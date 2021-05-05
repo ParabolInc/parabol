@@ -1,35 +1,30 @@
 import Team from '../../database/types/Team'
 import getRethink from '../../database/rethinkDriver'
 import {checkTableEq} from './checkEqBase'
-import updateTeamByTeamId from '../queries/updateTeamByTeamId'
+import getTeamsById from '../queries/getTeamsById'
 
-const alwaysDefinedFields: 
-  (keyof Partial<Team>)[] = 
-[
+const alwaysDefinedFields: (keyof Partial<Team>)[] = [
   'name',
   'createdAt',
   'isArchived',
   'isPaid',
   'tier',
   'orgId',
-  'updatedAt',
+  'updatedAt'
 ]
 
-const maybeUndefinedFieldsDefaultValues :
-  {[Property in keyof Partial<Team>]: any} =
-{
+const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<Team>]: any} = {
   jiraDimensionFields: [],
-  lastMeetingType: 'retrospective',
+  lastMeetingType: 'retrospective'
 }
 
-const checkTeamEq = async (maxErrors: number = 10) => {
+const checkTeamEq = async (maxErrors = 10) => {
   const r = await getRethink()
-  const rethinkQuery = r
-    .table('Team').orderBy('updatedAt', {index: 'updatedAt'})
+  const rethinkQuery = r.table('Team').orderBy('updatedAt', {index: 'updatedAt'})
   const errors = await checkTableEq(
     'Team',
     rethinkQuery,
-    updateTeamByTeamId,
+    getTeamsById,
     alwaysDefinedFields,
     maybeUndefinedFieldsDefaultValues,
     maxErrors

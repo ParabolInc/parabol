@@ -15,7 +15,5 @@ UPDATE "User" SET
   "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),
   "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),
   "identities" = COALESCE(:identities, "identities"),
-  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy"),
-  "eqChecked" = COALESCE(:eqChecked, "eqChecked")
-WHERE id IN :ids
-RETURNING *;
+  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy")
+WHERE id IN :ids;

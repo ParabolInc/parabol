@@ -10,7 +10,5 @@ UPDATE "Team" SET
   "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),
   "tier" = COALESCE(:tier, "tier"),
   "orgId" = COALESCE(:orgId, "orgId"),
-  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
-  "eqChecked" = COALESCE(:eqChecked, "eqChecked")
-WHERE id IN :ids
-RETURNING *;
+  "updatedAt" = COALESCE(:updatedAt, "updatedAt")
+WHERE id IN :ids;

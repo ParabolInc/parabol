@@ -17,14 +17,15 @@ interface IError {
         pgRow: Partial<PGDoc>
       }
     | number
+    | boolean
     | undefined
     | string[]
   rethinkRecordsCompared: number
   foundErrors: number
   missingPgRows: string[]
-  extraPgRows: string[]
   rethinkRowCount?: number
   pgRowCount?: number
+  areRowCountsEqual?: boolean
 }
 
 function getPairNeFields(
@@ -77,25 +78,18 @@ function addNeFieldsToErrors(
   }
 }
 
-const getExtraPgRowIds = async (tableName: string): Promise<string[]> => {
+const getPgRowCount = async (tableName: string) => {
   const pg = getPg()
   const queryRes = await pg.query(`
-    SELECT ARRAY_AGG("id") FROM "${tableName}"
-      WHERE "eqChecked" = '-infinity'::timestamptz;
+    SELECT COUNT(*) FROM "${tableName}";
   `)
-  return queryRes.rows[0].array_agg
+  return queryRes.rows[0].count
 }
 
 export async function checkTableEq(
   tableName: string,
   rethinkQuery: RTable<TableSchema>,
-  pgQuery: (
-    update: {
-      [key: string]: any
-      eqChecked: Date
-    },
-    ids: string[]
-  ) => Promise<PGDoc[] | null>,
+  pgQuery: (ids: string[]) => Promise<PGDoc[] | null>,
   alwaysDefinedFields: string[],
   maybeUndefinedFieldsDefaultValues: {[key: string]: any},
   maxErrors = 10
@@ -103,8 +97,7 @@ export async function checkTableEq(
   const errors: IError = {
     rethinkRecordsCompared: 0,
     foundErrors: 0,
-    missingPgRows: [],
-    extraPgRows: []
+    missingPgRows: []
   }
   const batchSize = 3000
 
@@ -123,7 +116,7 @@ export async function checkTableEq(
     }
 
     const ids = rethinkRows.map((t) => t.id)
-    const pgRows = (await pgQuery({eqChecked: new Date()}, ids)) ?? []
+    const pgRows = (await pgQuery(ids)) ?? []
     const pgRowsById = {} as {[key: string]: PGDoc}
     pgRows.forEach((pgRow) => {
       pgRowsById[pgRow.id] = pgRow
@@ -156,9 +149,7 @@ export async function checkTableEq(
     }
   }
   errors.rethinkRowCount = errors.rethinkRecordsCompared
-  errors.extraPgRows = await getExtraPgRowIds(tableName)
-  errors.foundErrors += errors.extraPgRows.length
-  errors.pgRowCount =
-    errors.rethinkRowCount - errors.missingPgRows.length + errors.extraPgRows.length
+  errors.pgRowCount = await getPgRowCount(tableName)
+  errors.areRowCountsEqual = errors.rethinkRowCount === errors.pgRowCount
   return errors
 }
