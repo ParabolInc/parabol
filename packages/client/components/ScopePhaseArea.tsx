@@ -68,8 +68,7 @@ const tabs = [
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  // TODO: change this back to Atlassian before pushing to prod
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const updateActiveIdx = (idx: number) => {
