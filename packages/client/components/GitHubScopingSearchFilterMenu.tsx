@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
@@ -18,6 +17,9 @@ import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
+import useFilteredItems from '../hooks/useFilteredItems'
+import useForm from '../hooks/useForm'
+import TypeAheadLabel from './TypeAheadLabel'
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
@@ -25,7 +27,7 @@ const SearchIcon = styled(Icon)({
 })
 
 const StyledMenu = styled(Menu)({
-  minWidth: 450
+  width: 450
 })
 
 const NoResults = styled(MenuItemLabel)({
@@ -67,31 +69,43 @@ type GitHubSearchQuery = NonNullable<
   NonNullable<GitHubScopingSearchFilterMenu_viewer['meeting']>['githubSearchQuery']
 >
 
-const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
-  commitLocalUpdate(atmosphere, (store) => {
-    const meeting = store.get(meetingId)
-    if (!meeting) return
-    const githubSearchQuery = meeting.getLinkedRecord('githubSearchQuery')!
-    githubSearchQuery.setValue(value, 'reposQuery')
-  })
+type Repo = Pick<IXGitHubRepository, 'id' | 'nameWithOwner'>
+
+const MAX_REPOS = 10
+
+const getValue = (item: {nameWithOwner?: string}) => {
+  const repoName = item.nameWithOwner || 'Unknown Project'
+  return repoName.toLowerCase()
 }
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
   const isLoading = viewer === null
   const atmosphere = useAtmosphere()
-  const edges = viewer?.teamMember?.integrations?.github?.api?.query?.search.edges ?? []
+  const edges =
+    viewer?.teamMember?.integrations.github?.api?.query?.viewer?.repositories?.edges ?? []
+  const repos = useMemo(
+    () => edges.map((edge) => edge?.node).filter((node): node is Repo => !!node),
+    [edges]
+  )
+  const {fields, onChange} = useForm({
+    search: {
+      getDefault: () => ''
+    }
+  })
+  const {search} = fields
+  const {value} = search
+  const query = value.toLowerCase()
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
   const githubSearchQuery = meeting?.githubSearchQuery ?? null
   const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
-  const reposQuery = githubSearchQuery?.reposQuery ?? ''
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {value} = e.target
-    setSearch(atmosphere, meetingId, value)
-  }
-
+  const queryFilteredRepos = useFilteredItems(query, repos, getValue)
+  const selectedAndFilteredProjects = useMemo(() => {
+    const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.nameWithOwner))
+    const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
+    return Array.from(new Set([...selectedRepos, ...queryFilteredRepos])).slice(0, adjustedMax)
+  }, [queryFilteredRepos])
   const {portalStatus, isDropdown} = menuProps
   return (
     <StyledMenu
@@ -106,28 +120,24 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         </StyledMenuItemIcon>
         <TaskFooterIntegrateMenuSearch
           placeholder={'Search your GitHub repos'}
-          value={reposQuery}
+          value={value}
           onChange={onChange}
         />
       </SearchItem>
       {isLoading && <MockFieldList />}
       {edges.length === 0 && !isLoading && <NoResults key='no-results'>No repos found!</NoResults>}
-      {edges.map((repo) => {
-        const {id: repoId, nameWithOwner} = repo?.node as Pick<
-          IXGitHubRepository,
-          'id' | 'nameWithOwner'
-        >
+      {selectedAndFilteredProjects.map((repo) => {
+        const {id: repoId, nameWithOwner} = repo
         const isSelected = nameWithOwnerFilters.includes(nameWithOwner)
         const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('github', meetingId)
             const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
-            const nameWithOwnerFilters = githubSearchQuery.getValue('nameWithOwnerFilters')
             const newFilters = isSelected
               ? nameWithOwnerFilters.filter((name) => name !== nameWithOwner)
               : nameWithOwnerFilters.concat(nameWithOwner)
+            const queryString = githubSearchQuery.getValue('queryString')
             githubSearchQuery.setValue(newFilters, 'nameWithOwnerFilters')
-            const queryString = githubSearchQuery.getValue('queryString') as string
             const queryWithoutRepos = queryString
               .trim()
               .split(' ')
@@ -143,7 +153,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             label={
               <StyledMenuItemLabel>
                 <StyledCheckBox active={isSelected} />
-                {nameWithOwner}
+                <TypeAheadLabel query={query} label={nameWithOwner} />
               </StyledMenuItemLabel>
             }
             onClick={handleClick}
@@ -163,7 +173,6 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
           githubSearchQuery {
             nameWithOwnerFilters
             queryString
-            reposQuery
           }
         }
       }
@@ -171,22 +180,15 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
         integrations {
           github {
             api {
-              errors {
-                message
-                locations {
-                  line
-                  column
-                }
-                path
-              }
               query {
-                search(first: 50, type: REPOSITORY, query: "Parabol") {
-                  edges {
-                    node {
-                      ... on _xGitHubRepository {
-                        __typename
-                        id
-                        nameWithOwner
+                viewer {
+                  repositories(first: 10) {
+                    edges {
+                      node {
+                        ... on _xGitHubRepository {
+                          id
+                          nameWithOwner
+                        }
                       }
                     }
                   }

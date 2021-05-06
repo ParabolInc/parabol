@@ -27,6 +27,10 @@ const SearchIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18
 })
 
+const StyledMenu = styled(Menu)({
+  width: 250
+})
+
 const NoResults = styled(MenuItemLabel)({
   color: PALETTE.SLATE_600,
   justifyContent: 'center',
@@ -129,7 +133,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
     })
   }
   return (
-    <Menu
+    <StyledMenu
       keepParentFocus
       ariaLabel={'Define the Jira search query'}
       portalStatus={portalStatus}
@@ -199,7 +203,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </StyledMenu>
   )
 }
 

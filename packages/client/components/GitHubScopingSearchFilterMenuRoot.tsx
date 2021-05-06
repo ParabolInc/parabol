@@ -23,13 +23,10 @@ interface Props {
 const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
   const {menuProps, teamId, meeting} = props
   const {id: meetingId} = meeting
-  // const {id: meetingId, githubSearchQuery} = meeting
-  // const {reposQuery} = githubSearchQuery
   const atmosphere = useAtmosphere()
 
   return (
     <QueryRenderer
-      // variables={{teamId, meetingId, reposQuery}}
       variables={{teamId, meetingId}}
       environment={atmosphere}
       query={query}
@@ -46,9 +43,6 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenuRoot, {
   meeting: graphql`
     fragment GitHubScopingSearchFilterMenuRoot_meeting on PokerMeeting {
       id
-      githubSearchQuery {
-        reposQuery
-      }
     }
   `
 })
