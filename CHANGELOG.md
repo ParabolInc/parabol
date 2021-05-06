@@ -19,6 +19,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fix various Hubspot data issues #4904
 - Fix facilitator being kicked out of Poker #4873
 - Fix SAML request param encoding and parsing #4898
+- Fix Stripe invoice #4937
 
 ### Changed
 
