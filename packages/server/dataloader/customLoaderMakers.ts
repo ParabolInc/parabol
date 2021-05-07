@@ -257,6 +257,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             .getAll(userId, {index: 'userId'})
             .filter({teamId})
             .nth(0)
+            .default(null)
             .run()
 
           if (!atlassianAuth?.refreshToken) return null

@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import RemoveAgendaItemPayload from '../types/RemoveAgendaItemPayload'
-import publish from '../../utils/publish'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
-import removeStagesFromMeetings from './helpers/removeStagesFromMeetings'
-import AgendaItemsStage from '../../database/types/AgendaItemsStage'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getRethink from '../../database/rethinkDriver'
+import AgendaItemsStage from '../../database/types/AgendaItemsStage'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import RemoveAgendaItemPayload from '../types/RemoveAgendaItemPayload'
+import removeStagesFromMeetings from './helpers/removeStagesFromMeetings'
 
 export default {
   type: RemoveAgendaItemPayload,
@@ -34,7 +34,10 @@ export default {
     const agendaItem = await r
       .table('AgendaItem')
       .get(agendaItemId)
-      .delete({returnChanges: true})('changes')(0)('old_val')
+      .update(
+        {isActive: false},
+        {returnChanges: true}
+      )('changes')(0)('old_val')
       .default(null)
       .run()
     if (!agendaItem) {
