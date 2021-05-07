@@ -3700,10 +3700,10 @@
     eventemitter3 "^3.1.0"
     tslib "^1.9.3"
 
-"@mattkrick/graphql-trebuchet-client@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-2.0.0.tgz#fd2998debd402fa1dd01e787e09f91b8caa23b76"
-  integrity sha512-EUBTkfwyYxyiUvWw1QwXot+GGMphSX5JaWdfJbUoSqnHmvDaNs75kAnDnajktTWAdF0KEa6j0x+//fcSWhMl8w==
+"@mattkrick/graphql-trebuchet-client@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-2.0.1.tgz#866ba1e60cb6ee7aaa52fd422ed32f4edf908c68"
+  integrity sha512-4ZaI6kVDdcLpSXWLlI7ZyTyIVug+mXfssIFdqIn2BluAuk16nOk5nwXVaO4Gp3pPbkaf0AF2y1Y5GajpcFzo+w==
   dependencies:
     tslib "~2.2.0"
 
