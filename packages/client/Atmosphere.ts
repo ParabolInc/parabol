@@ -15,6 +15,7 @@ import {
   Network,
   Observable,
   RecordSource,
+  RelayFeatureFlags,
   RequestParameters,
   Store,
   SubscribeFunction,
@@ -22,15 +23,13 @@ import {
   Variables
 } from 'relay-runtime'
 import {Sink} from 'relay-runtime/lib/network/RelayObservable'
-import {RelayFeatureFlags} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import handleInvalidatedSession from './hooks/handleInvalidatedSession'
+import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-import {AuthToken} from './types/AuthToken'
-
 (RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
 interface QuerySubscription {
@@ -48,7 +47,7 @@ export type SubscriptionRequestor = {
     atmosphere: Atmosphere,
     variables: Variables,
     router: {history: RouterProps['history']}
-  ): Disposable,
+  ): Disposable
   key: string
 }
 
@@ -61,22 +60,11 @@ const noop = (): any => {
   /* noop */
 }
 
-// used when no sink is provided (not awaiting responses)
-const noopSink = {
-  next: noop,
-  error: noop,
-  complete: noop,
-  closed: false
-}
-
-const toFormData = (
-  body: FetchHTTPData,
-  formData = new FormData()
-) => {
+const toFormData = (body: FetchHTTPData, formData = new FormData()) => {
   const uploadables = body.payload.uploadables || []
   delete body.payload.uploadables
   formData.append('body', JSON.stringify(body))
-  Object.keys(uploadables).forEach(key => {
+  Object.keys(uploadables).forEach((key) => {
     formData.append(`uploadables.${key}`, uploadables[key])
   })
   return formData
@@ -152,7 +140,7 @@ export default class Atmosphere extends Environment {
     const headers = {
       accept: 'application/json',
       Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
-      'x-correlation-id': connectionId || '',
+      'x-correlation-id': connectionId || ''
     }
     /* if uploadables, don't set content type bc we want the browser to set it */
     if (!uploadables) headers['content-type'] = 'application/json'
@@ -195,7 +183,6 @@ export default class Atmosphere extends Environment {
       } catch (e) {
         return
       }
-
     } else {
       this.subscriptions[subKey] = transport.subscribe({documentId, variables}, sink)
     }
@@ -225,7 +212,9 @@ export default class Atmosphere extends Environment {
         })
         return ''
       }
-      const host = __PRODUCTION__ ? window.location.host : `${window.location.hostname}:${__SOCKET_PORT__}`
+      const host = __PRODUCTION__
+        ? window.location.host
+        : `${window.location.hostname}:${__SOCKET_PORT__}`
       return `${wsProtocol}//${host}/?token=${this.authToken}`
     }
     return new SocketTrebuchet({getUrl})
@@ -233,7 +222,12 @@ export default class Atmosphere extends Environment {
 
   trySSE = () => {
     const getUrl = () => `/sse/?token=${this.authToken}`
-    return new SSETrebuchet({getUrl, fetchData: this.fetchHTTP, fetchPing: this.fetchPing, fetchReliable: this.fetchReliable})
+    return new SSETrebuchet({
+      getUrl,
+      fetchData: this.fetchHTTP,
+      fetchPing: this.fetchPing,
+      fetchReliable: this.fetchReliable
+    })
   }
 
   async promiseToUpgrade() {
@@ -265,7 +259,7 @@ export default class Atmosphere extends Environment {
     request: RequestParameters,
     variables: Variables,
     uploadables?: UploadableMap | null,
-    sink?: Sink<any>
+    sink?: Sink<any> | undefined | null
   ) => {
     // await sleep(1000)
     const field = __PRODUCTION__ ? 'documentId' : 'query'
@@ -279,11 +273,15 @@ export default class Atmosphere extends Environment {
       }
     }
     const transport = uploadables ? this.baseHTTPTransport : this.transport
-    return transport.fetch({
-      [field]: data,
-      variables,
-      uploadables: uploadables || undefined
-    }, sink || noopSink)
+    return transport.fetch(
+      {
+        [field]: data,
+        variables,
+        uploadables: uploadables || undefined
+      },
+      // if sink is nully, then the server doesn't send a response
+      sink
+    )
   }
 
   handleFetch: FetchFunction = (request, variables, _, uploadables) => {

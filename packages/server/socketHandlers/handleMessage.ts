@@ -30,7 +30,7 @@ const handleParsedMessage = async (
     const response = await handleGraphQLTrebuchetRequest(msg, connectionContext)
     if (response) {
       const {type, id: opId, payload} = response
-      sendGQLMessage(connectionContext, type, false, payload, opId)
+      sendGQLMessage(connectionContext, opId, type, false, payload)
     }
   })
 }
