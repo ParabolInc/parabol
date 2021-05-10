@@ -52,8 +52,6 @@ const handleGraphQLTrebuchetRequest = async (
         safeError.stack = firstError.stack
         sendToSentry(safeError)
       }
-      // no client sink = no opId = no response expected
-      if (!opId) return
       const safeResult = sanitizeGraphQLErrors(result)
       // TODO if multiple results, send GQL_DATA for all but the last
       const messageType = result.data ? 'complete' : 'error'
