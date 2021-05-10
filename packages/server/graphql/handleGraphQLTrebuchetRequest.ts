@@ -10,30 +10,31 @@ import subscribeGraphQL from './subscribeGraphQL'
 
 export type GraphQLMessageType = 'data' | 'complete' | 'error'
 
-type TrebuchetServerResult = Promise<{
-  type: GraphQLMessageType
-  id?: string
-  payload: {data?: any; errors?: {message: string; path?: string[]}[]}
-} | void>
-
-const IGNORE_MUTATIONS = ['segmentEventTrack', 'updateDragLocation', 'setAppLocation']
-
 const handleGraphQLTrebuchetRequest = async (
   data: OutgoingMessage,
   connectionContext: ConnectionContext
-): TrebuchetServerResult => {
-  const opId = data.id!
+) => {
+  const opId = data.id
   const {id: socketId, authToken, ip, subs} = connectionContext
   if (data.type === 'start') {
     const {payload} = data
-    if (!payload)
-      return {type: 'error', id: opId, payload: {errors: [{message: 'No payload provided'}]}}
     const {variables, documentId: docId, query} = payload
+    if (!payload)
+      return {
+        type: 'error' as const,
+        id: opId || '',
+        payload: {errors: [{message: 'No payload provided'}]}
+      }
     if (PROD && !docId)
-      return {type: 'error', id: opId, payload: {errors: [{message: 'DocumentId not provided'}]}}
+      return {
+        type: 'error' as const,
+        id: opId || '',
+        payload: {errors: [{message: 'DocumentId not provided'}]}
+      }
+
     const isSubscription = PROD ? docId![0] === 's' : query?.startsWith('subscription')
     if (isSubscription) {
-      subscribeGraphQL({docId, query, opId, variables, connectionContext})
+      subscribeGraphQL({docId, query, opId: opId!, variables, connectionContext})
       return
     }
     try {
@@ -51,16 +52,15 @@ const handleGraphQLTrebuchetRequest = async (
         safeError.stack = firstError.stack
         sendToSentry(safeError)
       }
-      if (result.data && IGNORE_MUTATIONS.includes(Object.keys(result.data)[0])) return
       const safeResult = sanitizeGraphQLErrors(result)
       // TODO if multiple results, send GQL_DATA for all but the last
       const messageType = result.data ? 'complete' : 'error'
-      return {type: messageType, id: opId, payload: safeResult as any}
+      return {type: messageType, id: opId, payload: safeResult} as const
     } catch (e) {
       const viewerId = getUserId(authToken)
       sendToSentry(e, {userId: viewerId})
     }
-  } else if (data.type === 'stop') {
+  } else if (data.type === 'stop' && opId) {
     relayUnsubscribe(subs, opId)
   }
   return

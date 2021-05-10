@@ -3682,15 +3682,6 @@
     globby "^11.0.0"
     read-yaml-file "^1.1.0"
 
-"@mattkrick/fast-rtc-peer@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.0.6.tgz#e884b91f6410cd54df2b543fb0ad3beafd41b4cb"
-  integrity sha512-bctZNvNJacMrV9OS0Cp3KmSpNA4tfU+MDOTLSedL4ihQJNWyu4j73nR6ByMB5wUWLh7ScUrDXCpd2ux3d7CuLA==
-  dependencies:
-    eventemitter3 "^3.1.0"
-    shortid "^2.2.12"
-    tslib "^1.9.3"
-
 "@mattkrick/fast-rtc-peer@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.4.1.tgz#68a0c7053f19b088b1737f0d03c2ef7935de7dd4"
@@ -3709,23 +3700,27 @@
     eventemitter3 "^3.1.0"
     tslib "^1.9.3"
 
-"@mattkrick/graphql-trebuchet-client@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-1.0.2.tgz#9ef56ca05ed6e3f6785348ae67c70f23c2d5cce0"
-  integrity sha512-XexI4g+4U6LuaNNdOhpuD1PewHXmvvcKcs61pZFD2HZTSUT4h807WyZiKIONpqHb/egjPqtB8khldAex76d1uQ==
+"@mattkrick/graphql-trebuchet-client@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-2.0.1.tgz#866ba1e60cb6ee7aaa52fd422ed32f4edf908c68"
+  integrity sha512-4ZaI6kVDdcLpSXWLlI7ZyTyIVug+mXfssIFdqIn2BluAuk16nOk5nwXVaO4Gp3pPbkaf0AF2y1Y5GajpcFzo+w==
+  dependencies:
+    tslib "~2.2.0"
 
 "@mattkrick/sanitize-svg@0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.3.1.tgz#c21da0a835857ffa2014d9fe76ff80bda704cb9f"
   integrity sha512-wbIv43EBkzMlYcfv2+SrLVfgpzEp8axjOFD1TGOwHuS1I60GQplzx8fduWWHGNpgt/1QlrI95vNXFRSZM2oWtA==
 
-"@mattkrick/trebuchet-client@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.0.tgz#001c082736c4fd8e48927c0e5b656bd1122a7b7e"
-  integrity sha512-oe2WhV2Mq/hwiiz4/qhG12XGKqpTvyYWKYTPTrKjnyltoNlnkjpGqBm0Znpvc+BHn+evSjhZ7TKJQ8EbHmpRrw==
+"@mattkrick/trebuchet-client@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.1.tgz#3fc49f7858652a55dca92cb0c14c0313df931619"
+  integrity sha512-5uHCldCqmVntoyujTzRfmGtjld8k4JuBdFN0SvhvRFf83FPaNeoit6Mh8VgrcxxxKujKeYCQDMQH6LWwpsshgQ==
   dependencies:
-    "@mattkrick/fast-rtc-peer" "^0.0.6"
-    eventemitter3 "^3.1.0"
+    "@mattkrick/fast-rtc-peer" "^0.4.1"
+    eventemitter3 "^4.0.7"
+    tslib "~2.2.0"
+    typescript "^4.2.4"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -8981,6 +8976,11 @@ eventemitter3@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.0.tgz#d65176163887ee59f386d64c82610b696a4a74eb"
   integrity sha512-qerSRB0p+UDEssxTtm6EDKcE7W4OaoisfIMl4CngyEhjpYglocpNg6UEqCvemdGhosAsg4sO2dXJOdyBifPGCg==
+
+eventemitter3@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
+  integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
 
 events@1.1.1:
   version "1.1.1"
@@ -18118,7 +18118,7 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.1.3:
+typescript@4.1.3, typescript@^4.2.4:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.3.tgz#519d582bd94cba0cf8934c7d8e8467e473f53bb7"
   integrity sha512-B3ZIOf1IKeH2ixgHhj6la6xdwR9QrLC5d1VKeCSY4tvkqhF2eqd9O7txNlS0PO3GrBAFIdr3L1ndNwteUbZLYg==
