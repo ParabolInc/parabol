@@ -16,7 +16,7 @@ type SignUpWithPasswordMutationVariables = {
 
 const createEmailVerification = async (props: SignUpWithPasswordMutationVariables) => {
   const {password, invitationToken, segmentId} = props
-  const email = props.email.toLowerCase()
+  const email = props.email.toLowerCase().trim()
   const tokenBuffer = crypto.randomBytes(48)
   const verifiedEmailToken = base64url.encode(tokenBuffer)
   const {subject, body, html} = emailVerificationEmailCreator({verifiedEmailToken, invitationToken})
