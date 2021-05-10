@@ -12,7 +12,7 @@ const GitHubSearchQuery = new GraphQLObjectType<any, GQLContext>({
     },
     queryString: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'The query string, either simple or JQL depending on the isJQL flag'
+      description: 'The query string in GitHub format, e.g. is:issue is:open'
     },
     nameWithOwnerFilters: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),

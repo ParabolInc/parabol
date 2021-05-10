@@ -19769,6 +19769,50 @@ export type RepoFragFragment = {__typename?: 'RepositoryConnection'} & {
   >
 }
 
+export type SearchIssuesQueryVariables = Exact<{
+  queryString: Scalars['String']
+  first: Scalars['Int']
+  after?: Maybe<Scalars['String']>
+}>
+
+export type SearchIssuesQuery = {__typename?: 'Query'} & {
+  search: {__typename?: 'SearchResultItemConnection'} & Pick<
+    SearchResultItemConnection,
+    'issueCount'
+  > & {
+      edges?: Maybe<
+        Array<
+          Maybe<
+            {__typename?: 'SearchResultItemEdge'} & Pick<SearchResultItemEdge, 'cursor'> & {
+                node?: Maybe<
+                  | {__typename?: 'App'}
+                  | ({__typename?: 'Issue'} & IssueFragment)
+                  | {__typename?: 'MarketplaceListing'}
+                  | {__typename?: 'Organization'}
+                  | ({__typename?: 'PullRequest'} & PullRequestFragment)
+                  | {__typename?: 'Repository'}
+                  | {__typename?: 'User'}
+                >
+              }
+          >
+        >
+      >
+      pageInfo: {__typename?: 'PageInfo'} & Pick<
+        PageInfo,
+        'endCursor' | 'hasNextPage' | 'hasPreviousPage'
+      >
+    }
+}
+
+export type IssueFragment = {__typename?: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
+    repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>
+  }
+
+export type PullRequestFragment = {__typename?: 'PullRequest'} & Pick<
+  PullRequest,
+  'id' | 'title' | 'url'
+> & {repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>}
+
 export const RepoFragFragmentDoc: DocumentNode<RepoFragFragment, unknown> = {
   kind: 'Document',
   definitions: [
@@ -19789,6 +19833,58 @@ export const RepoFragFragmentDoc: DocumentNode<RepoFragFragment, unknown> = {
                 {kind: 'Field', name: {kind: 'Name', value: 'updatedAt'}},
                 {kind: 'Field', name: {kind: 'Name', value: 'viewerCanAdminister'}}
               ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+export const IssueFragmentDoc: DocumentNode<IssueFragment, unknown> = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: {kind: 'Name', value: 'issue'},
+      typeCondition: {kind: 'NamedType', name: {kind: 'Name', value: 'Issue'}},
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {kind: 'Field', name: {kind: 'Name', value: 'id'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'title'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'url'}},
+          {
+            kind: 'Field',
+            name: {kind: 'Name', value: 'repository'},
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{kind: 'Field', name: {kind: 'Name', value: 'nameWithOwner'}}]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+export const PullRequestFragmentDoc: DocumentNode<PullRequestFragment, unknown> = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: {kind: 'Name', value: 'pullRequest'},
+      typeCondition: {kind: 'NamedType', name: {kind: 'Name', value: 'PullRequest'}},
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {kind: 'Field', name: {kind: 'Name', value: 'id'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'title'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'url'}},
+          {
+            kind: 'Field',
+            name: {kind: 'Name', value: 'repository'},
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{kind: 'Field', name: {kind: 'Name', value: 'nameWithOwner'}}]
             }
           }
         ]
@@ -19927,5 +20023,107 @@ export const GetRepositoriesDocument: DocumentNode<
       }
     },
     ...RepoFragFragmentDoc.definitions
+  ]
+}
+export const SearchIssuesDocument: DocumentNode<SearchIssuesQuery, SearchIssuesQueryVariables> = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: {kind: 'Name', value: 'searchIssues'},
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {kind: 'Variable', name: {kind: 'Name', value: 'queryString'}},
+          type: {
+            kind: 'NonNullType',
+            type: {kind: 'NamedType', name: {kind: 'Name', value: 'String'}}
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {kind: 'Variable', name: {kind: 'Name', value: 'first'}},
+          type: {kind: 'NonNullType', type: {kind: 'NamedType', name: {kind: 'Name', value: 'Int'}}}
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {kind: 'Variable', name: {kind: 'Name', value: 'after'}},
+          type: {kind: 'NamedType', name: {kind: 'Name', value: 'String'}}
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: {kind: 'Name', value: 'search'},
+            arguments: [
+              {
+                kind: 'Argument',
+                name: {kind: 'Name', value: 'query'},
+                value: {kind: 'Variable', name: {kind: 'Name', value: 'queryString'}}
+              },
+              {
+                kind: 'Argument',
+                name: {kind: 'Name', value: 'type'},
+                value: {kind: 'EnumValue', value: 'ISSUE'}
+              },
+              {
+                kind: 'Argument',
+                name: {kind: 'Name', value: 'first'},
+                value: {kind: 'Variable', name: {kind: 'Name', value: 'first'}}
+              },
+              {
+                kind: 'Argument',
+                name: {kind: 'Name', value: 'after'},
+                value: {kind: 'Variable', name: {kind: 'Name', value: 'after'}}
+              }
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: {kind: 'Name', value: 'edges'},
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {kind: 'Field', name: {kind: 'Name', value: 'cursor'}},
+                      {
+                        kind: 'Field',
+                        name: {kind: 'Name', value: 'node'},
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {kind: 'FragmentSpread', name: {kind: 'Name', value: 'issue'}},
+                            {kind: 'FragmentSpread', name: {kind: 'Name', value: 'pullRequest'}}
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: 'Field',
+                  name: {kind: 'Name', value: 'pageInfo'},
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {kind: 'Field', name: {kind: 'Name', value: 'endCursor'}},
+                      {kind: 'Field', name: {kind: 'Name', value: 'hasNextPage'}},
+                      {kind: 'Field', name: {kind: 'Name', value: 'hasPreviousPage'}}
+                    ]
+                  }
+                },
+                {kind: 'Field', name: {kind: 'Name', value: 'issueCount'}}
+              ]
+            }
+          }
+        ]
+      }
+    },
+    ...IssueFragmentDoc.definitions,
+    ...PullRequestFragmentDoc.definitions
   ]
 }

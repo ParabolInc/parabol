@@ -3,7 +3,7 @@
 // import React from 'react'
 // import ReflectTemplateModal from '../modules/meeting/components/ReflectTemplateModal'
 // import StoryProvider from './components/StoryProvider'
-// import {PALETTE} from '../styles/paletteV2'
+// import {PALETTE} from '../styles/paletteV3'
 
 // const retroMeetingSettings = {
 //   reflectTemplates: [

@@ -1,4 +1,4 @@
-const gql = (str: ReadonlyArray<string>) => str[0]
+import {gql} from '../getGQLInputStr'
 export const getRepositories = gql`
   query getRepositories {
     viewer {

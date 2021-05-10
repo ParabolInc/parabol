@@ -8,9 +8,10 @@ graphql`
     gitHubIssue {
       id
       url
-      nameWithOwner
+      repository {
+        nameWithOwner
+      }
       title
-      description
     }
     meetingId
     teamId

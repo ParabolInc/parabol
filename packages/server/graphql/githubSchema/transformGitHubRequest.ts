@@ -57,7 +57,7 @@ const transformGitHubRequest = (info: GraphQLResolveInfo, prefix: string) => {
         ...node,
         name: {
           ...node.name,
-          value: value.slice(prefix.length)
+          value: value.startsWith(prefix) ? value.slice(prefix.length) : value
         }
       }
     }

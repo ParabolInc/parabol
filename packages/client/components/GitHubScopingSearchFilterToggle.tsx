@@ -4,7 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 // import lazyPreload from '../utils/lazyPreload'
 // import {GitHubScopingSearchFilterToggle_meeting} from '../__generated__/GitHubScopingSearchFilterToggle_meeting.graphql'
@@ -12,7 +12,7 @@ import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
 const FilterIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD24
 })
 

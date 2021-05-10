@@ -93,7 +93,6 @@ abstract class GitHubManager {
   async getProfile() {
     return this.query(getProfile)
   }
-
   async createIssue(createIssueInput: ICreateIssueInput) {
     return this.mutate(createIssue, {input: createIssueInput} as any)
   }

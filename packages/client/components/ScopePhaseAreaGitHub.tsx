@@ -25,7 +25,6 @@ const ScopePhaseAreaGitHub = (props: Props) => {
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
-  console.log({teamMember})
   const hasAuth = integrations?.github?.isActive ?? false
   if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
   return <ComingSoon>Coming Soon!</ComingSoon>

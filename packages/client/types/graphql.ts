@@ -44315,12 +44315,12 @@ export interface IPageInfoDateCursor {
   /**
    * When paginating backwards, the cursor to continue.
    */
-  startCursor: any | null;
+  startCursor: string | null;
 
   /**
    * When paginating forwards, the cursor to continue.
    */
-  endCursor: any | null;
+  endCursor: string | null;
 }
 
 /**
@@ -44576,7 +44576,6 @@ export type ThreadSource =
   | ITask
   | IAgendaItem
   | IJiraIssue
-  | IGitHubIssue
   | IRetroReflectionGroup;
 
 /**
@@ -44665,7 +44664,7 @@ export interface IThreadableEdge {
 /**
  * An entity that can be used in a poker meeting and receive estimates
  */
-export type Story = ITask | IJiraIssue | IGitHubIssue;
+export type Story = ITask | IJiraIssue;
 
 /**
  * An entity that can be used in a poker meeting and receive estimates
@@ -45296,11 +45295,6 @@ export interface IGitHubIntegration {
   githubSearchQueries: Array<IGitHubSearchQuery>;
 
   /**
-   * A list of issues coming straight from the jira integration for a specific team member
-   */
-  issues: IGitHubIssueConnection;
-
-  /**
    * *The GitHub login used for queries
    */
   login: string;
@@ -45322,24 +45316,6 @@ export interface IGitHubIntegration {
   api: IGitHubApi | null;
 }
 
-export interface IIssuesOnGitHubIntegrationArguments {
-  /**
-   * @default 100
-   */
-  first?: number | null;
-
-  /**
-   * the datetime cursor
-   */
-  after?: any | null;
-
-  /**
-   * A string of text to search for
-   */
-  queryString?: string | null;
-  nameWithOwnerFilters?: Array<string> | null;
-}
-
 /**
  * A GitHub search query including all filters selected when the query was executed
  */
@@ -45352,7 +45328,7 @@ export interface IGitHubSearchQuery {
   id: string;
 
   /**
-   * The query string, either simple or JQL depending on the isJQL flag
+   * The query string in GitHub format, e.g. is:issue is:open
    */
   queryString: string;
 
@@ -45365,92 +45341,6 @@ export interface IGitHubSearchQuery {
    * the time the search query was last used. Used for sorting
    */
   lastUsedAt: any;
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IGitHubIssueConnection {
-  __typename: 'GitHubIssueConnection';
-
-  /**
-   * Page info with cursors coerced to ISO8601 dates
-   */
-  pageInfo: IPageInfoDateCursor | null;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IGitHubIssueEdge>;
-
-  /**
-   * An error with the connection, if any
-   */
-  error: IStandardMutationError | null;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IGitHubIssueEdge {
-  __typename: 'GitHubIssueEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IGitHubIssue;
-  cursor: any | null;
-}
-
-/**
- * The GitHub Issue that comes direct from GitHub
- */
-export interface IGitHubIssue {
-  __typename: 'GitHubIssue';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
-   * A list of users currently commenting
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * Alias for summary used by the Story interface
-   */
-  title: string;
-
-  /**
-   * The url to access the issue
-   */
-  url: any;
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
-
-  /**
-   * The stringified ADF of the jira issue description
-   */
-  description: string;
-}
-
-export interface IThreadOnGitHubIssueArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
 }
 
 /**
@@ -54617,6 +54507,45 @@ export interface IGitHubCreateIssueSuccess {
    * The id of the team that is creating the GitHub issue
    */
   teamId: string;
+}
+
+/**
+ * The GitHub Issue that comes direct from GitHub
+ */
+export interface IGitHubIssue {
+  __typename: 'GitHubIssue';
+
+  /**
+   * The id of the issue as found in GitHub
+   */
+  id: string;
+
+  /**
+   * The url to access the issue
+   */
+  url: any;
+
+  /**
+   * The repository that the issue belongs to
+   */
+  repository: IGitHubRepository;
+
+  /**
+   * The title of the GitHub issue
+   */
+  title: string;
+}
+
+/**
+ * A repository that comes directly from GitHub
+ */
+export interface IGitHubRepository {
+  __typename: 'GitHubRepository';
+
+  /**
+   * The owner / repo of the issue as found in GitHub
+   */
+  nameWithOwner: string;
 }
 
 /**

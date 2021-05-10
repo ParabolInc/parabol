@@ -4,14 +4,14 @@ import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {GitHubScopingSearchHistoryMenu_teamMember} from '../__generated__/GitHubScopingSearchHistoryMenu_teamMember.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,
@@ -19,11 +19,11 @@ const NoResults = styled(MenuItemLabel)({
 })
 
 const QueryString = styled('span')({
-  color: PALETTE.TEXT_GRAY
+  color: PALETTE.SLATE_600
 })
 
 const ProjectFilter = styled('span')({
-  color: PALETTE.TEXT_GRAY
+  color: PALETTE.SLATE_600
 })
 
 const StyledMenuItemLabel = styled(MenuItemLabel)({

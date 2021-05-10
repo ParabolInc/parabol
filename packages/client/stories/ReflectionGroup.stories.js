@@ -13,7 +13,7 @@
 // import Grid from './components/Grid'
 // import RetroBackground from './components/RetroBackground'
 // import StoryContainer from './components/StoryContainer'
-// import {PALETTE} from '../styles/paletteV2'
+// import {PALETTE} from '../styles/paletteV3'
 
 // const newId = () => shortid.generate()
 

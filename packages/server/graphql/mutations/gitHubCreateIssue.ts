@@ -102,8 +102,7 @@ const gitHubCreateIssue = {
       id: gitHubIssueId,
       summary: title,
       url,
-      nameWithOwner,
-      description: ''
+      nameWithOwner
     }
 
     const data = {meetingId, teamId, gitHubIssue}
