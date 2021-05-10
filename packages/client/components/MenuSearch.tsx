@@ -28,7 +28,7 @@ interface Props {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const TaskFooterIntegrateMenuSearch = (props: Props) => {
+const MenuSearch = (props: Props) => {
   const {onChange, placeholder, value} = props
   const ref = useRef<HTMLInputElement>(null)
   const onBlur = useCallback(() => {
@@ -37,6 +37,7 @@ const TaskFooterIntegrateMenuSearch = (props: Props) => {
   return (
     <Input
       autoFocus
+      autoComplete='off'
       ref={ref}
       name='search'
       onBlur={onBlur}
@@ -47,4 +48,4 @@ const TaskFooterIntegrateMenuSearch = (props: Props) => {
   )
 }
 
-export default TaskFooterIntegrateMenuSearch
+export default MenuSearch

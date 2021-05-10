@@ -19,7 +19,7 @@ import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
-import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
+import MenuSearch from './MenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
 
 const SearchIcon = styled(Icon)({
@@ -158,11 +158,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
           <StyledMenuItemIcon>
             <SearchIcon>search</SearchIcon>
           </StyledMenuItemIcon>
-          <TaskFooterIntegrateMenuSearch
-            placeholder={'Search Jira'}
-            value={value}
-            onChange={onChange}
-          />
+          <MenuSearch placeholder={'Search Jira'} value={value} onChange={onChange} />
         </SearchItem>
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (

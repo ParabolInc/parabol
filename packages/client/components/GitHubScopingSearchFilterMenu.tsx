@@ -16,7 +16,7 @@ import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
-import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
+import MenuSearch from './MenuSearch'
 import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import TypeAheadLabel from './TypeAheadLabel'
@@ -83,7 +83,8 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const isLoading = viewer === null
   const atmosphere = useAtmosphere()
   const edges =
-    viewer?.teamMember?.integrations.github?.api?.query?.viewer?.repositories?.edges ?? []
+    viewer?.teamMember?.integrations.github?.api?.query?.viewer?.repositoriesContributedTo?.edges ??
+    []
   const repos = useMemo(
     () => edges.map((edge) => edge?.node).filter((node): node is Repo => !!node),
     [edges]
@@ -118,11 +119,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
         </StyledMenuItemIcon>
-        <TaskFooterIntegrateMenuSearch
-          placeholder={'Search your GitHub repos'}
-          value={value}
-          onChange={onChange}
-        />
+        <MenuSearch placeholder={'Search your GitHub repos'} value={value} onChange={onChange} />
       </SearchItem>
       {isLoading && <MockFieldList />}
       {edges.length === 0 && !isLoading && <NoResults key='no-results'>No repos found!</NoResults>}
@@ -182,13 +179,13 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
             api {
               query {
                 viewer {
-                  repositories(first: 10) {
+                  repositoriesContributedTo(
+                    first: 10
+                    orderBy: {field: UPDATED_AT, direction: DESC}
+                  ) {
                     edges {
                       node {
-                        ... on _xGitHubRepository {
-                          id
-                          nameWithOwner
-                        }
+                        nameWithOwner
                       }
                     }
                   }
