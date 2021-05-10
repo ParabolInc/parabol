@@ -23,7 +23,7 @@ const logFailedLogin = async (ip: string, email: string) => {
 const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
   const r = await getRethink()
   const yesterday = new Date(Date.now() - ms('1d'))
-  const email = denormEmail.toLowerCase()
+  const email = denormEmail.toLowerCase().trim()
   const {existingUser, failOnAccount, failOnTime} = await r({
     existingUser: (r
       .table('User')
