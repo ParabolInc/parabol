@@ -2,6 +2,7 @@ import generateUID from '../../generateUID'
 import {TierEnum} from './Invoice'
 import JiraDimensionField from './JiraDimensionField'
 import {MeetingTypeEnum} from './Meeting'
+import {TEAM_NAME_LIMIT} from '../../postgres/constants'
 
 interface Input {
   id?: string
@@ -44,7 +45,7 @@ export default class Team {
       tier,
       updatedAt
     } = input
-    this.name = name
+    this.name = name.trim().slice(0, TEAM_NAME_LIMIT)
     this.createdBy = createdBy
     this.orgId = orgId
     this.tier = tier

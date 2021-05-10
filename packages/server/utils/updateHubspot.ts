@@ -272,7 +272,7 @@ const updateHubspotBulkContact = async (records: BulkRecord[], retryCount = 0) =
   if (!records || Object.keys(records).length === 0) return
   const body = JSON.stringify(
     records.map((record) => {
-      const {id, email, ...props} = record
+      const {email, ...props} = record
       return {
         email,
         properties: Object.keys(props).map((key) => ({

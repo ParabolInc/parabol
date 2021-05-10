@@ -57,7 +57,7 @@ const SummarySheet = (props: Props) => {
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
         <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} appOrigin={appOrigin} />
-        <SummaryPokerStories meeting={meeting} isEmail={referrer === 'email'} />
+        <SummaryPokerStories appOrigin={appOrigin} meeting={meeting} isEmail={referrer === 'email'} />
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}

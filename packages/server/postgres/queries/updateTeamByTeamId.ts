@@ -7,13 +7,14 @@ import getPg from '../../postgres/getPg'
 
 const updateTeamByTeamId = async (
   teamUpdates: Partial<IUpdateTeamByTeamIdQueryParams>,
-  teamId: string
+  teamIds: string | string[]
 ) => {
-  await catchAndLog(() =>
+  teamIds = typeof teamIds === 'string' ? [teamIds] : teamIds
+  return await catchAndLog(() =>
     updateTeamByTeamIdQuery.run(
       {
         ...teamUpdates,
-        id: teamId
+        ids: teamIds
       } as IUpdateTeamByTeamIdQueryParams,
       getPg()
     )

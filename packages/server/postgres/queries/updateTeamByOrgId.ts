@@ -8,7 +8,7 @@ import getPg from '../../postgres/getPg'
 const updateTeamByOrgId = async (
   teamUpdates: Partial<IUpdateTeamByOrgIdQueryParams>,
   orgId: string
-): Promise<void> => {
+) => {
   await catchAndLog(() =>
     updateTeamByOrgIdQuery.run(
       {

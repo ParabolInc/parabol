@@ -8,7 +8,7 @@ import ErrorComponent from './ErrorComponent/ErrorComponent'
 import GitHubScopingSearchResults from './GitHubScopingSearchResults'
 
 const query = graphql`
-  query GitHubScopingSearchResultsRootQuery($teamId: ID!) {
+  query GitHubScopingSearchResultsRootQuery($teamId: ID!, $queryString: String!) {
     viewer {
       ...GitHubScopingSearchResults_viewer
     }
@@ -23,17 +23,18 @@ interface Props {
 const GitHubScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {meeting} = props
-  // const {teamId, githubSearchQuery} = meeting
-  const {teamId} = meeting
-  // const {queryString} = githubSearchQuery
-  // const normalizedQueryString = queryString.trim()
+  const {teamId, githubSearchQuery} = meeting
+  // const {teamId} = meeting
+  const {queryString} = githubSearchQuery
+  const normalizedQueryString = queryString.trim()
+
   return (
     <QueryRenderer<GitHubScopingSearchResultsRootQuery>
       environment={atmosphere}
       query={query}
       variables={{
-        teamId
-        // queryString: normalizedQueryString
+        teamId,
+        queryString: normalizedQueryString
       }}
       fetchPolicy={'store-or-network' as any}
       render={({props, error}) => {

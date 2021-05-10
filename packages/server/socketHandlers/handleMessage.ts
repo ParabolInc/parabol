@@ -4,10 +4,10 @@ import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequ
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
+import handleReliableMessage from '../utils/handleReliableMessage'
 import sendToSentry from '../utils/sendToSentry'
 import handleSignal from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
-import handleReliableMessage from '../utils/handleReliableMessage'
 
 interface WRTCMessage {
   type: 'WRTC_SIGNAL'
@@ -28,9 +28,10 @@ const handleParsedMessage = async (
       return
     }
     const response = await handleGraphQLTrebuchetRequest(msg, connectionContext)
-    if (response) {
+    // only reply if an opId was included. no opId = no sink on client = ignored
+    if (response?.id) {
       const {type, id: opId, payload} = response
-      sendGQLMessage(connectionContext, type, false, payload, opId)
+      sendGQLMessage(connectionContext, opId, type, false, payload)
     }
   })
 }

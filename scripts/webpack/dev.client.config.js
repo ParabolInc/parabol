@@ -23,12 +23,8 @@ module.exports = {
   devServer: {
     index: 'index.html',
     clientLogLevel: 'silent',
-    contentBase: [
-      path.join(PROJECT_ROOT, 'static'),
-      path.join(PROJECT_ROOT, 'build'),
-      path.join(PROJECT_ROOT, 'dev', 'dll')
-    ],
-    contentBasePublicPath: '/static/',
+    contentBase: [path.join(PROJECT_ROOT, 'static'), path.join(PROJECT_ROOT, 'build'), path.join(PROJECT_ROOT, 'dev', 'dll'), path.join(PROJECT_ROOT, 'self-hosted')],
+    contentBasePublicPath: ['/static/', '/static/', '/static/', '/self-hosted/'],
     publicPath: '/',
     hot: true,
     historyApiFallback: true,

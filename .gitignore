@@ -18,6 +18,7 @@ packages/cypress/screenshots/
 packages/cypress/videos/
 packages/cypress/results/
 packages/server/segmentFns/debug.js
+packages/server/graphql/intranetSchema/mutations/__output__/
 queryMap.json
 rethinkdb_data/
 rethinkdb_dump_*

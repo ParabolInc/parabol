@@ -97,12 +97,12 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
       })
     }
     if (!data) {
-      sendGQLMessage(connectionContext, 'data', false, payload, opId)
+      sendGQLMessage(connectionContext, opId, 'data', false, payload)
     } else {
       const subscriptionName = Object.keys(data)[0]
       const subscriptionType = data[subscriptionName].__typename
       const syn = !reliableSubscriptionPayloadBlackList.includes(subscriptionType)
-      sendGQLMessage(connectionContext, 'data', syn, payload, opId)
+      sendGQLMessage(connectionContext, opId, 'data', syn, payload)
     }
   }
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
@@ -111,7 +111,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     connectionContext.availableResubs.splice(resubIdx, 1)
     subscribeGraphQL({...req, hideErrors: true}).catch()
   } else {
-    sendGQLMessage(connectionContext, 'complete', false, undefined, opId)
+    sendGQLMessage(connectionContext, opId, 'complete', false)
   }
 }
 

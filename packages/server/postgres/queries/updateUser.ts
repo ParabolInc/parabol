@@ -7,12 +7,9 @@ interface UpdateUserQueryParams extends Omit<IUpdateUserQueryParams, 'identities
   identities: AuthIdentity[]
 }
 
-const updateUser = async (
-  update: Partial<UpdateUserQueryParams>,
-  userIds: string | string[]
-): Promise<void> => {
+const updateUser = async (update: Partial<UpdateUserQueryParams>, userIds: string | string[]) => {
   userIds = typeof userIds === 'string' ? [userIds] : userIds
-  await catchAndLog(() =>
+  return await catchAndLog(() =>
     updateUserQuery.run(
       {
         ...update,
