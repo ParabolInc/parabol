@@ -17,6 +17,7 @@ import enableSAMLForDomain from './mutations/enableSAMLForDomain'
 import endOldMeetings from './mutations/endOldMeetings'
 import flagConversionModal from './mutations/flagConversionModal'
 import flagOverLimit from './mutations/flagOverLimit'
+import lockTeams from './mutations/lockTeams'
 import loginSAML from './mutations/loginSAML'
 import messageAllSlackUsers from './mutations/messageAllSlackUsers'
 import profileCPU from './mutations/profileCPU'
@@ -73,6 +74,7 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       endOldMeetings,
       flagConversionModal,
       flagOverLimit,
+      lockTeams,
       loginSAML,
       enableSAMLForDomain,
       messageAllSlackUsers,
