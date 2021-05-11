@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.10.1
+
+### Fixed
+
+- Validate & normalize email inputs on account creation
+
 ## 6.10.0
 
 ### Added

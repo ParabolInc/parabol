@@ -14,6 +14,7 @@ import rateLimit from '../rateLimit'
 import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
 import updateUser from '../../postgres/queries/updateUser'
+import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
 
 const loginWithGoogle = {
   type: new GraphQLNonNull(LoginWithGooglePayload),
@@ -44,6 +45,10 @@ const loginWithGoogle = {
       }
       const {picture, name, email_verified, sub} = id
       const email = id.email.toLowerCase()
+      if (email.length > USER_PREFERRED_NAME_LIMIT) {
+        return {error: {message: 'Email is too long'}}
+      }
+
       const existingUser = await r
         .table('User')
         .getAll(email, {index: 'email'})
