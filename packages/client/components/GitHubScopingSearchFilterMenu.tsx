@@ -169,7 +169,6 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
         ... on PokerMeeting {
           githubSearchQuery {
             nameWithOwnerFilters
-            queryString
           }
         }
       }
@@ -180,8 +179,9 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
               query {
                 viewer {
                   repositoriesContributedTo(
-                    first: 10
+                    first: 100
                     orderBy: {field: UPDATED_AT, direction: DESC}
+                    includeUserRepositories: true
                   ) {
                     edges {
                       node {
