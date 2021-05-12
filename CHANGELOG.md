@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.11.0
+
+### Added
+
+- lockTeams private mutation (#4953)
+- GitHub Search bar for Poker Scoping (#4901)
+
+### Fixed
+
+- Changing Jira field ID when name changes (#4957)
+- Log invalid authTokens for gql queries (#4949)
+- Poker summaries use appOrigin vs. global origin (#4938)
+- Analytics mutations are not resent on wake (#4941)
+- Support missing AtlassianAuth (#4941)
+- Soft delete agenda items (#4941)
+
 ## 6.10.1
 
 ### Fixed
