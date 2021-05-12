@@ -30,7 +30,7 @@ import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
 interface QuerySubscription {
   subKey: string
@@ -406,8 +406,8 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
-      // remove all records
-      ; (this.getStore().getSource() as any).clear()
+    // remove all records
+    ;(this.getStore().getSource() as any).clear()
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null
