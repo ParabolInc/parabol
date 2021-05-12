@@ -57,7 +57,7 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
 
   return() {
     this.close()
-    return Promise.resolve({done: true as true, value: undefined})
+    return Promise.resolve({done: true as const, value: undefined})
   }
 
   throw(error) {

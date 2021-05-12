@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {requireSU} from '../../../utils/authorization'
@@ -14,26 +14,31 @@ const lockTeams = {
     isPaid: {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true to unlock the teams, false to lock'
+    },
+    message: {
+      type: GraphQLString,
+      description: 'The HTML to show if isPaid is false'
     }
   },
   resolve: async (
     _source,
-    {teamIds, isPaid}: {teamIds: string[]; isPaid: boolean},
+    {message, teamIds, isPaid}: {teamIds: string[]; isPaid: boolean; message?: string},
     {authToken}
   ) => {
     const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
+    const lockMessageHTML = isPaid ? null : message ?? null
 
     // RESOLUTION
     await Promise.all([
       r
         .table('Team')
         .getAll(r.args(teamIds))
-        .update({isPaid})
+        .update({isPaid, lockMessageHTML})
         .run(),
-      updateTeamByTeamId({isPaid}, teamIds)
+      updateTeamByTeamId({isPaid, lockMessageHTML}, teamIds)
     ])
     return true
   }

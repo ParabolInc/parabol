@@ -18,6 +18,7 @@ export interface IUpdateTeamByTeamIdQueryParams {
   tier: TierEnum | null | void
   orgId: string | null | void
   updatedAt: Date | null | void
+  lockMessageHTML: string | null | void
 }
 
 /** 'UpdateTeamByTeamIdQuery' return type */
@@ -36,7 +37,7 @@ const updateTeamByTeamIdQueryIR: any = {
       name: 'ids',
       codeRefs: {
         defined: {a: 44, b: 46, line: 3, col: 9},
-        used: [{a: 498, b: 500, line: 14, col: 13}]
+        used: [{a: 567, b: 569, line: 15, col: 13}]
       },
       transform: {type: 'array_spread'}
     },
@@ -79,6 +80,11 @@ const updateTeamByTeamIdQueryIR: any = {
       name: 'updatedAt',
       transform: {type: 'scalar'},
       codeRefs: {used: [{a: 461, b: 469, line: 13, col: 26}]}
+    },
+    {
+      name: 'lockMessageHTML',
+      transform: {type: 'scalar'},
+      codeRefs: {used: [{a: 518, b: 532, line: 14, col: 32}]}
     }
   ],
   usedParamSet: {
@@ -90,12 +96,13 @@ const updateTeamByTeamIdQueryIR: any = {
     tier: true,
     orgId: true,
     updatedAt: true,
+    lockMessageHTML: true,
     ids: true
   },
   statement: {
     body:
-      'UPDATE "Team" SET\n  "name" = COALESCE(:name, "name"),\n  "isArchived" = COALESCE(:isArchived, "isArchived"),\n  "isPaid" = COALESCE(:isPaid, "isPaid"),\n  "jiraDimensionFields" = COALESCE(:jiraDimensionFields, "jiraDimensionFields"),\n  "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),\n  "tier" = COALESCE(:tier, "tier"),\n  "orgId" = COALESCE(:orgId, "orgId"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt")\nWHERE id IN :ids',
-    loc: {a: 60, b: 500, line: 5, col: 0}
+      'UPDATE "Team" SET\n  "name" = COALESCE(:name, "name"),\n  "isArchived" = COALESCE(:isArchived, "isArchived"),\n  "isPaid" = COALESCE(:isPaid, "isPaid"),\n  "jiraDimensionFields" = COALESCE(:jiraDimensionFields, "jiraDimensionFields"),\n  "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),\n  "tier" = COALESCE(:tier, "tier"),\n  "orgId" = COALESCE(:orgId, "orgId"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),\n  "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")\nWHERE id IN :ids',
+    loc: {a: 60, b: 569, line: 5, col: 0}
   }
 }
 
@@ -110,7 +117,8 @@ const updateTeamByTeamIdQueryIR: any = {
  *   "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),
  *   "tier" = COALESCE(:tier, "tier"),
  *   "orgId" = COALESCE(:orgId, "orgId"),
- *   "updatedAt" = COALESCE(:updatedAt, "updatedAt")
+ *   "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
+ *   "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")
  * WHERE id IN :ids
  * ```
  */

@@ -26,7 +26,15 @@ const UnpaidTeamModal = (props: Props) => {
   const {viewerId} = atmosphere
   const {team} = viewer
   if (!team) return null
-  const {name: teamName, organization} = team
+  const {name: teamName, organization, lockMessageHTML} = team
+  if (lockMessageHTML) {
+    return (
+      <DashModal>
+        <div dangerouslySetInnerHTML={{__html: lockMessageHTML}} />
+      </DashModal>
+    )
+  }
+
   const {id: orgId, billingLeaders, name: orgName} = organization
   const [firstBillingLeader] = billingLeaders
   const billingLeaderName = firstBillingLeader?.preferredName ?? 'Unknown'
@@ -58,6 +66,7 @@ export default createFragmentContainer(UnpaidTeamModal, {
   viewer: graphql`
     fragment UnpaidTeamModal_viewer on User {
       team(teamId: $teamId) {
+        lockMessageHTML
         organization {
           id
           billingLeaders {

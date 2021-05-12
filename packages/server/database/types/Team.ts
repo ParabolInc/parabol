@@ -1,8 +1,8 @@
 import generateUID from '../../generateUID'
+import {TEAM_NAME_LIMIT} from '../../postgres/constants'
 import {TierEnum} from './Invoice'
 import JiraDimensionField from './JiraDimensionField'
 import {MeetingTypeEnum} from './Meeting'
-import {TEAM_NAME_LIMIT} from '../../postgres/constants'
 
 interface Input {
   id?: string
@@ -27,6 +27,7 @@ export default class Team {
   isPaid: boolean
   jiraDimensionFields?: JiraDimensionField[]
   lastMeetingType: MeetingTypeEnum
+  lockMessageHTML?: string | null
   tier: TierEnum
   orgId: string
   isOnboardTeam: boolean
