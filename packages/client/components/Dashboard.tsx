@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy} from 'react'
+import React, {lazy, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {matchPath, Route, RouteProps, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -93,6 +93,7 @@ const Dashboard = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {location} = useRouter()
   const overLimitCopy = viewer?.overLimitCopy
+  const meetingsDashRef = useRef<HTMLDivElement>(null)
   useSnackNag(overLimitCopy)
   useSnacksForNewMeetings(activeMeetings)
   return (
@@ -110,11 +111,13 @@ const Dashboard = (props: Props) => {
             <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
           </SwipeableDashSidebar>
         )}
-        <DashMain>
+        <DashMain ref={meetingsDashRef}>
           <Switch>
             <Route
               path='/meetings'
-              render={(routeProps) => <MeetingsDash {...routeProps} viewer={viewer} />}
+              render={(routeProps) => (
+                <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
+              )}
             />
             <Route path='/me' component={UserDashboard} />
             <Route path='/team/:teamId' component={TeamRoot} />

@@ -12,6 +12,7 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import useMenu from '../hooks/useMenu'
 import useTooltip from '../hooks/useTooltip'
+import {TransitionStatus} from '../hooks/useTransition'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card} from '../types/constEnums'
@@ -22,14 +23,27 @@ import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
-const CardWrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+
+const CardWrapper = styled('div')<{
+  maybeTabletPlus: boolean
+  left: number
+  status: number
+  top: number
+}>(({maybeTabletPlus, left, status, top}) => ({
   background: Card.BACKGROUND_COLOR,
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: Elevation.CARD_SHADOW,
   flexShrink: 0,
+  left,
+  top,
   maxWidth: '100%',
-  margin: maybeTabletPlus ? '0 16px 16px 0' : '0 0 16px',
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}`,
+  // margin: maybeTabletPlus ? '0 16px 16px 0' : '0 0 16px',
+  marginLeft: 16,
+  marginBottom: 0,
+  // transition: `box-shadow 100ms ${BezierCurve.DECELERATE}`,
+  transition: `300ms ${BezierCurve.DECELERATE}`,
+  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
+  position: 'absolute',
   width: maybeTabletPlus ? 320 : '100%',
   userSelect: 'none',
   ':hover': {
@@ -100,7 +114,11 @@ const Options = styled(CardButton)({
 })
 
 interface Props {
+  onTransitionEnd: () => void
   meeting: MeetingCard_meeting
+  left: number
+  status: number
+  top: number
 }
 
 const ILLUSTRATIONS = {
@@ -116,7 +134,7 @@ const MEETING_TYPE_LABEL = {
 }
 
 const MeetingCard = (props: Props) => {
-  const {meeting} = props
+  const {meeting, left, status, onTransitionEnd, top} = props
   const {name, team, id: meetingId, meetingType, phases} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   if (!team) {
@@ -144,7 +162,13 @@ const MeetingCard = (props: Props) => {
     HTMLDivElement
   >(MenuPosition.UPPER_RIGHT)
   return (
-    <CardWrapper maybeTabletPlus={maybeTabletPlus}>
+    <CardWrapper
+      left={left}
+      maybeTabletPlus={maybeTabletPlus}
+      status={status}
+      top={top}
+      onTransitionEnd={onTransitionEnd}
+    >
       <MeetingImgWrapper>
         <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
         <Link to={`/meet/${meetingId}`}>

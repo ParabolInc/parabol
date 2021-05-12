@@ -23,7 +23,6 @@ const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   [makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)]: {
     bottom: 0,
     left: 0,
-    position: 'fixed',
     top: AppBar.HEIGHT,
     zIndex: 2
   }
