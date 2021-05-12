@@ -15,7 +15,10 @@ mutation LoginSAML($queryString: String!, $samlName: ID!) {
 `
 
 const redirectOnError = (res: HttpResponse, error: string) => {
-  res.writeStatus('302').writeHeader('location', `/saml-redirect?error=${error}`).end()
+  res
+    .writeStatus('302')
+    .writeHeader('location', `/saml-redirect?error=${error}`)
+    .end()
 }
 
 const GENERIC_ERROR = 'Error signing in|Please try again'
@@ -43,7 +46,10 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     return
   }
   res.cork(() => {
-    res.writeStatus('302').writeHeader('location', `/saml-redirect?token=${authToken}`).end()
+    res
+      .writeStatus('302')
+      .writeHeader('location', `/saml-redirect?token=${authToken}`)
+      .end()
   })
 })
 

@@ -29,7 +29,6 @@ export default class StripeManager {
 
   async createEnterpriseSubscription(customerId: string, orgId: string, quantity, plan?: string) {
     return this.stripe.subscriptions.create({
-      // @ts-ignore
       collection_method: 'send_invoice',
       customer: customerId,
       days_until_due: 30,
@@ -43,7 +42,7 @@ export default class StripeManager {
           quantity
         }
       ]
-    })
+    } as any)
   }
 
   async createProSubscription(customerId: string, orgId: string, quantity) {
