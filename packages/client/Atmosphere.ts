@@ -280,7 +280,7 @@ export default class Atmosphere extends Environment {
         uploadables: uploadables || undefined
       },
       // if sink is nully, then the server doesn't send a response
-      sink!
+      sink
     )
   }
 
