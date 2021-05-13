@@ -222,7 +222,7 @@ interface JiraField {
 const MAX_REQUEST_TIME = 5000
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
-  static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
+  static SCOPE = 'read:jira-user read:jira-work write:jira-work manage:jira-project offline_access'
   accessToken: string
   private readonly fetchWithTimeout: (
     url: string,
@@ -530,6 +530,25 @@ export default abstract class AtlassianManager {
     return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field`) as JiraField[]
   }
 
+  async getScreens(cloudId: string) {
+    return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`) as any
+  }
+
+  async getScreenTabs(cloudId: string, screenId: number) {
+    return this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs`
+    ) as any
+  }
+
+  async addFieldToScreenTab(cloudId: string, screenId: number, tabId: number, fieldId: string) {
+    return this.post(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields`,
+      {
+        fieldId
+      }
+    ) as any
+  }
+
   async getFieldScreens(cloudId: string, fieldId: string) {
     return this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field/${fieldId}/screens`
@@ -620,3 +639,24 @@ export default abstract class AtlassianManager {
     }
   }
 }
+
+
+// const screens = await manager.getScreens(cloudId)
+// const {values} = screens
+// const projectScreens = values.filter((value) => value.name.startsWith(projectKey))
+// const bestScreen = projectScreens.filter((value) => value.name.includes('Default'))
+// const screensToUpdate = bestScreen.length > 0 ? bestScreen : projectScreens
+// const screenIds = screensToUpdate.map(({id}) => id)
+// const tabsToAdd = await Promise.all(
+//   screenIds.map(async (screenId) => {
+//     const res = await manager.getScreenTabs(cloudId, screenId)
+//     const [firstTab] = res
+//     const {id: tabId} = firstTab
+//     return {tabId, screenId}
+//   })
+// )
+// await Promise.all(
+//   tabsToAdd.map(({tabId, screenId}) => {
+//     return manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
+//   })
+// )
