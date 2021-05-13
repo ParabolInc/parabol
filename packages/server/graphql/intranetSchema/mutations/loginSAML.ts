@@ -8,6 +8,7 @@ import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
+import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {SSORelayState} from '../../queries/SAMLIdP'
@@ -77,6 +78,9 @@ const loginSAML = {
     const email = inputEmail || emailaddress
     if (!email) {
       return {error: {message: 'Email attribute was not included in SAML response'}}
+    }
+    if (email.length > USER_PREFERRED_NAME_LIMIT) {
+      return {error: {message: 'Email is too long'}}
     }
     const ssoDomain = getSSODomainFromEmail(email)
     if (!ssoDomain || !domains.includes(ssoDomain)) {

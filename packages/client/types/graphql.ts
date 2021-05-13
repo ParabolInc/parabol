@@ -45558,6 +45558,11 @@ export interface ITeam {
   lastMeetingType: MeetingTypeEnum;
 
   /**
+   * The HTML message to show if isPaid is false
+   */
+  lockMessageHTML: string | null;
+
+  /**
    * The hash and expiration for a token that allows anyone with it to join the team
    */
   massInvitation: IMassInvitation;

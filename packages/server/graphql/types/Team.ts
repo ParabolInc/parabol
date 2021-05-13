@@ -57,6 +57,10 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: GraphQLNonNull(MeetingTypeEnum),
       description: 'The type of the last meeting run'
     },
+    lockMessageHTML: {
+      type: GraphQLString,
+      description: 'The HTML message to show if isPaid is false'
+    },
     massInvitation: {
       type: GraphQLNonNull(MassInvitation),
       args: {

@@ -33,7 +33,7 @@ export default class GraphQLRedisPubSub {
     }
   }
 
-  publish = (channel: string, payload: object) => {
+  publish = (channel: string, payload: any) => {
     return this.publisher.publish(channel, JSON.stringify(payload))
   }
 

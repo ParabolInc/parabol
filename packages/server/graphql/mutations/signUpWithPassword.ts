@@ -3,6 +3,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import createEmailVerification from '../../email/createEmailVerification'
+import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
 import createNewLocalUser from '../../utils/createNewLocalUser'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import isEmailVerificationRequired from '../../utils/isEmailVerificationRequired'
@@ -11,7 +12,6 @@ import rateLimit from '../rateLimit'
 import SignUpWithPasswordPayload from '../types/SignUpWithPasswordPayload'
 import attemptLogin from './helpers/attemptLogin'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
-
 type SignUpWithPasswordMutationVariables = {
   email: string
   password: string
@@ -42,7 +42,10 @@ const signUpWithPassword = {
     async (_source, args: SignUpWithPasswordMutationVariables, context: GQLContext) => {
       const {invitationToken, password, segmentId} = args
       const denormEmail = args.email
-      const email = denormEmail.toLowerCase()
+      const email = denormEmail.toLowerCase().trim()
+      if (email.length > USER_PREFERRED_NAME_LIMIT) {
+        return {error: {message: 'Email is too long'}}
+      }
       const r = await getRethink()
       const isOrganic = !invitationToken
       const {ip} = context

@@ -1,8 +1,8 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode} from 'react'
+import {DECELERATE} from '../../styles/animation'
 import {modalShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
-import {DECELERATE} from '../../styles/animation'
 import {Radius, ZIndex} from '../../types/constEnums'
 
 const animateIn = {

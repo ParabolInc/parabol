@@ -74,7 +74,14 @@ const AnalyticsPage = () => {
     if (logRocketId) {
       const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
       LogRocket.init(logRocketId, {
-        release: __APP_VERSION__
+        release: __APP_VERSION__,
+        network: {
+          requestSanitizer: (request) => {
+            const body = request?.body?.toLowerCase()
+            if (body?.includes('password')) return null
+            return request
+          }
+        }
       })
       if (email) {
         LogRocket.identify(atmosphere.viewerId, {

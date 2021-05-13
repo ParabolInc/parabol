@@ -1,8 +1,8 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
+import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
 import AuthIdentity from './AuthIdentity'
 import {TierEnum} from './Invoice'
-import {USER_EMAIL_LIMIT, USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
 
 interface Input {
   id?: string
@@ -72,7 +72,7 @@ export default class User {
     const now = new Date()
     this.id = id ?? `local|${generateUID()}`
     this.tms = tms || []
-    this.email = email.trim().slice(0, USER_EMAIL_LIMIT)
+    this.email = email
     this.createdAt = createdAt || now
     this.picture = picture || `${AVATAR_BUCKET}/${avatarName}.png`
     this.updatedAt = updatedAt || now

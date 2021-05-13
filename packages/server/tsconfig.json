@@ -22,7 +22,8 @@
     ],
   },
   "exclude": [
-    "**/node_modules"
+    "**/node_modules",
+    "types/typed-document-nodes.ts"
   ],
   "files": [
     "types/modules.d.ts",
