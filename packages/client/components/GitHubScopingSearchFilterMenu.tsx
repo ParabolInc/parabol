@@ -74,7 +74,7 @@ type Repo = Pick<IXGitHubRepository, 'id' | 'nameWithOwner'>
 const MAX_REPOS = 10
 
 const getValue = (item: {nameWithOwner?: string}) => {
-  const repoName = item.nameWithOwner || 'Unknown Project'
+  const repoName = item.nameWithOwner || 'Unknown Repo'
   return repoName.toLowerCase()
 }
 
