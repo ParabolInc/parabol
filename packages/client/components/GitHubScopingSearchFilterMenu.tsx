@@ -3,11 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useFilteredItems from '../hooks/useFilteredItems'
+import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {_xGitHubRepositoryNode, IXGitHubRepository} from '../types/graphql'
+import {IXGitHubRepository} from '../types/graphql'
 import {GitHubScopingSearchFilterMenu_viewer} from '../__generated__/GitHubScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
@@ -15,10 +17,8 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import MockFieldList from './MockFieldList'
 import MenuSearch from './MenuSearch'
-import useFilteredItems from '../hooks/useFilteredItems'
-import useForm from '../hooks/useForm'
+import MockFieldList from './MockFieldList'
 import TypeAheadLabel from './TypeAheadLabel'
 
 const SearchIcon = styled(Icon)({
@@ -99,13 +99,13 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const query = value.toLowerCase()
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
-  const githubSearchQuery = meeting?.githubSearchQuery ?? null
-  const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
+  // TODO parse the query string & extract out the repositories
+  const nameWithOwnerFilters = [] as string[]
   const queryFilteredRepos = useFilteredItems(query, repos, getValue)
   const selectedAndFilteredProjects = useMemo(() => {
-    const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.nameWithOwner))
-    const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
-    return Array.from(new Set([...selectedRepos, ...queryFilteredRepos])).slice(0, adjustedMax)
+    // const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.nameWithOwner))
+    const adjustedMax = repos.length >= MAX_REPOS ? repos.length + 1 : MAX_REPOS
+    return Array.from(new Set([...repos, ...queryFilteredRepos])).slice(0, adjustedMax)
   }, [queryFilteredRepos])
   const {portalStatus, isDropdown} = menuProps
   return (
@@ -134,7 +134,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
               ? nameWithOwnerFilters.filter((name) => name !== nameWithOwner)
               : nameWithOwnerFilters.concat(nameWithOwner)
             const queryString = githubSearchQuery.getValue('queryString')
-            githubSearchQuery.setValue(newFilters, 'nameWithOwnerFilters')
             const queryWithoutRepos = queryString
               .trim()
               .split(' ')
@@ -168,7 +167,7 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
         id
         ... on PokerMeeting {
           githubSearchQuery {
-            nameWithOwnerFilters
+            queryString
           }
         }
       }

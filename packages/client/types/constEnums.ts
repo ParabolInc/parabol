@@ -393,5 +393,7 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT = '__comment',
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
-  JIRA_FIELD_NULL_LABEL = 'Do Not Update'
+  JIRA_FIELD_NULL_LABEL = 'Do Not Update',
+  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
+
 }

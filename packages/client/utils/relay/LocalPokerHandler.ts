@@ -28,8 +28,7 @@ const defaults = [
     meetingPropName: 'githubSearchQuery',
     type: 'GitHubSearchQuery',
     defaultQuery: {
-      queryString: '',
-      nameWithOwnerFilters: []
+      queryString: ''
     }
   }
 ] as const

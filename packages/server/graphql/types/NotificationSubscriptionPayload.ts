@@ -19,6 +19,7 @@ import StripeFailPaymentPayload from './StripeFailPaymentPayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 import User from './User'
 import {EndCheckInSuccess} from './EndCheckInPayload'
+import {PersistGitHubSearchQuerySuccess} from './PersistGitHubSearchQueryPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 
 const types = [
@@ -44,7 +45,8 @@ const types = [
   // User doesn't have an error field, either make an exception & add it (because it's the Viewer) or use a payload here
   User,
   // a one off used so the server can sniff it & update its connection context
-  AuthTokenPayload
+  AuthTokenPayload,
+  PersistGitHubSearchQuerySuccess
 ]
 
 export default graphQLSubscriptionType('NotificationSubscriptionPayload', types)

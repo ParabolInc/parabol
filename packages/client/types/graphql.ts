@@ -45328,14 +45328,9 @@ export interface IGitHubSearchQuery {
   id: string;
 
   /**
-   * The query string in GitHub format, e.g. is:issue is:open
+   * The query string in GitHub format, including repository filters. e.g. is:issue is:open
    */
   queryString: string;
-
-  /**
-   * The list of repos selected as a filter. null if not set
-   */
-  nameWithOwnerFilters: Array<string>;
 
   /**
    * the time the search query was last used. Used for sorting
@@ -50832,6 +50827,7 @@ export interface IMutation {
    * Set whether the user is spectating poker meeting
    */
   setPokerSpectate: SetPokerSpectatePayload;
+  persistGitHubSearchQuery: PersistGitHubSearchQueryPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -52027,6 +52023,23 @@ export interface ISetPokerSpectateOnMutationArguments {
    * true if the viewer is spectating poker and does not want to vote. else false
    */
   isSpectating: boolean;
+}
+
+export interface IPersistGitHubSearchQueryOnMutationArguments {
+  /**
+   * the team witht the settings we add the query to
+   */
+  teamId: string;
+
+  /**
+   * The query string as sent to GitHub
+   */
+  queryString: string;
+
+  /**
+   * true if this query should be deleted
+   */
+  isRemove?: boolean | null;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -54569,6 +54582,32 @@ export interface ISetPokerSpectateSuccess {
   meetingMember: IPokerMeetingMember;
 }
 
+/**
+ * Return object for PersistGitHubSearchQueryPayload
+ */
+export type PersistGitHubSearchQueryPayload =
+  | IErrorPayload
+  | IPersistGitHubSearchQuerySuccess;
+
+export interface IPersistGitHubSearchQuerySuccess {
+  __typename: 'PersistGitHubSearchQuerySuccess';
+
+  /**
+   * The affected teamId
+   */
+  teamId: string;
+
+  /**
+   * The affected userId
+   */
+  userId: string;
+
+  /**
+   * The auth with the updated search queries
+   */
+  githubIntegration: IGitHubIntegration;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -54660,7 +54699,8 @@ export type NotificationSubscriptionPayload =
   | IStripeFailPaymentPayload
   | IPersistJiraSearchQuerySuccess
   | IUser
-  | IAuthTokenPayload;
+  | IAuthTokenPayload
+  | IPersistGitHubSearchQuerySuccess;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';
