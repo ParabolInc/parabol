@@ -93,14 +93,13 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
     const contributions = contributionsByRepo.map((contributionByRepo) =>
       contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
     )
-    const filteredContributions = contributions.filter(
-      (contribution): contribution is Contribution => !!contribution
-    )
-    const sortedContributions = filteredContributions.sort(
-      (a, b) =>
-        new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
-    )
-    return sortedContributions.map((sortedContributions) => sortedContributions?.repository)
+    return contributions
+      .filter((contribution): contribution is Contribution => !!contribution)
+      .sort(
+        (a, b) =>
+          new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
+      )
+      .map((sortedContributions) => sortedContributions?.repository)
   }, [contributionsByRepo])
 
   const {fields, onChange} = useForm({
