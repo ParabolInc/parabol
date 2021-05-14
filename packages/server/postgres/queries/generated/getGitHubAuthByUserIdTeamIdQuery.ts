@@ -1,6 +1,8 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getGitHubAuthByUserIdTeamIdQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
+export type JsonArray = (null | boolean | number | string | Json[] | {[key: string]: Json})[]
+
 /** 'GetGitHubAuthByUserIdTeamIdQuery' parameters type */
 export interface IGetGitHubAuthByUserIdTeamIdQueryParams {
   userId: string | null | void
@@ -16,6 +18,7 @@ export interface IGetGitHubAuthByUserIdTeamIdQueryResult {
   login: string
   teamId: string
   userId: string
+  githubSearchQueries: JsonArray
 }
 
 /** 'GetGitHubAuthByUserIdTeamIdQuery' query type */
