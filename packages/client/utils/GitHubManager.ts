@@ -22,9 +22,7 @@ type DocVariables = any
 // type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
 
 abstract class GitHubManager {
-  static SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
-  // static SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook'
-  // static SCOPE = 'user,public_repo,repo,repo_deployment,repo:status,read:repo_hook,read:org'
+  static SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook'
   accessToken: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland
