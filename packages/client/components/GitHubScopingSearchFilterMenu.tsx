@@ -9,7 +9,7 @@ import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {IXGitHubRepository} from '../types/graphql'
+import {IXGitHubCreatedCommitContribution} from '../types/graphql'
 import {GitHubScopingSearchFilterMenu_viewer} from '../__generated__/GitHubScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
@@ -20,6 +20,7 @@ import MenuItemLabel from './MenuItemLabel'
 import MenuSearch from './MenuSearch'
 import MockFieldList from './MockFieldList'
 import TypeAheadLabel from './TypeAheadLabel'
+import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
@@ -69,7 +70,7 @@ type GitHubSearchQuery = NonNullable<
   NonNullable<GitHubScopingSearchFilterMenu_viewer['meeting']>['githubSearchQuery']
 >
 
-type Repo = Pick<IXGitHubRepository, 'id' | 'nameWithOwner'>
+type Contribution = Pick<IXGitHubCreatedCommitContribution, 'occurredAt' | 'repository'>
 
 const MAX_REPOS = 10
 
@@ -80,15 +81,28 @@ const getValue = (item: {nameWithOwner?: string}) => {
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
+  const meeting = viewer?.meeting ?? null
+  const meetingId = meeting?.id ?? ''
+  const queryString = meeting?.githubSearchQuery?.queryString ?? null
   const isLoading = viewer === null
   const atmosphere = useAtmosphere()
-  const edges =
-    viewer?.teamMember?.integrations.github?.api?.query?.viewer?.repositoriesContributedTo?.edges ??
-    []
-  const repos = useMemo(
-    () => edges.map((edge) => edge?.node).filter((node): node is Repo => !!node),
-    [edges]
-  )
+  const contributionsByRepo =
+    viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
+      ?.commitContributionsByRepository ?? []
+  const repoContributions = useMemo(() => {
+    const contributions = contributionsByRepo.map((contributionByRepo) =>
+      contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
+    )
+    const filteredContributions = contributions.filter(
+      (contribution): contribution is Contribution => !!contribution
+    )
+    const sortedContributions = filteredContributions.sort(
+      (a, b) =>
+        new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
+    )
+    return sortedContributions.map((sortedContributions) => sortedContributions?.repository)
+  }, [contributionsByRepo])
+
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -97,16 +111,14 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {search} = fields
   const {value} = search
   const query = value.toLowerCase()
-  const meeting = viewer?.meeting ?? null
-  const meetingId = meeting?.id ?? ''
   // TODO parse the query string & extract out the repositories
-  const nameWithOwnerFilters = [] as string[]
-  const queryFilteredRepos = useFilteredItems(query, repos, getValue)
-  const selectedAndFilteredProjects = useMemo(() => {
-    // const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.nameWithOwner))
-    const adjustedMax = repos.length >= MAX_REPOS ? repos.length + 1 : MAX_REPOS
-    return Array.from(new Set([...repos, ...queryFilteredRepos])).slice(0, adjustedMax)
-  }, [queryFilteredRepos])
+  const filteredRepoContributions = useFilteredItems(query, repoContributions, getValue)
+  const selectedRepos = getReposFromQueryStr(queryString)
+  const selectedAndFilteredRepos = useMemo(() => {
+    const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
+    const repos = filteredRepoContributions.map(({nameWithOwner}) => nameWithOwner)
+    return Array.from(new Set([...selectedRepos, ...repos])).slice(0, adjustedMax)
+  }, [filteredRepoContributions])
   const {portalStatus, isDropdown} = menuProps
   return (
     <StyledMenu
@@ -122,17 +134,18 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         <MenuSearch placeholder={'Search your GitHub repos'} value={value} onChange={onChange} />
       </SearchItem>
       {isLoading && <MockFieldList />}
-      {edges.length === 0 && !isLoading && <NoResults key='no-results'>No repos found!</NoResults>}
-      {selectedAndFilteredProjects.map((repo) => {
-        const {id: repoId, nameWithOwner} = repo
-        const isSelected = nameWithOwnerFilters.includes(nameWithOwner)
+      {repoContributions.length === 0 && !isLoading && (
+        <NoResults key='no-results'>No repos found!</NoResults>
+      )}
+      {selectedAndFilteredRepos.map((repo) => {
+        const isSelected = selectedRepos.includes(repo)
         const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('github', meetingId)
             const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
             const newFilters = isSelected
-              ? nameWithOwnerFilters.filter((name) => name !== nameWithOwner)
-              : nameWithOwnerFilters.concat(nameWithOwner)
+              ? selectedRepos.filter((name) => name !== repo)
+              : selectedRepos.concat(repo)
             const queryString = githubSearchQuery.getValue('queryString')
             const queryWithoutRepos = queryString
               .trim()
@@ -145,11 +158,11 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         }
         return (
           <MenuItem
-            key={repoId}
+            key={repo}
             label={
               <StyledMenuItemLabel>
                 <StyledCheckBox active={isSelected} />
-                <TypeAheadLabel query={query} label={nameWithOwner} />
+                <TypeAheadLabel query={query} label={repo} />
               </StyledMenuItemLabel>
             }
             onClick={handleClick}
@@ -177,14 +190,16 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
             api {
               query {
                 viewer {
-                  repositoriesContributedTo(
-                    first: 100
-                    orderBy: {field: UPDATED_AT, direction: DESC}
-                    includeUserRepositories: true
-                  ) {
-                    edges {
-                      node {
-                        nameWithOwner
+                  contributionsCollection {
+                    commitContributionsByRepository(maxRepositories: 100) {
+                      contributions(orderBy: {field: OCCURRED_AT, direction: DESC}, first: 1) {
+                        nodes {
+                          occurredAt
+                          repository {
+                            id
+                            nameWithOwner
+                          }
+                        }
                       }
                     }
                   }
