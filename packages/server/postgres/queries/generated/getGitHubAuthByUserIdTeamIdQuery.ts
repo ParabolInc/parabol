@@ -19,6 +19,7 @@ export interface IGetGitHubAuthByUserIdTeamIdQueryResult {
   teamId: string
   userId: string
   githubSearchQueries: JsonArray
+  scope: string
 }
 
 /** 'GetGitHubAuthByUserIdTeamIdQuery' query type */
