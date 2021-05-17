@@ -3,6 +3,7 @@ import {useLayoutEffect, useState} from 'react'
 const useTopPerRow = (cardsPerRow: number, meetings: any, viewerId?: string) => {
   const [topByRow, setTopByRow] = useState({})
   const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
+
   const getTopByRow = () => {
     const topByRow = {}
     for (let i = 0; i < totalRows; i++) {
@@ -17,9 +18,9 @@ const useTopPerRow = (cardsPerRow: number, meetings: any, viewerId?: string) => 
         topByRow[i].top += 32
       }
     }
-    if (!viewerId) return {}
+    if (!viewerId) return
     meetings.forEach((meeting, meetingIdx) => {
-      const {id: meetingId, meetingMembers} = meeting.child
+      const {id: meetingId, meetingMembers} = meeting
       const connectedUsers = meetingMembers.filter(({user}) => {
         return user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) && user.isConnected
       })
@@ -31,12 +32,11 @@ const useTopPerRow = (cardsPerRow: number, meetings: any, viewerId?: string) => 
         }
       }
     })
-    return topByRow
+    setTopByRow(topByRow)
   }
 
   useLayoutEffect(() => {
-    const newTopByRow = getTopByRow()
-    setTopByRow(newTopByRow)
+    getTopByRow()
   }, [cardsPerRow, meetings])
 
   return topByRow

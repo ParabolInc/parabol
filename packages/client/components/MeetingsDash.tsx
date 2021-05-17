@@ -89,10 +89,10 @@ const MeetingsDash = (props: Props) => {
     displayIdx
   }))
   const transitioningMeetings = useTransition(meetingsWithKey)
-  const memodMeetings = useDeepEqual(transitioningMeetings)
   const maybeBigDisplay = useBreakpoint(1900)
   const isInit = useInitialRender()
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
+  const memodMeetings = useDeepEqual(activeMeetings)
   const topByRow = useTopPerRow(cardsPerRow, memodMeetings, viewer?.id)
   const hasMeetings = activeMeetings.length > 0 && cardsPerRow
   const totalRows =
