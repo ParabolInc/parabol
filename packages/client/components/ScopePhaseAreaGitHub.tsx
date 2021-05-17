@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {Providers} from '../types/constEnums'
 import {ScopePhaseAreaGitHub_meeting} from '../__generated__/ScopePhaseAreaGitHub_meeting.graphql'
 import ScopePhaseAreaAddGitHub from './ScopePhaseAreaAddGitHub'
-// import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
+import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
 
 const ComingSoon = styled('div')({
   display: 'flex',
@@ -20,6 +20,9 @@ interface Props {
   meeting: ScopePhaseAreaGitHub_meeting
 }
 
+// poor man's feature flag. change this so we don't have to comment out stuff
+const IS_DEV = true
+
 const ScopePhaseAreaGitHub = (props: Props) => {
   const {isActive, gotoParabol, meeting} = props
   const {viewerMeetingMember} = meeting
@@ -28,8 +31,11 @@ const ScopePhaseAreaGitHub = (props: Props) => {
   const {integrations} = teamMember
   const hasAuth = integrations?.github?.scope === Providers.GITHUB_SCOPE
   if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
-  return <ComingSoon>Coming Soon!</ComingSoon>
-  // return <ScopePhaseAreaGitHubScoping meeting={meeting} />
+  return IS_DEV ? (
+    <ScopePhaseAreaGitHubScoping meeting={meeting} />
+  ) : (
+    <ComingSoon>Coming Soon!</ComingSoon>
+  )
 }
 
 export default createFragmentContainer(ScopePhaseAreaGitHub, {

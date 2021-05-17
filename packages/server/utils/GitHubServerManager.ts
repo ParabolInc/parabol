@@ -1,10 +1,8 @@
 import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
-import {GetRepositoriesQuery, SearchIssuesQuery} from '../../server/types/typed-document-nodes'
+import {GetRepositoriesQuery} from '../../server/types/typed-document-nodes'
 import {getRepositories} from './githubQueries/getRepositories'
-import {searchIssues} from './githubQueries/searchIssues'
-
 interface OAuth2Response {
   access_token: string
   error: any
@@ -83,11 +81,6 @@ class GitHubServerManager extends GitHubManager {
   async getRepositories() {
     const body = JSON.stringify({query: getRepositories, variables: {}})
     return this.serverPost<GetRepositoriesQuery>(body)
-  }
-
-  async searchIssues(queryString: string, first: number, after?: string) {
-    const body = JSON.stringify({query: searchIssues, variables: {queryString, first, after}})
-    return await this.serverPost<SearchIssuesQuery>(body)
   }
 }
 
