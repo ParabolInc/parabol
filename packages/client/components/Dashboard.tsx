@@ -80,6 +80,7 @@ const DashMain = styled('div')({
   flex: 1,
   flexDirection: 'column',
   height: '100%',
+  marginBotttom: 48,
   minHeight: 0,
   overflow: 'auto',
   position: 'relative'

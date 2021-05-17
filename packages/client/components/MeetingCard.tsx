@@ -38,8 +38,6 @@ const CardWrapper = styled('div')<{
   top,
   maxWidth: '100%',
   // margin: maybeTabletPlus ? '0 16px 16px 0' : '0 0 16px',
-  marginLeft: 16,
-  marginBottom: 0,
   // transition: `box-shadow 100ms ${BezierCurve.DECELERATE}`,
   transition: `300ms ${BezierCurve.DECELERATE}`,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
