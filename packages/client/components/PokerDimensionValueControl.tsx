@@ -78,7 +78,7 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
-const useHandleFinalScoreError = ({error, serviceField, stageId}) => {
+const useHandleFinalScoreError = ({error, serviceField, stageId, setPendingScore, finalScore}) => {
   const atmosphere = useAtmosphere()
   const {closePortal, openPortal, modalPortal} = useModal()
 
@@ -93,6 +93,7 @@ const useHandleFinalScoreError = ({error, serviceField, stageId}) => {
       openPortal()
     } else {
       setFinalScoreError(atmosphere, stageId, nextError)
+      setPendingScore(finalScore)
     }
   }, [error, serviceField])
 
@@ -119,25 +120,13 @@ const PokerDimensionValueControl = (props: Props) => {
   const {addMissingJiraFieldModalPortal, closeAddMissingJiraFieldModal} = useHandleFinalScoreError({
     error,
     stageId,
-    serviceField
+    serviceField,
+    setPendingScore,
+    finalScore
   })
 
   useLayoutEffect(() => {
-    setPendingScore(finalScore)
     lastServiceFieldNameRef.current = serviceFieldName
-  }, [finalScore])
-
-  useEffect(() => {
-    if (error) {
-      // we want this for remote errors but not local errors, so we keep the 2 in different vars
-      setPendingScore(finalScore)
-    }
-  }, [error])
-
-  useEffect(() => {
-    if (finalScore) {
-      closeAddMissingJiraFieldModal()
-    }
   }, [finalScore])
 
   const submitScore = () => {
@@ -211,7 +200,7 @@ const PokerDimensionValueControl = (props: Props) => {
             placeholder={placeholder}
             value={pendingScore}
             maxLength={3}
-          ></Input>
+          />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
         {service === 'jira' && (
@@ -240,8 +229,8 @@ const PokerDimensionValueControl = (props: Props) => {
       </Control>
       {addMissingJiraFieldModalPortal(
         <AddMissingJiraFieldModal
-          pendingScore={pendingScore}
           stage={stage}
+          submitScore={submitScore}
           closePortal={closeAddMissingJiraFieldModal}
         />
       )}

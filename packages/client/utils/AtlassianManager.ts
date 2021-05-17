@@ -219,6 +219,33 @@ interface JiraField {
   searchable: boolean
   untranslatedName: string
 }
+
+export interface JiraScreen {
+  id: string
+  name: string
+  description: string
+}
+
+export interface JiraScreenTab {
+  id: string
+  name: string
+}
+
+export interface JiraAddScreenFieldResponse {
+  id: string
+  name: string
+}
+
+interface JiraPageBean<T> {
+  startAt: number
+  maxResults: number
+  total: number
+  isLast: boolean
+  values: T[]
+}
+
+export type JiraScreensResponse = JiraPageBean<JiraScreen>
+
 const MAX_REQUEST_TIME = 5000
 
 export type JiraPermissionScope =
@@ -246,6 +273,7 @@ export default abstract class AtlassianManager {
   private readonly get: (url: string) => any
   private readonly post: (url: string, payload: any) => any
   private readonly put: (url: string, payload: any) => any
+  private readonly delete: (url: string) => any
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
@@ -289,6 +317,16 @@ export default abstract class AtlassianManager {
         method: 'PUT',
         headers,
         body: JSON.stringify(payload)
+      })
+      if (res.status == 204) return null
+      if ((res as any).code === -1) return res
+      return res.json()
+    }
+
+    this.delete = async (url) => {
+      const res = await this.fetchWithTimeout(url, {
+        method: 'DELETE',
+        headers
       })
       if (res.status == 204) return null
       if ((res as any).code === -1) return res
@@ -605,7 +643,6 @@ export default abstract class AtlassianManager {
       payload
     )) as null | AtlassianError | JiraError
     if (res !== null) {
-      console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
       if ('message' in res) {
         throw new Error(res.message)
       }
@@ -634,17 +671,34 @@ export default abstract class AtlassianManager {
     }
   }
 
-  async addFieldToDefaultScreen(cloudId: string, fieldId: string) {
-    return (await this.post(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/addToDefault/${fieldId}`,
-      {}
-    )) as null | AtlassianError | JiraError
-  }
-
-  async getAllScreens(cloudId: string) {
+  async getScreens(cloudId: string) {
     return (await this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`)) as
-      | null
+      | JiraScreensResponse
       | AtlassianError
       | JiraError
+  }
+
+  async getScreenTabs(cloudId: string, screenId: string) {
+    return (await this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs`
+    )) as JiraScreenTab[] | AtlassianError | JiraError
+  }
+
+  async addFieldToScreenTab(cloudId: string, screenId: string, tabId: string, fieldId: string) {
+    return (await this.post(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/`,
+      {fieldId}
+    )) as JiraAddScreenFieldResponse | AtlassianError | JiraError
+  }
+
+  async removeFieldFromScreenTab(
+    cloudId: string,
+    screenId: string,
+    tabId: string,
+    fieldId: string
+  ) {
+    return (await this.delete(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/${fieldId}`
+    )) as null | AtlassianError | JiraError
   }
 }

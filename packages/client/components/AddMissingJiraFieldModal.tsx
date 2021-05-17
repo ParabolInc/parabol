@@ -12,7 +12,6 @@ import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import AddMissingJiraFieldMutation from '../mutations/AddMissingJiraFieldMutation'
 import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
@@ -21,7 +20,7 @@ import {AddMissingJiraFieldModal_stage} from '../__generated__/AddMissingJiraFie
 
 interface Props {
   closePortal: () => void
-  pendingScore: string
+  submitScore: () => void
   stage: AddMissingJiraFieldModal_stage
 }
 
@@ -66,7 +65,7 @@ const Label = styled('div')({
   fontWeight: 600
 })
 
-const AddMissingJiraFieldModal = ({stage, pendingScore, closePortal}: Props) => {
+const AddMissingJiraFieldModal = ({stage, closePortal, submitScore}: Props) => {
   const {meetingId, id: stageId, teamId} = stage
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
@@ -75,24 +74,23 @@ const AddMissingJiraFieldModal = ({stage, pendingScore, closePortal}: Props) => 
     if (mutationProps.submitting) return
 
     /**
-     * Finally, when new field is added, update the story points
-     */
-    const onAddMissingJiraFieldCompleted = () => {
-      PokerSetFinalScoreMutation(
-        atmosphere,
-        {finalScore: pendingScore, meetingId, stageId},
-        mutationProps
-      )
-    }
-
-    /**
      * When Atlassian auth is successfully updated, add a new field to a Jira configuration on behalf of the user
      */
     const onAddAtlassianAuthCompleted = () => {
       AddMissingJiraFieldMutation(
         atmosphere,
         {meetingId, stageId},
-        {onError: mutationProps.onError, onCompleted: onAddMissingJiraFieldCompleted}
+        {
+          onError: mutationProps.onError,
+          onCompleted: (res, errors) => {
+            mutationProps.onCompleted(res, errors)
+
+            if (!errors) {
+              closePortal()
+              submitScore()
+            }
+          }
+        }
       )
     }
 

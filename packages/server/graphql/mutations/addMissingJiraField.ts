@@ -11,6 +11,7 @@ import {TaskServiceEnum} from '../../database/types/Task'
 import JiraServiceTaskId from '~/shared/gqlIds/JiraServiceTaskId'
 import publish from '../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
+import {JiraScreen, JiraScreensResponse, JiraScreenTab} from '~/utils/AtlassianManager'
 
 const addMissingJiraField = {
   type: GraphQLNonNull(AddMissingJiraFieldPayload),
@@ -91,7 +92,7 @@ const addMissingJiraField = {
       return {error: {message: 'User no longer has access to Atlassian'}}
     }
     const {accessToken} = auth
-    const {cloudId, projectKey} = JiraServiceTaskId.split(serviceTaskId)
+    const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
     const manager = new AtlassianServerManager(accessToken)
     const team = await dataLoader.get('teams').load(teamId)
     const jiraDimensionFields = team.jiraDimensionFields || []
@@ -101,10 +102,58 @@ const addMissingJiraField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
-    //TODO: Figure out how to add selected field to a proper Jira screen
-    // const project = await manager.getProject(cloudId, dimensionField.projectKey)
-    // const jiraScreens = manager.getAllScreens(cloudId)
-    await manager.addFieldToDefaultScreen(cloudId, dimensionField.fieldId)
+
+    const {values: screens} = (await manager.getScreens(cloudId)) as JiraScreensResponse
+
+    // we're trying to guess what's the probability that given screen is assigned to an issue project
+    const evaluateProbability = (screen: JiraScreen) => {
+      if (screen.name.startsWith(projectKey) && screen.name.includes('Default')) return 1
+      if (screen.name.includes(projectKey)) return 0.9
+      if (screen.name.includes('Bug')) return 0
+
+      return 0.5
+    }
+    const possibleScreens = screens
+      .map((screen) => ({screen, probability: evaluateProbability(screen)}))
+      .sort((screen1, screen2) => screen2.probability - screen1.probability)
+      .map(({screen}) => screen)
+
+    // stores screen tabs so we won't need to refetch it when reverting from previous operation
+    const screenTabIds = new Map()
+    // iterate over all the screens sorted by probability, try to update the given field
+    for (let i = 0; i < possibleScreens.length; i++) {
+      try {
+        const currentScreen = possibleScreens[i]
+        const previousScreen = i > 0 ? possibleScreens[i - 1] : null
+        if (previousScreen) {
+          await manager.removeFieldFromScreenTab(
+            cloudId,
+            previousScreen.id,
+            screenTabIds.get(previousScreen),
+            dimensionField.fieldId
+          )
+        }
+
+        const [{id: tabId}] = (await manager.getScreenTabs(
+          cloudId,
+          currentScreen.id
+        )) as JiraScreenTab[]
+        screenTabIds.set(currentScreen, tabId)
+        await manager.addFieldToScreenTab(cloudId, currentScreen.id, tabId, dimensionField.fieldId)
+        // if we can update the field that was previously missing it means we've added it to the right screen
+        await manager.updateStoryPoints(
+          cloudId,
+          issueKey,
+          0, // dummy value
+          dimensionField.fieldId,
+          dimensionField.fieldName
+        )
+
+        break
+      } catch (e) {
+        // do nothing, continue looking for a proper screen
+      }
+    }
 
     // RESOLUTION
     const data = {dimensionField}
