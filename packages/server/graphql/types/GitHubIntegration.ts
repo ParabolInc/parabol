@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import {getUserId} from '../../utils/authorization'
@@ -57,6 +64,10 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
     login: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The GitHub login used for queries'
+    },
+    scope: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The comma-separated list of scopes requested from GitHub'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

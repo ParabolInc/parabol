@@ -234,6 +234,7 @@ export const enum Providers {
   ATLASSIAN_DESC = 'Create Jira issues from Parabol',
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
+  GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }

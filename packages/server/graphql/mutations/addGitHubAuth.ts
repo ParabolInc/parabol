@@ -26,7 +26,7 @@ export default {
 
     // RESOLUTION
 
-    const manager = await GitHubServerManager.init(code)
+    const {manager, scope} = await GitHubServerManager.init(code)
     const {accessToken} = manager
     const profile = await manager.getProfile()
 
@@ -46,7 +46,7 @@ export default {
     const {viewer} = profileData
     const {login} = viewer
 
-    await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId})
+    await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope})
     segmentIo.track({
       userId: viewerId,
       event: 'Added Integration',
