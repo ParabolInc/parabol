@@ -8,13 +8,15 @@ import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import useSetFinalScoreError, {setFinalScoreError} from '../hooks/useSetFinalScoreError'
+import {setFinalScoreError} from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
 import PokerDimensionFinalScoreJiraPicker from './PokerDimensionFinalScoreJiraPicker'
 import StyledError from './StyledError'
+import useModal from '../hooks/useModal'
+import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 
 const ControlWrap = styled('div')({
   padding: '0 8px'
@@ -76,6 +78,31 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
+const useHandleFinalScoreError = ({error, serviceField, stageId, setPendingScore, finalScore}) => {
+  const atmosphere = useAtmosphere()
+  const {closePortal, openPortal, modalPortal} = useModal()
+
+  useEffect(() => {
+    const nextError = error?.message ?? ''
+
+    if (
+      nextError.includes(
+        `Update failed! In Jira, add the field "${serviceField.name}" to the Issue screen.`
+      )
+    ) {
+      openPortal()
+    } else {
+      setFinalScoreError(atmosphere, stageId, nextError)
+      setPendingScore(finalScore)
+    }
+  }, [error, serviceField])
+
+  return {
+    addMissingJiraFieldModalPortal: modalPortal,
+    closeAddMissingJiraFieldModal: closePortal
+  }
+}
+
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
   const {id: stageId, dimensionRef, finalScoreError, meetingId, service, serviceField} = stage
@@ -90,18 +117,17 @@ const PokerDimensionValueControl = (props: Props) => {
   const lastServiceFieldNameRef = useRef(serviceFieldName)
   const canUpdate =
     pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
-  useSetFinalScoreError(stageId, error)
+  const {addMissingJiraFieldModalPortal, closeAddMissingJiraFieldModal} = useHandleFinalScoreError({
+    error,
+    stageId,
+    serviceField,
+    setPendingScore,
+    finalScore
+  })
 
   useLayoutEffect(() => {
-    setPendingScore(finalScore)
     lastServiceFieldNameRef.current = serviceFieldName
   }, [finalScore])
-  useEffect(() => {
-    if (error) {
-      // we want this for remote errors but not local errors, so we keep the 2 in different vars
-      setPendingScore(finalScore)
-    }
-  }, [error])
 
   const submitScore = () => {
     if (submitting || !canUpdate) return
@@ -131,7 +157,7 @@ const PokerDimensionValueControl = (props: Props) => {
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // keydown required bceause escape doesn't fire onKeyPress
+    // keydown required because escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
       submitScore()
@@ -174,7 +200,7 @@ const PokerDimensionValueControl = (props: Props) => {
             placeholder={placeholder}
             value={pendingScore}
             maxLength={3}
-          ></Input>
+          />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
         {service === 'jira' && (
@@ -201,6 +227,13 @@ const PokerDimensionValueControl = (props: Props) => {
           </>
         )}
       </Control>
+      {addMissingJiraFieldModalPortal(
+        <AddMissingJiraFieldModal
+          stage={stage}
+          submitScore={submitScore}
+          closePortal={closeAddMissingJiraFieldModal}
+        />
+      )}
     </ControlWrap>
   )
 }
@@ -209,8 +242,10 @@ export default createFragmentContainer(PokerDimensionValueControl, {
   stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
       ...PokerDimensionFinalScoreJiraPicker_stage
+      ...AddMissingJiraFieldModal_stage
       id
       meetingId
+      teamId
       finalScore
       finalScoreError
       serviceField {

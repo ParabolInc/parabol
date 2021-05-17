@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useCallback} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -9,6 +9,7 @@ import AtlassianClientManager from '../utils/AtlassianClientManager'
 import {ScopePhaseAreaAddJira_meeting} from '../__generated__/ScopePhaseAreaAddJira_meeting.graphql'
 import JiraSVG from './JiraSVG'
 import RaisedButton from './RaisedButton'
+import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 
 const AddJiraArea = styled('div')({
   display: 'flex',
@@ -47,9 +48,21 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   const {integrations} = teamMember
   const hasAuth = integrations?.atlassian?.isActive ?? false
 
+  const onAtlassianOAuthCompleted = useCallback(
+    (code) => {
+      if (mutationProps.submitting) {
+        return
+      }
+
+      mutationProps.submitMutation()
+      AddAtlassianAuthMutation(atmosphere, {code, teamId}, mutationProps)
+    },
+    [mutationProps, teamId]
+  )
+
   const importStories = () => {
     if (!hasAuth) {
-      AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+      AtlassianClientManager.openOAuth(onAtlassianOAuthCompleted)
     }
   }
   return (

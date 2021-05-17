@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import jwtDecode from 'jwt-decode'
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
@@ -13,7 +13,9 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useAtlassianSites from '../../../../hooks/useAtlassianSites'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -27,6 +29,7 @@ import {Breakpoint, Providers} from '../../../../types/constEnums'
 import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {AtlassianProviderRow_viewer} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
+import AddAtlassianAuthMutation from '../../../../mutations/AddAtlassianAuthMutation'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -124,8 +127,20 @@ const AtlassianProviderRow = (props: Props) => {
   const accessToken = atlassian?.accessToken ?? undefined
   useFreshToken(accessToken, retry)
 
+  const onAtlassianOAuthCompleted = useCallback(
+    (code) => {
+      if (mutationProps.submitting) {
+        return
+      }
+
+      mutationProps.submitMutation()
+      AddAtlassianAuthMutation(atmosphere, {code, teamId}, mutationProps)
+    },
+    [mutationProps, teamId]
+  )
+
   const openOAuth = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    AtlassianClientManager.openOAuth(onAtlassianOAuthCompleted)
   }
 
   const {sites, status} = useAtlassianSites(accessToken)
