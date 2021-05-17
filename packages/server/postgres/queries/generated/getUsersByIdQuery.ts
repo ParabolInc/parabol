@@ -36,7 +36,6 @@ export interface IGetUsersByIdQueryResult {
   reasonRemoved: string | null
   rol: AuthTokenRole | null
   payLaterClickCount: number
-  eqChecked: Date
 }
 
 /** 'GetUsersByIdQuery' query type */
