@@ -45300,6 +45300,11 @@ export interface IGitHubIntegration {
   login: string;
 
   /**
+   * The comma-separated list of scopes requested from GitHub
+   */
+  scope: string;
+
+  /**
    * *The team that the token is linked to
    */
   teamId: string;

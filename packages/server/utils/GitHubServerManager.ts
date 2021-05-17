@@ -1,9 +1,8 @@
 import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
-import {getRepositories} from './githubQueries/getRepositories'
 import {GetRepositoriesQuery} from '../../server/types/typed-document-nodes'
-
+import {getRepositories} from './githubQueries/getRepositories'
 interface OAuth2Response {
   access_token: string
   error: any
@@ -62,14 +61,7 @@ class GitHubServerManager extends GitHubManager {
     if (error) {
       throw new Error(`GitHub: ${error}`)
     }
-    const providedScope = scope.split(',')
-    const matchingScope =
-      new Set([...GitHubServerManager.SCOPE.split(','), ...providedScope]).size ===
-      providedScope.length
-    if (!matchingScope) {
-      throw new Error(`GitHub Bad scope: ${scope}`)
-    }
-    return new GitHubServerManager(accessToken)
+    return {manager: new GitHubServerManager(accessToken), scope}
   }
   fetch = fetch
 
