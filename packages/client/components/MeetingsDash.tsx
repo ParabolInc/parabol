@@ -70,7 +70,6 @@ const MeetingsDash = (props: Props) => {
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const memodMeetings = useDeepEqual(activeMeetings)
   const topByRow = useTopPerRow(cardsPerRow, memodMeetings, viewer?.id)
-  console.log('🚀 ~ MeetingsDash ~ topByRow', topByRow)
   const hasMeetings = activeMeetings.length > 0 && cardsPerRow
   const totalRows =
     !memodMeetings.length || !cardsPerRow ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
