@@ -7,7 +7,6 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroDiscussPhase_meeting} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import useScreenBugs from '../hooks/useScreenBugs'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
@@ -137,11 +136,17 @@ const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const [callbackRef, phaseRef] = useCallbackRef()
   const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
-  const {reflectionGroup, isComplete} = localStage
+  const {reflectionGroup} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
-  const isBuggy = (!isComplete && title?.toLowerCase().includes('bug')) ?? false
-  useScreenBugs(isBuggy, meetingId)
+
+  // Uncomment below code to enable Easter Egg:
+  // bugs shown on screen when the discussion group title contains "bug"
+  //
+  // const {isComplete} = localStage
+  // const isBuggy = (!isComplete && title?.toLowerCase().includes('bug')) ?? false
+  // useScreenBugs(isBuggy, meetingId)
+
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {id: reflectionGroupId, voteCount} = reflectionGroup
@@ -222,10 +227,6 @@ graphql`
       reflectionGroup {
         ...ReflectionGroup_reflectionGroup
         id
-        commentors {
-          userId
-          preferredName
-        }
         title
         voteCount
         reflections {

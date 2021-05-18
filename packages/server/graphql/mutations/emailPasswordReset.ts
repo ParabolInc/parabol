@@ -29,7 +29,7 @@ const emailPasswordReset = {
   },
   resolve: rateLimit({perMinute: 5, perHour: 50})(
     async (_source, {email: denormEmail}, {ip}: GQLContext) => {
-      const email = denormEmail.toLowerCase()
+      const email = denormEmail.toLowerCase().trim()
       const r = await getRethink()
 
       // we only wanna send like 2 emails/min or 5 per day to the same person

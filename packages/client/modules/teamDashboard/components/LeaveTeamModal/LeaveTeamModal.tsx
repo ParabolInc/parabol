@@ -31,7 +31,7 @@ const LeaveTeamModal = (props: Props) => {
   const {atmosphere, closePortal, history, teamMember} = props
   const {teamMemberId} = teamMember
   const handleClick = () => {
-    history.push('/me')
+    history.push('/meetings')
     closePortal()
     RemoveTeamMemberMutation(atmosphere, teamMemberId)
   }

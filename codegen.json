@@ -1,0 +1,13 @@
+{
+  "schema": "packages/server/utils/githubSchema.ts",
+  "documents": "packages/server/utils/githubQueries/*",
+  "generates": {
+    "packages/server/types/typed-document-nodes.ts": {
+      "plugins": [
+        "typescript",
+        "typescript-operations",
+        "typed-document-node"
+      ]
+    }
+  }
+}

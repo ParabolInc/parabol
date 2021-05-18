@@ -22,7 +22,8 @@
     ],
   },
   "exclude": [
-    "**/node_modules"
+    "**/node_modules",
+    "types/typed-document-nodes.ts"
   ],
   "files": [
     "types/modules.d.ts",
@@ -30,6 +31,7 @@
     "graphql/queries/tasks.ts",
     "graphql/queries/archivedTasks.ts",
     "billing/debug.ts",
+    "hubspot/backfillHubSpot.ts",
     "server.ts",
     "debugJira.ts"
   ],

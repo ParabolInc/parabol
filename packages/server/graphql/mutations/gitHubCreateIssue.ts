@@ -86,6 +86,9 @@ const gitHubCreateIssue = {
       return standardError(new Error(createIssueRes.message), {userId: viewerId})
     }
     const {data: payload} = createIssueRes
+    if (createIssueRes.errors) {
+      return standardError(new Error(createIssueRes.errors[0].message), {userId: viewerId})
+    }
     if (!payload || !payload.createIssue || !payload.createIssue.issue) {
       return standardError(new Error('createIssueRes does not contain expected payload'), {
         userId: viewerId
@@ -99,8 +102,7 @@ const gitHubCreateIssue = {
       id: gitHubIssueId,
       summary: title,
       url,
-      nameWithOwner,
-      description: ''
+      nameWithOwner
     }
 
     const data = {meetingId, teamId, gitHubIssue}

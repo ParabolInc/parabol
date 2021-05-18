@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import useRouter from '~/hooks/useRouter'
-import useSnackNag from '~/hooks/useSnackNag'
 import React, {lazy} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {matchPath, Route, RouteProps, Switch} from 'react-router'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import useRouter from '~/hooks/useRouter'
+import useSnackNag from '~/hooks/useSnackNag'
+import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
 import useSidebar from '../hooks/useSidebar'
 import {Dashboard_viewer} from '../__generated__/Dashboard_viewer.graphql'
@@ -17,6 +18,9 @@ import StartMeetingFAB from './StartMeetingFAB'
 import StaticStartMeetingFAB from './StaticStartMeetingFAB'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
+const MeetingsDash = lazy(() =>
+  import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
+)
 const UserDashboard = lazy(() =>
   import(
     /* webpackChunkName: 'UserDashboard' */ '../modules/userDashboard/components/UserDashboard/UserDashboard'
@@ -36,14 +40,14 @@ const getShowFAB = (location: NonNullable<RouteProps['location']>) => {
   return (
     pathname.includes('/me/tasks') ||
     !!matchPath(pathname, {
-      path: '/me/',
-      exact: true,
-      strict: true
-    }) ||
-    !!matchPath(pathname, {
       path: '/me',
       exact: true,
-      strict: true
+      strict: false
+    }) ||
+    !!matchPath(pathname, {
+      path: '/meetings',
+      exact: true,
+      strict: false
     }) ||
     !!matchPath(pathname, {
       path: '/team/:teamId',
@@ -83,28 +87,35 @@ const DashMain = styled('div')({
 
 const Dashboard = (props: Props) => {
   const {viewer} = props
+  const teams = viewer?.teams ?? []
+  const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {location} = useRouter()
   const overLimitCopy = viewer?.overLimitCopy
   useSnackNag(overLimitCopy)
+  useSnacksForNewMeetings(activeMeetings)
   return (
     <DashLayout>
       {isDesktop ? (
         <DashTopBar viewer={viewer} toggle={toggle} />
       ) : (
-          <MobileDashTopBar viewer={viewer} toggle={toggle} />
-        )}
+        <MobileDashTopBar viewer={viewer} toggle={toggle} />
+      )}
       <DashPanel>
         {isDesktop ? (
           <DashSidebar viewer={viewer} isOpen={isOpen} />
         ) : (
-            <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
-              <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
-            </SwipeableDashSidebar>
-          )}
+          <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
+            <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
+          </SwipeableDashSidebar>
+        )}
         <DashMain>
           <Switch>
+            <Route
+              path='/meetings'
+              render={(routeProps) => <MeetingsDash {...routeProps} viewer={viewer} />}
+            />
             <Route path='/me' component={UserDashboard} />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
@@ -119,11 +130,17 @@ const Dashboard = (props: Props) => {
 export default createFragmentContainer(Dashboard, {
   viewer: graphql`
     fragment Dashboard_viewer on User {
+      ...MeetingsDash_viewer
       ...MobileDashSidebar_viewer
       ...MobileDashTopBar_viewer
       ...DashTopBar_viewer
       ...DashSidebar_viewer
       overLimitCopy
+      teams {
+        activeMeetings {
+          ...useSnacksForNewMeetings_meetings
+        }
+      }
     }
   `
 })

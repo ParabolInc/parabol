@@ -346,7 +346,7 @@ export default async function generateInvoice(
       .filter({removedAt: null, role: 'BILLING_LEADER'})
       .coerceTo('array')('userId')
       .do((userIds) => {
-        return r.table('User').getAll(userIds, {index: 'id'})('email')
+        return r.table('User').getAll(r.args(userIds), {index: 'id'})('email')
       })
       .coerceTo('array') as unknown) as string[]
   }).run()

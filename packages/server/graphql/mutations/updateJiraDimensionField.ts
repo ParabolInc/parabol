@@ -3,12 +3,12 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 const updateJiraDimensionField = {
   type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
@@ -71,34 +71,34 @@ const updateJiraDimensionField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
-    if (existingDimensionField) {
-      if (existingDimensionField.fieldName === fieldName) {
-        return data
-      }
-      existingDimensionField.fieldName = fieldName
-    } else {
-      const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
-      if (!auth) {
-        return {error: {message: 'Not authenticated with Jira'}}
-      }
-      const {accessToken} = auth
-      const manager = await new AtlassianServerManager(accessToken)
-      const fields = await manager.getFields(cloudId)
-      const field = fields.find((field) => field.name === fieldName)
-      if (!field) return {error: {message: 'Invalid field name'}}
-      const {id: fieldId, schema} = field
-      const type = schema.type as 'string' | 'number'
-      jiraDimensionFields.push(
-        new JiraDimensionField({
-          dimensionName,
-          fieldName,
-          fieldId,
-          cloudId,
-          fieldType: type,
-          projectKey
-        })
-      )
+    if (existingDimensionField?.fieldName === fieldName) return data
+
+    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
+    if (!auth) {
+      return {error: {message: 'Not authenticated with Jira'}}
     }
+    const {accessToken} = auth
+    const manager = new AtlassianServerManager(accessToken)
+    const fields = await manager.getFields(cloudId)
+    const field = fields.find((field) => field.name === fieldName)
+    if (!field) return {error: {message: 'Invalid field name'}}
+    const {id: fieldId, schema} = field
+    const type = schema.type as 'string' | 'number'
+    const newField = new JiraDimensionField({
+      dimensionName,
+      fieldName,
+      fieldId,
+      cloudId,
+      fieldType: type,
+      projectKey
+    })
+    if (existingDimensionField) {
+      // mutate the existing record
+      Object.assign(existingDimensionField, newField)
+    } else {
+      jiraDimensionFields.push(newField)
+    }
+
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
     await Promise.all([
       r

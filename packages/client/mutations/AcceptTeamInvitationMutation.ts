@@ -40,7 +40,7 @@ graphql`
     # this is just for the user that accepted the invitation
     team {
       ...DashNavListTeam
-      ...TopBarMeetingsActiveMeetings
+      ...MeetingsDashActiveMeetings
       id
       name
       isPaid

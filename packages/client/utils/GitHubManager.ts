@@ -1,4 +1,5 @@
 import {DocumentNode} from 'graphql-typed'
+import {Providers} from '../types/constEnums'
 import {ICreateIssueInput} from '../types/githubGraphql'
 import createIssue from './githubQueries/createIssue.graphql'
 import getProfile from './githubQueries/getProfile.graphql'
@@ -22,7 +23,7 @@ type DocVariables = any
 // type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
 
 abstract class GitHubManager {
-  static SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
+  static SCOPE = Providers.GITHUB_SCOPE
   accessToken: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland
@@ -35,7 +36,7 @@ abstract class GitHubManager {
       'Content-Type': 'application/json',
       // an Authorization requires a preflight request, ie reqs are slow
       Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json' as 'application/json'
+      Accept: 'application/json' as const
     }
   }
 
@@ -80,6 +81,7 @@ abstract class GitHubManager {
     return this.post(body)
   }
 
+  // deprecated. Using getRepositories on the server now
   async getRepos() {
     return this.query(getRepos)
   }
@@ -92,7 +94,6 @@ abstract class GitHubManager {
   async getProfile() {
     return this.query(getProfile)
   }
-
   async createIssue(createIssueInput: ICreateIssueInput) {
     return this.mutate(createIssue, {input: createIssueInput} as any)
   }

@@ -5,3 +5,4 @@ packages/client/types/graphql.ts
 packages/server/database
 packages/server/postgres/queries/generated
 packages/server/segmentFns/*
+packages/server/types/typed-document-nodes.ts

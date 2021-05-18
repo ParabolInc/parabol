@@ -4,12 +4,12 @@ import fetch from 'node-fetch'
 
 const updateGitHubSchema = async () => {
   const schemaPath = './githubSchema.graphql'
-  const schemaJSONPath = './githubSchema.json'
+  const schemaJSONPath = './githubSchema.ts'
   const accessToken = 'foobar'
   const headers = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${accessToken}`,
-    Accept: 'application/json' as 'application/json'
+    Accept: 'application/json' as const
   }
   const res = await fetch('https://api.github.com/graphql', {headers})
   const result = await res.json()

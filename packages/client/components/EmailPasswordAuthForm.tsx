@@ -145,7 +145,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
     } else {
-      const nextUrl = getValidRedirectParam() || '/me'
+      const nextUrl = getValidRedirectParam() || '/meetings'
       history.push(nextUrl)
     }
     return true

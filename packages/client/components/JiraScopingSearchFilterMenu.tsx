@@ -18,13 +18,17 @@ import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
-import MockJiraFieldList from './MockJiraFieldList'
-import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
+import MockFieldList from './MockFieldList'
+import MenuSearch from './MenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
+})
+
+const StyledMenu = styled(Menu)({
+  width: 250
 })
 
 const NoResults = styled(MenuItemLabel)({
@@ -129,7 +133,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
     })
   }
   return (
-    <Menu
+    <StyledMenu
       keepParentFocus
       ariaLabel={'Define the Jira search query'}
       portalStatus={portalStatus}
@@ -147,18 +151,14 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
-      {isLoading && <MockJiraFieldList />}
+      {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && (
         <SearchItem key='search'>
           <StyledMenuItemIcon>
             <SearchIcon>search</SearchIcon>
           </StyledMenuItemIcon>
-          <TaskFooterIntegrateMenuSearch
-            placeholder={'Search Jira'}
-            value={value}
-            onChange={onChange}
-          />
+          <MenuSearch placeholder={'Search Jira'} value={value} onChange={onChange} />
         </SearchItem>
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
@@ -199,7 +199,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
           />
         )
       })}
-    </Menu>
+    </StyledMenu>
   )
 }
 

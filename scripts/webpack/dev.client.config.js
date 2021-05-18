@@ -23,8 +23,8 @@ module.exports = {
   devServer: {
     index: 'index.html',
     clientLogLevel: 'silent',
-    contentBase: [path.join(PROJECT_ROOT, 'static'), path.join(PROJECT_ROOT, 'build'), path.join(PROJECT_ROOT, 'dev', 'dll')],
-    contentBasePublicPath: '/static/',
+    contentBase: [path.join(PROJECT_ROOT, 'static'), path.join(PROJECT_ROOT, 'build'), path.join(PROJECT_ROOT, 'dev', 'dll'), path.join(PROJECT_ROOT, 'self-hosted')],
+    contentBasePublicPath: ['/static/', '/static/', '/static/', '/self-hosted/'],
     publicPath: '/',
     hot: true,
     historyApiFallback: true,
@@ -32,22 +32,22 @@ module.exports = {
     port: PORT,
     proxy: {
       '/graphql': {
-        target: `http://localhost:${SOCKET_PORT}`,
+        target: `http://localhost:${SOCKET_PORT}`
       },
       '/intranet-graphql': {
-        target: `http://localhost:${SOCKET_PORT}`,
+        target: `http://localhost:${SOCKET_PORT}`
       },
       '/sse': {
-        target: `http://localhost:${SOCKET_PORT}`,
+        target: `http://localhost:${SOCKET_PORT}`
       },
       '/sse-ping': {
-        target: `http://localhost:${SOCKET_PORT}`,
+        target: `http://localhost:${SOCKET_PORT}`
       }
-    },
+    }
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
-    ignored: /node_modules/,
+    ignored: /node_modules/
     // aggregateTimeout: 200,
   },
   devtool: 'eval-source-map',
@@ -79,17 +79,11 @@ module.exports = {
       os: false
     },
     unsafeCache: true,
-    modules: [
-      path.resolve(CLIENT_ROOT, '../node_modules'),
-      'node_modules'
-    ],
+    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules'],
     symlinks: false
   },
   resolveLoader: {
-    modules: [
-      path.resolve(CLIENT_ROOT, '../node_modules'),
-      'node_modules'
-    ]
+    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
   },
   plugins: [
     new webpack.DllReferencePlugin({
@@ -102,6 +96,7 @@ module.exports = {
         atlassian: process.env.ATLASSIAN_CLIENT_ID,
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
+        logRocket: process.env.LOG_ROCKET,
         segment: process.env.SEGMENT_WRITE_KEY,
         sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
@@ -120,7 +115,7 @@ module.exports = {
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT),
       __STATIC_IMAGES__: JSON.stringify(`/static/images`)
     }),
-    new webpack.HotModuleReplacementPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ],
   module: {
     rules: [
@@ -143,7 +138,7 @@ module.exports = {
                     }
                   }
                 ],
-                'react-refresh/babel',
+                'react-refresh/babel'
               ]
             }
           },

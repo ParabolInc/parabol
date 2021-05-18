@@ -5,12 +5,117 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.11.0
+
+### Added
+
+- lockTeams private mutation (#4953)
+- GitHub Search bar for Poker Scoping (#4901)
+
+### Fixed
+
+- Changing Jira field ID when name changes (#4957)
+- Log invalid authTokens for gql queries (#4949)
+- Poker summaries use appOrigin vs. global origin (#4938)
+- Analytics mutations are not resent on wake (#4941)
+- Support missing AtlassianAuth (#4941)
+- Soft delete agenda items (#4941)
+
+## 6.10.1
+
+### Fixed
+
+- Validate & normalize email inputs on account creation
+
+## 6.10.0
+
+### Added
+
+- Add meeting card overflow menu #4893
+- Fetch GitHub repos and ensure strongly typed results #4870
+- Add postgres rethink equality checker mutation #4856
+- Add docker volume for self-hosted instances using local storage #4907
+
+### Fixed
+
+- Fix various Hubspot data issues #4904
+- Fix facilitator being kicked out of Poker #4873
+- Fix SAML request param encoding and parsing #4898
+- Fix Stripe invoice #4937
+
+### Changed
+
+- Bump ssri from 6.0.1 to 6.0.2 #4925
+- Improve avatar group layout #4918
+
+## 6.9.0 2021-Apr-29
+
+### Added
+
+- Add LogRocket #4886
+- support addGitHubToSchema #4920
+
+### Fixed
+
+- Fix team invitation #4877
+
+## 6.8.0 2021-Apr-21
+
+### Added
+
+- Validate new poker issues #4831
+- Poker avatars tooltip #4882
+
+### Fixed
+
+- Check if story and meeting exist #4786
+- Fix editing too bug #4879
+
+## 6.7.0 2021-Apr-14
+
+### Added
+
+- Meetings view v1 (#4624, #4623)
+
+### Changed
+
+- Limit number of dashboard avatars (#4566)
+
+## 6.6.1 2021-Apr-10
+
+### Fixed
+
+- Fixed an issue where GraphQL subscription fails to execute
+
+### Changed
+
+- Disabled the Easter Egg
+
+## 6.6.0 2021-Apr-07
+
+### Added
+
+- Add migration for priority scale (#4846)
+- Enable Datadog APM tracer (#4843)
+
+### Changed
+
+- Update link in Check-In summary email (#4858)
+- Meetings view style changes (#4849)
+
+### Fixed
+
+- Fix a typo in DragEstimatingTaskSuccess (#4850)
+- Fix meeting control bar width (#4852)
+- Fix types for fieldName and dimensionName in JiraDimensionField (#4854)
+
 ## 6.5.0 2021-Apr-01
 
 ### Added
 
 - Create GH issue button in Sprint poker, currently hidden (#4799)
 - GitHub tab in Sprint Poker (#4777)
+
 ### Removed
 
 - Removed IM scopes from Slack integration, per Slack feedback (#4844)

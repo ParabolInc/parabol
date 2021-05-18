@@ -1,17 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
+import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubScopingSearchInput_meeting} from '../__generated__/GitHubScopingSearchInput_meeting.graphql'
 import Icon from './Icon'
 
 const SearchInput = styled('input')({
   appearance: 'none',
   border: 'none',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
   outline: 0,
@@ -26,7 +27,7 @@ const Wrapper = styled('div')({
 })
 
 const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: 'pointer',
   padding: 12,
   visibility: isEmpty ? 'hidden' : undefined
@@ -51,7 +52,11 @@ const GitHubScopingSearchInput = (props: Props) => {
   const {queryString} = githubSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
-  const placeholder = 'Search issues on GitHub'
+  useEffect(() => {
+    const defaultInput = `${SprintPokerDefaults.GITHUB_DEFAULT_QUERY} `
+    setSearch(atmosphere, meetingId, defaultInput)
+  }, [])
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(atmosphere, meetingId, value)
@@ -59,9 +64,10 @@ const GitHubScopingSearchInput = (props: Props) => {
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
   }
+
   return (
     <Wrapper>
-      <SearchInput value={queryString} placeholder={placeholder} onChange={onChange} />
+      <SearchInput autoFocus value={queryString} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>

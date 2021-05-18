@@ -7,27 +7,32 @@ import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {IXGitHubCreatedCommitContribution} from '../types/graphql'
 import {GitHubScopingSearchFilterMenu_viewer} from '../__generated__/GitHubScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
-import DropdownMenuLabel from './DropdownMenuLabel'
 import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import MockGitHubFieldList from './MockGitHubFieldList'
-import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
+import MenuSearch from './MenuSearch'
+import MockFieldList from './MockFieldList'
 import TypeAheadLabel from './TypeAheadLabel'
+import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
 })
 
+const StyledMenu = styled(Menu)({
+  width: 450
+})
+
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,
@@ -49,21 +54,11 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
-const ProjectAvatar = styled('img')({
-  height: 24,
-  width: 24,
-  marginRight: 8
-})
-
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
   marginRight: 8
 })
 const StyledMenuItemLabel = styled(MenuItemLabel)({})
-
-const FilterLabel = styled(DropdownMenuLabel)({
-  borderBottom: 0
-})
 
 interface Props {
   menuProps: MenuProps
@@ -75,19 +70,38 @@ type GitHubSearchQuery = NonNullable<
   NonNullable<GitHubScopingSearchFilterMenu_viewer['meeting']>['githubSearchQuery']
 >
 
-const getValue = (item: {name: string}) => item.name.toLowerCase()
+type Contribution = Pick<IXGitHubCreatedCommitContribution, 'occurredAt' | 'repository'>
 
-const MAX_PROJECTS = 10
+const MAX_REPOS = 10
+
+const getValue = (item: {nameWithOwner?: string}) => {
+  const repoName = item.nameWithOwner || 'Unknown Repo'
+  return repoName.toLowerCase()
+}
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
-  // TODO replace projects
   const {menuProps, viewer} = props
-  const isLoading = viewer === null
-  const projects = viewer?.teamMember?.integrations.github?.projects ?? []
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
-  const githubSearchQuery = meeting?.githubSearchQuery ?? null
-  const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
+  const queryString = meeting?.githubSearchQuery?.queryString ?? null
+  const isLoading = viewer === null
+  const atmosphere = useAtmosphere()
+  const contributionsByRepo =
+    viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
+      ?.commitContributionsByRepository ?? []
+  const repoContributions = useMemo(() => {
+    const contributions = contributionsByRepo.map((contributionByRepo) =>
+      contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
+    )
+    return contributions
+      .filter((contribution): contribution is Contribution => !!contribution)
+      .sort(
+        (a, b) =>
+          new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
+      )
+      .map((sortedContributions) => sortedContributions?.repository)
+  }, [contributionsByRepo])
+
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -96,88 +110,65 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {search} = fields
   const {value} = search
   const query = value.toLowerCase()
-  const showSearch = projects.length > MAX_PROJECTS
-  const queryFilteredProjects = useFilteredItems(query, projects, getValue)
-  const selectedAndFilteredProjects = useMemo(() => {
-    const selectedProjects = projects.filter((project) => nameWithOwnerFilters.includes(project.id))
-    const adjustedMax =
-      selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS
-    return Array.from(new Set([...selectedProjects, ...queryFilteredProjects])).slice(
-      0,
-      adjustedMax
-    )
-  }, [queryFilteredProjects])
-
-  const atmosphere = useAtmosphere()
+  // TODO parse the query string & extract out the repositories
+  const filteredRepoContributions = useFilteredItems(query, repoContributions, getValue)
+  const selectedRepos = getReposFromQueryStr(queryString)
+  const selectedAndFilteredRepos = useMemo(() => {
+    const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
+    const repos = filteredRepoContributions.map(({nameWithOwner}) => nameWithOwner)
+    return Array.from(new Set([...selectedRepos, ...repos])).slice(0, adjustedMax)
+  }, [filteredRepoContributions])
   const {portalStatus, isDropdown} = menuProps
-  const toggleJQL = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const searchQueryId = SearchQueryId.join('github', meetingId)
-      const githubSearchQuery = store.get(searchQueryId)
-      // this might bork if the checkbox is ticked before the full query loads
-      if (!githubSearchQuery) return
-      githubSearchQuery.setValue([], 'nameWithOwnerFilters')
-    })
-  }
   return (
-    <Menu
+    <StyledMenu
       keepParentFocus
       ariaLabel={'Define the GitHub search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
-      resetActiveOnChanges={[selectedAndFilteredProjects]}
     >
-      {isLoading && <MockGitHubFieldList />}
-      {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
-      {showSearch && (
-        <SearchItem key='search'>
-          <StyledMenuItemIcon>
-            <SearchIcon>search</SearchIcon>
-          </StyledMenuItemIcon>
-          <TaskFooterIntegrateMenuSearch
-            placeholder={'Search GitHub'}
-            value={value}
-            onChange={onChange}
-          />
-        </SearchItem>
+      <SearchItem key='search'>
+        <StyledMenuItemIcon>
+          <SearchIcon>search</SearchIcon>
+        </StyledMenuItemIcon>
+        <MenuSearch placeholder={'Search your GitHub repos'} value={value} onChange={onChange} />
+      </SearchItem>
+      {isLoading && <MockFieldList />}
+      {repoContributions.length === 0 && !isLoading && (
+        <NoResults key='no-results'>No repos found!</NoResults>
       )}
-      {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
-        <NoResults key='no-results'>No GitHub Projects found!</NoResults>
-      )) ||
-        null}
-      {selectedAndFilteredProjects.map((project) => {
-        const {id: globalProjectKey, avatar, name} = project
-        const toggleProjectKeyFilter = () => {
+      {selectedAndFilteredRepos.map((repo) => {
+        const isSelected = selectedRepos.includes(repo)
+        const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('github', meetingId)
             const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
-            const nameWithOwnerFiltersProxy = githubSearchQuery
-              .getValue('nameWithOwnerFilters')!
-              .slice()
-            const keyIdx = nameWithOwnerFiltersProxy.indexOf(globalProjectKey)
-            if (keyIdx !== -1) {
-              nameWithOwnerFiltersProxy.splice(keyIdx, 1)
-            } else {
-              nameWithOwnerFiltersProxy.push(globalProjectKey)
-            }
-            githubSearchQuery.setValue(nameWithOwnerFiltersProxy, 'nameWithOwnerFilters')
+            const newFilters = isSelected
+              ? selectedRepos.filter((name) => name !== repo)
+              : selectedRepos.concat(repo)
+            const queryString = githubSearchQuery.getValue('queryString')
+            const queryWithoutRepos = queryString
+              .trim()
+              .split(' ')
+              .filter((str) => !str.includes('repo:'))
+            const newRepos = newFilters.map((name) => `repo:${name}`)
+            const newQueryStr = queryWithoutRepos.concat(newRepos).join(' ')
+            githubSearchQuery.setValue(newQueryStr, 'queryString')
           })
         }
         return (
           <MenuItem
-            key={globalProjectKey}
+            key={repo}
             label={
               <StyledMenuItemLabel>
-                <StyledCheckBox active={nameWithOwnerFilters.includes(globalProjectKey)} />
-                <ProjectAvatar src={avatar} />
-                <TypeAheadLabel query={query} label={name} />
+                <StyledCheckBox active={isSelected} />
+                <TypeAheadLabel query={query} label={repo} />
               </StyledMenuItemLabel>
             }
-            onClick={toggleProjectKeyFilter}
+            onClick={handleClick}
           />
         )
       })}
-    </Menu>
+    </StyledMenu>
   )
 }
 
@@ -188,14 +179,32 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
         id
         ... on PokerMeeting {
           githubSearchQuery {
-            nameWithOwnerFilters
+            queryString
           }
         }
       }
       teamMember(teamId: $teamId) {
         integrations {
           github {
-            login
+            api {
+              query {
+                viewer {
+                  contributionsCollection {
+                    commitContributionsByRepository(maxRepositories: 100) {
+                      contributions(orderBy: {field: OCCURRED_AT, direction: DESC}, first: 1) {
+                        nodes {
+                          occurredAt
+                          repository {
+                            id
+                            nameWithOwner
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

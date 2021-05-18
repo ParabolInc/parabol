@@ -90,7 +90,7 @@ const CreateAccountSection = (props) => {
   if (!isDemo) return null
   const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
-  const primaryActionLink = isLoggedIn ? '/me' : '/create-account?from=demo'
+  const primaryActionLink = isLoggedIn ? '/meetings' : '/create-account?from=demo'
   const copyLineOne = isLoggedIn
     ? 'Head on over to your dashboard'
     : 'In just a few seconds you’ll have access'

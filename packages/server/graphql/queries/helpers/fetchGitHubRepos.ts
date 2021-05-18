@@ -42,7 +42,7 @@ const fetchGitHubRepos = async (teamId: string, userId: string, dataLoader: Data
   if (!auth) return []
   const {accessToken} = auth
   const manager = new GitHubServerManager(accessToken)
-  const repos = await manager.getRepos()
+  const repos = await manager.getRepositories()
   if ('message' in repos) {
     console.error(repos)
     return []
@@ -60,7 +60,7 @@ const fetchGitHubRepos = async (teamId: string, userId: string, dataLoader: Data
   const uniqueRepos = getUniqueRepos(orgs, personalRepos)
   return uniqueRepos.map((repo) => ({
     id: repo.nameWithOwner,
-    service: 'github', // TaskServiceEnum.github
+    service: 'github',
     nameWithOwner: repo.nameWithOwner
   }))
 }

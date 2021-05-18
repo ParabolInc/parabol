@@ -1,9 +1,9 @@
-import Atmosphere from '../Atmosphere'
 import graphql from 'babel-plugin-relay/macro'
 import {getRequest} from 'relay-runtime'
+import Atmosphere from '../Atmosphere'
 
 graphql`
-  fragment SetAppLocationMutation_meeting on SetAppLocationSuccess {
+  fragment SetAppLocationMutation_team on SetAppLocationSuccess {
     user {
       id
       lastSeenAtURLs
@@ -23,9 +23,13 @@ const mutation = graphql`
   }
 `
 
+let timeout: number | undefined
 const SetAppLocationMutation = (atmosphere: Atmosphere, variables: {location: string | null}) => {
-  const request = getRequest(mutation).params
-  atmosphere.handleFetchPromise(request, variables)
+  window.clearTimeout(timeout)
+  timeout = window.setTimeout(() => {
+    const request = getRequest(mutation).params
+    atmosphere.handleFetchPromise(request, variables)
+  }, 200)
 }
 
 export default SetAppLocationMutation

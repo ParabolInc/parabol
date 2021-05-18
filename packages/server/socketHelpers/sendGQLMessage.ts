@@ -2,24 +2,14 @@ import {GraphQLMessageType} from '../graphql/handleGraphQLTrebuchetRequest'
 import ConnectionContext from './ConnectionContext'
 import {sendEncodedMessage} from './sendEncodedMessage'
 
-interface Message {
-  type: string
-  syn: boolean
-  payload?: Record<string, any>
-  id?: string
-}
-
 const sendGQLMessage = (
   context: ConnectionContext,
+  opId: string,
   type: GraphQLMessageType,
   syn: boolean,
-  payload?: Record<string, any>,
-  opId?: string
+  payload?: Record<string, any>
 ) => {
-  const message = {type} as Message
-  if (payload) message.payload = payload
-  if (opId) message.id = opId
-
+  const message = {id: opId, type, ...(payload && {payload})}
   sendEncodedMessage(context, message, syn)
 }
 

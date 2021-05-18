@@ -1,5 +1,6 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
+import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
 import AuthIdentity from './AuthIdentity'
 import {TierEnum} from './Invoice'
 
@@ -80,7 +81,7 @@ export default class User {
     this.inactive = inactive || false
     this.lastSeenAt = lastSeenAt ?? null
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
-    this.preferredName = preferredName
+    this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
     this.segmentId = segmentId ?? undefined
     this.tier = tier ?? 'personal'
   }

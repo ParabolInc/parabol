@@ -15,7 +15,7 @@ const UserTaskViewRoot = () => {
   const atmosphere = useAtmosphere()
   const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
 
-  useDocumentTitle('My Tasks | Parabol', 'My Tasks')
+  useDocumentTitle('Tasks | Parabol', 'Tasks')
 
   if (showArchived) {
     return <ArchiveTasksRoot userIds={userIds} teamIds={teamIds} team={null} />

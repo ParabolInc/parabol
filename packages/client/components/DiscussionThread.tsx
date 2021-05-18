@@ -1,10 +1,10 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, RefObject, useMemo} from 'react'
+import React, {RefObject, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
-import styled from '@emotion/styled'
+import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
@@ -36,15 +36,14 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, threadSourceId, viewer} = props
+  const thread = viewer.thread!
   const meeting = viewer.meeting!
-  const {endedAt, meetingType, replyingToCommentId, threadSource} = meeting
-  const thread = threadSource?.thread
-  const commentors = threadSource?.commentors
+  const {endedAt, meetingType, replyingToCommentId} = meeting
+  const commentors = thread?.commentors ?? []
   const isPokerMeeting = meetingType === 'poker'
-  const preferredNames = useMemo(
-    () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
-    [commentors]
-  )
+  const preferredNames = useMemo(() => commentors.map(({preferredName}) => preferredName), [
+    commentors
+  ])
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -86,61 +85,30 @@ const DiscussionThread = (props: Props) => {
   )
 }
 
-graphql`
-  fragment DiscussionThread_threadSource on ThreadSource {
-    id
-    thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-      edges {
-        node {
-          threadSortOrder
-          threadId
-          threadSource
-          ...DiscussionThreadList_threadables
-          threadSortOrder
-        }
-      }
-    }
-  }
-`
-
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
+      thread(id: $threadSourceId, first: 1000) @connection(key: "DiscussionThread_thread") {
+        commentors {
+          id
+          preferredName
+        }
+        edges {
+          node {
+            threadSortOrder
+            threadId
+            threadSource
+            ...DiscussionThreadList_threadables
+            threadSortOrder
+          }
+        }
+      }
       meeting(meetingId: $meetingId) {
-        ... on NewMeeting {
-          ...DiscussionThreadInput_meeting
-          ...DiscussionThreadList_meeting
-          endedAt
-          meetingType
-          replyingToCommentId
-        }
-        ... on RetrospectiveMeeting {
-          threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
-            ...DiscussionThread_threadSource @relay(mask: false)
-            commentors {
-              userId
-              preferredName
-            }
-          }
-        }
-        ... on ActionMeeting {
-          threadSource: agendaItem(agendaItemId: $threadSourceId) {
-            ...DiscussionThread_threadSource @relay(mask: false)
-            commentors {
-              userId
-              preferredName
-            }
-          }
-        }
-        ... on PokerMeeting {
-          threadSource: story(storyId: $threadSourceId) {
-            ...DiscussionThread_threadSource @relay(mask: false)
-            commentors {
-              userId
-              preferredName
-            }
-          }
-        }
+        ...DiscussionThreadInput_meeting
+        ...DiscussionThreadList_meeting
+        endedAt
+        meetingType
+        replyingToCommentId
       }
     }
   `

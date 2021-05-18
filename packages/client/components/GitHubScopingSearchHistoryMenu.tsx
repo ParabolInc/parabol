@@ -4,14 +4,14 @@ import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {GitHubScopingSearchHistoryMenu_teamMember} from '../__generated__/GitHubScopingSearchHistoryMenu_teamMember.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,
@@ -19,11 +19,11 @@ const NoResults = styled(MenuItemLabel)({
 })
 
 const QueryString = styled('span')({
-  color: PALETTE.TEXT_GRAY
+  color: PALETTE.SLATE_600
 })
 
 const ProjectFilter = styled('span')({
-  color: PALETTE.TEXT_GRAY
+  color: PALETTE.SLATE_600
 })
 
 const StyledMenuItemLabel = styled(MenuItemLabel)({
@@ -57,27 +57,20 @@ const GitHubScopingSearchHistoryMenu = (props: Props) => {
         <NoResults key='no-results'>No saved queries yet!</NoResults>
       )}
       {githubSearchQueries.map((githubSearchQuery) => {
-        const {id: queryId, queryString, isJQL, nameWithOwnerFilters} = githubSearchQuery
+        const {id: queryId, queryString} = githubSearchQuery
         const selectQuery = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = `githubSearchQuery:${meetingId}`
             const githubSearchQuery = store.get(searchQueryId)!
-            githubSearchQuery.setValue(isJQL, 'isJQL')
             githubSearchQuery.setValue(queryString, 'queryString')
-            githubSearchQuery.setValue(nameWithOwnerFilters as string[], 'nameWithOwnerFilters')
           })
         }
-        const queryStringLabel = isJQL ? queryString : `“${queryString}”`
-        const filters = nameWithOwnerFilters
-          .map((filter) => filter.slice(filter.indexOf(':') + 1))
-          .join(', ')
         return (
           <MenuItem
             key={queryId}
             label={
               <StyledMenuItemLabel>
-                <QueryString>{queryStringLabel}</QueryString>
-                {filters && <ProjectFilter>{`in ${filters}`}</ProjectFilter>}
+                <QueryString>{queryString}</QueryString>
               </StyledMenuItemLabel>
             }
             onClick={selectQuery}
@@ -96,7 +89,6 @@ export default createFragmentContainer(GitHubScopingSearchHistoryMenu, {
           githubSearchQueries {
             id
             queryString
-            nameWithOwnerFilters
           }
         }
       }

@@ -24,7 +24,7 @@ const Switch = styled('div')({
 
 const Track = styled('div')<{active: boolean; disabled: boolean | undefined}>(
   ({active, disabled}) => ({
-    backgroundColor: active ? PALETTE.SLATE_400 : PALETTE.SLATE_500,
+    backgroundColor: active ? PALETTE.SLATE_500 : PALETTE.SLATE_400,
     borderRadius: TRACK_HEIGHT,
     color: 'white',
     cursor: disabled ? 'not-allowed' : 'pointer',

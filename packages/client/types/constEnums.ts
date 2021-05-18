@@ -31,7 +31,8 @@ export const enum Breakpoint {
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
   WIDER_SCREEN = 1600,
-  VOTE_PHASE = 800
+  VOTE_PHASE = 800,
+  FUZZY_TABLET = 700
 }
 
 export const enum Card {
@@ -89,7 +90,8 @@ export const enum ElementWidth {
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6,
-  REFLECTION_COLUMN = 320
+  REFLECTION_COLUMN = 320,
+  NEW_MEETING_FAB = 128
 }
 
 export const enum ElementHeight {
@@ -232,6 +234,7 @@ export const enum Providers {
   ATLASSIAN_DESC = 'Create Jira issues from Parabol',
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
+  GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }
@@ -335,6 +338,7 @@ export const enum Threshold {
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_REACTJIS = 12,
   MAX_POKER_STORIES = 50,
+  MAX_INTEGRATION_FETCH_TIME = 10000,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
   VERIFY_TOKEN_LIFESPAN = 2592000000, // 30 days
@@ -390,5 +394,6 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT = '__comment',
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
-  JIRA_FIELD_NULL_LABEL = 'Do Not Update'
+  JIRA_FIELD_NULL_LABEL = 'Do Not Update',
+  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
 }

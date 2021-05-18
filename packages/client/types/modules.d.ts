@@ -15,3 +15,4 @@ declare const __SOCKET_PORT__: string
 interface Window {
   __ACTION__: any
 }
+declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}

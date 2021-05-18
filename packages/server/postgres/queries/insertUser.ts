@@ -7,7 +7,7 @@ interface InsertUserQueryParams extends Omit<IInsertUserQueryParams, 'identities
   identities: AuthIdentity[]
 }
 
-const insertUser = async (user: InsertUserQueryParams): Promise<void> => {
+const insertUser = async (user: InsertUserQueryParams) => {
   await catchAndLog(() => insertUserQuery.run((user as unknown) as IInsertUserQueryParams, getPg()))
 }
 

@@ -4,8 +4,9 @@ import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTransition, {TransitionStatus} from '../hooks/useTransition'
+import {PokerCards} from '../types/constEnums'
 import {DeckActivityAvatars_stage} from '../__generated__/DeckActivityAvatars_stage.graphql'
-import PokerVotingAvatar from './PokerVotingAvatar'
+import AvatarListUser from './AvatarListUser'
 
 const DeckActivityPanel = styled('div')({
   height: '100%',
@@ -18,14 +19,14 @@ const DeckActivityPanel = styled('div')({
   zIndex: 100 // show above dimension column
 })
 
-const PeekingAvatar = styled(PokerVotingAvatar)<{status?: TransitionStatus}>(({status}) => ({
+const PeekingAvatar = styled(AvatarListUser)<{status?: TransitionStatus}>(({status}) => ({
   opacity: status === TransitionStatus.EXITING ? 0 : 1,
   transform:
     status === TransitionStatus.MOUNTED
       ? `translate(64px)`
       : status === TransitionStatus.EXITING
-        ? 'scale(0)'
-        : undefined
+      ? 'scale(0)'
+      : undefined
 }))
 
 interface Props {
@@ -66,9 +67,10 @@ const DeckActivityAvatars = (props: Props) => {
             status={status}
             onTransitionEnd={onTransitionEnd}
             user={child}
-            idx={displayIdx}
+            offset={(PokerCards.AVATAR_WIDTH - 10) * displayIdx}
             isColumn
-            isInitialStageRender={false}
+            isAnimated
+            width={PokerCards.AVATAR_WIDTH as number}
           />
         )
       })}
@@ -81,7 +83,7 @@ export default createFragmentContainer(DeckActivityAvatars, {
     fragment DeckActivityAvatars_stage on EstimateStage {
       id
       hoveringUsers {
-        ...PokerVotingAvatar_user
+        ...AvatarListUser_user
         id
         picture
       }

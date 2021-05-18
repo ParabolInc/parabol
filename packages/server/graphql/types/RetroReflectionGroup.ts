@@ -41,6 +41,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     commentors: {
       type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
       description: 'A list of users currently commenting',
+      deprecationReason: 'Moved to ThreadConnection. Can remove Jun-01-2021',
       resolve: ({commentor = []}) => {
         return commentor
       }
