@@ -3,7 +3,6 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import AddMissingJiraFieldPayload from '../types/AddMissingJiraFieldPayload'
 import {GQLContext} from '../graphql'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import isPhaseComplete from '~/utils/meetings/isPhaseComplete'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
@@ -55,9 +54,6 @@ const addMissingJiraField = {
     }
     if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
-    }
-    if (isPhaseComplete('ESTIMATE', phases)) {
-      return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== createdBy) {
