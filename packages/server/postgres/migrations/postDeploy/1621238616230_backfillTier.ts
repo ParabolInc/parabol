@@ -11,12 +11,11 @@ export async function up(): Promise<void> {
   const r = await getRethink()
   const batchSize = 3000
   const doBackfill = async (usersAfterTs?: Date) => {
-    let foundUsers = false
+    let moreUsersToBackfill = false
 
     for (let i = 0; i < 1e5; i++) {
-      console.log('i:', i)
       const offset = batchSize * i
-      const rethinkUsers = await r
+      const affectedUsers = (await r
         .table('User')
         .between(usersAfterTs ?? r.minval, r.maxval, {index: 'updatedAt'})
         .orderBy('updatedAt', {index: 'updatedAt'})
@@ -24,22 +23,21 @@ export async function up(): Promise<void> {
         .pluck('id', 'tier')
         .skip(offset)
         .limit(batchSize)
-        .run()
-      if (!rethinkUsers.length) {
+        .run()) as {tier: string; id: string}[]
+      if (!affectedUsers.length) {
         break
       }
-      foundUsers = true
-      const pgUsers = rethinkUsers.map(({id, tier}) => ({id, tier}))
-      await catchAndLog(() => backfillTierQuery.run({users: pgUsers}, getPg()))
+      moreUsersToBackfill = true
+      await catchAndLog(() => backfillTierQuery.run({users: affectedUsers}, getPg()))
     }
-    return foundUsers
+    return moreUsersToBackfill
   }
 
   const doBackfillAccountingForRaceConditions = async (usersAfterTs?: Date) => {
     for (let i = 0; i < 1e5; i++) {
       const thisBackfillStartTs = new Date()
-      const backfillFoundUsers = await doBackfill(usersAfterTs)
-      if (!backfillFoundUsers) {
+      const moreUsersToBackfill = await doBackfill(usersAfterTs)
+      if (!moreUsersToBackfill) {
         break
       }
       usersAfterTs = thisBackfillStartTs
@@ -47,5 +45,4 @@ export async function up(): Promise<void> {
   }
 
   await doBackfillAccountingForRaceConditions()
-  console.log('Finished backfilling tier.')
 }
