@@ -1,6 +1,9 @@
 import {useLayoutEffect, useState} from 'react'
+import {MeetingsDash_viewer} from '../__generated__/MeetingsDash_viewer.graphql'
 
-const useTopPerRow = (cardsPerRow: number, meetings: any, viewerId?: string) => {
+type Meetings = MeetingsDash_viewer['teams'][0]['activeMeetings']
+
+const useTopPerRow = (cardsPerRow: number, meetings: Meetings, viewerId?: string) => {
   const [topByRow, setTopByRow] = useState({})
   const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
 
