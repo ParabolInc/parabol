@@ -32,6 +32,7 @@ class ErrorBoundary extends Component<Props, State> {
         scope.setUser({email, id: viewerId})
       })
     }
+    LogRocket.captureException(error)
     LogRocket.track('Fatal error')
     // Catch errors in any components below and re-render with error message
     Sentry.withScope((scope) => {
