@@ -47,7 +47,7 @@ const notifySlack = async (
   event: SlackNotificationEvent,
   dataLoader: DataLoaderWorker,
   teamId: string,
-  slackText: string
+  slackMessage: string | Array<{type: string}>
 ) => {
   const r = await getRethink()
   const slackDetails = await getSlackDetails(event, teamId, dataLoader)
@@ -57,7 +57,7 @@ const notifySlack = async (
     const {channelId} = notification
     const {botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken)
-    const res = await manager.postMessage(channelId!, slackText)
+    const res = await manager.postMessage(channelId!, slackMessage)
     segmentIo.track({
       userId,
       event: 'Slack notification sent',
@@ -97,11 +97,56 @@ export const startSlackMeeting = async (
     utm_campaign: 'invitations'
   }
   const options = {searchParams}
-  const team = await dataLoader.get('teams').load(teamId)
-
+  const [team, meeting] = await Promise.all([
+    dataLoader.get('teams').load(teamId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
-  const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`
-  notifySlack('meetingStart', dataLoader, teamId, slackText).catch(console.log)
+  const blocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: 'Meeting started :wave: '
+      }
+    },
+    {
+      type: 'section',
+      fields: [
+        {
+          type: 'mrkdwn',
+          text: `*Team:*\n${team.name}`
+        },
+        {
+          type: 'mrkdwn',
+          text: `*Meeting:*\n${meeting.name}`
+        }
+      ]
+    },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*Link:*\n${meetingUrl}`
+      }
+    },
+    {
+      type: 'actions',
+      block_id: 'actionblock789',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Join meeting'
+          },
+          style: 'primary',
+          value: meetingUrl
+        }
+      ]
+    }
+  ]
+  notifySlack('meetingStart', dataLoader, teamId, blocks).catch(console.log)
 }
 
 export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderWorker) => {
@@ -111,10 +156,66 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
     utm_campaign: 'after-meeting'
   }
   const options = {searchParams}
-  const team = await dataLoader.get('teams').load(teamId)
+  const [team, meeting] = await Promise.all([
+    dataLoader.get('teams').load(teamId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
   const summaryUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
-  const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`
-  notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
+  const blocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: 'Meeting completed :tada: '
+      }
+    },
+    {
+      type: 'section',
+      fields: [
+        {
+          type: 'mrkdwn',
+          text: `*Team:*\n${team.name}`
+        },
+        {
+          type: 'mrkdwn',
+          text: `*Meeting:*\n${meeting.name}`
+        }
+      ]
+    },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `It lasted and generated tasks, agenda items and comments.`
+      }
+    },
+    {
+      type: 'actions',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: meeting.meetingType === 'poker' ? 'See estimates' : 'See discussion'
+          },
+          value: 'click_me_123'
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            emoji: true,
+            text: 'Review summary'
+          },
+
+          value: summaryUrl
+        }
+      ]
+    }
+  ]
+
+  notifySlack('meetingEnd', dataLoader, teamId, blocks).catch(console.log)
 }
 
 const upsertSlackMessage = async (
