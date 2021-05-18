@@ -65,13 +65,14 @@ const Label = styled('div')({
   fontWeight: 600
 })
 
-const AddMissingJiraFieldModal = ({stage, closePortal, submitScore}: Props) => {
+const AddMissingJiraFieldModal = (props: Props) => {
+  const {stage, closePortal, submitScore} = props
   const {meetingId, id: stageId, teamId} = stage
   const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
 
   const onFixItForMeClicked = () => {
-    if (mutationProps.submitting) return
+    if (submitting) return
 
     /**
      * When Atlassian auth is successfully updated, add a new field to a Jira configuration on behalf of the user
@@ -81,9 +82,9 @@ const AddMissingJiraFieldModal = ({stage, closePortal, submitScore}: Props) => {
         atmosphere,
         {meetingId, stageId},
         {
-          onError: mutationProps.onError,
+          onError,
           onCompleted: (res, errors) => {
-            mutationProps.onCompleted(res, errors)
+            onCompleted(res, errors)
 
             if (!errors) {
               closePortal()
@@ -98,12 +99,12 @@ const AddMissingJiraFieldModal = ({stage, closePortal, submitScore}: Props) => {
      * Executed when user successfully finishes the OAuth flow of Adding a new permission [jira:manage-project]
      */
     const onAtlassianOAuthCompleted = (code) => {
-      mutationProps.submitMutation()
+      submitMutation()
 
       AddAtlassianAuthMutation(
         atmosphere,
         {code, teamId},
-        {onError: mutationProps.onError, onCompleted: onAddAtlassianAuthCompleted}
+        {onError, onCompleted: onAddAtlassianAuthCompleted}
       )
     }
 
@@ -119,27 +120,23 @@ const AddMissingJiraFieldModal = ({stage, closePortal, submitScore}: Props) => {
             {'You do not have this field configured in Jira, do you want us to fix it for you?'}
           </StyledTip>
 
-          {mutationProps.error && (
+          {error && (
             <ErrorWrapper>
               <StyledIcon>
                 <Icon>{'error'}</Icon>
               </StyledIcon>
-              <Label>{mutationProps.error.message}</Label>
+              <Label>{error.message}</Label>
             </ErrorWrapper>
           )}
           <ButtonGroup>
-            <SecondaryButton
-              onClick={closePortal}
-              size='medium'
-              disabled={mutationProps.submitting}
-            >
+            <SecondaryButton onClick={closePortal} size='medium' disabled={submitting}>
               Cancel
             </SecondaryButton>
             <StyledPrimaryButton
               onClick={onFixItForMeClicked}
               size='medium'
-              waiting={mutationProps.submitting}
-              disabled={mutationProps.submitting}
+              waiting={submitting}
+              disabled={submitting}
             >
               Fix it for me
             </StyledPrimaryButton>
