@@ -1,4 +1,4 @@
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {R} from 'rethinkdb-ts'
 export const up = async function(r: R) {
   const questions = [

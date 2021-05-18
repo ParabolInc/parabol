@@ -40,12 +40,13 @@ const scoreStyle = (isLast: boolean) => ({
 })
 
 interface Props {
+  appOrigin: string
   isEmail: boolean
   meeting: SummaryPokerStories_meeting
 }
 
 const SummaryPokerStories = (props: Props) => {
-  const {isEmail, meeting} = props
+  const {appOrigin, isEmail, meeting} = props
   const {id: meetingId, phases, meetingType} = meeting
   if (meetingType !== 'poker') return null
   const estimatePhase = phases?.find((phase) => phase?.phaseType === 'ESTIMATE')
@@ -67,7 +68,7 @@ const SummaryPokerStories = (props: Props) => {
                 const title = story?.title ?? issueKey
                 const urlPath = `/meet/${meetingId}/estimate/${usedServiceTaskIds.size}`
                 const to = isEmail
-                  ? makeAppURL(origin, urlPath, {
+                  ? makeAppURL(appOrigin, urlPath, {
                     searchParams: {
                       utm_source: 'summary email',
                       utm_medium: 'email',

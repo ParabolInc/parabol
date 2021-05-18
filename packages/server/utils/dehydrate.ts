@@ -8,7 +8,7 @@
  * make data available to the client without requiring a request from within
  * the client app.
  */
-const dehydrate = (globalScopeName: string, data: object) =>
+const dehydrate = (globalScopeName: string, data: Record<string, any>) =>
   `window.${globalScopeName} = ${JSON.stringify(data)}`
 
 export default dehydrate

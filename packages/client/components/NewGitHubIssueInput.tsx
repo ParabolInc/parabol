@@ -7,7 +7,7 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import GitHubCreateIssueMutation from '~/mutations/GitHubCreateIssueMutation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {NewGitHubIssueInput_meeting} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
 import {NewGitHubIssueInput_viewer} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
 import {PortalStatus} from '../hooks/usePortal'
@@ -33,14 +33,14 @@ const StyledButton = styled(PlainButton)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   fontSize: 20,
   padding: 0,
   alignContent: 'center'
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'block',
   fontSize: 12,
   lineHeight: '20px',
@@ -57,7 +57,7 @@ const Form = styled('form')({
 })
 
 const Item = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND_BLUE_MAGENTA,
+  backgroundColor: PALETTE.SLATE_100,
   cursor: 'pointer',
   display: 'flex',
   paddingLeft: 16,
@@ -76,7 +76,7 @@ const NewIssueInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
   padding: '0px 8px 0px 0px',

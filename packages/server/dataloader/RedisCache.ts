@@ -107,7 +107,9 @@ export default class RedisCache<T extends keyof CacheType> {
       writes.push(msetpx(key, docsByKey[key]))
     })
     // don't wait for redis to populate the local cache
-    this.getRedis().multi(writes).exec()
+    this.getRedis()
+      .multi(writes)
+      .exec()
     return fetchKeys.map((key, idx) => {
       const cachedDoc = cachedDocs[idx]
       return cachedDoc ? hydrateRedisDoc(cachedDoc, fetches[idx].table) : docsByKey[key]
@@ -126,7 +128,9 @@ export default class RedisCache<T extends keyof CacheType> {
       redisWrites.push(msetpx(key, result))
     })
     // awaiting redis isn't strictly required, can get speedboost by removing the wait
-    await this.getRedis().multi(redisWrites).exec()
+    await this.getRedis()
+      .multi(redisWrites)
+      .exec()
     return results
   }
 
@@ -137,7 +141,9 @@ export default class RedisCache<T extends keyof CacheType> {
     const writes = docs.map((doc) => {
       return msetpx(`${table}:${doc.id}`, doc)
     })
-    await this.getRedis().multi(writes).exec()
+    await this.getRedis()
+      .multi(writes)
+      .exec()
   }
   writeTable = async <T extends keyof DBType>(table: T, updater: Partial<CacheType[T]>) => {
     // inefficient to not update rethink & redis in parallel, but writeTable is uncommon
@@ -153,7 +159,9 @@ export default class RedisCache<T extends keyof CacheType> {
           Object.assign(user, updater)
           return msetpx(keys[idx], user)
         })
-        await this.getRedis().multi(writes).exec()
+        await this.getRedis()
+          .multi(writes)
+          .exec()
         stream.resume()
       })
       stream.on('end', () => {

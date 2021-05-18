@@ -6,7 +6,7 @@ import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {GitHubScopingSelectAllIssues_issues} from '../__generated__/GitHubScopingSelectAllIssues_issues.graphql'
@@ -53,11 +53,11 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
       (serviceTaskId) =>
-      ({
-        service: 'github',
-        serviceTaskId,
-        action
-      } as const)
+        ({
+          service: 'github',
+          serviceTaskId,
+          action
+        } as const)
     )
 
     const variables = {
@@ -84,7 +84,7 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
 
 export default createFragmentContainer(GitHubScopingSelectAllIssues, {
   issues: graphql`
-    fragment GitHubScopingSelectAllIssues_issues on GitHubIssueEdge @relay(plural: true) {
+    fragment GitHubScopingSelectAllIssues_issues on _xGitHubIssueEdge @relay(plural: true) {
       node {
         id
       }

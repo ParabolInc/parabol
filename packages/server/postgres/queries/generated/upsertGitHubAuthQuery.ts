@@ -8,6 +8,7 @@ export interface IUpsertGitHubAuthQueryParams {
     login: string | null | void
     teamId: string | null | void
     userId: string | null | void
+    scope: string | null | void
   }
 }
 
@@ -27,27 +28,27 @@ const upsertGitHubAuthQueryIR: any = {
       name: 'auth',
       codeRefs: {
         defined: {a: 42, b: 45, line: 3, col: 9},
-        used: [{a: 168, b: 171, line: 6, col: 8}]
+        used: [{a: 184, b: 187, line: 6, col: 8}]
       },
-      transform: {type: 'pick_tuple', keys: ['accessToken', 'login', 'teamId', 'userId']}
+      transform: {type: 'pick_tuple', keys: ['accessToken', 'login', 'teamId', 'userId', 'scope']}
     }
   ],
   usedParamSet: {auth: true},
   statement: {
     body:
-      'INSERT INTO "GitHubAuth" ("accessToken", "login", "teamId", "userId")\nVALUES :auth\nON CONFLICT ("userId", "teamId")\nDO UPDATE\nSET ("accessToken", "updatedAt", "isActive", "login") = (EXCLUDED."accessToken", CURRENT_TIMESTAMP, TRUE, EXCLUDED.login)',
-    loc: {a: 90, b: 336, line: 5, col: 0}
+      'INSERT INTO "GitHubAuth" ("accessToken", "login", "teamId", "userId", "scope")\nVALUES :auth\nON CONFLICT ("userId", "teamId")\nDO UPDATE\nSET ("accessToken", "updatedAt", "isActive", "login", "scope") = (EXCLUDED."accessToken", CURRENT_TIMESTAMP, TRUE, EXCLUDED.login, EXCLUDED.scope)',
+    loc: {a: 97, b: 377, line: 5, col: 0}
   }
 }
 
 /**
  * Query generated from SQL:
  * ```
- * INSERT INTO "GitHubAuth" ("accessToken", "login", "teamId", "userId")
+ * INSERT INTO "GitHubAuth" ("accessToken", "login", "teamId", "userId", "scope")
  * VALUES :auth
  * ON CONFLICT ("userId", "teamId")
  * DO UPDATE
- * SET ("accessToken", "updatedAt", "isActive", "login") = (EXCLUDED."accessToken", CURRENT_TIMESTAMP, TRUE, EXCLUDED.login)
+ * SET ("accessToken", "updatedAt", "isActive", "login", "scope") = (EXCLUDED."accessToken", CURRENT_TIMESTAMP, TRUE, EXCLUDED.login, EXCLUDED.scope)
  * ```
  */
 export const upsertGitHubAuthQuery = new PreparedQuery<

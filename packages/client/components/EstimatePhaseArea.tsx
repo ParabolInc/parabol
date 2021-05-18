@@ -12,6 +12,7 @@ import EstimateDimensionColumn from './EstimateDimensionColumn'
 import PokerCardDeck from './PokerCardDeck'
 
 const EstimateArea = styled('div')({
+  overflow: 'hidden',
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
@@ -54,8 +55,8 @@ const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
         ? '12px 8px 0'
         : '4px 4px 0'
       : isDesktop
-        ? '8px 40px 0'
-        : '8px 16px 0',
+      ? '8px 40px 0'
+      : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }

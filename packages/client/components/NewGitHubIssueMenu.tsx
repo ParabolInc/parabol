@@ -7,7 +7,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useForm from '~/hooks/useForm'
 import {MenuProps} from '~/hooks/useMenu'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {NewGitHubIssueMenu_suggestedIntegrations} from '~/__generated__/NewGitHubIssueMenu_suggestedIntegrations.graphql'
 import Icon from './Icon'
@@ -17,7 +17,7 @@ import MenuItemLabel from './MenuItemLabel'
 import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
 
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,
@@ -40,14 +40,14 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
 })
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
 })
 
 const Input = styled('input')({
   appearance: 'none',
   background: 'inherit',
-  border: `1px solid ${PALETTE.BORDER_LIGHT}`,
+  border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: 2,
   display: 'block',
   fontSize: 14,
@@ -56,8 +56,8 @@ const Input = styled('input')({
   padding: '3px 0 3px 39px',
   width: '100%',
   '&:focus, &:active': {
-    border: `1px solid ${PALETTE.BORDER_BLUE}`,
-    boxShadow: `0 0 1px 1px ${PALETTE.BORDER_BLUE_LIGHT}`
+    border: `1px solid ${PALETTE.SKY_500}`,
+    boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`
   }
 })
 

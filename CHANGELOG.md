@@ -5,6 +5,49 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.11.0
+
+### Added
+
+- lockTeams private mutation (#4953)
+- GitHub Search bar for Poker Scoping (#4901)
+
+### Fixed
+
+- Changing Jira field ID when name changes (#4957)
+- Log invalid authTokens for gql queries (#4949)
+- Poker summaries use appOrigin vs. global origin (#4938)
+- Analytics mutations are not resent on wake (#4941)
+- Support missing AtlassianAuth (#4941)
+- Soft delete agenda items (#4941)
+
+## 6.10.1
+
+### Fixed
+
+- Validate & normalize email inputs on account creation
+
+## 6.10.0
+
+### Added
+
+- Add meeting card overflow menu #4893
+- Fetch GitHub repos and ensure strongly typed results #4870
+- Add postgres rethink equality checker mutation #4856
+- Add docker volume for self-hosted instances using local storage #4907
+
+### Fixed
+
+- Fix various Hubspot data issues #4904
+- Fix facilitator being kicked out of Poker #4873
+- Fix SAML request param encoding and parsing #4898
+- Fix Stripe invoice #4937
+
+### Changed
+
+- Bump ssri from 6.0.1 to 6.0.2 #4925
+- Improve avatar group layout #4918
+
 ## 6.9.0 2021-Apr-29
 
 ### Added
@@ -35,14 +78,17 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Meetings view v1 (#4624, #4623)
 
 ### Changed
+
 - Limit number of dashboard avatars (#4566)
 
 ## 6.6.1 2021-Apr-10
 
 ### Fixed
+
 - Fixed an issue where GraphQL subscription fails to execute
 
 ### Changed
+
 - Disabled the Easter Egg
 
 ## 6.6.0 2021-Apr-07

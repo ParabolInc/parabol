@@ -1,5 +1,5 @@
-import {HttpResponse} from 'uWebSockets.js'
 import fs from 'fs'
+import {HttpResponse} from 'uWebSockets.js'
 
 const pipeStreamOverResponse = (
   res: HttpResponse,
@@ -12,6 +12,10 @@ const pipeStreamOverResponse = (
   })
   readStream
     .on('data', (chunk: Buffer) => {
+      if (res.done) {
+        readStream.destroy()
+        return
+      }
       const ab = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength)
       const lastOffset = res.getWriteOffset()
       const [ok, done] = res.tryEnd(ab, totalSize)

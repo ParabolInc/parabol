@@ -44315,12 +44315,12 @@ export interface IPageInfoDateCursor {
   /**
    * When paginating backwards, the cursor to continue.
    */
-  startCursor: any | null;
+  startCursor: string | null;
 
   /**
    * When paginating forwards, the cursor to continue.
    */
-  endCursor: any | null;
+  endCursor: string | null;
 }
 
 /**
@@ -44576,7 +44576,6 @@ export type ThreadSource =
   | ITask
   | IAgendaItem
   | IJiraIssue
-  | IGitHubIssue
   | IRetroReflectionGroup;
 
 /**
@@ -44665,7 +44664,7 @@ export interface IThreadableEdge {
 /**
  * An entity that can be used in a poker meeting and receive estimates
  */
-export type Story = ITask | IJiraIssue | IGitHubIssue;
+export type Story = ITask | IJiraIssue;
 
 /**
  * An entity that can be used in a poker meeting and receive estimates
@@ -45296,14 +45295,14 @@ export interface IGitHubIntegration {
   githubSearchQueries: Array<IGitHubSearchQuery>;
 
   /**
-   * A list of issues coming straight from the jira integration for a specific team member
-   */
-  issues: IGitHubIssueConnection;
-
-  /**
    * *The GitHub login used for queries
    */
   login: string;
+
+  /**
+   * The comma-separated list of scopes requested from GitHub
+   */
+  scope: string;
 
   /**
    * *The team that the token is linked to
@@ -45322,24 +45321,6 @@ export interface IGitHubIntegration {
   api: IGitHubApi | null;
 }
 
-export interface IIssuesOnGitHubIntegrationArguments {
-  /**
-   * @default 100
-   */
-  first?: number | null;
-
-  /**
-   * the datetime cursor
-   */
-  after?: any | null;
-
-  /**
-   * A string of text to search for
-   */
-  queryString?: string | null;
-  nameWithOwnerFilters?: Array<string> | null;
-}
-
 /**
  * A GitHub search query including all filters selected when the query was executed
  */
@@ -45352,105 +45333,14 @@ export interface IGitHubSearchQuery {
   id: string;
 
   /**
-   * The query string, either simple or JQL depending on the isJQL flag
+   * The query string in GitHub format, including repository filters. e.g. is:issue is:open
    */
   queryString: string;
-
-  /**
-   * The list of repos selected as a filter. null if not set
-   */
-  nameWithOwnerFilters: Array<string>;
 
   /**
    * the time the search query was last used. Used for sorting
    */
   lastUsedAt: any;
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IGitHubIssueConnection {
-  __typename: 'GitHubIssueConnection';
-
-  /**
-   * Page info with cursors coerced to ISO8601 dates
-   */
-  pageInfo: IPageInfoDateCursor | null;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IGitHubIssueEdge>;
-
-  /**
-   * An error with the connection, if any
-   */
-  error: IStandardMutationError | null;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IGitHubIssueEdge {
-  __typename: 'GitHubIssueEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IGitHubIssue;
-  cursor: any | null;
-}
-
-/**
- * The GitHub Issue that comes direct from GitHub
- */
-export interface IGitHubIssue {
-  __typename: 'GitHubIssue';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
-   * A list of users currently commenting
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * Alias for summary used by the Story interface
-   */
-  title: string;
-
-  /**
-   * The url to access the issue
-   */
-  url: any;
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
-
-  /**
-   * The stringified ADF of the jira issue description
-   */
-  description: string;
-}
-
-export interface IThreadOnGitHubIssueArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
 }
 
 /**
@@ -45666,6 +45556,11 @@ export interface ITeam {
    * The type of the last meeting run
    */
   lastMeetingType: MeetingTypeEnum;
+
+  /**
+   * The HTML message to show if isPaid is false
+   */
+  lockMessageHTML: string | null;
 
   /**
    * The hash and expiration for a token that allows anyone with it to join the team
@@ -50937,6 +50832,7 @@ export interface IMutation {
    * Set whether the user is spectating poker meeting
    */
   setPokerSpectate: SetPokerSpectatePayload;
+  persistGitHubSearchQuery: PersistGitHubSearchQueryPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -52132,6 +52028,23 @@ export interface ISetPokerSpectateOnMutationArguments {
    * true if the viewer is spectating poker and does not want to vote. else false
    */
   isSpectating: boolean;
+}
+
+export interface IPersistGitHubSearchQueryOnMutationArguments {
+  /**
+   * the team witht the settings we add the query to
+   */
+  teamId: string;
+
+  /**
+   * The query string as sent to GitHub
+   */
+  queryString: string;
+
+  /**
+   * true if this query should be deleted
+   */
+  isRemove?: boolean | null;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -54620,6 +54533,45 @@ export interface IGitHubCreateIssueSuccess {
 }
 
 /**
+ * The GitHub Issue that comes direct from GitHub
+ */
+export interface IGitHubIssue {
+  __typename: 'GitHubIssue';
+
+  /**
+   * The id of the issue as found in GitHub
+   */
+  id: string;
+
+  /**
+   * The url to access the issue
+   */
+  url: any;
+
+  /**
+   * The repository that the issue belongs to
+   */
+  repository: IGitHubRepository;
+
+  /**
+   * The title of the GitHub issue
+   */
+  title: string;
+}
+
+/**
+ * A repository that comes directly from GitHub
+ */
+export interface IGitHubRepository {
+  __typename: 'GitHubRepository';
+
+  /**
+   * The owner / repo of the issue as found in GitHub
+   */
+  nameWithOwner: string;
+}
+
+/**
  * Return object for SetPokerSpectatePayload
  */
 export type SetPokerSpectatePayload = IErrorPayload | ISetPokerSpectateSuccess;
@@ -54633,6 +54585,32 @@ export interface ISetPokerSpectateSuccess {
    * The meeting member with the updated isSpectating value
    */
   meetingMember: IPokerMeetingMember;
+}
+
+/**
+ * Return object for PersistGitHubSearchQueryPayload
+ */
+export type PersistGitHubSearchQueryPayload =
+  | IErrorPayload
+  | IPersistGitHubSearchQuerySuccess;
+
+export interface IPersistGitHubSearchQuerySuccess {
+  __typename: 'PersistGitHubSearchQuerySuccess';
+
+  /**
+   * The affected teamId
+   */
+  teamId: string;
+
+  /**
+   * The affected userId
+   */
+  userId: string;
+
+  /**
+   * The auth with the updated search queries
+   */
+  githubIntegration: IGitHubIntegration;
 }
 
 export interface ISubscription {
@@ -54726,7 +54704,8 @@ export type NotificationSubscriptionPayload =
   | IStripeFailPaymentPayload
   | IPersistJiraSearchQuerySuccess
   | IUser
-  | IAuthTokenPayload;
+  | IAuthTokenPayload
+  | IPersistGitHubSearchQuerySuccess;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';

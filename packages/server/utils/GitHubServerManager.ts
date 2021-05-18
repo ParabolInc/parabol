@@ -1,16 +1,15 @@
 import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
-import {getRepositories} from './githubQueries/getRepositories'
 import {GetRepositoriesQuery} from '../../server/types/typed-document-nodes'
-
+import {getRepositories} from './githubQueries/getRepositories'
 interface OAuth2Response {
   access_token: string
   error: any
   scope: string
 }
 
-type GQLResponse<TData> = {
+export type GQLResponse<TData> = {
   data: TData
   errors?: [
     {
@@ -35,6 +34,7 @@ interface GitHubCredentialError {
   documentation_url: string
 }
 type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
+
 class GitHubServerManager extends GitHubManager {
   static async init(code: string) {
     return GitHubServerManager.fetchToken(code)
@@ -61,14 +61,7 @@ class GitHubServerManager extends GitHubManager {
     if (error) {
       throw new Error(`GitHub: ${error}`)
     }
-    const providedScope = scope.split(',')
-    const matchingScope =
-      new Set([...GitHubServerManager.SCOPE.split(','), ...providedScope]).size ===
-      providedScope.length
-    if (!matchingScope) {
-      throw new Error(`GitHub Bad scope: ${scope}`)
-    }
-    return new GitHubServerManager(accessToken)
+    return {manager: new GitHubServerManager(accessToken), scope}
   }
   fetch = fetch
 
