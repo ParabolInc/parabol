@@ -38,10 +38,6 @@ export const threadableFields = () => ({
       return dataLoader.get('users').load(createdBy)
     }
   },
-  // isThreadTombstone: {
-  //   type: GraphQLBoolean,
-  //   description: 'true if the item has been deleted but still has replies, else falsy'
-  // },
   replies: {
     type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Threadable))),
     description: 'the replies to this threadable item',
@@ -87,6 +83,12 @@ const {connectionType, edgeType} = connectionDefinitions({
     }
   }),
   connectionFields: () => ({
+    commentorIds: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      description: 'A list of userIds currently commenting',
+      // WE CURRENTLY DON'T USE THIS, LET'S PUT THIS STUFF IN REDIS SOON!
+      resolve: () => []
+    },
     pageInfo: {
       type: PageInfo,
       description: 'Page info with strings (sortOrder) as cursors'

@@ -1,6 +1,6 @@
-import {GraphQLID, GraphQLNonNull, GraphQLList, GraphQLInterfaceType, GraphQLString} from 'graphql'
-import ThreadSource, {threadSourceFields} from './ThreadSource'
+import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import CommentorDetails from './CommentorDetails'
+import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 export const storyFields = () => ({
   ...threadSourceFields(),
@@ -11,6 +11,7 @@ export const storyFields = () => ({
   commentors: {
     type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
     description: 'A list of users currently commenting',
+    deprecationReason: 'Moved to ThreadConnection. Can remove Jun-01-2021',
     resolve: ({commentors = []}) => {
       return commentors
     }

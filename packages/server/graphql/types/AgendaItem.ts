@@ -25,6 +25,7 @@ const AgendaItem = new GraphQLObjectType<any, GQLContext>({
     },
     commentors: {
       type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
+      deprecationReason: 'Moved to ThreadConnection. Can remove Jun-01-2021',
       description: 'A list of users currently commenting',
       resolve: ({commentors = []}) => {
         return commentors
