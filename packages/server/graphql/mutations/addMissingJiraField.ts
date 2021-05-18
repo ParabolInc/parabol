@@ -6,7 +6,6 @@ import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
-import {TaskServiceEnum} from '../../database/types/Task'
 import JiraServiceTaskId from '~/shared/gqlIds/JiraServiceTaskId'
 import publish from '../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
@@ -80,7 +79,7 @@ const addMissingJiraField = {
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
-    if ((service as TaskServiceEnum) !== 'jira') {
+    if (service !== 'jira') {
       return {error: {message: 'Non Jira service'}}
     }
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
