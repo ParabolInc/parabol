@@ -10,40 +10,16 @@ import useDocumentTitle from '../hooks/useDocumentTitle'
 import useInitialRender from '../hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '../hooks/useTransition'
 import {Layout} from '../types/constEnums'
-// import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useTopPerRow from '../hooks/useTopPerRow'
 import useDeepEqual from '../hooks/useDeepEqual'
-// import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
-// import {teamMembersByUserId} from 'parabol-server/dataloader/foreignLoaderMakers'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
-
-// const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
-
-// const Wrapper = styled('div')({
-//   height: '100%',
-//   margin: '0 auto',
-//   width: '100%',
-//   [desktopDashWidestMediaQuery]: {
-//     paddingLeft: NavSidebar.WIDTH,
-//     paddingRight: RightSidebar.WIDTH
-//   }
-// })
-
-// const InnerContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
-//   display: 'flex',
-//   margin: '0 auto auto',
-//   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
-//   padding: maybeTabletPlus ? '16px 0 0 16px' : '16px 16px 0',
-//   width: '100%',
-//   height: '100%'
-// }))
 
 const EmptyContainer = styled('div')({
   display: 'flex',
@@ -94,6 +70,7 @@ const MeetingsDash = (props: Props) => {
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const memodMeetings = useDeepEqual(activeMeetings)
   const topByRow = useTopPerRow(cardsPerRow, memodMeetings, viewer?.id)
+  console.log('🚀 ~ MeetingsDash ~ topByRow', topByRow)
   const hasMeetings = activeMeetings.length > 0 && cardsPerRow
   const totalRows =
     !memodMeetings.length || !cardsPerRow ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
