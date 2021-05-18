@@ -20,6 +20,7 @@ import {GQLContext} from '../graphql'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
+import resolveThread from '../resolvers/resolveThread'
 import AuthIdentity from './AuthIdentity'
 import Company from './Company'
 import GraphQLEmailType from './GraphQLEmailType'
@@ -33,6 +34,7 @@ import SuggestedAction from './SuggestedAction'
 import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
+import {ThreadableConnection} from './Threadable'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
@@ -229,6 +231,31 @@ const User = new GraphQLObjectType<any, GQLContext>({
             hasNextPage: events.length > edges.length
           }
         }
+      }
+    },
+    thread: {
+      type: GraphQLNonNull(ThreadableConnection),
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLID),
+          description: 'The ID of the thread source'
+        },
+        // type: {
+        //   type: GraphQLNonNull(ThreadSourceEnum),
+        //   description: 'The type of item the ID refers to'
+        // },
+        first: {
+          type: GraphQLInt,
+          description: 'How many items to show. optional if only comments are desired'
+        },
+        after: {
+          type: GraphQLString,
+          description: 'the incrementing sort order in string format'
+        }
+      },
+      description: 'the comments and tasks created from the discussion',
+      resolve: async (_source, {id, first, after}, {dataLoader}) => {
+        return resolveThread({id}, {first, after}, {dataLoader})
       }
     },
     newFeatureId: {

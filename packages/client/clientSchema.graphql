@@ -106,3 +106,7 @@ extend type AgendaItemsStage {
 extend type EstimateStage {
   finalScoreError: String
 }
+
+extend type ThreadableConnection {
+  commentors: [User!]!
+}

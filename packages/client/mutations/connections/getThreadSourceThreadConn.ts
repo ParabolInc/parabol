@@ -1,8 +1,12 @@
-import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 
-const getThreadSourceThreadConn = (threadSource: ReadOnlyRecordProxy | null | undefined) => {
-  if (threadSource) {
-    return ConnectionHandler.getConnection(threadSource, 'DiscussionThread_thread')
+const getThreadSourceThreadConn = (
+  store: RecordSourceSelectorProxy,
+  threadId: string | null | undefined
+) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  if (viewer && threadId) {
+    return ConnectionHandler.getConnection(viewer, 'DiscussionThread_thread', {id: threadId})
   }
   return null
 }

@@ -54,8 +54,7 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
   }
   const threadSourceId = comment.getValue('threadId')
   if (threadSourceId) {
-    const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
-    const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
+    const threadSourceConn = getThreadSourceThreadConn(store, threadSourceId)
     safePutNodeInConn(threadSourceConn, comment, store, 'threadSortOrder', true)
   }
 }

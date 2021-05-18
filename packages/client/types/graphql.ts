@@ -43986,6 +43986,11 @@ export interface IUser {
   timeline: ITimelineEventConnection;
 
   /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection;
+
+  /**
    * the ID of the newest feature, null if the user has dismissed it
    */
   newFeatureId: string | null;
@@ -44155,6 +44160,23 @@ export interface ITimelineOnUserArguments {
    * the number of timeline events to return
    */
   first: number;
+}
+
+export interface IThreadOnUserArguments {
+  /**
+   * The ID of the thread source
+   */
+  id: string;
+
+  /**
+   * How many items to show. optional if only comments are desired
+   */
+  first?: number | null;
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null;
 }
 
 export interface IMeetingMemberOnUserArguments {
@@ -44404,6 +44426,7 @@ export interface ITask {
 
   /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -44619,6 +44642,11 @@ export interface IThreadableConnection {
    * A list of edges.
    */
   edges: Array<IThreadableEdge>;
+
+  /**
+   * A list of userIds currently commenting
+   */
+  commentorIds: Array<string>;
 }
 
 /**
@@ -44684,6 +44712,7 @@ export interface IStory {
 
   /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -44737,6 +44766,7 @@ export interface IAgendaItem {
 
   /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -45121,6 +45151,7 @@ export interface IJiraIssue {
 
   /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -47750,6 +47781,7 @@ export interface IRetroReflectionGroup {
 
   /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
