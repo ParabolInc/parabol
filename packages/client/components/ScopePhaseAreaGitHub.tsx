@@ -21,7 +21,7 @@ interface Props {
 }
 
 // poor man's feature flag. change this so we don't have to comment out stuff
-const IS_DEV = true
+const IS_DEV = false
 
 const ScopePhaseAreaGitHub = (props: Props) => {
   const {isActive, gotoParabol, meeting} = props
@@ -30,12 +30,12 @@ const ScopePhaseAreaGitHub = (props: Props) => {
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const hasAuth = integrations?.github?.scope === Providers.GITHUB_SCOPE
-  if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
-  return IS_DEV ? (
-    <ScopePhaseAreaGitHubScoping meeting={meeting} />
-  ) : (
-    <ComingSoon>Coming Soon!</ComingSoon>
-  )
+  if (IS_DEV) {
+    if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
+    return <ScopePhaseAreaGitHubScoping meeting={meeting} />
+  } else {
+    return <ComingSoon>Coming Soon!</ComingSoon>
+  }
 }
 
 export default createFragmentContainer(ScopePhaseAreaGitHub, {
