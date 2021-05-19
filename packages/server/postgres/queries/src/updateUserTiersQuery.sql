@@ -1,5 +1,5 @@
 /*
-  @name backfillTierQuery
+  @name updateUserTiersQuery
   @param users -> ((tier, id)...)
 */
 UPDATE "User" AS u SET

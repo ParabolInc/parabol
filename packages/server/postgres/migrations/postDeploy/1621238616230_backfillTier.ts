@@ -2,7 +2,7 @@ import {ColumnDefinitions} from 'node-pg-migrate'
 import {TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import getPg from '../../getPg'
-import {backfillTierQuery} from '../../queries/generated/backfillTierQuery'
+import {updateUserTiersQuery} from '../../queries/generated/updateUserTiersQuery'
 import catchAndLog from '../../utils/catchAndLog'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
@@ -23,12 +23,12 @@ export async function up(): Promise<void> {
         .pluck('id', 'tier')
         .skip(offset)
         .limit(batchSize)
-        .run()) as {tier: string; id: string}[]
+        .run()) as {id: string; tier: TierEnum}[]
       if (!affectedUsers.length) {
         break
       }
       moreUsersToBackfill = true
-      await catchAndLog(() => backfillTierQuery.run({users: affectedUsers}, getPg()))
+      await catchAndLog(() => updateUserTiersQuery.run({users: affectedUsers}, getPg()))
     }
     return moreUsersToBackfill
   }

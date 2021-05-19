@@ -1,7 +1,9 @@
 import getRethink from '../database/rethinkDriver'
 import db from '../db'
+import getPg from '../postgres/getPg'
 import {TierEnum} from '../postgres/queries/generated/updateUserQuery'
-import updateUser from '../postgres/queries/updateUser'
+import {updateUserTiersQuery} from '../postgres//queries/generated/updateUserTiersQuery'
+import catchAndLog from '../postgres/utils/catchAndLog'
 import segmentIo from './segmentIo'
 
 const setUserTierForUserIds = async (userIds: string[]) => {
@@ -58,10 +60,12 @@ const setUserTierForUserIds = async (userIds: string[]) => {
         })
         .default('personal')
     }))
-    .run()) as {group: string; reduction: string[]; tier: TierEnum}[]
-  userTiers.forEach(({group: userId, tier}) => {
-    updateUser({tier}, userId)
-  })
+    .map((row) => ({
+      id: row('group'),
+      tier: row('tier')
+    }))
+    .run()) as {id: string; tier: TierEnum}[]
+  await catchAndLog(() => updateUserTiersQuery.run({users: userTiers}, getPg()))
 
   await Promise.all(userIds.map((userId) => db.clear('User', userId)))
   const users = await db.readMany('User', userIds)
