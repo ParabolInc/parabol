@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.12.0 2021-May-19
+
+### Added
+
+- Support varying GitHub scopes (#4971)
+- Send exceptions to LogRocket as well as Sentry (#4978)
+
+### Changed
+
+- Refactor commentor to thread conn (#4974)
+
+### Fixed
+
+- Init sentry in gqlExecutor (#4959)
+
 ## 6.11.0
 
 ### Added
