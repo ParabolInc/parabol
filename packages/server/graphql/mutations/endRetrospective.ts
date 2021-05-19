@@ -120,10 +120,10 @@ export default {
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').load(templateId)
+      dataLoader.get('meetingTemplates').load(templateId),
+      finishRetroMeeting(completedRetrospective, dataLoader)
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    finishRetroMeeting(completedRetrospective, dataLoader)
     sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = teamMembers.map(
