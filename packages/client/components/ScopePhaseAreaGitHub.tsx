@@ -21,7 +21,7 @@ interface Props {
 }
 
 // poor man's feature flag. change this so we don't have to comment out stuff
-const IS_DEV = true
+const IS_DEV = false
 
 const ScopePhaseAreaGitHub = (props: Props) => {
   const {isActive, gotoParabol, meeting} = props
