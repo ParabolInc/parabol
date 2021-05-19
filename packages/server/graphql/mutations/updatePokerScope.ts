@@ -48,7 +48,6 @@ const updatePokerScope = {
     }
 
     const {endedAt, teamId, phases, meetingType, templateRefId, facilitatorStageId} = meeting
-    console.log('🚀 ~ meeting', meeting)
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
     }
