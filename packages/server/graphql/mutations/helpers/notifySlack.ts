@@ -21,6 +21,7 @@ import MeetingAction from '../../../database/types/MeetingAction'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import plural from 'parabol-client/utils/plural'
 import EstimatePhase from '../../../database/types/EstimatePhase'
+import {makeSections, makeButtons} from './makeSlackBlocks'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -108,49 +109,12 @@ export const startSlackMeeting = async (
     dataLoader.get('newMeetings').load(meetingId)
   ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
+  const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
   const blocks = [
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: 'Meeting started :wave: '
-      }
-    },
-    {
-      type: 'section',
-      fields: [
-        {
-          type: 'mrkdwn',
-          text: `*Team:*\n${team.name}`
-        },
-        {
-          type: 'mrkdwn',
-          text: `*Meeting:*\n${meeting.name}`
-        }
-      ]
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*Link:*\n${meetingUrl}`
-      }
-    },
-    {
-      type: 'actions',
-      block_id: 'actionblock789',
-      elements: [
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: 'Join meeting'
-          },
-          style: 'primary',
-          url: meetingUrl
-        }
-      ]
-    }
+    makeSections(['Meeting started :wave: ']),
+    makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
+    makeSections([`*Link:*\n${meetingUrl}`]),
+    makeButtons([button])
   ]
   notifySlack('meetingStart', dataLoader, teamId, blocks).catch(console.log)
 }
@@ -207,59 +171,20 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
   const summaryText = getSummaryText(meeting)
   const {name: teamName} = team
   const {meetingType, name: meetingName} = meeting
+  const discussionButton = {
+    text: meetingType === 'poker' ? 'See estimates' : 'See discussion',
+    url: meetingType === 'poker' ? pokerUrl : meetingUrl
+  } as const
+  const summaryButton = {
+    text: 'Review summary',
+    url: summaryUrl
+  } as const
   const blocks = [
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: 'Meeting completed :tada: '
-      }
-    },
-    {
-      type: 'section',
-      fields: [
-        {
-          type: 'mrkdwn',
-          text: `*Team:*\n${teamName}`
-        },
-        {
-          type: 'mrkdwn',
-          text: `*Meeting:*\n${meetingName}`
-        }
-      ]
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: summaryText
-      }
-    },
-    {
-      type: 'actions',
-      elements: [
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: meetingType === 'poker' ? 'See estimates' : 'See discussion'
-          },
-          url: meetingType === 'poker' ? pokerUrl : meetingUrl
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            emoji: true,
-            text: 'Review summary'
-          },
-          url: summaryUrl
-        }
-      ]
-    }
+    makeSections(['Meeting completed :tada:']),
+    makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+    makeSections([summaryText]),
+    makeButtons([discussionButton, summaryButton])
   ]
-
   notifySlack('meetingEnd', dataLoader, teamId, blocks).catch(console.log)
 }
 
@@ -281,7 +206,7 @@ const upsertSlackMessage = async (
       const timestamp = new Date(Number.parseFloat(ts) * 1000)
       const ageThresh = new Date(Date.now() - ms('5m'))
       if (timestamp >= ageThresh) {
-        // update message silently fails if blocks aren't stringified
+        // blocks need to be stringified when updating but not posting
         const stringifiedBlocks = JSON.stringify(blocks)
         const res = await manager.updateMessage(channelId, stringifiedBlocks, ts)
         if (!res.ok) {
@@ -330,57 +255,13 @@ export const notifySlackTimeLimitStart = async (
     const constraint = `You have until *<!date^${toEpochSeconds(
       scheduledEndTime
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
-
+    const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
     const blocks = [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`
-        }
-      },
-      {
-        type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: `*Team:*\n${teamName}`
-          },
-          {
-            type: 'mrkdwn',
-            text: `*Meeting:*\n${meetingName}`
-          }
-        ]
-      },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: constraint
-        }
-      },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*Link:*\n${meetingUrl}`
-        }
-      },
-      {
-        type: 'actions',
-        block_id: 'actionblock789',
-        elements: [
-          {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              text: 'Open meeting'
-            },
-            style: 'primary',
-            url: meetingUrl
-          }
-        ]
-      }
+      makeSections([`The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`]),
+      makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+      makeSections([constraint]),
+      makeSections([`*Link:*\n${meetingUrl}`]),
+      makeButtons([button])
     ]
     upsertSlackMessage(slackDetail, blocks).catch(console.error)
   })
