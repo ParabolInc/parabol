@@ -41,28 +41,32 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .run()
 
   const userTiers = (await r
-    .table('OrganizationUser')
-    .getAll(r.args(userIds), {index: 'userId'})
-    .filter({removedAt: null})
-    .merge((orgUser) => ({
+    .table('User')
+    .getAll(r.args(userIds))
+    .map((user) => ({
+      id: user('id'),
       tier: r
-        .db('actionDevelopment')
-        .table('Organization')
-        .get(orgUser('orgId'))('tier')
-        .default('personal')
-    }))
-    .group('userId')('tier')
-    .ungroup()
-    .merge((row) => ({
-      tier: row('reduction')
-        .reduce((_left, right) => {
-          return r.branch(right.eq('enterprise'), 'enterprise', right.eq('pro'), 'pro', 'personal')
+        .table('OrganizationUser')
+        .getAll(user('id'), {index: 'userId'})
+        .filter({removedAt: null})('orgId')
+        .coerceTo('array')
+        .distinct()
+        .do((orgIds) =>
+          r
+            .table('Organization')
+            .getAll(r.args(orgIds))('tier')
+            .distinct()
+            .coerceTo('array')
+        )
+        .do((tiers) => {
+          return r.branch(
+            tiers.contains('enterprise'),
+            'enterprise',
+            tiers.contains('pro'),
+            'pro',
+            'personal'
+          )
         })
-        .default('personal')
-    }))
-    .map((row) => ({
-      id: row('group'),
-      tier: row('tier')
     }))
     .run()) as {id: string; tier: TierEnum}[]
   await catchAndLog(() => updateUserTiersQuery.run({users: userTiers}, getPg()))
