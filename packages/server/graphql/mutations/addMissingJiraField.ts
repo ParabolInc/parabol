@@ -97,9 +97,9 @@ const addMissingJiraField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
+    const {fieldType, fieldId, fieldName} = dimensionField
 
     const {values: screens} = (await manager.getScreens(cloudId)) as JiraScreensResponse
-
     // we're trying to guess what's the probability that given screen is assigned to an issue project
     const evaluateProbability = (screen: JiraScreen) => {
       if (screen.name.startsWith(projectKey) && screen.name.includes('Default')) return 1
@@ -108,47 +108,40 @@ const addMissingJiraField = {
 
       return 0.5
     }
-    const possibleScreens = screens
-      .map((screen) => ({screen, probability: evaluateProbability(screen)}))
-      .sort((screen1, screen2) => screen2.probability - screen1.probability)
-      .map(({screen}) => screen)
+    const possibleScreens = (
+      await Promise.all(
+        screens.map(async (screen) => {
+          const [{id: tabId}] = (await manager.getScreenTabs(cloudId, screen.id)) as JiraScreenTab[]
+          return {...screen, tabId, probability: evaluateProbability(screen)}
+        })
+      )
+    ).sort((screen1, screen2) => screen2.probability - screen1.probability)
 
-    // stores screen tabs so we won't need to refetch it when reverting from previous operation
-    const screenTabIds = new Map()
+    const dummyValues = {number: 0, string: '0'}
+    const dummyValue = dummyValues[fieldType]
+
+    const screensToCleanup: Array<{screenId: string; tabId: string}> = []
     // iterate over all the screens sorted by probability, try to update the given field
     for (let i = 0; i < possibleScreens.length; i++) {
+      const {id: screenId, tabId} = possibleScreens[i]
+      await manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
+
       try {
-        const currentScreen = possibleScreens[i]
-        const previousScreen = i > 0 ? possibleScreens[i - 1] : null
-        if (previousScreen) {
-          await manager.removeFieldFromScreenTab(
-            cloudId,
-            previousScreen.id,
-            screenTabIds.get(previousScreen),
-            dimensionField.fieldId
-          )
-        }
-
-        const [{id: tabId}] = (await manager.getScreenTabs(
-          cloudId,
-          currentScreen.id
-        )) as JiraScreenTab[]
-        screenTabIds.set(currentScreen, tabId)
-        await manager.addFieldToScreenTab(cloudId, currentScreen.id, tabId, dimensionField.fieldId)
         // if we can update the field that was previously missing it means we've added it to the right screen
-        await manager.updateStoryPoints(
-          cloudId,
-          issueKey,
-          0, // dummy value
-          dimensionField.fieldId,
-          dimensionField.fieldName
-        )
-
+        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, fieldId, fieldName)
         break
       } catch (e) {
-        // do nothing, continue looking for a proper screen
+        // save a screen for a later cleanup, continue looking for a proper screen
+        screensToCleanup.push({screenId, tabId})
       }
     }
+
+    // remove field from all the unused screens
+    await Promise.all(
+      screensToCleanup.map(({screenId, tabId}) => {
+        return manager.removeFieldFromScreenTab(cloudId, screenId, tabId, fieldId)
+      })
+    )
 
     // RESOLUTION
     const data = {dimensionField}
