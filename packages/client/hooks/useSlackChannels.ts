@@ -12,25 +12,35 @@ const useSlackChannels = (
     const getChannels = async () => {
       const {botAccessToken, slackUserId} = slackAuth
       const botManager = new SlackClientManager(botAccessToken!)
-      const [publicChannelRes, privateChannelRes] = await Promise.all([
+      // Slack bug: requesting public, private and ims at once returns only
+      // public channels so grab public channels in a separate request
+      const [publicChannelRes, privateAndImChannelRes] = await Promise.all([
         botManager.getConversationList(),
-        botManager.getConversationList(['private_channel'])
+        botManager.getConversationList(['private_channel', 'im'])
       ])
       if (!isMounted) return
       if (!publicChannelRes.ok) {
         console.error(publicChannelRes.error)
         return
+      } else if (!privateAndImChannelRes.ok) {
+        console.error(privateAndImChannelRes.error)
       }
-      let availableChannels
-      const {channels: publicChannels} = publicChannelRes
-      if (privateChannelRes.ok && privateChannelRes.channels.length) {
-        availableChannels = [...privateChannelRes.channels, ...publicChannels]
-      } else {
-        availableChannels = publicChannels
-      }
+      const channels = privateAndImChannelRes.ok
+        ? [...publicChannelRes.channels, ...privateAndImChannelRes.channels]
+        : publicChannelRes.channels
+      const availableChannels = [] as SlackChannelDropdownChannels
+      let slackbotChannelId: string | undefined
+      channels.forEach((channel) => {
+        if (channel.is_im && channel.user === slackUserId) {
+          slackbotChannelId = channel.id
+        } else if (!channel.is_im) {
+          const {id, name} = channel
+          availableChannels.push({id, name})
+        }
+      })
       availableChannels.sort((a, b) => (a.name > b.name ? 1 : -1))
       const botChannel = {
-        id: slackUserId,
+        id: slackbotChannelId || slackUserId,
         name: '@Parabol'
       }
       availableChannels.unshift({...botChannel, name: '@Parabol'})

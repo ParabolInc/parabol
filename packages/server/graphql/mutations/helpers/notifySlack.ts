@@ -147,7 +147,7 @@ export const startSlackMeeting = async (
             text: 'Join meeting'
           },
           style: 'primary',
-          value: meetingUrl
+          url: meetingUrl
         }
       ]
     }
@@ -245,7 +245,7 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
             emoji: true,
             text: meetingType === 'poker' ? 'See estimates' : 'See discussion'
           },
-          value: meetingType === 'poker' ? pokerUrl : meetingUrl
+          url: meetingType === 'poker' ? pokerUrl : meetingUrl
         },
         {
           type: 'button',
@@ -254,8 +254,7 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
             emoji: true,
             text: 'Review summary'
           },
-
-          value: summaryUrl
+          url: summaryUrl
         }
       ]
     }
@@ -266,7 +265,7 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
 
 const upsertSlackMessage = async (
   slackDetails: Unpromise<ReturnType<typeof getSlackDetails>>[0],
-  slackText: string
+  blocks: string | Array<{type: string}>
 ) => {
   const {notification, auth} = slackDetails
   const {channelId} = notification
@@ -278,25 +277,25 @@ const upsertSlackMessage = async (
     const {channel} = convoInfo
     const {latest} = channel
     if (latest) {
-      const {ts, bot_profile} = latest
-      const {name} = bot_profile
-      if (name === 'Parabol') {
-        const timestamp = new Date(Number.parseFloat(ts) * 1000)
-        const ageThresh = new Date(Date.now() - ms('5m'))
-        if (timestamp >= ageThresh) {
-          // trigger update
-          const res = await manager.updateMessage(channelId, slackText, ts)
-          if (!res.ok) {
-            console.error(res.error)
-          }
-          return
+      const {ts} = latest
+      const timestamp = new Date(Number.parseFloat(ts) * 1000)
+      const ageThresh = new Date(Date.now() - ms('5m'))
+      if (timestamp >= ageThresh) {
+        // update message silently fails if blocks aren't stringified
+        const stringifiedBlocks = JSON.stringify(blocks)
+        const res = await manager.updateMessage(channelId, stringifiedBlocks, ts)
+        if (!res.ok) {
+          console.error(res.error)
+          const postRes = await manager.postMessage(channelId, blocks)
+          if (!postRes.ok) console.error(postRes.error)
         }
+        return
       }
     }
   } else {
     // handle error?
   }
-  const res = await manager.postMessage(channelId, slackText)
+  const res = await manager.postMessage(channelId, blocks)
   if (!res.ok) {
     console.error(res.error)
   }
@@ -312,7 +311,11 @@ export const notifySlackTimeLimitStart = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
-  const {name: meetingName, phases, facilitatorStageId} = meeting
+  const {name, phases, facilitatorStageId} = meeting
+  const {name: teamName} = team
+  // Slack fails with error message "invalid_arguments" if updating a block with a #
+  // It can successfully post messages with a #
+  const meetingName = name.replace('#', '')
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
@@ -324,15 +327,61 @@ export const notifySlackTimeLimitStart = async (
     const fallbackTime = formatTime(scheduledEndTime)
     const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
     const fallback = `${fallbackDate} at ${fallbackTime} (${fallbackZone})`
-    const situation = `The *${phaseLabel} Phase* for ${meetingName} on ${team.name} has begun!`.replace(
-      '#',
-      ''
-    )
     const constraint = `You have until *<!date^${toEpochSeconds(
       scheduledEndTime
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
-    const cta = `Check it out: ${meetingUrl}`
-    const slackText = [situation, constraint, cta].join('\n')
-    upsertSlackMessage(slackDetail, slackText).catch(console.error)
+
+    const blocks = [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`
+        }
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*Team:*\n${teamName}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `*Meeting:*\n${meetingName}`
+          }
+        ]
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: constraint
+        }
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Link:*\n${meetingUrl}`
+        }
+      },
+      {
+        type: 'actions',
+        block_id: 'actionblock789',
+        elements: [
+          {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Open meeting'
+            },
+            style: 'primary',
+            url: meetingUrl
+          }
+        ]
+      }
+    ]
+    upsertSlackMessage(slackDetail, blocks).catch(console.error)
   })
 }

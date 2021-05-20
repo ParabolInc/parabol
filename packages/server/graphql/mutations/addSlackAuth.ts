@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SlackIM} from '../../../client/utils/SlackManager'
 import getRethink from '../../database/rethinkDriver'
 import SlackAuth from '../../database/types/SlackAuth'
 import SlackNotification, {SlackNotificationEvent} from '../../database/types/SlackNotification'
@@ -115,17 +116,28 @@ export default {
     const {response} = manager
     const slackUserId = response.authed_user.id
     const defaultChannelId = response.incoming_webhook.channel_id
-    const [joinConvoRes, userInfoRes] = await Promise.all([
+    const [convoInfoRes, joinConvoRes, userInfoRes, imRes] = await Promise.all([
+      manager.getConversationInfo(defaultChannelId),
       manager.joinConversation(defaultChannelId),
-      manager.getUserInfo(slackUserId)
+      manager.getUserInfo(slackUserId),
+      manager.getConversationList(['im'])
     ])
     if (!userInfoRes.ok) {
       return standardError(new Error(userInfoRes.error), {userId: viewerId})
     }
+    if (!imRes.ok) {
+      return standardError(new Error(imRes.error), {userId: viewerId})
+    }
+    const slackbotIm = (imRes.channels as SlackIM[]).find((channel) => channel.user === slackUserId)
 
-    // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
-    // Using the slackUserId sends a DM to the user from @Parabol
-    const teamChannelId = joinConvoRes.ok ? joinConvoRes.channel.id : slackUserId
+    // The default channel could be anything: public, private, im, mpim. We use public & private
+    // channels or the @Parabol im bot
+    let teamChannelId
+    if (convoInfoRes.ok && convoInfoRes.channel.is_member) {
+      teamChannelId = convoInfoRes.channel.id
+    } else if (joinConvoRes.ok && joinConvoRes.channel.id) {
+      teamChannelId = joinConvoRes.channel.id
+    } else teamChannelId = slackbotIm?.id || slackUserId
 
     const [, slackAuthId] = await Promise.all([
       upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
