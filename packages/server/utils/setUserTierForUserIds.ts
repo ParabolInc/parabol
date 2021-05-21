@@ -41,32 +41,26 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .run()
 
   const userTiers = (await r
-    .table('User')
-    .getAll(r.args(userIds))
-    .map((user) => ({
-      id: user('id'),
+    .table('OrganizationUser')
+    .getAll(r.args(userIds), {index: 'userId'})
+    .filter({removedAt: null})
+    .merge((orgUser) => ({
       tier: r
-        .table('OrganizationUser')
-        .getAll(user('id'), {index: 'userId'})
-        .filter({removedAt: null})('orgId')
-        .coerceTo('array')
-        .distinct()
-        .do((orgIds) =>
-          r
-            .table('Organization')
-            .getAll(r.args(orgIds))('tier')
-            .distinct()
-            .coerceTo('array')
-        )
-        .do((tiers) => {
-          return r.branch(
-            tiers.contains('enterprise'),
-            'enterprise',
-            tiers.contains('pro'),
-            'pro',
-            'personal'
-          )
-        })
+        .table('Organization')
+        .get(orgUser('orgId'))('tier')
+        .default('personal')
+    }))
+    .group('userId')('tier')
+    .ungroup()
+    .map((row) => ({
+      id: row('group'),
+      tier: r.branch(
+        row('reduction').contains('enterprise'),
+        'enterprise',
+        row('reduction').contains('pro'),
+        'pro',
+        'personal'
+      )
     }))
     .run()) as {id: string; tier: TierEnum}[]
   await catchAndLog(() => updateUserTiersQuery.run({users: userTiers}, getPg()))
