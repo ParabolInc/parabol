@@ -17,7 +17,9 @@ export default new GraphQLObjectType<any, GQLContext>({
       resolve: async (_source, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (!viewerId) {
-          const error = new Error(`viewerId is null in User query. authToken: ${authToken}`)
+          const error = new Error(
+            `viewerId is null in User query. authToken: ${JSON.stringify(authToken)}`
+          )
           Sentry.captureException(error)
           LogRocket.captureException(error)
           return null
