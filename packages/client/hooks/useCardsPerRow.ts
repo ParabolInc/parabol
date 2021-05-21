@@ -13,7 +13,7 @@ const useCardsPerRow = (wrapperRef: RefObject<HTMLDivElement>) => {
 
   useLayoutEffect(() => getCardsPerRow(), [wrapperRef.current])
   useResizeObserver(getCardsPerRow, wrapperRef)
-  return cardsPerRow
+  return Math.max(cardsPerRow, 1)
 }
 
 export default useCardsPerRow

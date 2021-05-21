@@ -38,8 +38,9 @@ const CardWrapper = styled('div')<{
   top,
   maxWidth: '100%',
   transition: `all 300ms ${BezierCurve.DECELERATE}, box-shadow 100ms ${BezierCurve.DECELERATE}`,
+  marginBottom: maybeTabletPlus ? 0 : 16,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  position: 'absolute',
+  position: maybeTabletPlus ? 'absolute' : 'inherit',
   width: maybeTabletPlus ? 320 : '100%',
   userSelect: 'none',
   ':hover': {

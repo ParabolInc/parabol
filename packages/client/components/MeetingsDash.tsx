@@ -9,7 +9,7 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useInitialRender from '../hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '../hooks/useTransition'
-import {Layout} from '../types/constEnums'
+import {Breakpoint, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import useCardsPerRow from '../hooks/useCardsPerRow'
@@ -20,6 +20,10 @@ interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
+
+const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+  padding: maybeTabletPlus ? 0 : 16
+}))
 
 const EmptyContainer = styled('div')({
   display: 'flex',
@@ -70,6 +74,7 @@ const MeetingsDash = (props: Props) => {
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const memodMeetings = useDeepEqual(activeMeetings)
   const topByRow = useTopPerRow(cardsPerRow, memodMeetings, viewer?.id)
+  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const hasMeetings = activeMeetings.length > 0 && cardsPerRow
   const totalRows =
     !memodMeetings.length || !cardsPerRow ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
@@ -78,7 +83,7 @@ const MeetingsDash = (props: Props) => {
   return (
     <>
       {hasMeetings ? (
-        <>
+        <Wrapper maybeTabletPlus={maybeTabletPlus}>
           {transitioningMeetings.map((meeting, idx) => {
             const rowIdx = cardsPerRow === 0 ? 0 : Math.floor(idx / cardsPerRow)
             const topForAvatars = topByRow[rowIdx]?.top || 0
@@ -95,7 +100,7 @@ const MeetingsDash = (props: Props) => {
             )
           })}
           <Spacer top={272 * totalRows + 16} />
-        </>
+        </Wrapper>
       ) : (
         <EmptyContainer>
           <MeetingsDashEmpty />
