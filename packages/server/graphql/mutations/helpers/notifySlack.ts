@@ -108,8 +108,9 @@ export const startSlackMeeting = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
-  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
-  const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
+  const meetingUrlWithParams = makeAppURL(appOrigin, `meet/${meetingId}`, options)
+  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
+  const button = {text: 'Join meeting', url: meetingUrlWithParams, type: 'primary'} as const
   const blocks = [
     makeSections(['Meeting started :wave: ']),
     makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
