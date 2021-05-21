@@ -1,4 +1,5 @@
 import {RefObject, useLayoutEffect, useState} from 'react'
+import useInitialRender from './useInitialRender'
 import useResizeObserver from './useResizeObserver'
 import useTransition from './useTransition'
 
@@ -20,6 +21,7 @@ const useOverflowAvatars = <T extends {id: string}>(
   avatarOverlap: number
 ) => {
   const [maxAvatars, setMaxAvatars] = useState(0)
+  const isInit = useInitialRender()
   const checkOverflow = () => {
     const {current: el} = rowRef
     if (!el) return
@@ -40,7 +42,7 @@ const useOverflowAvatars = <T extends {id: string}>(
     displayIdx
   })) as ((T & {key: string; displayIdx: number}) | OverflowAvatar)[]
 
-  if (overflowCount > 0) {
+  if (overflowCount > 0 && !isInit) {
     visibleAvatars.push(new OverflowAvatar(overflowCount, visibleAvatars.length))
   }
 
