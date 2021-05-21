@@ -1,4 +1,4 @@
-const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js') // we need to load this first
+require('./utils/dotenv')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
@@ -13,7 +13,7 @@ const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const SFU_ROOT = path.join(PROJECT_ROOT, 'packages', 'sfu')
-const publicPath = getWebpackPublicPath()
+const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
 
 const getNormalizedWebpackPublicPath = () => {
