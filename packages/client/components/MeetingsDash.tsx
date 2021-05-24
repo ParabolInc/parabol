@@ -76,8 +76,7 @@ const MeetingsDash = (props: Props) => {
   const topByRow = useTopPerRow(cardsPerRow, memodMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const hasMeetings = activeMeetings.length > 0 && !isInit
-  const totalRows =
-    !memodMeetings.length || !cardsPerRow ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
+  const totalRows = !memodMeetings.length ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer) return null
   return (
