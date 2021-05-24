@@ -147,7 +147,6 @@ const MeetingCard = (props: Props) => {
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const popTooltip = () => {
     openTooltip()

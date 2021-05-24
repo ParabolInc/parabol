@@ -3,7 +3,7 @@ import {MeetingsDash_viewer} from '../__generated__/MeetingsDash_viewer.graphql'
 
 type Meetings = MeetingsDash_viewer['teams'][0]['activeMeetings']
 
-const useTopPerRow = (cardsPerRow: number, meetings: Meetings, viewerId?: string) => {
+const useTopPerRow = (cardsPerRow: number, meetings: Meetings) => {
   const [topByRow, setTopByRow] = useState({})
   const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
 
@@ -21,7 +21,6 @@ const useTopPerRow = (cardsPerRow: number, meetings: Meetings, viewerId?: string
         topByRow[i].top += 32
       }
     }
-    if (!viewerId) return
     meetings.forEach((meeting, meetingIdx) => {
       const {id: meetingId, meetingMembers} = meeting
       const connectedUsers = meetingMembers.filter(({user}) => {

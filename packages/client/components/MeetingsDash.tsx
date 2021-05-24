@@ -73,9 +73,9 @@ const MeetingsDash = (props: Props) => {
   const isInit = useInitialRender()
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const memodMeetings = useDeepEqual(activeMeetings)
-  const topByRow = useTopPerRow(cardsPerRow, memodMeetings, viewer?.id)
+  const topByRow = useTopPerRow(cardsPerRow, memodMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const hasMeetings = activeMeetings.length > 0 && cardsPerRow
+  const hasMeetings = activeMeetings.length > 0 && !isInit
   const totalRows =
     !memodMeetings.length || !cardsPerRow ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
   useDocumentTitle('Meetings | Parabol', 'Meetings')
