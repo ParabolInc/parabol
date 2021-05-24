@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject} from 'react'
+import React, {RefObject, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg'
@@ -59,16 +59,18 @@ const Spacer = styled('div')<{top: number}>(({top}) => ({
 const MeetingsDash = (props: Props) => {
   const {meetingsDashRef, viewer} = props
   const teams = viewer?.teams ?? []
-  const activeMeetings = teams
-    .flatMap((team) => team.activeMeetings)
-    .filter(Boolean)
-    .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
-  const meetingsWithKey = activeMeetings.map((meeting, displayIdx) => ({
-    ...meeting,
-    key: meeting.createdAt,
-    displayIdx
-  }))
-  const transitioningMeetings = useTransition(meetingsWithKey)
+  const activeMeetings = useMemo(() => {
+    const meetings = teams
+      .flatMap((team) => team.activeMeetings)
+      .filter(Boolean)
+      .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+    return meetings.map((meeting, displayIdx) => ({
+      ...meeting,
+      key: meeting.createdAt,
+      displayIdx
+    }))
+  }, [teams])
+  const transitioningMeetings = useTransition(activeMeetings)
   const maybeBigDisplay = useBreakpoint(1900)
   const isInit = useInitialRender()
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
