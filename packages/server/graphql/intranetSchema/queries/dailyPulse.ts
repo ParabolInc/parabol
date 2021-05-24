@@ -6,7 +6,7 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
-import {makeSections} from '../../mutations/helpers/makeSlackBlocks'
+import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
 
 interface TypeField {
   type: 'mrkdwn'
@@ -124,11 +124,11 @@ const dailyPulse = {
     const start = toEpochSeconds(after)
 
     const blocks = [
-      makeSections([
+      makeSection(
         `We've had *${totalSignups} Signups* and *${totalLogins} Logins* since <!date^${start}^{date_short} {time}|Yesterday>\n *Top Signups*`
-      ]),
+      ),
       signupsList,
-      makeSections([`*Top Logins*`]),
+      makeSection(`*Top Logins*`),
       loginsList
     ]
     const manager = new SlackServerManager(botAccessToken)

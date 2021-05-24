@@ -21,7 +21,7 @@ import MeetingAction from '../../../database/types/MeetingAction'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import plural from 'parabol-client/utils/plural'
 import EstimatePhase from '../../../database/types/EstimatePhase'
-import {makeSections, makeButtons} from './makeSlackBlocks'
+import {makeSection, makeSections, makeButtons} from './makeSlackBlocks'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -108,13 +108,12 @@ export const startSlackMeeting = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
-  const meetingUrlWithParams = makeAppURL(appOrigin, `meet/${meetingId}`, options)
-  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
-  const button = {text: 'Join meeting', url: meetingUrlWithParams, type: 'primary'} as const
+  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
+  const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
   const blocks = [
-    makeSections(['Meeting started :wave: ']),
+    makeSection('Meeting started :wave: '),
     makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
-    makeSections([`*Link:*\n${meetingUrl}`]),
+    makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
     makeButtons([button])
   ]
   notifySlack('meetingStart', dataLoader, teamId, blocks).catch(console.log)
@@ -181,9 +180,9 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
     url: summaryUrl
   } as const
   const blocks = [
-    makeSections(['Meeting completed :tada:']),
+    makeSection('Meeting completed :tada:'),
     makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
-    makeSections([summaryText]),
+    makeSection(summaryText),
     makeButtons([discussionButton, summaryButton])
   ]
   notifySlack('meetingEnd', dataLoader, teamId, blocks).catch(console.log)
@@ -258,10 +257,10 @@ export const notifySlackTimeLimitStart = async (
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
     const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
     const blocks = [
-      makeSections([`The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`]),
+      makeSection(`The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`),
       makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
-      makeSections([constraint]),
-      makeSections([`*Link:*\n${meetingUrl}`]),
+      makeSection(constraint),
+      makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
       makeButtons([button])
     ]
     upsertSlackMessage(slackDetail, blocks).catch(console.error)

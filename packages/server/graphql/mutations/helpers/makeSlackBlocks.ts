@@ -1,3 +1,11 @@
+export const makeSection = (text: string) => ({
+  type: 'section',
+  text: {
+    type: 'mrkdwn',
+    text
+  }
+})
+
 export const makeSections = (fields: string[]) => ({
   type: 'section',
   fields: fields.map((field) => ({
