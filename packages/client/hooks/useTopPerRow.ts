@@ -5,7 +5,7 @@ type Meetings = MeetingsDash_viewer['teams'][0]['activeMeetings']
 
 const useTopPerRow = (cardsPerRow: number, meetings: Meetings) => {
   const [topByRow, setTopByRow] = useState({})
-  const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
+  const totalRows = !meetings.length ? 0 : Math.ceil(meetings.length / cardsPerRow)
 
   const getTopByRow = () => {
     const topByRow = {}
