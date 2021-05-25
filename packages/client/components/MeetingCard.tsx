@@ -185,7 +185,7 @@ const MeetingCard = (props: Props) => {
             {teamName} • {meetingPhaseLabel}
           </Meta>
         </Link>
-        <AvatarList users={connectedUsers} size={28} />
+        <AvatarList users={connectedUsers} size={28} isMeetingCard />
       </MeetingInfo>
       {menuPortal(
         <MeetingCardOptionsMenuRoot

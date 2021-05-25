@@ -3,12 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
+import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
 import {AvatarList_users} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
 import OverflowAvatar from './OverflowAvatar'
 
-const Wrapper = styled('div')<{minHeight: number, size: number}>(({minHeight, size}) => ({
+const Wrapper = styled('div')<{minHeight: number; size: number}>(({minHeight, size}) => ({
   alignItems: 'center',
   display: 'flex',
   // This left margin accounts for the border on the avatar
@@ -41,10 +42,20 @@ interface Props {
   emptyEl?: ReactElement
   isAnimated?: boolean
   borderColor?: string
+  isMeetingCard?: boolean
 }
 
 const AvatarList = (props: Props) => {
-  const {users, onUserClick, onOverflowClick, size, emptyEl, isAnimated, borderColor} = props
+  const {
+    users,
+    onUserClick,
+    onOverflowClick,
+    size,
+    emptyEl,
+    isAnimated,
+    borderColor,
+    isMeetingCard
+  } = props
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
   const offsetSize = size - overlap
@@ -56,11 +67,14 @@ const AvatarList = (props: Props) => {
       {transitionChildren.length === 0 && emptyEl}
       {transitionChildren.map(({onTransitionEnd, child, status, displayIdx}) => {
         const {id: userId} = child
+        const transitionSpeed =
+          isMeetingCard && status === TransitionStatus.EXITING ? '20ms' : '300ms'
         if ('overflowCount' in child) {
           const {overflowCount} = child
           return (
             <OverflowAvatar
               key={userId}
+              transitionSpeed={transitionSpeed}
               isAnimated={showAnimated}
               onTransitionEnd={onTransitionEnd}
               status={status}
@@ -75,6 +89,7 @@ const AvatarList = (props: Props) => {
         return (
           <AvatarListUser
             key={userId}
+            transitionSpeed={transitionSpeed}
             isAnimated={showAnimated}
             user={child}
             onClick={onUserClick ? () => onUserClick(userId) : undefined}
