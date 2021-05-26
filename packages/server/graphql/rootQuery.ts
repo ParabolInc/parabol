@@ -18,7 +18,9 @@ export default new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         if (!viewerId) {
           const error = new Error(
-            `viewerId is null in User query. authToken: ${JSON.stringify(authToken)}`
+            `viewerId is null in User query. authToken: ${JSON.stringify(
+              authToken
+            )}. Timestamp: ${Math.floor(new Date().getTime() / 1000)}`
           )
           Sentry.captureException(error)
           LogRocket.captureException(error)
