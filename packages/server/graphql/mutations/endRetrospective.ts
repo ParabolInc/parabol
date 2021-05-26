@@ -120,9 +120,11 @@ export default {
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').load(templateId),
-      finishRetroMeeting(completedRetrospective, dataLoader)
+      dataLoader.get('meetingTemplates').load(templateId)
     ])
+    // wait for removeEmptyTasks before finishRetroMeeting & wait for meeting stats
+    // to be generated in finishRetroMeeting before sending Slack notifications
+    await finishRetroMeeting(completedRetrospective, dataLoader)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)

@@ -1,3 +1,5 @@
+import generateUID from '../../../generateUID'
+
 export const makeSection = (text: string) => ({
   type: 'section',
   text: {
@@ -22,7 +24,7 @@ type ButtonInput = {
 
 export const makeButtons = (buttons: ButtonInput[]) => ({
   type: 'actions',
-  block_id: `actionblock${new Date().toISOString()}`,
+  block_id: `actionblock${generateUID()}`,
   elements: buttons.map((button) => ({
     type: 'button',
     text: {

@@ -206,9 +206,7 @@ const upsertSlackMessage = async (
       const timestamp = new Date(Number.parseFloat(ts) * 1000)
       const ageThresh = new Date(Date.now() - ms('5m'))
       if (timestamp >= ageThresh) {
-        // blocks need to be stringified when updating but not posting
-        const stringifiedBlocks = JSON.stringify(blocks)
-        const res = await manager.updateMessage(channelId, stringifiedBlocks, ts)
+        const res = await manager.updateMessage(channelId, blocks, ts)
         if (!res.ok) {
           console.error(res.error)
           const postRes = await manager.postMessage(channelId, blocks)
