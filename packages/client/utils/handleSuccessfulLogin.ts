@@ -1,6 +1,5 @@
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from './safeIdentify'
-import LogRocket from 'logrocket'
 
 interface Payload {
   user?: {
@@ -15,9 +14,6 @@ const handleSuccessfulLogin = (payload: Payload) => {
   if (!email || !userId) return
   window.localStorage.setItem(LocalStorageKey.EMAIL, email)
   safeIdentify(userId, email)
-  LogRocket.identify(userId, {
-    email
-  })
 }
 
 export default handleSuccessfulLogin

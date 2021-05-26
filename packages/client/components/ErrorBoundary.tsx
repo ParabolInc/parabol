@@ -25,15 +25,33 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const {atmosphere} = this.props
     const {viewerId} = atmosphere
+    const store = atmosphere.getStore()
+    const email = (store as any)?._recordSource?._records?.[viewerId]?.email ?? ''
     if (viewerId) {
-      const store = atmosphere.getStore()
-      const email = (store as any)?._recordSource?._records?.[viewerId]?.email ?? ''
       Sentry.configureScope((scope) => {
         scope.setUser({email, id: viewerId})
       })
     }
-    LogRocket.captureException(error)
-    LogRocket.track('Fatal error')
+    const logRocketId = window.__ACTION__.logRocket
+    if (logRocketId) {
+      LogRocket.init(logRocketId, {
+        release: __APP_VERSION__,
+        network: {
+          requestSanitizer: (request) => {
+            const body = request?.body?.toLowerCase()
+            if (body?.includes('password')) return null
+            return request
+          }
+        }
+      })
+      if (email) {
+        LogRocket.identify(atmosphere.viewerId, {
+          email
+        })
+      }
+      LogRocket.captureException(error)
+      LogRocket.track('Fatal error')
+    }
     // Catch errors in any components below and re-render with error message
     Sentry.withScope((scope) => {
       scope.setExtras(errorInfo)
