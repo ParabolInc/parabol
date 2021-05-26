@@ -155,7 +155,8 @@ export const enum LocalStorageKey {
   APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
-  EMAIL = 'email'
+  EMAIL = 'email',
+  ERROR_PRONE_AT = 'errorProneAt'
 }
 
 export const enum AuthenticationError {

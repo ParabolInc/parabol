@@ -1,6 +1,7 @@
 /// <reference types="@types/segment-analytics" />
 
 import * as Sentry from '@sentry/browser'
+import LogRocket from 'logrocket'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {fetchQuery} from 'react-relay'
@@ -11,6 +12,7 @@ import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import makeHref from '../utils/makeHref'
+import ms from 'ms'
 
 const query = graphql`
   query AnalyticsPageQuery {
@@ -68,6 +70,32 @@ const AnalyticsPage = () => {
     }
   )
   const atmosphere = useAtmosphere()
+  useEffect(() => {
+    const logRocketId = window.__ACTION__.logRocket
+    const errorProneAt = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
+    const expiredErrorProne =
+      errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('30d'))
+    if (expiredErrorProne) {
+      window.localStorage.deleteItem(LocalStorageKey.ERROR_PRONE_AT)
+    } else if (logRocketId && errorProneAt) {
+      const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+      LogRocket.init(logRocketId, {
+        release: __APP_VERSION__,
+        network: {
+          requestSanitizer: (request) => {
+            const body = request?.body?.toLowerCase()
+            if (body?.includes('password')) return null
+            return request
+          }
+        }
+      })
+      if (email) {
+        LogRocket.identify(atmosphere.viewerId, {
+          email
+        })
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return

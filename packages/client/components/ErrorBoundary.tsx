@@ -3,6 +3,7 @@ import React, {Component, ErrorInfo, ReactNode} from 'react'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 import withAtmosphere, {WithAtmosphereProps} from '~/decorators/withAtmosphere/withAtmosphere'
 import LogRocket from 'logrocket'
+import {LocalStorageKey} from '~/types/constEnums'
 
 interface Props extends WithAtmosphereProps {
   fallback?: (error: Error, eventId: string) => ReactNode
@@ -45,10 +46,11 @@ class ErrorBoundary extends Component<Props, State> {
         }
       })
       if (email) {
-        LogRocket.identify(atmosphere.viewerId, {
+        LogRocket.identify(viewerId, {
           email
         })
       }
+      window.localStorage.setItem(LocalStorageKey.ERROR_PRONE_AT, `${new Date().getTime()}`)
       LogRocket.captureException(error)
       LogRocket.track('Fatal error')
     }
