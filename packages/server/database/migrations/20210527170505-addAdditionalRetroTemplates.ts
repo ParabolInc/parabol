@@ -1,6 +1,8 @@
 import {R} from 'rethinkdb-ts'
+const Redis = require('ioredis')
 
 const createdAt = new Date()
+const redis = new Redis(process.env.REDIS_URL)
 
 const nameToId = (name: string, isTemplate: boolean) => {
   const cleanedName = name
@@ -160,16 +162,18 @@ export const up = async function(r: R) {
       r
         .table('ReflectPrompt')
         .insert(reflectPrompts)
-        .run()
+        .run(),
+      // we cache the templates but get the prompts from the db
+      // clear the cache to prevent empty templates
+      redis.flushall()
     ])
+    redis.disconnect()
   } catch (e) {
     console.log(e)
   }
 }
 
 export const down = async function(r: R) {
-  const Redis = require('ioredis')
-  const redis = new Redis(process.env.REDIS_URL)
   const templateIds = templates.map(({id}) => id)
   const promptIds = reflectPrompts.map(({id}) => id)
   try {
