@@ -50,7 +50,7 @@ const makePrompt = (promptInfo: PromptInfo) => {
     sortOrder,
     teamId: 'aGhostTeam',
     templateId,
-    title: `New prompt #${sortOrder + 1}`,
+    title: question,
     updatedAt: createdAt
   }
 }
