@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.13.0 2021-May-26
+
+### Added
+
+- LogRocket free tier (#4996)
+- 
+
+### Changed
+
+- Tier update pg (#4980)
+- Bump browserslist from 4.11.1 to 4.16.6 (#4995)
+
+## 6.12.0 2021-May-19
+
+### Added
+
+- Support varying GitHub scopes (#4971)
+- Send exceptions to LogRocket as well as Sentry (#4978)
+
+### Changed
+
+- Refactor commentor to thread conn (#4974)
+
+### Fixed
+
+- Init sentry in gqlExecutor (#4959)
+
 ## 6.11.0
 
 ### Added
