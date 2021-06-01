@@ -1,8 +1,8 @@
 import {R} from 'rethinkdb-ts'
-const Redis = require('ioredis')
+import getRedis from '../../utils/getRedis'
 
 const createdAt = new Date()
-const redis = new Redis(process.env.REDIS_URL)
+const redis = getRedis()
 
 const nameToId = (name: string, isTemplate: boolean) => {
   const cleanedName = name
@@ -164,8 +164,8 @@ export const up = async function(r: R) {
         .insert(reflectPrompts)
         .run(),
       // we cache the templates but get the prompts from the db
-      // clear the cache to prevent empty templates
-      redis.flushall()
+      // clear the cache to grab templates from the updated db
+      redis.del('publicTemplates:retrospective')
     ])
     redis.disconnect()
   } catch (e) {
@@ -189,8 +189,8 @@ export const down = async function(r: R) {
         .delete()
         .run(),
       // we cache the templates but get the prompts from the db
-      // clear the cache to prevent empty templates
-      redis.flushall()
+      // clear the cache to grab templates from the updated db
+      redis.del('publicTemplates:retrospective')
     ])
     redis.disconnect()
   } catch (e) {
