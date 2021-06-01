@@ -9,7 +9,7 @@ import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import JiraServiceTaskId from '~/shared/gqlIds/JiraServiceTaskId'
 import publish from '../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
-import {JiraScreen, JiraScreensResponse, JiraScreenTab} from '~/utils/AtlassianManager'
+import {JiraScreen} from '~/utils/AtlassianManager'
 
 const addMissingJiraField = {
   type: GraphQLNonNull(AddMissingJiraFieldPayload),
@@ -99,7 +99,7 @@ const addMissingJiraField = {
     )
     const {fieldType, fieldId, fieldName} = dimensionField
 
-    const {values: screens} = (await manager.getScreens(cloudId)) as JiraScreensResponse
+    const {values: screens} = await manager.getScreens(cloudId)
     // we're trying to guess what's the probability that given screen is assigned to an issue project
     const evaluateProbability = (screen: JiraScreen) => {
       if (screen.name.startsWith(projectKey) && screen.name.includes('Default')) return 1
@@ -111,7 +111,7 @@ const addMissingJiraField = {
     const possibleScreens = (
       await Promise.all(
         screens.map(async (screen) => {
-          const [{id: tabId}] = (await manager.getScreenTabs(cloudId, screen.id)) as JiraScreenTab[]
+          const [{id: tabId}] = await manager.getScreenTabs(cloudId, screen.id)
           return {...screen, tabId, probability: evaluateProbability(screen)}
         })
       )
