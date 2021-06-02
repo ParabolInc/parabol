@@ -21,9 +21,12 @@ interface Props {
   viewer: MeetingsDash_viewer | null
 }
 
-const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
-  padding: maybeTabletPlus ? 0 : 16
-}))
+const Wrapper = styled('div')<{maybeTabletPlus: boolean; minHeight: number}>(
+  ({maybeTabletPlus, minHeight}) => ({
+    padding: maybeTabletPlus ? 0 : 16,
+    minHeight
+  })
+)
 
 const EmptyContainer = styled('div')({
   display: 'flex',
@@ -49,13 +52,6 @@ const Flash = styled('img')({
   right: -32
 })
 
-const Spacer = styled('div')<{top: number}>(({top}) => ({
-  position: 'absolute',
-  top,
-  width: 16,
-  height: 32
-}))
-
 const MeetingsDash = (props: Props) => {
   const {meetingsDashRef, viewer} = props
   const teams = viewer?.teams ?? []
@@ -66,7 +62,7 @@ const MeetingsDash = (props: Props) => {
       .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
     return meetings.map((meeting, displayIdx) => ({
       ...meeting,
-      key: meeting.createdAt,
+      key: meeting.id,
       displayIdx
     }))
   }, [teams])
@@ -84,7 +80,7 @@ const MeetingsDash = (props: Props) => {
   return (
     <>
       {hasMeetings ? (
-        <Wrapper maybeTabletPlus={maybeTabletPlus}>
+        <Wrapper maybeTabletPlus={maybeTabletPlus} minHeight={272 * totalRows + 16}>
           {transitioningMeetings.map((meeting, idx) => {
             const rowIdx = cardsPerRow === 0 ? 0 : Math.floor(idx / cardsPerRow)
             const topForAvatars = topByRow[rowIdx]?.top || 0
@@ -100,7 +96,6 @@ const MeetingsDash = (props: Props) => {
               />
             )
           })}
-          <Spacer top={272 * totalRows + 16} />
         </Wrapper>
       ) : (
         <EmptyContainer>

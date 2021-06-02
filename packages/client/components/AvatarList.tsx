@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
-import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
 import {AvatarList_users} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
@@ -42,7 +41,7 @@ interface Props {
   emptyEl?: ReactElement
   isAnimated?: boolean
   borderColor?: string
-  isMeetingCard?: boolean
+  exitSpeed?: number
 }
 
 const AvatarList = (props: Props) => {
@@ -54,7 +53,7 @@ const AvatarList = (props: Props) => {
     emptyEl,
     isAnimated,
     borderColor,
-    isMeetingCard
+    exitSpeed
   } = props
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
@@ -67,14 +66,12 @@ const AvatarList = (props: Props) => {
       {transitionChildren.length === 0 && emptyEl}
       {transitionChildren.map(({onTransitionEnd, child, status, displayIdx}) => {
         const {id: userId} = child
-        const transitionSpeed =
-          isMeetingCard && status === TransitionStatus.EXITING ? '20ms' : '300ms'
         if ('overflowCount' in child) {
           const {overflowCount} = child
           return (
             <OverflowAvatar
               key={userId}
-              transitionSpeed={transitionSpeed}
+              exitSpeed={exitSpeed}
               isAnimated={showAnimated}
               onTransitionEnd={onTransitionEnd}
               status={status}
@@ -89,7 +86,7 @@ const AvatarList = (props: Props) => {
         return (
           <AvatarListUser
             key={userId}
-            transitionSpeed={transitionSpeed}
+            exitSpeed={exitSpeed}
             isAnimated={showAnimated}
             user={child}
             onClick={onUserClick ? () => onUserClick(userId) : undefined}
