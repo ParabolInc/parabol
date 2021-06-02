@@ -1,8 +1,6 @@
 import {R} from 'rethinkdb-ts'
-import getRedis from '../../utils/getRedis'
 
 const createdAt = new Date()
-const redis = getRedis()
 
 const nameToId = (name: string, isTemplate: boolean) => {
   const cleanedName = name
@@ -162,12 +160,8 @@ export const up = async function(r: R) {
       r
         .table('ReflectPrompt')
         .insert(reflectPrompts)
-        .run(),
-      // we cache the templates but get the prompts from the db
-      // clear the cache to grab templates from the updated db
-      redis.del('publicTemplates:retrospective')
+        .run()
     ])
-    redis.disconnect()
   } catch (e) {
     console.log(e)
   }
@@ -187,12 +181,8 @@ export const down = async function(r: R) {
         .table('ReflectPrompt')
         .getAll(r.args(promptIds))
         .delete()
-        .run(),
-      // we cache the templates but get the prompts from the db
-      // clear the cache to grab templates from the updated db
-      redis.del('publicTemplates:retrospective')
+        .run()
     ])
-    redis.disconnect()
   } catch (e) {
     console.log(e)
   }
