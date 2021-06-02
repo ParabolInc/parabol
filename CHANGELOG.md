@@ -5,12 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.14.0 2021-Jun-2
+
+### Changed
+- Bump dns-packet from 1.3.1 to 1.3.4 (#5000)
+
+### Added
+- Add 120 additional icebreakers (#5004)
+
+### Fixed
+- Add clock tolerance to getVerifiedAuthToken (#5011)
+- Sentry server stack (#4987)
+- UI fix-ups (#5001)
+
 ## 6.13.0 2021-May-26
 
 ### Added
 
 - LogRocket free tier (#4996)
-- 
 
 ### Changed
 
