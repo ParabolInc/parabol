@@ -36,15 +36,7 @@ const addMissingJiraField = {
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
-    const {
-      endedAt,
-      phases,
-      meetingType,
-      teamId,
-      createdBy,
-      facilitatorUserId,
-      templateRefId
-    } = meeting
+    const {endedAt, phases, meetingType, teamId, facilitatorUserId, templateRefId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
@@ -55,11 +47,6 @@ const addMissingJiraField = {
       return {error: {message: 'Not a poker meeting'}}
     }
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== createdBy) {
-        return {
-          error: {message: 'Not meeting facilitator'}
-        }
-      }
       return {
         error: {message: 'Not meeting facilitator anymore'}
       }
@@ -74,7 +61,7 @@ const addMissingJiraField = {
     }
 
     // RESOLUTION
-    const {creatorUserId, dimensionRefIdx, service, serviceTaskId} = stage
+    const {dimensionRefIdx, service, serviceTaskId} = stage
     const templateRef = await getTemplateRefById(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
@@ -82,7 +69,7 @@ const addMissingJiraField = {
     if (service !== 'jira') {
       return {error: {message: 'Non Jira service'}}
     }
-    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
+    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (!auth) {
       return {error: {message: 'User no longer has access to Atlassian'}}
     }
