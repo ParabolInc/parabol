@@ -687,7 +687,7 @@ export default abstract class AtlassianManager {
   async getScreens(cloudId: string) {
     const res = (await this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`
-    )) as JiraScreensResponse | AtlassianError | JiraError
+    )) as JiraScreensResponse | AtlassianError | JiraNoAccessError
 
     if ('values' in res) {
       return res
