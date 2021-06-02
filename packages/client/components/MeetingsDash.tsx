@@ -73,16 +73,16 @@ const MeetingsDash = (props: Props) => {
   const memodMeetings = useDeepEqual(activeMeetings)
   const topByRow = useTopPerRow(cardsPerRow, memodMeetings)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const hasMeetings = activeMeetings.length > 0 && !isInit
+  const hasMeetings = activeMeetings.length > 0
   const totalRows = !memodMeetings.length ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
   useDocumentTitle('Meetings | Parabol', 'Meetings')
-  if (!viewer) return null
+  if (!viewer || isInit) return null
   return (
     <>
       {hasMeetings ? (
         <Wrapper maybeTabletPlus={maybeTabletPlus} minHeight={272 * totalRows + 16}>
           {transitioningMeetings.map((meeting, idx) => {
-            const rowIdx = cardsPerRow === 0 ? 0 : Math.floor(idx / cardsPerRow)
+            const rowIdx = Math.floor(idx / cardsPerRow)
             const topForAvatars = topByRow[rowIdx]?.top || 0
             const leftMargin = maybeBigDisplay ? 40 : 16
             return (
