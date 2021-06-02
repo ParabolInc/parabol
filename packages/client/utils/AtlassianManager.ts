@@ -75,6 +75,10 @@ export interface AtlassianError {
   message: string
 }
 
+function isAtlassianError<T>(response: T | AtlassianError): response is AtlassianError {
+  return 'message' in response
+}
+
 interface GetProjectsResult {
   cloudId: string
   newProjects: JiraProject[]
@@ -114,10 +118,19 @@ type GetProjectsCallback = (error: AtlassianError | null, result: GetProjectsRes
 interface JiraNoAccessError {
   errorMessages: ['The app is not installed on this instance.']
 }
+
+function isJiraNoAccessError<T>(response: T | JiraNoAccessError): response is JiraNoAccessError {
+  return 'errorMessages' in response
+}
+
 interface JiraFieldError {
   errors: {
     [fieldName: string]: string
   }
+}
+
+function isJiraFieldError<T>(response: T | JiraFieldError): response is JiraFieldError {
+  return 'errors' in response
 }
 
 type JiraError = JiraNoAccessError | JiraFieldError
@@ -680,11 +693,11 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if ('message' in res) {
+    if (isAtlassianError(res)) {
       throw new Error(res.message)
     }
 
-    if ('errorMessages' in res) {
+    if (isJiraNoAccessError(res)) {
       throw new Error(res.errorMessages?.[0])
     }
 
@@ -694,17 +707,17 @@ export default abstract class AtlassianManager {
   async getScreenTabs(cloudId: string, screenId: string) {
     const res = (await this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs`
-    )) as JiraScreenTab[] | AtlassianError | JiraError
+    )) as JiraScreenTab[] | AtlassianError | JiraNoAccessError
 
     if (Array.isArray(res)) {
       return res
     }
 
-    if ('message' in res) {
+    if (isAtlassianError(res)) {
       throw new Error(res.message)
     }
 
-    if ('errorMessages' in res) {
+    if (isJiraNoAccessError(res)) {
       throw new Error(res.errorMessages?.[0])
     }
 
@@ -721,15 +734,15 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if ('message' in res) {
+    if (isAtlassianError(res)) {
       throw new Error(res.message)
     }
 
-    if ('errors' in res) {
+    if (isJiraFieldError(res)) {
       throw new Error(`Jira field error: ${res.errors[fieldId]}`)
     }
 
-    if ('errorMessages' in res) {
+    if (isJiraNoAccessError(res)) {
       throw new Error(res.errorMessages?.[0])
     }
 
@@ -750,15 +763,15 @@ export default abstract class AtlassianManager {
       return null
     }
 
-    if ('message' in res) {
+    if (isAtlassianError(res)) {
       throw new Error(res.message)
     }
 
-    if ('errors' in res) {
+    if (isJiraFieldError(res)) {
       throw new Error(`Jira field error: ${res.errors[fieldId]}`)
     }
 
-    if ('errorMessages' in res) {
+    if (isJiraNoAccessError(res)) {
       throw new Error(res.errorMessages?.[0])
     }
 
