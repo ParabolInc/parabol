@@ -294,7 +294,7 @@ const questions = [
   'What’s your spirit animal this week?',
   'If buying groceries were a game, what would be one of the loading screen tips?',
   'What’s one of your recent pet peeves?',
-  'How would your best friend describe you?’,
+  'How would your best friend describe you?',
   'Congratulations! You’ve been chosen to represent your country in a global competition. What sport or activity are you doing?'
 ]
 
