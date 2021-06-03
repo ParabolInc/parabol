@@ -225,9 +225,9 @@ abstract class SlackManager {
   }
 
   updateMessage(channelId: string, blocks: string | Array<{type: string}>, ts: string) {
-    const stringifiedBlocks = JSON.stringify(blocks)
+    const newBlocks = typeof blocks === 'string' ? blocks : JSON.stringify(blocks)
     return this.get<UpdateMessageResponse>(
-      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&blocks=${stringifiedBlocks}&ts=${ts}`
+      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&blocks=${newBlocks}&ts=${ts}`
     )
   }
 }

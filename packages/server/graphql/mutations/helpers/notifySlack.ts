@@ -120,8 +120,13 @@ export const startSlackMeeting = async (
 }
 
 const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
-  if ('reflectionCount' in meeting) {
-    const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
+  if (meeting.meetingType === 'retrospective') {
+    const {
+      commentCount = 0,
+      reflectionCount = 0,
+      topicCount = 0,
+      taskCount = 0
+    } = meeting as MeetingRetrospective
     return `Your team shared ${reflectionCount} ${plural(
       reflectionCount,
       'reflection'
@@ -129,8 +134,14 @@ const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingP
       commentCount,
       'comment'
     )} and created ${taskCount} ${plural(taskCount, 'task')}.`
-  } else if ('agendaItemCount' in meeting) {
-    const {createdAt, endedAt, agendaItemCount = 0, commentCount = 0, taskCount = 0} = meeting
+  } else if (meeting.meetingType === 'action') {
+    const {
+      createdAt,
+      endedAt,
+      agendaItemCount = 0,
+      commentCount = 0,
+      taskCount = 0
+    } = meeting as MeetingAction
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
       max: 2,
@@ -145,7 +156,7 @@ const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingP
       'comment'
     )}.`
   } else {
-    const estimatePhase = meeting.phases.find(
+    const estimatePhase = (meeting as MeetingPoker).phases.find(
       (phase) => phase.phaseType === 'ESTIMATE'
     ) as EstimatePhase
     const stages = estimatePhase.stages
@@ -154,36 +165,59 @@ const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingP
   }
 }
 
-export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderWorker) => {
+const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
+  const {id: meetingId} = meeting
   const searchParams = {
     utm_source: 'slack summary',
     utm_medium: 'product',
     utm_campaign: 'after-meeting'
   }
   const options = {searchParams}
-  const [team, meeting] = await Promise.all([
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('newMeetings').load(meetingId)
-  ])
   const summaryUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
-  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/1`)
-  const pokerUrl = makeAppURL(appOrigin, `meet/${meetingId}/estimate/1`)
-  const summaryText = getSummaryText(meeting)
-  const {name: teamName} = team
-  const {meetingType, name: meetingName} = meeting
-  const discussionButton = {
-    text: meetingType === 'poker' ? 'See estimates' : 'See discussion',
-    url: meetingType === 'poker' ? pokerUrl : meetingUrl
-  } as const
+  const makeDiscussionButton = (meetingUrl: string) => ({
+    text: 'See discussion',
+    url: meetingUrl
+  })
   const summaryButton = {
     text: 'Review summary',
     url: summaryUrl
   } as const
+  switch (meeting.meetingType) {
+    case 'retrospective':
+      const retroUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/1`)
+      return makeButtons([makeDiscussionButton(retroUrl), summaryButton])
+    case 'action':
+      const checkInUrl = makeAppURL(appOrigin, `meet/${meetingId}/checkin/1`)
+      return makeButtons([makeDiscussionButton(checkInUrl), summaryButton])
+    case 'poker':
+      const pokerUrl = makeAppURL(appOrigin, `meet/${meetingId}/estimate/1`)
+      const estimateButton = {
+        text: 'See estimates',
+        url: pokerUrl
+      }
+      return makeButtons([estimateButton, summaryButton])
+    default:
+      throw new Error('Invalid meeting type')
+  }
+}
+
+export const endSlackMeeting = async (
+  meetingId: string,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const [team, meeting] = await Promise.all([
+    dataLoader.get('teams').load(teamId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
+  const summaryText = getSummaryText(meeting)
+  const {name: teamName} = team
+  const {name: meetingName} = meeting
   const blocks = [
     makeSection('Meeting completed :tada:'),
     makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
     makeSection(summaryText),
-    makeButtons([discussionButton, summaryButton])
+    makeEndMeetingButtons(meeting)
   ]
   notifySlack('meetingEnd', dataLoader, teamId, blocks).catch(console.log)
 }
