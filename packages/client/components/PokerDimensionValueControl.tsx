@@ -9,7 +9,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import {setFinalScoreError} from '../hooks/useSetFinalScoreError'
+import useSetFinalScoreError, {setFinalScoreError} from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import {PokerSetFinalScoreMutationResponse} from '../__generated__/PokerSetFinalScoreMutation.graphql'
@@ -79,6 +79,8 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
+const MissingJiraFieldError = `Update failed! In Jira, add the field`
+
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
   const {id: stageId, dimensionRef, finalScoreError, meetingId, service, serviceField} = stage
@@ -94,17 +96,18 @@ const PokerDimensionValueControl = (props: Props) => {
   const canUpdate =
     pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
+  useSetFinalScoreError(stageId, error)
 
   useLayoutEffect(() => {
-    setPendingScore(finalScore)
     lastServiceFieldNameRef.current = serviceFieldName
-  }, [finalScore])
+  }, [serviceFieldName])
   useEffect(() => {
-    if (error) {
+    // reset the pending score only if error is not related to missing Jira field, otherwise we need the value to update once Jira is 'fixed'
+    if (error && !error.message.includes(MissingJiraFieldError)) {
       // we want this for remote errors but not local errors, so we keep the 2 in different vars
       setPendingScore(finalScore)
     }
-  }, [error])
+  }, [error, finalScore])
   const submitScore = () => {
     if (submitting || !canUpdate) return
     submitMutation()
@@ -113,7 +116,7 @@ const PokerDimensionValueControl = (props: Props) => {
       onCompleted(res as any, errors)
       const {pokerSetFinalScore} = res
       const {error} = pokerSetFinalScore
-      if (error?.message.includes(`Update failed! In Jira, add the field`)) {
+      if (error?.message.includes(MissingJiraFieldError)) {
         openPortal()
       }
     }

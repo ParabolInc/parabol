@@ -86,7 +86,7 @@ const AddMissingJiraFieldModal = (props: Props) => {
           onCompleted: (res, errors) => {
             onCompleted(res, errors)
 
-            if (!errors) {
+            if (!res?.addMissingJiraField?.error) {
               closePortal()
               submitScore()
             }
