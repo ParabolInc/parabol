@@ -15,7 +15,7 @@ import useTooltip from '../hooks/useTooltip'
 import {TransitionStatus} from '../hooks/useTransition'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, Card} from '../types/constEnums'
+import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {MeetingCard_meeting} from '../__generated__/MeetingCard_meeting.graphql'
@@ -34,14 +34,13 @@ const CardWrapper = styled('div')<{
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: Elevation.CARD_SHADOW,
   flexShrink: 0,
-  left,
-  top,
   maxWidth: '100%',
-  transition: `all 300ms ${BezierCurve.DECELERATE}, box-shadow 100ms ${BezierCurve.DECELERATE}`,
+  transform: maybeTabletPlus ? `translate(${left}px, ${top}px)` : undefined,
+  transition: `transform 300ms ${BezierCurve.DECELERATE}, box-shadow 100ms ${BezierCurve.DECELERATE}`,
   marginBottom: maybeTabletPlus ? 0 : 16,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   position: maybeTabletPlus ? 'absolute' : 'inherit',
-  width: maybeTabletPlus ? 320 : '100%',
+  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
   userSelect: 'none',
   ':hover': {
     boxShadow: Elevation.CARD_SHADOW_HOVER
