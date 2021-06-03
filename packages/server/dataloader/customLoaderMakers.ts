@@ -9,6 +9,11 @@ import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import {ThreadSource, ThreadSourceEnum} from '../database/types/ThreadSource'
+import getPg from '../postgres/getPg'
+import {
+  getThreadsByIdQuery,
+  IGetThreadsByIdQueryResult
+} from '../postgres/queries/generated/getThreadsByIdQuery'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -284,6 +289,19 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+// TODO abstract this out so we can use this easier with PG
+export const threads = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, IGetThreadsByIdQueryResult | null, string>(
+    async (keys) => {
+      const rows = await getThreadsByIdQuery.run({ids: keys as string[]}, getPg())
+      return keys.map((key) => rows.find((row) => row.id === key) || null)
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

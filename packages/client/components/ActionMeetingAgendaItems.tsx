@@ -1,11 +1,9 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
-
-import styled from '@emotion/styled'
-
+import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
@@ -54,8 +52,8 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {showSidebar, id: meetingId, endedAt, localStage} = meeting
-  const {agendaItem, agendaItemId} = localStage
+  const {id: meetingId, showSidebar, endedAt, localStage} = meeting
+  const {agendaItem, threadId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   // optimistic updater could remove the agenda item
@@ -81,8 +79,8 @@ const ActionMeetingAgendaItems = (props: Props) => {
           <ThreadColumn isDesktop={isDesktop}>
             <DiscussionThreadRoot
               meetingContentRef={meetingContentRef}
+              threadId={threadId!}
               meetingId={meetingId}
-              threadSourceId={agendaItemId!}
             />
           </ThreadColumn>
           <EditorHelpModalContainer />
@@ -94,7 +92,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
 
 graphql`
   fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
-    agendaItemId
+    threadId
     agendaItem {
       content
       teamMember {

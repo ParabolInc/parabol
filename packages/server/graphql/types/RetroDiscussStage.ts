@@ -1,9 +1,9 @@
-import {GraphQLID, GraphQLObjectType, GraphQLFloat, GraphQLNonNull} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
+import {GQLContext} from '../graphql'
+import {makeResolve} from '../resolvers'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
-import {makeResolve} from '../resolvers'
-import {GQLContext} from '../graphql'
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 
 const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroDiscussStage',
@@ -24,6 +24,10 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order for reprioritizing discussion topics'
+    },
+    threadId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID to find the thread that goes in the stage'
     }
   })
 })

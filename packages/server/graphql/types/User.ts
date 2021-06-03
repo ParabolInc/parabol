@@ -238,12 +238,8 @@ const User = new GraphQLObjectType<any, GQLContext>({
       args: {
         id: {
           type: GraphQLNonNull(GraphQLID),
-          description: 'The ID of the thread source'
+          description: 'The ID of the thread'
         },
-        // type: {
-        //   type: GraphQLNonNull(ThreadSourceEnum),
-        //   description: 'The type of item the ID refers to'
-        // },
         first: {
           type: GraphQLInt,
           description: 'How many items to show. optional if only comments are desired'
@@ -254,7 +250,23 @@ const User = new GraphQLObjectType<any, GQLContext>({
         }
       },
       description: 'the comments and tasks created from the discussion',
-      resolve: async (_source, {id, first, after}, {dataLoader}) => {
+      resolve: async (_source, {id, first, after}, {authToken, dataLoader}) => {
+        // VALIDATE
+        const thread = await dataLoader.get('threads').load(id)
+        if (!thread) {
+          return {
+            error: 'Thread does not exist',
+            edges: []
+          }
+        }
+        const {teamId} = thread
+        if (!isTeamMember(authToken, teamId)) {
+          return {
+            error: 'Not on team',
+            edges: []
+          }
+        }
+
         return resolveThread({id}, {first, after}, {dataLoader})
       }
     },

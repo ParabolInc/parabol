@@ -20,6 +20,10 @@ const AgendaItemsStage = new GraphQLObjectType<any, GQLContext>({
       resolve: ({agendaItemId}, _args, {dataLoader}) => {
         return dataLoader.get('agendaItems').load(agendaItemId)
       }
+    },
+    threadId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID to find the thread that goes in the stage'
     }
   })
 })

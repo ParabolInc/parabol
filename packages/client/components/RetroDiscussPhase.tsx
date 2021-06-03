@@ -136,7 +136,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const [callbackRef, phaseRef] = useCallbackRef()
   const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
-  const {reflectionGroup} = localStage
+  const {reflectionGroup, threadId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
 
@@ -149,7 +149,7 @@ const RetroDiscussPhase = (props: Props) => {
 
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
-  const {id: reflectionGroupId, voteCount} = reflectionGroup
+  const {voteCount} = reflectionGroup
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
@@ -207,8 +207,8 @@ const RetroDiscussPhase = (props: Props) => {
               <ThreadColumn isDesktop={isDesktop}>
                 <DiscussionThreadRoot
                   meetingContentRef={phaseRef}
+                  threadId={threadId!}
                   meetingId={meetingId}
-                  threadSourceId={reflectionGroupId!}
                 />
               </ThreadColumn>
             </ColumnsContainer>
@@ -224,6 +224,7 @@ graphql`
   fragment RetroDiscussPhase_stage on NewMeetingStage {
     ... on RetroDiscussStage {
       isComplete
+      threadId
       reflectionGroup {
         ...ReflectionGroup_reflectionGroup
         id

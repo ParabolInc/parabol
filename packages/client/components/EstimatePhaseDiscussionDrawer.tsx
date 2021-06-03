@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {desktopSidebarShadow} from '~/styles/elevation'
+import {PALETTE} from '~/styles/paletteV3'
+import {ICON_SIZE} from '~/styles/typographyV2'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
-import {PALETTE} from '~/styles/paletteV3'
+import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
-import Icon from './Icon'
-import {ICON_SIZE} from '~/styles/typographyV2'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -81,7 +81,7 @@ interface Props {
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, isOpen, meeting, onToggle} = props
   const {id: meetingId, localStage} = meeting
-  const {serviceTaskId} = localStage
+  const {threadId} = localStage
 
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen}>
@@ -92,7 +92,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         </StyledCloseButton>
       </Header>
       <ThreadColumn>
-        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={serviceTaskId!} />
+        <DiscussionThreadRoot threadId={threadId!} meetingId={meetingId} />
       </ThreadColumn>
     </Drawer>
   )
@@ -100,7 +100,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
 
 graphql`
   fragment EstimatePhaseDiscussionDrawerStage on EstimateStage {
-    serviceTaskId
+    threadId
   }
 `
 export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {

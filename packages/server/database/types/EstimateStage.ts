@@ -1,7 +1,8 @@
+import generateUID from '../../generateUID'
 import EstimateUserScore from './EstimateUserScore'
-import GenericMeetingStage from './GenericMeetingStage'
+import GenericMeetingStage, {GenericMeetingStageInput} from './GenericMeetingStage'
 
-interface Input {
+interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   creatorUserId: string
   service: string
   serviceTaskId: string
@@ -10,6 +11,7 @@ interface Input {
   dimensionRefIdx: number
   scores?: EstimateUserScore[]
   finalScore?: number
+  threadId?: string
 }
 
 export default class EstimateStage extends GenericMeetingStage {
@@ -21,9 +23,18 @@ export default class EstimateStage extends GenericMeetingStage {
   finalScore?: number
   scores: EstimateUserScore[]
   isVoting: boolean
+  threadId: string
   constructor(input: Input) {
-    super('ESTIMATE', input.durations)
-    const {creatorUserId, service, serviceTaskId, sortOrder, scores, dimensionRefIdx} = input
+    super({phaseType: 'ESTIMATE', durations: input.durations})
+    const {
+      creatorUserId,
+      service,
+      serviceTaskId,
+      sortOrder,
+      scores,
+      dimensionRefIdx,
+      threadId
+    } = input
     this.creatorUserId = creatorUserId
     this.service = service
     this.serviceTaskId = serviceTaskId
@@ -33,5 +44,6 @@ export default class EstimateStage extends GenericMeetingStage {
     this.isNavigableByFacilitator = true
     this.isVoting = true
     this.dimensionRefIdx = dimensionRefIdx
+    this.threadId = threadId ?? generateUID()
   }
 }

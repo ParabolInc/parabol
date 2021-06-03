@@ -85,6 +85,10 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order for reprioritizing discussion topics'
     },
+    threadId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID to find the thread that goes in the stage'
+    },
     dimensionRefIdx: {
       type: GraphQLNonNull(GraphQLInt),
       description: 'The immutable index of the dimensionRef tied to this stage'

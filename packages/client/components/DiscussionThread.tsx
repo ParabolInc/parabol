@@ -30,12 +30,12 @@ const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
 
 interface Props {
   meetingContentRef?: RefObject<HTMLDivElement>
-  threadSourceId: string
+  threadId: string
   viewer: DiscussionThread_viewer
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, threadSourceId, viewer} = props
+  const {meetingContentRef, threadId, viewer} = props
   const thread = viewer.thread!
   const meeting = viewer.meeting!
   const {endedAt, meetingType, replyingToCommentId} = meeting
@@ -62,11 +62,12 @@ const DiscussionThread = (props: Props) => {
       undefined,
       meetingType
     ) || !!endedAt
+  // FIXME: threadSourceId needs to be refactored to threadId below
   return (
     <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
       <DiscussionThreadList
         dataCy='discuss-thread-list'
-        threadSourceId={threadSourceId}
+        threadSourceId={threadId}
         meeting={meeting}
         preferredNames={preferredNames}
         threadables={threadables}
@@ -79,7 +80,7 @@ const DiscussionThread = (props: Props) => {
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
         meeting={meeting}
-        threadSourceId={threadSourceId}
+        threadSourceId={threadId}
       />
     </Wrapper>
   )
@@ -88,7 +89,7 @@ const DiscussionThread = (props: Props) => {
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
-      thread(id: $threadSourceId, first: 1000) @connection(key: "DiscussionThread_thread") {
+      thread(id: $threadId, first: 1000) @connection(key: "DiscussionThread_thread") {
         commentors {
           id
           preferredName

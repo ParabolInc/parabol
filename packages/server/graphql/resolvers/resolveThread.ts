@@ -7,7 +7,6 @@ const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
     dataLoader.get('commentsByThreadId').load(threadSourceId),
     dataLoader.get('tasksByThreadId').load(threadSourceId)
   ])
-  // type Item = IThreadable & {threadSortOrder: NonNullable<number>}
   const threadables = [...comments, ...tasks] as Threadable[]
   const threadablesByParentId = {} as {[parentId: string]: Threadable[]}
 

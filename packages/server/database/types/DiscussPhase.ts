@@ -5,6 +5,6 @@ export default class DiscussPhase extends GenericMeetingPhase {
   stages: DiscussStage[]
   constructor(durations: number[] | undefined) {
     super('discuss')
-    this.stages = [new DiscussStage(0, durations)]
+    this.stages = [new DiscussStage({sortOrder: 0, durations, reflectionGroupId: ''})]
   }
 }

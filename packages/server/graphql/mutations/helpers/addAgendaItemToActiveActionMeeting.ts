@@ -26,7 +26,7 @@ const addAgendaItemToActiveActionMeeting = async (
   if (!agendaItemPhase) return undefined
 
   const {stages} = agendaItemPhase
-  const newStage = new AgendaItemsStage(agendaItemId)
+  const newStage = new AgendaItemsStage({agendaItemId})
   newStage.isNavigable = true
   newStage.isNavigableByFacilitator = true
   stages.push(newStage)

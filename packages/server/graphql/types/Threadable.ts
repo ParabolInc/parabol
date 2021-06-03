@@ -83,6 +83,10 @@ const {connectionType, edgeType} = connectionDefinitions({
     }
   }),
   connectionFields: () => ({
+    error: {
+      type: GraphQLString,
+      description: 'Any errors that prevented the query from returning the full results'
+    },
     commentorIds: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
       description: 'A list of userIds currently commenting',

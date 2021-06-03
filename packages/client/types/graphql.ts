@@ -44164,7 +44164,7 @@ export interface ITimelineOnUserArguments {
 
 export interface IThreadOnUserArguments {
   /**
-   * The ID of the thread source
+   * The ID of the thread
    */
   id: string;
 
@@ -44642,6 +44642,11 @@ export interface IThreadableConnection {
    * A list of edges.
    */
   edges: Array<IThreadableEdge>;
+
+  /**
+   * Any errors that prevented the query from returning the full results
+   */
+  error: string | null;
 
   /**
    * A list of userIds currently commenting
@@ -47756,6 +47761,11 @@ export interface IRetroDiscussStage {
    * The sort order for reprioritizing discussion topics
    */
   sortOrder: number;
+
+  /**
+   * The ID to find the thread that goes in the stage
+   */
+  threadId: string;
 }
 
 /**
@@ -48294,6 +48304,11 @@ export interface IEstimateStage {
   sortOrder: number;
 
   /**
+   * The ID to find the thread that goes in the stage
+   */
+  threadId: string;
+
+  /**
    * The immutable index of the dimensionRef tied to this stage
    */
   dimensionRefIdx: number;
@@ -48556,6 +48571,11 @@ export interface IAgendaItemsStage {
    */
   agendaItemId: string;
   agendaItem: IAgendaItem;
+
+  /**
+   * The ID to find the thread that goes in the stage
+   */
+  threadId: string;
 }
 
 /**
