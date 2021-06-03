@@ -87,18 +87,17 @@ const addMissingJiraField = {
     const {fieldType, fieldId, fieldName} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
-    if (!('values' in screensResponse)) {
-      if (isAtlassianError(screensResponse)) {
-        return {error: {message: screensResponse.message}}
-      }
-
-      if (isJiraNoAccessError(screensResponse)) {
-        return {error: {message: screensResponse.errorMessages?.[0]}}
-      }
-
-      return {error: {message: "Couldn't fetch project screens!"}}
+    if (isAtlassianError(screensResponse)) {
+      return {error: {message: screensResponse.message}}
     }
 
+    if (isJiraNoAccessError(screensResponse)) {
+      return {error: {message: screensResponse.errorMessages?.[0]}}
+    }
+
+    if (!('values' in screensResponse)) {
+      return {error: {message: "Couldn't fetch project screens!"}}
+    }
     const {values: screens} = screensResponse
     // we're trying to guess what's the probability that given screen is assigned to an issue project
     const evaluateProbability = (screen: JiraScreen) => {
