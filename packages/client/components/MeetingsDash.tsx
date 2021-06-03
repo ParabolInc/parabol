@@ -9,7 +9,7 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useInitialRender from '../hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '../hooks/useTransition'
-import {Breakpoint, Layout} from '../types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import useCardsPerRow from '../hooks/useCardsPerRow'
@@ -67,12 +67,12 @@ const MeetingsDash = (props: Props) => {
     }))
   }, [teams])
   const transitioningMeetings = useTransition(activeMeetings)
-  const maybeBigDisplay = useBreakpoint(1900)
+  const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
+  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const isInit = useInitialRender()
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const memodMeetings = useDeepEqual(activeMeetings)
   const topByRow = useTopPerRow(cardsPerRow, memodMeetings)
-  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const hasMeetings = activeMeetings.length > 0
   const totalRows = !memodMeetings.length ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
   useDocumentTitle('Meetings | Parabol', 'Meetings')
@@ -80,16 +80,27 @@ const MeetingsDash = (props: Props) => {
   return (
     <>
       {hasMeetings ? (
-        <Wrapper maybeTabletPlus={maybeTabletPlus} minHeight={272 * totalRows + 16}>
+        <Wrapper
+          maybeTabletPlus={maybeTabletPlus}
+          minHeight={
+            ElementHeight.MEETING_CARD_WITH_MARGIN * totalRows + ElementHeight.MEETING_CARD_MARGIN
+          }
+        >
           {transitioningMeetings.map((meeting, idx) => {
             const rowIdx = Math.floor(idx / cardsPerRow)
             const topForAvatars = topByRow[rowIdx]?.top || 0
-            const leftMargin = maybeBigDisplay ? 40 : 16
+            const leftMargin = maybeBigDisplay
+              ? ElementWidth.MEETING_CARD_LARGE_MARGIN
+              : ElementWidth.MEETING_CARD_MARGIN
             return (
               <MeetingCard
                 key={meeting.child.createdAt}
-                left={336 * (idx % cardsPerRow) + leftMargin}
-                top={272 * rowIdx + 16 + topForAvatars}
+                left={ElementWidth.MEETING_CARD_WITH_MARGIN * (idx % cardsPerRow) + leftMargin}
+                top={
+                  ElementHeight.MEETING_CARD_WITH_MARGIN * rowIdx +
+                  ElementHeight.MEETING_CARD_MARGIN +
+                  topForAvatars
+                }
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={isInit ? TransitionStatus.ENTERED : meeting.status}
