@@ -32,7 +32,8 @@ function getPairNeFields(
   rethinkRow: RethinkDoc,
   pgRow: PGDoc,
   alwaysDefinedFields: string[],
-  maybeUndefinedFieldsDefaultValues: {[key: string]: any}
+  maybeUndefinedFieldsDefaultValues: {[key: string]: any},
+  maybeNullFieldsDefaultValues?: {[key: string]: any}
 ): string[] {
   const neFields = [] as string[]
 
@@ -45,7 +46,15 @@ function getPairNeFields(
   for (const [f, defaultValue] of Object.entries(maybeUndefinedFieldsDefaultValues)) {
     const [rethinkValue, pgValue] = [rethinkRow[f], pgRow[f]]
     if (rethinkValue !== undefined) {
-      if (!areEqual(rethinkValue, pgValue)) {
+      if (
+        rethinkValue === null &&
+        maybeNullFieldsDefaultValues &&
+        maybeNullFieldsDefaultValues[f] !== undefined
+      ) {
+        if (!areEqual(maybeNullFieldsDefaultValues[f], pgValue)) {
+          neFields.push(f)
+        }
+      } else if (!areEqual(rethinkValue, pgValue)) {
         neFields.push(f)
       }
     } else {
@@ -92,6 +101,7 @@ export async function checkTableEq(
   pgQuery: (ids: string[]) => Promise<PGDoc[] | null>,
   alwaysDefinedFields: string[],
   maybeUndefinedFieldsDefaultValues: {[key: string]: any},
+  maybeNullFieldsDefaultValues: {[key: string]: any},
   maxErrors = 10
 ): Promise<IError> {
   const errors: IError = {
@@ -139,7 +149,8 @@ export async function checkTableEq(
         rethinkRow,
         pgRow,
         alwaysDefinedFields,
-        maybeUndefinedFieldsDefaultValues
+        maybeUndefinedFieldsDefaultValues,
+        maybeNullFieldsDefaultValues
       )
 
       if (neFields.length) {
