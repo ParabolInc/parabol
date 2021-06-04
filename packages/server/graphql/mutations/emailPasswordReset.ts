@@ -1,6 +1,6 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
@@ -15,11 +15,12 @@ import resetPasswordEmailCreator from '../../email/resetPasswordEmailCreator'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import updateUser from '../../postgres/queries/updateUser'
+import EmailPassWordResetPayload from '../types/EmailPasswordResetPayload'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
 const emailPasswordReset = {
-  type: new GraphQLNonNull(GraphQLBoolean),
+  type: new GraphQLNonNull(EmailPassWordResetPayload),
   description: 'Send an email to reset a password',
   args: {
     email: {
@@ -55,6 +56,10 @@ const emailPasswordReset = {
       }).run()
       if (failOnAccount || failOnTime || !user) return true
       const {id: userId, identities} = user
+      const googleIdentity = identities.find(
+        (identity) => identity.type === AuthIdentityTypeEnum.GOOGLE
+      )
+      if (googleIdentity) return {error: {message: 'Try logging in with Google'}}
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal
@@ -85,7 +90,7 @@ const emailPasswordReset = {
         html,
         tags: ['type:resetPassword']
       })
-      return success
+      return {success}
     }
   )
 }

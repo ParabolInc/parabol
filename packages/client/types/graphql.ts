@@ -50416,7 +50416,7 @@ export interface IMutation {
   /**
    * Send an email to reset a password
    */
-  emailPasswordReset: boolean;
+  emailPasswordReset: EmailPasswordResetPayload;
 
   /**
    * Track which users are commenting
@@ -52990,6 +52990,18 @@ export interface IPokerMeetingMember {
    * true if the user is not voting and does not want their vote to count towards aggregates
    */
   isSpectating: boolean;
+}
+
+/**
+ * Return object for EmailPasswordResetPayload
+ */
+export type EmailPasswordResetPayload =
+  | IErrorPayload
+  | IEmailPasswordResetSuccess;
+
+export interface IEmailPasswordResetSuccess {
+  __typename: 'EmailPasswordResetSuccess';
+  success: boolean | null;
 }
 
 export interface IEditCommentingPayload {

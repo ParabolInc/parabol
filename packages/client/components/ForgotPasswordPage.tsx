@@ -85,7 +85,7 @@ const validateEmail = (email) => {
 const ForgotPasswordPage = (props: Props) => {
   const {gotoPage} = props
   const [isSent, setIsSent] = useState(false)
-  const {submitMutation, submitting, onCompleted} = useMutationProps()
+  const {submitMutation, submitting, onCompleted, error, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
     email: {
@@ -115,8 +115,8 @@ const ForgotPasswordPage = (props: Props) => {
       atmosphere,
       {email},
       {
-        onCompleted: () => { },
-        onError: () => { }
+        onCompleted,
+        onError
       }
     )
     onCompleted()
