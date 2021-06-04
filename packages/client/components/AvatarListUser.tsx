@@ -16,12 +16,11 @@ const Wrapper = styled('div')<{offset: number; isColumn?: boolean}>(({offset, is
 }))
 
 const StyledAvatar = styled(Avatar)<{
-  exitSpeed?: number
   status?: TransitionStatus
   isAnimated: boolean
   borderColor?: string
   width: number
-}>(({exitSpeed = 300, status, isAnimated, borderColor = '#fff', width}) => ({
+}>(({status, isAnimated, borderColor = '#fff', width}) => ({
   border: `${width >= 40 ? '3px' : '2px'} solid ${borderColor}`,
   opacity: !isAnimated
     ? undefined
@@ -33,7 +32,7 @@ const StyledAvatar = styled(Avatar)<{
     : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
     ? 'scale(0)'
     : 'scale(1)',
-  transition: `all ${exitSpeed}ms ${BezierCurve.DECELERATE}`
+  transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 
 interface Props {
@@ -47,7 +46,6 @@ interface Props {
   width: number
   onClick?: () => void
   borderColor?: string
-  exitSpeed?: number
 }
 
 const AvatarListUser = (props: Props) => {
@@ -61,7 +59,6 @@ const AvatarListUser = (props: Props) => {
     isAnimated,
     width,
     onClick,
-    exitSpeed,
     borderColor
   } = props
   const {picture, preferredName} = user
@@ -85,7 +82,6 @@ const AvatarListUser = (props: Props) => {
         size={width}
         isAnimated={isAnimated}
         borderColor={borderColor}
-        exitSpeed={exitSpeed}
         width={width}
       />
       {tooltipPortal(preferredName)}

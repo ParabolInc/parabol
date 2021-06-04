@@ -1,4 +1,4 @@
-import {useMemo, useRef} from 'react'
+import {useMemo, useEffect, useRef} from 'react'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import useEventCallback from './useEventCallback'
 import useForceUpdate from './useForceUpdate'
@@ -21,6 +21,16 @@ interface TransitionChild<T = {key: Key}> {
 const useTransition = <T extends {key: Key}>(children: T[]) => {
   const previousTransitionChildrenRef = useRef<TransitionChild<T>[]>([])
   const forceUpdate = useForceUpdate()
+
+  useEffect(() => {
+    return () => {
+      const {current: prevChildren} = previousTransitionChildrenRef
+      const activeChildren = prevChildren.filter(
+        (child) => child.status !== TransitionStatus.EXITING
+      )
+      previousTransitionChildrenRef.current = activeChildren
+    }
+  }, [children])
 
   const transitionEndFactory = useEventCallback((key: Key) => (e?: React.TransitionEvent) => {
     // animations must live in the outermost element if triggered on onTransitionEnd

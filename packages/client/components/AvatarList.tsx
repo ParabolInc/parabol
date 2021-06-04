@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
+import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
 import {AvatarList_users} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
@@ -41,26 +42,19 @@ interface Props {
   emptyEl?: ReactElement
   isAnimated?: boolean
   borderColor?: string
-  exitSpeed?: number
 }
 
 const AvatarList = (props: Props) => {
-  const {
-    users,
-    onUserClick,
-    onOverflowClick,
-    size,
-    emptyEl,
-    isAnimated,
-    borderColor,
-    exitSpeed
-  } = props
+  const {users, onUserClick, onOverflowClick, size, emptyEl, isAnimated, borderColor} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const overlap = widthToOverlap[size]
   const offsetSize = size - overlap
   const transitionChildren = useOverflowAvatars(rowRef, users, size, overlap)
   const showAnimated = isAnimated ?? true
-  const minHeight = transitionChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
+  const activeTChildren = transitionChildren.filter(
+    (child) => child.status !== TransitionStatus.EXITING
+  )
+  const minHeight = activeTChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
   return (
     <Wrapper ref={rowRef} minHeight={minHeight} size={size}>
       {transitionChildren.length === 0 && emptyEl}
@@ -71,7 +65,6 @@ const AvatarList = (props: Props) => {
           return (
             <OverflowAvatar
               key={userId}
-              exitSpeed={exitSpeed}
               isAnimated={showAnimated}
               onTransitionEnd={onTransitionEnd}
               status={status}
@@ -86,7 +79,6 @@ const AvatarList = (props: Props) => {
         return (
           <AvatarListUser
             key={userId}
-            exitSpeed={exitSpeed}
             isAnimated={showAnimated}
             user={child}
             onClick={onUserClick ? () => onUserClick(userId) : undefined}

@@ -16,8 +16,7 @@ const OverflowCount = styled('div')<{
   isAnimated: boolean
   width: number
   borderColor?: string
-  exitSpeed?: number
-}>(({status, isAnimated, width, borderColor = '#fff', exitSpeed = 300}) => ({
+}>(({status, isAnimated, width, borderColor = '#fff'}) => ({
   alignItems: 'center',
   backgroundColor: PALETTE.SKY_400,
   border: `2px solid ${borderColor}`,
@@ -39,7 +38,7 @@ const OverflowCount = styled('div')<{
     : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
     ? 'scale(0)'
     : 'scale(1)',
-  transition: `all ${exitSpeed}ms ${BezierCurve.DECELERATE}`,
+  transition: `all 300ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
   width
 }))
@@ -53,7 +52,6 @@ interface Props {
   onClick?: () => void
   width: number
   borderColor?: string
-  exitSpeed?: number
 }
 
 const OverflowAvatar = (props: Props) => {
@@ -65,8 +63,7 @@ const OverflowAvatar = (props: Props) => {
     isAnimated,
     onClick,
     width,
-    borderColor,
-    exitSpeed
+    borderColor
   } = props
   const ref = useRef<HTMLDivElement>(null)
   const label = overflowCount >= 99 ? 99 : overflowCount
@@ -80,7 +77,6 @@ const OverflowAvatar = (props: Props) => {
         onTransitionEnd={onTransitionEnd}
         isAnimated={isAnimated}
         borderColor={borderColor}
-        exitSpeed={exitSpeed}
       >
         {label}
       </OverflowCount>
