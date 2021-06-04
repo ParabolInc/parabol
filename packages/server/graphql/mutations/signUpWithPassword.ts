@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
+import {GMAIL_SIGN_UP_ERROR} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import createEmailVerification from '../../email/createEmailVerification'
 import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
@@ -59,7 +60,7 @@ const signUpWithPassword = {
       }
       const {error} = loginAttempt
       if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-        return {error: {message: 'Try logging in with Google'}}
+        return {error: {message: GMAIL_SIGN_UP_ERROR}}
       } else if (error === AuthenticationError.INVALID_PASSWORD) {
         return {error: {message: 'User already exists'}}
       }

@@ -5,7 +5,13 @@ import {StandardMutation} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation EmailPasswordResetMutation($email: ID!) {
-    emailPasswordReset(email: $email)
+    emailPasswordReset(email: $email) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+    }
   }
 `
 const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation> = (

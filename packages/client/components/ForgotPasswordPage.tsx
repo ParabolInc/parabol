@@ -13,11 +13,15 @@ import AuthenticationDialog from './AuthenticationDialog'
 import {GotoAuthPage} from './GenericAuthentication'
 import DialogTitle from './DialogTitle'
 import {PALETTE} from '../styles/paletteV3'
-import IconLabel from './IconLabel'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {GMAIL_SIGN_UP_ERROR} from '../utils/constants'
+import SubmittedForgotPasswordDialog from './SubmittedForgotPasswordDialog'
+import useRouter from '../hooks/useRouter'
+import IconLabel from './IconLabel'
+import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 
 interface Props {
   email?: string
@@ -97,6 +101,9 @@ const ForgotPasswordPage = (props: Props) => {
       validate: validateEmail
     }
   })
+  const {match} = useRouter<{token: string}>()
+  const {params} = match
+  const {token} = params
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
@@ -134,51 +141,118 @@ const ForgotPasswordPage = (props: Props) => {
     gotoPage('signin', params.toString())
   }
 
+  const dialogCopyOptions = {
+    gmailErr: {
+      title: 'Oops!',
+      descriptionOne: 'It looks like you signed-up with Gmail.',
+      descriptionTwo: 'Try logging in with Google here:',
+      actionButton: <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
+    },
+    success: {
+      title: 'You’re all set!',
+      descriptionOne: 'We’ve sent you an email with password recovery instructions.',
+      descriptionTwo: (
+        <>
+          {'Didn’t get it? Check your spam folder, or '}
+          <LinkButton onClick={resetState}>click here</LinkButton>
+          {' to try again.'}
+        </>
+      ),
+      actionButton: (
+        <StyledPrimaryButton size='medium'>
+          <IconLabel icon='arrow_back' label='Back to Sign In' />
+        </StyledPrimaryButton>
+      )
+    }
+  } as const
+  const type = error ? (error.message === GMAIL_SIGN_UP_ERROR ? 'gmailErr' : 'samlErr') : 'success'
+  const dialogCopy = dialogCopyOptions[type] ?? dialogCopyOptions.gmailErr
+
   return (
     <AuthenticationDialog>
-      <DialogTitle>{isSent ? 'You’re all set!' : 'Forgot your password?'}</DialogTitle>
-      {!isSent && (
-        <DialogSubTitle>
-          <span>{isSent ? '' : 'Remember it? '}</span>
-          <BrandedLink onClick={gotoSignIn}>{isSent ? '' : 'Sign in with password'}</BrandedLink>
-        </DialogSubTitle>
+      {isSent ? (
+        <SubmittedForgotPasswordDialog dialogCopy={dialogCopy} />
+      ) : (
+        <>
+          <DialogTitle>{'Forgot your password?'}</DialogTitle>
+          <DialogSubTitle>
+            <span>{'Remember it? '}</span>
+            <BrandedLink onClick={gotoSignIn}>{'Sign in with password'}</BrandedLink>
+          </DialogSubTitle>
+          <Container>
+            <Fragment>
+              <P>
+                {
+                  'Confirm your email address, and we’ll send you an email with password recovery instructions.'
+                }
+              </P>
+              <Form onSubmit={onSubmit}>
+                <EmailInputField
+                  {...fields.email}
+                  autoFocus
+                  onChange={onChange}
+                  onBlur={handleBlur}
+                />
+                <SubmitButton size='medium' waiting={submitting}>
+                  {'Send Email'}
+                </SubmitButton>
+              </Form>
+            </Fragment>
+          </Container>
+        </>
       )}
-      <Container>
-        {isSent ? (
-          <Fragment>
-            <P>{'We’ve sent you an email with password recovery instructions.'}</P>
-            <P>
-              {'Didn’t get it? Check your spam folder, or '}
-              <LinkButton onClick={resetState}>click here</LinkButton>
-              {' to try again.'}
-            </P>
-            <StyledPrimaryButton onClick={gotoSignIn} size='medium'>
-              <IconLabel icon='arrow_back' label='Back to Sign In' />
-            </StyledPrimaryButton>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <P>
-              {
-                'Confirm your email address, and we’ll send you an email with password recovery instructions.'
-              }
-            </P>
-            <Form onSubmit={onSubmit}>
-              <EmailInputField
-                {...fields.email}
-                autoFocus
-                onChange={onChange}
-                onBlur={handleBlur}
-              />
-              <SubmitButton size='medium' waiting={submitting}>
-                {'Send Email'}
-              </SubmitButton>
-            </Form>
-          </Fragment>
-        )}
-      </Container>
     </AuthenticationDialog>
   )
+
+  // return (
+  //   <AuthenticationDialog>
+  //     {/* <DialogTitle>{isSent ? 'You’re all set!' : 'Forgot your password?'}</DialogTitle> */}
+  //     <DialogTitle>{isSent ? dialogCopy.title : 'Forgot your password?'}</DialogTitle>
+  //     {!isSent && (
+  //       <DialogSubTitle>
+  //         {/* <span>{isSent ? '' : 'Remember it? '}</span> */}
+  //         <span>{'Remember it? '}</span>
+  //         <BrandedLink onClick={gotoSignIn}>{isSent ? '' : 'Sign in with password'}</BrandedLink>
+  //       </DialogSubTitle>
+  //     )}
+  //     <Container>
+  //       {isSent ? (
+  //         <Fragment>
+  //           {/* <P>{'We’ve sent you an email with password recovery instructions.'}</P> */}
+  //           <P>{dialogCopy.descriptionOne}</P>
+  //           <P>
+  //             {/* {'Didn’t get it? Check your spam folder, or '}
+  //             <LinkButton onClick={resetState}>click here</LinkButton>
+  //             {' to try again.'} */}
+  //             {dialogCopy.descriptionTwo}
+  //           </P>
+  //           <StyledPrimaryButton onClick={gotoSignIn} size='medium'>
+  //             <IconLabel icon='arrow_back' label='Back to Sign In' />
+  //           </StyledPrimaryButton>
+  //         </Fragment>
+  //       ) : (
+  //         <Fragment>
+  //           <P>
+  //             {
+  //               'Confirm your email address, and we’ll send you an email with password recovery instructions.'
+  //             }
+  //           </P>
+  //           <Form onSubmit={onSubmit}>
+  //             <EmailInputField
+  //               {...fields.email}
+  //               autoFocus
+  //               onChange={onChange}
+  //               onBlur={handleBlur}
+  //             />
+  //             <SubmitButton size='medium' waiting={submitting}>
+  //               {'Send Email'}
+  //             </SubmitButton>
+  //           </Form>
+  //         </Fragment>
+  //       )}
+  //     </Container>
+  //   </AuthenticationDialog>
+  // )
 }
 
 export default ForgotPasswordPage

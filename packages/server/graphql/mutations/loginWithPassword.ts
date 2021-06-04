@@ -4,6 +4,7 @@ import {AuthenticationError} from 'parabol-client/types/constEnums'
 import rateLimit from '../rateLimit'
 import attemptLogin from './helpers/attemptLogin'
 import encodeAuthToken from '../../utils/encodeAuthToken'
+import {GMAIL_SIGN_UP_ERROR} from '../../../client/utils/constants'
 
 const loginWithPassword = {
   type: new GraphQLNonNull(LoginWithPasswordPayload),
@@ -27,7 +28,7 @@ const loginWithPassword = {
     }
     const {error} = loginAttempt
     if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-      return {error: {message: 'Try logging in with Google'}}
+      return {error: {message: GMAIL_SIGN_UP_ERROR}}
     } else if (
       error === AuthenticationError.INVALID_PASSWORD ||
       error === AuthenticationError.USER_NOT_FOUND

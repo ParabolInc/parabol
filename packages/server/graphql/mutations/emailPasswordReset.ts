@@ -16,6 +16,7 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import updateUser from '../../postgres/queries/updateUser'
 import EmailPassWordResetPayload from '../types/EmailPasswordResetPayload'
+import {GMAIL_SIGN_UP_ERROR} from '../../../client/utils/constants'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -59,7 +60,9 @@ const emailPasswordReset = {
       const googleIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.GOOGLE
       )
-      if (googleIdentity) return {error: {message: 'Try logging in with Google'}}
+      // if (googleIdentity) return {error: {message: 'Try logging in with Google'}}
+      // if (googleIdentity) return {error: {message: 'It looks like you signed up with Gmail.'}}
+      if (googleIdentity) return {error: {message: GMAIL_SIGN_UP_ERROR}}
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal
