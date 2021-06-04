@@ -83,7 +83,9 @@ const MeetingsDash = (props: Props) => {
         <Wrapper
           maybeTabletPlus={maybeTabletPlus}
           minHeight={
-            ElementHeight.MEETING_CARD_WITH_MARGIN * totalRows + ElementHeight.MEETING_CARD_MARGIN
+            ElementHeight.MEETING_CARD_WITH_MARGIN * totalRows +
+            ElementHeight.MEETING_CARD_MARGIN +
+            topByRow[totalRows - 1]?.top
           }
         >
           {transitioningMeetings.map((meeting, idx) => {
