@@ -22,8 +22,7 @@ graphql`
     sortOrder
     status
     tags
-    threadId
-    threadSource
+    discussionId
     threadSortOrder
     threadParentId
     updatedAt

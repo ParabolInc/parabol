@@ -20,9 +20,9 @@ import {GQLContext} from '../graphql'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
-import resolveThread from '../resolvers/resolveThread'
 import AuthIdentity from './AuthIdentity'
 import Company from './Company'
+import Discussion from './Discussion'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -34,7 +34,6 @@ import SuggestedAction from './SuggestedAction'
 import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
-import {ThreadableConnection} from './Threadable'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
@@ -233,41 +232,21 @@ const User = new GraphQLObjectType<any, GQLContext>({
         }
       }
     },
-    thread: {
-      type: GraphQLNonNull(ThreadableConnection),
+    discussion: {
+      type: Discussion,
       args: {
         id: {
           type: GraphQLNonNull(GraphQLID),
-          description: 'The ID of the thread'
-        },
-        first: {
-          type: GraphQLInt,
-          description: 'How many items to show. optional if only comments are desired'
-        },
-        after: {
-          type: GraphQLString,
-          description: 'the incrementing sort order in string format'
+          description: 'The ID of the discussion'
         }
       },
       description: 'the comments and tasks created from the discussion',
-      resolve: async (_source, {id, first, after}, {authToken, dataLoader}) => {
-        // VALIDATE
-        const thread = await dataLoader.get('threads').load(id)
-        if (!thread) {
-          return {
-            error: 'Thread does not exist',
-            edges: []
-          }
-        }
-        const {teamId} = thread
-        if (!isTeamMember(authToken, teamId)) {
-          return {
-            error: 'Not on team',
-            edges: []
-          }
-        }
-
-        return resolveThread({id}, {first, after}, {dataLoader})
+      resolve: async (_source, {id}, {authToken, dataLoader}) => {
+        const discussion = await dataLoader.get('discussions').load(id)
+        if (!discussion) return null
+        const {teamId} = discussion
+        if (!isTeamMember(authToken, teamId)) return null
+        return discussion
       }
     },
     newFeatureId: {

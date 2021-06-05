@@ -1,27 +1,23 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import Comment from '../../database/types/Comment'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
-import {ThreadSourceEnum} from '../../database/types/ThreadSource'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
-import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
 
 type AddCommentMutationVariables = {
   comment: {
-    threadSource: ThreadSourceEnum
-    threadId: string
+    discussionId: string
     content: string
     threadSortOrder: number
   }
-  meetingId: string
 }
 
 const addComment = {
@@ -31,15 +27,11 @@ const addComment = {
     comment: {
       type: GraphQLNonNull(AddCommentInput),
       description: 'A partial new comment'
-    },
-    meetingId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the meeting'
     }
   },
   resolve: async (
     _source,
-    {comment, meetingId}: AddCommentMutationVariables,
+    {comment}: AddCommentMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -48,19 +40,23 @@ const addComment = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const {threadId, threadSource} = comment
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const [meeting, viewerMeetingMember, threadError] = await Promise.all([
+    const {discussionId} = comment
+    const discussion = await dataLoader.get('discussions').load(discussionId)
+    if (!discussion) {
+      return {error: {message: 'Invalid discussion thread'}}
+    }
+    const {meetingId} = discussion
+    if (!meetingId) {
+      return {error: {message: 'Discussion does not take place in a meeting'}}
+    }
+    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+    const [meeting, viewerMeetingMember] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('meetingMembers').load(meetingMemberId),
-      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader)
+      dataLoader.get('meetingMembers').load(meetingMemberId)
     ])
 
     if (!viewerMeetingMember) {
       return {error: {message: 'Not a member of the meeting'}}
-    }
-    if (threadError) {
-      return {error: {message: threadError}}
     }
 
     // VALIDATION

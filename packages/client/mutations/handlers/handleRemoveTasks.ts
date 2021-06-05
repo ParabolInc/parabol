@@ -1,5 +1,5 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
+import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
 import {handleRemoveReply} from '~/mutations/DeleteCommentMutation'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 import ITask from '../../../server/database/types/Task'
@@ -17,7 +17,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const task = store.get<ITask>(taskId)
   if (!task) return
   const teamId = task.getValue('teamId')
-  const threadSourceId = task.getValue('threadId')
+  const discussionId = task.getValue('discussionId')
   const threadParentId = task.getValue('threadParentId')
   if (threadParentId) {
     handleRemoveReply(taskId, threadParentId, store)
@@ -33,7 +33,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   ]
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer, userIds, teamIds)
-  const threadSourceConn = getThreadSourceThreadConn(store, threadSourceId)
+  const threadSourceConn = getDiscussionThreadConn(store, discussionId)
   safeRemoveNodeFromConn(taskId, teamConn)
   safeRemoveNodeFromConn(taskId, userConn)
   archiveConns.forEach((archiveConn) => safeRemoveNodeFromConn(taskId, archiveConn))

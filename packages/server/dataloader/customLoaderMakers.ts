@@ -8,7 +8,6 @@ import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
-import {ThreadSource, ThreadSourceEnum} from '../database/types/ThreadSource'
 import getPg from '../postgres/getPg'
 import {
   getThreadsByIdQuery,
@@ -53,11 +52,6 @@ export interface ReactablesKey {
   type: ReactableEnum
 }
 
-export interface ThreadSourceKey {
-  sourceId: string
-  type: ThreadSourceEnum
-}
-
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -71,11 +65,6 @@ export interface MeetingTemplateKey {
 const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
   {type: 'REFLECTION', loader: 'retroReflections'}
-] as const
-
-const threadableLoaders = [
-  {type: 'AGENDA_ITEM', loader: 'agendaItems'},
-  {type: 'REFLECTION_GROUP', loader: 'retroReflectionGroups'}
 ] as const
 
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
@@ -102,12 +91,12 @@ export const serializeUserTasksKey = (key: UserTasksKey) => {
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
   return new DataLoader<string, number, string>(
-    async (threadIds) => {
+    async (discussionIds) => {
       const r = await getRethink()
       const groups = (await (r
         .table('Comment')
-        .getAll(r.args(threadIds as string[]), {index: 'threadId'})
-        .group('threadId') as any)
+        .getAll(r.args(discussionIds as string[]), {index: 'threadId'})
+        .group('discussionId') as any)
         .count()
         .ungroup()
         .run()) as {group: string; reduction: number}[]
@@ -115,7 +104,7 @@ export const commentCountByThreadId = (parent: RethinkDataLoader) => {
       groups.forEach(({group, reduction}) => {
         lookup[group] = reduction
       })
-      return threadIds.map((threadId) => lookup[threadId] || 0)
+      return discussionIds.map((discussionId) => lookup[discussionId] || 0)
     },
     {
       ...parent.dataLoaderOptions
@@ -140,26 +129,6 @@ export const reactables = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.id}:${key.type}`
-    }
-  )
-}
-
-export const threadSources = (parent: RethinkDataLoader) => {
-  return new DataLoader<ThreadSourceKey, ThreadSource, string>(
-    async (keys) => {
-      const threadableResults = (await Promise.all(
-        threadableLoaders.map(async (val) => {
-          const ids = keys.filter((key) => key.type === val.type).map(({sourceId}) => sourceId)
-          return parent.get(val.loader).loadMany(ids)
-        })
-      )) as ThreadSource[][]
-      const threadables = threadableResults.flat()
-      const keyIds = keys.map(({sourceId}) => sourceId)
-      return normalizeRethinkDbResults(keyIds, threadables)
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.sourceId}:${key.type}`
     }
   )
 }
@@ -294,7 +263,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
 }
 
 // TODO abstract this out so we can use this easier with PG
-export const threads = (parent: RethinkDataLoader) => {
+export const discussions = (parent: RethinkDataLoader) => {
   return new DataLoader<string, IGetThreadsByIdQueryResult | null, string>(
     async (keys) => {
       const rows = await getThreadsByIdQuery.run({ids: keys as string[]}, getPg())

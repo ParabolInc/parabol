@@ -1,18 +1,18 @@
 import {RecordProxy} from 'relay-runtime'
 import createProxyRecord from '../../utils/relay/createProxyRecord'
-import getThreadSourceThreadConn from '../connections/getThreadSourceThreadConn'
+import getDiscussionThreadConn from '../connections/getDiscussionThreadConn'
 
 interface Commentor {
   userId: string
   preferredName: string
 }
 const handleEditCommenting = (payload, store) => {
-  const threadId = payload.getValue('threadId')
+  const discussionId = payload.getValue('discussionId')
   const commentor = payload.getLinkedRecord('commentor')
   const commentorId = commentor.getValue('id')
   const preferredName = commentor.getValue('preferredName')
   const isCommenting = payload.getValue('isCommenting')
-  const thread = getThreadSourceThreadConn(store, threadId)
+  const thread = getDiscussionThreadConn(store, discussionId)
   if (!thread) return
   const commentors = thread.getLinkedRecords<Commentor[]>('commentors') || []
   if (commentors.length === 1 && !isCommenting) {

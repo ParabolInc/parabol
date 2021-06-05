@@ -11,6 +11,7 @@ import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -50,10 +51,11 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   maxWidth: 700
 }))
 
+const allowedThreadables: DiscussionThreadables[] = ['comment', 'task']
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {id: meetingId, showSidebar, endedAt, localStage} = meeting
-  const {agendaItem, threadId} = localStage
+  const {showSidebar, endedAt, localStage} = meeting
+  const {agendaItem, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   // optimistic updater could remove the agenda item
@@ -79,8 +81,9 @@ const ActionMeetingAgendaItems = (props: Props) => {
           <ThreadColumn isDesktop={isDesktop}>
             <DiscussionThreadRoot
               meetingContentRef={meetingContentRef}
-              threadId={threadId!}
-              meetingId={meetingId}
+              discussionId={discussionId!}
+              isReadOnly={!!endedAt}
+              allowedThreadables={allowedThreadables}
             />
           </ThreadColumn>
           <EditorHelpModalContainer />
@@ -92,7 +95,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
 
 graphql`
   fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
-    threadId
+    discussionId
     agendaItem {
       content
       teamMember {
@@ -106,7 +109,6 @@ graphql`
 export default createFragmentContainer(ActionMeetingAgendaItems, {
   meeting: graphql`
     fragment ActionMeetingAgendaItems_meeting on ActionMeeting {
-      id
       showSidebar
       endedAt
       facilitatorUserId

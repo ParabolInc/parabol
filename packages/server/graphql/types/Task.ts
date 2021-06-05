@@ -6,7 +6,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {ThreadSourceEnum} from '../../database/types/ThreadSource'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
@@ -27,18 +26,18 @@ const Task = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [Threadable, ThreadSource, Story],
   isTypeOf: ({status}) => !!status,
   fields: () => ({
-    ...threadableFields(),
+    ...(threadableFields() as any),
     ...storyFields(),
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',
-      resolve: (
-        {threadId, threadSource}: {threadId: string; threadSource: ThreadSourceEnum},
-        _args,
-        {dataLoader}
-      ) => {
-        const agendaId = threadSource === 'AGENDA_ITEM' ? threadId : undefined
-        return agendaId ? dataLoader.get('agendaItems').load(agendaId) : null
+      resolve: async ({discussionId}, _args, {dataLoader}) => {
+        if (!discussionId) return null
+        const discussion = await dataLoader.get('discussions').load(discussionId)
+        if (!discussion) return null
+        const {discussionTopicId, discussionTopicType} = discussion
+        if (discussionTopicType !== 'agendaItem') return null
+        return dataLoader.get('agendaItems').load(discussionTopicId)
       }
     },
     createdBy: {
@@ -59,15 +58,13 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     estimates: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
       description: 'A list of estimates for the story, created in a poker meeting',
-      resolve: ({estimates}) => estimates || []
+      resolve: (source: any) => source.estimates ?? []
     },
     editors: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEditorDetails))),
       description:
         'a list of users currently editing the task (fed by a subscription, so queries return null)',
-      resolve: ({editors = []}) => {
-        return editors
-      }
+      resolve: (source: any) => source.editors ?? []
     },
     integration: {
       type: TaskIntegration

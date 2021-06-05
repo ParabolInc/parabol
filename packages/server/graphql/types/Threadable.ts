@@ -12,7 +12,6 @@ import Comment from './Comment'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfo from './PageInfo'
 import Task from './Task'
-import ThreadSourceEnum from './ThreadSourceEnum'
 
 export const threadableFields = () => ({
   id: {
@@ -43,14 +42,16 @@ export const threadableFields = () => ({
     description: 'the replies to this threadable item',
     resolve: ({replies}) => replies || []
   },
-  threadId: {
+  discussionId: {
     type: GraphQLID,
-    description: 'The ID of the thread'
+    description: 'The ID of the discussion',
+    resolve: ({discussionId, threadId}) => discussionId || threadId
   },
-  threadSource: {
-    type: ThreadSourceEnum,
-    description: 'The item that spurred the threaded discussion'
-  },
+  // threadId: {
+  //   type: GraphQLID,
+  //   description: 'The ID of the thread',
+  //   deprecationReason: 'Use discussionId'
+  // },
   threadParentId: {
     type: GraphQLID,
     description: 'the parent, if this threadable is a reply, else null'

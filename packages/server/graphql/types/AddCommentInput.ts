@@ -1,12 +1,11 @@
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLNonNull,
-  GraphQLString,
-  GraphQLBoolean
+  GraphQLString
 } from 'graphql'
-import ThreadSourceEnum from './ThreadSourceEnum'
 
 const AddCommentInput = new GraphQLInputObjectType({
   name: 'AddCommentInput',
@@ -19,12 +18,9 @@ const AddCommentInput = new GraphQLInputObjectType({
       type: GraphQLBoolean,
       description: 'true if the comment should be anonymous'
     },
-    threadId: {
+    discussionId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'foreign key for the reflection group or agenda item this was created from'
-    },
-    threadSource: {
-      type: GraphQLNonNull(ThreadSourceEnum)
+      description: 'foreign key for the discussion this was created in'
     },
     threadSortOrder: {
       type: GraphQLNonNull(GraphQLFloat)

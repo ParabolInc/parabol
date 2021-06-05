@@ -12,9 +12,7 @@ export const storyFields = () => ({
     type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
     description: 'A list of users currently commenting',
     deprecationReason: 'Moved to ThreadConnection. Can remove Jun-01-2021',
-    resolve: ({commentors = []}) => {
-      return commentors
-    }
+    resolve: (source: any) => source.commentors ?? []
   },
   title: {
     type: GraphQLNonNull(GraphQLString),

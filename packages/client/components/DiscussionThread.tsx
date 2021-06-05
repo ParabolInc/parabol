@@ -8,39 +8,38 @@ import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.g
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
-import DiscussionThreadList from './DiscussionThreadList'
+import DiscussionThreadList, {DiscussionThreadables} from './DiscussionThreadList'
 
-const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
-  ({isExpanded, isPokerMeeting}) => ({
-    background: '#fff',
-    borderRadius: 4,
-    boxShadow: Elevation.DISCUSSION_THREAD,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '100%',
-    overflow: 'hidden',
-    width: isPokerMeeting ? '100%' : 'calc(100% - 16px)',
-    [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-      height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-      width: DiscussionThreadEnum.WIDTH
-    }
-  })
-)
+const Wrapper = styled('div')<{isExpanded: boolean; width?: string}>(({isExpanded, width}) => ({
+  background: '#fff',
+  borderRadius: 4,
+  boxShadow: Elevation.DISCUSSION_THREAD,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  height: '100%',
+  overflow: 'hidden',
+  width: width || '100%',
+  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+    width: DiscussionThreadEnum.WIDTH
+  }
+}))
 
 interface Props {
   meetingContentRef?: RefObject<HTMLDivElement>
-  threadId: string
+  isReadOnly: boolean
+  allowedThreadables: DiscussionThreadables[]
+  width?: string
   viewer: DiscussionThread_viewer
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, threadId, viewer} = props
-  const thread = viewer.thread!
-  const meeting = viewer.meeting!
-  const {endedAt, meetingType, replyingToCommentId} = meeting
-  const commentors = thread?.commentors ?? []
-  const isPokerMeeting = meetingType === 'poker'
+  const {meetingContentRef, isReadOnly, allowedThreadables, width, viewer} = props
+  const isDrawer = !!width // hack to say this is in a poker meeting
+  const discussion = viewer.discussion!
+  const {replyingToCommentId, thread} = discussion
+  const commentors = thread.commentors ?? []
   const preferredNames = useMemo(() => commentors.map(({preferredName}) => preferredName), [
     commentors
   ])
@@ -60,27 +59,30 @@ const DiscussionThread = (props: Props) => {
       MeetingControlBarEnum.HEIGHT,
       meetingContentRef,
       undefined,
-      meetingType
-    ) || !!endedAt
-  // FIXME: threadSourceId needs to be refactored to threadId below
+      isDrawer
+    ) || isReadOnly
+  // FIXME: threadSourceId needs to be refactored to discussionId below
   return (
-    <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
+    <Wrapper isExpanded={isExpanded} width={width} ref={ref}>
       <DiscussionThreadList
         dataCy='discuss-thread-list'
-        threadSourceId={threadId}
-        meeting={meeting}
+        discussion={discussion}
+        allowedThreadables={allowedThreadables}
+        isReadOnly={isReadOnly}
         preferredNames={preferredNames}
         threadables={threadables}
         ref={listRef}
         editorRef={editorRef}
+        viewer={viewer}
       />
       <DiscussionThreadInput
+        allowedThreadables={allowedThreadables}
         dataCy='discuss-input'
         editorRef={editorRef}
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
-        meeting={meeting}
-        threadSourceId={threadId}
+        discussion={discussion}
+        viewer={viewer}
       />
     </Wrapper>
   )
@@ -89,27 +91,27 @@ const DiscussionThread = (props: Props) => {
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
-      thread(id: $threadId, first: 1000) @connection(key: "DiscussionThread_thread") {
-        commentors {
-          id
-          preferredName
-        }
-        edges {
-          node {
-            threadSortOrder
-            threadId
-            threadSource
-            ...DiscussionThreadList_threadables
-            threadSortOrder
+      ...DiscussionThreadInput_viewer
+      ...DiscussionThreadList_viewer
+      discussion(id: $discussionId) {
+        ...DiscussionThreadInput_discussion
+        ...DiscussionThreadList_discussion
+        id
+        replyingToCommentId
+        thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+          commentors {
+            id
+            preferredName
+          }
+          edges {
+            node {
+              threadSortOrder
+              discussionId
+              ...DiscussionThreadList_threadables
+              threadSortOrder
+            }
           }
         }
-      }
-      meeting(meetingId: $meetingId) {
-        ...DiscussionThreadInput_meeting
-        ...DiscussionThreadList_meeting
-        endedAt
-        meetingType
-        replyingToCommentId
       }
     }
   `

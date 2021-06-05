@@ -2,10 +2,10 @@ import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'
 
-const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
+const resolveThreadableConnection = async (threadId, {dataLoader}) => {
   const [comments, tasks] = await Promise.all([
-    dataLoader.get('commentsByThreadId').load(threadSourceId),
-    dataLoader.get('tasksByThreadId').load(threadSourceId)
+    dataLoader.get('commentsByThreadId').load(threadId),
+    dataLoader.get('tasksByThreadId').load(threadId)
   ])
   const threadables = [...comments, ...tasks] as Threadable[]
   const threadablesByParentId = {} as {[parentId: string]: Threadable[]}
@@ -52,4 +52,4 @@ const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
   }
 }
 
-export default resovleThread
+export default resolveThreadableConnection

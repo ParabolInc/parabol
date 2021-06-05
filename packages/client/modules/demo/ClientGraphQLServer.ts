@@ -5,18 +5,18 @@ import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
 import {PALETTE} from '~/styles/paletteV3'
-import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
-import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
-import DiscussPhase from '../../../server/database/types/DiscussPhase'
-import DiscussStage from '../../../server/database/types/DiscussStage'
-import ReflectPhase from '../../../server/database/types/ReflectPhase'
-import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
-import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
-import ITask from '../../../server/database/types/Task'
-import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
-import Reflection from '../../../server/database/types/Reflection'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import DiscussPhase from '../../../server/database/types/DiscussPhase'
+import DiscussStage from '../../../server/database/types/DiscussStage'
+import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
+import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
+import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
+import Reflection from '../../../server/database/types/Reflection'
+import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
+import ReflectPhase from '../../../server/database/types/ReflectPhase'
+import ITask from '../../../server/database/types/Task'
+import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
@@ -38,7 +38,8 @@ import initDB, {
   demoTeamId,
   demoViewerId,
   GitHubProjectKeyLookup,
-  JiraProjectKeyLookup
+  JiraProjectKeyLookup,
+  RetroDemoDB
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
@@ -141,7 +142,7 @@ const makeReflectionGroupThread = () => ({
 
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
-  db: ReturnType<typeof initDB>
+  db: RetroDemoDB
   getTempId = (prefix) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
@@ -278,15 +279,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    DiscussionThreadRootQuery: ({threadSourceId}) => {
+    DiscussionThreadRootQuery: ({discussionId}) => {
       return {
         viewer: {
           ...this.db.users[0],
+          thread: this.db.reflectionGroups.find(
+            (reflectionGroup) => `discussion:${reflectionGroup.id}` === discussionId
+          )!.thread,
           meeting: {
-            ...this.db.newMeeting,
-            threadSource: this.db.reflectionGroups.find(
-              (reflectionGroup) => reflectionGroup.id === threadSourceId
-            )
+            ...this.db.newMeeting
           }
         }
       }
@@ -331,14 +332,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         threadParentId: comment.threadParentId || null
       }
       this.db.comments.push(newComment)
-      const {threadParentId, threadId} = newComment
+      const {threadParentId, discussionId} = newComment
       if (threadParentId) {
         const threadParent =
           this.db.tasks.find(({id}) => id === threadParentId) ||
           this.db.comments.find(({id}) => id === threadParentId)
         threadParent?.replies.push(newComment)
       } else {
-        const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
+        const reflectionGroup = this.db.reflectionGroups.find(
+          (group) => `discussion:${group.id}` === discussionId
+        )!
         reflectionGroup.thread.edges.push({
           __typename: 'ThreadableEdge',
           cursor: newComment.createdAt,
@@ -537,19 +540,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {createReflection: data}
     },
     EditCommentingMutation: (
-      {
-        isCommenting,
-        meetingId,
-        threadId
-      }: {isCommenting: boolean; meetingId: string; threadId: string},
+      {isCommenting, discussionId}: {isCommenting: boolean; discussionId: string},
       userId
     ) => {
       const commentor = this.db.users.find((user) => user.id === userId)
       const data = {
         isCommenting,
         commentor,
-        meetingId,
-        threadId,
+        discussionId,
         __typename: 'EditCommentingPayload'
       }
       if (userId !== demoViewerId) {
@@ -1193,7 +1191,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     CreateTaskMutation: async ({newTask}, userId) => {
       const now = new Date().toJSON()
       const taskId = newTask.id || this.getTempId('task')
-      const {threadId, threadSource, threadParentId, threadSortOrder, sortOrder, status} = newTask
+      const {discussionId, threadParentId, threadSortOrder, sortOrder, status} = newTask
       const content = newTask.content || makeEmptyStr()
       const {entityMap} = JSON.parse(content)
       const tags = getTagsFromEntityMap(entityMap)
@@ -1214,8 +1212,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         team: this.db.team,
         meetingId: RetroDemo.MEETING_ID,
         replies: [],
-        threadId,
-        threadSource,
+        discussionId,
         threadParentId: threadParentId || null,
         threadSortOrder,
         sortOrder: sortOrder || 0,
@@ -1228,7 +1225,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         user
       }
       this.db.tasks.push(task as any)
-      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
+      const reflectionGroup = this.db.reflectionGroups.find(
+        (group) => `discussion:${group.id}` === discussionId
+      )!
       if (threadParentId) {
         const threadParent =
           this.db.comments.find(({id}) => id === threadParentId) ||
@@ -1365,8 +1364,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     DeleteTaskMutation: ({taskId}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
-      const {threadId} = task
-      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)
+      const {discussionId} = task
+      const reflectionGroup = this.db.reflectionGroups.find(
+        (group) => `discussion:${group.id}` === discussionId
+      )
       if (!reflectionGroup) return
       reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
       const data = {

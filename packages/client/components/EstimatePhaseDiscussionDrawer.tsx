@@ -78,10 +78,12 @@ interface Props {
   onToggle: () => void
 }
 
+const allowedThreadables = ['comment' as const]
+
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, isOpen, meeting, onToggle} = props
-  const {id: meetingId, localStage} = meeting
-  const {threadId} = localStage
+  const {endedAt, localStage} = meeting
+  const {discussionId} = localStage
 
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen}>
@@ -92,24 +94,25 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         </StyledCloseButton>
       </Header>
       <ThreadColumn>
-        <DiscussionThreadRoot threadId={threadId!} meetingId={meetingId} />
+        <DiscussionThreadRoot
+          allowedThreadables={allowedThreadables}
+          discussionId={discussionId!}
+          isReadOnly={!!endedAt}
+          width={'calc(100% - 16px)'}
+        />
       </ThreadColumn>
     </Drawer>
   )
 }
 
-graphql`
-  fragment EstimatePhaseDiscussionDrawerStage on EstimateStage {
-    threadId
-  }
-`
 export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
   meeting: graphql`
     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
-      id
       endedAt
       localStage {
-        ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
+        ... on EstimateStage {
+          discussionId
+        }
       }
     }
   `

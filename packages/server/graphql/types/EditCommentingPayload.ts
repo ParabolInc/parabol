@@ -19,7 +19,7 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
     meetingId: {
       type: GraphQLNonNull(GraphQLID)
     },
-    threadId: {
+    discussionId: {
       type: GraphQLNonNull(GraphQLID)
     }
   })

@@ -6,7 +6,7 @@ import {
   ResetMeetingToStageMutation as TResetMeetingToStageMutation,
   ResetMeetingToStageMutationVariables
 } from '../__generated__/ResetMeetingToStageMutation.graphql'
-import getThreadSourceThreadConn from './connections/getThreadSourceThreadConn'
+import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 
 graphql`
   fragment ResetMeetingToStageMutation_meeting on ResetMeetingToStagePayload {
@@ -58,7 +58,7 @@ export const resetMeetingToStageUpdater = (payload, {store}) => {
   if (!reflectionGroups || !viewer) return
   reflectionGroups.forEach((group) => {
     const threadId = group.getValue('id')
-    const thread = getThreadSourceThreadConn(store, threadId)
+    const thread = getDiscussionThreadConn(store, threadId)
     thread?.setLinkedRecords([], 'edges')
   })
 }

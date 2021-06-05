@@ -4,8 +4,10 @@ import React, {ReactNode, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {PALETTE} from '~/styles/paletteV3'
-import {ThreadedTaskBase_meeting} from '~/__generated__/ThreadedTaskBase_meeting.graphql'
+import {ThreadedTaskBase_discussion} from '~/__generated__/ThreadedTaskBase_discussion.graphql'
 import {ThreadedTaskBase_task} from '~/__generated__/ThreadedTaskBase_task.graphql'
+import {ThreadedTaskBase_viewer} from '~/__generated__/ThreadedTaskBase_viewer.graphql'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import NullableTask from './NullableTask/NullableTask'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
@@ -34,20 +36,30 @@ const StyledNullableTask = styled(NullableTask)({
 })
 
 interface Props {
+  allowedThreadables: DiscussionThreadables[]
   task: ThreadedTaskBase_task
   children?: ReactNode
-  meeting: ThreadedTaskBase_meeting
+  discussion: ThreadedTaskBase_discussion
   isReply?: boolean // this comment is a reply & should be indented
-  threadSourceId: string
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
+  viewer: ThreadedTaskBase_viewer
 }
 
 const ThreadedTaskBase = (props: Props) => {
-  const {children, meeting, threadSourceId, setReplyMention, replyMention, task, dataCy} = props
+  const {
+    allowedThreadables,
+    children,
+    discussion,
+    setReplyMention,
+    replyMention,
+    task,
+    dataCy,
+    viewer
+  } = props
   const isReply = !!props.isReply
-  const {id: meetingId, replyingToCommentId} = meeting
+  const {id: discussionId, replyingToCommentId} = discussion
   const {id: taskId, createdByUser, threadParentId} = task
   const {picture, preferredName} = createdByUser
   const atmosphere = useAtmosphere()
@@ -56,7 +68,7 @@ const ThreadedTaskBase = (props: Props) => {
   const ownerId = threadParentId || taskId
   const onReply = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId)?.setValue(ownerId, 'replyingToCommentId')
+      store.get(discussionId)?.setValue(ownerId, 'replyingToCommentId')
     })
   }
   useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
@@ -72,13 +84,14 @@ const ThreadedTaskBase = (props: Props) => {
         <StyledNullableTask dataCy={`${dataCy}`} area='meeting' task={task} />
         {children}
         <ThreadedItemReply
+          allowedThreadables={allowedThreadables}
           dataCy={`${dataCy}-reply`}
-          threadSourceId={threadSourceId}
-          meeting={meeting}
+          discussion={discussion}
           threadable={task}
           editorRef={replyEditorRef}
           replyMention={replyMention}
           setReplyMention={setReplyMention}
+          viewer={viewer}
         />
       </BodyCol>
     </ThreadedItemWrapper>
@@ -86,9 +99,14 @@ const ThreadedTaskBase = (props: Props) => {
 }
 
 export default createFragmentContainer(ThreadedTaskBase, {
-  meeting: graphql`
-    fragment ThreadedTaskBase_meeting on NewMeeting {
-      ...ThreadedItemReply_meeting
+  viewer: graphql`
+    fragment ThreadedTaskBase_viewer on User {
+      ...ThreadedItemReply_viewer
+    }
+  `,
+  discussion: graphql`
+    fragment ThreadedTaskBase_discussion on Discussion {
+      ...ThreadedItemReply_discussion
       id
       replyingToCommentId
     }

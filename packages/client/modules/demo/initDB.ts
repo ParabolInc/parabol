@@ -398,7 +398,6 @@ const initDB = (botScript) => {
       preferredName: 'You',
       email: 'demo-user@example.co',
       picture: demoUserAvatar
-      // picture: getDemoAvatar(3).picture
     },
     getDemoAvatar(1),
     getDemoAvatar(2)
@@ -411,13 +410,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ;(user as any).teamMember = teamMembers[idx]
+    ; (user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ;(teamMember as any).team = team
+    ; (teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0
@@ -444,4 +443,5 @@ const initDB = (botScript) => {
   }
 }
 
+export type RetroDemoDB = ReturnType<typeof initDB>
 export default initDB

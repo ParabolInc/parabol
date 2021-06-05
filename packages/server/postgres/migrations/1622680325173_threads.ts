@@ -6,8 +6,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   await pgm.db.query(`
     DO $$
     BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ThreadSourceTypeEnum') THEN
-        CREATE TYPE "ThreadSourceTypeEnum" AS ENUM (
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'DiscussionTopicTypeEnum') THEN
+        CREATE TYPE "DiscussionTopicTypeEnum" AS ENUM (
           'agendaItem',
           'reflectionGroup',
           'task',
@@ -15,16 +15,16 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
           'jiraIssue'
         );
       END IF;
-      CREATE TABLE IF NOT EXISTS "Thread" (
+      CREATE TABLE IF NOT EXISTS "Discussion" (
         "id" VARCHAR(50) PRIMARY KEY,
         "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
         "teamId" VARCHAR(100) NOT NULL,
         "meetingId" VARCHAR(100) NOT NULL,
-        "threadSourceId" VARCHAR(100) NOT NULL,
-        "threadSourceType" "ThreadSourceTypeEnum" NOT NULL
+        "discussionTopicId" VARCHAR(100) NOT NULL,
+        "discussionTopicType" "DiscussionTopicTypeEnum" NOT NULL
       );
-      CREATE INDEX IF NOT EXISTS "idx_Thread_teamId" ON "Thread"("teamId");
-      CREATE INDEX IF NOT EXISTS "idx_Thread_meetingId" ON "Thread"("meetingId");
+      CREATE INDEX IF NOT EXISTS "idx_Thread_teamId" ON "Discussion"("teamId");
+      CREATE INDEX IF NOT EXISTS "idx_Thread_meetingId" ON "Discussion"("meetingId");
     END
     $$;
   `)
@@ -32,7 +32,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
   await pgm.db.query(`
-    DROP TYPE "ThreadSourceTypeEnum" CASCADE;
-    DROP TABLE "Thread";
+    DROP TYPE "DiscussionTopicTypeEnum" CASCADE;
+    DROP TABLE "Discussion";
   `)
 }
