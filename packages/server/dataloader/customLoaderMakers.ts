@@ -10,9 +10,9 @@ import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getPg from '../postgres/getPg'
 import {
-  getThreadsByIdQuery,
-  IGetThreadsByIdQueryResult
-} from '../postgres/queries/generated/getThreadsByIdQuery'
+  getDiscussionsByIdQuery,
+  IGetDiscussionsByIdQueryResult
+} from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -264,9 +264,9 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
 
 // TODO abstract this out so we can use this easier with PG
 export const discussions = (parent: RethinkDataLoader) => {
-  return new DataLoader<string, IGetThreadsByIdQueryResult | null, string>(
+  return new DataLoader<string, IGetDiscussionsByIdQueryResult | null, string>(
     async (keys) => {
-      const rows = await getThreadsByIdQuery.run({ids: keys as string[]}, getPg())
+      const rows = await getDiscussionsByIdQuery.run({ids: keys as string[]}, getPg())
       return keys.map((key) => rows.find((row) => row.id === key) || null)
     },
     {

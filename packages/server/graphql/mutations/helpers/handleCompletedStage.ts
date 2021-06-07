@@ -6,7 +6,7 @@ import MeetingAction from '../../../database/types/MeetingAction'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getPg from '../../../postgres/getPg'
-import {insertThreadsQuery} from '../../../postgres/queries/generated/insertThreadsQuery'
+import {insertDiscussionsQuery} from '../../../postgres/queries/generated/insertDiscussionsQuery'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
 import removeEmptyReflections from './removeEmptyReflections'
@@ -72,14 +72,14 @@ const handleCompletedRetrospectiveStage = async (
     // create new threads
     const {discussPhaseStages} = data
     const {id: meetingId, teamId} = meeting
-    const threads = discussPhaseStages.map((stage) => ({
+    const discussions = discussPhaseStages.map((stage) => ({
       id: stage.threadId,
       meetingId,
       teamId,
-      threadSourceType: 'reflectionGroup' as const,
-      threadSourceId: stage.reflectionGroupId
+      discussionTopicType: 'reflectionGroup' as const,
+      discussionTopicId: stage.reflectionGroupId
     }))
-    await insertThreadsQuery.run({threads}, getPg())
+    await insertDiscussionsQuery.run({discussions}, getPg())
     return {[VOTE]: data}
   }
   return {}
