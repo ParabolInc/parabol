@@ -15,8 +15,13 @@ import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import DialogTitle from './DialogTitle'
 import AuthenticationDialog from './AuthenticationDialog'
 import ForgotPasswordPage from './ForgotPasswordPage'
+import SubmittedForgotPasswordPage from './SubmittedForgotPasswordPage'
 
-export type AuthPageSlug = 'create-account' | 'signin' | 'forgot-password'
+export type AuthPageSlug =
+  | 'create-account'
+  | 'signin'
+  | 'forgot-password'
+  | 'forgot-password/submitted'
 
 export type GotoAuthPage = (page: AuthPageSlug, search?: string) => void
 
@@ -62,6 +67,10 @@ const GenericAuthentication = (props: Props) => {
 
   if (page === 'forgot-password') {
     return <ForgotPasswordPage gotoPage={gotoPage} />
+  }
+
+  if (page === 'forgot-password/submitted') {
+    return <SubmittedForgotPasswordPage gotoPage={gotoPage} />
   }
 
   const isCreate = page === 'create-account'

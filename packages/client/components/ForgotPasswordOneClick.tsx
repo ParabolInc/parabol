@@ -36,8 +36,8 @@ const ForgotPasswordOneClick = (props: Props) => {
       atmosphere,
       {email},
       {
-        onCompleted: () => { },
-        onError: () => { }
+        onCompleted: () => {},
+        onError: () => {}
       }
     )
     onCompleted()

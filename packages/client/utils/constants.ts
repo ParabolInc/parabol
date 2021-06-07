@@ -136,7 +136,6 @@ export const SIGNOUT_SLUG = 'signout'
 export const CREATE_ACCOUNT_LABEL = 'Create Free Account'
 export const CREATE_ACCOUNT_BUTTON_LABEL = 'Create Free Account'
 export const CREATE_ACCOUNT_SLUG = 'create-account'
-export const GMAIL_SIGN_UP_ERROR = 'Try logging in with Google'
 
 /* Meeting Types */
 export const ACTION = 'action'

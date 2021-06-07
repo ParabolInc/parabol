@@ -2,7 +2,7 @@
  * The password reset page. Allows the user to reset their password via email.
  *
  */
-import React, {Fragment, useState} from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import EmailInputField from './EmailInputField'
 import PlainButton from './PlainButton/PlainButton'
@@ -17,8 +17,6 @@ import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {GMAIL_SIGN_UP_ERROR} from '../utils/constants'
-import SubmittedForgotPasswordDialog from './SubmittedForgotPasswordDialog'
 import useRouter from '../hooks/useRouter'
 import IconLabel from './IconLabel'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
@@ -88,7 +86,6 @@ const validateEmail = (email) => {
 
 const ForgotPasswordPage = (props: Props) => {
   const {gotoPage} = props
-  const [isSent, setIsSent] = useState(false)
   const {submitMutation, submitting, onCompleted, error, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
@@ -101,9 +98,7 @@ const ForgotPasswordPage = (props: Props) => {
       validate: validateEmail
     }
   })
-  const {match} = useRouter<{token: string}>()
-  const {params} = match
-  const {token} = params
+  const {history} = useRouter()
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
@@ -118,21 +113,21 @@ const ForgotPasswordPage = (props: Props) => {
     if (emailRes.error) return
     const email = emailRes.value as string
     submitMutation()
+
     EmailPasswordResetMutation(
       atmosphere,
       {email},
       {
+        history,
         onCompleted,
         onError
       }
     )
     onCompleted()
-    setIsSent(true)
   }
 
   const resetState = () => {
     onCompleted()
-    setIsSent(false)
   }
 
   const gotoSignIn = () => {
@@ -141,66 +136,28 @@ const ForgotPasswordPage = (props: Props) => {
     gotoPage('signin', params.toString())
   }
 
-  const dialogCopyOptions = {
-    gmailErr: {
-      title: 'Oops!',
-      descriptionOne: 'It looks like you signed-up with Gmail.',
-      descriptionTwo: 'Try logging in with Google here:',
-      actionButton: <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
-    },
-    success: {
-      title: 'You’re all set!',
-      descriptionOne: 'We’ve sent you an email with password recovery instructions.',
-      descriptionTwo: (
-        <>
-          {'Didn’t get it? Check your spam folder, or '}
-          <LinkButton onClick={resetState}>click here</LinkButton>
-          {' to try again.'}
-        </>
-      ),
-      actionButton: (
-        <StyledPrimaryButton size='medium'>
-          <IconLabel icon='arrow_back' label='Back to Sign In' />
-        </StyledPrimaryButton>
-      )
-    }
-  } as const
-  const type = error ? (error.message === GMAIL_SIGN_UP_ERROR ? 'gmailErr' : 'samlErr') : 'success'
-  const dialogCopy = dialogCopyOptions[type] ?? dialogCopyOptions.gmailErr
-
   return (
     <AuthenticationDialog>
-      {isSent ? (
-        <SubmittedForgotPasswordDialog dialogCopy={dialogCopy} />
-      ) : (
+      <DialogTitle>{'Forgot your password?'}</DialogTitle>
+      <DialogSubTitle>
+        <span>{'Remember it? '}</span>
+        <BrandedLink onClick={gotoSignIn}>{'Sign in with password'}</BrandedLink>
+      </DialogSubTitle>
+      <Container>
         <>
-          <DialogTitle>{'Forgot your password?'}</DialogTitle>
-          <DialogSubTitle>
-            <span>{'Remember it? '}</span>
-            <BrandedLink onClick={gotoSignIn}>{'Sign in with password'}</BrandedLink>
-          </DialogSubTitle>
-          <Container>
-            <Fragment>
-              <P>
-                {
-                  'Confirm your email address, and we’ll send you an email with password recovery instructions.'
-                }
-              </P>
-              <Form onSubmit={onSubmit}>
-                <EmailInputField
-                  {...fields.email}
-                  autoFocus
-                  onChange={onChange}
-                  onBlur={handleBlur}
-                />
-                <SubmitButton size='medium' waiting={submitting}>
-                  {'Send Email'}
-                </SubmitButton>
-              </Form>
-            </Fragment>
-          </Container>
+          <P>
+            {
+              'Confirm your email address, and we’ll send you an email with password recovery instructions.'
+            }
+          </P>
+          <Form onSubmit={onSubmit}>
+            <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
+            <SubmitButton size='medium' waiting={submitting}>
+              {'Send Email'}
+            </SubmitButton>
+          </Form>
         </>
-      )}
+      </Container>
     </AuthenticationDialog>
   )
 
