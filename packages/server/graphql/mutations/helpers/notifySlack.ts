@@ -121,12 +121,7 @@ export const startSlackMeeting = async (
 
 const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
   if (meeting.meetingType === 'retrospective') {
-    const {
-      commentCount = 0,
-      reflectionCount = 0,
-      topicCount = 0,
-      taskCount = 0
-    } = meeting as MeetingRetrospective
+    const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
     return `Your team shared ${reflectionCount} ${plural(
       reflectionCount,
       'reflection'
@@ -135,13 +130,7 @@ const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingP
       'comment'
     )} and created ${taskCount} ${plural(taskCount, 'task')}.`
   } else if (meeting.meetingType === 'action') {
-    const {
-      createdAt,
-      endedAt,
-      agendaItemCount = 0,
-      commentCount = 0,
-      taskCount = 0
-    } = meeting as MeetingAction
+    const {createdAt, endedAt, agendaItemCount = 0, commentCount = 0, taskCount = 0} = meeting
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
       max: 2,
@@ -156,7 +145,7 @@ const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingP
       'comment'
     )}.`
   } else {
-    const estimatePhase = (meeting as MeetingPoker).phases.find(
+    const estimatePhase = meeting.phases.find(
       (phase) => phase.phaseType === 'ESTIMATE'
     ) as EstimatePhase
     const stages = estimatePhase.stages

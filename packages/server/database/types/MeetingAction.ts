@@ -10,6 +10,7 @@ interface Input {
 }
 
 export default class MeetingAction extends Meeting {
+  meetingType!: 'action'
   taskCount?: number
   commentCount?: number
   agendaItemCount?: number
