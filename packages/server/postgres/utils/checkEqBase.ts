@@ -43,27 +43,28 @@ function getPairNeFields(
       neFields.push(f)
     }
   }
-  for (const [f, defaultValue] of Object.entries(maybeUndefinedFieldsDefaultValues)) {
-    const [rethinkValue, pgValue] = [rethinkRow[f], pgRow[f]]
-    if (rethinkValue !== undefined) {
-      if (
-        rethinkValue === null &&
-        maybeNullFieldsDefaultValues &&
-        maybeNullFieldsDefaultValues[f] !== undefined
-      ) {
-        if (!areEqual(maybeNullFieldsDefaultValues[f], pgValue)) {
-          neFields.push(f)
-        }
-      } else if (!areEqual(rethinkValue, pgValue)) {
-        neFields.push(f)
-      }
-    } else {
-      if (!areEqual(pgValue, defaultValue)) {
-        neFields.push(f)
-      }
-    }
-  }
+  for (const [maybeUndefinedField, defaultValueForUndefinedField] of Object.entries(
+    maybeUndefinedFieldsDefaultValues
+  )) {
+    const [rethinkValue, pgValue] = [rethinkRow[maybeUndefinedField], pgRow[maybeUndefinedField]]
 
+    if (rethinkValue === undefined) {
+      if (areEqual(pgValue, defaultValueForUndefinedField)) {
+        continue
+      }
+    } else if (rethinkValue === null && pgValue !== null) {
+      if (
+        maybeNullFieldsDefaultValues &&
+        areEqual(maybeNullFieldsDefaultValues[maybeUndefinedField], pgValue)
+      ) {
+        continue
+      }
+    } else if (areEqual(pgValue, rethinkValue)) {
+      continue
+    }
+
+    neFields.push(maybeUndefinedField)
+  }
   return neFields
 }
 
