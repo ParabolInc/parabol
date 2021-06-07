@@ -93,7 +93,7 @@ const getPgRowCount = async (tableName: string) => {
   const queryRes = await pg.query(`
     SELECT COUNT(*) FROM "${tableName}";
   `)
-  return queryRes.rows[0].count
+  return Number(queryRes.rows[0].count)
 }
 
 export async function checkTableEq(
