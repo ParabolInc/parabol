@@ -61,7 +61,6 @@ const DiscussionThread = (props: Props) => {
       undefined,
       isDrawer
     ) || isReadOnly
-  // FIXME: threadSourceId needs to be refactored to discussionId below
   return (
     <Wrapper isExpanded={isExpanded} width={width} ref={ref}>
       <DiscussionThreadList

@@ -89,13 +89,13 @@ export const serializeUserTasksKey = (key: UserTasksKey) => {
   return parts.join(':')
 }
 
-export const commentCountByThreadId = (parent: RethinkDataLoader) => {
+export const commentCountByDiscussionId = (parent: RethinkDataLoader) => {
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
       const r = await getRethink()
       const groups = (await (r
         .table('Comment')
-        .getAll(r.args(discussionIds as string[]), {index: 'threadId'})
+        .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
         .group('discussionId') as any)
         .count()
         .ungroup()

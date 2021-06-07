@@ -15,11 +15,11 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
     ...newMeetingStageFields(),
     ...discussionThreadStageFields(),
     reflectionGroupId: {
-      type: GraphQLID,
+      type: GraphQLNonNull(GraphQLID),
       description: 'foreign key. use reflectionGroup'
     },
     reflectionGroup: {
-      type: RetroReflectionGroup,
+      type: GraphQLNonNull(RetroReflectionGroup),
       description: 'the group that is the focal point of the discussion',
       resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
     },

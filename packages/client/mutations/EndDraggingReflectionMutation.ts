@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {EndDraggingReflectionMutation as TEndDraggingReflectionMutation} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
@@ -34,9 +34,6 @@ graphql`
         ...DraggableReflectionCard_reflection @relay(mask: false)
       }
       title
-      tasks {
-        id
-      }
       voteCount
     }
     oldReflectionGroup {

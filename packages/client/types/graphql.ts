@@ -44385,7 +44385,7 @@ export interface ITask {
   replies: Array<Threadable>;
 
   /**
-   * The ID of the discussion
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
    */
   discussionId: string | null;
 
@@ -44529,7 +44529,7 @@ export interface IThreadable {
   replies: Array<Threadable>;
 
   /**
-   * The ID of the discussion
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
    */
   discussionId: string | null;
 
@@ -44547,27 +44547,6 @@ export interface IThreadable {
    * The timestamp the item was updated
    */
   updatedAt: any;
-}
-
-/**
- * The source of a discusson thread
- */
-export type ThreadSource =
-  | ITask
-  | IAgendaItem
-  | IJiraIssue
-  | IRetroReflectionGroup;
-
-/**
- * The source of a discusson thread
- */
-export interface IThreadSource {
-  __typename: 'ThreadSource';
-
-  /**
-   * shortid
-   */
-  id: string;
 }
 
 /**
@@ -46968,6 +46947,11 @@ export interface IDiscussion {
   discussionTopicType: DiscussionTopicTypeEnum;
 
   /**
+   * The number of comments contained in the thread
+   */
+  commentCount: number;
+
+  /**
    * The comments & tasks thread in the discussion
    */
   thread: IThreadableConnection;
@@ -47714,12 +47698,12 @@ export interface IRetroDiscussStage {
   /**
    * foreign key. use reflectionGroup
    */
-  reflectionGroupId: string | null;
+  reflectionGroupId: string;
 
   /**
    * the group that is the focal point of the discussion
    */
-  reflectionGroup: IRetroReflectionGroup | null;
+  reflectionGroup: IRetroReflectionGroup;
 
   /**
    * The sort order for reprioritizing discussion topics
@@ -47764,11 +47748,6 @@ export interface IRetroReflectionGroup {
   id: string;
 
   /**
-   * The number of comments in this group’s thread, if any
-   */
-  commentCount: number;
-
-  /**
    * A list of users currently commenting
    * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
@@ -47810,11 +47789,6 @@ export interface IRetroReflectionGroup {
    * The sort order of the reflection group
    */
   sortOrder: number;
-
-  /**
-   * The tasks created for this group in the discussion phase
-   */
-  tasks: Array<ITask>;
 
   /**
    * The team that is running the retro
@@ -50071,7 +50045,7 @@ export interface IComment {
   replies: Array<Threadable>;
 
   /**
-   * The ID of the discussion
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
    */
   discussionId: string | null;
 
@@ -52992,6 +52966,10 @@ export interface IEditCommentingPayload {
    */
   commentor: IUser | null;
   meetingId: string;
+
+  /**
+   * The discussion the comment was created in
+   */
   discussionId: string;
 }
 

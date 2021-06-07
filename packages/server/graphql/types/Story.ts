@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import CommentorDetails from './CommentorDetails'
-import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 export const storyFields = () => ({
-  ...threadSourceFields(),
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'serviceTaskId'
@@ -23,7 +21,6 @@ export const storyFields = () => ({
 const Story = new GraphQLInterfaceType({
   name: 'Story',
   description: 'An entity that can be used in a poker meeting and receive estimates',
-  interfaces: () => [ThreadSource],
   fields: () => ({
     ...storyFields()
   })

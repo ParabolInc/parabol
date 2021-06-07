@@ -2,12 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
+import generateUID from '../../generateUID'
 import getPg from '../../postgres/getPg'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
@@ -17,7 +18,6 @@ import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -80,9 +80,10 @@ export default {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
 
-    const meetingType = 'poker' as MeetingTypeEnum
+    const meetingType = 'poker' as const
 
     // RESOLUTION
+    const meetingId = generateUID()
     const meetingCount = await r
       .table('NewMeeting')
       .getAll(teamId, {index: 'teamId'})
@@ -94,6 +95,7 @@ export default {
     const phases = await createNewMeetingPhases(
       viewerId,
       teamId,
+      meetingId,
       meetingCount,
       meetingType,
       dataLoader
@@ -105,6 +107,7 @@ export default {
     const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
 
     const meeting = new MeetingPoker({
+      id: meetingId,
       teamId,
       meetingCount,
       phases,
@@ -113,7 +116,6 @@ export default {
       templateRefId
     })
 
-    const meetingId = meeting.id
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
 
     await r

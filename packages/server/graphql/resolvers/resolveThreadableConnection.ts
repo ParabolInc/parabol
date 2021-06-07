@@ -2,10 +2,10 @@ import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'
 
-const resolveThreadableConnection = async (threadId, {dataLoader}) => {
+const resolveThreadableConnection = async (discussionId, {dataLoader}) => {
   const [comments, tasks] = await Promise.all([
-    dataLoader.get('commentsByThreadId').load(threadId),
-    dataLoader.get('tasksByThreadId').load(threadId)
+    dataLoader.get('commentsByDiscussionId').load(discussionId),
+    dataLoader.get('tasksByDiscussionId').load(discussionId)
   ])
   const threadables = [...comments, ...tasks] as Threadable[]
   const threadablesByParentId = {} as {[parentId: string]: Threadable[]}

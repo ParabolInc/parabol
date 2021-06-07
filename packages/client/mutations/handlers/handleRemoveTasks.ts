@@ -33,11 +33,11 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   ]
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer, userIds, teamIds)
-  const threadSourceConn = getDiscussionThreadConn(store, discussionId)
+  const threadConn = getDiscussionThreadConn(store, discussionId)
   safeRemoveNodeFromConn(taskId, teamConn)
   safeRemoveNodeFromConn(taskId, userConn)
   archiveConns.forEach((archiveConn) => safeRemoveNodeFromConn(taskId, archiveConn))
-  safeRemoveNodeFromConn(taskId, threadSourceConn)
+  safeRemoveNodeFromConn(taskId, threadConn)
   safeRemoveNodeFromArray(taskId, meeting, 'tasks')
 
   const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])

@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import Organization from '../../database/types/Organization'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
+import generateUID from '../../generateUID'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -14,7 +15,6 @@ import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -40,7 +40,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const meetingType = 'retrospective' as MeetingTypeEnum
+    const meetingType = 'retrospective' as const
 
     // RESOLUTION
     const meetingCount = await r
@@ -51,9 +51,11 @@ export default {
       .default(0)
       .run()
 
+    const meetingId = generateUID()
     const phases = await createNewMeetingPhases(
       viewerId,
       teamId,
+      meetingId,
       meetingCount,
       meetingType,
       dataLoader
@@ -70,6 +72,7 @@ export default {
       .load({teamId, meetingType})) as MeetingSettingsRetrospective
     const {totalVotes, maxVotesPerGroup, selectedTemplateId} = meetingSettings
     const meeting = new MeetingRetrospective({
+      id: meetingId,
       teamId,
       meetingCount,
       phases,
@@ -80,7 +83,6 @@ export default {
       templateId: selectedTemplateId
     })
 
-    const meetingId = meeting.id
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     await r
       .table('NewMeeting')

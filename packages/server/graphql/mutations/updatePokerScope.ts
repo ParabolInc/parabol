@@ -6,6 +6,7 @@ import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
+import insertDiscussions from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getRedis from '../../utils/getRedis'
@@ -15,6 +16,18 @@ import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import getNextFacilitatorStageAfterStageRemoved from './helpers/getNextFacilitatorStageAfterStageRemoved'
+
+interface TUpdatePokerScopeItemInput {
+  service: 'github' | 'PARABOL' | 'jira'
+  serviceTaskId: string
+  action: 'ADD' | 'DELETE'
+}
+
+const taskServiceToDiscussionTopicType = {
+  github: 'githubIssue',
+  jira: 'jiraIssue',
+  PARABOL: 'task'
+} as const
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -31,7 +44,7 @@ const updatePokerScope = {
   },
   resolve: async (
     _source,
-    {meetingId, updates},
+    {meetingId, updates}: {meetingId: string; updates: TUpdatePokerScopeItemInput[]},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -75,6 +88,7 @@ const updatePokerScope = {
     const templateRef = await getTemplateRefById(templateRefId)
 
     const {dimensions} = templateRef
+    const newDiscussions = [] as any[]
     updates.forEach((update) => {
       const {service, serviceTaskId, action} = update
 
@@ -96,6 +110,14 @@ const updatePokerScope = {
             })
         )
         // MUTATIVE
+        const discussions = newStages.map((stage) => ({
+          id: stage.discussionId,
+          meetingId,
+          teamId,
+          discussionTopicId: serviceTaskId,
+          discussionTopicType: taskServiceToDiscussionTopicType[service]
+        }))
+        newDiscussions.push(discussions)
         stages.push(...newStages)
         const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
         const firstDimensionName = dimensions[0].name
@@ -159,7 +181,9 @@ const updatePokerScope = {
         updatedAt: now
       })
       .run()
-
+    if (newDiscussions.length > 0) {
+      await insertDiscussions(newDiscussions)
+    }
     await redisLock.unlock()
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)

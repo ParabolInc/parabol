@@ -32,6 +32,13 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       description:
         'The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue'
     },
+    commentCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The number of comments contained in the thread',
+      resolve: async ({id: discussionId}, _args, {dataLoader}) => {
+        return dataLoader.get('commentCountByDiscussionId').load(discussionId)
+      }
+    },
     thread: {
       type: GraphQLNonNull(ThreadableConnection),
       description: 'The comments & tasks thread in the discussion',

@@ -63,7 +63,6 @@ export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'update
 
 export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | 'updatedAt'> & {
   __typename: string
-  commentCount: number
   commentors: any
   createdAt: string | Date
   meeting: any
@@ -491,7 +490,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
-        commentCount: 0,
         commentors: null,
         id: reflectionGroupId,
         reflectionGroupId,
@@ -1258,6 +1256,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // the result is tasks == [undefined]
       // if a sleep is added, RetroDiscussPhase component is notified, but without, only MeetingAgendaCards is notified
       // (I removed MeetingAgendaCards, mentioned in the comment line above, as it’s unused, TA)
+      // Safe to test removing this now that MeetingAgendaCards is gone MK
       // honestly, no good idea what is going on here. don't even know if it's relay or react (or me)
       await sleep(100)
       return {createTask: data}

@@ -18,12 +18,11 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import ThreadSource from './ThreadSource'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
-  interfaces: () => [Threadable, ThreadSource, Story],
+  interfaces: () => [Threadable, Story],
   isTypeOf: ({status}) => !!status,
   fields: () => ({
     ...(threadableFields() as any),

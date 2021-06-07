@@ -1,11 +1,15 @@
+import CheckInPhase from './CheckInPhase'
+import EstimatePhase from './EstimatePhase'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
 
+type PokerPhase = CheckInPhase | EstimatePhase | GenericMeetingPhase
 interface Input {
+  id: string
   teamId: string
   meetingCount: number
   name?: string
-  phases: GenericMeetingPhase[]
+  phases: PokerPhase[]
   facilitatorUserId: string
   templateId: string
   templateRefId: string
@@ -15,9 +19,20 @@ export default class MeetingPoker extends Meeting {
   templateId: string
   templateRefId: string
   storyCount?: number
+  meetingType!: 'poker'
   constructor(input: Input) {
-    const {teamId, meetingCount, name, phases, facilitatorUserId, templateId, templateRefId} = input
+    const {
+      id,
+      teamId,
+      meetingCount,
+      name,
+      phases,
+      facilitatorUserId,
+      templateId,
+      templateRefId
+    } = input
     super({
+      id,
       teamId,
       meetingCount,
       phases,

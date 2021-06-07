@@ -31,9 +31,6 @@ graphql`
           id
           meetingId
           viewerVoteCount
-          tasks {
-            id
-          }
         }
       }
     }

@@ -1,19 +1,19 @@
-import {AGENDA_ITEMS} from 'parabol-client/utils/constants'
 import generateUID from '../../generateUID'
 import GenericMeetingStage, {GenericMeetingStageInput} from './GenericMeetingStage'
 
 interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   agendaItemId: string
-  threadId?: string
+  discussionId?: string
 }
 
 export default class AgendaItemsStage extends GenericMeetingStage {
-  threadId: string
+  discussionId: string
   agendaItemId: string
+  phaseType!: 'agendaitems'
   constructor(input: Input) {
-    super({...input, phaseType: AGENDA_ITEMS})
-    const {agendaItemId, threadId} = input
+    super({...input, phaseType: 'agendaitems'})
+    const {agendaItemId, discussionId} = input
     this.agendaItemId = agendaItemId
-    this.threadId = threadId ?? generateUID()
+    this.discussionId = discussionId ?? generateUID()
   }
 }

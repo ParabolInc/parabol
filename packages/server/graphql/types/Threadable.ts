@@ -44,14 +44,11 @@ export const threadableFields = () => ({
   },
   discussionId: {
     type: GraphQLID,
-    description: 'The ID of the discussion',
+    description:
+      'The FK of the discussion this task was created in. Null if task was not created in a discussion',
+    // can remove the threadId after 2021-07-01
     resolve: ({discussionId, threadId}) => discussionId || threadId
   },
-  // threadId: {
-  //   type: GraphQLID,
-  //   description: 'The ID of the thread',
-  //   deprecationReason: 'Use discussionId'
-  // },
   threadParentId: {
     type: GraphQLID,
     description: 'the parent, if this threadable is a reply, else null'

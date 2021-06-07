@@ -54,9 +54,6 @@ graphql`
                 reflectionGroup {
                   id
                   voteCount
-                  tasks {
-                    id
-                  }
                 }
                 sortOrder
               }
