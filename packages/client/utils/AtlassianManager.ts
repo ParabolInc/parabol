@@ -1,5 +1,18 @@
 import AbortController from 'abort-controller'
 import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+
+/**
+ * Jira API throws a lot of different errors that could be placed in a different properties.
+ * This type is used to expose the error under a simple interface for others to consume.
+ */
+export interface JiraApiError {
+  errorMessage: string
+}
+
+export function isJiraApiError<T>(response: T | JiraApiError): response is JiraApiError {
+  return 'errorMessage' in response
+}
+4
 export interface JiraUser {
   self: string
   key: string
@@ -687,23 +700,70 @@ export default abstract class AtlassianManager {
   }
 
   async getScreens(cloudId: string) {
-    return (await this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`)) as
-      | JiraScreensResponse
-      | AtlassianError
-      | JiraNoAccessError
+    const res = (await this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`
+    )) as JiraScreensResponse | AtlassianError | JiraNoAccessError
+
+    if (isJiraNoAccessError(res)) {
+      return {errorMessage: res.errorMessages[0]}
+    }
+
+    if (isAtlassianError(res)) {
+      return {errorMessage: res.message}
+    }
+
+    if (!('values' in res)) {
+      return {errorMessage: "Couldn't fetch project screens!"}
+    }
+
+    return res
   }
 
   async getScreenTabs(cloudId: string, screenId: string) {
-    return (await this.get(
+    const res = (await this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs`
     )) as JiraScreenTab[] | AtlassianError | JiraNoAccessError
+
+    if (isJiraNoAccessError(res)) {
+      return {errorMessage: res.errorMessages[0]}
+    }
+
+    if (isAtlassianError(res)) {
+      return {errorMessage: res.message}
+    }
+
+    if (!Array.isArray(res)) {
+      return {errorMessage: `Couldn't fetch screen: ${screenId} tabs!`}
+    }
+
+    return res
   }
 
   async addFieldToScreenTab(cloudId: string, screenId: string, tabId: string, fieldId: string) {
-    return (await this.post(
+    const res = (await this.post(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/`,
       {fieldId}
     )) as JiraAddScreenFieldResponse | AtlassianError | JiraError
+
+    if (isJiraNoAccessError(res)) {
+      return {errorMessage: res.errorMessages[0]}
+    }
+
+    if (isJiraFieldError(res)) {
+      return {errorMessage: res.errors[fieldId]}
+    }
+
+    if (isAtlassianError(res)) {
+      return {errorMessage: res.message}
+    }
+
+    if (!('id' in res)) {
+      return {
+        errorMessage: `Couldn't add field: ${fieldId} to a screen: ${screenId} tab: ${tabId}!`
+      }
+    }
+
+    return res
   }
 
   async removeFieldFromScreenTab(
@@ -712,8 +772,22 @@ export default abstract class AtlassianManager {
     tabId: string,
     fieldId: string
   ) {
-    return (await this.delete(
+    const res = (await this.delete(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/${fieldId}`
     )) as null | AtlassianError | JiraError
+
+    if (isJiraNoAccessError(res)) {
+      return {errorMessage: res.errorMessages[0]}
+    }
+
+    if (isJiraFieldError(res)) {
+      return {errorMessage: res.errors[fieldId]}
+    }
+
+    if (isAtlassianError(res)) {
+      return {errorMessage: res.message}
+    }
+
+    return res
   }
 }

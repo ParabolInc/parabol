@@ -9,7 +9,9 @@ import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import JiraServiceTaskId from '~/shared/gqlIds/JiraServiceTaskId'
 import publish from '../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
-import {isAtlassianError, isJiraNoAccessError, JiraScreen} from '~/utils/AtlassianManager'
+import {isJiraApiError, JiraScreen} from '~/utils/AtlassianManager'
+import standardError from '../../utils/standardError'
+import {isNotNull} from '../../utils/predicates'
 
 const addMissingJiraField = {
   type: GraphQLNonNull(AddMissingJiraFieldPayload),
@@ -87,17 +89,10 @@ const addMissingJiraField = {
     const {fieldType, fieldId, fieldName} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
-    if (isAtlassianError(screensResponse)) {
-      return {error: {message: screensResponse.message}}
+    if (isJiraApiError(screensResponse)) {
+      return {error: {message: screensResponse.errorMessage}}
     }
 
-    if (isJiraNoAccessError(screensResponse)) {
-      return {error: {message: screensResponse.errorMessages?.[0]}}
-    }
-
-    if (!('values' in screensResponse)) {
-      return {error: {message: "Couldn't fetch project screens!"}}
-    }
     const {values: screens} = screensResponse
     // we're trying to guess what's the probability that given screen is assigned to an issue project
     const evaluateProbability = (screen: JiraScreen) => {
@@ -111,7 +106,7 @@ const addMissingJiraField = {
       await Promise.all(
         screens.map(async (screen) => {
           const screenTabsResponse = await manager.getScreenTabs(cloudId, screen.id)
-          if (!Array.isArray(screenTabsResponse) || screenTabsResponse.length === 0) {
+          if (isJiraApiError(screenTabsResponse)) {
             return null
           }
 
@@ -120,7 +115,7 @@ const addMissingJiraField = {
         })
       )
     )
-      .filter(<T>(screen: T | null): screen is T => screen !== null)
+      .filter(isNotNull)
       .sort((screen1, screen2) => screen2.probability - screen1.probability)
     if (possibleScreens.length === 0) {
       return {error: {message: 'No screens available to modify!'}}
@@ -136,7 +131,7 @@ const addMissingJiraField = {
       const screen = possibleScreens[i]
       const {screenId, tabId} = screen
       const addFieldResponse = await manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
-      if (!('id' in addFieldResponse)) {
+      if (isJiraApiError(addFieldResponse)) {
         continue
       }
 
@@ -161,7 +156,7 @@ const addMissingJiraField = {
     }
 
     if (updatedScreen === null) {
-      return {error: {message: `Couldn't fix the missing field!`}}
+      return standardError(new Error(`Couldn't fix the missing field!`))
     }
 
     // RESOLUTION
