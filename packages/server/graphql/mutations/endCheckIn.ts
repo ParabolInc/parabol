@@ -224,13 +224,14 @@ export default {
     }
 
     // remove any empty tasks
-    const [meetingMembers, team, teamMembers, removedTaskIds, result] = await Promise.all([
+    const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
-      finishCheckInMeeting(completedCheckIn, dataLoader)
+      removeEmptyTasks(meetingId)
     ])
+    // need to wait for removeEmptyTasks before finishing the meeting
+    const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])

@@ -122,8 +122,10 @@ export default {
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').load(templateId)
     ])
+    // wait for removeEmptyTasks before finishRetroMeeting & wait for meeting stats
+    // to be generated in finishRetroMeeting before sending Slack notifications
+    await finishRetroMeeting(completedRetrospective, dataLoader)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    finishRetroMeeting(completedRetrospective, dataLoader)
     sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = teamMembers.map(
