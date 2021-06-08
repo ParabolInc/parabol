@@ -25,16 +25,20 @@ const EmailPasswordResetMutation: StandardMutation<
     onError,
     onCompleted: (res, err) => {
       onCompleted(res, err)
+      const {email} = variables
+      const params = new URLSearchParams()
       if (res.emailPasswordReset.error) {
         const {message} = res.emailPasswordReset.error
         if (message === AuthenticationError.USER_EXISTS_GOOGLE) {
-          history.push(`/forgot-password/submitted?type=${ForgotPasswordTypes.GOOGLE}`)
+          params.set('type', ForgotPasswordTypes.GOOGLE)
         } else if (message === AuthenticationError.USER_EXISTS_SAML) {
-          history.push(`/forgot-password/submitted?type=${ForgotPasswordTypes.SAML}`)
+          params.set('type', ForgotPasswordTypes.SAML)
         }
       } else {
-        history.push(`/forgot-password/submitted?type=${ForgotPasswordTypes.SUCCESS}`)
+        params.set('type', 'success')
+        params.set('email', email)
       }
+      history.push(`/forgot-password/submitted?${params}`)
     }
   })
 }

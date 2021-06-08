@@ -2,7 +2,7 @@
  * The password reset page. Allows the user to reset their password via email.
  *
  */
-import React, {useState} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
 import EmailInputField from './EmailInputField'
 import PlainButton from './PlainButton/PlainButton'
@@ -18,8 +18,6 @@ import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
-import IconLabel from './IconLabel'
-import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 
 interface Props {
   email?: string
@@ -44,21 +42,8 @@ const Container = styled('div')({
   width: '100%'
 })
 
-const LinkButton = styled(PlainButton)({
-  color: PALETTE.SKY_500,
-  ':hover': {
-    color: PALETTE.SKY_500,
-    textDecoration: 'underline'
-  }
-})
-
 const SubmitButton = styled(PrimaryButton)({
   marginTop: 16
-})
-
-const StyledPrimaryButton = styled(PrimaryButton)({
-  margin: '16px auto 0',
-  width: 240
 })
 
 const BrandedLink = styled(PlainButton)({
@@ -73,8 +58,7 @@ const DialogSubTitle = styled('div')({
   fontSize: 14,
   fontWeight: 400,
   lineHeight: 1.5,
-  paddingTop: 16,
-  paddingBottom: 24
+  padding: '16px 0px 0px'
 })
 
 const validateEmail = (email) => {
@@ -86,7 +70,7 @@ const validateEmail = (email) => {
 
 const ForgotPasswordPage = (props: Props) => {
   const {gotoPage} = props
-  const {submitMutation, submitting, onCompleted, error, onError} = useMutationProps()
+  const {submitMutation, submitting, onCompleted, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
     email: {
@@ -126,9 +110,9 @@ const ForgotPasswordPage = (props: Props) => {
     onCompleted()
   }
 
-  const resetState = () => {
-    onCompleted()
-  }
+  // const resetState = () => {
+  //   onCompleted()
+  // }
 
   const gotoSignIn = () => {
     const params = new URLSearchParams(location.search)
@@ -144,19 +128,17 @@ const ForgotPasswordPage = (props: Props) => {
         <BrandedLink onClick={gotoSignIn}>{'Sign in with password'}</BrandedLink>
       </DialogSubTitle>
       <Container>
-        <>
-          <P>
-            {
-              'Confirm your email address, and we’ll send you an email with password recovery instructions.'
-            }
-          </P>
-          <Form onSubmit={onSubmit}>
-            <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
-            <SubmitButton size='medium' waiting={submitting}>
-              {'Send Email'}
-            </SubmitButton>
-          </Form>
-        </>
+        <P>
+          {
+            'Confirm your email address, and we’ll send you an email with password recovery instructions.'
+          }
+        </P>
+        <Form onSubmit={onSubmit}>
+          <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
+          <SubmitButton size='medium' waiting={submitting}>
+            {'Send Email'}
+          </SubmitButton>
+        </Form>
       </Container>
     </AuthenticationDialog>
   )

@@ -53001,7 +53001,11 @@ export type EmailPasswordResetPayload =
 
 export interface IEmailPasswordResetSuccess {
   __typename: 'EmailPasswordResetSuccess';
-  success: boolean | null;
+
+  /**
+   * The email address that the user wants to reset
+   */
+  email: string;
 }
 
 export interface IEditCommentingPayload {

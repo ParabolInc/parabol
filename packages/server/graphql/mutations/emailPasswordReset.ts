@@ -90,7 +90,7 @@ const emailPasswordReset = {
         html,
         tags: ['type:resetPassword']
       })
-      return {success}
+      return {email, success}
     }
   )
 }

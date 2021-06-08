@@ -25,7 +25,8 @@ const AuthenticationPage = (props: Props) => {
     return null
   }
   const gotoPage: GotoAuthPage = (page, search?) => {
-    history.push(`/${page}${search}`)
+    const url = search ? `/${page}${search}` : `/${page}`
+    history.push(url)
   }
   return (
     <TeamInvitationWrapper>

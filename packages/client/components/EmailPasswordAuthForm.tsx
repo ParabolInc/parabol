@@ -83,7 +83,7 @@ const validatePassword = (password: string) => {
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
-  const {isPrimary, isSignin, invitationToken} = props
+  const {isPrimary, isSignin, invitationToken, email} = props
   const [isSSO, setIsSSO] = useState(false)
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
@@ -93,7 +93,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const {history} = useRouter()
   const {fields, onChange, setDirtyField, validateField} = useForm({
     email: {
-      getDefault: () => props.email,
+      getDefault: () => email,
       validate: validateEmail
     },
     password: {
@@ -211,8 +211,9 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
         </Button>
       </Form>
-      <UseSSO onClick={toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'
-        } SSO`}</UseSSO>
+      <UseSSO onClick={toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${
+        isSSO ? 'without' : 'with'
+      } SSO`}</UseSSO>
     </>
   )
 })

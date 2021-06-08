@@ -1,14 +1,13 @@
-import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import makeMutationPayload from './makeMutationPayload'
 import {GQLContext} from '../graphql'
 
 const EmailPasswordResetSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EmailPasswordResetSuccess',
   fields: () => ({
-    success: {
-      type: GraphQLBoolean
-      // description: 'The new auth token'
-    }
+    // success: {
+    //   type: GraphQLBoolean
+    // }
   })
 })
 

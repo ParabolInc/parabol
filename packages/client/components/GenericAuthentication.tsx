@@ -16,6 +16,7 @@ import DialogTitle from './DialogTitle'
 import AuthenticationDialog from './AuthenticationDialog'
 import ForgotPasswordPage from './ForgotPasswordPage'
 import SubmittedForgotPasswordPage from './SubmittedForgotPasswordPage'
+import useRouter from '../hooks/useRouter'
 
 export type AuthPageSlug =
   | 'create-account'
@@ -64,6 +65,9 @@ const DialogSubTitle = styled('div')({
 const GenericAuthentication = (props: Props) => {
   const {gotoPage, invitationToken, page, teamName} = props
   const emailRef = useRef<{email: () => string}>()
+  const {location} = useRouter()
+  const params = new URLSearchParams(location.search)
+  const email = params.get('email')
 
   if (page === 'forgot-password') {
     return <ForgotPasswordPage gotoPage={gotoPage} />
@@ -94,7 +98,7 @@ const GenericAuthentication = (props: Props) => {
       <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
       <HorizontalSeparator margin='1rem 0 0' text='or' />
       <EmailPasswordAuthForm
-        email=''
+        email={email || ''}
         isSignin={!isCreate}
         invitationToken={invitationToken}
         ref={emailRef}
@@ -102,9 +106,7 @@ const GenericAuthentication = (props: Props) => {
       {isCreate ? (
         <AuthPrivacyFooter />
       ) : (
-        <>
-          <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
-        </>
+        <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
       )}
     </AuthenticationDialog>
   )

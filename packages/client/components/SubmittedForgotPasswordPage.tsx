@@ -9,7 +9,7 @@ import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 import PrimaryButton from './PrimaryButton'
 import IconLabel from './IconLabel'
-import {GotoAuthPage} from './GenericAuthentication'
+import {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 
 const P = styled('p')({
   fontSize: 14,
@@ -37,26 +37,36 @@ const StyledPrimaryButton = styled(PrimaryButton)({
   width: 240
 })
 
+type TextField = {
+  title: string
+  descriptionOne: string | JSX.Element
+  descriptionTwo: string | JSX.Element
+  button: JSX.Element
+}
+type CopyType = Record<ForgotPasswordTypes, TextField>
+
 interface Props {
   gotoPage: GotoAuthPage
 }
 
-const getForgotPasswordRes = (search: string) => search.split('?type=').pop()
-
 const SubmittedForgotPasswordPage = (props: Props) => {
   const {gotoPage} = props
   const {match, location} = useRouter<{token: string}>()
-  const {search} = location
-  const {params} = match
-  const {token} = params
-  const resType = getForgotPasswordRes(search) || ForgotPasswordTypes.SUCCESS
+  const params = new URLSearchParams(location.search)
+  const resType = params.get('type') || 'success'
+  const email = params.get('email')
+  const {token} = match.params
+
+  const handleGoToPage = (page: AuthPageSlug, email: string | null) => {
+    email ? gotoPage(page, `?email=${email}`) : gotoPage(page)
+  }
 
   const copyTypes = {
     goog: {
       title: 'Oops!',
       descriptionOne: 'It looks like you signed-up with Gmail.',
       descriptionTwo: 'Try logging in with Google here:',
-      actionButton: <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
+      button: <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
     },
     success: {
       title: 'You’re all set!',
@@ -64,17 +74,19 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       descriptionTwo: (
         <>
           {'Didn’t get it? Check your spam folder, or '}
-          <LinkButton>click here</LinkButton>
+          <LinkButton onClick={() => handleGoToPage('forgot-password', email)}>
+            click here
+          </LinkButton>
           {' to try again.'}
         </>
       ),
-      actionButton: (
-        <StyledPrimaryButton onClick={() => gotoPage('signin')} size='medium'>
+      button: (
+        <StyledPrimaryButton onClick={() => handleGoToPage('signin', email)} size='medium'>
           <IconLabel icon='arrow_back' label='Back to Sign In' />
         </StyledPrimaryButton>
       )
     }
-  } as const
+  } as CopyType
   const copy = copyTypes[resType]
 
   return (
@@ -83,7 +95,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       <Container>
         <P>{copy.descriptionOne}</P>
         <P>{copy.descriptionTwo}</P>
-        {copy.actionButton}
+        {copy.button}
       </Container>
     </AuthenticationDialog>
   )
