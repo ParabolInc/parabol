@@ -37,18 +37,6 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, isReadOnly, allowedThreadables, width, viewer} = props
   const isDrawer = !!width // hack to say this is in a poker meeting
-  const discussion = viewer.discussion!
-  const {replyingToCommentId, thread} = discussion
-  const commentors = thread.commentors ?? []
-  const preferredNames = useMemo(() => commentors.map(({preferredName}) => preferredName), [
-    commentors
-  ])
-  const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
-  const threadables = edges.map(({node}) => node)
-  const getMaxSortOrder = () => {
-    return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
-  }
-
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
@@ -61,6 +49,22 @@ const DiscussionThread = (props: Props) => {
       undefined,
       isDrawer
     ) || isReadOnly
+  const {discussion} = viewer
+  const commentors = discussion?.thread?.commentors ?? []
+  const preferredNames = useMemo(() => commentors.map(({preferredName}) => preferredName), [
+    commentors
+  ])
+  if (!discussion) {
+    return <div>No discussion found!</div>
+  }
+
+  const {replyingToCommentId, thread} = discussion
+  const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
+  const threadables = edges.map(({node}) => node)
+  const getMaxSortOrder = () => {
+    return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
+  }
+
   return (
     <Wrapper isExpanded={isExpanded} width={width} ref={ref}>
       <DiscussionThreadList

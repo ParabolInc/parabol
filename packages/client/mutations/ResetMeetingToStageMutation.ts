@@ -50,12 +50,13 @@ const mutation = graphql`
 
 export const resetMeetingToStageUpdater = (payload, {store}) => {
   const meeting = payload.getLinkedRecord('meeting')
-  const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
-  const viewer = store.getRoot().getLinkedRecord('viewer')
-  if (!reflectionGroups || !viewer) return
-  reflectionGroups.forEach((group) => {
-    const threadId = group.getValue('id')
-    const thread = getDiscussionThreadConn(store, threadId)
+  const phases = meeting.getLinkedRecords('phases')
+  const discussPhase = phases.find((phase) => phase?.getValue('phaseType') === 'discuss')
+  if (!discussPhase) return
+  const stages = discussPhase.getLinkedRecords('stages')
+  stages.forEach((stage) => {
+    const discussionId = stage?.getValue('discussionId')
+    const thread = getDiscussionThreadConn(store, discussionId)
     thread?.setLinkedRecords([], 'edges')
   })
 }

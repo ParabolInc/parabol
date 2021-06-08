@@ -139,6 +139,7 @@ const RetroDiscussPhase = (props: Props) => {
   const [callbackRef, phaseRef] = useCallbackRef()
   const {endedAt, localStage, showSidebar, organization} = meeting
   const {reflectionGroup, discussionId} = localStage
+  console.log({localStage})
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
 

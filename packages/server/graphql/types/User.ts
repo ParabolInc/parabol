@@ -245,7 +245,9 @@ const User = new GraphQLObjectType<any, GQLContext>({
         const discussion = await dataLoader.get('discussions').load(id)
         if (!discussion) return null
         const {teamId} = discussion
-        if (!isTeamMember(authToken, teamId)) return null
+        if (!isTeamMember(authToken, teamId)) {
+          return null
+        }
         return discussion
       }
     },

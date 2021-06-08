@@ -1,13 +1,38 @@
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
-import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
+import {RetroDemo} from '../../types/constEnums'
+import {ACTIVE, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
-import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import clientTempId from '../../utils/relay/clientTempId'
 import commentLookup from './commentLookup'
-import {RetroDemoDB} from './initDB'
+import {DemoDiscussion, RetroDemoDB} from './initDB'
 import reactjiLookup from './reactjiLookup'
 import taskLookup from './taskLookup'
+
+class DemoDiscussStage {
+  __typename = 'RetroDiscussStage'
+
+  meetingId = RetroDemo.MEETING_ID
+  isComplete = false
+  isNavigable = true
+  isNavigableByFacilitator = true
+  phaseType = 'discuss'
+  startAt = new Date().toJSON()
+  viewCount = 0
+  readyCount = 0
+  reflectionGroupId: string
+  discussion: DemoDiscussion
+  constructor(
+    public id: string,
+    public sortOrder: number,
+    public reflectionGroup: any,
+    public discussionId: string,
+    db: RetroDemoDB
+  ) {
+    this.reflectionGroupId = reflectionGroup.id
+    this.discussion = db.discussions.find((discussion) => discussion.id === this.discussionId)
+  }
+}
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -32,7 +57,7 @@ const removeEmptyReflections = (db) => {
         reflectionGroup.isActive = false
       })
   }
-  return {emptyReflectionGroupIds}
+  return {emptyReflectionGroupIds, reflectionGroups: db.reflectionGroups}
 }
 
 const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId: string) => {
@@ -171,19 +196,17 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
 const addDiscussionTopics = (db: RetroDemoDB) => {
   const meeting = db.newMeeting
   const {id: meetingId, phases} = meeting
-  const discussPhase = phases!.find((phase) => phase.phaseType === DISCUSS)!
+  const discussPhase = phases!.find((phase) => phase.phaseType === 'discuss')!
   if (!discussPhase) return {}
   const placeholderStage = discussPhase.stages[0]
   const sortedReflectionGroups = mapGroupsToStages(db.reflectionGroups)
+    ; (placeholderStage as any).discussionId = `discussion:${sortedReflectionGroups[0]?.id}`
   const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : clientTempId()
-    const discussStage = makeDiscussionStage(reflectionGroup.id, meetingId!, idx, id)
     addStageToBotScript(id, db, reflectionGroup.id)
-    return Object.assign(discussStage, {
-      __typename: 'RetroDiscussStage',
-      reflectionGroup,
-      readyCount: 0
-    })
+    const discussionId = `discussion:${reflectionGroup.id}`
+    const stage = new DemoDiscussStage(id, idx, reflectionGroup, discussionId, db)
+    return stage
   })
   const firstDiscussStage = nextDiscussStages[0]
   if (!firstDiscussStage || !placeholderStage) return {}

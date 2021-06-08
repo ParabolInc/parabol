@@ -8,7 +8,7 @@ const getDiscussionThreadConn = (
   if (!viewer) return null
   const discussion = viewer.getLinkedRecord('discussion', {id: discussionId})
   if (!discussion) return null
-  return ConnectionHandler.getConnection(viewer, 'DiscussionThread_thread')
+  return ConnectionHandler.getConnection(discussion, 'DiscussionThread_thread')
 }
 
 export default getDiscussionThreadConn

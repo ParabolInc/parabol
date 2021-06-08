@@ -35,7 +35,10 @@ import getDemoEntities from './getDemoEntities'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
 import initDB, {
+  DemoComment,
+  DemoDiscussion,
   demoTeamId,
+  DemoThreadableEdge,
   demoViewerId,
   GitHubProjectKeyLookup,
   JiraProjectKeyLookup,
@@ -107,7 +110,11 @@ export type INewMeetingPhase = Omit<NewMeetingPhase, 'endAt' | 'startAt'> & {
   endAt: string | Date
 }
 
-export type DemoTask = Omit<ITask, 'agendaItem'>
+export type DemoTask = Omit<ITask, 'agendaItem' | 'createdAt' | 'updatedAt' | 'doneMeetingId'> & {
+  createdAt: string
+  updatedAt: string
+  doneMeetingId: string | null
+}
 
 interface Payload {
   __typename: string
@@ -282,9 +289,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...this.db.users[0],
-          thread: this.db.reflectionGroups.find(
-            (reflectionGroup) => `discussion:${reflectionGroup.id}` === discussionId
-          )!.thread,
+          discussion: this.db.discussions.find((discussion) => discussion.id === discussionId),
           meeting: {
             ...this.db.newMeeting
           }
@@ -314,43 +319,31 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     AddCommentMutation: ({comment}, userId) => {
       const commentId = comment.id || this.getTempId('comment')
-      const {isAnonymous} = comment
-      const newComment = {
-        ...comment,
-        __typename: 'Comment',
-        content: normalizeRawDraftJS(comment.content),
-        createdAt: new Date().toJSON(),
-        updatedAt: new Date().toJSON(),
-        createdBy: isAnonymous ? null : userId,
-        createdByUser: isAnonymous ? null : this.db.users.find(({id}) => id === userId),
-        id: commentId,
-        isActive: true,
-        isViewerComment: userId === demoViewerId,
-        reactjis: [],
-        replies: [],
-        threadParentId: comment.threadParentId || null
-      }
+      const newComment = new DemoComment(
+        {
+          ...comment,
+          id: commentId,
+          userId
+        },
+        this.db
+      )
       this.db.comments.push(newComment)
       const {threadParentId, discussionId} = newComment
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
+      discussion.commentCount++
       if (threadParentId) {
         const threadParent =
           this.db.tasks.find(({id}) => id === threadParentId) ||
           this.db.comments.find(({id}) => id === threadParentId)
         threadParent?.replies.push(newComment)
       } else {
-        const reflectionGroup = this.db.reflectionGroups.find(
-          (group) => `discussion:${group.id}` === discussionId
-        )!
-        reflectionGroup.thread.edges.push({
-          __typename: 'ThreadableEdge',
-          cursor: newComment.createdAt,
-          node: newComment
-        })
+        const {thread} = discussion
+        thread.edges.push(new DemoThreadableEdge(newComment))
       }
-
       const data = {
         __typename: 'AddCommentSuccess',
         error: null,
+        meetingId: RetroDemo.MEETING_ID,
         comment: newComment
       }
       if (userId !== demoViewerId) {
@@ -515,6 +508,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflection.retroReflectionGroup = reflectionGroup as any
       this.db.reflectionGroups.push(reflectionGroup)
       this.db.reflections.push(reflection)
+      this.db.discussions.push(new DemoDiscussion(reflectionGroupId))
       const unlockedStageIds = unlockAllStagesForPhase(
         this.db.newMeeting.phases as any,
         'group',
@@ -898,6 +892,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         } as any
 
         this.db.reflectionGroups.push(newReflectionGroup)
+        this.db.discussions.push(new DemoDiscussion(newReflectionGroupId))
         oldReflections.splice(oldReflections.indexOf(reflection as any), 1)
 
         Object.assign(reflection, {
@@ -1194,6 +1189,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const {entityMap} = JSON.parse(content)
       const tags = getTagsFromEntityMap(entityMap)
       const user = this.db.users.find((user) => user.id === userId)
+      const plaintextContent = extractTextFromDraftString(content)
       const task = {
         __typename: 'Task',
         agendaItem: null,
@@ -1211,6 +1207,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         meetingId: RetroDemo.MEETING_ID,
         replies: [],
         discussionId,
+        plaintextContent,
+        title: plaintextContent,
         threadParentId: threadParentId || null,
         threadSortOrder,
         sortOrder: sortOrder || 0,
@@ -1223,25 +1221,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         user
       }
       this.db.tasks.push(task as any)
-      const reflectionGroup = this.db.reflectionGroups.find(
-        (group) => `discussion:${group.id}` === discussionId
-      )!
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
+      const {thread} = discussion
+      const {edges} = thread
       if (threadParentId) {
         const threadParent =
           this.db.comments.find(({id}) => id === threadParentId) ||
           this.db.tasks.find(({id}) => id === threadParentId)
         threadParent.replies.push(task)
       } else {
-        reflectionGroup.thread.edges.push({
-          __typename: 'ThreadableEdge',
-          cursor: task.createdAt,
-          node: task as any
-        })
+        edges.push(new DemoThreadableEdge(task as any))
       }
 
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
       meetingMember.tasks.push(task as any)
-      reflectionGroup.tasks!.push(task as any)
       const data = {
         __typename: 'CreateTaskPayload',
         error: null,
@@ -1267,7 +1260,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       comment.updatedAt = new Date().toJSON()
       comment.isActive = false
 
-      const {threadParentId} = comment
+      const {discussionId, threadParentId} = comment
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      discussion.commentCount--
       if (comment.threadParentId) {
         const threadParent =
           this.db.tasks.find(({id}) => id === threadParentId) ||
@@ -1281,9 +1276,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           }
         }
       } else if (comment.replies.length === 0) {
-        const reflectionGroup = this.db.reflectionGroups.find(({id}) => id === threadParentId)
-        if (reflectionGroup) {
-          const {thread} = reflectionGroup
+        // const reflectionGroup = this.db.reflectionGroups.find(({id}) => id === threadParentId)
+        if (discussion) {
+          const {thread} = discussion
           const {edges} = thread
           const idx = edges.findIndex((edge) => edge.node.id === commentId)
           edges.splice(idx, 1)
@@ -1364,11 +1359,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     DeleteTaskMutation: ({taskId}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       const {discussionId} = task
-      const reflectionGroup = this.db.reflectionGroups.find(
-        (group) => `discussion:${group.id}` === discussionId
-      )
-      if (!reflectionGroup) return
-      reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      if (!discussion) return
+      const {thread} = discussion
+      const {edges} = thread
+      edges.splice(edges.indexOf(task), 1)
       const data = {
         __typename: 'DeleteTaskPayload',
         error: null,

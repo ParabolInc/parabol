@@ -51,6 +51,7 @@ graphql`
                 isNavigableByFacilitator
                 meetingId
                 phaseType
+                discussionId
                 reflectionGroup {
                   id
                   voteCount
