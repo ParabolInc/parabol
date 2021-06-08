@@ -1,7 +1,7 @@
 import {EmailPasswordResetMutation as TEmailPasswordResetMutation} from '../__generated__/EmailPasswordResetMutation.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import {LocalHandlers, StandardMutation} from '../types/relayMutations'
 import {AuthenticationError, ForgotPasswordTypes} from '../types/constEnums'
 
 const mutation = graphql`
@@ -15,16 +15,20 @@ const mutation = graphql`
     }
   }
 `
-const EmailPasswordResetMutation: StandardMutation<
-  TEmailPasswordResetMutation,
-  HistoryLocalHandler
-> = (atmosphere, variables, {history, onError, onCompleted}) => {
+
+const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, LocalHandlers> = (
+  atmosphere,
+  variables,
+  {history, onError, onCompleted}: LocalHandlers = {}
+) => {
   return commitMutation<TEmailPasswordResetMutation>(atmosphere, {
     mutation,
     variables,
     onError,
     onCompleted: (res, err) => {
-      onCompleted(res, err)
+      if (onCompleted) {
+        onCompleted(res, err)
+      }
       const {email} = variables
       const params = new URLSearchParams()
       if (res.emailPasswordReset.error) {
@@ -35,10 +39,10 @@ const EmailPasswordResetMutation: StandardMutation<
           params.set('type', ForgotPasswordTypes.SAML)
         }
       } else {
-        params.set('type', 'success')
+        params.set('type', ForgotPasswordTypes.SUCCESS)
         params.set('email', email)
       }
-      history.push(`/forgot-password/submitted?${params}`)
+      if (history) history.push(`/forgot-password/submitted?${params}`)
     }
   })
 }

@@ -18,6 +18,10 @@ const P = styled('p')({
   textAlign: 'center'
 })
 
+const ButtonWrapper = styled('div')({
+  paddingTop: 8
+})
+
 const Container = styled('div')({
   margin: '0 auto',
   maxWidth: 240,
@@ -53,7 +57,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   const {gotoPage} = props
   const {match, location} = useRouter<{token: string}>()
   const params = new URLSearchParams(location.search)
-  const resType = params.get('type') || 'success'
+  const resType = params.get('type') || ForgotPasswordTypes.SUCCESS
   const email = params.get('email')
   const {token} = match.params
 
@@ -66,7 +70,11 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       title: 'Oops!',
       descriptionOne: 'It looks like you signed-up with Gmail.',
       descriptionTwo: 'Try logging in with Google here:',
-      button: <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
+      button: (
+        <ButtonWrapper>
+          <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
+        </ButtonWrapper>
+      )
     },
     success: {
       title: 'You’re all set!',

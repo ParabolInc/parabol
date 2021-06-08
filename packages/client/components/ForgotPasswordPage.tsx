@@ -110,10 +110,6 @@ const ForgotPasswordPage = (props: Props) => {
     onCompleted()
   }
 
-  // const resetState = () => {
-  //   onCompleted()
-  // }
-
   const gotoSignIn = () => {
     const params = new URLSearchParams(location.search)
     params.delete('email')
@@ -142,56 +138,6 @@ const ForgotPasswordPage = (props: Props) => {
       </Container>
     </AuthenticationDialog>
   )
-
-  // return (
-  //   <AuthenticationDialog>
-  //     {/* <DialogTitle>{isSent ? 'You’re all set!' : 'Forgot your password?'}</DialogTitle> */}
-  //     <DialogTitle>{isSent ? dialogCopy.title : 'Forgot your password?'}</DialogTitle>
-  //     {!isSent && (
-  //       <DialogSubTitle>
-  //         {/* <span>{isSent ? '' : 'Remember it? '}</span> */}
-  //         <span>{'Remember it? '}</span>
-  //         <BrandedLink onClick={gotoSignIn}>{isSent ? '' : 'Sign in with password'}</BrandedLink>
-  //       </DialogSubTitle>
-  //     )}
-  //     <Container>
-  //       {isSent ? (
-  //         <Fragment>
-  //           {/* <P>{'We’ve sent you an email with password recovery instructions.'}</P> */}
-  //           <P>{dialogCopy.descriptionOne}</P>
-  //           <P>
-  //             {/* {'Didn’t get it? Check your spam folder, or '}
-  //             <LinkButton onClick={resetState}>click here</LinkButton>
-  //             {' to try again.'} */}
-  //             {dialogCopy.descriptionTwo}
-  //           </P>
-  //           <StyledPrimaryButton onClick={gotoSignIn} size='medium'>
-  //             <IconLabel icon='arrow_back' label='Back to Sign In' />
-  //           </StyledPrimaryButton>
-  //         </Fragment>
-  //       ) : (
-  //         <Fragment>
-  //           <P>
-  //             {
-  //               'Confirm your email address, and we’ll send you an email with password recovery instructions.'
-  //             }
-  //           </P>
-  //           <Form onSubmit={onSubmit}>
-  //             <EmailInputField
-  //               {...fields.email}
-  //               autoFocus
-  //               onChange={onChange}
-  //               onBlur={handleBlur}
-  //             />
-  //             <SubmitButton size='medium' waiting={submitting}>
-  //               {'Send Email'}
-  //             </SubmitButton>
-  //           </Form>
-  //         </Fragment>
-  //       )}
-  //     </Container>
-  //   </AuthenticationDialog>
-  // )
 }
 
 export default ForgotPasswordPage
