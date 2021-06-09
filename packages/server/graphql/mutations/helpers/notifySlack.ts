@@ -15,6 +15,13 @@ import SlackServerManager from '../../../utils/SlackServerManager'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import appOrigin from '../../../appOrigin'
+import relativeDate from 'parabol-client/utils/date/relativeDate'
+import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import MeetingAction from '../../../database/types/MeetingAction'
+import MeetingPoker from '../../../database/types/MeetingPoker'
+import plural from 'parabol-client/utils/plural'
+import EstimatePhase from '../../../database/types/EstimatePhase'
+import {makeSection, makeSections, makeButtons} from './makeSlackBlocks'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -47,7 +54,7 @@ const notifySlack = async (
   event: SlackNotificationEvent,
   dataLoader: DataLoaderWorker,
   teamId: string,
-  slackText: string
+  slackMessage: string | Array<{type: string}>
 ) => {
   const r = await getRethink()
   const slackDetails = await getSlackDetails(event, teamId, dataLoader)
@@ -57,7 +64,7 @@ const notifySlack = async (
     const {channelId} = notification
     const {botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken)
-    const res = await manager.postMessage(channelId!, slackText)
+    const res = await manager.postMessage(channelId!, slackMessage)
     segmentIo.track({
       userId,
       event: 'Slack notification sent',
@@ -97,29 +104,116 @@ export const startSlackMeeting = async (
     utm_campaign: 'invitations'
   }
   const options = {searchParams}
-  const team = await dataLoader.get('teams').load(teamId)
-
+  const [team, meeting] = await Promise.all([
+    dataLoader.get('teams').load(teamId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
-  const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`
-  notifySlack('meetingStart', dataLoader, teamId, slackText).catch(console.log)
+  const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
+  const blocks = [
+    makeSection('Meeting started :wave: '),
+    makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
+    makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
+    makeButtons([button])
+  ]
+  notifySlack('meetingStart', dataLoader, teamId, blocks).catch(console.log)
 }
 
-export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderWorker) => {
+const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
+  if (meeting.meetingType === 'retrospective') {
+    const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
+    return `Your team shared ${reflectionCount} ${plural(
+      reflectionCount,
+      'reflection'
+    )} and grouped them into ${topicCount} topics.\nYou added ${commentCount} ${plural(
+      commentCount,
+      'comment'
+    )} and created ${taskCount} ${plural(taskCount, 'task')}.`
+  } else if (meeting.meetingType === 'action') {
+    const {createdAt, endedAt, agendaItemCount = 0, commentCount = 0, taskCount = 0} = meeting
+    const meetingDuration = relativeDate(createdAt, {
+      now: endedAt,
+      max: 2,
+      suffix: false,
+      smallDiff: 'less than a minute'
+    })
+    return `It lasted ${meetingDuration} and generated ${taskCount} ${plural(
+      taskCount,
+      'task'
+    )}, ${agendaItemCount} ${plural(agendaItemCount, 'agenda item')} and ${commentCount} ${plural(
+      commentCount,
+      'comment'
+    )}.`
+  } else {
+    const estimatePhase = meeting.phases.find(
+      (phase) => phase.phaseType === 'ESTIMATE'
+    ) as EstimatePhase
+    const stages = estimatePhase.stages
+    const storyCount = new Set(stages.map(({serviceTaskId}) => serviceTaskId)).size
+    return `You voted on ${storyCount} ${plural(storyCount, 'story', 'stories')}.`
+  }
+}
+
+const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
+  const {id: meetingId} = meeting
   const searchParams = {
     utm_source: 'slack summary',
     utm_medium: 'product',
     utm_campaign: 'after-meeting'
   }
   const options = {searchParams}
-  const team = await dataLoader.get('teams').load(teamId)
   const summaryUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
-  const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`
-  notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
+  const makeDiscussionButton = (meetingUrl: string) => ({
+    text: 'See discussion',
+    url: meetingUrl
+  })
+  const summaryButton = {
+    text: 'Review summary',
+    url: summaryUrl
+  } as const
+  switch (meeting.meetingType) {
+    case 'retrospective':
+      const retroUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/1`)
+      return makeButtons([makeDiscussionButton(retroUrl), summaryButton])
+    case 'action':
+      const checkInUrl = makeAppURL(appOrigin, `meet/${meetingId}/checkin/1`)
+      return makeButtons([makeDiscussionButton(checkInUrl), summaryButton])
+    case 'poker':
+      const pokerUrl = makeAppURL(appOrigin, `meet/${meetingId}/estimate/1`)
+      const estimateButton = {
+        text: 'See estimates',
+        url: pokerUrl
+      }
+      return makeButtons([estimateButton, summaryButton])
+    default:
+      throw new Error('Invalid meeting type')
+  }
+}
+
+export const endSlackMeeting = async (
+  meetingId: string,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const [team, meeting] = await Promise.all([
+    dataLoader.get('teams').load(teamId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
+  const summaryText = getSummaryText(meeting)
+  const {name: teamName} = team
+  const {name: meetingName} = meeting
+  const blocks = [
+    makeSection('Meeting completed :tada:'),
+    makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+    makeSection(summaryText),
+    makeEndMeetingButtons(meeting)
+  ]
+  notifySlack('meetingEnd', dataLoader, teamId, blocks).catch(console.log)
 }
 
 const upsertSlackMessage = async (
   slackDetails: Unpromise<ReturnType<typeof getSlackDetails>>[0],
-  slackText: string
+  blocks: string | Array<{type: string}>
 ) => {
   const {notification, auth} = slackDetails
   const {channelId} = notification
@@ -131,25 +225,23 @@ const upsertSlackMessage = async (
     const {channel} = convoInfo
     const {latest} = channel
     if (latest) {
-      const {ts, bot_profile} = latest
-      const {name} = bot_profile
-      if (name === 'Parabol') {
-        const timestamp = new Date(Number.parseFloat(ts) * 1000)
-        const ageThresh = new Date(Date.now() - ms('5m'))
-        if (timestamp >= ageThresh) {
-          // trigger update
-          const res = await manager.updateMessage(channelId, slackText, ts)
-          if (!res.ok) {
-            console.error(res.error)
-          }
-          return
+      const {ts} = latest
+      const timestamp = new Date(Number.parseFloat(ts) * 1000)
+      const ageThresh = new Date(Date.now() - ms('5m'))
+      if (timestamp >= ageThresh) {
+        const res = await manager.updateMessage(channelId, blocks, ts)
+        if (!res.ok) {
+          console.error(res.error)
+          const postRes = await manager.postMessage(channelId, blocks)
+          if (!postRes.ok) console.error(postRes.error)
         }
+        return
       }
     }
   } else {
     // handle error?
   }
-  const res = await manager.postMessage(channelId, slackText)
+  const res = await manager.postMessage(channelId, blocks)
   if (!res.ok) {
     console.error(res.error)
   }
@@ -165,7 +257,11 @@ export const notifySlackTimeLimitStart = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
-  const {name: meetingName, phases, facilitatorStageId} = meeting
+  const {name, phases, facilitatorStageId} = meeting
+  const {name: teamName} = team
+  // Slack fails with error message "invalid_arguments" if updating a block with a #
+  // It can successfully post messages with a #
+  const meetingName = name.replace('#', '')
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
@@ -177,15 +273,17 @@ export const notifySlackTimeLimitStart = async (
     const fallbackTime = formatTime(scheduledEndTime)
     const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
     const fallback = `${fallbackDate} at ${fallbackTime} (${fallbackZone})`
-    const situation = `The *${phaseLabel} Phase* for ${meetingName} on ${team.name} has begun!`.replace(
-      '#',
-      ''
-    )
     const constraint = `You have until *<!date^${toEpochSeconds(
       scheduledEndTime
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
-    const cta = `Check it out: ${meetingUrl}`
-    const slackText = [situation, constraint, cta].join('\n')
-    upsertSlackMessage(slackDetail, slackText).catch(console.error)
+    const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
+    const blocks = [
+      makeSection(`The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`),
+      makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+      makeSection(constraint),
+      makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
+      makeButtons([button])
+    ]
+    upsertSlackMessage(slackDetail, blocks).catch(console.error)
   })
 }

@@ -3,7 +3,7 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
 
-export type SlackChannelDropdownChannels = readonly {id: string | null; name: string}[]
+export type SlackChannelDropdownChannels = {id: string; name: string}[]
 export type SlackChannelDropdownOnClick = (
   channelId: string | null
 ) => (e: React.MouseEvent) => void

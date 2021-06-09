@@ -25,10 +25,8 @@ import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration
 import createImposterToken from './mutations/createImposterToken'
 import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
-import createOrgPicturePutUrl from './mutations/createOrgPicturePutUrl'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
-import createUserPicturePutUrl from './mutations/createUserPicturePutUrl'
 import deleteComment from './mutations/deleteComment'
 import deleteTask from './mutations/deleteTask'
 import deleteUser from './mutations/deleteUser'
@@ -168,10 +166,8 @@ export default new GraphQLObjectType<any, Context>({
       createGitHubTaskIntegration,
       createJiraTaskIntegration,
       createMassInvitation,
-      createOrgPicturePutUrl,
       createReflection,
       createTask,
-      createUserPicturePutUrl,
       deleteComment,
       deleteTask,
       deleteUser,
