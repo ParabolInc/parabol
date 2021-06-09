@@ -1,9 +1,14 @@
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
+import {Client} from 'pg'
+import getPgConfig from '../getPgConfig'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
-export async function up(pgm: MigrationBuilder): Promise<void> {
-  await pgm.db.query(`
+export async function up(): Promise<void> {
+  // use the client here so the next migration runs in serial
+  const client = new Client(getPgConfig())
+  await client.connect()
+  await client.query(`
     DO $$
     BEGIN
       IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'DiscussionTopicTypeEnum') THEN
@@ -28,6 +33,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     END
     $$;
   `)
+  await client.end()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
