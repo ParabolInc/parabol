@@ -16,6 +16,7 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import updateUser from '../../postgres/queries/updateUser'
 import EmailPassWordResetPayload from '../types/EmailPasswordResetPayload'
+import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -63,7 +64,17 @@ const emailPasswordReset = {
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal
-      if (!localIdentity) return true
+      if (!localIdentity) {
+        const domain = getSSODomainFromEmail(email)
+        const samlDomainExists = await r
+          .table('SAML')
+          .filter((row) => row('domains').contains(domain))
+          .run()
+        if (samlDomainExists) {
+          return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
+        }
+        return true
+      }
       // seems legit, make a record of it create a reset code
       const tokenBuffer = await randomBytes(48)
       const resetPasswordToken = base64url.encode(tokenBuffer)
@@ -90,7 +101,7 @@ const emailPasswordReset = {
         html,
         tags: ['type:resetPassword']
       })
-      return {email, success}
+      return {success}
     }
   )
 }

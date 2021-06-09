@@ -3,13 +3,14 @@ import styled from '@emotion/styled'
 import DialogTitle from './DialogTitle'
 import AuthenticationDialog from './AuthenticationDialog'
 import useRouter from '../hooks/useRouter'
-import {ForgotPasswordTypes} from '../types/constEnums'
+import {ForgotPasswordResType} from '../types/constEnums'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 import PrimaryButton from './PrimaryButton'
 import IconLabel from './IconLabel'
 import {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
+import {emailLinkStyle} from '../modules/email/styles'
 
 const P = styled('p')({
   fontSize: 14,
@@ -47,7 +48,7 @@ type TextField = {
   descriptionTwo: string | JSX.Element
   button: JSX.Element
 }
-type CopyType = Record<ForgotPasswordTypes, TextField>
+type CopyType = Record<ForgotPasswordResType, TextField>
 
 interface Props {
   gotoPage: GotoAuthPage
@@ -57,9 +58,17 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   const {gotoPage} = props
   const {match, location} = useRouter<{token: string}>()
   const params = new URLSearchParams(location.search)
-  const resType = params.get('type') || ForgotPasswordTypes.SUCCESS
+  const forgotPasswordResType = params.get('type') || ForgotPasswordResType.SUCCESS
   const email = params.get('email')
   const {token} = match.params
+  const contactSupportCopy = (
+    <>
+      <a href={'mailto:love@parabol.co'} style={emailLinkStyle} title={'love@parabol.co'}>
+        {'click here '}
+      </a>
+      {'to contact support.'}
+    </>
+  )
 
   const handleGoToPage = (page: AuthPageSlug, email: string | null) => {
     email ? gotoPage(page, `?email=${email}`) : gotoPage(page)
@@ -68,12 +77,32 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   const copyTypes = {
     goog: {
       title: 'Oops!',
-      descriptionOne: 'It looks like you signed-up with Gmail.',
-      descriptionTwo: 'Try logging in with Google here:',
+      descriptionOne: 'It looks like you may have signed-up with Gmail.',
+      descriptionTwo: (
+        <>
+          {`Try signing in with Google or `}
+          {contactSupportCopy}
+        </>
+      ),
       button: (
         <ButtonWrapper>
           <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
         </ButtonWrapper>
+      )
+    },
+    saml: {
+      title: 'Oops!',
+      descriptionOne: 'It looks like you may have signed-up using SSO.',
+      descriptionTwo: (
+        <>
+          {`Try signing in with SSO or `}
+          {contactSupportCopy}
+        </>
+      ),
+      button: (
+        <StyledPrimaryButton onClick={() => handleGoToPage('signin', null)} size='medium'>
+          <IconLabel icon='arrow_back' label='Sign In with SSO' />
+        </StyledPrimaryButton>
       )
     },
     success: {
@@ -95,7 +124,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       )
     }
   } as CopyType
-  const copy = copyTypes[resType]
+  const copy = copyTypes[forgotPasswordResType]
 
   return (
     <AuthenticationDialog>

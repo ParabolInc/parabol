@@ -4,8 +4,7 @@ export const enum AppBar {
 
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE',
-  SAML = 'SAML'
+  GOOGLE = 'GOOGLE'
 }
 
 // https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
@@ -169,7 +168,7 @@ export const enum AuthenticationError {
   USER_EXISTS_SAML = 'userExistsSaml'
 }
 
-export const enum ForgotPasswordTypes {
+export const enum ForgotPasswordResType {
   GOOGLE = 'goog',
   SAML = 'saml',
   SUCCESS = 'success'

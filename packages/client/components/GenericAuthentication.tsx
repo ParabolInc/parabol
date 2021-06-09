@@ -17,6 +17,7 @@ import AuthenticationDialog from './AuthenticationDialog'
 import ForgotPasswordPage from './ForgotPasswordPage'
 import SubmittedForgotPasswordPage from './SubmittedForgotPasswordPage'
 import useRouter from '../hooks/useRouter'
+import {ForgotPasswordResType} from '../types/constEnums'
 
 export type AuthPageSlug =
   | 'create-account'
@@ -74,7 +75,14 @@ const GenericAuthentication = (props: Props) => {
   }
 
   if (page === 'forgot-password/submitted') {
-    return <SubmittedForgotPasswordPage gotoPage={gotoPage} />
+    const type = params.get('type')
+    if (
+      type === ForgotPasswordResType.GOOGLE ||
+      type === ForgotPasswordResType.SAML ||
+      type === ForgotPasswordResType.SUCCESS
+    ) {
+      return <SubmittedForgotPasswordPage gotoPage={gotoPage} />
+    }
   }
 
   const isCreate = page === 'create-account'
