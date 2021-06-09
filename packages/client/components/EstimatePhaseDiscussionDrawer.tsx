@@ -84,7 +84,6 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, isOpen, meeting, onToggle} = props
   const {endedAt, localStage} = meeting
   const {discussionId} = localStage
-
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen}>
       <Header>
@@ -105,13 +104,22 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   )
 }
 
+// break it out so we can include this in the mutation
+graphql`
+  fragment EstimatePhaseDiscussionDrawerEstimateStage on EstimateStage {
+    discussionId
+  }
+`
 export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
   meeting: graphql`
     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
       endedAt
       localStage {
-        ... on EstimateStage {
-          discussionId
+        ...EstimatePhaseDiscussionDrawerEstimateStage @relay(mask: false)
+      }
+      phases {
+        stages {
+          ...EstimatePhaseDiscussionDrawerEstimateStage @relay(mask: false)
         }
       }
     }

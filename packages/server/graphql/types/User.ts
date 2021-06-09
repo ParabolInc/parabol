@@ -226,7 +226,9 @@ const User = new GraphQLObjectType<any, GQLContext>({
           edges,
           pageInfo: {
             startCursor: firstEdge ? firstEdge.cursor : null,
-            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
+            // FIXME: the PageInfo type should be a GraphQLISO8601 type, but fixing that requires more work
+            // because the type is shared all over so we'll have to verify that the change doesn't break anything
+            endCursor: firstEdge ? new Date(edges[edges.length - 1].cursor).toJSON() : null,
             hasNextPage: events.length > edges.length
           }
         }

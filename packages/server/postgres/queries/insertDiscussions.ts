@@ -5,9 +5,9 @@ import {
   insertDiscussionsQuery
 } from './generated/insertDiscussionsQuery'
 
-type Discussions = DeepNonNullable<IInsertDiscussionsQueryParams['discussions']>
+export type InputDiscussions = DeepNonNullable<IInsertDiscussionsQueryParams['discussions']>
 
-const insertDiscussions = async (discussions: Discussions) => {
+const insertDiscussions = async (discussions: InputDiscussions) => {
   if (discussions.length === 0) return
   insertDiscussionsQuery.run({discussions}, getPg())
 }

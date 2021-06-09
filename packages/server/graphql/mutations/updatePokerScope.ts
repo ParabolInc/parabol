@@ -6,7 +6,7 @@ import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
-import insertDiscussions from '../../postgres/queries/insertDiscussions'
+import insertDiscussions, {InputDiscussions} from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getRedis from '../../utils/getRedis'
@@ -88,7 +88,7 @@ const updatePokerScope = {
     const templateRef = await getTemplateRefById(templateRefId)
 
     const {dimensions} = templateRef
-    const newDiscussions = [] as any[]
+    const newDiscussions = [] as InputDiscussions
     updates.forEach((update) => {
       const {service, serviceTaskId, action} = update
 
@@ -117,7 +117,7 @@ const updatePokerScope = {
           discussionTopicId: serviceTaskId,
           discussionTopicType: taskServiceToDiscussionTopicType[service]
         }))
-        newDiscussions.push(discussions)
+        newDiscussions.push(...discussions)
         stages.push(...newStages)
         const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
         const firstDimensionName = dimensions[0].name

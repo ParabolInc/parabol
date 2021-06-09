@@ -22,6 +22,7 @@ graphql`
             ...EstimatePhaseAreaStage
             ...JiraFieldDimensionDropdown_stage
             ...EstimateDimensionColumn_stage
+            ...EstimatePhaseDiscussionDrawerEstimateStage
             id
             isNavigableByFacilitator
             service
