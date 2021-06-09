@@ -50316,12 +50316,6 @@ export interface IMutation {
   createMassInvitation: CreateMassInvitationPayload;
 
   /**
-   * Create a PUT URL on the CDN for an organization’s profile picture
-   * @deprecated "Replaced with `uploadOrgImage` mutation"
-   */
-  createOrgPicturePutUrl: ICreatePicturePutUrlPayload | null;
-
-  /**
    * Create a new reflection
    */
   createReflection: ICreateReflectionPayload | null;
@@ -50330,12 +50324,6 @@ export interface IMutation {
    * Create a new task, triggering a CreateCard for other viewers
    */
   createTask: ICreateTaskPayload;
-
-  /**
-   * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
-   * @deprecated "Replaced with `uploadUserImage` mutation"
-   */
-  createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null;
 
   /**
    * Delete a comment from a discussion
@@ -51072,23 +51060,6 @@ export interface ICreateMassInvitationOnMutationArguments {
   voidOld?: boolean | null;
 }
 
-export interface ICreateOrgPicturePutUrlOnMutationArguments {
-  /**
-   * user-supplied MIME content type
-   */
-  contentType: string;
-
-  /**
-   * user-supplied file size
-   */
-  contentLength: number;
-
-  /**
-   * The organization id to update
-   */
-  orgId: string;
-}
-
 export interface ICreateReflectionOnMutationArguments {
   input: ICreateReflectionInput;
 }
@@ -51103,18 +51074,6 @@ export interface ICreateTaskOnMutationArguments {
    * The part of the site where the creation occurred
    */
   area?: AreaEnum | null;
-}
-
-export interface ICreateUserPicturePutUrlOnMutationArguments {
-  /**
-   * user supplied image metadata
-   */
-  image: IImageMetadataInput;
-
-  /**
-   * a png version of the above image
-   */
-  pngVersion?: IImageMetadataInput | null;
 }
 
 export interface IDeleteCommentOnMutationArguments {
@@ -52522,12 +52481,6 @@ export interface ICreateMassInvitationSuccess {
   team: ITeam;
 }
 
-export interface ICreatePicturePutUrlPayload {
-  __typename: 'CreatePicturePutUrlPayload';
-  error: IStandardMutationError | null;
-  url: any | null;
-}
-
 export interface ICreateReflectionPayload {
   __typename: 'CreateReflectionPayload';
   error: IStandardMutationError | null;
@@ -52670,25 +52623,6 @@ export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
   userDash = 'userDash'
-}
-
-export interface ICreateUserPicturePutUrlPayload {
-  __typename: 'CreateUserPicturePutUrlPayload';
-  error: IStandardMutationError | null;
-  url: any | null;
-  pngUrl: any | null;
-}
-
-export interface IImageMetadataInput {
-  /**
-   * user-supplied MIME content type
-   */
-  contentType: string;
-
-  /**
-   * user-supplied file size
-   */
-  contentLength: number;
 }
 
 /**

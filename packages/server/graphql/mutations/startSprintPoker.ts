@@ -80,7 +80,7 @@ export default {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
 
-    const meetingType = 'poker' as const
+    const meetingType = 'poker'
 
     // RESOLUTION
     const meetingId = generateUID()

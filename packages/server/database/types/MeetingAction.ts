@@ -15,10 +15,10 @@ interface Input {
 }
 
 export default class MeetingAction extends Meeting {
+  meetingType!: 'action'
   taskCount?: number
   commentCount?: number
   agendaItemCount?: number
-  meetingType!: 'action'
   constructor(input: Input) {
     const {id, teamId, meetingCount, name, phases, facilitatorUserId} = input
     super({

@@ -6,6 +6,7 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
+import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
 
 interface TypeField {
   type: 'mrkdwn'
@@ -68,14 +69,6 @@ const makeTopXSection = async (domainCount: DomainCount[]) => {
     fields
   }
 }
-
-const makeSection = (text: string) => ({
-  type: 'section',
-  text: {
-    type: 'mrkdwn',
-    text
-  }
-})
 
 const dailyPulse = {
   type: GraphQLBoolean,

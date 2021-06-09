@@ -15,6 +15,7 @@ interface Input {
 }
 
 export default class MeetingRetrospective extends Meeting {
+  meetingType!: 'retrospective'
   showConversionModal?: boolean
   autoGroupThreshold?: number | null
   nextAutoGroupThreshold?: number | null
@@ -26,7 +27,6 @@ export default class MeetingRetrospective extends Meeting {
   templateId: string
   topicCount?: number
   reflectionCount?: number
-  meetingType!: 'retrospective'
   constructor(input: Input) {
     const {
       id,

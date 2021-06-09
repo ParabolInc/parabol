@@ -37,7 +37,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const meetingType = 'action' as const
+    const meetingType = 'action'
 
     // RESOLUTION
     const meetingCount = await r
