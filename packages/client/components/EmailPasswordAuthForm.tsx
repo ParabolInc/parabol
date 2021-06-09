@@ -25,6 +25,7 @@ import useRouter from '../hooks/useRouter'
 import getAnonymousId from '../utils/getAnonymousId'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
+import {AuthPageSlug} from './GenericAuthentication'
 
 interface Props {
   email: string
@@ -32,6 +33,7 @@ interface Props {
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
+  gotoPage?: (page: AuthPageSlug, params: string) => void
 }
 
 const FieldGroup = styled('div')({
@@ -83,8 +85,11 @@ const validatePassword = (password: string) => {
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
-  const {isPrimary, isSignin, invitationToken, email} = props
-  const [isSSO, setIsSSO] = useState(false)
+  const {isPrimary, isSignin, invitationToken, email, gotoPage} = props
+  const {location} = useRouter()
+  const params = new URLSearchParams(location.search)
+  const isSSODefault = Boolean(params.get('sso'))
+  const [isSSO, setIsSSO] = useState(isSSODefault)
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
   const [ssoDomain, setSSODomain] = useState('')
@@ -127,6 +132,10 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
 
   const toggleSSO = () => {
     setIsSSO(!isSSO)
+    if (isSSODefault && gotoPage) {
+      params.delete('sso')
+      gotoPage('signin', params.toString())
+    }
   }
 
   const tryLoginWithSSO = async (email: string) => {

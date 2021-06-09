@@ -3,7 +3,6 @@ import styled from '@emotion/styled'
 import DialogTitle from './DialogTitle'
 import AuthenticationDialog from './AuthenticationDialog'
 import useRouter from '../hooks/useRouter'
-import {ForgotPasswordResType} from '../types/constEnums'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
@@ -11,6 +10,7 @@ import PrimaryButton from './PrimaryButton'
 import IconLabel from './IconLabel'
 import {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 import {emailLinkStyle} from '../modules/email/styles'
+import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 
 const P = styled('p')({
   fontSize: 14,
@@ -70,7 +70,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
     </>
   )
 
-  const handleGoToPage = (page: AuthPageSlug, email: string | null) => {
+  const goToPageWithEmail = (page: AuthPageSlug, email: string | null) => {
     email ? gotoPage(page, `?email=${email}`) : gotoPage(page)
   }
 
@@ -100,8 +100,8 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         </>
       ),
       button: (
-        <StyledPrimaryButton onClick={() => handleGoToPage('signin', null)} size='medium'>
-          <IconLabel icon='arrow_back' label='Sign In with SSO' />
+        <StyledPrimaryButton onClick={() => gotoPage('signin', '?sso=true')} size='medium'>
+          {'Sign In with SSO'}
         </StyledPrimaryButton>
       )
     },
@@ -111,14 +111,14 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       descriptionTwo: (
         <>
           {'Didn’t get it? Check your spam folder, or '}
-          <LinkButton onClick={() => handleGoToPage('forgot-password', email)}>
+          <LinkButton onClick={() => goToPageWithEmail('forgot-password', email)}>
             click here
           </LinkButton>
           {' to try again.'}
         </>
       ),
       button: (
-        <StyledPrimaryButton onClick={() => handleGoToPage('signin', email)} size='medium'>
+        <StyledPrimaryButton onClick={() => goToPageWithEmail('signin', email)} size='medium'>
           <IconLabel icon='arrow_back' label='Back to Sign In' />
         </StyledPrimaryButton>
       )

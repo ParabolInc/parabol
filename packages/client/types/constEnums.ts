@@ -168,12 +168,6 @@ export const enum AuthenticationError {
   USER_EXISTS_SAML = 'userExistsSaml'
 }
 
-export const enum ForgotPasswordResType {
-  GOOGLE = 'goog',
-  SAML = 'saml',
-  SUCCESS = 'success'
-}
-
 export const enum MathEnum {
   MAX_INT = 2147483647
 }

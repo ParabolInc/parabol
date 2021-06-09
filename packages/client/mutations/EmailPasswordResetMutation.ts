@@ -2,7 +2,13 @@ import {EmailPasswordResetMutation as TEmailPasswordResetMutation} from '../__ge
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {LocalHandlers, StandardMutation} from '../types/relayMutations'
-import {AuthenticationError, ForgotPasswordResType} from '../types/constEnums'
+import {AuthenticationError} from '../types/constEnums'
+
+export enum ForgotPasswordResType {
+  GOOGLE = 'goog',
+  SAML = 'saml',
+  SUCCESS = 'success'
+}
 
 const mutation = graphql`
   mutation EmailPasswordResetMutation($email: ID!) {
