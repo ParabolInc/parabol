@@ -33,7 +33,7 @@ interface Props {
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
-  gotoPage?: (page: AuthPageSlug, params: string) => void
+  goToPage?: (page: AuthPageSlug, params: string) => void
 }
 
 const FieldGroup = styled('div')({
@@ -85,7 +85,7 @@ const validatePassword = (password: string) => {
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
-  const {isPrimary, isSignin, invitationToken, email, gotoPage} = props
+  const {isPrimary, isSignin, invitationToken, email, goToPage} = props
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
   const isSSODefault = Boolean(params.get('sso'))
@@ -132,9 +132,9 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
 
   const toggleSSO = () => {
     setIsSSO(!isSSO)
-    if (isSSODefault && gotoPage) {
+    if (isSSODefault && goToPage) {
       params.delete('sso')
-      gotoPage('signin', params.toString())
+      goToPage('signin', params.toString())
     }
   }
 

@@ -51,11 +51,11 @@ type TextField = {
 type CopyType = Record<ForgotPasswordResType, TextField>
 
 interface Props {
-  gotoPage: GotoAuthPage
+  goToPage: GotoAuthPage
 }
 
 const SubmittedForgotPasswordPage = (props: Props) => {
-  const {gotoPage} = props
+  const {goToPage} = props
   const {match, location} = useRouter<{token: string}>()
   const params = new URLSearchParams(location.search)
   const forgotPasswordResType = params.get('type') || ForgotPasswordResType.SUCCESS
@@ -77,7 +77,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   )
 
   const goToPageWithEmail = (page: AuthPageSlug, email: string | null) => {
-    email ? gotoPage(page, `?email=${email}`) : gotoPage(page)
+    email ? goToPage(page, `?email=${email}`) : goToPage(page)
   }
 
   const copyTypes = {
@@ -106,7 +106,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         </>
       ),
       button: (
-        <StyledPrimaryButton onClick={() => gotoPage('signin', '?sso=true')} size='medium'>
+        <StyledPrimaryButton onClick={() => goToPage('signin', '?sso=true')} size='medium'>
           {'Sign In with SSO'}
         </StyledPrimaryButton>
       )

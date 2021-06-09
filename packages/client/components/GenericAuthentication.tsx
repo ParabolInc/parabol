@@ -28,7 +28,7 @@ export type AuthPageSlug =
 export type GotoAuthPage = (page: AuthPageSlug, search?: string) => void
 
 interface Props {
-  gotoPage: GotoAuthPage
+  goToPage: GotoAuthPage
   teamName?: string
   page: AuthPageSlug
   invitationToken?: string
@@ -64,20 +64,20 @@ const DialogSubTitle = styled('div')({
 })
 
 const GenericAuthentication = (props: Props) => {
-  const {gotoPage, invitationToken, page, teamName} = props
+  const {goToPage, invitationToken, page, teamName} = props
   const emailRef = useRef<{email: () => string}>()
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
   const email = params.get('email')
 
   if (page === 'forgot-password') {
-    return <ForgotPasswordPage gotoPage={gotoPage} />
+    return <ForgotPasswordPage goToPage={goToPage} />
   }
 
   if (page === 'forgot-password/submitted') {
     const type = params.get('type') as ForgotPasswordResType
     if (type && Object.values(ForgotPasswordResType).includes(type)) {
-      return <SubmittedForgotPasswordPage gotoPage={gotoPage} />
+      return <SubmittedForgotPasswordPage goToPage={goToPage} />
     }
   }
 
@@ -88,14 +88,14 @@ const GenericAuthentication = (props: Props) => {
   const actionCopy = isCreate ? 'Already have an account? ' : 'New to Parabol? '
   const title = teamName ? `${teamName} is waiting` : action
   const onForgot = () => {
-    gotoPage('forgot-password', `?email=${emailRef.current?.email()}`)
+    goToPage('forgot-password', `?email=${emailRef.current?.email()}`)
   }
   return (
     <AuthenticationDialog>
       <DialogTitle>{title}</DialogTitle>
       <DialogSubTitle>
         <span>{actionCopy}</span>
-        <BrandedLink onClick={() => gotoPage(counterActionSlug, location.search)}>
+        <BrandedLink onClick={() => goToPage(counterActionSlug, location.search)}>
           {counterAction}
         </BrandedLink>
       </DialogSubTitle>
@@ -106,7 +106,7 @@ const GenericAuthentication = (props: Props) => {
         isSignin={!isCreate}
         invitationToken={invitationToken}
         ref={emailRef}
-        gotoPage={gotoPage}
+        goToPage={goToPage}
       />
       {isCreate ? (
         <AuthPrivacyFooter />

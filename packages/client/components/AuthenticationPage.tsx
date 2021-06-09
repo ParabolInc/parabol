@@ -24,13 +24,13 @@ const AuthenticationPage = (props: Props) => {
     setTimeout(() => history.replace(nextUrl))
     return null
   }
-  const gotoPage: GotoAuthPage = (page, search?) => {
+  const goToPage: GotoAuthPage = (page, search?) => {
     const url = search ? `/${page}${search}` : `/${page}`
     history.push(url)
   }
   return (
     <TeamInvitationWrapper>
-      <GenericAuthentication page={page} gotoPage={gotoPage} />
+      <GenericAuthentication page={page} goToPage={goToPage} />
     </TeamInvitationWrapper>
   )
 }

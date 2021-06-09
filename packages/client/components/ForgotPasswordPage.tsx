@@ -23,7 +23,7 @@ import {AuthenticationError} from '../types/constEnums'
 
 interface Props {
   email?: string
-  gotoPage: GotoAuthPage
+  goToPage: GotoAuthPage
 }
 
 const Form = styled('form')({
@@ -82,7 +82,7 @@ const validateEmail = (email) => {
 }
 
 const ForgotPasswordPage = (props: Props) => {
-  const {gotoPage} = props
+  const {goToPage} = props
   const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
@@ -126,7 +126,7 @@ const ForgotPasswordPage = (props: Props) => {
   const gotoSignIn = () => {
     const params = new URLSearchParams(location.search)
     params.delete('email')
-    gotoPage('signin', params.toString())
+    goToPage('signin', params.toString())
   }
 
   return (
