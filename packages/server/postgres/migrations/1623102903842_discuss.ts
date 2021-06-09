@@ -166,10 +166,14 @@ export async function up(): Promise<void> {
   }
 
   // update comments with discussionId
-  await r({
-    comment: r.table('Comment').indexCreate('discussionId'),
-    task: r.table('Task').indexCreate('discussionId')
-  }).run()
+  try {
+    await r({
+      comment: r.table('Comment').indexCreate('discussionId'),
+      task: r.table('Task').indexCreate('discussionId')
+    }).run()
+  } catch (e) {
+    console.log('cannot create rethinkdb indexes', e)
+  }
 
   const threadableUpdates = threadIdToDiscussionId.map((item) => {
     const [threadId, discussionId] = item
@@ -191,10 +195,14 @@ export async function up(): Promise<void> {
     console.log('error updating threadables', e)
   }
 
-  await r({
-    comment: r.table('Comment').indexDrop('threadId'),
-    task: r.table('Task').indexDrop('threadId')
-  }).run()
+  try {
+    await r({
+      comment: r.table('Comment').indexDrop('threadId'),
+      task: r.table('Task').indexDrop('threadId')
+    }).run()
+  } catch (e) {
+    console.log('cannot drop rethinkdb indexes', e)
+  }
 
   await client.end()
   await r.getPoolMaster().drain()
