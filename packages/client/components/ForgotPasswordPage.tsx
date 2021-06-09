@@ -18,6 +18,8 @@ import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
+import StyledError from './StyledError'
+import {AuthenticationError} from '../types/constEnums'
 
 interface Props {
   email?: string
@@ -46,6 +48,11 @@ const SubmitButton = styled(PrimaryButton)({
   marginTop: 16
 })
 
+const ErrorMessage = styled(StyledError)({
+  fontSize: 12,
+  paddingTop: 16
+})
+
 const BrandedLink = styled(PlainButton)({
   color: PALETTE.SKY_500,
   ':hover,:focus': {
@@ -61,6 +68,12 @@ const DialogSubTitle = styled('div')({
   padding: '16px 0px 0px'
 })
 
+const linkStyle = {
+  color: PALETTE.TOMATO_500,
+  fontSize: 12,
+  textDecoration: 'underline'
+}
+
 const validateEmail = (email) => {
   return new Legitity(email)
     .trim()
@@ -70,7 +83,7 @@ const validateEmail = (email) => {
 
 const ForgotPasswordPage = (props: Props) => {
   const {gotoPage} = props
-  const {submitMutation, submitting, onCompleted, onError} = useMutationProps()
+  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
     email: {
@@ -134,6 +147,26 @@ const ForgotPasswordPage = (props: Props) => {
           <SubmitButton size='medium' waiting={submitting}>
             {'Send Email'}
           </SubmitButton>
+          {error && (
+            <ErrorMessage>
+              {error.message === AuthenticationError.USER_NOT_FOUND ? (
+                'We couldn’t find that email. Please try again.'
+              ) : (
+                <>
+                  {'Oh no! Something went wrong. Try again or '}{' '}
+                  <a
+                    href={'mailto:love@parabol.co'}
+                    rel='noopener noreferrer'
+                    target='_blank'
+                    style={linkStyle}
+                    title={'love@parabol.co'}
+                  >
+                    {'contact us'}.
+                  </a>
+                </>
+              )}
+            </ErrorMessage>
+          )}
         </Form>
       </Container>
     </AuthenticationDialog>

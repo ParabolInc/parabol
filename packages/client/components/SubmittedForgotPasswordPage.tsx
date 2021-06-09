@@ -63,7 +63,13 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   const {token} = match.params
   const contactSupportCopy = (
     <>
-      <a href={'mailto:love@parabol.co'} style={emailLinkStyle} title={'love@parabol.co'}>
+      <a
+        href={'mailto:love@parabol.co'}
+        rel='noopener noreferrer'
+        target='_blank'
+        style={emailLinkStyle}
+        title={'love@parabol.co'}
+      >
         {'click here '}
       </a>
       {'to contact support.'}

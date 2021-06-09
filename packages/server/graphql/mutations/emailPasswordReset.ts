@@ -55,7 +55,10 @@ const emailPasswordReset = {
           .count()
           .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown) as boolean
       }).run()
-      if (failOnAccount || failOnTime || !user) return true
+      if (failOnAccount || failOnTime) {
+        return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
+      }
+      if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}
       const {id: userId, identities} = user
       const googleIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.GOOGLE
@@ -73,7 +76,7 @@ const emailPasswordReset = {
         if (samlDomainExists) {
           return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
         }
-        return true
+        return {error: {message: AuthenticationError.IDENTITY_NOT_FOUND}}
       }
       // seems legit, make a record of it create a reset code
       const tokenBuffer = await randomBytes(48)
@@ -101,6 +104,7 @@ const emailPasswordReset = {
         html,
         tags: ['type:resetPassword']
       })
+      if (!success) return {error: {message: AuthenticationError.FAILED_TO_SEND}}
       return {success}
     }
   )

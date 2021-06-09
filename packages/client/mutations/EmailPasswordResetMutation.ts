@@ -41,7 +41,7 @@ const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, 
           params.set('type', ForgotPasswordResType.GOOGLE)
         } else if (message === AuthenticationError.USER_EXISTS_SAML) {
           params.set('type', ForgotPasswordResType.SAML)
-        }
+        } else return
       } else {
         params.set('type', ForgotPasswordResType.SUCCESS)
         params.set('email', email)
