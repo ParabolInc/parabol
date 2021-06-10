@@ -122,7 +122,7 @@ jobs:
             if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
               ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
               $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
-                -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+                -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}" \
                 -b "${S3_DB_BACKUPS_BUCKET}" -p "${CIRCLE_BRANCH}"
             fi &&
             if [ -n "${GITHUB_REMOTE}" ]; then
