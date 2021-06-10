@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -37,7 +36,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const meetingType = 'action' as MeetingTypeEnum
+    const meetingType = 'action'
 
     // RESOLUTION
     const meetingCount = await r

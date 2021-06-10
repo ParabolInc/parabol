@@ -12,6 +12,7 @@ interface Input {
 }
 
 export default class MeetingPoker extends Meeting {
+  meetingType!: 'poker'
   templateId: string
   templateRefId: string
   storyCount?: number

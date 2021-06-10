@@ -57,10 +57,21 @@ export interface SlackConversation {
   locale: string
 }
 
+export interface SlackIM {
+  created: number
+  id: string
+  is_im: true
+  is_org_shared: boolean
+  is_user_deleted: boolean
+  priority: number
+  user: string
+}
+
 interface ConversationListResponse {
   ok: true
-  channels: SlackConversation[]
+  channels: SlackConversation[] | SlackIM[]
 }
+
 interface ConversationJoinResponse {
   ok: true
   channel: {
@@ -130,7 +141,7 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
-type ConversationType = 'public_channel' | 'private_channel'
+type ConversationType = 'public_channel' | 'private_channel' | 'im'
 
 abstract class SlackManager {
   static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read'
@@ -213,9 +224,10 @@ abstract class SlackManager {
     return this.post<PostMessageResponse>('https://slack.com/api/chat.postMessage', payload)
   }
 
-  updateMessage(channelId: string, text: string, ts: string) {
+  updateMessage(channelId: string, blocks: string | Array<{type: string}>, ts: string) {
+    const newBlocks = typeof blocks === 'string' ? blocks : JSON.stringify(blocks)
     return this.get<UpdateMessageResponse>(
-      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&text=${text}&ts=${ts}`
+      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&blocks=${newBlocks}&ts=${ts}`
     )
   }
 }

@@ -14,6 +14,7 @@ interface Input {
 }
 
 export default class MeetingRetrospective extends Meeting {
+  meetingType!: 'retrospective'
   showConversionModal?: boolean
   autoGroupThreshold?: number | null
   nextAutoGroupThreshold?: number | null

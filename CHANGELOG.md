@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.15.0 2021-Jun-10
+### Changed
+- Make Slack notification prettier (#4911)
+- Deprecate createXPicturePutUrl mutations (#4342)
+- Ecnrypt database backup (#4603)
+
+
 ## 6.14.0 2021-Jun-2
 
 ### Changed

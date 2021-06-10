@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import getPg from '../../postgres/getPg'
@@ -80,7 +79,7 @@ export default {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
 
-    const meetingType = 'poker' as MeetingTypeEnum
+    const meetingType = 'poker'
 
     // RESOLUTION
     const meetingCount = await r
