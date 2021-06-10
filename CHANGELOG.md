@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.16.0 2021-Jun-10
+
+## Added
+
+- Discussion as first-class entity (#5016)
+
 ## 6.15.0 2021-Jun-10
 ### Changed
 - Make Slack notification prettier (#4911)
