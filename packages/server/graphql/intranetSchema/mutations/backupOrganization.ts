@@ -246,11 +246,11 @@ const backupOrganization = {
                   notification('teamId')
                     .default(null)
                     .ne(null),
-                  r.args(teamIds).contains(notification('teamId')),
+                  r(teamIds).contains(notification('teamId')),
                   notification('orgId')
                     .default(null)
                     .ne(null),
-                  r.args(orgIds).contains(notification('orgId')),
+                  r(orgIds).contains(notification('orgId')),
                   true
                 )
               )
