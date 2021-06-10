@@ -1,4 +1,3 @@
-import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
@@ -65,8 +64,6 @@ const notifySlack = async (
     const {channelId} = notification
     const {botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken)
-    console.log('🚀 ~ notificationText', notificationText)
-    console.log('🚀 ~ slackMessage', slackMessage)
     const res = await manager.postMessage(channelId!, slackMessage, notificationText)
     segmentIo.track({
       userId,
@@ -226,28 +223,30 @@ const upsertSlackMessage = async (
   const {botAccessToken} = auth
   if (!channelId) return
   const manager = new SlackServerManager(botAccessToken)
-  const convoInfo = await manager.getConversationInfo(channelId)
-  if (convoInfo.ok && 'latest' in convoInfo.channel) {
-    const {channel} = convoInfo
-    const {latest} = channel
-    if (latest) {
-      const {ts, bot_profile} = latest
-      const {name} = bot_profile
-      if (name === 'Parabol') {
-        const timestamp = new Date(Number.parseFloat(ts) * 1000)
-        const ageThresh = new Date(Date.now() - ms('5m'))
-        if (timestamp >= ageThresh) {
-          const res = await manager.updateMessage(channelId, blocks, ts)
-          if (!res.ok) {
-            console.error(res.error)
-          }
-          return
-        }
-      }
-    }
-  } else {
-    // handle error?
-  }
+  // need im:read scope to get the bot channelId so that we can upsert
+
+  // const convoInfo = await manager.getConversationInfo(channelId)
+  // if (convoInfo.ok && 'latest' in convoInfo.channel) {
+  //   const {channel} = convoInfo
+  //   const {latest} = channel
+  //   if (latest) {
+  //     const {ts, bot_profile} = latest
+  //     const {name} = bot_profile
+  //     if (name === 'Parabol') {
+  //       const timestamp = new Date(Number.parseFloat(ts) * 1000)
+  //       const ageThresh = new Date(Date.now() - ms('5m'))
+  //       if (timestamp >= ageThresh) {
+  //         const res = await manager.updateMessage(channelId, blocks, ts)
+  //         if (!res.ok) {
+  //           console.error(res.error)
+  //         }
+  //         return
+  //       }
+  //     }
+  //   }
+  // } else {
+  //   // handle error?
+  // }
   const res = await manager.postMessage(channelId, blocks, title)
   if (!res.ok) {
     console.error(res.error)

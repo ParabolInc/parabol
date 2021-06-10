@@ -208,7 +208,8 @@ abstract class SlackManager {
     if (!prop) throw new Error('Invalid Slack postMessage')
     const defaultPayload = {
       channel: channelId,
-      unfurl_links: true,
+      unfurl_links: false,
+      unfurl_media: false,
       [prop]: text
     }
     const payload =
