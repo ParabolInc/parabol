@@ -57,19 +57,9 @@ export interface SlackConversation {
   locale: string
 }
 
-export interface SlackIM {
-  created: number
-  id: string
-  is_im: true
-  is_org_shared: boolean
-  is_user_deleted: boolean
-  priority: number
-  user: string
-}
-
 interface ConversationListResponse {
   ok: true
-  channels: SlackConversation[] | SlackIM[]
+  channels: SlackConversation[]
 }
 
 interface ConversationJoinResponse {
@@ -141,7 +131,7 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
-type ConversationType = 'public_channel' | 'private_channel' | 'im'
+type ConversationType = 'public_channel' | 'private_channel'
 
 abstract class SlackManager {
   static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read'
@@ -213,14 +203,21 @@ abstract class SlackManager {
     )
   }
 
-  postMessage(channelId: string, text: string | Array<{type: string}>) {
+  postMessage(channelId: string, text: string | Array<{type: string}>, notificationText?: string) {
     const prop = typeof text === 'string' ? 'text' : Array.isArray(text) ? 'blocks' : null
     if (!prop) throw new Error('Invalid Slack postMessage')
-    const payload = {
+    const defaultPayload = {
       channel: channelId,
       unfurl_links: true,
       [prop]: text
     }
+    const payload =
+      prop === 'text'
+        ? defaultPayload
+        : {
+            ...defaultPayload,
+            text: notificationText
+          }
     return this.post<PostMessageResponse>('https://slack.com/api/chat.postMessage', payload)
   }
 
