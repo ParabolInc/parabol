@@ -1,4 +1,3 @@
-import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
@@ -54,7 +53,8 @@ const notifySlack = async (
   event: SlackNotificationEvent,
   dataLoader: DataLoaderWorker,
   teamId: string,
-  slackMessage: string | Array<{type: string}>
+  slackMessage: string | Array<{type: string}>,
+  notificationText?: string
 ) => {
   const r = await getRethink()
   const slackDetails = await getSlackDetails(event, teamId, dataLoader)
@@ -64,7 +64,7 @@ const notifySlack = async (
     const {channelId} = notification
     const {botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken)
-    const res = await manager.postMessage(channelId!, slackMessage)
+    const res = await manager.postMessage(channelId!, slackMessage, notificationText)
     segmentIo.track({
       userId,
       event: 'Slack notification sent',
@@ -110,13 +110,14 @@ export const startSlackMeeting = async (
   ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
+  const title = 'Meeting started :wave: '
   const blocks = [
-    makeSection('Meeting started :wave: '),
+    makeSection(title),
     makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
     makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
     makeButtons([button])
   ]
-  notifySlack('meetingStart', dataLoader, teamId, blocks).catch(console.log)
+  notifySlack('meetingStart', dataLoader, teamId, blocks, title).catch(console.log)
 }
 
 const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
@@ -202,46 +203,51 @@ export const endSlackMeeting = async (
   const summaryText = getSummaryText(meeting)
   const {name: teamName} = team
   const {name: meetingName} = meeting
+  const title = 'Meeting completed :tada:'
   const blocks = [
-    makeSection('Meeting completed :tada:'),
+    makeSection(title),
     makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
     makeSection(summaryText),
     makeEndMeetingButtons(meeting)
   ]
-  notifySlack('meetingEnd', dataLoader, teamId, blocks).catch(console.log)
+  notifySlack('meetingEnd', dataLoader, teamId, blocks, title).catch(console.log)
 }
 
 const upsertSlackMessage = async (
   slackDetails: Unpromise<ReturnType<typeof getSlackDetails>>[0],
-  blocks: string | Array<{type: string}>
+  blocks: string | Array<{type: string}>,
+  title: string
 ) => {
   const {notification, auth} = slackDetails
   const {channelId} = notification
   const {botAccessToken} = auth
   if (!channelId) return
   const manager = new SlackServerManager(botAccessToken)
-  const convoInfo = await manager.getConversationInfo(channelId)
-  if (convoInfo.ok && 'latest' in convoInfo.channel) {
-    const {channel} = convoInfo
-    const {latest} = channel
-    if (latest) {
-      const {ts} = latest
-      const timestamp = new Date(Number.parseFloat(ts) * 1000)
-      const ageThresh = new Date(Date.now() - ms('5m'))
-      if (timestamp >= ageThresh) {
-        const res = await manager.updateMessage(channelId, blocks, ts)
-        if (!res.ok) {
-          console.error(res.error)
-          const postRes = await manager.postMessage(channelId, blocks)
-          if (!postRes.ok) console.error(postRes.error)
-        }
-        return
-      }
-    }
-  } else {
-    // handle error?
-  }
-  const res = await manager.postMessage(channelId, blocks)
+  // need im:read scope to get the bot channelId so that we can upsert
+
+  // const convoInfo = await manager.getConversationInfo(channelId)
+  // if (convoInfo.ok && 'latest' in convoInfo.channel) {
+  //   const {channel} = convoInfo
+  //   const {latest} = channel
+  //   if (latest) {
+  //     const {ts, bot_profile} = latest
+  //     const {name} = bot_profile
+  //     if (name === 'Parabol') {
+  //       const timestamp = new Date(Number.parseFloat(ts) * 1000)
+  //       const ageThresh = new Date(Date.now() - ms('5m'))
+  //       if (timestamp >= ageThresh) {
+  //         const res = await manager.updateMessage(channelId, blocks, ts)
+  //         if (!res.ok) {
+  //           console.error(res.error)
+  //         }
+  //         return
+  //       }
+  //     }
+  //   }
+  // } else {
+  //   // handle error?
+  // }
+  const res = await manager.postMessage(channelId, blocks, title)
   if (!res.ok) {
     console.error(res.error)
   }
@@ -277,13 +283,14 @@ export const notifySlackTimeLimitStart = async (
       scheduledEndTime
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
     const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
+    const title = `The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`
     const blocks = [
-      makeSection(`The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`),
+      makeSection(title),
       makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
       makeSection(constraint),
       makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
       makeButtons([button])
     ]
-    upsertSlackMessage(slackDetail, blocks).catch(console.error)
+    upsertSlackMessage(slackDetail, blocks, title).catch(console.error)
   })
 }
