@@ -24,10 +24,6 @@ const updateEmail = {
     requireSU(authToken)
 
     // VALIDATION
-    if (!newEmail) {
-      throw new Error('New email can not be empty')
-    }
-
     if (oldEmail === newEmail) {
       throw new Error('New email is the same as the old one')
     }
@@ -48,7 +44,7 @@ const updateEmail = {
     }
 
     // RESOLUTION
-    const userId = user.id
+    const {id: userId} = user
     await Promise.all([
       r
         .table('User')
