@@ -21,8 +21,31 @@ export async function up(): Promise<void> {
   const client = new Client(getPgConfig())
   await client.connect()
   const BATCH_SIZE = 3000
-  const rMapIf = (r) => (rArr, test, f) => {
-    return rArr.map((x) => r.branch(test(x), f(x), x))
+  const MAX_PG_PARAMS = 2 ** 16 - 1
+  const DISCUSSION_COLS = 5
+  const MAX_INSERT_BATCH_SIZE = MAX_PG_PARAMS / DISCUSSION_COLS
+  const updateStagesWithDiscussionIds = (
+    meetingId: string,
+    phaseType: string,
+    discussionIds: string[]
+  ) => {
+    return r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update((meeting) => ({
+        phases: meeting('phases').map((phase) =>
+          r.branch(
+            phase('phaseType').eq(phaseType),
+            phase.merge({
+              stages: r.map(phase('stages'), r(discussionIds), (stage, discussionId) =>
+                stage.merge({discussionId})
+              )
+            }),
+            phase
+          )
+        )
+      }))
+      .run()
   }
 
   const taskServiceToDiscussionTopicType = {
@@ -31,19 +54,32 @@ export async function up(): Promise<void> {
     PARABOL: 'task'
   } as const
 
-  const threadIdToDiscussionId = [] as [string, string][]
+  try {
+    await r
+      .table('NewMeeting')
+      .indexCreate('createdAt')
+      .run()
+    await r
+      .table('NewMeeting')
+      .indexWait('createdAt')
+      .run()
+  } catch (e) {
+    console.log('failed to create new meeting index createdAt')
+  }
 
   // update meeting stages with discussionId
   for (let i = 0; i < 1e6; i++) {
     const skip = i * BATCH_SIZE
+    console.log('migrating meeting #', skip)
     const curMeetings = await r
       .table('NewMeeting')
-      .orderBy('id')
+      .orderBy('createdAt', {index: 'createdAt'})
       .skip(skip)
       .limit(BATCH_SIZE)
       .run()
     if (curMeetings.length < 1) break
     const discussions = []
+    const threadIdToDiscussionId = [] as [string, string][]
     const stageUpdates = curMeetings.map((meeting) => {
       const {id: meetingId, teamId, meetingType, phases} = meeting
       if (meetingType === 'retrospective') {
@@ -66,23 +102,7 @@ export async function up(): Promise<void> {
             })
           }
         })
-        const mapIf = rMapIf(r)
-        return r
-          .table('NewMeeting')
-          .get(meetingId)
-          .update((meeting) => ({
-            phases: mapIf(
-              meeting('phases'),
-              (phase) => phase('phaseType').eq('discuss'),
-              (phase) =>
-                phase.merge({
-                  stages: r.map(phase('stages'), r(discussionIds), (stage, discussionId) =>
-                    stage.merge({discussionId})
-                  )
-                })
-            )
-          }))
-          .run()
+        return updateStagesWithDiscussionIds(meetingId, 'discuss', discussionIds)
       } else if (meetingType === 'action') {
         const phase = phases.find((phase) => phase.phaseType === 'agendaitems') as AgendaItemsPhase
         if (!phase) return
@@ -100,23 +120,7 @@ export async function up(): Promise<void> {
             discussionTopicType: 'agendaItem' as const
           })
         })
-        const mapIf = rMapIf(r)
-        return r
-          .table('NewMeeting')
-          .get(meetingId)
-          .update((meeting) => ({
-            phases: mapIf(
-              meeting('phases'),
-              (phase) => phase('phaseType').eq('agendaitems'),
-              (phase) =>
-                phase.merge({
-                  stages: r.map(phase('stages'), r(discussionIds), (stage, discussionId) =>
-                    stage.merge({discussionId})
-                  )
-                })
-            )
-          }))
-          .run()
+        return updateStagesWithDiscussionIds(meetingId, 'agendaitems', discussionIds)
       } else if (meetingType === 'poker') {
         const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
         if (!phase) return
@@ -134,34 +138,44 @@ export async function up(): Promise<void> {
             discussionTopicType: taskServiceToDiscussionTopicType[service]
           })
         })
-        const mapIf = rMapIf(r)
-        return r
-          .table('NewMeeting')
-          .get(meetingId)
-          .update((meeting) => ({
-            phases: mapIf(
-              meeting('phases'),
-              (phase) => phase('phaseType').eq('ESTIMATE'),
-              (phase) =>
-                phase.merge({
-                  stages: r.map(phase('stages'), r(discussionIds), (stage, discussionId) =>
-                    stage.merge({discussionId})
-                  )
-                })
-            )
-          }))
-          .run()
+        return updateStagesWithDiscussionIds(meetingId, 'ESTIMATE', discussionIds)
       }
     })
     try {
-      await insertDiscussionsQuery.run({discussions}, client)
+      if (discussions.length > 0) {
+        for (let startIdx = 0; startIdx < discussions.length; startIdx += MAX_INSERT_BATCH_SIZE) {
+          const batch = discussions.slice(startIdx, startIdx + MAX_INSERT_BATCH_SIZE)
+          await insertDiscussionsQuery.run({discussions: batch}, client)
+        }
+      }
     } catch (e) {
       console.log('error inserting discussions', e)
+      throw e
     }
     try {
       await Promise.all(stageUpdates)
     } catch (e) {
       console.log('error updating stage discussionId', e)
+    }
+
+    const threadableUpdates = threadIdToDiscussionId.map((item) => {
+      const [threadId, discussionId] = item
+      return r({
+        comment: r
+          .table('Comment')
+          .getAll(threadId, {index: 'threadId'})
+          .update({discussionId}),
+        task: r
+          .table('Task')
+          .getAll(threadId, {index: 'threadId'})
+          .update({discussionId})
+      }).run()
+    })
+
+    try {
+      await Promise.all(threadableUpdates)
+    } catch (e) {
+      console.log('error updating threadables', e)
     }
   }
 
@@ -175,33 +189,13 @@ export async function up(): Promise<void> {
     console.log('cannot create rethinkdb indexes', e)
   }
 
-  const threadableUpdates = threadIdToDiscussionId.map((item) => {
-    const [threadId, discussionId] = item
-    return r({
-      comment: r
-        .table('Comment')
-        .getAll(threadId, {index: 'threadId'})
-        .update({discussionId}),
-      task: r
-        .table('Task')
-        .getAll(threadId, {index: 'threadId'})
-        .update({discussionId})
-    }).run()
-  })
-
-  try {
-    await Promise.all(threadableUpdates)
-  } catch (e) {
-    console.log('error updating threadables', e)
-  }
-
   try {
     await r({
-      comment: r.table('Comment').indexDrop('threadId'),
-      task: r.table('Task').indexDrop('threadId')
+      comment: r.table('Comment').indexWait('discussionId'),
+      task: r.table('Task').indexWait('discussionId')
     }).run()
   } catch (e) {
-    console.log('cannot drop rethinkdb indexes', e)
+    console.log('cannot wait on rethinkdb indexes', e)
   }
 
   await client.end()
@@ -217,14 +211,6 @@ export async function down(pgm: MigrationBuilder): Promise<void> {
   })
   try {
     await Promise.all([
-      r
-        .table('Comment')
-        .indexCreate('threadId')
-        .run(),
-      r
-        .table('Task')
-        .indexCreate('threadId')
-        .run(),
       r
         .table('Comment')
         .indexDrop('discussionId')

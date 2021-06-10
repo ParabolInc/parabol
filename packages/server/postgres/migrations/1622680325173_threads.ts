@@ -38,7 +38,7 @@ export async function up(): Promise<void> {
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
   await pgm.db.query(`
-    DROP TYPE "DiscussionTopicTypeEnum" CASCADE;
-    DROP TABLE "Discussion";
+    DROP TYPE IF EXISTS "DiscussionTopicTypeEnum" CASCADE;
+    DROP TABLE IF EXISTS "Discussion";
   `)
 }
