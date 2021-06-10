@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
@@ -77,12 +77,25 @@ const updateJiraDimensionField = {
     if (!auth) {
       return {error: {message: 'Not authenticated with Jira'}}
     }
-    const {accessToken} = auth
-    const manager = new AtlassianServerManager(accessToken)
-    const fields = await manager.getFields(cloudId)
-    const field = fields.find((field) => field.name === fieldName)
-    if (!field) return {error: {message: 'Invalid field name'}}
-    const {id: fieldId, schema} = field
+
+    let selectedField
+    // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
+    // differently and can't be found on Jira fields list
+    const customFields = [
+      SprintPokerDefaults.JIRA_FIELD_COMMENT,
+      SprintPokerDefaults.JIRA_FIELD_NULL
+    ]
+    if (customFields.includes(fieldName)) selectedField = {id: fieldName, schema: {type: 'string'}}
+    else {
+      // a regular Jira field
+      const {accessToken} = auth
+      const manager = new AtlassianServerManager(accessToken)
+      const fields = await manager.getFields(cloudId)
+      selectedField = fields.find((field) => field.name === fieldName)
+    }
+    if (!selectedField) return {error: {message: 'Invalid field name'}}
+
+    const {id: fieldId, schema} = selectedField
     const type = schema.type as 'string' | 'number'
     const newField = new JiraDimensionField({
       dimensionName,
