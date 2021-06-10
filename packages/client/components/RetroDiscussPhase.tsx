@@ -12,6 +12,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
@@ -132,11 +133,12 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 
+const allowedThreadables: DiscussionThreadables[] = ['comment', 'task']
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const [callbackRef, phaseRef] = useCallbackRef()
-  const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
-  const {reflectionGroup} = localStage
+  const {endedAt, localStage, showSidebar, organization} = meeting
+  const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
 
@@ -149,7 +151,7 @@ const RetroDiscussPhase = (props: Props) => {
 
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
-  const {id: reflectionGroupId, voteCount} = reflectionGroup
+  const {voteCount} = reflectionGroup
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
@@ -206,9 +208,10 @@ const RetroDiscussPhase = (props: Props) => {
               </ReflectionColumn>
               <ThreadColumn isDesktop={isDesktop}>
                 <DiscussionThreadRoot
+                  allowedThreadables={allowedThreadables}
+                  isReadOnly={!!endedAt}
                   meetingContentRef={phaseRef}
-                  meetingId={meetingId}
-                  threadSourceId={reflectionGroupId!}
+                  discussionId={discussionId!}
                 />
               </ThreadColumn>
             </ColumnsContainer>
@@ -224,6 +227,7 @@ graphql`
   fragment RetroDiscussPhase_stage on NewMeetingStage {
     ... on RetroDiscussStage {
       isComplete
+      discussionId
       reflectionGroup {
         ...ReflectionGroup_reflectionGroup
         id
@@ -245,7 +249,6 @@ export default createFragmentContainer(RetroDiscussPhase, {
       ...StageTimerControl_meeting
       ...ReflectionGroup_meeting
       ...StageTimerDisplay_meeting
-      id
       endedAt
       organization {
         ...DiscussPhaseSqueeze_organization

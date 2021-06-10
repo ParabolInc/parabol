@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {desktopSidebarShadow} from '~/styles/elevation'
+import {PALETTE} from '~/styles/paletteV3'
+import {ICON_SIZE} from '~/styles/typographyV2'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
-import {PALETTE} from '~/styles/paletteV3'
+import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
-import Icon from './Icon'
-import {ICON_SIZE} from '~/styles/typographyV2'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -78,11 +78,12 @@ interface Props {
   onToggle: () => void
 }
 
+const allowedThreadables = ['comment' as const]
+
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, isOpen, meeting, onToggle} = props
-  const {id: meetingId, localStage} = meeting
-  const {serviceTaskId} = localStage
-
+  const {endedAt, localStage} = meeting
+  const {discussionId} = localStage
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen}>
       <Header>
@@ -92,24 +93,34 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         </StyledCloseButton>
       </Header>
       <ThreadColumn>
-        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={serviceTaskId!} />
+        <DiscussionThreadRoot
+          allowedThreadables={allowedThreadables}
+          discussionId={discussionId!}
+          isReadOnly={!!endedAt}
+          width={'calc(100% - 16px)'}
+        />
       </ThreadColumn>
     </Drawer>
   )
 }
 
+// break it out so we can include this in the mutation
 graphql`
-  fragment EstimatePhaseDiscussionDrawerStage on EstimateStage {
-    serviceTaskId
+  fragment EstimatePhaseDiscussionDrawerEstimateStage on EstimateStage {
+    discussionId
   }
 `
 export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
   meeting: graphql`
     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
-      id
       endedAt
       localStage {
-        ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
+        ...EstimatePhaseDiscussionDrawerEstimateStage @relay(mask: false)
+      }
+      phases {
+        stages {
+          ...EstimatePhaseDiscussionDrawerEstimateStage @relay(mask: false)
+        }
       }
     }
   `

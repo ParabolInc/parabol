@@ -4,9 +4,9 @@ import {QueryRenderer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import renderQuery from '../utils/relay/renderQuery'
 import DiscussionThread from './DiscussionThread'
-
+import {DiscussionThreadables} from './DiscussionThreadList'
 const query = graphql`
-  query DiscussionThreadRootQuery($meetingId: ID!, $threadSourceId: ID!) {
+  query DiscussionThreadRootQuery($discussionId: ID!) {
     viewer {
       ...DiscussionThread_viewer
     }
@@ -14,21 +14,25 @@ const query = graphql`
 `
 
 interface Props {
-  meetingId: string
   meetingContentRef?: RefObject<HTMLDivElement>
-  threadSourceId: string
+  discussionId: string
+  isReadOnly: boolean
+  allowedThreadables: DiscussionThreadables[]
+  width?: string
 }
 
 const DiscussionThreadRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {meetingContentRef, meetingId, threadSourceId} = props
+  const {allowedThreadables, isReadOnly, meetingContentRef, discussionId, width} = props
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{meetingId, threadSourceId}}
+      variables={{discussionId}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(DiscussionThread, {props: {meetingContentRef, threadSourceId}})}
+      render={renderQuery(DiscussionThread, {
+        props: {allowedThreadables, isReadOnly, meetingContentRef, width}
+      })}
     />
   )
 }

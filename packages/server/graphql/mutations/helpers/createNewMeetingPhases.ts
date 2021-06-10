@@ -22,6 +22,7 @@ import MeetingSettingsRetrospective from '../../../database/types/MeetingSetting
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {DataLoaderWorker} from '../../graphql'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
@@ -69,6 +70,7 @@ const getPastStageDurations = async (teamId: string) => {
 const createNewMeetingPhases = async (
   facilitatorUserId: string,
   teamId: string,
+  meetingId: string,
   meetingCount: number,
   meetingType: MeetingTypeEnum,
   dataLoader: DataLoaderWorker
@@ -81,6 +83,8 @@ const createNewMeetingPhases = async (
   ])
   const {phaseTypes} = meetingSettings
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
+  const asyncSideEffects = [] as Promise<any>[]
+
   const phases = (await Promise.all(
     phaseTypes.map(async (phaseType) => {
       const durations = stageDurations[phaseType]
@@ -93,22 +97,47 @@ const createNewMeetingPhases = async (
           })
         case REFLECT:
           const {selectedTemplateId} = meetingSettings as MeetingSettingsRetrospective
-          await r
-            .table('MeetingTemplate')
-            .get(selectedTemplateId)
-            .update({
-              lastUsedAt: now
-            })
-            .run()
+          asyncSideEffects.push(
+            r
+              .table('MeetingTemplate')
+              .get(selectedTemplateId)
+              .update({
+                lastUsedAt: now
+              })
+              .run()
+          )
           return new ReflectPhase(teamId, selectedTemplateId, durations)
         case DISCUSS:
-          return new DiscussPhase(durations)
+          const discussPhase = new DiscussPhase(durations)
+          const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
+          asyncSideEffects.push(
+            insertDiscussions(
+              discussStages.map((stage) => ({
+                id: stage.discussionId,
+                teamId,
+                meetingId,
+                discussionTopicId: stage.reflectionGroupId,
+                discussionTopicType: 'reflectionGroup' as const
+              }))
+            )
+          )
+          return discussPhase
         case UPDATES:
           return new UpdatesPhase({durations, stages: [new UpdatesStage(facilitatorTeamMemberId)]})
         case AGENDA_ITEMS:
           const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
           const agendaItemIds = agendaItems.map(({id}) => id)
-          return new AgendaItemsPhase(agendaItemIds, durations)
+          const agendaItemPhase = new AgendaItemsPhase(agendaItemIds, durations)
+          const {stages} = agendaItemPhase
+          const discussions = stages.map((stage) => ({
+            id: stage.discussionId,
+            teamId,
+            meetingId,
+            discussionTopicId: stage.agendaItemId,
+            discussionTopicType: 'agendaItem' as const
+          }))
+          asyncSideEffects.push(insertDiscussions(discussions))
+          return agendaItemPhase
         case 'ESTIMATE':
           return new EstimatePhase()
         case GROUP:
@@ -123,6 +152,7 @@ const createNewMeetingPhases = async (
     })
   )) as GenericMeetingPhase[]
   primePhases(phases)
+  await Promise.all(asyncSideEffects)
   return phases
 }
 

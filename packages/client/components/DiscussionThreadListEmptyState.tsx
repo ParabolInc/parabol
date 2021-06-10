@@ -1,5 +1,5 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 
 const Message = styled('div')({
@@ -14,19 +14,19 @@ const Message = styled('div')({
 })
 
 interface Props {
-  isEndedMeeting: boolean
-  hasTasks: boolean
+  isReadOnly?: boolean
+  allowTasks: boolean
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isEndedMeeting, hasTasks} = props
-  const meetingEndedMessage = hasTasks
+  const {isReadOnly, allowTasks} = props
+  const readOnlyMessage = allowTasks
     ? 'No comments or tasks were added here'
     : 'No comments were added here'
-  const message = hasTasks
+  const message = allowTasks
     ? '✍️ Be the first to add a comment or task'
     : '✍️ Be the first to add a comment'
-  return <Message>{isEndedMeeting ? meetingEndedMessage : message}</Message>
+  return <Message>{isReadOnly ? readOnlyMessage : message}</Message>
 }
 
 export default DiscussionThreadListEmptyState

@@ -2,6 +2,7 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
 
 interface Input {
+  id?: string
   teamId: string
   meetingCount: number
   name?: string
@@ -28,6 +29,7 @@ export default class MeetingRetrospective extends Meeting {
   reflectionCount?: number
   constructor(input: Input) {
     const {
+      id,
       showConversionModal,
       teamId,
       meetingCount,
@@ -39,6 +41,7 @@ export default class MeetingRetrospective extends Meeting {
       maxVotesPerGroup
     } = input
     super({
+      id,
       teamId,
       meetingCount,
       phases,

@@ -2,7 +2,6 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import generateUID from '../../generateUID'
-import {ThreadSourceEnum} from './ThreadSource'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 import TaskIntegrationJira from './TaskIntegrationJira'
 
@@ -23,10 +22,9 @@ export interface TaskInput {
   sortOrder?: number | null
   status: TaskStatusEnum
   teamId: string
-  threadId?: string | null
+  discussionId?: string | null
   threadParentId?: string | null
   threadSortOrder?: number | null
-  threadSource?: ThreadSourceEnum | null
   updatedAt?: Date
   userId?: string | null
 }
@@ -45,10 +43,9 @@ export default class Task {
   status: TaskStatusEnum
   tags: TaskTagEnum[]
   teamId: string
-  threadId?: string
+  discussionId?: string
   threadParentId?: string
   threadSortOrder?: number | null
-  threadSource?: ThreadSourceEnum
   updatedAt: Date
   userId: string | null
 
@@ -68,15 +65,13 @@ export default class Task {
       status,
       threadParentId,
       threadSortOrder,
-      threadSource,
-      threadId,
+      discussionId,
       updatedAt
     } = input
     const {entityMap} = JSON.parse(content)
     const tags = getTagsFromEntityMap<TaskTagEnum>(entityMap)
     this.id = id || generateUID()
-    this.threadId = threadId || undefined
-    this.threadSource = threadSource || undefined
+    this.discussionId = discussionId || undefined
     this.content = content
     this.createdAt = createdAt || new Date()
     this.createdBy = createdBy

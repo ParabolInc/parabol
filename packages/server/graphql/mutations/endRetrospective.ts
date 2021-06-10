@@ -1,12 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import DiscussPhase from '../../database/types/DiscussPhase'
 import MeetingMember from '../../database/types/MeetingMember'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -20,12 +21,16 @@ import {endSlackMeeting} from './helpers/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
-  const {id: meetingId} = meeting
+  const {id: meetingId, phases} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
+  const discussPhase = phases.find((phase) => phase.phaseType === 'discuss') as DiscussPhase
+  const {stages} = discussPhase
+  const discussionIds = stages.map((stage) => stage.discussionId)
+
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
 
   await r
@@ -35,13 +40,13 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
       {
         commentCount: (r
           .table('Comment')
-          .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
           .filter({isActive: true})
           .count()
           .default(0) as unknown) as number,
         taskCount: (r
           .table('Task')
-          .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+          .getAll(r.args(discussionIds), {index: 'discussionId'})
           .count()
           .default(0) as unknown) as number,
         topicCount: reflectionGroupIds.length,

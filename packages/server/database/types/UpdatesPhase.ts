@@ -8,6 +8,7 @@ interface Input {
 export default class UpdatesPhase extends GenericMeetingPhase {
   stages: UpdatesStage[]
   durations: number[] | undefined
+  phaseType!: 'updates'
   constructor(input: Input) {
     super('updates')
     const {durations, stages} = input
