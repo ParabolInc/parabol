@@ -231,15 +231,18 @@ const upsertSlackMessage = async (
     const {channel} = convoInfo
     const {latest} = channel
     if (latest) {
-      const {ts} = latest
-      const timestamp = new Date(Number.parseFloat(ts) * 1000)
-      const ageThresh = new Date(Date.now() - ms('5m'))
-      if (timestamp >= ageThresh) {
-        const res = await manager.updateMessage(channelId, blocks, ts)
-        if (!res.ok) {
-          console.error(res.error)
+      const {ts, bot_profile} = latest
+      const {name} = bot_profile
+      if (name === 'Parabol' || name === 'Parabol-staging') {
+        const timestamp = new Date(Number.parseFloat(ts) * 1000)
+        const ageThresh = new Date(Date.now() - ms('5m'))
+        if (timestamp >= ageThresh) {
+          const res = await manager.updateMessage(channelId, blocks, ts)
+          if (!res.ok) {
+            console.error(res.error)
+          }
+          return
         }
-        return
       }
     }
   }
