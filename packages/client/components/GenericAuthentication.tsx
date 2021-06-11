@@ -15,13 +15,20 @@ import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import DialogTitle from './DialogTitle'
 import AuthenticationDialog from './AuthenticationDialog'
 import ForgotPasswordPage from './ForgotPasswordPage'
+import SubmittedForgotPasswordPage from './SubmittedForgotPasswordPage'
+import useRouter from '../hooks/useRouter'
+import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 
-export type AuthPageSlug = 'create-account' | 'signin' | 'forgot-password'
+export type AuthPageSlug =
+  | 'create-account'
+  | 'signin'
+  | 'forgot-password'
+  | 'forgot-password/submitted'
 
 export type GotoAuthPage = (page: AuthPageSlug, search?: string) => void
 
 interface Props {
-  gotoPage: GotoAuthPage
+  goToPage: GotoAuthPage
   teamName?: string
   page: AuthPageSlug
   invitationToken?: string
@@ -57,11 +64,21 @@ const DialogSubTitle = styled('div')({
 })
 
 const GenericAuthentication = (props: Props) => {
-  const {gotoPage, invitationToken, page, teamName} = props
+  const {goToPage, invitationToken, page, teamName} = props
   const emailRef = useRef<{email: () => string}>()
+  const {location} = useRouter()
+  const params = new URLSearchParams(location.search)
+  const email = params.get('email')
 
   if (page === 'forgot-password') {
-    return <ForgotPasswordPage gotoPage={gotoPage} />
+    return <ForgotPasswordPage goToPage={goToPage} />
+  }
+
+  if (page === 'forgot-password/submitted') {
+    const type = params.get('type') as ForgotPasswordResType
+    if (type && Object.values(ForgotPasswordResType).includes(type)) {
+      return <SubmittedForgotPasswordPage goToPage={goToPage} />
+    }
   }
 
   const isCreate = page === 'create-account'
@@ -71,31 +88,30 @@ const GenericAuthentication = (props: Props) => {
   const actionCopy = isCreate ? 'Already have an account? ' : 'New to Parabol? '
   const title = teamName ? `${teamName} is waiting` : action
   const onForgot = () => {
-    gotoPage('forgot-password', `?email=${emailRef.current?.email()}`)
+    goToPage('forgot-password', `?email=${emailRef.current?.email()}`)
   }
   return (
     <AuthenticationDialog>
       <DialogTitle>{title}</DialogTitle>
       <DialogSubTitle>
         <span>{actionCopy}</span>
-        <BrandedLink onClick={() => gotoPage(counterActionSlug, location.search)}>
+        <BrandedLink onClick={() => goToPage(counterActionSlug, location.search)}>
           {counterAction}
         </BrandedLink>
       </DialogSubTitle>
       <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
       <HorizontalSeparator margin='1rem 0 0' text='or' />
       <EmailPasswordAuthForm
-        email=''
+        email={email || ''}
         isSignin={!isCreate}
         invitationToken={invitationToken}
         ref={emailRef}
+        goToPage={goToPage}
       />
       {isCreate ? (
         <AuthPrivacyFooter />
       ) : (
-        <>
-          <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
-        </>
+        <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
       )}
     </AuthenticationDialog>
   )
