@@ -58,6 +58,12 @@ const emailPasswordReset = {
       if (failOnAccount || failOnTime) {
         return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
       }
+      const domain = getSSODomainFromEmail(email)
+      const samlDomainExists = await r
+        .table('SAML')
+        .filter((row) => row('domains').contains(domain))
+        .run()
+      if (samlDomainExists) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
       if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}
       const {id: userId, identities} = user
       const googleIdentity = identities.find(
@@ -67,17 +73,7 @@ const emailPasswordReset = {
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal
-      if (!localIdentity) {
-        const domain = getSSODomainFromEmail(email)
-        const samlDomainExists = await r
-          .table('SAML')
-          .filter((row) => row('domains').contains(domain))
-          .run()
-        if (samlDomainExists) {
-          return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
-        }
-        return {error: {message: AuthenticationError.IDENTITY_NOT_FOUND}}
-      }
+      if (!localIdentity) return {error: {message: AuthenticationError.IDENTITY_NOT_FOUND}}
       // seems legit, make a record of it create a reset code
       const tokenBuffer = await randomBytes(48)
       const resetPasswordToken = base64url.encode(tokenBuffer)
