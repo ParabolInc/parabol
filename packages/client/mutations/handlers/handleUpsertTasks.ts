@@ -1,22 +1,21 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
+import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
+import isTaskPrivate from '~/utils/isTaskPrivate'
+import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
+import getScopingTasksConn from '../connections/getScopingTasksConn'
 import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 import safePutNodeInConn from './safePutNodeInConn'
-import isTaskPrivate from '~/utils/isTaskPrivate'
-import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
-import getScopingTasksConn from '../connections/getScopingTasksConn'
 
 type Task = RecordProxy<{
   readonly id: string
   readonly teamId: string
   readonly tags: readonly string[]
-  readonly threadId: string | null
-  readonly threadSource: string | null
+  readonly discussionId: string | null
   readonly threadParentId: string | null
   readonly meetingId: string | null
   readonly updatedAt: string | null
@@ -47,9 +46,8 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer, userIds, teamIds)
-  const threadSourceId = task.getValue('threadId')
-  const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
-  const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
+  const discussionId = task.getValue('discussionId')
+  const threadConn = getDiscussionThreadConn(store, discussionId)
   const meeting = meetingId ? store.get(meetingId) : null
 
   if (isNowArchived) {
@@ -59,7 +57,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   } else {
     archiveConns.forEach((archiveConn) => safeRemoveNodeFromConn(taskId, archiveConn))
     safePutNodeInConn(teamConn, task, store)
-    safePutNodeInConn(threadSourceConn, task, store, 'threadSortOrder', true)
+    safePutNodeInConn(threadConn, task, store, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')
     if (userConn) {
       const isPrivate = isTaskPrivate(tags)

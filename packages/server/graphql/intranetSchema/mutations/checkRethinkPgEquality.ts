@@ -19,7 +19,7 @@ const tableResolvers = {
 const checkEqAndWriteOutput = async (
   tableName: string,
   fileLocation: string,
-  maxErrors: number = 10
+  maxErrors = 10
 ): Promise<void> => {
   const errors = await tableResolvers[tableName](maxErrors)
   await fs.promises.writeFile(fileLocation, JSON.stringify(errors))

@@ -9,8 +9,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve} from '~/types/constEnums'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
-import {CommentSendOrAdd_meeting} from '~/__generated__/CommentSendOrAdd_meeting.graphql'
-import {ThreadSourceEnum} from '~/__generated__/CreateTaskMutation.graphql'
+import {CommentSendOrAdd_discussion} from '~/__generated__/CommentSendOrAdd_discussion.graphql'
 import {DECELERATE} from '../styles/animation'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -75,10 +74,8 @@ interface Props {
   collapseAddTask: () => void
   commentSubmitState: CommentSubmitState
   getMaxSortOrder: () => number
-  meeting: CommentSendOrAdd_meeting
-  threadSourceId: string
+  discussion: CommentSendOrAdd_discussion
   threadParentId?: string
-  threadSource: ThreadSourceEnum
   onSubmit: () => void
   dataCy: string
 }
@@ -88,14 +85,12 @@ const CommentSendOrAdd = (props: Props) => {
     collapseAddTask,
     commentSubmitState,
     getMaxSortOrder,
-    meeting,
-    threadSourceId,
+    discussion,
     threadParentId,
-    threadSource,
     onSubmit,
     dataCy
   } = props
-  const {id: meetingId, teamId} = meeting
+  const {id: discussionId, meetingId, teamId} = discussion
   const atmosphere = useAtmosphere()
   if (commentSubmitState === 'send') {
     return (
@@ -109,10 +104,9 @@ const CommentSendOrAdd = (props: Props) => {
     const newTask = {
       status: 'active',
       sortOrder: dndNoise(),
+      discussionId,
       meetingId,
-      threadId: threadSourceId,
       threadParentId,
-      threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,
       teamId
@@ -120,7 +114,11 @@ const CommentSendOrAdd = (props: Props) => {
     CreateTaskMutation(atmosphere, {newTask}, {})
     collapseAddTask()
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId)?.setValue('', 'replyingToCommentId')
+      store
+        .getRoot()
+        .getLinkedRecord('viewer')
+        ?.getLinkedRecord('discussion', {id: discussionId})
+        ?.setValue('', 'replyingToCommentId')
     })
   }
   const isExpanded = commentSubmitState === 'addExpanded'
@@ -135,10 +133,11 @@ const CommentSendOrAdd = (props: Props) => {
 }
 
 export default createFragmentContainer(CommentSendOrAdd, {
-  meeting: graphql`
-    fragment CommentSendOrAdd_meeting on NewMeeting {
+  discussion: graphql`
+    fragment CommentSendOrAdd_discussion on Discussion {
       id
       teamId
+      meetingId
     }
   `
 })

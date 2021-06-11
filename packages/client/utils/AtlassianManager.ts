@@ -481,12 +481,22 @@ export default abstract class AtlassianManager {
         fields: ['summary', 'description'],
         expand: ['renderedFields']
       }
+
+      function isJiraNoAccessError<T>(
+        response: T | JiraNoAccessError
+      ): response is JiraNoAccessError {
+        return 'errorMessages' in response
+      }
+
+      function isAtError<T>(response: T | AtlassianError): response is AtlassianError {
+        return 'message' in response
+      }
       // TODO add type
       const res = (await this.post(url, payload)) as AtlassianError | JiraError | JiraSearchResponse
       if (!firstError) {
-        if ('message' in res) {
+        if (isAtError(res)) {
           firstError = res.message
-        } else if ('errorMessages' in res) {
+        } else if (isJiraNoAccessError(res)) {
           firstError = res.errorMessages[0]
           if (firstError.includes('THe app is not installed on this instance')) {
             firstError = 'Jira access revoked. Please reintegrate with Jira.'

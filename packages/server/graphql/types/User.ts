@@ -22,6 +22,7 @@ import invoices from '../queries/invoices'
 import organization from '../queries/organization'
 import AuthIdentity from './AuthIdentity'
 import Company from './Company'
+import Discussion from './Discussion'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -225,10 +226,31 @@ const User = new GraphQLObjectType<any, GQLContext>({
           edges,
           pageInfo: {
             startCursor: firstEdge ? firstEdge.cursor : null,
-            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
+            // FIXME: the PageInfo type should be a GraphQLISO8601 type, but fixing that requires more work
+            // because the type is shared all over so we'll have to verify that the change doesn't break anything
+            endCursor: firstEdge ? new Date(edges[edges.length - 1].cursor).toJSON() : null,
             hasNextPage: events.length > edges.length
           }
         }
+      }
+    },
+    discussion: {
+      type: Discussion,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLID),
+          description: 'The ID of the discussion'
+        }
+      },
+      description: 'the comments and tasks created from the discussion',
+      resolve: async (_source, {id}, {authToken, dataLoader}) => {
+        const discussion = await dataLoader.get('discussions').load(id)
+        if (!discussion) return null
+        const {teamId} = discussion
+        if (!isTeamMember(authToken, teamId)) {
+          return null
+        }
+        return discussion
       }
     },
     newFeatureId: {

@@ -27,8 +27,7 @@ graphql`
       ...CompleteTaskFrag @relay(mask: false)
       ...ThreadedItemReply_threadable
       ...ThreadedItem_threadable
-      threadSource
-      threadId
+      discussionId
       threadSortOrder
       threadParentId
       replies {

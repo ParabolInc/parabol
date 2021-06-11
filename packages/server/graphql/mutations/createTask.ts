@@ -3,7 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task, {TaskStatusEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
@@ -17,41 +19,20 @@ import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
-import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
-import {ThreadSourceEnum} from '../../database/types/ThreadSource'
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
-
-const validateTaskAgendaItemId = async (
-  threadSource: ThreadSourceEnum | null,
-  threadId: string | null | undefined,
-  teamId: string,
-  dataLoader: DataLoaderWorker
-) => {
-  const agendaItemId = threadSource === 'AGENDA_ITEM' ? threadId : undefined
-  if (agendaItemId) {
-    const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
-    if (!agendaItem || agendaItem.teamId !== teamId) {
-      return 'Invalid agenda item ID'
-    }
-  }
-  return undefined
-}
 
 const validateTaskMeetingId = async (
   meetingId: string | null | undefined,
-  teamId: string,
+  viewerId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  if (meetingId) {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting || meeting.teamId !== teamId) {
-      return 'Invalid meeting ID'
-    }
-  }
+  if (!meetingId) return undefined
+  const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+  const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+  if (!meetingMember) return 'Viewer is not in meeting'
   return undefined
 }
 
-export const validateTaskUserId = async (
+export const validateTaskUserIsTeamMember = async (
   userId: string | null | undefined,
   teamId: string,
   dataLoader: DataLoaderWorker
@@ -94,6 +75,20 @@ const sendToSentryTaskCreated = async (
       isReply
     }
   })
+}
+
+const validateTaskDiscussionId = async (
+  task: CreateTaskInput['newTask'],
+  dataLoader: DataLoaderWorker
+) => {
+  const {discussionId, teamId, meetingId} = task
+  if (!discussionId) return undefined
+  const discussion = await dataLoader.get('discussions').load(discussionId)
+  if (!discussion) return 'Invalid discussion'
+  if (discussion.meetingId !== meetingId)
+    return 'Discussion meetingId does not match task meetingId'
+  if (discussion.teamId !== teamId) return 'Discussion teamId does not match task teamId'
+  return undefined
 }
 
 const handleAddTaskNotifications = async (
@@ -170,8 +165,7 @@ export type CreateTaskInput = {
     content?: string | null
     plaintextContent?: string | null
     meetingId?: string | null
-    threadId?: string | null
-    threadSource?: ThreadSourceEnum | null
+    discussionId?: string | null
     threadSortOrder?: number | null
     threadParentId?: string | null
     sortOrder?: number | null
@@ -205,7 +199,7 @@ export default {
 
     const {
       meetingId,
-      threadId,
+      discussionId,
       threadParentId,
       threadSortOrder,
       sortOrder,
@@ -213,16 +207,15 @@ export default {
       teamId,
       userId
     } = newTask
-    const threadSource = newTask.threadSource as ThreadSourceEnum | null
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return {error: {message: 'Not on team'}}
     }
+
     const errors = await Promise.all([
       // threadParentId not validated because if it's invalid it simply won't appear
-      validateTaskAgendaItemId(threadSource, threadId, teamId, dataLoader),
-      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader),
-      validateTaskMeetingId(meetingId, teamId, dataLoader),
-      validateTaskUserId(userId, teamId, dataLoader)
+      validateTaskDiscussionId(newTask, dataLoader),
+      validateTaskMeetingId(meetingId, viewerId, dataLoader),
+      validateTaskUserIsTeamMember(userId, teamId, dataLoader)
     ])
     const firstError = errors.find(Boolean)
     if (firstError) {
@@ -238,8 +231,7 @@ export default {
       sortOrder,
       status,
       teamId,
-      threadId,
-      threadSource,
+      discussionId,
       threadSortOrder,
       threadParentId,
       userId

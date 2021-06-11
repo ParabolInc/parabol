@@ -5,6 +5,7 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
+import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubScopingSearchInput_meeting} from '../__generated__/GitHubScopingSearchInput_meeting.graphql'
 import Icon from './Icon'
 
@@ -52,7 +53,7 @@ const GitHubScopingSearchInput = (props: Props) => {
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    const defaultInput = 'is:issue is:open sort:updated involves:@me '
+    const defaultInput = `${SprintPokerDefaults.GITHUB_DEFAULT_QUERY} `
     setSearch(atmosphere, meetingId, defaultInput)
   }, [])
 

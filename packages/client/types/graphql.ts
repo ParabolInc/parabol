@@ -43986,6 +43986,11 @@ export interface IUser {
   timeline: ITimelineEventConnection;
 
   /**
+   * the comments and tasks created from the discussion
+   */
+  discussion: IDiscussion | null;
+
+  /**
    * the ID of the newest feature, null if the user has dismissed it
    */
   newFeatureId: string | null;
@@ -44155,6 +44160,13 @@ export interface ITimelineOnUserArguments {
    * the number of timeline events to return
    */
   first: number;
+}
+
+export interface IDiscussionOnUserArguments {
+  /**
+   * The ID of the discussion
+   */
+  id: string;
 }
 
 export interface IMeetingMemberOnUserArguments {
@@ -44373,14 +44385,9 @@ export interface ITask {
   replies: Array<Threadable>;
 
   /**
-   * The ID of the thread
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
    */
-  threadId: string | null;
-
-  /**
-   * The item that spurred the threaded discussion
-   */
-  threadSource: ThreadSourceEnum | null;
+  discussionId: string | null;
 
   /**
    * the parent, if this threadable is a reply, else null
@@ -44398,12 +44405,8 @@ export interface ITask {
   updatedAt: any;
 
   /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -44484,15 +44487,6 @@ export interface ITask {
   user: IUser | null;
 }
 
-export interface IThreadOnTaskArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
-}
-
 /**
  * An item that can be put in a thread
  */
@@ -44535,14 +44529,9 @@ export interface IThreadable {
   replies: Array<Threadable>;
 
   /**
-   * The ID of the thread
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
    */
-  threadId: string | null;
-
-  /**
-   * The item that spurred the threaded discussion
-   */
-  threadSource: ThreadSourceEnum | null;
+  discussionId: string | null;
 
   /**
    * the parent, if this threadable is a reply, else null
@@ -44558,107 +44547,6 @@ export interface IThreadable {
    * The timestamp the item was updated
    */
   updatedAt: any;
-}
-
-/**
- * The source of the thread
- */
-export const enum ThreadSourceEnum {
-  AGENDA_ITEM = 'AGENDA_ITEM',
-  REFLECTION_GROUP = 'REFLECTION_GROUP',
-  STORY = 'STORY'
-}
-
-/**
- * The source of a discusson thread
- */
-export type ThreadSource =
-  | ITask
-  | IAgendaItem
-  | IJiraIssue
-  | IRetroReflectionGroup;
-
-/**
- * The source of a discusson thread
- */
-export interface IThreadSource {
-  __typename: 'ThreadSource';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-}
-
-export interface IThreadOnThreadSourceArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IThreadableConnection {
-  __typename: 'ThreadableConnection';
-
-  /**
-   * Page info with strings (sortOrder) as cursors
-   */
-  pageInfo: IPageInfo | null;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IThreadableEdge>;
-}
-
-/**
- * Information about pagination in a connection.
- */
-export interface IPageInfo {
-  __typename: 'PageInfo';
-
-  /**
-   * When paginating forwards, are there more items?
-   */
-  hasNextPage: boolean;
-
-  /**
-   * When paginating backwards, are there more items?
-   */
-  hasPreviousPage: boolean;
-
-  /**
-   * When paginating backwards, the cursor to continue.
-   */
-  startCursor: string | null;
-
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
-  endCursor: string | null;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IThreadableEdge {
-  __typename: 'ThreadableEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: Threadable;
-  cursor: string | null;
 }
 
 /**
@@ -44678,12 +44566,8 @@ export interface IStory {
   id: string;
 
   /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -44691,15 +44575,6 @@ export interface IStory {
    * The title, independent of the story type
    */
   title: string;
-}
-
-export interface IThreadOnStoryArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
 }
 
 /**
@@ -44731,12 +44606,8 @@ export interface IAgendaItem {
   id: string;
 
   /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -44794,15 +44665,6 @@ export interface IAgendaItem {
    * The team member that created the agenda item
    */
   teamMember: ITeamMember;
-}
-
-export interface IThreadOnAgendaItemArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
 }
 
 /**
@@ -45115,12 +44977,8 @@ export interface IJiraIssue {
   id: string;
 
   /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -45163,15 +45021,6 @@ export interface IJiraIssue {
    * The description converted into raw HTML
    */
   descriptionHTML: string;
-}
-
-export interface IThreadOnJiraIssueArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
 }
 
 export interface IStandardMutationError {
@@ -45300,6 +45149,11 @@ export interface IGitHubIntegration {
   login: string;
 
   /**
+   * The comma-separated list of scopes requested from GitHub
+   */
+  scope: string;
+
+  /**
    * *The team that the token is linked to
    */
   teamId: string;
@@ -45328,14 +45182,9 @@ export interface IGitHubSearchQuery {
   id: string;
 
   /**
-   * The query string in GitHub format, e.g. is:issue is:open
+   * The query string in GitHub format, including repository filters. e.g. is:issue is:open
    */
   queryString: string;
-
-  /**
-   * The list of repos selected as a filter. null if not set
-   */
-  nameWithOwnerFilters: Array<string>;
 
   /**
    * the time the search query was last used. Used for sorting
@@ -46405,6 +46254,33 @@ export interface IOrganizationUserConnection {
 }
 
 /**
+ * Information about pagination in a connection.
+ */
+export interface IPageInfo {
+  __typename: 'PageInfo';
+
+  /**
+   * When paginating forwards, are there more items?
+   */
+  hasNextPage: boolean;
+
+  /**
+   * When paginating backwards, are there more items?
+   */
+  hasPreviousPage: boolean;
+
+  /**
+   * When paginating backwards, the cursor to continue.
+   */
+  startCursor: string | null;
+
+  /**
+   * When paginating forwards, the cursor to continue.
+   */
+  endCursor: string | null;
+}
+
+/**
  * An edge in a connection.
  */
 export interface IOrganizationUserEdge {
@@ -47044,6 +46920,104 @@ export const enum TimelineEventEnum {
   joinedParabol = 'joinedParabol',
   createdTeam = 'createdTeam',
   POKER_COMPLETE = 'POKER_COMPLETE'
+}
+
+/**
+ * A discussion thread
+ */
+export interface IDiscussion {
+  __typename: 'Discussion';
+  id: string;
+  teamId: string;
+  meetingId: string;
+
+  /**
+   * time the thread was created
+   */
+  createdAt: any;
+
+  /**
+   * The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId
+   */
+  discussionTopicId: string;
+
+  /**
+   * The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue
+   */
+  discussionTopicType: DiscussionTopicTypeEnum;
+
+  /**
+   * The number of comments contained in the thread
+   */
+  commentCount: number;
+
+  /**
+   * The comments & tasks thread in the discussion
+   */
+  thread: IThreadableConnection;
+}
+
+export interface IThreadOnDiscussionArguments {
+  /**
+   * How many items to show. optional if only comments are desired
+   */
+  first?: number | null;
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null;
+}
+
+/**
+ * The topic being discussed
+ */
+export const enum DiscussionTopicTypeEnum {
+  agendaItem = 'agendaItem',
+  reflectionGroup = 'reflectionGroup',
+  task = 'task',
+  githubIssue = 'githubIssue',
+  jiraIssue = 'jiraIssue'
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IThreadableConnection {
+  __typename: 'ThreadableConnection';
+
+  /**
+   * Page info with strings (sortOrder) as cursors
+   */
+  pageInfo: IPageInfo | null;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IThreadableEdge>;
+
+  /**
+   * Any errors that prevented the query from returning the full results
+   */
+  error: string | null;
+
+  /**
+   * A list of userIds currently commenting
+   */
+  commentorIds: Array<string>;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IThreadableEdge {
+  __typename: 'ThreadableEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: Threadable;
+  cursor: string | null;
 }
 
 /**
@@ -47712,19 +47686,54 @@ export interface IRetroDiscussStage {
   timeRemaining: number | null;
 
   /**
+   * The ID to find the discussion that goes in the stage
+   */
+  discussionId: string;
+
+  /**
+   * The discussion about the stage
+   */
+  discussion: IDiscussion;
+
+  /**
    * foreign key. use reflectionGroup
    */
-  reflectionGroupId: string | null;
+  reflectionGroupId: string;
 
   /**
    * the group that is the focal point of the discussion
    */
-  reflectionGroup: IRetroReflectionGroup | null;
+  reflectionGroup: IRetroReflectionGroup;
 
   /**
    * The sort order for reprioritizing discussion topics
    */
   sortOrder: number;
+}
+
+/**
+ * A meeting stage that includes a discussion thread
+ */
+export type DiscussionThreadStage =
+  | IRetroDiscussStage
+  | IEstimateStage
+  | IAgendaItemsStage;
+
+/**
+ * A meeting stage that includes a discussion thread
+ */
+export interface IDiscussionThreadStage {
+  __typename: 'DiscussionThreadStage';
+
+  /**
+   * The ID to find the discussion that goes in the stage
+   */
+  discussionId: string;
+
+  /**
+   * The discussion about the stage
+   */
+  discussion: IDiscussion;
 }
 
 /**
@@ -47739,17 +47748,8 @@ export interface IRetroReflectionGroup {
   id: string;
 
   /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
-   * The number of comments in this group’s thread, if any
-   */
-  commentCount: number;
-
-  /**
    * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
    */
   commentors: Array<ICommentorDetails> | null;
 
@@ -47791,11 +47791,6 @@ export interface IRetroReflectionGroup {
   sortOrder: number;
 
   /**
-   * The tasks created for this group in the discussion phase
-   */
-  tasks: Array<ITask>;
-
-  /**
    * The team that is running the retro
    */
   team: ITeam | null;
@@ -47829,15 +47824,6 @@ export interface IRetroReflectionGroup {
    * The number of votes the viewer has given this group
    */
   viewerVoteCount: number | null;
-}
-
-export interface IThreadOnRetroReflectionGroupArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
 }
 
 /**
@@ -48237,6 +48223,16 @@ export interface IEstimateStage {
   timeRemaining: number | null;
 
   /**
+   * The ID to find the discussion that goes in the stage
+   */
+  discussionId: string;
+
+  /**
+   * The discussion about the stage
+   */
+  discussion: IDiscussion;
+
+  /**
    * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
    */
   creatorUserId: string;
@@ -48518,6 +48514,16 @@ export interface IAgendaItemsStage {
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
    */
   timeRemaining: number | null;
+
+  /**
+   * The ID to find the discussion that goes in the stage
+   */
+  discussionId: string;
+
+  /**
+   * The discussion about the stage
+   */
+  discussion: IDiscussion;
 
   /**
    * The id of the agenda item this relates to
@@ -50039,14 +50045,9 @@ export interface IComment {
   replies: Array<Threadable>;
 
   /**
-   * The ID of the thread
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
    */
-  threadId: string | null;
-
-  /**
-   * The item that spurred the threaded discussion
-   */
-  threadSource: ThreadSourceEnum | null;
+  discussionId: string | null;
 
   /**
    * the parent, if this threadable is a reply, else null
@@ -50315,12 +50316,6 @@ export interface IMutation {
   createMassInvitation: CreateMassInvitationPayload;
 
   /**
-   * Create a PUT URL on the CDN for an organization’s profile picture
-   * @deprecated "Replaced with `uploadOrgImage` mutation"
-   */
-  createOrgPicturePutUrl: ICreatePicturePutUrlPayload | null;
-
-  /**
    * Create a new reflection
    */
   createReflection: ICreateReflectionPayload | null;
@@ -50329,12 +50324,6 @@ export interface IMutation {
    * Create a new task, triggering a CreateCard for other viewers
    */
   createTask: ICreateTaskPayload;
-
-  /**
-   * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
-   * @deprecated "Replaced with `uploadUserImage` mutation"
-   */
-  createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null;
 
   /**
    * Delete a comment from a discussion
@@ -50832,6 +50821,7 @@ export interface IMutation {
    * Set whether the user is spectating poker meeting
    */
   setPokerSpectate: SetPokerSpectatePayload;
+  persistGitHubSearchQuery: PersistGitHubSearchQueryPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -50863,11 +50853,6 @@ export interface IAddCommentOnMutationArguments {
    * A partial new comment
    */
   comment: IAddCommentInput;
-
-  /**
-   * The id of the meeting
-   */
-  meetingId: string;
 }
 
 export interface IAddPokerTemplateOnMutationArguments {
@@ -51075,23 +51060,6 @@ export interface ICreateMassInvitationOnMutationArguments {
   voidOld?: boolean | null;
 }
 
-export interface ICreateOrgPicturePutUrlOnMutationArguments {
-  /**
-   * user-supplied MIME content type
-   */
-  contentType: string;
-
-  /**
-   * user-supplied file size
-   */
-  contentLength: number;
-
-  /**
-   * The organization id to update
-   */
-  orgId: string;
-}
-
 export interface ICreateReflectionOnMutationArguments {
   input: ICreateReflectionInput;
 }
@@ -51106,18 +51074,6 @@ export interface ICreateTaskOnMutationArguments {
    * The part of the site where the creation occurred
    */
   area?: AreaEnum | null;
-}
-
-export interface ICreateUserPicturePutUrlOnMutationArguments {
-  /**
-   * user supplied image metadata
-   */
-  image: IImageMetadataInput;
-
-  /**
-   * a png version of the above image
-   */
-  pngVersion?: IImageMetadataInput | null;
 }
 
 export interface IDeleteCommentOnMutationArguments {
@@ -51192,8 +51148,7 @@ export interface IEditCommentingOnMutationArguments {
    * True if the user is commenting, false if the user has stopped commenting
    */
   isCommenting: boolean;
-  meetingId: string;
-  threadId: string;
+  discussionId: string;
 }
 
 export interface IEndSprintPokerOnMutationArguments {
@@ -52029,6 +51984,23 @@ export interface ISetPokerSpectateOnMutationArguments {
   isSpectating: boolean;
 }
 
+export interface IPersistGitHubSearchQueryOnMutationArguments {
+  /**
+   * the team witht the settings we add the query to
+   */
+  teamId: string;
+
+  /**
+   * The query string as sent to GitHub
+   */
+  queryString: string;
+
+  /**
+   * true if this query should be deleted
+   */
+  isRemove?: boolean | null;
+}
+
 export interface IAcceptTeamInvitationPayload {
   __typename: 'AcceptTeamInvitationPayload';
   error: IStandardMutationError | null;
@@ -52157,10 +52129,9 @@ export interface IAddCommentInput {
   isAnonymous?: boolean | null;
 
   /**
-   * foreign key for the reflection group or agenda item this was created from
+   * foreign key for the discussion this was created in
    */
-  threadId: string;
-  threadSource: ThreadSourceEnum;
+  discussionId: string;
   threadSortOrder: number;
   threadParentId?: string | null;
 }
@@ -52510,12 +52481,6 @@ export interface ICreateMassInvitationSuccess {
   team: ITeam;
 }
 
-export interface ICreatePicturePutUrlPayload {
-  __typename: 'CreatePicturePutUrlPayload';
-  error: IStandardMutationError | null;
-  url: any | null;
-}
-
 export interface ICreateReflectionPayload {
   __typename: 'CreateReflectionPayload';
   error: IStandardMutationError | null;
@@ -52632,10 +52597,9 @@ export interface ICreateTaskInput {
   meetingId?: string | null;
 
   /**
-   * foreign key for the reflection group or agenda item this was created from
+   * foreign key for the thread this was created in
    */
-  threadId?: string | null;
-  threadSource?: ThreadSourceEnum | null;
+  discussionId?: string | null;
   threadSortOrder?: number | null;
   threadParentId?: string | null;
   sortOrder?: number | null;
@@ -52659,25 +52623,6 @@ export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
   userDash = 'userDash'
-}
-
-export interface ICreateUserPicturePutUrlPayload {
-  __typename: 'CreateUserPicturePutUrlPayload';
-  error: IStandardMutationError | null;
-  url: any | null;
-  pngUrl: any | null;
-}
-
-export interface IImageMetadataInput {
-  /**
-   * user-supplied MIME content type
-   */
-  contentType: string;
-
-  /**
-   * user-supplied file size
-   */
-  contentLength: number;
 }
 
 /**
@@ -52955,7 +52900,11 @@ export interface IEditCommentingPayload {
    */
   commentor: IUser | null;
   meetingId: string;
-  threadId: string;
+
+  /**
+   * The discussion the comment was created in
+   */
+  discussionId: string;
 }
 
 /**
@@ -54569,6 +54518,32 @@ export interface ISetPokerSpectateSuccess {
   meetingMember: IPokerMeetingMember;
 }
 
+/**
+ * Return object for PersistGitHubSearchQueryPayload
+ */
+export type PersistGitHubSearchQueryPayload =
+  | IErrorPayload
+  | IPersistGitHubSearchQuerySuccess;
+
+export interface IPersistGitHubSearchQuerySuccess {
+  __typename: 'PersistGitHubSearchQuerySuccess';
+
+  /**
+   * The affected teamId
+   */
+  teamId: string;
+
+  /**
+   * The affected userId
+   */
+  userId: string;
+
+  /**
+   * The auth with the updated search queries
+   */
+  githubIntegration: IGitHubIntegration;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -54660,7 +54635,8 @@ export type NotificationSubscriptionPayload =
   | IStripeFailPaymentPayload
   | IPersistJiraSearchQuerySuccess
   | IUser
-  | IAuthTokenPayload;
+  | IAuthTokenPayload
+  | IPersistGitHubSearchQuerySuccess;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';

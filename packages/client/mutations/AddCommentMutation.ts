@@ -1,20 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import makeEmptyStr from '~/utils/draftjs/makeEmptyStr'
+import addNodeToArray from '~/utils/relay/addNodeToArray'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import {AddCommentMutation_meeting} from '~/__generated__/AddCommentMutation_meeting.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
-import getThreadSourceThreadConn from './connections/getThreadSourceThreadConn'
+import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
-import addNodeToArray from '~/utils/relay/addNodeToArray'
 
 graphql`
   fragment AddCommentMutation_meeting on AddCommentSuccess {
     comment {
       ...ThreadedItem_threadable
-      threadSource
-      threadId
+      discussionId
       threadSortOrder
       threadParentId
     }
@@ -23,8 +22,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AddCommentMutation($comment: AddCommentInput!, $meetingId: ID!) {
-    addComment(comment: $comment, meetingId: $meetingId) {
+  mutation AddCommentMutation($comment: AddCommentInput!) {
+    addComment(comment: $comment) {
       ... on ErrorPayload {
         error {
           message
@@ -52,11 +51,10 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
     addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
     return
   }
-  const threadSourceId = comment.getValue('threadId')
-  if (threadSourceId) {
-    const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
-    const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
-    safePutNodeInConn(threadSourceConn, comment, store, 'threadSortOrder', true)
+  const discussionId = comment.getValue('discussionId')
+  if (discussionId) {
+    const threadConn = getDiscussionThreadConn(store, discussionId)
+    safePutNodeInConn(threadConn, comment, store, 'threadSortOrder', true)
   }
 }
 

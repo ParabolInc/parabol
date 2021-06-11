@@ -26,9 +26,6 @@ graphql`
       reflections {
         ...DraggableReflectionCard_reflection @relay(mask: false)
       }
-      tasks {
-        id
-      }
       voteCount
     }
     unlockedStages {

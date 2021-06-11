@@ -52,8 +52,7 @@ graphql`
       content
       tags
       teamId
-      threadId
-      threadSource
+      discussionId
       meetingId
       updatedAt
       userId

@@ -12,6 +12,6 @@ export default class ReflectPhase extends GenericMeetingPhase {
     durations: number[] | undefined
   ) {
     super('reflect')
-    this.stages = [new GenericMeetingStage(REFLECT, durations)]
+    this.stages = [new GenericMeetingStage({phaseType: REFLECT, durations})]
   }
 }

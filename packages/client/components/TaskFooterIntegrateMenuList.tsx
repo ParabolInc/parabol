@@ -21,7 +21,7 @@ import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
-import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
+import MenuSearch from './MenuSearch'
 
 interface Props {
   menuProps: MenuProps
@@ -96,11 +96,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
         </StyledMenuItemIcon>
-        <TaskFooterIntegrateMenuSearch
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-        />
+        <MenuSearch placeholder={placeholder} value={value} onChange={onChange} />
       </SearchItem>
       {(query && allItems.length === 0 && status !== 'loading' && (
         <NoResults key='no-results'>No integrations found!</NoResults>

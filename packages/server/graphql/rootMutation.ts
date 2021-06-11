@@ -25,10 +25,8 @@ import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration
 import createImposterToken from './mutations/createImposterToken'
 import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
-import createOrgPicturePutUrl from './mutations/createOrgPicturePutUrl'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
-import createUserPicturePutUrl from './mutations/createUserPicturePutUrl'
 import deleteComment from './mutations/deleteComment'
 import deleteTask from './mutations/deleteTask'
 import deleteUser from './mutations/deleteUser'
@@ -133,6 +131,7 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
+import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -167,10 +166,8 @@ export default new GraphQLObjectType<any, Context>({
       createGitHubTaskIntegration,
       createJiraTaskIntegration,
       createMassInvitation,
-      createOrgPicturePutUrl,
       createReflection,
       createTask,
-      createUserPicturePutUrl,
       deleteComment,
       deleteTask,
       deleteUser,
@@ -274,6 +271,7 @@ export default new GraphQLObjectType<any, Context>({
       updateJiraDimensionField,
       joinMeeting,
       gitHubCreateIssue,
-      setPokerSpectate
+      setPokerSpectate,
+      persistGitHubSearchQuery
     } as any)
 })

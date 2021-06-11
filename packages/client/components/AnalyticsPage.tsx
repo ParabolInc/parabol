@@ -12,6 +12,7 @@ import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import makeHref from '../utils/makeHref'
+import ms from 'ms'
 
 const query = graphql`
   query AnalyticsPageQuery {
@@ -71,7 +72,12 @@ const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
   useEffect(() => {
     const logRocketId = window.__ACTION__.logRocket
-    if (logRocketId) {
+    const errorProneAt = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
+    const expiredErrorProne =
+      errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('30d'))
+    if (expiredErrorProne) {
+      window.localStorage.deleteItem(LocalStorageKey.ERROR_PRONE_AT)
+    } else if (logRocketId && errorProneAt) {
       const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
       LogRocket.init(logRocketId, {
         release: __APP_VERSION__,

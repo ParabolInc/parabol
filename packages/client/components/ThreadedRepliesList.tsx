@@ -1,22 +1,25 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ThreadedRepliesList_meeting} from '~/__generated__/ThreadedRepliesList_meeting.graphql'
+import {ThreadedRepliesList_discussion} from '~/__generated__/ThreadedRepliesList_discussion.graphql'
 import {ThreadedRepliesList_replies} from '~/__generated__/ThreadedRepliesList_replies.graphql'
+import {ThreadedRepliesList_viewer} from '~/__generated__/ThreadedRepliesList_viewer.graphql'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
 import {SetReplyMention} from './ThreadedItem'
 import ThreadedTaskBase from './ThreadedTaskBase'
 
 interface Props {
-  meeting: ThreadedRepliesList_meeting
-  threadSourceId: string
+  allowedThreadables: DiscussionThreadables[]
+  discussion: ThreadedRepliesList_discussion
   replies: ThreadedRepliesList_replies
   setReplyMention: SetReplyMention
   dataCy: string
+  viewer: ThreadedRepliesList_viewer
 }
 
 const ThreadedRepliesList = (props: Props) => {
-  const {replies, setReplyMention, meeting, threadSourceId, dataCy} = props
+  const {allowedThreadables, replies, setReplyMention, discussion, dataCy, viewer} = props
   // https://sentry.io/organizations/parabol/issues/1569570376/?project=107196&query=is%3Aunresolved
   // not sure why this is required addComment and createTask but request replies
   if (!replies) return null
@@ -26,23 +29,25 @@ const ThreadedRepliesList = (props: Props) => {
         const {__typename, id} = reply
         return __typename === 'Task' ? (
           <ThreadedTaskBase
+            allowedThreadables={allowedThreadables}
             dataCy={`${dataCy}-task`}
             key={id}
             isReply
             task={reply}
-            meeting={meeting}
-            threadSourceId={threadSourceId}
+            discussion={discussion}
             setReplyMention={setReplyMention}
+            viewer={viewer}
           />
         ) : (
           <ThreadedCommentBase
+            allowedThreadables={allowedThreadables}
             dataCy={`${dataCy}-comment`}
             key={id}
             isReply
             comment={reply}
-            meeting={meeting}
-            threadSourceId={threadSourceId}
+            discussion={discussion}
             setReplyMention={setReplyMention}
+            viewer={viewer}
           />
         )
       })}
@@ -51,10 +56,16 @@ const ThreadedRepliesList = (props: Props) => {
 }
 
 export default createFragmentContainer(ThreadedRepliesList, {
-  meeting: graphql`
-    fragment ThreadedRepliesList_meeting on NewMeeting {
-      ...ThreadedCommentBase_meeting
-      ...ThreadedTaskBase_meeting
+  viewer: graphql`
+    fragment ThreadedRepliesList_viewer on User {
+      ...ThreadedCommentBase_viewer
+      ...ThreadedTaskBase_viewer
+    }
+  `,
+  discussion: graphql`
+    fragment ThreadedRepliesList_discussion on Discussion {
+      ...ThreadedCommentBase_discussion
+      ...ThreadedTaskBase_discussion
     }
   `,
   replies: graphql`

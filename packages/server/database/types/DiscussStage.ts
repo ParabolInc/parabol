@@ -1,9 +1,21 @@
-import {DISCUSS} from 'parabol-client/utils/constants'
-import GenericMeetingStage from './GenericMeetingStage'
+import generateUID from '../../generateUID'
+import GenericMeetingStage, {GenericMeetingStageInput} from './GenericMeetingStage'
 
+interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
+  sortOrder: number
+  discussionId?: string
+  reflectionGroupId: string
+}
 export default class DiscussStage extends GenericMeetingStage {
-  reflectionGroupId?: string
-  constructor(public sortOrder: number, durations: number[] | undefined) {
-    super(DISCUSS, durations)
+  reflectionGroupId: string
+  discussionId: string
+  sortOrder: number
+  phaseType!: 'discuss'
+  constructor(input: Input) {
+    const {sortOrder, discussionId, reflectionGroupId} = input
+    super({...input, phaseType: 'discuss'})
+    this.sortOrder = sortOrder
+    this.discussionId = discussionId ?? generateUID()
+    this.reflectionGroupId = reflectionGroupId
   }
 }

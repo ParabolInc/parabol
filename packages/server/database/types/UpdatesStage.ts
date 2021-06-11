@@ -1,8 +1,8 @@
 import GenericMeetingStage from './GenericMeetingStage'
-import {UPDATES} from 'parabol-client/utils/constants'
 
 export default class UpdatesStage extends GenericMeetingStage {
+  phaseType!: 'updates'
   constructor(public teamMemberId: string, durations?: number[] | undefined) {
-    super(UPDATES, durations)
+    super({phaseType: 'updates', durations})
   }
 }

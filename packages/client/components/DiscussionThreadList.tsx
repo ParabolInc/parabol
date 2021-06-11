@@ -1,10 +1,11 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
-import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
-import styled from '@emotion/styled'
+import {DiscussionThreadList_discussion} from '~/__generated__/DiscussionThreadList_discussion.graphql'
+import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
+import {DiscussionThreadList_viewer} from '~/__generated__/DiscussionThreadList_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
@@ -46,32 +47,38 @@ const CommentingStatusBlock = styled('div')({
   width: '100%'
 })
 
+export type DiscussionThreadables = 'task' | 'comment'
 interface Props {
+  allowedThreadables: DiscussionThreadables[]
   editorRef: RefObject<HTMLTextAreaElement>
-  meeting: DiscussionThreadList_meeting
+  isReadOnly?: boolean
+  discussion: DiscussionThreadList_discussion
   preferredNames: string[] | null
-  threadSourceId: string
   threadables: DiscussionThreadList_threadables
+  viewer: DiscussionThreadList_viewer
+
   dataCy: string
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
-  const {editorRef, meeting, threadSourceId, threadables, dataCy, preferredNames} = props
-  const {endedAt, meetingType} = meeting
+  const {
+    allowedThreadables,
+    editorRef,
+    isReadOnly,
+    discussion,
+    threadables,
+    dataCy,
+    preferredNames,
+    viewer
+  } = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
-  const HeaderBlock = () => {
-    if (meetingType === 'poker') return null
-    return <Header>{'Discussion & Takeaway Tasks'}</Header>
-  }
+  const allowTasks = allowedThreadables.includes('task')
   if (isEmpty) {
     return (
       <EmptyWrapper>
-        <HeaderBlock />
-        <DiscussionThreadListEmptyState
-          hasTasks={meetingType !== 'poker'}
-          isEndedMeeting={!!endedAt}
-        />
+        {allowTasks && <Header>{'Discussion & Takeaway Tasks'}</Header>}
+        <DiscussionThreadListEmptyState allowTasks={allowTasks} isReadOnly={isReadOnly} />
         <CommentingStatusBlock>
           <CommentingStatusText preferredNames={preferredNames} />
         </CommentingStatusBlock>
@@ -81,16 +88,17 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 
   return (
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
-      <HeaderBlock />
+      {allowTasks && <Header>{'Discussion & Takeaway Tasks'}</Header>}
       <PusherDowner />
       {threadables.map((threadable) => {
         const {id} = threadable
         return (
           <ThreadedItem
+            allowedThreadables={allowedThreadables}
+            viewer={viewer}
             key={id}
             threadable={threadable}
-            meeting={meeting}
-            threadSourceId={threadSourceId}
+            discussion={discussion}
           />
         )
       })}
@@ -100,14 +108,16 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 })
 
 export default createFragmentContainer(DiscussionThreadList, {
-  meeting: graphql`
-    fragment DiscussionThreadList_meeting on NewMeeting {
-      ...ThreadedItem_meeting
-      endedAt
-      meetingType
+  viewer: graphql`
+    fragment DiscussionThreadList_viewer on User {
+      ...ThreadedItem_viewer
     }
   `,
-
+  discussion: graphql`
+    fragment DiscussionThreadList_discussion on Discussion {
+      ...ThreadedItem_discussion
+    }
+  `,
   threadables: graphql`
     fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
       ...ThreadedItem_threadable

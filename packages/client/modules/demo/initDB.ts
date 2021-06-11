@@ -1,15 +1,16 @@
 import {PALETTE} from '~/styles/paletteV3'
-import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
+import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
+import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
-import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
 import ITask from '../../../server/database/types/Task'
-import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
-import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
+import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
 
 export const demoViewerId = 'demoUser'
@@ -163,6 +164,7 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     picture: picture,
     preferredName,
     integrations: {
+      id: 'demoTeamIntegrations',
       atlassian: {isActive: true, accessToken: '123'},
       github: {isActive: true, accessToken: '123'},
       slack: initSlackAuth(userId)
@@ -272,21 +274,24 @@ const initPhases = (teamMembers) => {
           promptId: 'startId',
           question: 'Start',
           description: 'What new behaviors should we adopt?',
-          groupColor: PALETTE.JADE_400
+          groupColor: PALETTE.JADE_400,
+          sortOrder: 0
         },
         {
           id: 'stopId',
           promptId: 'stopId',
           question: 'Stop',
           description: 'What existing behaviors should we cease doing?',
-          groupColor: PALETTE.TOMATO_500
+          groupColor: PALETTE.TOMATO_500,
+          sortOrder: 1
         },
         {
           id: 'continueId',
           promptId: 'continueId',
           question: 'Continue',
           description: 'What current behaviors should we keep doing?',
-          groupColor: PALETTE.SKY_500
+          groupColor: PALETTE.SKY_500,
+          sortOrder: 2
         }
       ],
       stages: [
@@ -350,12 +355,81 @@ const initPhases = (teamMembers) => {
           isNavigableByFacilitator: false,
           phaseType: DISCUSS,
           reflectionGroup: null,
+          discussionId: `discussion:dummy`,
+          discussion: null,
           readyCount: 0,
           sortOrder: 0
         }
       ]
     }
   ]
+}
+
+export class DemoComment {
+  __typename = 'Comment'
+  content: string
+  createdAt: string
+  updatedAt: string
+  createdBy: string | null
+  createdByUser: ReturnType<typeof initDemoUser> | null
+  id: string
+  isActive = true
+  isViewerComment: boolean
+  meetingId = RetroDemo.MEETING_ID
+  reactjis = []
+  replies = []
+  threadParentId: string | null
+  threadSortOrder: number
+  discussionId: string
+  constructor(
+    {id, threadSortOrder, content, isAnonymous, userId, threadParentId, discussionId},
+    db: RetroDemoDB
+  ) {
+    this.content = normalizeRawDraftJS(content)
+    this.createdAt = new Date().toJSON()
+    this.updatedAt = new Date().toJSON()
+    this.createdBy = isAnonymous ? null : userId
+    this.createdByUser = isAnonymous ? null : db.users.find(({id}) => id === userId)!
+    this.id = id
+    this.discussionId = discussionId
+    this.isViewerComment = userId === demoViewerId
+    this.threadParentId = threadParentId || null
+    this.threadSortOrder = threadSortOrder
+  }
+}
+
+export class DemoThreadableEdge {
+  __typename = 'ThreadableEdge'
+  cursor: string
+  node: DemoComment | DemoTask
+  constructor(node: DemoComment | DemoTask) {
+    this.node = node
+    this.cursor = String(node.createdAt)
+  }
+}
+export class DemoDiscussionThread {
+  pageInfo = {
+    hasNextPage: false,
+    hasPreviousPage: false,
+    startCursor: '',
+    endCursor: ''
+  }
+  edges = [] as DemoThreadableEdge[]
+}
+export class DemoDiscussion {
+  teamId = demoTeamId
+  meetingId = RetroDemo.MEETING_ID
+  discussionTopicType = 'reflectionGroup'
+  discussionTopicId: string
+  createdAt: string
+  id: string
+  thread = new DemoDiscussionThread()
+  commentCount = 0
+  constructor(reflectionGroupId: string) {
+    this.createdAt = new Date().toJSON()
+    this.id = `discussion:${reflectionGroupId}`
+    this.discussionTopicId = reflectionGroupId
+  }
 }
 
 const initNewMeeting = (organization, teamMembers, meetingMembers) => {
@@ -398,7 +472,6 @@ const initDB = (botScript) => {
       preferredName: 'You',
       email: 'demo-user@example.co',
       picture: demoUserAvatar
-      // picture: getDemoAvatar(3).picture
     },
     getDemoAvatar(1),
     getDemoAvatar(2)
@@ -411,13 +484,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ;(user as any).teamMember = teamMembers[idx]
+    ; (user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ;(teamMember as any).team = team
+    ; (teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0
@@ -428,6 +501,7 @@ const initDB = (botScript) => {
   newMeeting.topicCount = 0
   newMeeting.settings = team.meetingSettings as any
   return {
+    discussions: [] as any[],
     meetingMembers,
     newMeeting,
     organization: org,
@@ -444,4 +518,5 @@ const initDB = (botScript) => {
   }
 }
 
+export type RetroDemoDB = ReturnType<typeof initDB>
 export default initDB

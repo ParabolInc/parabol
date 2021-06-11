@@ -155,7 +155,8 @@ export const enum LocalStorageKey {
   APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
-  EMAIL = 'email'
+  EMAIL = 'email',
+  ERROR_PRONE_AT = 'errorProneAt'
 }
 
 export const enum AuthenticationError {
@@ -234,6 +235,7 @@ export const enum Providers {
   ATLASSIAN_DESC = 'Create Jira issues from Parabol',
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
+  GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }
@@ -393,5 +395,6 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT = '__comment',
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
-  JIRA_FIELD_NULL_LABEL = 'Do Not Update'
+  JIRA_FIELD_NULL_LABEL = 'Do Not Update',
+  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
 }

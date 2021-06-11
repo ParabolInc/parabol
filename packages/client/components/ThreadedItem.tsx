@@ -1,16 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ThreadedItem_meeting} from '~/__generated__/ThreadedItem_meeting.graphql'
+import {ThreadedItem_discussion} from '~/__generated__/ThreadedItem_discussion.graphql'
 import {ThreadedItem_threadable} from '~/__generated__/ThreadedItem_threadable.graphql'
+import {ThreadedItem_viewer} from '~/__generated__/ThreadedItem_viewer.graphql'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
 import ThreadedRepliesList from './ThreadedRepliesList'
 import ThreadedTaskBase from './ThreadedTaskBase'
 
 interface Props {
+  allowedThreadables: DiscussionThreadables[]
   threadable: ThreadedItem_threadable
-  meeting: ThreadedItem_meeting
-  threadSourceId: string
+  discussion: ThreadedItem_discussion
+  viewer: ThreadedItem_viewer
 }
 
 export type ReplyMention = {
@@ -21,28 +24,29 @@ export type ReplyMention = {
 export type SetReplyMention = (replyMention: ReplyMention) => void
 
 export const ThreadedItem = (props: Props) => {
-  const {threadable, threadSourceId, meeting} = props
+  const {allowedThreadables, threadable, discussion, viewer} = props
   const {__typename, replies} = threadable
   const [replyMention, setReplyMention] = useState<ReplyMention>(null)
-  if (!replies) debugger
   const child = (
     <ThreadedRepliesList
+      allowedThreadables={allowedThreadables}
       dataCy={`child`}
-      meeting={meeting}
+      discussion={discussion}
       replies={replies}
-      threadSourceId={threadSourceId}
       setReplyMention={setReplyMention}
+      viewer={viewer}
     />
   )
   if (__typename === 'Task') {
     return (
       <ThreadedTaskBase
+        allowedThreadables={allowedThreadables}
         dataCy={`task`}
         task={threadable}
-        meeting={meeting}
-        threadSourceId={threadSourceId}
+        discussion={discussion}
         replyMention={replyMention}
         setReplyMention={setReplyMention}
+        viewer={viewer}
       >
         {child}
       </ThreadedTaskBase>
@@ -50,12 +54,13 @@ export const ThreadedItem = (props: Props) => {
   }
   return (
     <ThreadedCommentBase
+      allowedThreadables={allowedThreadables}
       dataCy={`comment`}
       comment={threadable}
-      meeting={meeting}
-      threadSourceId={threadSourceId}
+      discussion={discussion}
       replyMention={replyMention}
       setReplyMention={setReplyMention}
+      viewer={viewer}
     >
       {child}
     </ThreadedCommentBase>
@@ -63,11 +68,18 @@ export const ThreadedItem = (props: Props) => {
 }
 
 export default createFragmentContainer(ThreadedItem, {
-  meeting: graphql`
-    fragment ThreadedItem_meeting on NewMeeting {
-      ...ThreadedCommentBase_meeting
-      ...ThreadedTaskBase_meeting
-      ...ThreadedRepliesList_meeting
+  viewer: graphql`
+    fragment ThreadedItem_viewer on User {
+      ...ThreadedTaskBase_viewer
+      ...ThreadedCommentBase_viewer
+      ...ThreadedRepliesList_viewer
+    }
+  `,
+  discussion: graphql`
+    fragment ThreadedItem_discussion on Discussion {
+      ...ThreadedCommentBase_discussion
+      ...ThreadedTaskBase_discussion
+      ...ThreadedRepliesList_discussion
     }
   `,
   threadable: graphql`

@@ -2,8 +2,6 @@ extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
-  isAnonymousComment: Boolean
-  replyingToCommentId: String
 }
 
 extend type ActionMeeting {
@@ -30,7 +28,6 @@ extend type PokerMeeting {
 }
 
 extend type RetrospectiveMeeting {
-  isAnonymousComment: Boolean
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
@@ -105,4 +102,13 @@ extend type AgendaItemsStage {
 
 extend type EstimateStage {
   finalScoreError: String
+}
+
+extend type Discussion {
+  isAnonymousComment: Boolean
+  replyingToCommentId: String
+}
+
+extend type ThreadableConnection {
+  commentors: [User!]!
 }
