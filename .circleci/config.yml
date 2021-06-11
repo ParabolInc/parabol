@@ -26,6 +26,7 @@ jobs:
       SENTRY_ORG: 'parabol'
       SENTRY_PROJECT: 'action-production'
       S3_DB_BACKUPS_BUCKET: 'db-backups.parabol.co'
+      SERVER_ID: '0'
     working_directory: ~/action
     steps:
       - add_ssh_keys:
