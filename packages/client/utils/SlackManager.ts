@@ -57,9 +57,19 @@ export interface SlackConversation {
   locale: string
 }
 
+export interface SlackIM {
+  created: number
+  id: string
+  is_im: true
+  is_org_shared: boolean
+  is_user_deleted: boolean
+  priority: number
+  user: string
+}
+
 interface ConversationListResponse {
   ok: true
-  channels: SlackConversation[]
+  channels: SlackConversation[] | SlackIM[]
 }
 
 interface ConversationJoinResponse {
@@ -131,10 +141,11 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
-type ConversationType = 'public_channel' | 'private_channel'
+type ConversationType = 'public_channel' | 'private_channel' | 'im'
 
 abstract class SlackManager {
-  static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read,groups:read'
+  static SCOPE =
+    'incoming-webhook,channels:read,channels:join,chat:write,users:read,groups:read,im:read'
   token: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland

@@ -21,6 +21,7 @@ import MeetingPoker from '../../../database/types/MeetingPoker'
 import plural from 'parabol-client/utils/plural'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import {makeSection, makeSections, makeButtons} from './makeSlackBlocks'
+import ms from 'ms'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -108,12 +109,14 @@ export const startSlackMeeting = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  const {name: teamName} = team
+  const {name: meetingName} = meeting
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
   const title = 'Meeting started :wave: '
   const blocks = [
     makeSection(title),
-    makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
+    makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName.replace('#', '')}`]),
     makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
     makeButtons([button])
   ]
@@ -206,7 +209,7 @@ export const endSlackMeeting = async (
   const title = 'Meeting completed :tada:'
   const blocks = [
     makeSection(title),
-    makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
+    makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName.replace('#', '')}`]),
     makeSection(summaryText),
     makeEndMeetingButtons(meeting)
   ]
@@ -223,30 +226,23 @@ const upsertSlackMessage = async (
   const {botAccessToken} = auth
   if (!channelId) return
   const manager = new SlackServerManager(botAccessToken)
-  // need im:read scope to get the bot channelId so that we can upsert
-
-  // const convoInfo = await manager.getConversationInfo(channelId)
-  // if (convoInfo.ok && 'latest' in convoInfo.channel) {
-  //   const {channel} = convoInfo
-  //   const {latest} = channel
-  //   if (latest) {
-  //     const {ts, bot_profile} = latest
-  //     const {name} = bot_profile
-  //     if (name === 'Parabol') {
-  //       const timestamp = new Date(Number.parseFloat(ts) * 1000)
-  //       const ageThresh = new Date(Date.now() - ms('5m'))
-  //       if (timestamp >= ageThresh) {
-  //         const res = await manager.updateMessage(channelId, blocks, ts)
-  //         if (!res.ok) {
-  //           console.error(res.error)
-  //         }
-  //         return
-  //       }
-  //     }
-  //   }
-  // } else {
-  //   // handle error?
-  // }
+  const convoInfo = await manager.getConversationInfo(channelId)
+  if (convoInfo.ok && 'latest' in convoInfo.channel) {
+    const {channel} = convoInfo
+    const {latest} = channel
+    if (latest) {
+      const {ts} = latest
+      const timestamp = new Date(Number.parseFloat(ts) * 1000)
+      const ageThresh = new Date(Date.now() - ms('5m'))
+      if (timestamp >= ageThresh) {
+        const res = await manager.updateMessage(channelId, blocks, ts)
+        if (!res.ok) {
+          console.error(res.error)
+        }
+        return
+      }
+    }
+  }
   const res = await manager.postMessage(channelId, blocks, title)
   if (!res.ok) {
     console.error(res.error)
@@ -265,8 +261,7 @@ export const notifySlackTimeLimitStart = async (
   ])
   const {name, phases, facilitatorStageId} = meeting
   const {name: teamName} = team
-  // Slack fails with error message "invalid_arguments" if updating a block with a #
-  // It can successfully post messages with a #
+  // can't update blocks with a # but can post
   const meetingName = name.replace('#', '')
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
