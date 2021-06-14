@@ -1,19 +1,20 @@
-import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 import updateUser from '../../../postgres/queries/updateUser'
+import GraphQLEmailType from '../../types/GraphQLEmailType'
 
 const updateEmail = {
   type: GraphQLNonNull(GraphQLBoolean),
   description: `Updates the user email`,
   args: {
     oldEmail: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLEmailType),
       description: 'User current email'
     },
     newEmail: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLEmailType),
       description: 'User new email'
     }
   },
@@ -26,11 +27,6 @@ const updateEmail = {
     // VALIDATION
     if (oldEmail === newEmail) {
       throw new Error('New email is the same as the old one')
-    }
-
-    const email = newEmail.toLowerCase().trim()
-    if (!email.includes('@')) {
-      throw new Error('Invalid email')
     }
 
     const user = await r
