@@ -13,5 +13,5 @@ To set the `su` role in PG open pgAdmin (credentials are specified in .env as PG
 UPDATE "User" SET "rol" = 'su' WHERE "id" = 'set-your-user-id-here'; 
 ```
 
-Once the role is set, the admin interface can be accessed locally at http://localhost:3000/admin/graphql and allows you to execute available queries and mutations. 
-More info: https://github.com/graphql/graphiql 
+Once the role is set, the admin interface can be accessed locally (logout and login again is required) at http://localhost:3000/admin/graphql and allows you to execute available queries and mutations. 
+More info: https://github.com/graphql/graphiql
