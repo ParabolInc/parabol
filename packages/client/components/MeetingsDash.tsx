@@ -14,7 +14,6 @@ import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useTopPerRow from '../hooks/useTopPerRow'
-import useDeepEqual from '../hooks/useDeepEqual'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -71,10 +70,9 @@ const MeetingsDash = (props: Props) => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const isInit = useInitialRender()
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const memodMeetings = useDeepEqual(activeMeetings)
-  const topByRow = useTopPerRow(cardsPerRow, memodMeetings)
+  const topByRow = useTopPerRow(cardsPerRow, activeMeetings)
   const hasMeetings = activeMeetings.length > 0
-  const totalRows = !memodMeetings.length ? 0 : Math.ceil(memodMeetings.length / cardsPerRow)
+  const totalRows = !activeMeetings.length ? 0 : Math.ceil(activeMeetings.length / cardsPerRow)
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || isInit) return null
   return (
