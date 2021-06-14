@@ -1,16 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
+import startStage_ from 'parabol-client/utils/startStage_'
+import unlockNextStages from 'parabol-client/utils/unlockNextStages'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
-import findStageById from 'parabol-client/utils/meetings/findStageById'
-import handleCompletedStage from './helpers/handleCompletedStage'
-import unlockNextStages from 'parabol-client/utils/unlockNextStages'
-import startStage_ from 'parabol-client/utils/startStage_'
 import standardError from '../../utils/standardError'
-import Meeting from '../../database/types/Meeting'
+import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
+import handleCompletedStage from './helpers/handleCompletedStage'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -41,11 +40,11 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = (await r
+    const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-      .run()) as Meeting | null
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {createdBy, facilitatorUserId, phases, teamId, meetingType} = meeting
     if (viewerId !== facilitatorUserId) {

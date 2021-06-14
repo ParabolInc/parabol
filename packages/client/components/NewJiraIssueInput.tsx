@@ -27,6 +27,7 @@ const StyledButton = styled(PlainButton)({
   justifyContent: 'flex-start',
   margin: 0,
   opacity: 1,
+  width: 'fit-content',
   ':hover, :focus': {
     backgroundColor: 'transparent'
   }
@@ -115,7 +116,7 @@ const NewJiraIssueInput = (props: Props) => {
   const projectKey = suggestedIntegration?.projectKey
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_RIGHT
+    MenuPosition.UPPER_LEFT
   )
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {

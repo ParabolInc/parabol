@@ -16,6 +16,7 @@ import db from '../../db'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
+import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import ServiceField from './ServiceField'
@@ -27,10 +28,11 @@ import User from './User'
 const EstimateStage = new GraphQLObjectType<any, GQLContext>({
   name: 'EstimateStage',
   description: 'The stage where the team estimates & discusses a single task',
-  interfaces: () => [NewMeetingStage],
+  interfaces: () => [NewMeetingStage, DiscussionThreadStage],
   isTypeOf: ({phaseType}) => (phaseType as NewMeetingPhaseTypeEnum) === 'ESTIMATE',
   fields: () => ({
     ...newMeetingStageFields(),
+    ...discussionThreadStageFields(),
     creatorUserId: {
       type: GraphQLNonNull(GraphQLID),
       description:

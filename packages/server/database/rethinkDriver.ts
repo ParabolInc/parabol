@@ -59,7 +59,7 @@ export type RethinkSchema = {
   }
   Comment: {
     type: Comment
-    index: 'threadId'
+    index: 'discussionId'
   }
   ReflectPrompt: {
     type: RetrospectivePrompt
@@ -176,7 +176,7 @@ export type RethinkSchema = {
   }
   Task: {
     type: Task
-    index: 'integrationId' | 'tags' | 'teamId' | 'teamIdUpdatedAt' | 'threadId' | 'userId'
+    index: 'integrationId' | 'tags' | 'teamId' | 'teamIdUpdatedAt' | 'discussionId' | 'userId'
   }
   TaskHistory: {
     type: any

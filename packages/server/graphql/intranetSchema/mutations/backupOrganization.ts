@@ -246,11 +246,11 @@ const backupOrganization = {
                   notification('teamId')
                     .default(null)
                     .ne(null),
-                  r.args(teamIds).contains(notification('teamId')),
+                  r(teamIds).contains(notification('teamId')),
                   notification('orgId')
                     .default(null)
                     .ne(null),
-                  r.args(orgIds).contains(notification('orgId')),
+                  r(orgIds).contains(notification('orgId')),
                   true
                 )
               )
@@ -355,8 +355,10 @@ const backupOrganization = {
               .table('RetroReflectionGroup')
               .getAll(r.args(meetingIds), {index: 'meetingId'})('id')
               .coerceTo('array')
-              .do((threadIds) => {
-                return (r.table('Comment').getAll(r.args(threadIds), {index: 'threadId'}) as any)
+              .do((discussionIds) => {
+                return (r
+                  .table('Comment')
+                  .getAll(r.args(discussionIds), {index: 'discussionId'}) as any)
                   .coerceTo('array')
                   .do((items) =>
                     r
@@ -369,8 +371,10 @@ const backupOrganization = {
               .table('AgendaItem')
               .getAll(r.args(meetingIds), {index: 'meetingId'})('id')
               .coerceTo('array')
-              .do((threadIds) => {
-                return (r.table('Comment').getAll(r.args(threadIds), {index: 'threadId'}) as any)
+              .do((discussionIds) => {
+                return (r
+                  .table('Comment')
+                  .getAll(r.args(discussionIds), {index: 'discussionId'}) as any)
                   .coerceTo('array')
                   .do((items) =>
                     r

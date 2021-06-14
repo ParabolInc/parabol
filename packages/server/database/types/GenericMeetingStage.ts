@@ -27,21 +27,47 @@ const getSuggestedDuration = (filteredDurations: number[], allDurations: number[
   return undefined
 }
 
+export interface GenericMeetingStageInput {
+  durations?: number[] | undefined
+  phaseType: string
+  id?: string
+  isNavigable?: boolean
+  isNavigableByFacilitator?: boolean
+  startAt?: Date
+  viewCount?: number
+}
+
 export default class GenericMeetingStage {
-  id = generateUID()
+  id: string
   isAsync: boolean | undefined | null
   isComplete = false
-  isNavigable = false
-  isNavigableByFacilitator = false
-  startAt: Date | undefined = undefined
+  isNavigable: boolean
+  isNavigableByFacilitator: boolean
+  startAt: Date | undefined
   endAt: Date | undefined = undefined
   scheduledEndTime: Date | undefined | null
   suggestedEndTime: Date | undefined
   suggestedTimeLimit: number | undefined
-  viewCount = 0
+  viewCount: number
   readyToAdvance = [] as string[]
+  phaseType: string
+  constructor(input: GenericMeetingStageInput) {
+    const {
+      durations,
+      phaseType,
+      id,
+      isNavigable,
+      isNavigableByFacilitator,
+      startAt,
+      viewCount
+    } = input
+    this.id = id || generateUID()
+    this.phaseType = phaseType
+    this.isNavigable = isNavigable ?? false
+    this.isNavigableByFacilitator = isNavigableByFacilitator ?? false
+    this.startAt = startAt ?? undefined
+    this.viewCount = viewCount ?? 0
 
-  constructor(public phaseType: string, durations: number[] | undefined) {
     if (durations) {
       const shortDurations = filterOutliers(
         durations.filter((duration) => duration < MAX_SYNC_STAGE_DURATION)

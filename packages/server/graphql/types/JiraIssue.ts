@@ -6,12 +6,11 @@ import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
 import Story, {storyFields} from './Story'
-import ThreadSource from './ThreadSource'
 
 const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraIssue',
   description: 'The Jira Issue that comes direct from Jira',
-  interfaces: () => [Story, ThreadSource],
+  interfaces: () => [Story],
   isTypeOf: ({cloudId, key}) => !!(cloudId && key),
   fields: () => ({
     ...storyFields(),

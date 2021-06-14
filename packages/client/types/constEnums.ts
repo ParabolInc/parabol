@@ -160,11 +160,14 @@ export const enum LocalStorageKey {
 }
 
 export const enum AuthenticationError {
+  FAILED_TO_SEND = 'failedToSend',
   MISSING_HASH = 'missingHash',
   INVALID_PASSWORD = 'invalidPassword',
   IDENTITY_NOT_FOUND = 'identityNotFound',
+  EXCEEDED_RESET_THRESHOLD = 'exceededResetThreshold',
   USER_NOT_FOUND = 'userNotFound',
-  USER_EXISTS_GOOGLE = 'userExistsGoogle'
+  USER_EXISTS_GOOGLE = 'userExistsGoogle',
+  USER_EXISTS_SAML = 'userExistsSaml'
 }
 
 export const enum MathEnum {

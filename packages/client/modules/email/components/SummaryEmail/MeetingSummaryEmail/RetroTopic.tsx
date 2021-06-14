@@ -3,14 +3,14 @@ import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from 'parabol-client/styles/typographyV2'
 import plural from 'parabol-client/utils/plural'
-import {RetroTopic_topic} from 'parabol-client/__generated__/RetroTopic_topic.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
+import {RetroTopic_stage} from '../../../../../__generated__/RetroTopic_stage.graphql'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
 
-const topicThemeHeading = {
+const stageThemeHeading = {
   color: PALETTE.SLATE_700,
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
@@ -53,13 +53,15 @@ const noCommentLinkStyle = {
 interface Props {
   isDemo: boolean
   isEmail: boolean
-  topic: RetroTopic_topic
+  stage: RetroTopic_stage
   to: string
 }
 
 const RetroTopic = (props: Props) => {
-  const {isDemo, isEmail, to, topic} = props
-  const {reflections, title, voteCount, commentCount} = topic
+  const {isDemo, isEmail, to, stage} = props
+  const {reflectionGroup, discussion} = stage
+  const {commentCount} = discussion
+  const {reflections, title, voteCount} = reflectionGroup!
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`
@@ -68,14 +70,14 @@ const RetroTopic = (props: Props) => {
     commentCount === 0
       ? 'No Comments'
       : commentCount >= 101
-        ? 'See 100+ Comments'
-        : `See ${commentCount} ${plural(commentCount, 'Comment')}`
+      ? 'See 100+ Comments'
+      : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   return (
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
-          <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail} style={topicThemeHeading}>
+          <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail} style={stageThemeHeading}>
             {title}
           </AnchorIfEmail>
         </td>
@@ -111,13 +113,17 @@ const RetroTopic = (props: Props) => {
 }
 
 export default createFragmentContainer(RetroTopic, {
-  topic: graphql`
-    fragment RetroTopic_topic on RetroReflectionGroup {
-      commentCount
-      title
-      voteCount
-      reflections {
-        ...EmailReflectionCard_reflection
+  stage: graphql`
+    fragment RetroTopic_stage on RetroDiscussStage {
+      reflectionGroup {
+        title
+        voteCount
+        reflections {
+          ...EmailReflectionCard_reflection
+        }
+      }
+      discussion {
+        commentCount
       }
     }
   `

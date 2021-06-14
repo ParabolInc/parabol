@@ -2,23 +2,20 @@ import {
   GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
-  GraphQLList
+  GraphQLString
 } from 'graphql'
 import {GQLContext} from '../graphql'
+import CommentorDetails from './CommentorDetails'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
-import ThreadSource, {threadSourceFields} from './ThreadSource'
-import CommentorDetails from './CommentorDetails'
 
 const AgendaItem = new GraphQLObjectType<any, GQLContext>({
   name: 'AgendaItem',
   description: 'A request placeholder that will likely turn into 1 or more tasks',
-  interfaces: () => [ThreadSource],
   fields: () => ({
-    ...threadSourceFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The unique agenda item id teamId::shortid'

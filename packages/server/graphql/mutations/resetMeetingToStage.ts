@@ -60,10 +60,12 @@ const resetMeetingToStage = {
     const createdPhases = await createNewMeetingPhases(
       viewerId,
       teamId,
+      meetingId,
       meetingCount,
       meetingType,
       dataLoader
     )
+    const discussionIds = [] as string[]
     let shouldResetStage = false
     let resetToPhaseIndex = -1
     const newPhases = [] as GenericMeetingPhase[]
@@ -72,6 +74,9 @@ const resetMeetingToStage = {
       if (!stages) continue
       const newStages = [] as GenericMeetingStage[]
       for (const [stageIndex, stage] of stages.entries()) {
+        if (stage.discussionId) {
+          discussionIds.push(stage.discussionId)
+        }
         if (stage.id === stageId) {
           shouldResetStage = true
           resetToPhaseIndex = phaseIndex
@@ -99,12 +104,12 @@ const resetMeetingToStage = {
     await Promise.all([
       r
         .table('Comment')
-        .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+        .getAll(r.args(discussionIds), {index: 'discussionId'})
         .delete()
         .run(),
       r
         .table('Task')
-        .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+        .getAll(r.args(discussionIds), {index: 'discussionId'})
         .delete()
         .run(),
       r

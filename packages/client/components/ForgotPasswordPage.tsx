@@ -2,7 +2,7 @@
  * The password reset page. Allows the user to reset their password via email.
  *
  */
-import React, {Fragment, useState} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
 import EmailInputField from './EmailInputField'
 import PlainButton from './PlainButton/PlainButton'
@@ -13,15 +13,17 @@ import AuthenticationDialog from './AuthenticationDialog'
 import {GotoAuthPage} from './GenericAuthentication'
 import DialogTitle from './DialogTitle'
 import {PALETTE} from '../styles/paletteV3'
-import IconLabel from './IconLabel'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useRouter from '../hooks/useRouter'
+import StyledError from './StyledError'
+import {AuthenticationError} from '../types/constEnums'
 
 interface Props {
   email?: string
-  gotoPage: GotoAuthPage
+  goToPage: GotoAuthPage
 }
 
 const Form = styled('form')({
@@ -42,21 +44,13 @@ const Container = styled('div')({
   width: '100%'
 })
 
-const LinkButton = styled(PlainButton)({
-  color: PALETTE.SKY_500,
-  ':hover': {
-    color: PALETTE.SKY_500,
-    textDecoration: 'underline'
-  }
-})
-
 const SubmitButton = styled(PrimaryButton)({
   marginTop: 16
 })
 
-const StyledPrimaryButton = styled(PrimaryButton)({
-  margin: '16px auto 0',
-  width: 240
+const ErrorMessage = styled(StyledError)({
+  fontSize: 12,
+  paddingTop: 16
 })
 
 const BrandedLink = styled(PlainButton)({
@@ -71,9 +65,14 @@ const DialogSubTitle = styled('div')({
   fontSize: 14,
   fontWeight: 400,
   lineHeight: 1.5,
-  paddingTop: 16,
-  paddingBottom: 24
+  padding: '16px 0px 0px'
 })
+
+const linkStyle = {
+  color: PALETTE.TOMATO_500,
+  fontSize: 12,
+  textDecoration: 'underline'
+}
 
 const validateEmail = (email) => {
   return new Legitity(email)
@@ -83,9 +82,8 @@ const validateEmail = (email) => {
 }
 
 const ForgotPasswordPage = (props: Props) => {
-  const {gotoPage} = props
-  const [isSent, setIsSent] = useState(false)
-  const {submitMutation, submitting, onCompleted} = useMutationProps()
+  const {goToPage} = props
+  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {validateField, setDirtyField, onChange, fields} = useForm({
     email: {
@@ -97,6 +95,7 @@ const ForgotPasswordPage = (props: Props) => {
       validate: validateEmail
     }
   })
+  const {history} = useRouter()
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
@@ -111,71 +110,64 @@ const ForgotPasswordPage = (props: Props) => {
     if (emailRes.error) return
     const email = emailRes.value as string
     submitMutation()
+
     EmailPasswordResetMutation(
       atmosphere,
       {email},
       {
-        onCompleted: () => { },
-        onError: () => { }
+        history,
+        onCompleted,
+        onError
       }
     )
     onCompleted()
-    setIsSent(true)
-  }
-
-  const resetState = () => {
-    onCompleted()
-    setIsSent(false)
   }
 
   const gotoSignIn = () => {
     const params = new URLSearchParams(location.search)
     params.delete('email')
-    gotoPage('signin', params.toString())
+    goToPage('signin', params.toString())
   }
 
   return (
     <AuthenticationDialog>
-      <DialogTitle>{isSent ? 'You’re all set!' : 'Forgot your password?'}</DialogTitle>
-      {!isSent && (
-        <DialogSubTitle>
-          <span>{isSent ? '' : 'Remember it? '}</span>
-          <BrandedLink onClick={gotoSignIn}>{isSent ? '' : 'Sign in with password'}</BrandedLink>
-        </DialogSubTitle>
-      )}
+      <DialogTitle>{'Forgot your password?'}</DialogTitle>
+      <DialogSubTitle>
+        <span>{'Remember it? '}</span>
+        <BrandedLink onClick={gotoSignIn}>{'Sign in with password'}</BrandedLink>
+      </DialogSubTitle>
       <Container>
-        {isSent ? (
-          <Fragment>
-            <P>{'We’ve sent you an email with password recovery instructions.'}</P>
-            <P>
-              {'Didn’t get it? Check your spam folder, or '}
-              <LinkButton onClick={resetState}>click here</LinkButton>
-              {' to try again.'}
-            </P>
-            <StyledPrimaryButton onClick={gotoSignIn} size='medium'>
-              <IconLabel icon='arrow_back' label='Back to Sign In' />
-            </StyledPrimaryButton>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <P>
-              {
-                'Confirm your email address, and we’ll send you an email with password recovery instructions.'
-              }
-            </P>
-            <Form onSubmit={onSubmit}>
-              <EmailInputField
-                {...fields.email}
-                autoFocus
-                onChange={onChange}
-                onBlur={handleBlur}
-              />
-              <SubmitButton size='medium' waiting={submitting}>
-                {'Send Email'}
-              </SubmitButton>
-            </Form>
-          </Fragment>
-        )}
+        <P>
+          {
+            'Confirm your email address, and we’ll send you an email with password recovery instructions.'
+          }
+        </P>
+        <Form onSubmit={onSubmit}>
+          <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
+          <SubmitButton size='medium' waiting={submitting}>
+            {'Send Email'}
+          </SubmitButton>
+          {error && (
+            <ErrorMessage>
+              {error.message === AuthenticationError.USER_NOT_FOUND ? (
+                'We couldn’t find that email. Please try again.'
+              ) : (
+                <>
+                  {'Oh no! Something went wrong. Try again or '}{' '}
+                  <a
+                    href={'mailto:love@parabol.co'}
+                    rel='noopener noreferrer'
+                    target='_blank'
+                    style={linkStyle}
+                    title={'love@parabol.co'}
+                  >
+                    {'contact us'}.
+                  </a>
+                </>
+              )}
+            </ErrorMessage>
+          )}
+        </Form>
       </Container>
     </AuthenticationDialog>
   )

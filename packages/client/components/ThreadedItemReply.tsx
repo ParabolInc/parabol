@@ -5,16 +5,19 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useClickAway from '~/hooks/useClickAway'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {ThreadedItemReply_meeting} from '~/__generated__/ThreadedItemReply_meeting.graphql'
+import {ThreadedItemReply_discussion} from '~/__generated__/ThreadedItemReply_discussion.graphql'
 import {ThreadedItemReply_threadable} from '~/__generated__/ThreadedItemReply_threadable.graphql'
+import {ThreadedItemReply_viewer} from '~/__generated__/ThreadedItemReply_viewer.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 
 interface Props {
+  allowedThreadables: DiscussionThreadables[]
   threadable: ThreadedItemReply_threadable
   editorRef: RefObject<HTMLTextAreaElement>
-  threadSourceId: string
-  meeting: ThreadedItemReply_meeting
+  discussion: ThreadedItemReply_discussion
+  viewer: ThreadedItemReply_viewer
   replyMention?: ReplyMention
   setReplyMention: SetReplyMention
   dataCy: string
@@ -22,22 +25,27 @@ interface Props {
 
 const ThreadedItemReply = (props: Props) => {
   const {
+    allowedThreadables,
     replyMention,
     threadable,
     editorRef,
-    threadSourceId,
-    meeting,
+    discussion,
     setReplyMention,
-    dataCy
+    dataCy,
+    viewer
   } = props
   const {id: threadableId, replies} = threadable
-  const {id: meetingId, replyingToCommentId} = meeting
+  const {id: discussionId, replyingToCommentId} = discussion
   const isReplying = replyingToCommentId === threadableId
   const replyRef = useRef<HTMLTextAreaElement>(null)
   const atmosphere = useAtmosphere()
   const clearReplyingToCommentId = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId)?.setValue('', 'replyingToCommentId')
+      store
+        .getRoot()
+        .getLinkedRecord('viewer')
+        ?.getLinkedRecord('discussion', {id: discussionId})
+        ?.setValue('', 'replyingToCommentId')
     })
   }
 
@@ -59,22 +67,28 @@ const ThreadedItemReply = (props: Props) => {
   }
   return (
     <DiscussionThreadInput
+      allowedThreadables={allowedThreadables}
       dataCy={`${dataCy}-input`}
       ref={replyRef}
       editorRef={editorRef}
       isReply
       replyMention={replyMention}
       getMaxSortOrder={getMaxSortOrder}
-      meeting={meeting}
+      discussion={discussion}
       onSubmitCommentSuccess={clearReplyingToCommentId}
-      threadSourceId={threadSourceId}
       setReplyMention={setReplyMention}
       threadParentId={threadableId}
+      viewer={viewer}
     />
   )
 }
 
 export default createFragmentContainer(ThreadedItemReply, {
+  viewer: graphql`
+    fragment ThreadedItemReply_viewer on User {
+      ...DiscussionThreadInput_viewer
+    }
+  `,
   threadable: graphql`
     fragment ThreadedItemReply_threadable on Threadable {
       id
@@ -84,9 +98,9 @@ export default createFragmentContainer(ThreadedItemReply, {
       }
     }
   `,
-  meeting: graphql`
-    fragment ThreadedItemReply_meeting on NewMeeting {
-      ...DiscussionThreadInput_meeting
+  discussion: graphql`
+    fragment ThreadedItemReply_discussion on Discussion {
+      ...DiscussionThreadInput_discussion
       id
       replyingToCommentId
     }

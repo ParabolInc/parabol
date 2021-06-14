@@ -1,13 +1,38 @@
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
-import {ThreadSourceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
+import {RetroDemo} from '../../types/constEnums'
+import {ACTIVE, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
-import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import clientTempId from '../../utils/relay/clientTempId'
 import commentLookup from './commentLookup'
+import {DemoDiscussion, RetroDemoDB} from './initDB'
 import reactjiLookup from './reactjiLookup'
 import taskLookup from './taskLookup'
+
+class DemoDiscussStage {
+  __typename = 'RetroDiscussStage'
+
+  meetingId = RetroDemo.MEETING_ID
+  isComplete = false
+  isNavigable = true
+  isNavigableByFacilitator = true
+  phaseType = 'discuss'
+  startAt = new Date().toJSON()
+  viewCount = 0
+  readyCount = 0
+  reflectionGroupId: string
+  discussion: DemoDiscussion
+  constructor(
+    public id: string,
+    public sortOrder: number,
+    public reflectionGroup: any,
+    public discussionId: string,
+    db: RetroDemoDB
+  ) {
+    this.reflectionGroupId = reflectionGroup.id
+    this.discussion = db.discussions.find((discussion) => discussion.id === this.discussionId)
+  }
+}
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -32,13 +57,11 @@ const removeEmptyReflections = (db) => {
         reflectionGroup.isActive = false
       })
   }
-  return {emptyReflectionGroupIds}
+  return {emptyReflectionGroupIds, reflectionGroups: db.reflectionGroups}
 }
 
-const addStageToBotScript = (stageId, db, reflectionGroupId) => {
-  const reflectionGroup = db.reflectionGroups.find((group) => group.id === reflectionGroupId)
-  const meeting = db.newMeeting
-  const {id: meetingId} = meeting
+const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId: string) => {
+  const reflectionGroup = db.reflectionGroups.find((group) => group.id === reflectionGroupId)!
   const {reflections} = reflectionGroup
   const stageTasks = [] as string[]
   const reactions = [] as {
@@ -47,7 +70,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
     reactji: string
   }[]
   const comments = [] as string[]
-
+  const discussionId = `discussion:${reflectionGroupId}`
   reflections.forEach((reflection) => {
     const tasks = taskLookup[reflection.id]
     if (tasks) {
@@ -97,9 +120,8 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
               id: taskId,
               sortOrder: idx,
               status: ACTIVE,
-              threadId: reflectionGroupId,
+              discussionId,
               threadParentId: null,
-              threadSource: 'REFLECTION_GROUP' as ThreadSourceEnum,
               threadSortOrder: idx
             }
           }
@@ -125,8 +147,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
       botId: 'bot1',
       variables: {
         isCommenting: true,
-        meetingId,
-        threadId: reflectionGroupId
+        discussionId
       }
     })
     ops.push({
@@ -135,8 +156,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
       botId: 'bot1',
       variables: {
         isCommenting: false,
-        meetingId,
-        threadId: reflectionGroupId
+        discussionId
       }
     })
     ops.push({
@@ -145,8 +165,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
       variables: {
         comment: {
           content: comment,
-          threadId: reflectionGroupId,
-          threadSource: 'REFLECTION_GROUP' as ThreadSourceEnum,
+          discussionId,
           threadSortOrder: 1
         }
       }
@@ -174,30 +193,28 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   db._botScript[stageId] = ops
 }
 
-const addDiscussionTopics = (db) => {
+const addDiscussionTopics = (db: RetroDemoDB) => {
   const meeting = db.newMeeting
   const {id: meetingId, phases} = meeting
-  const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
+  const discussPhase = phases!.find((phase) => phase.phaseType === 'discuss')!
   if (!discussPhase) return {}
   const placeholderStage = discussPhase.stages[0]
   const sortedReflectionGroups = mapGroupsToStages(db.reflectionGroups)
+    ; (placeholderStage as any).discussionId = `discussion:${sortedReflectionGroups[0]?.id}`
   const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : clientTempId()
-    const discussStage = makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
     addStageToBotScript(id, db, reflectionGroup.id)
-    return Object.assign(discussStage, {
-      __typename: 'RetroDiscussStage',
-      reflectionGroup,
-      readyCount: 0
-    })
+    const discussionId = `discussion:${reflectionGroup.id}`
+    const stage = new DemoDiscussStage(id, idx, reflectionGroup, discussionId, db)
+    return stage
   })
   const firstDiscussStage = nextDiscussStages[0]
   if (!firstDiscussStage || !placeholderStage) return {}
-  discussPhase.stages = nextDiscussStages
+    ; (discussPhase as any).stages = nextDiscussStages
   return {meetingId, discussPhaseStages: nextDiscussStages}
 }
 
-const handleCompletedDemoStage = async (db, stage) => {
+const handleCompletedDemoStage = async (db: RetroDemoDB, stage) => {
   if (stage.phaseType === REFLECT) {
     const data = removeEmptyReflections(db)
     return {[REFLECT]: data, [GROUP]: null, [VOTE]: null}
