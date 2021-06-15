@@ -111,7 +111,6 @@ export default createFragmentContainer(DiscussionThread, {
               threadSortOrder
               discussionId
               ...DiscussionThreadList_threadables
-              threadSortOrder
             }
           }
         }
