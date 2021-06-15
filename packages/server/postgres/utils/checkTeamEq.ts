@@ -27,6 +27,7 @@ const checkTeamEq = async (maxErrors = 10) => {
     getTeamsById,
     alwaysDefinedFields,
     maybeUndefinedFieldsDefaultValues,
+    {},
     maxErrors
   )
   return errors
