@@ -11,7 +11,11 @@ const StyledPlainButton = styled(PlainButton)({
   color: PALETTE.SKY_500,
   fontWeight: 600,
   fontSize: 14,
-  margin: 'auto'
+  margin: 'auto',
+  ':hover, :focus, :active': {
+    color: PALETTE.SKY_600
+  },
+  transition: 'color 0.1s ease'
 })
 
 const AddTaskIcon = styled(Icon)({
@@ -22,7 +26,7 @@ const AddTaskIcon = styled(Icon)({
 })
 
 const AddTaskLabel = styled('div')({
-  color: PALETTE.SKY_500
+  color: 'inherit'
 })
 
 interface Props {

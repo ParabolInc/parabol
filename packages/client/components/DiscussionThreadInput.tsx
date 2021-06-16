@@ -40,7 +40,8 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
 
 const CommentContainer = styled('div')({
   display: 'flex',
-  flex: 1
+  flex: 1,
+  padding: 4
 })
 
 const CommentAvatar = styled(Avatar)({

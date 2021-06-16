@@ -18,7 +18,10 @@ const StyledPlainButton = styled(PlainButton)<{commentSubmitState: CommentSubmit
     borderRadius: '100%',
     height: 32,
     width: 32,
-    margin: 8
+    margin: 8,
+    ':hover, :focus, :active': {
+      backgroundColor: commentSubmitState === 'idle' ? PALETTE.SLATE_200 : PALETTE.SKY_600
+    }
   })
 )
 
