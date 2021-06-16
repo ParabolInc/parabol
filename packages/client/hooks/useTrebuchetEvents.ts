@@ -63,6 +63,7 @@ const useTrebuchetEvents = () => {
       // hacky but that way we don't have to double parse huge json payloads. SSE graphql payloads are pre-parsed
       if (typeof payload !== 'string' || !payload.startsWith('{"version":')) return
       const obj = JSON.parse(payload)
+      if (obj.version) atmosphere.version = obj.version
       if (obj.version !== __APP_VERSION__ && 'serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.getRegistration()
         registration?.update().catch()

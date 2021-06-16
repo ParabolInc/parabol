@@ -16,12 +16,13 @@ const useServiceWorkerUpdater = () => {
       }
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'newVersion',
-        autoDismiss: 0,
-        message: 'A new version of Parabol is available',
+        autoDismiss: 5,
+        message: 'A new version of Parabol is available 🎉',
         action: {
-          label: 'Refresh to upgrade',
+          label: `See what's changed`,
           callback: () => {
-            window.location.reload()
+            const url = `https://www.google.com/`
+            window.open(url, '_blank', 'noopener')?.focus()
           }
         }
       })
