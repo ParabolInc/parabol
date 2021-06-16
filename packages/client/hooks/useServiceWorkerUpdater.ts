@@ -21,7 +21,7 @@ const useServiceWorkerUpdater = () => {
         action: {
           label: `See what's changed`,
           callback: () => {
-            const url = `https://www.google.com/`
+            const url = 'https://github.com/ParabolInc/parabol/blob/master/CHANGELOG.md#parabol-change-log'
             window.open(url, '_blank', 'noopener')?.focus()
           }
         }
