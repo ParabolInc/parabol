@@ -26,11 +26,21 @@ interface Props {
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task
+  clearIsCreatingNewTask?: () => void
   dataCy: string
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy} = props
+  const {
+    contentState,
+    className,
+    isDraggingOver,
+    task,
+    area,
+    isAgenda,
+    clearIsCreatingNewTask,
+    dataCy
+  } = props
   const {id: taskId, team, content} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
@@ -59,6 +69,7 @@ const OutcomeCardContainer = memo((props: Props) => {
         }
         UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
       }
+      clearIsCreatingNewTask?.()
       return
     }
     const nextContentState = editorState.getCurrentContent()
@@ -75,6 +86,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       }
       UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
     }
+    clearIsCreatingNewTask?.()
   }
 
   useScrollIntoView(ref, !contentState.hasText())

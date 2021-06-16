@@ -32,13 +32,14 @@ const AddTaskLabel = styled('div')({
 interface Props {
   onClick: () => void
   dataCy: string
+  disabled?: boolean
 }
 
 const AddTaskButton = (props: Props) => {
-  const {onClick, dataCy} = props
+  const {onClick, dataCy, disabled} = props
 
   return (
-    <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick}>
+    <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
       <AddTaskIcon>task_alt</AddTaskIcon>
       <AddTaskLabel>Add a task</AddTaskLabel>
     </StyledPlainButton>

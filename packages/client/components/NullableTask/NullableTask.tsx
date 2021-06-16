@@ -15,12 +15,13 @@ interface Props {
   isAgenda?: boolean
   isDraggingOver?: TaskStatusEnum
   measure?: () => void
+  clearIsCreatingNewTask?: () => void
   task: NullableTask_task
   dataCy: string
 }
 
 const NullableTask = (props: Props) => {
-  const {area, className, isAgenda, task, isDraggingOver, dataCy} = props
+  const {area, className, isAgenda, task, isDraggingOver, clearIsCreatingNewTask, dataCy} = props
   const {content, createdBy, createdByUser} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -57,6 +58,7 @@ const NullableTask = (props: Props) => {
       isDraggingOver={isDraggingOver}
       isAgenda={isAgenda}
       task={task}
+      clearIsCreatingNewTask={clearIsCreatingNewTask}
     />
   ) : (
     <NullCard className={className} preferredName={preferredName} />

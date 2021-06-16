@@ -91,7 +91,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: discussionId, meetingId, isAnonymousComment, teamId} = discussion
+  const {id: discussionId, meetingId, isAnonymousComment, teamId, isCreatingNewTask} = discussion
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -214,10 +214,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         .getLinkedRecord('viewer')
         ?.getLinkedRecord('discussion', {id: discussionId})
         ?.setValue('', 'replyingToCommentId')
+        ?.setValue(true, 'isCreatingNewTask')
     })
   }
 
   const avatar = isAnonymousComment ? anonymousAvatar : picture
+  const canCreateNewTask = !!isCreatingNewTask
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentContainer>
@@ -243,7 +245,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       </CommentContainer>
       {allowTasks && (
         <TaskContainer>
-          <AddTaskButton dataCy={`${dataCy}-add`} onClick={addTask} />
+          <AddTaskButton dataCy={`${dataCy}-add`} onClick={addTask} disabled={canCreateNewTask} />
         </TaskContainer>
       )}
     </Wrapper>
@@ -262,6 +264,7 @@ export default createFragmentContainer(DiscussionThreadInput, {
       meetingId
       teamId
       isAnonymousComment
+      isCreatingNewTask
     }
   `
 })
