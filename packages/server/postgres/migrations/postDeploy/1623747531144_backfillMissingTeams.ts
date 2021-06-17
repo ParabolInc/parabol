@@ -34,32 +34,52 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   const epochTimeOfEvent = 1616716368.188
   const batchSize = 1000
 
-  let i = 0
-  while (true) {
-    const offset = batchSize * i
-    const rethinkTeams = await r
-      .table('Team')
-      .filter((row) =>
-        // grab all teams "created" (artificially) at that timestamp,
-        // 1 second before & after to cover all teams affected
-        r.and(
-          row('createdAt').ge(r.epochTime(epochTimeOfEvent - 1)),
-          row('createdAt').le(r.epochTime(epochTimeOfEvent + 1))
-        )
-      )
-      .skip(offset)
-      .limit(batchSize)
-      .run()
-    console.log(`Backfilling ${rethinkTeams.length} team(s).`)
+  const doBackfill = async (teamsAfterTs?: Date) => {
+    let i = 0
+    let foundTeams = false
 
-    if (rethinkTeams.length != 0) {
-      const pgTeams = cleanTeams(rethinkTeams)
-      await catchAndLog(() => backupTeamQuery.run({teams: pgTeams}, getPg()))
-      i += 1
-    } else {
-      break
+    while (true) {
+      const offset = batchSize * i
+      const rethinkTeams = await r
+        .table('Team')
+        .between(teamsAfterTs ?? r.minval, r.maxval, {index: 'updatedAt'})
+        .filter((row) =>
+          // grab all teams "created" (artificially) at that timestamp,
+          // 1 second before & after to cover all teams affected
+          r.and(
+            row('createdAt').ge(r.epochTime(epochTimeOfEvent - 1)),
+            row('createdAt').le(r.epochTime(epochTimeOfEvent + 1))
+          )
+        )
+        .skip(offset)
+        .limit(batchSize)
+        .run()
+      console.log(`Backfilling ${rethinkTeams.length} team(s).`)
+
+      if (rethinkTeams.length) {
+        foundTeams = true
+        const pgTeams = cleanTeams(rethinkTeams)
+        await catchAndLog(() => backupTeamQuery.run({teams: pgTeams}, getPg()))
+        i += 1
+      } else {
+        break
+      }
+    }
+    return foundTeams
+  }
+
+  const doBackfillAccountingForRaceConditions = async (teamsAfterTs?: Date) => {
+    while (true) {
+      const thisBackfillStartTs = new Date()
+      const backfillFoundTeams = await doBackfill(teamsAfterTs)
+      if (!backfillFoundTeams) {
+        break
+      }
+      teamsAfterTs = thisBackfillStartTs
     }
   }
+
+  await doBackfillAccountingForRaceConditions()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
