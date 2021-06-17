@@ -1,6 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 
-const removeUserSlackAuth = async (userId: string, teamId: string) => {
+const removeUserSlackAuth = async (userId: string, teamId: string, removeToken: boolean) => {
   const r = await getRethink()
   const now = new Date()
   const existingAuth = await r
@@ -17,17 +17,15 @@ const removeUserSlackAuth = async (userId: string, teamId: string) => {
   }
 
   const {id: authId} = existingAuth
-  await r({
-    auth: r
-      .table('SlackAuth')
-      .get(authId)
-      .update({botAccessToken: null, isActive: false, updatedAt: now}),
-    notifications: r
-      .table('SlackNotification')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({userId})
-      .delete()
-  }).run()
+  await r
+    .table('SlackAuth')
+    .get(authId)
+    .update((row) => ({
+      botAccessToken: r.branch(removeToken, null, row('botAccessToken')),
+      isActive: false,
+      updatedAt: now
+    }))
+    .run()
 
   return {authId, error: null}
 }

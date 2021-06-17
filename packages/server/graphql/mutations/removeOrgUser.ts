@@ -40,7 +40,7 @@ const removeOrgUser = {
       teamMemberIds,
       organizationUserId
     } = await removeFromOrg(userId, orgId, viewerId, dataLoader)
-    teamIds.map((teamId) => removeUserSlackAuth(userId, teamId))
+    teamIds.map((teamId) => removeUserSlackAuth(userId, teamId, false))
 
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
 

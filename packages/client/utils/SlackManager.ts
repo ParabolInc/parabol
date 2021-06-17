@@ -133,6 +133,11 @@ interface ConversationInfoResponse {
 
 type ConversationType = 'public_channel' | 'private_channel'
 
+interface IsValidAuthRes {
+  ok: boolean
+  error: string
+}
+
 abstract class SlackManager {
   static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read'
   token: string
@@ -195,6 +200,10 @@ abstract class SlackManager {
     return this.get<UserInfoResponse>(
       `https://slack.com/api/users.info?token=${this.token}&user=${userId}`
     )
+  }
+
+  isValidAuthToken(token: string) {
+    return this.get<IsValidAuthRes>(`https://slack.com/api/auth.test?token=${token}`)
   }
 
   joinConversation(channelId: string) {

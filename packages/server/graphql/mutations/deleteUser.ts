@@ -59,7 +59,7 @@ export default {
       return {error: {message: 'User not found'}}
     }
     const {id: userIdToDelete, tms} = user
-    tms.map((teamId) => removeUserSlackAuth(userIdToDelete, teamId))
+    tms.map((teamId) => removeUserSlackAuth(userIdToDelete, teamId, true))
     const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)
     const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
     await Promise.all(
