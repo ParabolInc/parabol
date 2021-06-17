@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.17.0 2021-Jun-17
+
+### Changed
+
+- Forgot password flow gives user feedback if request was valid, #5033
+
+### Fixed
+
+- Fix inequality btwn User overLimitCopy in rethink and pg, #5020
+- Fix missing teams in rethink but not in pg, #5050
+
 ## 6.16.1 2021-Jun-10
 
 ### Fixed
@@ -18,21 +29,25 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Discussion as first-class entity (#5016)
 
 ## 6.15.0 2021-Jun-10
+
 ### Changed
+
 - Make Slack notification prettier (#4911)
 - Deprecate createXPicturePutUrl mutations (#4342)
 - Ecnrypt database backup (#4603)
 
-
 ## 6.14.0 2021-Jun-2
 
 ### Changed
+
 - Bump dns-packet from 1.3.1 to 1.3.4 (#5000)
 
 ### Added
+
 - Add 120 additional icebreakers (#5004)
 
 ### Fixed
+
 - Add clock tolerance to getVerifiedAuthToken (#5011)
 - Sentry server stack (#4987)
 - UI fix-ups (#5001)
