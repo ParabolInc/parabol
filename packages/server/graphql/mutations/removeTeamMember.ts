@@ -32,7 +32,7 @@ export default {
     }
 
     // RESOLUTION
-    if (isSelf) removeUserSlackAuth(teamMemberId)
+    removeUserSlackAuth(userId, teamId)
     const evictorUserId = isSelf ? undefined : viewerId
     const res = await removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res

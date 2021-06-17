@@ -1,10 +1,8 @@
-import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 
-const removeUserSlackAuth = async (teamMemberId: string) => {
+const removeUserSlackAuth = async (userId: string, teamId: string) => {
   const r = await getRethink()
   const now = new Date()
-  const {userId, teamId} = fromTeamMemberId(teamMemberId)
   const existingAuth = await r
     .table('SlackAuth')
     .getAll(userId, {index: 'userId'})
