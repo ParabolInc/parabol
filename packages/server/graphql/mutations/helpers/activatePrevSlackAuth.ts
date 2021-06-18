@@ -1,6 +1,7 @@
 import ms from 'ms'
 import getRethink from '../../../database/rethinkDriver'
 import SlackServerManager from '../../../utils/SlackServerManager'
+import {upsertNotifications} from '../addSlackAuth'
 
 const activatePrevSlackAuth = async (userId: string, teamId: string) => {
   const r = await getRethink()
@@ -15,17 +16,26 @@ const activatePrevSlackAuth = async (userId: string, teamId: string) => {
 
   if (!previousAuth) return
   const LAST_YEAR = new Date(Date.now() - ms('1y'))
-  const {id: authId, botAccessToken, isActive, updatedAt} = previousAuth
+  const {
+    id: authId,
+    botAccessToken,
+    isActive,
+    defaultTeamChannelId,
+    slackUserId,
+    updatedAt
+  } = previousAuth
   // re-adding a Slack auth from a team they left 1y+ ago might feel creepy
   if (botAccessToken && !isActive && updatedAt > LAST_YEAR) {
     const manager = new SlackServerManager(botAccessToken)
     const authRes = await manager.isValidAuthToken(botAccessToken)
     if (!authRes.ok) console.error(authRes.error)
+
     await r({
       auth: r
         .table('SlackAuth')
         .get(authId)
-        .update({isActive: true, updatedAt: now})
+        .update({isActive: true, updatedAt: now}),
+      notifications: upsertNotifications(userId, teamId, defaultTeamChannelId, slackUserId)
     }).run()
   }
 }

@@ -29,7 +29,7 @@ export default {
 
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const {authId, error} = await removeSlackAuths([teamMemberId], true)
+    const {authId, error} = await removeSlackAuths(teamMemberId, true)
     if (error) {
       return standardError(error, {userId: viewerId})
     }
