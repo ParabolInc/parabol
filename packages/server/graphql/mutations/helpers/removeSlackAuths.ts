@@ -23,7 +23,6 @@ const removeSlackAuths = async (teamMemberIds: string | string[], removeToken: b
   }
 
   const authIds = existingAuths.map(({id}) => id)
-
   await r({
     auth: r
       .table('SlackAuth')

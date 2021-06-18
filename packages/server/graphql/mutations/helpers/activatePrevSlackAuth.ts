@@ -28,7 +28,10 @@ const activatePrevSlackAuth = async (userId: string, teamId: string) => {
   if (botAccessToken && !isActive && updatedAt > LAST_YEAR) {
     const manager = new SlackServerManager(botAccessToken)
     const authRes = await manager.isValidAuthToken(botAccessToken)
-    if (!authRes.ok) console.error(authRes.error)
+    if (!authRes.ok) {
+      console.error(authRes.error)
+      return
+    }
 
     await r({
       auth: r
