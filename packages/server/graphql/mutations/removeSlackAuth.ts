@@ -4,7 +4,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeUserSlackAuth from './helpers/removeUserSlackAuth'
+import removeSlackAuths from './helpers/removeSlackAuths'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
 export default {
   name: 'RemoveSlackAuth',
@@ -27,7 +28,8 @@ export default {
     }
 
     // RESOLUTION
-    const {authId, error} = await removeUserSlackAuth(viewerId, teamId, true)
+    const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const {authId, error} = await removeSlackAuths([teamMemberId], true)
     if (error) {
       return standardError(error, {userId: viewerId})
     }

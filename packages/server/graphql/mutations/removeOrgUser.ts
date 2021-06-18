@@ -5,7 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
-import removeUserSlackAuth from './helpers/removeUserSlackAuth'
+import removeSlackAuths from './helpers/removeSlackAuths'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -40,8 +40,8 @@ const removeOrgUser = {
       teamMemberIds,
       organizationUserId
     } = await removeFromOrg(userId, orgId, viewerId, dataLoader)
-    teamIds.map((teamId) => removeUserSlackAuth(userId, teamId, false))
 
+    removeSlackAuths(teamMemberIds, false)
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
 
     const data = {
