@@ -63,7 +63,7 @@ const emailPasswordReset = {
         .table('SAML')
         .filter((row) => row('domains').contains(domain))
         .run()
-      if (samlDomainExists) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
+      if (samlDomainExists.length) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
       if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}
       const {id: userId, identities} = user
       const googleIdentity = identities.find(

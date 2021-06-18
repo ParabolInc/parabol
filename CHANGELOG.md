@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.17.1 2021-Jun-18
+
+### Fixed
+
+- Fix saml exists check in emailPasswordReset
+
 ## 6.17.0 2021-Jun-17
 
 ### Changed
