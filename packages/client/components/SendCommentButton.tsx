@@ -21,6 +21,10 @@ const StyledPlainButton = styled(PlainButton)<{commentSubmitState: CommentSubmit
     margin: 8,
     ':hover, :focus, :active': {
       backgroundColor: commentSubmitState === 'idle' ? PALETTE.SLATE_200 : PALETTE.SKY_600
+    },
+    opacity: 1,
+    ':hover,:focus': {
+      opacity: 1
     }
   })
 )
@@ -44,7 +48,7 @@ const SendCommentButton = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<
     HTMLButtonElement
   >(MenuPosition.LOWER_CENTER)
-
+  const isDisabled = commentSubmitState === 'idle'
   return (
     <>
       <StyledPlainButton
@@ -53,6 +57,7 @@ const SendCommentButton = (props: Props) => {
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
         commentSubmitState={commentSubmitState}
+        disabled={isDisabled}
         ref={tipRef}
       >
         <SendIcon commentSubmitState={commentSubmitState}>arrow_upward</SendIcon>
