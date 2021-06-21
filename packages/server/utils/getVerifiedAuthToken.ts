@@ -6,8 +6,6 @@ const SERVER_SECRET_BUFFER = Buffer.from(process.env.SERVER_SECRET!, 'base64')
 
 const getVerifiedAuthToken = (jwt: string | undefined | null, ignoreExp?: boolean) => {
   if (!jwt) {
-    const error = new Error('We do not have a jwt in getVerifiedAuthToken')
-    sendToSentry(error)
     return {} as AuthToken
   }
   try {
