@@ -10,25 +10,13 @@ const makePokerStats = (meetingRef: any) => {
         meetingMembers {
           id
         }
-        phases {
-          phaseType
-          ... on EstimatePhase {
-            stages {
-              finalScore
-              serviceTaskId
-            }
-          }
-        }
+        storyCount
       }
     `,
     meetingRef
   )
 
-  const {meetingMembers, phases} = meeting
-  const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
-  const stages = estimatePhase.stages!
-  const storyCount = new Set(stages.map((stage) => stage.serviceTaskId)).size
-
+  const {meetingMembers, storyCount} = meeting
   const meetingMembersCount = meetingMembers.length
   return [
     {value: '', label: ''},

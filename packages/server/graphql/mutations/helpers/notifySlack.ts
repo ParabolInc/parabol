@@ -19,7 +19,6 @@ import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import MeetingAction from '../../../database/types/MeetingAction'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import plural from 'parabol-client/utils/plural'
-import EstimatePhase from '../../../database/types/EstimatePhase'
 import {makeSection, makeSections, makeButtons} from './makeSlackBlocks'
 
 const getSlackDetails = async (
@@ -146,12 +145,12 @@ const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingP
       'comment'
     )}.`
   } else {
-    const estimatePhase = meeting.phases.find(
-      (phase) => phase.phaseType === 'ESTIMATE'
-    ) as EstimatePhase
-    const stages = estimatePhase.stages
-    const storyCount = new Set(stages.map(({serviceTaskId}) => serviceTaskId)).size
-    return `You voted on ${storyCount} ${plural(storyCount, 'story', 'stories')}.`
+    const {storyCount = 0, commentCount = 0} = meeting
+    return `You voted on ${storyCount} ${plural(
+      storyCount,
+      'story',
+      'stories'
+    )} and added ${commentCount} ${plural(commentCount, 'comment')}.`
   }
 }
 
