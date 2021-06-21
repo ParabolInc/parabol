@@ -92,7 +92,7 @@ const SlackProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {slack} = integrations
-  const isActive = slack?.isActive ?? undefined
+  const isActive = slack?.isActive
   const openOAuth = () => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
@@ -106,14 +106,7 @@ const SlackProviderRow = (props: Props) => {
           <ProviderName>{Providers.SLACK_NAME}</ProviderName>
           <RowInfoCopy>{Providers.SLACK_DESC}</RowInfoCopy>
         </RowInfo>
-        {!isActive && (
-          <ProviderActions>
-            <StyledButton onClick={openOAuth} palette='warm' waiting={submitting}>
-              {isDesktop ? 'Connect' : <Icon>add</Icon>}
-            </StyledButton>
-          </ProviderActions>
-        )}
-        {isActive && (
+        {isActive ? (
           <ListAndMenu>
             <SlackLogin title={slack!.slackTeamName || 'Slack'}>
               <SlackSVG />
@@ -129,6 +122,12 @@ const SlackProviderRow = (props: Props) => {
               />
             )}
           </ListAndMenu>
+        ) : (
+          <ProviderActions>
+            <StyledButton onClick={openOAuth} palette='warm' waiting={submitting}>
+              {isDesktop ? 'Connect' : <Icon>add</Icon>}
+            </StyledButton>
+          </ProviderActions>
         )}
       </CardTop>
       {isActive && <SlackNotificationList teamId={teamId} viewer={viewer} />}
