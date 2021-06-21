@@ -43658,8 +43658,8 @@ export const enum NewMeetingPhaseTypeEnum {
   vote = 'vote',
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
-  SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE'
+  ESTIMATE = 'ESTIMATE',
+  SCOPE = 'SCOPE'
 }
 
 /**
@@ -49879,12 +49879,180 @@ export interface ITimelineEventPokerComplete {
   /**
    * The meeting that was completed
    */
-  meeting: IRetrospectiveMeeting;
+  meeting: IPokerMeeting;
 
   /**
    * The meetingId that was completed
    */
   meetingId: string;
+}
+
+/**
+ * A Poker meeting
+ */
+export interface IPokerMeeting {
+  __typename: 'PokerMeeting';
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * The id of the user that created the meeting
+   */
+  createdBy: string;
+
+  /**
+   * The user that created the meeting
+   */
+  createdByUser: IUser;
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null;
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string;
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string;
+
+  /**
+   * The facilitator team member
+   */
+  facilitator: ITeamMember;
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<IPokerMeetingMember>;
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The name of the meeting
+   */
+  name: string;
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization;
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null;
+  teamId: string;
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null;
+
+  /**
+   * The Poker meeting member of the viewer
+   */
+  viewerMeetingMember: IPokerMeetingMember | null;
+
+  /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number;
+
+  /**
+   * The number of stories scored during a meeting
+   */
+  storyCount: number;
+
+  /**
+   * The settings that govern the Poker meeting
+   */
+  settings: IPokerMeetingSettings;
+
+  /**
+   * A single story created in a Sprint Poker meeting
+   */
+  story: Story | null;
+
+  /**
+   * The ID of the template used for the meeting. Note the underlying template could have changed!
+   * @deprecated "The underlying template could be mutated. Use templateRefId"
+   */
+  templateId: string;
+
+  /**
+   * The ID of the immutable templateRef used for the meeting
+   */
+  templateRefId: string;
+}
+
+export interface IStoryOnPokerMeetingArguments {
+  storyId: string;
+}
+
+/**
+ * All the meeting specifics for a user in a poker meeting
+ */
+export interface IPokerMeetingMember {
+  __typename: 'PokerMeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+
+  /**
+   * true if the user is not voting and does not want their vote to count towards aggregates
+   */
+  isSpectating: boolean;
 }
 
 /**
@@ -52717,174 +52885,6 @@ export interface IDragEstimatingTaskSuccess {
   meeting: IPokerMeeting;
   stageId: string;
   stage: IEstimateStage;
-}
-
-/**
- * A Poker meeting
- */
-export interface IPokerMeeting {
-  __typename: 'PokerMeeting';
-
-  /**
-   * The unique meeting id. shortid.
-   */
-  id: string;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * The id of the user that created the meeting
-   */
-  createdBy: string;
-
-  /**
-   * The user that created the meeting
-   */
-  createdByUser: IUser;
-
-  /**
-   * The timestamp the meeting officially ended
-   */
-  endedAt: any | null;
-
-  /**
-   * The location of the facilitator in the meeting
-   */
-  facilitatorStageId: string;
-
-  /**
-   * The userId (or anonymousId) of the most recent facilitator
-   */
-  facilitatorUserId: string;
-
-  /**
-   * The facilitator team member
-   */
-  facilitator: ITeamMember;
-
-  /**
-   * The team members that were active during the time of the meeting
-   */
-  meetingMembers: Array<IPokerMeetingMember>;
-
-  /**
-   * The auto-incrementing meeting number for the team
-   */
-  meetingNumber: number;
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The name of the meeting
-   */
-  name: string;
-
-  /**
-   * The organization this meeting belongs to
-   */
-  organization: IOrganization;
-
-  /**
-   * The phases the meeting will go through, including all phase-specific state
-   */
-  phases: Array<NewMeetingPhase>;
-
-  /**
-   * true if should show the org the conversion modal, else false
-   */
-  showConversionModal: boolean;
-
-  /**
-   * The time the meeting summary was emailed to the team
-   */
-  summarySentAt: any | null;
-  teamId: string;
-
-  /**
-   * The team that ran the meeting
-   */
-  team: ITeam;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any | null;
-
-  /**
-   * The Poker meeting member of the viewer
-   */
-  viewerMeetingMember: IPokerMeetingMember | null;
-
-  /**
-   * The number of comments generated in the meeting
-   */
-  commentCount: number;
-
-  /**
-   * The number of stories scored during a meeting
-   */
-  storyCount: number;
-
-  /**
-   * The settings that govern the Poker meeting
-   */
-  settings: IPokerMeetingSettings;
-
-  /**
-   * A single story created in a Sprint Poker meeting
-   */
-  story: Story | null;
-
-  /**
-   * The ID of the template used for the meeting. Note the underlying template could have changed!
-   * @deprecated "The underlying template could be mutated. Use templateRefId"
-   */
-  templateId: string;
-
-  /**
-   * The ID of the immutable templateRef used for the meeting
-   */
-  templateRefId: string;
-}
-
-export interface IStoryOnPokerMeetingArguments {
-  storyId: string;
-}
-
-/**
- * All the meeting specifics for a user in a poker meeting
- */
-export interface IPokerMeetingMember {
-  __typename: 'PokerMeetingMember';
-
-  /**
-   * A composite of userId::meetingId
-   */
-  id: string;
-
-  /**
-   * true if present, false if absent, else null
-   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
-   */
-  isCheckedIn: boolean | null;
-  meetingId: string;
-  meetingType: MeetingTypeEnum;
-  teamId: string;
-  teamMember: ITeamMember;
-  user: IUser;
-  userId: string;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any;
-
-  /**
-   * true if the user is not voting and does not want their vote to count towards aggregates
-   */
-  isSpectating: boolean;
 }
 
 /**

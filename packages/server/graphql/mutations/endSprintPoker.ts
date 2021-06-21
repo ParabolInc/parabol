@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
+import EstimatePhase from '../../database/types/EstimatePhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -52,7 +53,7 @@ export default {
 
     // RESOLUTION
     // remove hovering data from redis
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
+    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
     const {stages: estimateStages} = estimatePhase
     if (estimateStages.length > 0) {
       const redisKeys = estimateStages.map((stage) => `pokerHover:${stage.id}`)
@@ -64,6 +65,8 @@ export default {
     if (!currentStageRes) {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
+    const storyCount = new Set(estimateStages.map(({serviceTaskId}) => serviceTaskId)).size
+    const discussionIds = estimateStages.map((stage) => stage.discussionId)
     const {stage} = currentStageRes
     const phase = getMeetingPhase(phases)
     stage.isComplete = true
@@ -75,9 +78,15 @@ export default {
       .update(
         {
           endedAt: now,
-          phases
+          phases,
+          commentCount: (r
+            .table('Comment')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .count()
+            .default(0) as unknown) as number,
+          storyCount
         },
-        {returnChanges: true}
+        {returnChanges: true, nonAtomic: true}
       )('changes')(0)('new_val')
       .default(null)
       .run()) as unknown) as MeetingPoker
