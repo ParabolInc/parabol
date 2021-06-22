@@ -43658,8 +43658,8 @@ export const enum NewMeetingPhaseTypeEnum {
   vote = 'vote',
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
-  ESTIMATE = 'ESTIMATE',
-  SCOPE = 'SCOPE'
+  SCOPE = 'SCOPE',
+  ESTIMATE = 'ESTIMATE'
 }
 
 /**
