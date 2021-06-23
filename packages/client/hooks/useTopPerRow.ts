@@ -9,11 +9,11 @@ type TopByRow = {
   }
 }
 
-const useTopPerRow = (cardsPerRow: number, meetings: Meetings) => {
+const useTopPerRow = (cardsPerRow: number | null, meetings: Meetings) => {
   const [topByRow, setTopByRow] = useState<TopByRow>({})
-  const totalRows = !meetings.length ? 0 : Math.ceil(meetings.length / cardsPerRow)
+  const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
   const getTopByRow = () => {
-    if (!meetings.length) return
+    if (!meetings.length || !cardsPerRow) return
     const topByRow = {}
     for (let i = 0; i < totalRows; i++) {
       topByRow[i] = {

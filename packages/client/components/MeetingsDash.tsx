@@ -7,8 +7,7 @@ import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg
 import yellowFlashLine from '../../../static/images/illustrations/yellow-flash-line.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import useInitialRender from '../hooks/useInitialRender'
-import useTransition, {TransitionStatus} from '../hooks/useTransition'
+import useTransition from '../hooks/useTransition'
 import {Breakpoint, ElementHeight, ElementWidth, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
@@ -68,13 +67,13 @@ const MeetingsDash = (props: Props) => {
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const isInit = useInitialRender()
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const topByRow = useTopPerRow(cardsPerRow, activeMeetings)
   const hasMeetings = activeMeetings.length > 0
-  const totalRows = !activeMeetings.length ? 0 : Math.ceil(activeMeetings.length / cardsPerRow)
+  const totalRows = hasMeetings && cardsPerRow ? Math.ceil(activeMeetings.length / cardsPerRow) : 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
-  if (!viewer || isInit) return null
+
+  if (!viewer || !cardsPerRow) return null
   return (
     <>
       {hasMeetings ? (
@@ -103,7 +102,7 @@ const MeetingsDash = (props: Props) => {
                 }
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
-                status={isInit ? TransitionStatus.ENTERED : meeting.status}
+                status={meeting.status}
               />
             )
           })}
