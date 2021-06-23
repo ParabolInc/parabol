@@ -243,7 +243,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
   )
 }
 
-interface FreshAtlassianAuth extends AtlassianAuth {
+export interface FreshAtlassianAuth extends AtlassianAuth {
   accessToken: string
 }
 export const freshAtlassianAuth = (parent: RethinkDataLoader) => {

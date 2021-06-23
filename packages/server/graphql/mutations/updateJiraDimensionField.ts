@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
+import {FreshAtlassianAuth} from '../../dataloader/customLoaderMakers'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -9,6 +10,23 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
+
+const getJiraField = async (fieldName: string, cloudId: string, auth: FreshAtlassianAuth) => {
+  // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
+  // differently and can't be found on Jira fields list
+  const customFields = [SprintPokerDefaults.JIRA_FIELD_COMMENT, SprintPokerDefaults.JIRA_FIELD_NULL]
+  if (customFields.includes(fieldName as any)) {
+    return {fieldId: fieldName, type: 'string' as const}
+  }
+  // a regular Jira field
+  const {accessToken} = auth
+  const manager = new AtlassianServerManager(accessToken)
+  const fields = await manager.getFields(cloudId)
+  const selectedField = fields.find((field) => field.name === fieldName)
+  if (!selectedField) return null
+  const {id: fieldId, schema} = selectedField
+  return {fieldId, type: schema.type as 'string' | 'number'}
+}
 
 const updateJiraDimensionField = {
   type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
@@ -78,25 +96,10 @@ const updateJiraDimensionField = {
       return {error: {message: 'Not authenticated with Jira'}}
     }
 
-    let selectedField
-    // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
-    // differently and can't be found on Jira fields list
-    const customFields = [
-      SprintPokerDefaults.JIRA_FIELD_COMMENT,
-      SprintPokerDefaults.JIRA_FIELD_NULL
-    ]
-    if (customFields.includes(fieldName)) selectedField = {id: fieldName, schema: {type: 'string'}}
-    else {
-      // a regular Jira field
-      const {accessToken} = auth
-      const manager = new AtlassianServerManager(accessToken)
-      const fields = await manager.getFields(cloudId)
-      selectedField = fields.find((field) => field.name === fieldName)
-    }
+    const selectedField = await getJiraField(fieldName, cloudId, auth)
     if (!selectedField) return {error: {message: 'Invalid field name'}}
+    const {fieldId, type} = selectedField
 
-    const {id: fieldId, schema} = selectedField
-    const type = schema.type as 'string' | 'number'
     const newField = new JiraDimensionField({
       dimensionName,
       fieldName,
