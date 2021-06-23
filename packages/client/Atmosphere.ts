@@ -120,7 +120,7 @@ export default class Atmosphere extends Environment {
   fetchPing = async (connectionId?: string) => {
     return fetch('/sse-ping', {
       headers: {
-        authorizationHeader: `Bearer ${this.authToken}`,
+        [this.authorizationHeader]: `Bearer ${this.authToken}`,
         'x-correlation-id': connectionId || ''
       }
     })
@@ -130,7 +130,7 @@ export default class Atmosphere extends Environment {
     return fetch('/sse-ping', {
       method: 'POST',
       headers: {
-        authorizationHeader: `Bearer ${this.authToken}`,
+        [this.authorizationHeader]: `Bearer ${this.authToken}`,
         'x-correlation-id': connectionId || ''
       },
       body: data
@@ -141,7 +141,7 @@ export default class Atmosphere extends Environment {
     const uploadables = body.payload.uploadables
     const headers = {
       accept: 'application/json',
-      authorizationHeader: this.authToken ? `Bearer ${this.authToken}` : '',
+      [this.authorizationHeader]: this.authToken ? `Bearer ${this.authToken}` : '',
       'x-correlation-id': connectionId || ''
     }
     /* if uploadables, don't set content type bc we want the browser to set it */
