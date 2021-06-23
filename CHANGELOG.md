@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.18.0 2021-Jun-23
+
+### Added
+
+- Added update email mutation to intranet schema, #5005
+- Add retro templates, #4069
+
+### Fixed
+
+- Remove null jwt sentry error message
+- Always update the latest timestamp for lastSeenAt in PG
+
 ## 6.17.1 2021-Jun-18
 
 ### Fixed
