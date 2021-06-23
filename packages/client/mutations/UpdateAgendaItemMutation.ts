@@ -7,7 +7,6 @@ import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
 import {UpdateAgendaItemMutation_team} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
-import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {
@@ -45,8 +44,7 @@ const handleUpdateAgendaPhase = (
     )
     if (!agendaPhase) return
     const getSortOrder = (stage) => {
-      const agendaItemId = stage.getValue('agendaItemId')
-      const agendaItem = store.get<AgendaItem_agendaItem>(agendaItemId)
+      const agendaItem = stage.getLinkedRecord('agendaItem')
       if (!agendaItem) return 0
       return agendaItem.getValue('sortOrder')
     }
