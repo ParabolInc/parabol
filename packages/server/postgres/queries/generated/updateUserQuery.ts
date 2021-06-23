@@ -39,7 +39,7 @@ const updateUserQueryIR: any = {
       name: 'ids',
       codeRefs: {
         defined: {a: 36, b: 38, line: 3, col: 9},
-        used: [{a: 752, b: 754, line: 19, col: 13}]
+        used: [{a: 776, b: 778, line: 19, col: 13}]
       },
       transform: {type: 'array_spread'}
     },
@@ -61,52 +61,52 @@ const updateUserQueryIR: any = {
     {
       name: 'lastSeenAt',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 231, b: 240, line: 9, col: 27}]}
+      codeRefs: {used: [{a: 254, b: 263, line: 9, col: 50}]}
     },
     {
       name: 'preferredName',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 288, b: 300, line: 10, col: 30}]}
+      codeRefs: {used: [{a: 312, b: 324, line: 10, col: 30}]}
     },
     {
       name: 'tier',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 340, b: 343, line: 11, col: 19}]}
+      codeRefs: {used: [{a: 364, b: 367, line: 11, col: 19}]}
     },
     {
       name: 'picture',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 377, b: 383, line: 12, col: 22}]}
+      codeRefs: {used: [{a: 401, b: 407, line: 12, col: 22}]}
     },
     {
       name: 'segmentId',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 424, b: 432, line: 13, col: 26}]}
+      codeRefs: {used: [{a: 448, b: 456, line: 13, col: 26}]}
     },
     {
       name: 'isRemoved',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 475, b: 483, line: 14, col: 26}]}
+      codeRefs: {used: [{a: 499, b: 507, line: 14, col: 26}]}
     },
     {
       name: 'reasonRemoved',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 530, b: 542, line: 15, col: 30}]}
+      codeRefs: {used: [{a: 554, b: 566, line: 15, col: 30}]}
     },
     {
       name: 'newFeatureId',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 592, b: 603, line: 16, col: 29}]}
+      codeRefs: {used: [{a: 616, b: 627, line: 16, col: 29}]}
     },
     {
       name: 'identities',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 650, b: 659, line: 17, col: 27}]}
+      codeRefs: {used: [{a: 674, b: 683, line: 17, col: 27}]}
     },
     {
       name: 'overLimitCopy',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 707, b: 719, line: 18, col: 30}]}
+      codeRefs: {used: [{a: 731, b: 743, line: 18, col: 30}]}
     }
   ],
   usedParamSet: {
@@ -127,8 +127,8 @@ const updateUserQueryIR: any = {
   },
   statement: {
     body:
-      'UPDATE "User" SET\n  email = COALESCE(:email, "email"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),\n  inactive = COALESCE(:inactive, "inactive"),\n  "lastSeenAt" = COALESCE(:lastSeenAt, "lastSeenAt"),\n  "preferredName" = COALESCE(:preferredName, "preferredName"),\n  tier = COALESCE(:tier, "tier"),\n  picture = COALESCE(:picture, "picture"),\n  "segmentId" = COALESCE(:segmentId, "segmentId"),\n  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),\n  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),\n  "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),\n  "identities" = COALESCE(:identities, "identities"),\n  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy")\nWHERE id IN :ids',
-    loc: {a: 52, b: 754, line: 5, col: 0}
+      'UPDATE "User" SET\n  email = COALESCE(:email, "email"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),\n  inactive = COALESCE(:inactive, "inactive"),\n  "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),\n  "preferredName" = COALESCE(:preferredName, "preferredName"),\n  tier = COALESCE(:tier, "tier"),\n  picture = COALESCE(:picture, "picture"),\n  "segmentId" = COALESCE(:segmentId, "segmentId"),\n  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),\n  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),\n  "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),\n  "identities" = COALESCE(:identities, "identities"),\n  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy")\nWHERE id IN :ids',
+    loc: {a: 52, b: 778, line: 5, col: 0}
   }
 }
 
@@ -139,7 +139,7 @@ const updateUserQueryIR: any = {
  *   email = COALESCE(:email, "email"),
  *   "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
  *   inactive = COALESCE(:inactive, "inactive"),
- *   "lastSeenAt" = COALESCE(:lastSeenAt, "lastSeenAt"),
+ *   "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),
  *   "preferredName" = COALESCE(:preferredName, "preferredName"),
  *   tier = COALESCE(:tier, "tier"),
  *   picture = COALESCE(:picture, "picture"),
