@@ -1,4 +1,3 @@
-import {Unpromise} from 'parabol-client/types/generics'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
@@ -213,46 +212,6 @@ export const endSlackMeeting = async (
   notifySlack('meetingEnd', dataLoader, teamId, blocks, title).catch(console.log)
 }
 
-const upsertSlackMessage = async (
-  slackDetails: Unpromise<ReturnType<typeof getSlackDetails>>[0],
-  blocks: string | Array<{type: string}>,
-  title: string
-) => {
-  const {notification, auth} = slackDetails
-  const {channelId} = notification
-  const {botAccessToken} = auth
-  if (!channelId) return
-  const manager = new SlackServerManager(botAccessToken)
-  // need im:read scope to get the bot channelId so that we can upsert
-
-  // const convoInfo = await manager.getConversationInfo(channelId)
-  // if (convoInfo.ok && 'latest' in convoInfo.channel) {
-  //   const {channel} = convoInfo
-  //   const {latest} = channel
-  //   if (latest) {
-  //     const {ts, bot_profile} = latest
-  //     const {name} = bot_profile
-  //     if (name === 'Parabol') {
-  //       const timestamp = new Date(Number.parseFloat(ts) * 1000)
-  //       const ageThresh = new Date(Date.now() - ms('5m'))
-  //       if (timestamp >= ageThresh) {
-  //         const res = await manager.updateMessage(channelId, blocks, ts)
-  //         if (!res.ok) {
-  //           console.error(res.error)
-  //         }
-  //         return
-  //       }
-  //     }
-  //   }
-  // } else {
-  //   // handle error?
-  // }
-  const res = await manager.postMessage(channelId, blocks, title)
-  if (!res.ok) {
-    console.error(res.error)
-  }
-}
-
 export const notifySlackTimeLimitStart = async (
   scheduledEndTime: Date,
   meetingId: string,
@@ -263,11 +222,8 @@ export const notifySlackTimeLimitStart = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
-  const {name, phases, facilitatorStageId} = meeting
+  const {name: meetingName, phases, facilitatorStageId} = meeting
   const {name: teamName} = team
-  // Slack fails with error message "invalid_arguments" if updating a block with a #
-  // It can successfully post messages with a #
-  const meetingName = name.replace('#', '')
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
@@ -275,6 +231,10 @@ export const notifySlackTimeLimitStart = async (
   const phaseLabel = phaseLabelLookup[phaseType]
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)
   slackDetails.forEach(async (slackDetail) => {
+    const {auth, notification} = slackDetail
+    const {channelId} = notification
+    const {botAccessToken} = auth
+    const manager = new SlackServerManager(botAccessToken)
     const fallbackDate = formatWeekday(scheduledEndTime)
     const fallbackTime = formatTime(scheduledEndTime)
     const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
@@ -291,6 +251,6 @@ export const notifySlackTimeLimitStart = async (
       makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
       makeButtons([button])
     ]
-    upsertSlackMessage(slackDetail, blocks, title).catch(console.error)
+    await manager.postMessage(channelId, blocks, title)
   })
 }
