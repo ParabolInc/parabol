@@ -3,7 +3,6 @@ import React from 'react'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import useModal from '~/hooks/useModal'
-import useAtmosphere from '../../hooks/useAtmosphere'
 
 const ErrorBlock = styled('div')({
   alignItems: 'center',
@@ -33,24 +32,6 @@ const ErrorComponent = (props: Props) => {
   console.error(error)
   const {modalPortal, openPortal, closePortal} = useModal()
   const oldBrowserErrs = ['flatMap is not a function']
-  const atmosphere = useAtmosphere()
-  const {version} = atmosphere
-
-  if (version && version !== __APP_VERSION__) {
-    const handleClick = () => {
-      window.location.reload()
-    }
-    return (
-      <ErrorBlock>
-        {`Oh no! You've found a bug because you're using an old version of Parabol. Try refreshing the page.`}
-        <Button>
-          <Link onClick={handleClick} target='_blank' rel='noreferrer'>
-            Refresh
-          </Link>
-        </Button>
-      </ErrorBlock>
-    )
-  }
   const isOldBrowserErr = oldBrowserErrs.find((err) => error.message.includes(err))
   if (isOldBrowserErr) {
     const url = 'https://browser-update.org/update-browser.html'
