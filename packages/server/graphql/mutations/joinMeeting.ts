@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getPhase from '../../utils/getPhase'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import rMapIf from '../../database/rMapIf'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
-import CheckInPhase from '../../database/types/CheckInPhase'
 import CheckInStage from '../../database/types/CheckInStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
@@ -12,7 +12,6 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import TeamMember from '../../database/types/TeamMember'
-import UpdatesPhase from '../../database/types/UpdatesPhase'
 import UpdatesStage from '../../database/types/UpdatesStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -123,14 +122,14 @@ const joinMeeting = {
     }
 
     const appendToCheckin = async () => {
-      const checkInPhase = phases.find((phase) => phase.phaseType === 'checkin') as CheckInPhase
+      const checkInPhase = getPhase(phases, 'checkin')
       if (!checkInPhase) return
       const checkInStage = new CheckInStage(teamMemberId)
       return addStageToPhase(checkInStage, 'checkin')
     }
 
     const appendToUpdate = async () => {
-      const updatesPhase = phases.find((phase) => phase.phaseType === 'updates') as UpdatesPhase
+      const updatesPhase = getPhase(phases, 'updates')
       if (!updatesPhase) return
       const updatesStage = new UpdatesStage(teamMemberId)
       return addStageToPhase(updatesStage, 'updates')

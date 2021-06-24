@@ -4,9 +4,9 @@ import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
-import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import MeetingAction from '../../database/types/MeetingAction'
 import MeetingMember from '../../database/types/MeetingMember'
 import Task from '../../database/types/Task'
@@ -132,9 +132,7 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .run()
   ])
 
-  const agendaItemPhase = phases.find(
-    (phase) => phase.phaseType === 'agendaitems'
-  ) as AgendaItemsPhase
+  const agendaItemPhase = getPhase(phases, 'agendaitems')
   const {stages} = agendaItemPhase
   const discussionIds = stages.map((stage) => stage.discussionId)
   const userIds = meetingMembers.map(({userId}) => userId)

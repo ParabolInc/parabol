@@ -3,7 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
-import EstimatePhase from '../../database/types/EstimatePhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -18,6 +17,7 @@ import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegmen
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
+import getPhase from '../../utils/getPhase'
 
 export default {
   type: GraphQLNonNull(EndSprintPokerPayload),
@@ -53,7 +53,7 @@ export default {
 
     // RESOLUTION
     // remove hovering data from redis
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages: estimateStages} = estimatePhase
     if (estimateStages.length > 0) {
       const redisKeys = estimateStages.map((stage) => `pokerHover:${stage.id}`)

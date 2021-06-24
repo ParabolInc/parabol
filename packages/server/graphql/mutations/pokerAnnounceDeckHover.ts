@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import EstimatePhase from '../../database/types/EstimatePhase'
+import getPhase from '../../utils/getPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
@@ -54,7 +54,7 @@ const pokerAnnounceDeckHover = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {

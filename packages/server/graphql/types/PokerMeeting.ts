@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
-import EstimatePhase from '../../database/types/EstimatePhase'
+import getPhase from '../../utils/getPhase'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
@@ -48,9 +48,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async ({phases, teamId}, {storyId: serviceTaskId}, {dataLoader}) => {
-        const estimatePhase = phases.find(
-          (phase) => phase.phaseType === 'ESTIMATE'
-        ) as EstimatePhase
+        const estimatePhase = getPhase(phases, 'ESTIMATE')
         const {stages} = estimatePhase
         const stage = stages.find((stage) => stage.serviceTaskId === serviceTaskId)
         if (!stage) return null

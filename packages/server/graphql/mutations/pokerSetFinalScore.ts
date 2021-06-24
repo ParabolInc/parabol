@@ -3,9 +3,9 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
+import getPhase from '../../utils/getPhase'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
-import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {TaskServiceEnum} from '../../database/types/Task'
 import updateStage from '../../database/updateStage'
@@ -81,7 +81,7 @@ const pokerSetFinalScore = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {

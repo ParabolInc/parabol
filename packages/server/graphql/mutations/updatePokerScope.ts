@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
-import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
@@ -83,7 +83,7 @@ const updatePokerScope = {
       issueKey: string
       dimensionName: string
     }[]
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     let stages = estimatePhase.stages
     const templateRef = await getTemplateRefById(templateRefId)
 

@@ -1,7 +1,7 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
-import EstimatePhase from '../../database/types/EstimatePhase'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -42,7 +42,7 @@ export default {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     if (!estimatePhase) {
       return standardError(new Error('Meeting phase not found'), {userId: viewerId})
     }

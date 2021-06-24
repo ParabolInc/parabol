@@ -3,10 +3,9 @@ import getRethink from '../../database/rethinkDriver'
 import DragDiscussionTopicPayload from '../types/DragDiscussionTopicPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {DISCUSS} from 'parabol-client/utils/constants'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import DiscussPhase from '../../database/types/DiscussPhase'
+import getPhase from '../../utils/getPhase'
 
 export default {
   description: 'Changes the priority of the discussion topics',
@@ -43,7 +42,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS) as DiscussPhase
+    const discussPhase = getPhase(phases, 'discuss')
     if (!discussPhase) {
       return standardError(new Error('Meeting stage not found'), {userId: viewerId})
     }
