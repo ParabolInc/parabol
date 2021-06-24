@@ -6,7 +6,6 @@ import publish from '../../utils/publish'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeSlackAuths from './helpers/removeSlackAuths'
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -32,7 +31,6 @@ export default {
     }
 
     // RESOLUTION
-    removeSlackAuths(userId, teamId)
     const evictorUserId = isSelf ? undefined : viewerId
     const res = await removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
