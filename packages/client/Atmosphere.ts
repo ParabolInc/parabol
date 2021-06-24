@@ -102,7 +102,6 @@ export default class Atmosphere extends Environment {
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
   queryCache = {} as {[key: string]: GraphQLResponse}
   upgradeTransportPromise: Promise<void> | null = null
-  version: string | null = null
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
   userId: string | null = null // DEPRECATED
