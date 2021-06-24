@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {MouseEvent} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
@@ -98,8 +98,10 @@ const JiraScopingSearchHistoryMenu = (props: Props) => {
         const projectFilters = projectKeyFilters
           .map((filter) => filter.slice(filter.indexOf(':') + 1))
           .join(', ')
-        const handleRemoveJiraSearchQueryClick = (event) => {
-          event.stopPropagation() // prevents closing the menu when remove button is clicked
+        const handleRemoveJiraSearchQueryClick = (event: MouseEvent) => {
+          if (jiraSearchQueries.length > 1) {
+            event.stopPropagation() // prevents closing the menu when remove button is clicked
+          }
           removeJiraSearchQuery(jiraSearchQuery)
         }
         return (
