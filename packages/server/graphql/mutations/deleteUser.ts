@@ -10,7 +10,6 @@ import removeFromOrg from './helpers/removeFromOrg'
 import updateUser from '../../postgres/queries/updateUser'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import removeSlackAuths from './helpers/removeSlackAuths'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -60,8 +59,7 @@ export default {
       return {error: {message: 'User not found'}}
     }
     const {id: userIdToDelete, tms} = user
-    const teamMemberIds = tms.map((teamId) => toTeamMemberId(teamId, userIdToDelete))
-    removeSlackAuths(teamMemberIds, true)
+    removeSlackAuths(userIdToDelete, tms, true)
     const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)
     const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
     await Promise.all(
