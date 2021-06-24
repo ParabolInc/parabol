@@ -8,10 +8,12 @@ export const up = async function(r: R) {
         .filter({phaseType: NewMeetingPhaseTypeEnum.ESTIMATE})('stages')
         .concatMap((row) => row('discussionId'))
     }
-    const getStories = (meetingRow) => {
+    const getCompletedStories = (meetingRow) => {
       return meetingRow('phases')
         .filter({phaseType: NewMeetingPhaseTypeEnum.ESTIMATE})('stages')
-        .concatMap((row) => row('serviceTaskId'))
+        .nth(0)
+        .filter({isComplete: true})
+        .map((row) => row('serviceTaskId'))
     }
 
     await r
@@ -29,7 +31,7 @@ export const up = async function(r: R) {
             .getAll(r.args(getDiscussionIds(row)), {index: 'discussionId'})
             .count()
             .default(0),
-          storyCount: getStories(row)
+          storyCount: getCompletedStories(row)
             .count()
             .default(0)
         }),
