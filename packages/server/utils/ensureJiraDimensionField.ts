@@ -64,6 +64,7 @@ const ensureJiraDimensionField = async (
         jiraDimensionFields: team('jiraDimensionFields')
           .default([])
           .union(fieldsToAdd)
+          .orderBy((jiraDimensionField) => jiraDimensionField.coerceTo('string'))
       }))
       .run(),
     catchAndLog(() =>

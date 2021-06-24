@@ -100,21 +100,20 @@ const updateJiraDimensionField = {
     }
 
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
+    const sortedJiraDimensionFields = jiraDimensionFields
+      .slice(jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS)
+      .sort((a, b) => (JSON.stringify(a) < JSON.stringify(b) ? -1 : 1))
     await Promise.all([
       r
         .table('Team')
         .get(teamId)
         .update({
-          jiraDimensionFields: jiraDimensionFields.slice(
-            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-          )
+          jiraDimensionFields: sortedJiraDimensionFields
         })
         .run(),
       updateTeamByTeamId(
         {
-          jiraDimensionFields: jiraDimensionFields.slice(
-            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-          )
+          jiraDimensionFields: sortedJiraDimensionFields
         },
         teamId
       )
