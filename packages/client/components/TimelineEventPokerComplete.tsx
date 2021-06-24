@@ -25,11 +25,8 @@ const Link = styled(StyledLink)({
 const TimelineEventPokerComplete = (props: Props) => {
   const {timelineEvent} = props
   const {meeting, team} = timelineEvent
-  const {id: meetingId, name: meetingName, commentCount, phases} = meeting
+  const {id: meetingId, name: meetingName, commentCount, storyCount} = meeting
   const {name: teamName} = team
-  const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
-  const stages = estimatePhase.stages!
-  const storyCount = new Set(stages.map(({serviceTaskId}) => serviceTaskId)).size
   return (
     <TimelineEventCard
       IconSVG={<CardsSVG />}
@@ -63,6 +60,7 @@ export default createFragmentContainer(TimelineEventPokerComplete, {
       meeting {
         id
         commentCount
+        storyCount
         name
         phases {
           phaseType

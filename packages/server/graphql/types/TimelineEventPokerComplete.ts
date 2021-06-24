@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import RetrospectiveMeeting from './RetrospectiveMeeting'
+import PokerMeeting from './PokerMeeting'
 import Team from './Team'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 
@@ -11,7 +11,7 @@ const TimelineEventPokerComplete = new GraphQLObjectType<any>({
   fields: () => ({
     ...timelineEventInterfaceFields(),
     meeting: {
-      type: new GraphQLNonNull(RetrospectiveMeeting),
+      type: new GraphQLNonNull(PokerMeeting),
       description: 'The meeting that was completed',
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
