@@ -24,11 +24,11 @@ const removeSlackAuths = async (
     auth: r
       .table('SlackAuth')
       .getAll(r.args(authIds))
-      .update((row) => ({
-        botAccessToken: removeToken ? null : row('botAccessToken'),
+      .update({
+        botAccessToken: removeToken ? null : undefined,
         isActive: false,
         updatedAt: now
-      })),
+      }),
     notifications: r
       .table('SlackNotification')
       .getAll(r.args(teamIdsArr), {index: 'teamId'})
