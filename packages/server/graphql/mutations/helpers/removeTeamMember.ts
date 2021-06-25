@@ -11,6 +11,7 @@ import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import removeSlackAuths from './removeSlackAuths'
 
 interface Options {
   evictorUserId?: string
@@ -136,6 +137,7 @@ const removeTeamMember = async (
   const filterFn = (stage: CheckInStage | UpdatesStage) => {
     return stage.teamMemberId === teamMemberId
   }
+  removeSlackAuths(userId, teamId)
   await removeStagesFromMeetings(filterFn, teamId, dataLoader)
   await removeUserFromMeetingStages(userId, teamId, dataLoader)
   // TODO should probably just inactivate the meeting member

@@ -11,7 +11,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddSlackAuthPayload from '../types/AddSlackAuthPayload'
 
-const upsertNotifications = async (
+export const upsertNotifications = async (
   viewerId: string,
   teamId: string,
   teamChannelId: string,
