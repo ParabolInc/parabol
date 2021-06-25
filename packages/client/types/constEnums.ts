@@ -32,7 +32,8 @@ export const enum Breakpoint {
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
   WIDER_SCREEN = 1600,
   VOTE_PHASE = 800,
-  FUZZY_TABLET = 700
+  FUZZY_TABLET = 700,
+  BIG_DISPLAY = 1900
 }
 
 export const enum Card {
@@ -91,12 +92,18 @@ export const enum ElementWidth {
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6,
   REFLECTION_COLUMN = 320,
-  NEW_MEETING_FAB = 128
+  NEW_MEETING_FAB = 128,
+  MEETING_CARD = 320,
+  MEETING_CARD_MARGIN = 16,
+  MEETING_CARD_LARGE_MARGIN = 40,
+  MEETING_CARD_WITH_MARGIN = 336
 }
 
 export const enum ElementHeight {
   REFLECTION_CARD = 44,
-  REFLECTION_CARD_MAX = 104 // 4 lines (20px each) + (2 * 12px) vertical gutter
+  REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
+  MEETING_CARD_MARGIN = 16,
+  MEETING_CARD_WITH_MARGIN = 272
 }
 
 export const enum ExternalLinks {

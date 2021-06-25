@@ -18,20 +18,20 @@ const Wrapper = styled('div')<{offset: number; isColumn?: boolean}>(({offset, is
 const StyledAvatar = styled(Avatar)<{
   status?: TransitionStatus
   isAnimated: boolean
-  borderColor?: string,
+  borderColor?: string
   width: number
 }>(({status, isAnimated, borderColor = '#fff', width}) => ({
   border: `${width >= 40 ? '3px' : '2px'} solid ${borderColor}`,
   opacity: !isAnimated
     ? undefined
     : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
-      ? 0
-      : 1,
+    ? 0
+    : 1,
   transform: !isAnimated
     ? undefined
     : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
-      ? 'scale(0)'
-      : 'scale(1)',
+    ? 'scale(0)'
+    : 'scale(1)',
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 

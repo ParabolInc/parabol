@@ -3,12 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
+import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
 import {AvatarList_users} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
 import OverflowAvatar from './OverflowAvatar'
 
-const Wrapper = styled('div')<{minHeight: number, size: number}>(({minHeight, size}) => ({
+const Wrapper = styled('div')<{minHeight: number; size: number}>(({minHeight, size}) => ({
   alignItems: 'center',
   display: 'flex',
   // This left margin accounts for the border on the avatar
@@ -50,7 +51,10 @@ const AvatarList = (props: Props) => {
   const offsetSize = size - overlap
   const transitionChildren = useOverflowAvatars(rowRef, users, size, overlap)
   const showAnimated = isAnimated ?? true
-  const minHeight = transitionChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
+  const activeTChildren = transitionChildren.filter(
+    (child) => child.status !== TransitionStatus.EXITING
+  )
+  const minHeight = activeTChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
   return (
     <Wrapper ref={rowRef} minHeight={minHeight} size={size}>
       {transitionChildren.length === 0 && emptyEl}
