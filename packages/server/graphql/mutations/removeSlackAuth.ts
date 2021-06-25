@@ -27,11 +27,11 @@ export default {
     }
 
     // RESOLUTION
-    const {authIds, error} = await removeSlackAuths(viewerId, teamId, true)
-    if (error) {
-      return standardError(error, {userId: viewerId})
+    const res = await removeSlackAuths(viewerId, teamId, true)
+    if (res.error) {
+      return standardError(res.error, {userId: viewerId})
     }
-    const authId = authIds![0]
+    const authId = res.authIds[0]
 
     const data = {authId, teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveSlackAuthPayload', data, subOptions)
