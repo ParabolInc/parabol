@@ -7,7 +7,7 @@ import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
 import {UpdateAgendaItemMutation_team} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
-import {AgendaItem_agendaItem} from '../__generated__/AgendaItem_agendaItem.graphql'
+import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {
