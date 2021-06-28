@@ -29,12 +29,14 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   meeting: MeetingSidebarTeamMemberStageItems_meeting
+  phaseType?: string
 }
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
-  const {gotoStageId, handleMenuClick, meeting} = props
+  const {gotoStageId, handleMenuClick, meeting, phaseType} = props
   const {id: meetingId, facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
-  const {phaseType} = localPhase
+  const {phaseType: localPhaseType} = localPhase
+  const isActivePhase = phaseType === localPhaseType
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage =
@@ -47,7 +49,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {viewerId} = atmosphere
   const isViewerFacilitator = viewerId === facilitatorUserId
   return (
-    <MeetingSidebarPhaseItemChild>
+    <MeetingSidebarPhaseItemChild isActive={isActivePhase}>
       <ScrollStageItems>
         {localPhase.stages.map((stage) => {
           const {
@@ -61,7 +63,9 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
           if (!teamMember) {
             Sentry.captureException(
               new Error(
-                `Team member is undefined. teamMemberId is ${teamMemberId}. phaseType is ${phaseType}. stageId is ${stageId}. meetingId is ${meetingId}. localStageId is ${localStageId}. stage is ${JSON.stringify(stage)}.`
+                `Team member is undefined. teamMemberId is ${teamMemberId}. phaseType is ${localPhaseType}. stageId is ${stageId}. meetingId is ${meetingId}. localStageId is ${localStageId}. stage is ${JSON.stringify(
+                  stage
+                )}.`
               )
             )
             return null
@@ -80,7 +84,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
               }
               isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
               onClick={gotoStage(teamMemberId)}
-              isActive={localStageId === stageId}
+              isActive={isActivePhase && localStageId === stageId}
               isComplete={isComplete}
               isDragging={false}
               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}

@@ -24,16 +24,15 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
         meeting={meeting}
       />
     )
-  } else if (meeting.localPhase && meeting.localPhase.phaseType === phaseType) {
-    return (
-      <MeetingSidebarTeamMemberStageItems
-        gotoStageId={gotoStageId}
-        handleMenuClick={handleMenuClick}
-        meeting={meeting}
-      />
-    )
   }
-  return null
+  return (
+    <MeetingSidebarTeamMemberStageItems
+      gotoStageId={gotoStageId}
+      handleMenuClick={handleMenuClick}
+      meeting={meeting}
+      phaseType={phaseType}
+    />
+  )
 }
 
 export default createFragmentContainer(ActionSidebarPhaseListItemChildren, {

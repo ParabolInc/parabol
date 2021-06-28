@@ -26,7 +26,7 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
 
   return (
-    <MeetingSidebarPhaseItemChild>
+    <MeetingSidebarPhaseItemChild isActive>
       <AgendaListAndInput
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}
