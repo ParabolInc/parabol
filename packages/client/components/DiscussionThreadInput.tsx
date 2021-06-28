@@ -24,6 +24,7 @@ import {PALETTE} from '../styles/paletteV3'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import AddTaskButton from './AddTaskButton'
 import SendCommentButton from './SendCommentButton'
+import isViewerTyping from '../utils/isViewerTyping'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -91,14 +92,17 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: discussionId, meetingId, isAnonymousComment, teamId, isCreatingNewTask} = discussion
+  const {id: discussionId, meetingId, isAnonymousComment, teamId} = discussion
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
+  const [canCreateTask, setCanCreateTask] = useState(true)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
+  const allowComments = allowedThreadables.includes('comment')
+
   useEffect(() => {
     const inactiveCommenting = setTimeout(() => {
       if (isCommenting) {
@@ -129,6 +133,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     })
     editorRef.current?.focus()
   }
+
   const hasText = editorState.getCurrentContent().hasText()
   const commentSubmitState = hasText ? 'typing' : 'idle'
 
@@ -208,18 +213,22 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       teamId
     } as const
     CreateTaskMutation(atmosphere, {newTask}, {})
-    commitLocalUpdate(atmosphere, (store) => {
-      store
-        .getRoot()
-        .getLinkedRecord('viewer')
-        ?.getLinkedRecord('discussion', {id: discussionId})
-        ?.setValue('', 'replyingToCommentId')
-        ?.setValue(true, 'isCreatingNewTask')
-    })
   }
 
+  useEffect(() => {
+    const focusListener = () => {
+      setCanCreateTask(!isViewerTyping())
+    }
+
+    document.addEventListener('blur', focusListener, true)
+    document.addEventListener('focus', focusListener, true)
+    return () => {
+      document.removeEventListener('blur', focusListener, true)
+      document.removeEventListener('focus', focusListener, true)
+    }
+  }, [])
+
   const avatar = isAnonymousComment ? anonymousAvatar : picture
-  const canCreateNewTask = !!isCreatingNewTask
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentContainer>
@@ -235,6 +244,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             placeholder={placeholder}
             setEditorState={setEditorState}
             teamId={teamId}
+            readOnly={!allowComments}
           />
         </EditorWrap>
         <SendCommentButton
@@ -245,7 +255,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       </CommentContainer>
       {allowTasks && (
         <TaskContainer>
-          <AddTaskButton dataCy={`${dataCy}-add`} onClick={addTask} disabled={canCreateNewTask} />
+          <AddTaskButton dataCy={`${dataCy}-add`} onClick={addTask} disabled={!canCreateTask} />
         </TaskContainer>
       )}
     </Wrapper>
@@ -264,7 +274,6 @@ export default createFragmentContainer(DiscussionThreadInput, {
       meetingId
       teamId
       isAnonymousComment
-      isCreatingNewTask
     }
   `
 })

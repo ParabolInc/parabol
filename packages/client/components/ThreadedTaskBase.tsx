@@ -71,15 +71,6 @@ const ThreadedTaskBase = (props: Props) => {
       store.get(discussionId)?.setValue(ownerId, 'replyingToCommentId')
     })
   }
-  const clearIsCreatingNewTask = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      store
-        .getRoot()
-        .getLinkedRecord('viewer')
-        ?.getLinkedRecord('discussion', {id: discussionId})
-        ?.setValue(false, 'isCreatingNewTask')
-    })
-  }
   useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
   return (
     <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
@@ -90,12 +81,7 @@ const ThreadedTaskBase = (props: Props) => {
             <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
           </HeaderActions>
         </ThreadedItemHeaderDescription>
-        <StyledNullableTask
-          dataCy={`${dataCy}`}
-          area='meeting'
-          task={task}
-          clearIsCreatingNewTask={clearIsCreatingNewTask}
-        />
+        <StyledNullableTask dataCy={`${dataCy}`} area='meeting' task={task} />
         {children}
         <ThreadedItemReply
           allowedThreadables={allowedThreadables}

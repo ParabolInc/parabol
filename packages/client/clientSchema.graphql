@@ -105,7 +105,6 @@ extend type EstimateStage {
 }
 
 extend type Discussion {
-  isCreatingNewTask: Boolean
   isAnonymousComment: Boolean
   replyingToCommentId: String
 }
