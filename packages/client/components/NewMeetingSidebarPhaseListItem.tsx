@@ -15,10 +15,7 @@ const NavListItem = styled('li')<{phaseType: NewMeetingPhaseTypeEnum; isActive: 
     margin: 0,
     // hack to work around broken flexbox
     // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
-    minHeight: phaseType === 'agendaitems' ? 98 : 40,
-    maxHeight: phaseType === 'agendaitems' || isActive ? 1000 : 40,
-    transition: `all 300ms ${BezierCurve.DECELERATE}`,
-    transitionDelay: isActive ? '200ms' : '0ms'
+    minHeight: phaseType === 'agendaitems' ? 98 : 40
   })
 )
 
