@@ -5,10 +5,10 @@ import {BezierCurve} from '../types/constEnums'
 const MeetingSidebarPhaseItemChild = styled('div')<{isActive?: boolean}>(({isActive}) => ({
   display: 'flex',
   flexDirection: 'column',
-  maxHeight: isActive ? 1000 : 0, // trickle down height for overflow: ;
+  minHeight: isActive ? 40 : 0, // trickle down height for overflow: ;
   overflow: 'hidden', // required for FF68
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  transitionDelay: '200ms'
+  transitionDelay: isActive ? '200ms' : '0ms'
 }))
 
 export default MeetingSidebarPhaseItemChild
