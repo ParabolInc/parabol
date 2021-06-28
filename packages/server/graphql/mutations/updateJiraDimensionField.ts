@@ -9,6 +9,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
+import stringify from 'fast-json-stable-stringify'
 
 const updateJiraDimensionField = {
   type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
@@ -102,7 +103,7 @@ const updateJiraDimensionField = {
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
     const sortedJiraDimensionFields = jiraDimensionFields
       .slice(jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS)
-      .sort((a, b) => (JSON.stringify(a) < JSON.stringify(b) ? -1 : 1))
+      .sort((a, b) => (stringify(a) < stringify(b) ? -1 : 1))
     await Promise.all([
       r
         .table('Team')
