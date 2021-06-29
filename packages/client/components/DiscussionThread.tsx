@@ -28,14 +28,13 @@ const Wrapper = styled('div')<{isExpanded: boolean; width?: string}>(({isExpande
 
 interface Props {
   meetingContentRef?: RefObject<HTMLDivElement>
-  isReadOnly: boolean
   allowedThreadables: DiscussionThreadables[]
   width?: string
   viewer: DiscussionThread_viewer
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, isReadOnly, allowedThreadables, width, viewer} = props
+  const {meetingContentRef, allowedThreadables, width, viewer} = props
   const isDrawer = !!width // hack to say this is in a poker meeting
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -48,7 +47,7 @@ const DiscussionThread = (props: Props) => {
       meetingContentRef,
       undefined,
       isDrawer
-    ) || isReadOnly
+    ) || allowedThreadables.length === 0
   const {discussion} = viewer
   const commentors = discussion?.thread?.commentors ?? []
   const preferredNames = useMemo(() => commentors.map(({preferredName}) => preferredName), [
@@ -71,7 +70,6 @@ const DiscussionThread = (props: Props) => {
         dataCy='discuss-thread-list'
         discussion={discussion}
         allowedThreadables={allowedThreadables}
-        isReadOnly={isReadOnly}
         preferredNames={preferredNames}
         threadables={threadables}
         ref={listRef}

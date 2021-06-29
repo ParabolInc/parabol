@@ -16,14 +16,13 @@ const query = graphql`
 interface Props {
   meetingContentRef?: RefObject<HTMLDivElement>
   discussionId: string
-  isReadOnly: boolean
   allowedThreadables: DiscussionThreadables[]
   width?: string
 }
 
 const DiscussionThreadRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {allowedThreadables, isReadOnly, meetingContentRef, discussionId, width} = props
+  const {allowedThreadables, meetingContentRef, discussionId, width} = props
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -31,7 +30,7 @@ const DiscussionThreadRoot = (props: Props) => {
       variables={{discussionId}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(DiscussionThread, {
-        props: {allowedThreadables, isReadOnly, meetingContentRef, width}
+        props: {allowedThreadables, meetingContentRef, width}
       })}
     />
   )

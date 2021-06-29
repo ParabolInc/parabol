@@ -11,6 +11,7 @@ import DiscussionThreadRoot from './DiscussionThreadRoot'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
+import {DiscussionThreadables} from './DiscussionThreadList'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -78,12 +79,12 @@ interface Props {
   onToggle: () => void
 }
 
-const allowedThreadables = ['comment' as const]
-
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, isOpen, meeting, onToggle} = props
   const {endedAt, localStage} = meeting
   const {discussionId} = localStage
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment']
+
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen}>
       <Header>
@@ -96,7 +97,6 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         <DiscussionThreadRoot
           allowedThreadables={allowedThreadables}
           discussionId={discussionId!}
-          isReadOnly={!!endedAt}
           width={'calc(100% - 16px)'}
         />
       </ThreadColumn>
