@@ -18,15 +18,16 @@ const safeArchiveTeam = async (teamId: string) => {
     })),
     removeUserTms(teamId, userIds)
   ])
+  const updates = {
+    isArchived: true,
+    updatedAt: new Date()
+  }
   const [rethinkResult] = await Promise.all([
     r({
       team: (r
         .table('Team')
         .get(teamId)
-        .update(
-          {isArchived: true},
-          {returnChanges: true}
-        )('changes')(0)('new_val')
+        .update(updates, {returnChanges: true})('changes')(0)('new_val')
         .default(null) as unknown) as Team | null,
       invitations: (r
         .table('TeamInvitation')
@@ -46,7 +47,7 @@ const safeArchiveTeam = async (teamId: string) => {
         )('changes')('new_val')('id')
         .default([]) as unknown) as string[]
     }).run(),
-    updateTeamByTeamId({isArchived: true}, teamId)
+    updateTeamByTeamId(updates, teamId)
   ])
   return {...rethinkResult, users}
 }

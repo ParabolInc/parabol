@@ -116,24 +116,19 @@ const updateJiraDimensionField = {
     }
 
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
+    const updates = {
+      jiraDimensionFields: jiraDimensionFields.slice(
+        jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
+      ),
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('Team')
         .get(teamId)
-        .update({
-          jiraDimensionFields: jiraDimensionFields.slice(
-            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-          )
-        })
+        .update(updates)
         .run(),
-      updateTeamByTeamId(
-        {
-          jiraDimensionFields: jiraDimensionFields.slice(
-            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-          )
-        },
-        teamId
-      )
+      updateTeamByTeamId(updates, teamId)
     ])
 
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateJiraDimensionFieldSuccess', data, subOptions)
