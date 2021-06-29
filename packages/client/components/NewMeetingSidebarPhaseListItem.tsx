@@ -1,23 +1,21 @@
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, NavSidebar} from '../types/constEnums'
+import {NavSidebar} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql.ts'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
 import Icon from './Icon'
 
-const NavListItem = styled('li')<{phaseType: NewMeetingPhaseTypeEnum; isActive: boolean}>(
-  ({isActive, phaseType}) => ({
-    fontWeight: 600,
-    display: 'flex',
-    flexDirection: 'column',
-    margin: 0,
-    // hack to work around broken flexbox
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
-    minHeight: phaseType === 'agendaitems' ? 98 : 40
-  })
-)
+const NavListItem = styled('li')<{phaseType: NewMeetingPhaseTypeEnum}>(({phaseType}) => ({
+  fontWeight: 600,
+  display: 'flex',
+  flexDirection: 'column',
+  margin: 0,
+  // hack to work around broken flexbox
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
+  minHeight: phaseType === 'agendaitems' ? 98 : 40
+}))
 
 const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
   {
@@ -156,7 +154,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   const Image = phaseImageLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
   return (
-    <NavListItem phaseType={phaseType} isActive={isActive}>
+    <NavListItem phaseType={phaseType}>
       <NavListItemLink
         isActive={isActive}
         isCollapsible={isCollapsible}

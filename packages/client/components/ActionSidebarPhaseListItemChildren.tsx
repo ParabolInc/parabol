@@ -10,7 +10,7 @@ import useGotoStageId from '../hooks/useGotoStageId'
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  phaseType: NewMeetingPhaseTypeEnum | string
+  phaseType: NewMeetingPhaseTypeEnum
   meeting: ActionSidebarPhaseListItemChildren_meeting
 }
 

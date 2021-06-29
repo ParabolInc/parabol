@@ -9,6 +9,7 @@ import MeetingSubnavItem from '../components/MeetingSubnavItem'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/DraggableReflectionCard_meeting.graphql'
 
 const AvatarBlock = styled('div')({
   width: 32
@@ -29,7 +30,7 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   meeting: MeetingSidebarTeamMemberStageItems_meeting
-  phaseType?: string
+  phaseType?: NewMeetingPhaseTypeEnum
 }
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {

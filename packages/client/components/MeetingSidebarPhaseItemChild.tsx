@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {BezierCurve} from '../types/constEnums'
 
-// const MeetingSidebarPhaseItemChild = styled('div')<{isActive: boolean}>(({isActive}) => ({
 const MeetingSidebarPhaseItemChild = styled('div')<{isActive?: boolean}>(({isActive}) => ({
   display: 'flex',
   flexDirection: 'column',
