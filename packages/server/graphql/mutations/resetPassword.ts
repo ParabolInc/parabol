@@ -73,9 +73,13 @@ const resetPassword = {
       // MUTATIVE
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
+      const updates = {
+        identities,
+        updatedAt: new Date()
+      }
       await Promise.all([
-        updateUser({identities}, userId),
-        db.write('User', userId, {identities}),
+        updateUser(updates, userId),
+        db.write('User', userId, updates),
         r
           .table('FailedAuthRequest')
           .getAll(email, {index: 'email'})

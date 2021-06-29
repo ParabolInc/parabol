@@ -79,7 +79,8 @@ export default {
     const update = {
       isRemoved: true,
       email: 'DELETED',
-      reasonRemoved: validReason
+      reasonRemoved: validReason,
+      updatedAt: new Date()
     }
     setTimeout(() => {
       db.write('User', userIdToDelete, update)
