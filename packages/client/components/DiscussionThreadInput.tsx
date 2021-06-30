@@ -24,7 +24,7 @@ import {PALETTE} from '../styles/paletteV3'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import AddTaskButton from './AddTaskButton'
 import SendCommentButton from './SendCommentButton'
-import isViewerTyping from '../utils/isViewerTyping'
+import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -217,7 +217,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   useEffect(() => {
     const focusListener = () => {
-      setCanCreateTask(!isViewerTyping())
+      setCanCreateTask(!isViewerTypingInTask())
     }
 
     document.addEventListener('blur', focusListener, true)
