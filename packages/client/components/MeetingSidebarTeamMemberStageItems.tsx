@@ -56,7 +56,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   return (
     <MeetingSidebarPhaseItemChild
       isActive={isActivePhase}
-      maxHeight={NavSidebar.ITEM_HEIGHT * stageCount}
+      height={NavSidebar.ITEM_HEIGHT * stageCount}
     >
       <ScrollStageItems>
         {localPhase.stages.map((stage) => {
