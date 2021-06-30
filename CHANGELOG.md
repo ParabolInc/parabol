@@ -5,6 +5,64 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.16.1 2021-Jun-10
+
+### Fixed
+
+- Use default empty string for discussionId for dummy discuss stage
+
+## 6.16.0 2021-Jun-10
+
+## Added
+
+- Discussion as first-class entity (#5016)
+
+## 6.15.0 2021-Jun-10
+### Changed
+- Make Slack notification prettier (#4911)
+- Deprecate createXPicturePutUrl mutations (#4342)
+- Ecnrypt database backup (#4603)
+
+
+## 6.14.0 2021-Jun-2
+
+### Changed
+- Bump dns-packet from 1.3.1 to 1.3.4 (#5000)
+
+### Added
+- Add 120 additional icebreakers (#5004)
+
+### Fixed
+- Add clock tolerance to getVerifiedAuthToken (#5011)
+- Sentry server stack (#4987)
+- UI fix-ups (#5001)
+
+## 6.13.0 2021-May-26
+
+### Added
+
+- LogRocket free tier (#4996)
+
+### Changed
+
+- Tier update pg (#4980)
+- Bump browserslist from 4.11.1 to 4.16.6 (#4995)
+
+## 6.12.0 2021-May-19
+
+### Added
+
+- Support varying GitHub scopes (#4971)
+- Send exceptions to LogRocket as well as Sentry (#4978)
+
+### Changed
+
+- Refactor commentor to thread conn (#4974)
+
+### Fixed
+
+- Init sentry in gqlExecutor (#4959)
+
 ## 6.11.0
 
 ### Added

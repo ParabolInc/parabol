@@ -61,6 +61,7 @@ interface ConversationListResponse {
   ok: true
   channels: SlackConversation[]
 }
+
 interface ConversationJoinResponse {
   ok: true
   channel: {
@@ -202,20 +203,29 @@ abstract class SlackManager {
     )
   }
 
-  postMessage(channelId: string, text: string | Array<{type: string}>) {
+  postMessage(channelId: string, text: string | Array<{type: string}>, notificationText?: string) {
     const prop = typeof text === 'string' ? 'text' : Array.isArray(text) ? 'blocks' : null
     if (!prop) throw new Error('Invalid Slack postMessage')
-    const payload = {
+    const defaultPayload = {
       channel: channelId,
-      unfurl_links: true,
+      unfurl_links: false,
+      unfurl_media: false,
       [prop]: text
     }
+    const payload =
+      prop === 'text'
+        ? defaultPayload
+        : {
+            ...defaultPayload,
+            text: notificationText
+          }
     return this.post<PostMessageResponse>('https://slack.com/api/chat.postMessage', payload)
   }
 
-  updateMessage(channelId: string, text: string, ts: string) {
+  updateMessage(channelId: string, blocks: string | Array<{type: string}>, ts: string) {
+    const newBlocks = typeof blocks === 'string' ? blocks : JSON.stringify(blocks)
     return this.get<UpdateMessageResponse>(
-      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&text=${text}&ts=${ts}`
+      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&blocks=${newBlocks}&ts=${ts}`
     )
   }
 }

@@ -1,11 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import Atmosphere from '~/Atmosphere'
 import {SimpleMutation} from '../types/relayMutations'
 import {
   ResetMeetingToStageMutation as TResetMeetingToStageMutation,
   ResetMeetingToStageMutationVariables
 } from '../__generated__/ResetMeetingToStageMutation.graphql'
-import Atmosphere from '~/Atmosphere'
+import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 
 graphql`
   fragment ResetMeetingToStageMutation_meeting on ResetMeetingToStagePayload {
@@ -30,18 +31,6 @@ graphql`
           id
           meetingId
           viewerVoteCount
-          tasks {
-            id
-          }
-          thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-            edges {
-              node {
-                id
-                threadId
-                threadSource
-              }
-            }
-          }
         }
       }
     }
@@ -59,12 +48,30 @@ const mutation = graphql`
   }
 `
 
+export const resetMeetingToStageUpdater = (payload, {store}) => {
+  const meeting = payload.getLinkedRecord('meeting')
+  const phases = meeting.getLinkedRecords('phases')
+  const discussPhase = phases.find((phase) => phase?.getValue('phaseType') === 'discuss')
+  if (!discussPhase) return
+  const stages = discussPhase.getLinkedRecords('stages')
+  stages.forEach((stage) => {
+    const discussionId = stage?.getValue('discussionId')
+    const thread = getDiscussionThreadConn(store, discussionId)
+    thread?.setLinkedRecords([], 'edges')
+  })
+}
+
 const ResetMeetingToStageMutation: SimpleMutation<TResetMeetingToStageMutation> = (
   atmosphere: Atmosphere,
   variables: ResetMeetingToStageMutationVariables
 ) => {
   return commitMutation<TResetMeetingToStageMutation>(atmosphere, {
     mutation,
+    updater: (store) => {
+      const payload = store.getRootField('resetMeetingToStage')
+      if (!payload) return
+      resetMeetingToStageUpdater(payload, {store})
+    },
     variables
   })
 }

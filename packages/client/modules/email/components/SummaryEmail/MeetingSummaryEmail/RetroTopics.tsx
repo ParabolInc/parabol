@@ -27,31 +27,36 @@ interface Props {
 
 const RetroTopics = (props: Props) => {
   const {isDemo, isEmail, appOrigin, meeting} = props
-  const {id: meetingId, reflectionGroups} = meeting
-  if (!reflectionGroups) return null
+  const {id: meetingId, phases} = meeting
+  const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
+  if (!discussPhase || !discussPhase.stages) return null
+  // filter out the dummy one when the meeting is first created
+  const stages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
+
   return (
     <>
       <tr>
         <td align='center' style={sectionHeading}>
-          {plural(reflectionGroups.length, RETRO_TOPIC_LABEL)}
+          {plural(stages.length, RETRO_TOPIC_LABEL)}
         </td>
       </tr>
-      {reflectionGroups.map((topic, idx) => {
+      {stages.map((stage, idx) => {
         const topicUrlPath = `/meet/${meetingId}/discuss/${idx + 1}`
         const topicUrl = isEmail
           ? makeAppURL(appOrigin, topicUrlPath, {
-            searchParams: {
-              utm_source: 'summary email',
-              utm_medium: 'email',
-              utm_campaign: 'after-meeting'
-            }
-          }) : topicUrlPath
+              searchParams: {
+                utm_source: 'summary email',
+                utm_medium: 'email',
+                utm_campaign: 'after-meeting'
+              }
+            })
+          : topicUrlPath
         return (
           <RetroTopic
-            key={topic.id}
+            key={stage.id}
             isDemo={isDemo}
             isEmail={isEmail}
-            topic={topic}
+            stage={stage}
             to={topicUrl}
           />
         )
@@ -65,9 +70,15 @@ export default createFragmentContainer(RetroTopics, {
   meeting: graphql`
     fragment RetroTopics_meeting on RetrospectiveMeeting {
       id
-      reflectionGroups(sortBy: voteCount) {
-        id
-        ...RetroTopic_topic
+      phases {
+        phaseType
+        ... on DiscussPhase {
+          stages {
+            id
+            reflectionGroupId
+            ...RetroTopic_stage
+          }
+        }
       }
     }
   `

@@ -13,17 +13,14 @@ import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {
-  MeetingTypeEnum,
-  DiscussionThreadInput_meeting
-} from '~/__generated__/DiscussionThreadInput_meeting.graphql'
-import {ThreadSourceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {DiscussionThreadInput_discussion} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
+import {DiscussionThreadInput_viewer} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'flex-end',
   borderRadius: isReply ? '4px 0 0 4px' : undefined,
@@ -48,11 +45,12 @@ const EditorWrap = styled('div')({
 })
 
 interface Props {
+  allowedThreadables: DiscussionThreadables[]
   editorRef: RefObject<HTMLTextAreaElement>
   getMaxSortOrder: () => number
-  meeting: DiscussionThreadInput_meeting
+  discussion: DiscussionThreadInput_discussion
+  viewer: DiscussionThreadInput_viewer
   onSubmitCommentSuccess?: () => void
-  threadSourceId: string
   threadParentId?: string
   isReply?: boolean
   isDisabled?: boolean
@@ -63,34 +61,28 @@ interface Props {
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {
+    allowedThreadables,
     editorRef,
     getMaxSortOrder,
-    meeting,
+    discussion,
     onSubmitCommentSuccess,
-    threadSourceId,
     threadParentId,
     replyMention,
     setReplyMention,
-    dataCy
+    dataCy,
+    viewer
   } = props
+  const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
-  const picture = viewerMeetingMember?.user.picture ?? anonymousAvatar
+  const {id: discussionId, isAnonymousComment, teamId} = discussion
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
-
-  const threadSourceByMeetingType = {
-    retrospective: 'REFLECTION_GROUP',
-    action: 'AGENDA_ITEM',
-    poker: 'STORY'
-  } as Record<MeetingTypeEnum, ThreadSourceEnum>
-  const threadSource = threadSourceByMeetingType[meetingType]
-
+  const allowTasks = allowedThreadables.includes('task')
   useEffect(() => {
     const inactiveCommenting = setTimeout(() => {
       if (isCommenting) {
@@ -98,8 +90,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           atmosphere,
           {
             isCommenting: false,
-            meetingId,
-            threadId: threadSourceId
+            discussionId
           },
           {onError, onCompleted}
         )
@@ -113,9 +104,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const toggleAnonymous = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      if (!meeting) return
-      meeting.setValue(!meeting.getValue('isAnonymousComment'), 'isAnonymousComment')
+      const discussion = store
+        .getRoot()
+        .getLinkedRecord('viewer')
+        ?.getLinkedRecord('discussion', {id: discussionId})
+      if (!discussion) return
+      discussion.setValue(!discussion.getValue('isAnonymousComment'), 'isAnonymousComment')
     })
     editorRef.current?.focus()
   }
@@ -133,12 +127,11 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     const comment = {
       content: rawContent,
       isAnonymous: isAnonymousComment,
-      threadId: threadSourceId,
+      discussionId,
       threadParentId,
-      threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
     }
-    AddCommentMutation(atmosphere, {comment, meetingId}, {onError, onCompleted})
+    AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(
       EditorState.moveFocusToEnd(
@@ -158,8 +151,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       atmosphere,
       {
         isCommenting: true,
-        meetingId,
-        threadId: threadSourceId
+        discussionId
       },
       {onError, onCompleted}
     )
@@ -172,8 +164,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       atmosphere,
       {
         isCommenting: false,
-        meetingId,
-        threadId: threadSourceId
+        discussionId
       },
       {onError, onCompleted}
     )
@@ -213,15 +204,13 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           teamId={teamId}
         />
       </EditorWrap>
-      {meetingType !== 'poker' && (
+      {allowTasks && (
         <CommentSendOrAdd
           dataCy={`${dataCy}`}
           getMaxSortOrder={getMaxSortOrder}
           commentSubmitState={commentSubmitState}
-          meeting={meeting}
-          threadSourceId={threadSourceId}
+          discussion={discussion}
           threadParentId={threadParentId}
-          threadSource={threadSource}
           collapseAddTask={collapseAddTask}
           onSubmit={onSubmit}
         />
@@ -231,18 +220,17 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 })
 
 export default createFragmentContainer(DiscussionThreadInput, {
-  meeting: graphql`
-    fragment DiscussionThreadInput_meeting on NewMeeting {
-      ...CommentSendOrAdd_meeting
+  viewer: graphql`
+    fragment DiscussionThreadInput_viewer on User {
+      picture
+    }
+  `,
+  discussion: graphql`
+    fragment DiscussionThreadInput_discussion on Discussion {
+      ...CommentSendOrAdd_discussion
       id
       teamId
-      meetingType
       isAnonymousComment
-      viewerMeetingMember {
-        user {
-          picture
-        }
-      }
     }
   `
 })

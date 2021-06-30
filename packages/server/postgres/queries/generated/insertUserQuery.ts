@@ -21,6 +21,7 @@ export interface IInsertUserQueryParams {
   tms: stringArray | null | void
   featureFlags: stringArray | null | void
   lastSeenAtURLs: stringArray | null | void
+  segmentId: string | null | void
   identities: JsonArray | null | void
 }
 
@@ -39,67 +40,72 @@ const insertUserQueryIR: any = {
     {
       name: 'id',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 249, b: 250, line: 19, col: 3}]}
+      codeRefs: {used: [{a: 264, b: 265, line: 20, col: 3}]}
     },
     {
       name: 'email',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 256, b: 260, line: 20, col: 3}]}
+      codeRefs: {used: [{a: 271, b: 275, line: 21, col: 3}]}
     },
     {
       name: 'createdAt',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 266, b: 274, line: 21, col: 3}]}
+      codeRefs: {used: [{a: 281, b: 289, line: 22, col: 3}]}
     },
     {
       name: 'updatedAt',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 280, b: 288, line: 22, col: 3}]}
+      codeRefs: {used: [{a: 295, b: 303, line: 23, col: 3}]}
     },
     {
       name: 'inactive',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 294, b: 301, line: 23, col: 3}]}
+      codeRefs: {used: [{a: 309, b: 316, line: 24, col: 3}]}
     },
     {
       name: 'lastSeenAt',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 307, b: 316, line: 24, col: 3}]}
+      codeRefs: {used: [{a: 322, b: 331, line: 25, col: 3}]}
     },
     {
       name: 'preferredName',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 322, b: 334, line: 25, col: 3}]}
+      codeRefs: {used: [{a: 337, b: 349, line: 26, col: 3}]}
     },
     {
       name: 'tier',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 340, b: 343, line: 26, col: 3}]}
+      codeRefs: {used: [{a: 355, b: 358, line: 27, col: 3}]}
     },
     {
       name: 'picture',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 349, b: 355, line: 27, col: 3}]}
+      codeRefs: {used: [{a: 364, b: 370, line: 28, col: 3}]}
     },
     {
       name: 'tms',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 361, b: 363, line: 28, col: 3}]}
+      codeRefs: {used: [{a: 376, b: 378, line: 29, col: 3}]}
     },
     {
       name: 'featureFlags',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 369, b: 380, line: 29, col: 3}]}
+      codeRefs: {used: [{a: 384, b: 395, line: 30, col: 3}]}
     },
     {
       name: 'lastSeenAtURLs',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 386, b: 399, line: 30, col: 3}]}
+      codeRefs: {used: [{a: 401, b: 414, line: 31, col: 3}]}
+    },
+    {
+      name: 'segmentId',
+      transform: {type: 'scalar'},
+      codeRefs: {used: [{a: 420, b: 428, line: 32, col: 3}]}
     },
     {
       name: 'identities',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 405, b: 414, line: 31, col: 3}]}
+      codeRefs: {used: [{a: 434, b: 443, line: 33, col: 3}]}
     }
   ],
   usedParamSet: {
@@ -115,12 +121,13 @@ const insertUserQueryIR: any = {
     tms: true,
     featureFlags: true,
     lastSeenAtURLs: true,
+    segmentId: true,
     identities: true
   },
   statement: {
     body:
-      'INSERT INTO "User" (\n  "id",\n  "email",\n  "createdAt", \n  "updatedAt",\n  "inactive",\n  "lastSeenAt",\n  "preferredName",\n  "tier",\n  "picture",\n  "tms",\n  "featureFlags",\n  "lastSeenAtURLs",\n  "identities"\n) VALUES (\n  :id,\n  :email,\n  :createdAt,\n  :updatedAt,\n  :inactive,\n  :lastSeenAt,\n  :preferredName,\n  :tier,\n  :picture,\n  :tms,\n  :featureFlags,\n  :lastSeenAtURLs,\n  :identities\n)',
-    loc: {a: 30, b: 416, line: 4, col: 0}
+      'INSERT INTO "User" (\n  "id",\n  "email",\n  "createdAt", \n  "updatedAt",\n  "inactive",\n  "lastSeenAt",\n  "preferredName",\n  "tier",\n  "picture",\n  "tms",\n  "featureFlags",\n  "lastSeenAtURLs",\n  "segmentId",\n  "identities"\n) VALUES (\n  :id,\n  :email,\n  :createdAt,\n  :updatedAt,\n  :inactive,\n  :lastSeenAt,\n  :preferredName,\n  :tier,\n  :picture,\n  :tms,\n  :featureFlags,\n  :lastSeenAtURLs,\n  :segmentId,\n  :identities\n)',
+    loc: {a: 30, b: 445, line: 4, col: 0}
   }
 }
 
@@ -140,6 +147,7 @@ const insertUserQueryIR: any = {
  *   "tms",
  *   "featureFlags",
  *   "lastSeenAtURLs",
+ *   "segmentId",
  *   "identities"
  * ) VALUES (
  *   :id,
@@ -154,6 +162,7 @@ const insertUserQueryIR: any = {
  *   :tms,
  *   :featureFlags,
  *   :lastSeenAtURLs,
+ *   :segmentId,
  *   :identities
  * )
  * ```

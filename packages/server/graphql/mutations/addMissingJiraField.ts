@@ -3,15 +3,15 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import AddMissingJiraFieldPayload from '../types/AddMissingJiraFieldPayload'
 import {GQLContext} from '../graphql'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import isPhaseComplete from '~/utils/meetings/isPhaseComplete'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
-import {TaskServiceEnum} from '../../database/types/Task'
 import JiraServiceTaskId from '~/shared/gqlIds/JiraServiceTaskId'
 import publish from '../../utils/publish'
 import {SubscriptionChannel} from '~/types/constEnums'
-import {JiraScreen, JiraScreensResponse, JiraScreenTab} from '~/utils/AtlassianManager'
+import {isJiraApiError, JiraScreen} from '~/utils/AtlassianManager'
+import standardError from '../../utils/standardError'
+import {isNotNull} from '../../utils/predicates'
 
 const addMissingJiraField = {
   type: GraphQLNonNull(AddMissingJiraFieldPayload),
@@ -38,15 +38,7 @@ const addMissingJiraField = {
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
-    const {
-      endedAt,
-      phases,
-      meetingType,
-      teamId,
-      createdBy,
-      facilitatorUserId,
-      templateRefId
-    } = meeting
+    const {endedAt, phases, meetingType, teamId, facilitatorUserId, templateRefId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
@@ -56,15 +48,7 @@ const addMissingJiraField = {
     if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    if (isPhaseComplete('ESTIMATE', phases)) {
-      return {error: {message: 'Estimate phase is already complete'}}
-    }
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== createdBy) {
-        return {
-          error: {message: 'Not meeting facilitator'}
-        }
-      }
       return {
         error: {message: 'Not meeting facilitator anymore'}
       }
@@ -79,15 +63,15 @@ const addMissingJiraField = {
     }
 
     // RESOLUTION
-    const {creatorUserId, dimensionRefIdx, service, serviceTaskId} = stage
+    const {dimensionRefIdx, service, serviceTaskId} = stage
     const templateRef = await getTemplateRefById(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
-    if ((service as TaskServiceEnum) !== 'jira') {
+    if (service !== 'jira') {
       return {error: {message: 'Non Jira service'}}
     }
-    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
+    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (!auth) {
       return {error: {message: 'User no longer has access to Atlassian'}}
     }
@@ -102,9 +86,14 @@ const addMissingJiraField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
+    const {fieldType, fieldId, fieldName} = dimensionField
 
-    const {values: screens} = (await manager.getScreens(cloudId)) as JiraScreensResponse
+    const screensResponse = await manager.getScreens(cloudId)
+    if (isJiraApiError(screensResponse)) {
+      return {error: {message: screensResponse.errorMessage}}
+    }
 
+    const {values: screens} = screensResponse
     // we're trying to guess what's the probability that given screen is assigned to an issue project
     const evaluateProbability = (screen: JiraScreen) => {
       if (screen.name.startsWith(projectKey) && screen.name.includes('Default')) return 1
@@ -113,46 +102,61 @@ const addMissingJiraField = {
 
       return 0.5
     }
-    const possibleScreens = screens
-      .map((screen) => ({screen, probability: evaluateProbability(screen)}))
-      .sort((screen1, screen2) => screen2.probability - screen1.probability)
-      .map(({screen}) => screen)
+    const possibleScreens = (
+      await Promise.all(
+        screens.map(async (screen) => {
+          const screenTabsResponse = await manager.getScreenTabs(cloudId, screen.id)
+          if (isJiraApiError(screenTabsResponse)) {
+            return null
+          }
 
-    // stores screen tabs so we won't need to refetch it when reverting from previous operation
-    const screenTabIds = new Map()
+          const [{id: tabId}] = screenTabsResponse
+          return {screenId: screen.id, tabId, probability: evaluateProbability(screen)}
+        })
+      )
+    )
+      .filter(isNotNull)
+      .sort((screen1, screen2) => screen2.probability - screen1.probability)
+    if (possibleScreens.length === 0) {
+      return {error: {message: 'No screens available to modify!'}}
+    }
+
+    const dummyValues = {number: 0, string: '0'}
+    const dummyValue = dummyValues[fieldType]
+
+    let updatedScreen: {screenId: string; tabId: string} | null = null
+    const screensToCleanup: Array<{screenId: string; tabId: string}> = []
     // iterate over all the screens sorted by probability, try to update the given field
     for (let i = 0; i < possibleScreens.length; i++) {
+      const screen = possibleScreens[i]
+      const {screenId, tabId} = screen
+      const addFieldResponse = await manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
+      if (isJiraApiError(addFieldResponse)) {
+        continue
+      }
+
       try {
-        const currentScreen = possibleScreens[i]
-        const previousScreen = i > 0 ? possibleScreens[i - 1] : null
-        if (previousScreen) {
-          await manager.removeFieldFromScreenTab(
-            cloudId,
-            previousScreen.id,
-            screenTabIds.get(previousScreen),
-            dimensionField.fieldId
-          )
-        }
-
-        const [{id: tabId}] = (await manager.getScreenTabs(
-          cloudId,
-          currentScreen.id
-        )) as JiraScreenTab[]
-        screenTabIds.set(currentScreen, tabId)
-        await manager.addFieldToScreenTab(cloudId, currentScreen.id, tabId, dimensionField.fieldId)
         // if we can update the field that was previously missing it means we've added it to the right screen
-        await manager.updateStoryPoints(
-          cloudId,
-          issueKey,
-          0, // dummy value
-          dimensionField.fieldId,
-          dimensionField.fieldName
-        )
-
+        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, fieldId, fieldName)
+        updatedScreen = screen
         break
       } catch (e) {
-        // do nothing, continue looking for a proper screen
+        // save a screen for a later cleanup, continue looking for a proper screen
+        screensToCleanup.push({screenId, tabId})
       }
+    }
+
+    // remove field from all the unused screens
+    if (screensToCleanup.length > 0) {
+      await Promise.all(
+        screensToCleanup.map(({screenId, tabId}) => {
+          return manager.removeFieldFromScreenTab(cloudId, screenId, tabId, fieldId)
+        })
+      )
+    }
+
+    if (updatedScreen === null) {
+      return standardError(new Error(`Couldn't fix the missing field!`))
     }
 
     // RESOLUTION

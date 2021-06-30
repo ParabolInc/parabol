@@ -8,39 +8,28 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
+import CommentorDetails from './CommentorDetails'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import ReflectPrompt from './ReflectPrompt'
 import RetroReflection from './RetroReflection'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
-import Task from './Task'
 import Team from './Team'
-import ThreadSource, {threadSourceFields} from './ThreadSource'
-import CommentorDetails from './CommentorDetails'
 
 const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
   description: 'A reflection group created during the group phase of a retrospective',
-  interfaces: () => [ThreadSource],
   fields: () => ({
-    ...threadSourceFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
     },
-    commentCount: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The number of comments in this group’s thread, if any',
-      resolve: async ({id: reflectionGroupId}, _args, {dataLoader}) => {
-        return dataLoader.get('commentCountByThreadId').load(reflectionGroupId)
-      }
-    },
     commentors: {
       type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
       description: 'A list of users currently commenting',
+      deprecationReason: 'Moved to ThreadConnection. Can remove Jun-01-2021',
       resolve: ({commentor = []}) => {
         return commentor
       }
@@ -94,18 +83,6 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order of the reflection group'
-    },
-    tasks: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
-      description: 'The tasks created for this group in the discussion phase',
-      resolve: async ({id: reflectionGroupId}, _args, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        const tasks = await dataLoader.get('tasksByThreadId').load(reflectionGroupId)
-        return tasks.filter((task) => {
-          if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
-          return true
-        })
-      }
     },
     team: {
       type: Team,

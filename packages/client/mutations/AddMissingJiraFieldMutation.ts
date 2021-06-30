@@ -14,6 +14,11 @@ graphql`
 const mutation = graphql`
   mutation AddMissingJiraFieldMutation($meetingId: ID!, $stageId: ID!) {
     addMissingJiraField(meetingId: $meetingId, stageId: $stageId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
       ...AddMissingJiraFieldMutation_dimensionField @relay(mask: false)
     }
   }

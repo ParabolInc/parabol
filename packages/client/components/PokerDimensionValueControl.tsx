@@ -6,17 +6,18 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import {setFinalScoreError} from '../hooks/useSetFinalScoreError'
+import useSetFinalScoreError, {setFinalScoreError} from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
+import {PokerSetFinalScoreMutationResponse} from '../__generated__/PokerSetFinalScoreMutation.graphql'
+import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
 import PokerDimensionFinalScoreJiraPicker from './PokerDimensionFinalScoreJiraPicker'
 import StyledError from './StyledError'
-import useModal from '../hooks/useModal'
-import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 
 const ControlWrap = styled('div')({
   padding: '0 8px'
@@ -78,30 +79,7 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
-const useHandleFinalScoreError = ({error, serviceField, stageId, setPendingScore, finalScore}) => {
-  const atmosphere = useAtmosphere()
-  const {closePortal, openPortal, modalPortal} = useModal()
-
-  useEffect(() => {
-    const nextError = error?.message ?? ''
-
-    if (
-      nextError.includes(
-        `Update failed! In Jira, add the field "${serviceField.name}" to the Issue screen.`
-      )
-    ) {
-      openPortal()
-    } else {
-      setFinalScoreError(atmosphere, stageId, nextError)
-      setPendingScore(finalScore)
-    }
-  }, [error, serviceField])
-
-  return {
-    addMissingJiraFieldModalPortal: modalPortal,
-    closeAddMissingJiraFieldModal: closePortal
-  }
-}
+const MissingJiraFieldError = `Update failed! In Jira, add the field`
 
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
@@ -117,26 +95,35 @@ const PokerDimensionValueControl = (props: Props) => {
   const lastServiceFieldNameRef = useRef(serviceFieldName)
   const canUpdate =
     pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
-  const {addMissingJiraFieldModalPortal, closeAddMissingJiraFieldModal} = useHandleFinalScoreError({
-    error,
-    stageId,
-    serviceField,
-    setPendingScore,
-    finalScore
-  })
+  const {closePortal, openPortal, modalPortal} = useModal()
+  useSetFinalScoreError(stageId, error)
 
   useLayoutEffect(() => {
     lastServiceFieldNameRef.current = serviceFieldName
-  }, [finalScore])
-
+  }, [serviceFieldName])
+  useEffect(() => {
+    // reset the pending score only if error is not related to missing Jira field, otherwise we need the value to update once Jira is 'fixed'
+    if (error && !error.message.includes(MissingJiraFieldError)) {
+      // we want this for remote errors but not local errors, so we keep the 2 in different vars
+      setPendingScore(finalScore)
+    }
+  }, [error, finalScore])
   const submitScore = () => {
     if (submitting || !canUpdate) return
     submitMutation()
     lastServiceFieldNameRef.current = serviceFieldName
+    const handleCompleted = (res: PokerSetFinalScoreMutationResponse, errors) => {
+      onCompleted(res as any, errors)
+      const {pokerSetFinalScore} = res
+      const {error} = pokerSetFinalScore
+      if (error?.message.includes(MissingJiraFieldError)) {
+        openPortal()
+      }
+    }
     PokerSetFinalScoreMutation(
       atmosphere,
       {finalScore: pendingScore, meetingId, stageId},
-      {onError, onCompleted}
+      {onError, onCompleted: handleCompleted}
     )
   }
 
@@ -227,11 +214,11 @@ const PokerDimensionValueControl = (props: Props) => {
           </>
         )}
       </Control>
-      {addMissingJiraFieldModalPortal(
+      {modalPortal(
         <AddMissingJiraFieldModal
           stage={stage}
           submitScore={submitScore}
-          closePortal={closeAddMissingJiraFieldModal}
+          closePortal={closePortal}
         />
       )}
     </ControlWrap>

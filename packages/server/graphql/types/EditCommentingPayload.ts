@@ -19,8 +19,9 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
     meetingId: {
       type: GraphQLNonNull(GraphQLID)
     },
-    threadId: {
-      type: GraphQLNonNull(GraphQLID)
+    discussionId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The discussion the comment was created in'
     }
   })
 })

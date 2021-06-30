@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
-import updateUser from '../../queries/updateUser'
+import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import getRethink from '../../../database/rethinkDriver'
-import User from '../../../database/types/User'
-import {backupUserQuery, IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
 import getPg from '../../getPg'
+import {backupUserQuery} from '../../queries/generated/backupUserQuery'
+import updateUser from '../../queries/updateUser'
 import catchAndLog from '../../utils/catchAndLog'
 
-export const shorthands: ColumnDefinitions | undefined = undefined;
+export const shorthands: ColumnDefinitions | undefined = undefined
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -36,7 +34,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     .table('User')
     .getAll(r.args(skippedUserIds))
     .run()
-  const skippedPgUsers = skippedRethinkUsers.map(user => ({
+  const skippedPgUsers = skippedRethinkUsers.map((user) => ({
     ...undefinedUserFieldsAndTheirDefaultPgValues,
     ...user
   }))

@@ -1,9 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer, createPaginationContainer} from 'react-relay'
+import {createPaginationContainer} from 'react-relay'
 // import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
+import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
+import {SprintPokerDefaults} from '../types/constEnums'
 import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
 // import useAtmosphere from '../hooks/useAtmosphere'
 // import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
@@ -27,15 +31,16 @@ interface Props {
 const GitHubScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
   const github = viewer?.teamMember!.integrations.github ?? null
-  const {githubSearchQuery} = meeting
+  const {githubSearchQuery, teamId, phases} = meeting
   const {queryString} = githubSearchQuery
   const errors = github?.api?.errors ?? null
   const edges = github?.api?.query?.search?.edges ?? null
+  console.log({edges})
   const [isEditing, setIsEditing] = useState(false)
-  // const atmosphere = useAtmosphere()
+  const atmosphere = useAtmosphere()
   // const {id: meetingId, teamId, phases, githubSearchQuery} = meeting
-  // const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
-  // const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
   // even though it's a little herky jerky, we need to give the user feedback that a search is pending
@@ -43,37 +48,35 @@ const GitHubScopingSearchResults = (props: Props) => {
   if (!edges) return <MockScopingList />
   if (edges.length === 0 && !isEditing) {
     const invalidQuery = gitHubQueryValidation(queryString)
-    const defaultErrMsg = 'No issues match that query'
     return (
       <>
         <IntegrationScopingNoResults
-          error={invalidQuery || (errors && errors[0].message)}
-          msg={invalidQuery ? invalidQuery : defaultErrMsg}
+          error={invalidQuery || errors?.[0]?.message}
+          msg={'No issues match that query'}
         />
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     )
   }
 
-  // const persistQuery = () => {
-  //   const {queryString} = githubSearchQuery
-  //   // don't persist an empty string (the default)
-  //   if (!queryString) return
-  //   const nameWithOwnerFilters = githubSearchQuery.nameWithOwnerFilters as string[]
-  //   nameWithOwnerFilters.sort()
-  //   const lookupKey = JSON.stringify({queryString, nameWithOwnerFilters})
-  //   const {githubSearchQueries} = github!
-  //   const searchHashes = githubSearchQueries.map(({queryString, nameWithOwnerFilters}) => {
-  //     return JSON.stringify({queryString, nameWithOwnerFilters})
-  //   })
-  //   const isQueryNew = !searchHashes.includes(lookupKey)
-  //   if (isQueryNew) {
-  //     PersistGitHubSearchQueryMutation(atmosphere, {
-  //       teamId,
-  //       input: {queryString, nameWithOwnerFilters: nameWithOwnerFilters as string[]}
-  //     })
-  //   }
-  // }
+  const persistQuery = () => {
+    // don't persist empty
+    if (!queryString) return
+    const normalizedQueryString = queryString.toLowerCase().trim()
+    // don't persist default
+    if (normalizedQueryString === SprintPokerDefaults.GITHUB_DEFAULT_QUERY) return
+
+    const {githubSearchQueries} = github!
+    const searchHashes = githubSearchQueries.map(({queryString}) => queryString)
+    const isQueryNew = !searchHashes.includes(queryString)
+    if (isQueryNew) {
+      PersistGitHubSearchQueryMutation(atmosphere, {
+        teamId,
+        queryString
+      })
+    }
+  }
+  console.log(persistQuery, usedServiceTaskIds)
   return (
     <>
       {/* <GitHubScopingSelectAllIssues
@@ -126,6 +129,9 @@ export default createPaginationContainer(
           }
           integrations {
             github {
+              githubSearchQueries {
+                queryString
+              }
               api {
                 errors {
                   message
@@ -148,11 +154,6 @@ export default createPaginationContainer(
                     }
                   }
                 }
-                query {
-                  viewer {
-                    bio
-                  }
-                }
               }
             }
           }
@@ -165,7 +166,6 @@ export default createPaginationContainer(
         id
         teamId
         githubSearchQuery {
-          nameWithOwnerFilters
           queryString
         }
         phases {
@@ -179,7 +179,7 @@ export default createPaginationContainer(
     direction: 'forward',
     getConnectionFromProps(props) {
       const {viewer} = props
-      return viewer?.teamMember?.integrations.github?.api.query.search
+      return viewer?.teamMember?.integrations.github?.api?.query?.search
     },
     getFragmentVariables(prevVars) {
       return {

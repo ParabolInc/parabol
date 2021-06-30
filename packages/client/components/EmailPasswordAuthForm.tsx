@@ -25,6 +25,7 @@ import useRouter from '../hooks/useRouter'
 import getAnonymousId from '../utils/getAnonymousId'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
+import {AuthPageSlug} from './GenericAuthentication'
 
 interface Props {
   email: string
@@ -32,6 +33,7 @@ interface Props {
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
+  goToPage?: (page: AuthPageSlug, params: string) => void
 }
 
 const FieldGroup = styled('div')({
@@ -83,8 +85,11 @@ const validatePassword = (password: string) => {
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
-  const {isPrimary, isSignin, invitationToken} = props
-  const [isSSO, setIsSSO] = useState(false)
+  const {isPrimary, isSignin, invitationToken, email, goToPage} = props
+  const {location} = useRouter()
+  const params = new URLSearchParams(location.search)
+  const isSSODefault = Boolean(params.get('sso'))
+  const [isSSO, setIsSSO] = useState(isSSODefault)
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
   const [ssoDomain, setSSODomain] = useState('')
@@ -93,7 +98,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const {history} = useRouter()
   const {fields, onChange, setDirtyField, validateField} = useForm({
     email: {
-      getDefault: () => props.email,
+      getDefault: () => email,
       validate: validateEmail
     },
     password: {
@@ -127,6 +132,10 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
 
   const toggleSSO = () => {
     setIsSSO(!isSSO)
+    if (isSSODefault && goToPage) {
+      params.delete('sso')
+      goToPage('signin', params.toString())
+    }
   }
 
   const tryLoginWithSSO = async (email: string) => {
@@ -211,8 +220,9 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
         </Button>
       </Form>
-      <UseSSO onClick={toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'
-        } SSO`}</UseSSO>
+      <UseSSO onClick={toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${
+        isSSO ? 'without' : 'with'
+      } SSO`}</UseSSO>
     </>
   )
 })

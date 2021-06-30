@@ -1,11 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import EditCommentingPayload from '../types/EditCommentingPayload'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
 export default {
   type: EditCommentingPayload,
@@ -15,36 +14,28 @@ export default {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'True if the user is commenting, false if the user has stopped commenting'
     },
-    meetingId: {
-      type: GraphQLNonNull(GraphQLID)
-    },
-    threadId: {
+    discussionId: {
       type: GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
     _source,
-    {isCommenting, meetingId, threadId},
+    {isCommenting, discussionId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const [meeting, viewerMeetingMember] = await Promise.all([
-      r
-        .table('NewMeeting')
-        .get(meetingId)
-        .run(),
-      dataLoader.get('meetingMembers').load(meetingMemberId)
-    ])
-
-    if (!meeting) {
-      return {error: {message: 'Meeting not found'}}
+    const discussion = await dataLoader.get('discussions').load(discussionId)
+    if (!discussion) {
+      return {error: {message: 'Discussion not found'}}
     }
+    const {meetingId} = discussion
+
+    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+    const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
       return {error: {message: `Not a part of the meeting`}}
     }
@@ -53,8 +44,7 @@ export default {
     const data = {
       commentorId: viewerId,
       isCommenting,
-      meetingId,
-      threadId
+      discussionId
     }
     publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
 

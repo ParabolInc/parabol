@@ -57,27 +57,20 @@ const GitHubScopingSearchHistoryMenu = (props: Props) => {
         <NoResults key='no-results'>No saved queries yet!</NoResults>
       )}
       {githubSearchQueries.map((githubSearchQuery) => {
-        const {id: queryId, queryString, isJQL, nameWithOwnerFilters} = githubSearchQuery
+        const {id: queryId, queryString} = githubSearchQuery
         const selectQuery = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = `githubSearchQuery:${meetingId}`
             const githubSearchQuery = store.get(searchQueryId)!
-            githubSearchQuery.setValue(isJQL, 'isJQL')
             githubSearchQuery.setValue(queryString, 'queryString')
-            githubSearchQuery.setValue(nameWithOwnerFilters as string[], 'nameWithOwnerFilters')
           })
         }
-        const queryStringLabel = isJQL ? queryString : `“${queryString}”`
-        const filters = nameWithOwnerFilters
-          .map((filter) => filter.slice(filter.indexOf(':') + 1))
-          .join(', ')
         return (
           <MenuItem
             key={queryId}
             label={
               <StyledMenuItemLabel>
-                <QueryString>{queryStringLabel}</QueryString>
-                {filters && <ProjectFilter>{`in ${filters}`}</ProjectFilter>}
+                <QueryString>{queryString}</QueryString>
               </StyledMenuItemLabel>
             }
             onClick={selectQuery}
@@ -96,7 +89,6 @@ export default createFragmentContainer(GitHubScopingSearchHistoryMenu, {
           githubSearchQueries {
             id
             queryString
-            nameWithOwnerFilters
           }
         }
       }
