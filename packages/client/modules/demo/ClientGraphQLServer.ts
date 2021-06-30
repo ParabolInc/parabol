@@ -417,8 +417,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
         integration: {
-          __typename: 'TaskIntegrationJira',
-          id: `${taskId}:jira`,
+          __typename: 'JiraIssue',
+          id: `jira:${taskId}`,
           ...JiraProjectKeyLookup[projectKey],
           issueKey: this.getTempId(`${projectKey}-`)
         }

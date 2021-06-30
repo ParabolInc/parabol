@@ -2,6 +2,7 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import IntegrationHashId from '../../../client/shared/gqlIds/IntegrationHashId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
@@ -67,19 +68,16 @@ export default {
     }
 
     // RESOLUTION
-    const {userId, content: rawContentStr, meetingId} = task
-    const [viewerAuth, assigneeAuth] = await dataLoader.get('githubAuth').loadMany([
-      {teamId, userId: viewerId},
-      {teamId, userId}
-    ])
+    const {content: rawContentStr, meetingId} = task
+    const viewerAuth = await dataLoader.get('githubAuth').load({teamId, userId: viewerId})
 
-    if (!assigneeAuth || !assigneeAuth.isActive) {
+    if (!viewerAuth) {
       return standardError(
         new Error(`Assignment failed! The assignee does not have access to GitHub`),
         {userId: viewerId}
       )
     }
-
+    const {accessToken, login} = viewerAuth
     const rawContent = JSON.parse(rawContentStr)
     const {blocks} = rawContent
     let {text: title} = blocks[0]
@@ -91,15 +89,11 @@ export default {
     }
     const contentState =
       blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
-    let body = stateToMarkdown(contentState)
-    if (!viewerAuth) {
-      const viewer = await dataLoader.get('users').load(viewerId)
-      body = `${body}\n\n_Added by ${viewer.preferredName}_`
-    }
-    const {accessToken} = viewerAuth || assigneeAuth
+    const body = stateToMarkdown(contentState)
+
     const manager = new GitHubServerManager(accessToken)
 
-    const repoInfo = await manager.getRepoInfo(nameWithOwner, assigneeAuth.login)
+    const repoInfo = await manager.getRepoInfo(nameWithOwner, login)
     if ('message' in repoInfo) {
       return {error: repoInfo}
     }
@@ -128,14 +122,15 @@ export default {
     }
     const {createIssue} = payload
     const issue = createIssue.issue!
-    const {id: issueId, number: issueNumber} = issue
+    const {number: issueNumber} = issue
 
     await r
       .table('Task')
       .get(taskId)
       .update({
+        integrationHash: IntegrationHashId.join('github', nameWithOwner, issueNumber),
         integration: {
-          id: issueId,
+          accessUserId: viewerId,
           service: 'github',
           issueNumber,
           nameWithOwner

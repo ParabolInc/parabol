@@ -129,7 +129,8 @@ export default {
     }
     const data = {
       cloudId,
-      key: res.key,
+      projectKey,
+      issueKey: res.key,
       meetingId,
       teamId,
       userId: viewerId

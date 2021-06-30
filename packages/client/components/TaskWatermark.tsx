@@ -1,12 +1,12 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
+import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import GitHubSVG from './GitHubSVG'
 import JiraSVG from './JiraSVG'
-import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 
 const iconLookup = {
-  github: GitHubSVG,
-  jira: JiraSVG
+  GitHubIssue: GitHubSVG,
+  JiraIssue: JiraSVG
 }
 
 const WatermarkBlock = styled('div')({
@@ -31,12 +31,13 @@ const WatermarkBlock = styled('div')({
 })
 
 interface Props {
-  service: TaskServiceEnum | undefined
+  type: TaskServiceEnum | undefined
 }
 const TaskWatermark = (props: Props) => {
-  const {service} = props
-  if (!service) return null
-  const SVG = iconLookup[service]
+  const {type} = props
+  if (!type) return null
+  const SVG = iconLookup[type]
+  if (!SVG) return null
   return (
     <WatermarkBlock>
       <SVG />

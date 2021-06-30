@@ -2,6 +2,7 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import IntegrationHashId from '../../../client/shared/gqlIds/IntegrationHashId'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -161,8 +162,10 @@ export default {
       .table('Task')
       .get(taskId)
       .update({
+        integrationHash: IntegrationHashId.join('jira', cloudId, res.key),
         integration: {
           id: res.id,
+          accessUserId: viewerId,
           service: 'jira',
           projectKey,
           projectName,

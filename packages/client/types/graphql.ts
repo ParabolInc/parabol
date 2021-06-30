@@ -44434,7 +44434,16 @@ export interface ITask {
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails>;
+
+  /**
+   * The reference to the single source of truth for this task
+   */
   integration: TaskIntegration | null;
+
+  /**
+   * A hash of the integrated task
+   */
+  integrationHash: string | null;
 
   /**
    * the foreign key for the meeting the task was created in
@@ -44972,7 +44981,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * cloudId:key. equal to the serviceTaskId on the EstimateStage
+   * jira:cloudId:issueKey. equal to Task.integrationHash
    */
   id: string;
 
@@ -45004,6 +45013,13 @@ export interface IJiraIssue {
 
   /**
    * The key of the issue as found in Jira
+   * @deprecated "Use issue key instead"
+   */
+  issueKey: string;
+
+  /**
+   * The key of the issue as found in Jira
+   * @deprecated "Use issue key instead"
    */
   key: string;
 
@@ -45021,6 +45037,17 @@ export interface IJiraIssue {
    * The description converted into raw HTML
    */
   descriptionHTML: string;
+}
+
+export type TaskIntegration =
+  | IJiraIssue
+  | ITaskIntegrationGitHub
+  | ITaskIntegrationJira
+  | IGitHubIssue;
+
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration';
+  id: string;
 }
 
 export interface IStandardMutationError {
@@ -46409,14 +46436,6 @@ export interface ITaskEditorDetails {
    * The name of the userId editing the task
    */
   preferredName: string;
-}
-
-export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira;
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration';
-  id: string;
-  service: TaskServiceEnum;
 }
 
 /**
@@ -50089,7 +50108,6 @@ export interface IActionMeetingSettings {
 export interface ITaskIntegrationGitHub {
   __typename: 'TaskIntegrationGitHub';
   id: string;
-  service: TaskServiceEnum;
   nameWithOwner: string | null;
   issueNumber: number | null;
 }
@@ -50100,7 +50118,6 @@ export interface ITaskIntegrationGitHub {
 export interface ITaskIntegrationJira {
   __typename: 'TaskIntegrationJira';
   id: string;
-  service: TaskServiceEnum;
 
   /**
    * The project key used by jira as a more human readable proxy for a projectId

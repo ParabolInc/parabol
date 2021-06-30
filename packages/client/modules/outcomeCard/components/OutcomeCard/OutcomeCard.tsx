@@ -5,6 +5,7 @@ import React, {memo, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
@@ -12,7 +13,6 @@ import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFoc
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import {Card} from '../../../../types/constEnums'
-import {AreaEnum, TaskServiceEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import isTempId from '../../../../utils/relay/isTempId'
@@ -82,10 +82,10 @@ const OutcomeCard = memo((props: Props) => {
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
-  const {integration, status, taskId, team} = task
+  const {integration, status, id: taskId, team} = task
   const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
-  const {teamId} = team
-  const service = integration ? (integration.service as TaskServiceEnum) : undefined
+  const {id: teamId} = team
+  const type = integration?.__typename
   const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
   const archivedTitle = ', set as #archived'
@@ -99,7 +99,7 @@ const OutcomeCard = memo((props: Props) => {
       isTaskFocused={isTaskFocused}
       isDragging={!!isDraggingOver}
     >
-      <TaskWatermark service={service} />
+      <TaskWatermark type={type} />
       <ContentBlock>
         <EditingStatus
           isTaskHovered={isTaskHovered}
@@ -113,7 +113,8 @@ const OutcomeCard = memo((props: Props) => {
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
         </EditingStatus>
-        <TaskEditorWrapper
+        <IntegratedTaskContent task={task}/>
+        {!type && <TaskEditorWrapper
           onBlur={() => {
             removeTaskChild('root')
             setTimeout(handleCardUpdate)
@@ -124,12 +125,13 @@ const OutcomeCard = memo((props: Props) => {
             dataCy={`${dataCy}`}
             editorRef={editorRef}
             editorState={editorState}
-            readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || service)}
+            readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || type)}
             setEditorState={setEditorState}
             teamId={teamId}
             useTaskChild={useTaskChild}
           />
         </TaskEditorWrapper>
+        }
         <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />
         <TaskFooter
           dataCy={`${dataCy}`}
@@ -148,15 +150,15 @@ const OutcomeCard = memo((props: Props) => {
 export default createFragmentContainer(OutcomeCard, {
   task: graphql`
     fragment OutcomeCard_task on Task {
-      taskId: id
+      id
       integration {
-        service
+        __typename
         ...TaskIntegrationLink_integration
       }
       status
       tags
       team {
-        teamId: id
+        id
       }
       # grab userId to ensure sorting on connections works
       userId

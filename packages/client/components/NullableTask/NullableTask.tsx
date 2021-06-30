@@ -1,13 +1,13 @@
+import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw} from 'draft-js'
 import React, {useEffect, useMemo} from 'react'
-import NullCard from '../NullCard/NullCard'
-import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
-import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
+import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
+import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
+import NullCard from '../NullCard/NullCard'
 
 interface Props {
   area: AreaEnum
@@ -21,7 +21,7 @@ interface Props {
 
 const NullableTask = (props: Props) => {
   const {area, className, isAgenda, task, isDraggingOver, dataCy} = props
-  const {content, createdBy, createdByUser} = task
+  const {content, createdBy, createdByUser, integration} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
     try {
@@ -47,7 +47,7 @@ const NullableTask = (props: Props) => {
     ]
   )
 
-  const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId
+  const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId || integration?.__typename === 'JiraIssue'
   return showOutcome ? (
     <OutcomeCardContainer
       dataCy={`${dataCy}`}
@@ -70,6 +70,9 @@ export default createFragmentContainer(NullableTask, {
       createdBy
       createdByUser {
         preferredName
+      }
+      integration {
+        __typename
       }
       status
       ...OutcomeCardContainer_task

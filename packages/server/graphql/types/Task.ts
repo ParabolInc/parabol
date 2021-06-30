@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
@@ -66,7 +67,23 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       resolve: (source: any) => source.editors ?? []
     },
     integration: {
-      type: TaskIntegration
+      type: TaskIntegration,
+      description: 'The reference to the single source of truth for this task',
+      resolve: async ({integration, teamId}: DBTask, _args, {dataLoader}) => {
+        if (!integration) return null
+        const {accessUserId} = integration
+        if (integration.service === 'jira') {
+          const {cloudId, issueKey} = integration
+          return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+        } else if (integration.service === 'github') {
+          // TODO
+        }
+        return null
+      }
+    },
+    integrationHash: {
+      type: GraphQLID,
+      description: 'A hash of the integrated task'
     },
     meetingId: {
       type: GraphQLID,

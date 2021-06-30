@@ -31,8 +31,8 @@ interface Props {
 const TaskIntegrationLink = (props: Props) => {
   const {integration, dataCy, className, children, showJiraLabelPrefix} = props
   if (!integration) return null
-  const {service} = integration
-  if (service === 'jira') {
+  const {__typename} = integration
+  if (__typename === 'JiraIssue') {
     const {
       issueKey,
       projectKey,
@@ -49,7 +49,7 @@ const TaskIntegrationLink = (props: Props) => {
         showLabelPrefix={showJiraLabelPrefix}
       />
     )
-  } else if (service === 'github') {
+  } else if (__typename === 'GithubIssue') {
     const {nameWithOwner, issueNumber} = integration
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
@@ -89,7 +89,7 @@ graphql`
 export default createFragmentContainer(TaskIntegrationLink, {
   integration: graphql`
     fragment TaskIntegrationLink_integration on TaskIntegration {
-      service
+      __typename
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
     }

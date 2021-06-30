@@ -224,7 +224,6 @@ export default createFragmentContainer(PokerEstimateHeaderCardParabol, {
           id
           title
           integration {
-            service
             ...TaskIntegrationLink_integration
           }
           plaintextContent

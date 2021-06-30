@@ -9,8 +9,8 @@ graphql`
   fragment CreateJiraTaskIntegrationMutation_task on CreateJiraTaskIntegrationPayload {
     task {
       integration {
-        service
-        ... on TaskIntegrationJira {
+        __typename
+        ... on JiraIssue {
           cloudId
           projectKey
           projectName

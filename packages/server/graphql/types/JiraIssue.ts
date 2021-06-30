@@ -1,22 +1,36 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import IntegrationHashId from '../../../client/shared/gqlIds/IntegrationHashId'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
+import JiraRemoteProject from './JiraRemoteProject'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
 import Story, {storyFields} from './Story'
+import TaskIntegration from './TaskIntegration'
 
 const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraIssue',
   description: 'The Jira Issue that comes direct from Jira',
-  interfaces: () => [Story],
-  isTypeOf: ({cloudId, key}) => !!(cloudId && key),
+  interfaces: () => [Story, TaskIntegration],
+  isTypeOf: ({cloudId, issueKey}) => !!(cloudId && issueKey),
   fields: () => ({
     ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'cloudId:key. equal to the serviceTaskId on the EstimateStage'
+      description: 'jira:cloudId:issueKey. equal to Task.integrationHash',
+      resolve: ({cloudId, issueKey}) => {
+        return IntegrationHashId.join('jira', cloudId, issueKey)
+      }
+    },
+    teamId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The parabol teamId this issue was fetched for'
+    },
+    userId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The parabol userId this issue was fetched for'
     },
     cloudId: {
       type: GraphQLNonNull(GraphQLID),
@@ -29,13 +43,40 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     url: {
       type: GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue',
-      resolve: ({cloudName, key}) => {
-        return `https://${cloudName}.atlassian.net/browse/${key}`
+      resolve: ({cloudName, issueKey}) => {
+        return `https://${cloudName}.atlassian.net/browse/${issueKey}`
       }
     },
+    issueKey: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The key of the issue as found in Jira',
+    },
+    projectKey: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The key of the project, which is the prefix to the issueKey',
+      resolve: ({issueKey}) => issueKey.slice(0, issueKey.indexOf('-'))
+    },
+    project: {
+      type: JiraRemoteProject,
+      description: 'The project fetched from jira',
+      resolve: async ({projectKey, teamId, userId}, _args, {dataLoader}) => {
+        return dataLoader.get('jiraRemoteProject').load({})
+      }
+    },
+    // projectName: {
+    //   type: GraphQLNonNull(GraphQLString),
+    //   description: 'The full name of the project ',
+    //   resolve: async ({projectName, projectKey, issueKey}) => {
+    //     if (projectName) return projectName
+    //     const key = projectKey || issueKey.slice(0, issueKey.indexOf('-'))
+    //     const projectRes = await
+    //       issueKey.slice(0, issueKey.indexOf('-'))
+    //   }
+    // },
     key: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The key of the issue as found in Jira'
+      description: 'The key of the issue as found in Jira',
+      deprecationReason: 'Use issueKey instead'
     },
     summary: {
       type: GraphQLNonNull(GraphQLString),

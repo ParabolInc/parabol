@@ -1,5 +1,5 @@
 import AbortController from 'abort-controller'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+import IntegrationHashId from '../shared/gqlIds/IntegrationHashId'
 export interface JiraUser {
   self: string
   key: string
@@ -183,7 +183,7 @@ interface JiraGQLFields {
   cloudName: string
   description: any
   descriptionHTML: string
-  key: string
+  issueKey: string
   summary: string
 }
 interface JiraSearchResponse<T = {summary: string; description: string}> {
@@ -374,11 +374,11 @@ export default abstract class AtlassianManager {
     return projects
   }
 
-  async getProject(cloudId: string, projectId: string) {
+  async getProject(cloudId: string, projectKey: string) {
     const project = (await this.get(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectId}`
-    )) as JiraProject | AtlassianError
-    return 'id' in project ? {...project, cloudId} : project
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectKey}`
+    )) as JiraProject | AtlassianError | JiraError
+    return project
   }
 
   async convertMarkdownToADF(markdown: string) {
@@ -443,12 +443,12 @@ export default abstract class AtlassianManager {
       ) as AtlassianError | JiraError | JiraIssueBean
     ])
     if ('fields' in issueRes) {
-      const fields = issueRes.fields as any
+      const fields = issueRes.fields as JiraGQLFields
       fields.cloudName = cloudNameLookup[cloudId]
       fields.descriptionHTML = (issueRes as any).renderedFields.description
       fields.cloudId = cloudId
-      fields.key = issueKey
-      fields.id = `${cloudId}:${issueKey}`
+      fields.issueKey = issueKey
+      fields.id = IntegrationHashId.join('jira', cloudId, issueKey)
     }
     return issueRes as AtlassianError | JiraError | JiraGetIssueRes
   }
@@ -507,14 +507,14 @@ export default abstract class AtlassianManager {
       if ('issues' in res) {
         const {issues} = res
         issues.forEach((issue) => {
-          const {key, fields, renderedFields} = issue
+          const {key: issueKey, fields, renderedFields} = issue
           const {description, summary} = fields
           const {description: descriptionHTML} = renderedFields
           const gqlFields = {
-            key,
+            issueKey,
             summary,
             cloudId,
-            id: JiraServiceTaskId.join(cloudId, key),
+            id: IntegrationHashId.join('jira', cloudId, issueKey),
             description,
             descriptionHTML,
             cloudName: ''
