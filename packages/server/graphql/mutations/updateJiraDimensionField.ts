@@ -10,6 +10,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
+import stringify from 'fast-json-stable-stringify'
 
 const getJiraField = async (fieldName: string, cloudId: string, auth: FreshAtlassianAuth) => {
   // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
@@ -116,10 +117,11 @@ const updateJiraDimensionField = {
     }
 
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
+    const sortedJiraDimensionFields = jiraDimensionFields
+      .slice(jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS)
+      .sort((a, b) => (stringify(a) < stringify(b) ? -1 : 1))
     const updates = {
-      jiraDimensionFields: jiraDimensionFields.slice(
-        jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-      ),
+      jiraDimensionFields: sortedJiraDimensionFields,
       updatedAt: new Date()
     }
     await Promise.all([
