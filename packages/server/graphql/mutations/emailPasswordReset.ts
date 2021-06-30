@@ -89,7 +89,7 @@ const emailPasswordReset = {
         .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
         .run()
 
-      const updates = {identities}
+      const updates = {identities, updatedAt: new Date()}
       await Promise.all([updateUser(updates, userId), db.write('User', userId, updates)])
 
       const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})

@@ -82,10 +82,11 @@ const loginWithGoogle = {
             id: sub
           })
           identities.push(googleIdentity) // mutative
-          await Promise.all([
-            db.write('User', viewerId, {identities}),
-            updateUser({identities}, viewerId)
-          ])
+          const updates = {
+            identities,
+            updatedAt: new Date()
+          }
+          await Promise.all([db.write('User', viewerId, updates), updateUser(updates, viewerId)])
         }
         // MUTATIVE
         context.authToken = new AuthToken({sub: viewerId, rol, tms: existingUser.tms})

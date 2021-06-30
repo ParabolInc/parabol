@@ -32,13 +32,18 @@ const lockTeams = {
     const lockMessageHTML = isPaid ? null : message ?? null
 
     // RESOLUTION
+    const updates = {
+      isPaid,
+      lockMessageHTML,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('Team')
         .getAll(r.args(teamIds))
-        .update({isPaid, lockMessageHTML})
+        .update(updates)
         .run(),
-      updateTeamByTeamId({isPaid, lockMessageHTML}, teamIds)
+      updateTeamByTeamId(updates, teamIds)
     ])
     return true
   }

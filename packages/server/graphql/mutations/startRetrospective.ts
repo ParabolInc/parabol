@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import Organization from '../../database/types/Organization'
@@ -40,7 +41,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const meetingType = 'retrospective'
+    const meetingType: MeetingTypeEnum = 'retrospective'
 
     // RESOLUTION
     const meetingCount = await r
@@ -105,6 +106,10 @@ export default {
       return {error: {message: 'Meeting already started'}}
     }
 
+    const updates = {
+      lastMeetingType: meetingType,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('MeetingMember')
@@ -115,9 +120,9 @@ export default {
       r
         .table('Team')
         .get(teamId)
-        .update({lastMeetingType: meetingType})
+        .update(updates)
         .run(),
-      updateTeamByTeamId({lastMeetingType: meetingType}, teamId)
+      updateTeamByTeamId(updates, teamId)
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
