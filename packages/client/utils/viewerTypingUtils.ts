@@ -17,6 +17,6 @@ export const isViewerTypingInComment = () => {
   const ariaLabel = getAriaLabel(activeElement)
   return (
     ariaLabel === AriaLabels.COMMENT_EDITOR &&
-    (activeElement.contentEditable === 'true' || activeElement.tagName === 'INPUT')
+    (activeElement.contentEditable === 'true' || activeElement.tagName === 'TEXTAREA')
   )
 }
