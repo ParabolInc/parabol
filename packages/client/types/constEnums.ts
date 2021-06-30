@@ -218,6 +218,7 @@ export const enum MeetingTypes {
 
 export const enum NavSidebar {
   FONT_SIZE = 14,
+  ITEM_HEIGHT = 40,
   LEFT_BORDER_WIDTH = '3px',
   LINE_HEIGHT = '24px',
   SUB_FONT_SIZE = 14,

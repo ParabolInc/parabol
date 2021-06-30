@@ -10,6 +10,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/DraggableReflectionCard_meeting.graphql'
+import {NavSidebar} from '../types/constEnums'
 
 const AvatarBlock = styled('div')({
   width: 32
@@ -37,8 +38,13 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting, phaseType} = props
   const {id: meetingId, facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
   const {phaseType: localPhaseType} = localPhase
-  const isActivePhase = phaseType === localPhaseType
   const localStageId = (localStage && localStage.id) || ''
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isActivePhase = phaseType === localPhaseType
+  const isViewerFacilitator = viewerId === facilitatorUserId
+  const stageCount = localPhase.stages.length
+
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage =
       localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
@@ -46,11 +52,12 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
     gotoStageId(teamMemberStageId).catch()
     handleMenuClick()
   }
-  const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const isViewerFacilitator = viewerId === facilitatorUserId
+
   return (
-    <MeetingSidebarPhaseItemChild isActive={isActivePhase}>
+    <MeetingSidebarPhaseItemChild
+      isActive={isActivePhase}
+      maxHeight={NavSidebar.ITEM_HEIGHT * stageCount}
+    >
       <ScrollStageItems>
         {localPhase.stages.map((stage) => {
           const {
