@@ -36,14 +36,22 @@ interface Props {
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting, phaseType} = props
-  const {id: meetingId, facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
+  const {
+    id: meetingId,
+    facilitatorStageId,
+    facilitatorUserId,
+    localPhase,
+    localStage,
+    phases
+  } = meeting
   const {phaseType: localPhaseType} = localPhase
   const localStageId = (localStage && localStage.id) || ''
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isActivePhase = phaseType === localPhaseType
+  const isActivePhase = phaseType === localPhaseType && phaseType !== 'agendaitems'
   const isViewerFacilitator = viewerId === facilitatorUserId
   const stageCount = localPhase.stages.length
+  const stages = phases.find(({phaseType}) => phaseType === phaseType)?.stages
 
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage =
@@ -53,13 +61,14 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
     handleMenuClick()
   }
 
+  if (!stages) return null
   return (
     <MeetingSidebarPhaseItemChild
       isActive={isActivePhase}
       height={NavSidebar.ITEM_HEIGHT * stageCount}
     >
       <ScrollStageItems>
-        {localPhase.stages.map((stage) => {
+        {stages.map((stage) => {
           const {
             id: stageId,
             isComplete,
@@ -68,6 +77,15 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigableByFacilitator,
             isNavigable
           } = stage
+          // console.log('🚀  ~ ---> stage', stage)
+          // console.log('🚀 ____!___', {
+          //   teamMember,
+          //   localPhase,
+          //   stageCount,
+          //   phaseType,
+          //   localPhaseType,
+          //   isActivePhase
+          // })
           if (!teamMember) {
             Sentry.captureException(
               new Error(
@@ -78,7 +96,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             )
             return null
           }
-          const {picture, preferredName} = teamMember!
+          const {picture, preferredName} = teamMember
           const isLocalStage = localStageId === stageId
           const isFacilitatorStage = facilitatorStageId === stageId
           const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage

@@ -16,22 +16,22 @@ interface Props {
 
 const ActionSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, meeting} = props
-  if (phaseType === 'agendaitems') {
-    return (
-      <ActionSidebarAgendaItemsSection
+  return (
+    <>
+      <MeetingSidebarTeamMemberStageItems
         gotoStageId={gotoStageId}
         handleMenuClick={handleMenuClick}
         meeting={meeting}
+        phaseType={phaseType}
       />
-    )
-  }
-  return (
-    <MeetingSidebarTeamMemberStageItems
-      gotoStageId={gotoStageId}
-      handleMenuClick={handleMenuClick}
-      meeting={meeting}
-      phaseType={phaseType}
-    />
+      {phaseType === 'agendaitems' && (
+        <ActionSidebarAgendaItemsSection
+          gotoStageId={gotoStageId}
+          handleMenuClick={handleMenuClick}
+          meeting={meeting}
+        />
+      )}
+    </>
   )
 }
 
