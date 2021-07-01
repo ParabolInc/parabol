@@ -48,17 +48,13 @@ export default {
       // TODO: re-identify
     }
     const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
+    const updates = {
+      inactive: false,
+      lastSeenAt: now,
+      updatedAt: now
+    }
     if (!datesAreOnSameDay) {
-      await Promise.all([
-        updateUser(
-          {
-            inactive: false,
-            lastSeenAt: now
-          },
-          userId
-        ),
-        db.write('User', userId, {inactive: false, lastSeenAt: now})
-      ])
+      await Promise.all([updateUser(updates, userId), db.write('User', userId, updates)])
     }
     const socketCount = await redis.rpush(
       `presence:${userId}`,

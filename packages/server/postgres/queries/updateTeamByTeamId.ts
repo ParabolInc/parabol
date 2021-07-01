@@ -4,9 +4,10 @@ import {
   updateTeamByTeamIdQuery
 } from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
 import getPg from '../../postgres/getPg'
+import {OptionalExceptFor} from '../../utils/TypeUtil'
 
 const updateTeamByTeamId = async (
-  teamUpdates: Partial<IUpdateTeamByTeamIdQueryParams>,
+  teamUpdates: OptionalExceptFor<IUpdateTeamByTeamIdQueryParams, 'updatedAt'>,
   teamIds: string | string[]
 ) => {
   teamIds = typeof teamIds === 'string' ? [teamIds] : teamIds

@@ -37,7 +37,7 @@ export default class User {
   picture: string
   inactive: boolean
   identities: AuthIdentity[]
-  isRemoved?: true
+  isRemoved?: boolean
   createdAt: Date
   segmentId?: string
   tier: TierEnum
