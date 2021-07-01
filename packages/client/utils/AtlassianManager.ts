@@ -91,7 +91,7 @@ interface Assignee {
 interface CreateIssueFields {
   assignee: Assignee
   summary: string
-  description?: object
+  description?: Record<any, any>
   reporter?: Reporter // probably can't use, it throws a lot of errors
   project?: Partial<JiraProject>
   issuetype?: Partial<JiraIssueType>
@@ -109,7 +109,7 @@ interface JiraCreateIssueResponse {
   self: string
 }
 
-type GetProjectsCallback = (error: AtlassianError | null, result: GetProjectsResult | null) => void
+type GetProjectsCallback = (error: AtlassianError | Error | null, result: GetProjectsResult | null) => void
 
 interface JiraNoAccessError {
   errorMessages: ['The app is not installed on this instance.']
@@ -178,9 +178,7 @@ interface JiraAddCommentResponse {
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 interface JiraGQLFields {
-  id: string
   cloudId: string
-  cloudName: string
   description: any
   descriptionHTML: string
   issueKey: string
@@ -224,84 +222,93 @@ export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
   static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
   accessToken: string
-  private readonly fetchWithTimeout: (
-    url: string,
-    options: RequestInit,
-    errorResponse?: any
-  ) => ReturnType<typeof fetch>
-  private readonly get: (url: string) => any
-  private readonly post: (url: string, payload: any) => any
-  private readonly put: (url: string, payload: any) => any
-  // the any is for node until we can use tsc in nodeland
-  cache: {[key: string]: {result: any; expiration: number | any}} = {}
-  timeout = 5000
+  private headers = {
+    Authorization: '',
+    Accept: 'application/json' as const,
+    'Content-Type': 'application/json' as const
+  }
+  private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
+    const controller = new AbortController()
+    const {signal} = controller
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, MAX_REQUEST_TIME)
+    try {
+      const res = await this.fetch(url, {...options, signal})
+      clearTimeout(timeout)
+      return res
+    } catch (e) {
+      clearTimeout(timeout)
+      return new Error('Atlassian is down')
+    }
+  }
+  private readonly get = async <T>(url: string) => {
+    const res = await this.fetchWithTimeout(url, {headers: this.headers})
+    if (res instanceof Error) {
+      return res
+    }
+    const json = (await res.json()) as AtlassianError | JiraNoAccessError | T
+    if ('message' in json) {
+      return new Error(json.message)
+    }
+    if ('errorMessages' in json) {
+      return new Error(json.errorMessages[0])
+    }
+    return json
+  }
+  private readonly post = async <T>(url: string, payload: any) => {
+    const res = await this.fetchWithTimeout(url, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify(payload)
+    })
+    if (res instanceof Error) {
+      return res
+    }
+    const json = (await res.json()) as JiraError | AtlassianError | T
+    if ('message' in json) {
+      return new Error(json.message)
+    }
+    if ('errorMessages' in json) {
+      return new Error(json.errorMessages[0])
+    }
+    if ('errors' in json) {
+      const errorFieldName = Object.keys(json.errors)[0]
+      return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
+    }
+    return json
+  }
+  private readonly put = async (url: string, payload: any) => {
+    const res = await this.fetchWithTimeout(url, {
+      method: 'PUT',
+      headers: this.headers,
+      body: JSON.stringify(payload)
+    })
+    if (res instanceof Error) {
+      return res
+    }
+
+    if (res.status == 204) return null
+    const error = (await res.json()) as AtlassianError
+    return new Error(error.message)
+  }
 
   constructor(accessToken: string) {
     this.accessToken = accessToken
-    const headers = {
-      // an Authorization requires a preflight request, ie reqs are slow
-      Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json' as const,
-      'Content-Type': 'application/json'
-    }
-    this.fetchWithTimeout = async (url, options, errorResponse?: any) => {
-      const controller = new AbortController()
-      const {signal} = controller as any
-      const timeout = setTimeout(() => {
-        controller.abort()
-      }, MAX_REQUEST_TIME)
-      try {
-        const res = await this.fetch(url, {...options, signal})
-        clearTimeout(timeout)
-        return res
-      } catch (e) {
-        clearTimeout(timeout)
-        if (errorResponse !== undefined) return errorResponse
-        return {code: -1, message: 'Atlassian is down'}
-      }
-    }
-
-    this.post = async (url, payload) => {
-      const res = await this.fetchWithTimeout(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      })
-      return (res as any).code === -1 ? res : res.json()
-    }
-
-    this.put = async (url, payload) => {
-      const res = await this.fetchWithTimeout(url, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify(payload)
-      })
-      if (res.status == 204) return null
-      if ((res as any).code === -1) return res
-      return res.json()
-    }
-
-    this.get = async (url) => {
-      const res = await this.fetchWithTimeout(url, {headers})
-      return (res as any).code === -1 ? res : res.json()
-    }
+    this.headers.Authorization = `Bearer ${accessToken}`
   }
 
   async getAccessibleResources() {
-    return this.get('https://api.atlassian.com/oauth/token/accessible-resources') as
-      | AccessibleResource[]
-      | AtlassianError
+    return this.get<AccessibleResource[]>('https://api.atlassian.com/oauth/token/accessible-resources')
   }
 
   async getMyself(cloudId: string) {
-    return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/myself`) as
-      | JiraUser
-      | AtlassianError
+    return this.get<JiraUser>(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/myself`)
   }
 
   async getPaginatedProjects(cloudId: string, url: string, callback: GetProjectsCallback) {
-    const res = (await this.get(url)) as JiraProjectResponse | AtlassianError
-    if ('message' in res) {
+    const res = await this.get<JiraProjectResponse>(url)
+    if (res instanceof Error) {
       callback(res, null)
     } else {
       callback(null, {cloudId, newProjects: res.values})
@@ -324,37 +331,33 @@ export default abstract class AtlassianManager {
   }
 
   async getProjectAvatar(avatarUrl: string) {
+    // use fetchWithTimeout because we want a buffer
     const imageRes = await this.fetchWithTimeout(
       avatarUrl,
       {
-        headers: {Authorization: `Bearer ${this.accessToken}`}
-      },
-      null
+        headers: {Authorization: this.headers.Authorization}
+      }
     )
-    if (!imageRes) return ''
+
+    if (!imageRes || imageRes instanceof Error) return ''
     const arrayBuffer = await imageRes.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer).toString('base64')
     const contentType = imageRes.headers.get('content-type')
     return `data:${contentType};base64,${buffer}`
   }
   async getAllProjects(cloudIds: string[]) {
-    const projects = [] as (JiraProject & {cloudId: string; avatar: string})[]
-    let error = null as null | string
+    const projects = [] as (JiraProject & {cloudId: string})[]
+    let error: Error | undefined
     const getProjectPage = async (cloudId: string, url: string) => {
-      const res = (await this.get(url)) as JiraProjectResponse | AtlassianError
-      if ('message' in res) {
-        error = res.message
+      const res = await this.get<JiraProjectResponse>(url)
+      if (res instanceof Error) {
+        error = res
       } else {
-        const jiraProjects = res.values
-        const avatars = await Promise.all(
-          jiraProjects.map((project) => {
-            const url = project.avatarUrls['48x48']
-            return this.getProjectAvatar(url)
-          })
-        )
-        jiraProjects.forEach((project, idx) => {
-          projects.push({...project, cloudId, avatar: avatars[idx]})
-        })
+        const pagedProjects = res.values.map((project) => ({
+          ...project,
+          cloudId
+        }))
+        projects.push(...pagedProjects)
         if (res.nextPage) {
           return getProjectPage(cloudId, res.nextPage)
         }
@@ -368,6 +371,7 @@ export default abstract class AtlassianManager {
         )
       )
     )
+
     if (error) {
       console.log('getAllProjects ERROR:', error)
     }
@@ -375,16 +379,17 @@ export default abstract class AtlassianManager {
   }
 
   async getProject(cloudId: string, projectKey: string) {
-    const project = (await this.get(
+    const project = await this.get<JiraProject>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectKey}`
-    )) as JiraProject | AtlassianError | JiraError
+    )
+
     return project
   }
 
   async convertMarkdownToADF(markdown: string) {
-    return this.post('https://api.atlassian.com/pf-editor-service/convert?from=markdown&to=adf', {
+    return this.post<any>('https://api.atlassian.com/pf-editor-service/convert?from=markdown&to=adf', {
       input: markdown
-    }) as any
+    })
   }
 
   async getCreateMeta(cloudId: string, projectKeys?: string[]) {
@@ -395,15 +400,15 @@ export default abstract class AtlassianManager {
     if (args.length) {
       args = '?' + args
     }
-    return this.get(
+    return this.get<IssueCreateMetadata>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta${args}`
-    ) as IssueCreateMetadata | AtlassianError | JiraError
+    )
   }
 
   async getEditMeta(cloudId: string, issueKey: string) {
-    return this.get(
+    return this.get<IssueCreateMetadata>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/editmeta`
-    ) as IssueCreateMetadata | AtlassianError | JiraError
+    )
   }
 
   async createIssue(cloudId: string, projectKey: string, issueFields: CreateIssueFields) {
@@ -415,17 +420,14 @@ export default abstract class AtlassianManager {
         ...issueFields
       } as CreateIssueFields
     }
-    return this.post(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue`, payload) as
-      | JiraCreateIssueResponse
-      | AtlassianError
-      | JiraError
+    return this.post<JiraCreateIssueResponse>(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue`, payload)
   }
 
   async getCloudNameLookup() {
     const sites = await this.getAccessibleResources()
     const cloudNameLookup = {} as {[cloudId: string]: string}
-    if ('message' in sites) {
-      return cloudNameLookup
+    if (sites instanceof Error) {
+      return sites
     }
     sites.forEach((site) => {
       cloudNameLookup[site.id] = site.name
@@ -435,22 +437,21 @@ export default abstract class AtlassianManager {
 
   async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
     const baseFields = ['summary', 'description']
-    const fields = [...baseFields, ...extraFieldIds].join(',')
-    const [cloudNameLookup, issueRes] = await Promise.all([
-      this.getCloudNameLookup(),
-      this.get(
-        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${fields}&expand=renderedFields`
-      ) as AtlassianError | JiraError | JiraIssueBean
-    ])
-    if ('fields' in issueRes) {
-      const fields = issueRes.fields as JiraGQLFields
-      fields.cloudName = cloudNameLookup[cloudId]
-      fields.descriptionHTML = (issueRes as any).renderedFields.description
-      fields.cloudId = cloudId
-      fields.issueKey = issueKey
-      fields.id = IntegrationHashId.join('jira', cloudId, issueKey)
+    const reqFields = [...baseFields, ...extraFieldIds].join(',')
+    const issueRes = await this.get<JiraIssueBean<{description: string, summary: string}, {description: string}>>(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
+    )
+    if (issueRes instanceof Error) return issueRes
+    return {
+      ...issueRes,
+      fields: {
+        ...issueRes.fields,
+        descriptionHTML: issueRes.renderedFields.description,
+        cloudId,
+        issueKey,
+        id: IntegrationHashId.join('jira', cloudId, issueKey)
+      }
     }
-    return issueRes as AtlassianError | JiraError | JiraGetIssueRes
   }
 
   async getIssues(
@@ -460,7 +461,7 @@ export default abstract class AtlassianManager {
   ) {
     const cloudIds = Object.keys(projectFiltersByCloudId)
     const allIssues = [] as JiraGQLFields[]
-    let firstError: string | null = null
+    let firstError: Error | undefined
     const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
       const orderBy = 'order by lastViewed DESC'
       if (isJQL) return queryString || orderBy
@@ -482,52 +483,32 @@ export default abstract class AtlassianManager {
         expand: ['renderedFields']
       }
 
-      function isJiraNoAccessError<T>(
-        response: T | JiraNoAccessError
-      ): response is JiraNoAccessError {
-        return 'errorMessages' in response
-      }
-
-      function isAtError<T>(response: T | AtlassianError): response is AtlassianError {
-        return 'message' in response
-      }
-      // TODO add type
-      const res = (await this.post(url, payload)) as AtlassianError | JiraError | JiraSearchResponse
-      if (!firstError) {
-        if (isAtError(res)) {
-          firstError = res.message
-        } else if (isJiraNoAccessError(res)) {
-          firstError = res.errorMessages[0]
-          if (firstError.includes('THe app is not installed on this instance')) {
-            firstError = 'Jira access revoked. Please reintegrate with Jira.'
+      const res = await this.post<JiraSearchResponse>(url, payload)
+      if (res instanceof Error) {
+        if (!firstError) {
+          firstError = res
+          if (firstError.message.includes('not installed on this instance')) {
+            firstError.message = 'Jira access revoked. Please reintegrate with Jira.'
           }
         }
+        return
       }
-
-      if ('issues' in res) {
-        const {issues} = res
-        issues.forEach((issue) => {
-          const {key: issueKey, fields, renderedFields} = issue
-          const {description, summary} = fields
-          const {description: descriptionHTML} = renderedFields
-          const gqlFields = {
-            issueKey,
-            summary,
-            cloudId,
-            id: IntegrationHashId.join('jira', cloudId, issueKey),
-            description,
-            descriptionHTML,
-            cloudName: ''
-          } as JiraGQLFields
-          allIssues.push(gqlFields)
-        })
-      }
+      const issues = res.issues.map((issue) => {
+        const {key: issueKey, fields, renderedFields} = issue
+        const {description, summary} = fields
+        const {description: descriptionHTML} = renderedFields
+        return {
+          summary,
+          description,
+          descriptionHTML,
+          cloudId,
+          issueKey
+        }
+      })
+      allIssues.push(...issues)
     })
-    const [cloudNameLookup] = await Promise.all([this.getCloudNameLookup() as any, ...reqs])
-    allIssues.forEach((issue) => {
-      issue.cloudName = cloudNameLookup[issue.cloudId]
-    })
-    return {error: firstError as string | null, issues: allIssues}
+    await Promise.all(reqs)
+    return {error: firstError, issues: allIssues}
   }
 
   async getComments(cloudId: string, issueKey: string) {
@@ -537,7 +518,7 @@ export default abstract class AtlassianManager {
   }
 
   async getFields(cloudId: string) {
-    return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field`) as JiraField[]
+    return this.get<JiraField[]>(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field`)
   }
 
   async getFieldScreens(cloudId: string, fieldId: string) {
@@ -546,14 +527,14 @@ export default abstract class AtlassianManager {
     ) as any
   }
 
-  async addComment(cloudId: string, issueKey: string, body: object) {
+  async addComment(cloudId: string, issueKey: string, body: any) {
     const payload = {
       body
     }
-    return this.post(
+    return this.post<JiraAddCommentResponse>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`,
       payload
-    ) as AtlassianError | JiraAddCommentResponse
+    )
   }
 
   async getFirstValidJiraField(
@@ -562,6 +543,7 @@ export default abstract class AtlassianManager {
     testIssueKeyId: string
   ) {
     const fields = await this.getFields(cloudId)
+    if (fields instanceof Error) return null
 
     const possibleFields = possibleFieldNames
       .map((fieldName) => {
@@ -577,7 +559,7 @@ export default abstract class AtlassianManager {
               [field.id]: 0
             }
           }
-        ) as null | AtlassianError | JiraError
+        )
       })
     )
     const firstValidUpdateIdx = updateResArr.indexOf(null)
@@ -599,34 +581,21 @@ export default abstract class AtlassianManager {
     const res = (await this.put(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
       payload
-    )) as null | AtlassianError | JiraError
-    if (res !== null) {
-      console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
-      if ('message' in res) {
-        throw new Error(res.message)
-      }
-
-      if ('errorMessages' in res) {
-        const globalError = res.errorMessages?.[0]
-        if (globalError) {
-          if (globalError.includes('The app is not installed on this instance')) {
-            throw new Error(
-              'The user who added this issue was removed from Jira. Please remove & re-add the issue'
-            )
-          }
-          throw new Error(globalError)
-        }
-      }
-      if ('errors' in res) {
-        const fieldError = res.errors[fieldId]
-        if (fieldError.includes('is not on the appropriate screen')) {
-          throw new Error(
-            `Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`
-          )
-        }
-        throw new Error(`Jira: ${fieldError}`)
-      }
-      throw new Error('Cannot update field in Jira')
+    ))
+    if (res === null) return
+    console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
+    if (res.message.includes('The app is not installed on this instance')) {
+      throw new Error(
+        'The user who added this issue was removed from Jira. Please remove & re-add the issue'
+      )
     }
+    if (res.message.startsWith(fieldId)) {
+      if (res.message.includes('is not on the appropriate screen')) {
+        throw new Error(
+          `Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`
+        )
+      }
+    }
+    throw res
   }
 }

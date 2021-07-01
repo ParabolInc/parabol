@@ -1,10 +1,5 @@
 import DataLoader from 'dataloader'
-import {decode} from 'jsonwebtoken'
-import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
-import IntegrationHashId from '../../client/shared/gqlIds/IntegrationHashId'
-import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
-import AtlassianAuth from '../database/types/AtlassianAuth'
 import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
@@ -17,26 +12,9 @@ import {
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
-import AtlassianServerManager from '../utils/AtlassianServerManager'
-import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
-
-type TeamUserKey = {teamId: string; userId: string}
-export interface JiraRemoteProjectKey {
-  userId: string
-  teamId: string
-  cloudId: string
-  projectKey: string
-}
-
-export interface JiraIssueKey {
-  teamId: string
-  userId: string
-  cloudId: string
-  issueKey: string
-}
 
 export interface UserTasksKey {
   first: number
@@ -188,8 +166,8 @@ export const userTasks = (parent: RethinkDataLoader) => {
                 archived
                   ? task('tags').contains('archived')
                   : task('tags')
-                    .contains('archived')
-                    .not()
+                      .contains('archived')
+                      .not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true
@@ -215,51 +193,6 @@ export const userTasks = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: serializeUserTasksKey
-    }
-  )
-}
-
-export interface FreshAtlassianAuth extends AtlassianAuth {
-  accessToken: string
-}
-export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<TeamUserKey, FreshAtlassianAuth | null, string>(
-    async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({userId, teamId}) => {
-          const r = await getRethink()
-          const atlassianAuth = await r
-            .table('AtlassianAuth')
-            .getAll(userId, {index: 'userId'})
-            .filter({teamId})
-            .nth(0)
-            .default(null)
-            .run()
-
-          if (!atlassianAuth?.refreshToken) return null
-          const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
-          const now = new Date()
-          const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
-          if (!decodedToken || decodedToken.exp < inAMinute) {
-            const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken} = manager
-            atlassianAuth.accessToken = accessToken
-            atlassianAuth.updatedAt = now
-            await r
-              .table('AtlassianAuth')
-              .getAll(userId, {index: 'userId'})
-              .filter({teamId})
-              .update({accessToken, updatedAt: now})
-              .run()
-          }
-          return atlassianAuth
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
     }
   )
 }
@@ -293,91 +226,6 @@ export const githubAuth = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
-    }
-  )
-}
-
-export const jiraRemoteProject = (parent: RethinkDataLoader) => {
-  return new DataLoader<JiraRemoteProjectKey, string, string>(
-    async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({userId, teamId, cloudId, projectKey}) => {
-          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-          if (!auth) {
-            sendToSentry(new Error('No atlassian access token exists for team member'), {
-              userId,
-              tags: {teamId}
-            })
-            return null
-          }
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
-          const projectRes = await manager.getProject(cloudId, projectKey)
-          if ('message' in projectRes) {
-            sendToSentry(new Error(projectRes.message), {userId, tags: {cloudId, projectKey, teamId}})
-            return null
-          }
-          if ('errors' in projectRes) {
-            const error = projectRes.errors[0]
-            sendToSentry(new Error(error), {userId, tags: {cloudId, projectKey, teamId}})
-            return null
-          }
-          if ('errorMessages' in projectRes) {
-            const error = projectRes.errorMessages[0]
-            sendToSentry(new Error(error), {userId, tags: {cloudId, projectKey, teamId}})
-            return null
-          }
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.atlassianProjectId}:${key.cloudId}`
-    }
-  )
-}
-
-export const jiraIssue = (parent: RethinkDataLoader) => {
-  return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
-    async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({teamId, userId, cloudId, issueKey}) => {
-          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-          if (!auth) {
-            sendToSentry(new Error('No atlassian access token exists for team member'), {
-              userId,
-              tags: {teamId}
-            })
-            return null
-          }
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
-          const issueRes = await manager.getIssue(cloudId, issueKey)
-          if ('message' in issueRes) {
-            sendToSentry(new Error(issueRes.message), {userId, tags: {cloudId, issueKey, teamId}})
-            return null
-          }
-          if ('errors' in issueRes) {
-            const error = issueRes.errors[0]
-            sendToSentry(new Error(error), {userId, tags: {cloudId, issueKey, teamId}})
-            return null
-          }
-          if ('errorMessages' in issueRes) {
-            const error = issueRes.errorMessages[0]
-            sendToSentry(new Error(error), {userId, tags: {cloudId, issueKey, teamId}})
-            return null
-          }
-          return {
-            ...issueRes.fields,
-            teamId,
-            userId
-          }
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({cloudId, issueKey}) => IntegrationHashId.join('jira', cloudId, issueKey)
     }
   )
 }

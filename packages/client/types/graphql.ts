@@ -44997,6 +44997,16 @@ export interface IJiraIssue {
   title: string;
 
   /**
+   * The parabol teamId this issue was fetched for
+   */
+  teamId: string;
+
+  /**
+   * The parabol userId this issue was fetched for
+   */
+  userId: string;
+
+  /**
    * The ID of the jira cloud where the issue lives
    */
   cloudId: string;
@@ -45013,13 +45023,22 @@ export interface IJiraIssue {
 
   /**
    * The key of the issue as found in Jira
-   * @deprecated "Use issue key instead"
    */
   issueKey: string;
 
   /**
+   * The key of the project, which is the prefix to the issueKey
+   */
+  projectKey: string;
+
+  /**
+   * The project fetched from jira
+   */
+  project: IJiraRemoteProject | null;
+
+  /**
    * The key of the issue as found in Jira
-   * @deprecated "Use issue key instead"
+   * @deprecated "Use issueKey instead"
    */
   key: string;
 
@@ -45050,26 +45069,22 @@ export interface ITaskIntegration {
   id: string;
 }
 
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
-
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
-}
-
 /**
  * A project fetched from Jira in real time
  */
 export interface IJiraRemoteProject {
   __typename: 'JiraRemoteProject';
   id: string;
+
+  /**
+   * The parabol teamId this issue was fetched for
+   */
+  teamId: string;
+
+  /**
+   * The parabol userId this issue was fetched for
+   */
+  userId: string;
   self: string;
 
   /**
@@ -45105,6 +45120,20 @@ export interface IJiraRemoteProjectCategory {
   id: string;
   name: string;
   description: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
 }
 
 /**
@@ -54511,6 +54540,16 @@ export interface IGitHubIssue {
    * The url to access the issue
    */
   url: any;
+
+  /**
+   * The name of the repository with owner
+   */
+  nameWithOwner: string;
+
+  /**
+   * The issue number
+   */
+  issueNumber: number;
 
   /**
    * The repository that the issue belongs to

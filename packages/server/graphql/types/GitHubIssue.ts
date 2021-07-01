@@ -15,13 +15,21 @@ const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The id of the issue as found in GitHub',
+      description: 'The id of the issue as found in GitHub'
       // TODO fix me
       // resolve: ()
     },
     url: {
       type: GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue'
+    },
+    nameWithOwner: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The name of the repository with owner'
+    },
+    issueNumber: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The issue number'
     },
     repository: {
       type: GraphQLNonNull(GitHubRepository),

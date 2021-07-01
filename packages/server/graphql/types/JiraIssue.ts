@@ -38,18 +38,22 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     },
     cloudName: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The name of the jira cloud where the issue lives'
+      description: 'The name of the jira cloud where the issue lives',
+      resolve: async ({cloudId, teamId, userId}, _args, {dataLoader}) => {
+        return dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId})
+      }
     },
     url: {
       type: GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue',
-      resolve: ({cloudName, issueKey}) => {
+      resolve: async ({cloudId, teamId, userId, issueKey}, _args, {dataLoader}) => {
+        const cloudName = await dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId})
         return `https://${cloudName}.atlassian.net/browse/${issueKey}`
       }
     },
     issueKey: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The key of the issue as found in Jira',
+      description: 'The key of the issue as found in Jira'
     },
     projectKey: {
       type: GraphQLNonNull(GraphQLID),
@@ -59,20 +63,10 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     project: {
       type: JiraRemoteProject,
       description: 'The project fetched from jira',
-      resolve: async ({projectKey, teamId, userId}, _args, {dataLoader}) => {
-        return dataLoader.get('jiraRemoteProject').load({})
+      resolve: async ({projectKey, teamId, userId, cloudId}, _args, {dataLoader}) => {
+        return dataLoader.get('jiraRemoteProject').load({cloudId, projectKey, teamId, userId})
       }
     },
-    // projectName: {
-    //   type: GraphQLNonNull(GraphQLString),
-    //   description: 'The full name of the project ',
-    //   resolve: async ({projectName, projectKey, issueKey}) => {
-    //     if (projectName) return projectName
-    //     const key = projectKey || issueKey.slice(0, issueKey.indexOf('-'))
-    //     const projectRes = await
-    //       issueKey.slice(0, issueKey.indexOf('-'))
-    //   }
-    // },
     key: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The key of the issue as found in Jira',

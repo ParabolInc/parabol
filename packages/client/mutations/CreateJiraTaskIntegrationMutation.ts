@@ -13,7 +13,9 @@ graphql`
         ... on JiraIssue {
           cloudId
           projectKey
-          projectName
+          project {
+            name
+          }
         }
         ...TaskIntegrationLinkIntegrationJira
       }
@@ -65,7 +67,9 @@ const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegra
       )
       const hasMore = suggestedIntegrations.getValue('hasMore')
       if (!existingIntegration || !hasMore) {
-        const projectName = integration.getValue('projectName')
+        const project = integration.getLinkedRecord('project')
+        if (!project) return
+        const projectName = project.getValue('projectName')
         const cloudId = integration.getValue('cloudId')
         if (!projectName || !cloudId) return
         const nextItem = {

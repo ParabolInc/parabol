@@ -1,16 +1,15 @@
-import {CreateGitHubTaskIntegrationMutation as TCreateGitHubTaskIntegrationMutation} from '../__generated__/CreateGitHubTaskIntegrationMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {CreateGitHubTaskIntegrationMutation as TCreateGitHubTaskIntegrationMutation} from '../__generated__/CreateGitHubTaskIntegrationMutation.graphql'
 
 graphql`
   fragment CreateGitHubTaskIntegrationMutation_task on CreateGitHubTaskIntegrationPayload {
     task {
       integration {
-        ... on TaskIntegrationGitHub {
+        ... on GitHubIssue {
           issueNumber
-          service
           nameWithOwner
         }
         ...TaskIntegrationLinkIntegrationGitHub
@@ -45,12 +44,11 @@ const CreateGitHubTaskIntegrationMutation: StandardMutation<TCreateGitHubTaskInt
       const task = store.get(taskId)
       if (!task) return
       const optimisticIntegration = {
-        service: 'github',
         nameWithOwner,
-        issueNumber: '?',
+        issueNumber: 0,
         updatedAt: now.toJSON()
       } as const
-      const integration = createProxyRecord(store, 'TaskIntegrationGitHub', optimisticIntegration)
+      const integration = createProxyRecord(store, 'GitHubIssue', optimisticIntegration)
       task.setLinkedRecord(integration, 'integration')
     },
     onCompleted,

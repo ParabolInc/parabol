@@ -6,6 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
@@ -113,25 +114,26 @@ const OutcomeCard = memo((props: Props) => {
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
         </EditingStatus>
-        <IntegratedTaskContent task={task}/>
-        {!type && <TaskEditorWrapper
-          onBlur={() => {
-            removeTaskChild('root')
-            setTimeout(handleCardUpdate)
-          }}
-          onFocus={() => addTaskChild('root')}
-        >
-          <TaskEditor
-            dataCy={`${dataCy}`}
-            editorRef={editorRef}
-            editorState={editorState}
-            readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || type)}
-            setEditorState={setEditorState}
-            teamId={teamId}
-            useTaskChild={useTaskChild}
-          />
-        </TaskEditorWrapper>
-        }
+        <IntegratedTaskContent task={task} />
+        {!type && (
+          <TaskEditorWrapper
+            onBlur={() => {
+              removeTaskChild('root')
+              setTimeout(handleCardUpdate)
+            }}
+            onFocus={() => addTaskChild('root')}
+          >
+            <TaskEditor
+              dataCy={`${dataCy}`}
+              editorRef={editorRef}
+              editorState={editorState}
+              readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || type)}
+              setEditorState={setEditorState}
+              teamId={teamId}
+              useTaskChild={useTaskChild}
+            />
+          </TaskEditorWrapper>
+        )}
         <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />
         <TaskFooter
           dataCy={`${dataCy}`}
@@ -150,6 +152,7 @@ const OutcomeCard = memo((props: Props) => {
 export default createFragmentContainer(OutcomeCard, {
   task: graphql`
     fragment OutcomeCard_task on Task {
+      ...IntegratedTaskContent_task
       id
       integration {
         __typename

@@ -28,6 +28,7 @@ function split(id: Hash) {
     const [nameWithOwner, issueNumber] = parts
     return {service, nameWithOwner, issueNumber}
   }
+  return {service}
 }
 
 const IntegrationHashId = {

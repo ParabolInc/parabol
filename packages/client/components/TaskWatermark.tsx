@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import GitHubSVG from './GitHubSVG'
 import JiraSVG from './JiraSVG'
 
@@ -31,7 +30,7 @@ const WatermarkBlock = styled('div')({
 })
 
 interface Props {
-  type: TaskServiceEnum | undefined
+  type: string | undefined
 }
 const TaskWatermark = (props: Props) => {
   const {type} = props

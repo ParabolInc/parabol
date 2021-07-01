@@ -7,6 +7,7 @@ import LoaderMakerForeign from './LoaderMakerForeign'
 import LoaderMakerPrimary from './LoaderMakerPrimary'
 import pkLoader from './pkLoader'
 import * as primaryLoaderMakers from './primaryLoaderMakers'
+import * as atlassianLoaders from './atlassianLoaders'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -15,7 +16,8 @@ interface LoaderDict {
 const loaderMakers = {
   ...primaryLoaderMakers,
   ...foreignLoaderMakers,
-  ...customLoaderMakers
+  ...customLoaderMakers,
+  ...atlassianLoaders
 } as const
 
 type LoaderMakers = typeof loaderMakers
@@ -31,7 +33,7 @@ type ForeignLoaders = keyof ForeignLoaderMakers
 type Unforeign<T> = T extends LoaderMakerForeign<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
-type CustomLoaderMakers = typeof customLoaderMakers
+type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RethinkDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
