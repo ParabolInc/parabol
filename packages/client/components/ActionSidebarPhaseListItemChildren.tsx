@@ -15,6 +15,7 @@ interface Props {
   meeting: ActionSidebarPhaseListItemChildren_meeting
   maxSidebarChildrenHeight: number
 }
+const agendaPhases: NewMeetingPhaseTypeEnum[] = ['firstcall', 'agendaitems', 'lastcall']
 
 const ActionSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, meeting, maxSidebarChildrenHeight} = props
@@ -27,10 +28,10 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
     maxSidebarChildrenHeight - memberStageMaxHeight,
     NavSidebar.AGENDA_ITEM_INPUT_HEIGHT
   )
-  const maxAgendaItemsHeight =
-    localPhaseType === 'agendaitems' ? maxSidebarChildrenHeight : maxInactiveAgendaItemsHeight
-  if (!maxSidebarChildrenHeight) return null
-  if (phaseType === 'agendaitems') {
+  const maxAgendaItemsHeight = agendaPhases.includes(localPhaseType)
+    ? maxSidebarChildrenHeight
+    : maxInactiveAgendaItemsHeight
+  if (agendaPhases.includes(phaseType)) {
     return (
       <ActionSidebarAgendaItemsSection
         gotoStageId={gotoStageId}

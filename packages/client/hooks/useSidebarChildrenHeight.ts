@@ -3,7 +3,7 @@ import {NavSidebar} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
 
 const useSidebarChildrenHeight = (navListRef: RefObject<HTMLUListElement>) => {
-  const [maxSidebarChildrenHeight, setMaxSidebarChildrenHeight] = useState(0)
+  const [maxSidebarChildrenHeight, setMaxSidebarChildrenHeight] = useState<null | number>(null)
 
   const getMaxHeight = () => {
     const el = navListRef.current
