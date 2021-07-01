@@ -32,10 +32,11 @@ interface Props {
   handleMenuClick: () => void
   meeting: MeetingSidebarTeamMemberStageItems_meeting
   phaseType?: NewMeetingPhaseTypeEnum
+  maxSidebarChildrenHeight?: number
 }
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
-  const {gotoStageId, handleMenuClick, meeting, phaseType} = props
+  const {gotoStageId, handleMenuClick, meeting, phaseType, maxSidebarChildrenHeight = 0} = props
   const {
     id: meetingId,
     facilitatorStageId,
@@ -52,6 +53,8 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const isViewerFacilitator = viewerId === facilitatorUserId
   const stages = phases.find((stage) => stage.phaseType === phaseType)?.stages
   const stageCount = stages?.length || 0
+  const maxHeight = NavSidebar.ITEM_HEIGHT * stageCount
+  const childHeight = Math.min(maxSidebarChildrenHeight - 58, maxHeight)
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage = stages?.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
@@ -61,10 +64,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
 
   if (!stages) return null
   return (
-    <MeetingSidebarPhaseItemChild
-      isActive={isActivePhase}
-      height={NavSidebar.ITEM_HEIGHT * stageCount}
-    >
+    <MeetingSidebarPhaseItemChild isActive={isActivePhase} height={childHeight}>
       <ScrollStageItems>
         {stages.map((stage) => {
           const {

@@ -1,5 +1,5 @@
 import {ActionMeetingSidebar_meeting} from '../__generated__/ActionMeetingSidebar_meeting.graphql'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
@@ -11,6 +11,7 @@ import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
+import useSidebarChildrenHeight from '../hooks/useSidebarChildrenHeight'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -36,13 +37,16 @@ const ActionMeetingSidebar = (props: Props) => {
   const isViewerFacilitator = facilitatorUserId === viewerId
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
+  const navListRef = useRef<HTMLUListElement>(null)
+  const maxSidebarChildrenHeight = useSidebarChildrenHeight(navListRef)
+
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
       toggleSidebar={toggleSidebar}
       meeting={meeting}
     >
-      <MeetingNavList>
+      <MeetingNavList ref={navListRef}>
         {phaseTypes
           .filter((phaseType) => !blackList.includes(phaseType))
           .map((phaseType) => {
@@ -79,6 +83,7 @@ const ActionMeetingSidebar = (props: Props) => {
                   handleMenuClick={handleMenuClick}
                   phaseType={phaseType}
                   meeting={meeting}
+                  maxSidebarChildrenHeight={maxSidebarChildrenHeight}
                 />
               </NewMeetingSidebarPhaseListItem>
             )
