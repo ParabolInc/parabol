@@ -48,14 +48,12 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const localStageId = (localStage && localStage.id) || ''
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isActivePhase = phaseType === localPhaseType && phaseType !== 'agendaitems'
+  const isActivePhase = phaseType === localPhaseType
   const isViewerFacilitator = viewerId === facilitatorUserId
-  const stageCount = localPhase.stages.length
-  const stages = phases.find(({phaseType}) => phaseType === phaseType)?.stages
-
+  const stages = phases.find((stage) => stage.phaseType === phaseType)?.stages
+  const stageCount = stages?.length || 0
   const gotoStage = (teamMemberId) => () => {
-    const teamMemberStage =
-      localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
+    const teamMemberStage = stages?.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
     gotoStageId(teamMemberStageId).catch()
     handleMenuClick()
@@ -77,15 +75,6 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigableByFacilitator,
             isNavigable
           } = stage
-          // console.log('🚀  ~ ---> stage', stage)
-          // console.log('🚀 ____!___', {
-          //   teamMember,
-          //   localPhase,
-          //   stageCount,
-          //   phaseType,
-          //   localPhaseType,
-          //   isActivePhase
-          // })
           if (!teamMember) {
             Sentry.captureException(
               new Error(
