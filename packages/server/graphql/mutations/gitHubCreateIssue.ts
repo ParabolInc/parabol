@@ -100,6 +100,7 @@ const gitHubCreateIssue = {
     const url = `https://github.com/${nameWithOwner}/issues/${issueNumber}`
     const gitHubIssue = {
       id: gitHubIssueId,
+      issueNumber,
       summary: title,
       url,
       nameWithOwner
