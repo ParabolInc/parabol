@@ -31,12 +31,12 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   meeting: MeetingSidebarTeamMemberStageItems_meeting
-  phaseType?: NewMeetingPhaseTypeEnum
-  maxSidebarChildrenHeight?: number
+  phaseType: NewMeetingPhaseTypeEnum
+  maxSidebarChildrenHeight: number
 }
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
-  const {gotoStageId, handleMenuClick, meeting, phaseType, maxSidebarChildrenHeight = 0} = props
+  const {gotoStageId, handleMenuClick, meeting, phaseType, maxSidebarChildrenHeight} = props
   const {
     id: meetingId,
     facilitatorStageId,
@@ -52,9 +52,10 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const isActivePhase = phaseType === localPhaseType
   const isViewerFacilitator = viewerId === facilitatorUserId
   const stages = phases.find((stage) => stage.phaseType === phaseType)?.stages
-  const stageCount = stages?.length || 0
-  const maxHeight = NavSidebar.ITEM_HEIGHT * stageCount
-  const childHeight = Math.min(maxSidebarChildrenHeight - 58, maxHeight)
+  const stagesCount = stages?.length || 0
+  const maxHeight = NavSidebar.ITEM_HEIGHT * stagesCount
+  const childHeight = Math.min(maxSidebarChildrenHeight, maxHeight)
+
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage = stages?.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''

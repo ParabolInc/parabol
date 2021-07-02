@@ -38,7 +38,7 @@ const ActionMeetingSidebar = (props: Props) => {
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   const navListRef = useRef<HTMLUListElement>(null)
-  const maxSidebarChildrenHeight = useSidebarChildrenHeight(navListRef)
+  const maxSidebarChildrenHeight = useSidebarChildrenHeight(navListRef, collapsiblePhases.length)
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -86,8 +86,8 @@ const ActionMeetingSidebar = (props: Props) => {
                       gotoStageId={gotoStageId}
                       handleMenuClick={handleMenuClick}
                       phaseType={phaseType}
-                      meeting={meeting}
                       maxSidebarChildrenHeight={maxSidebarChildrenHeight}
+                      meeting={meeting}
                     />
                   </NewMeetingSidebarPhaseListItem>
                 )

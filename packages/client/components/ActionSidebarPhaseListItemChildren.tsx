@@ -22,8 +22,8 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
   const {localPhase, phases} = meeting
   const {phaseType: localPhaseType} = localPhase
   const stages = phases.find((stage) => stage.phaseType === localPhaseType)?.stages
-  const stageCount = stages?.length || 0
-  const memberStageMaxHeight = stageCount * NavSidebar.ITEM_HEIGHT
+  const stagesCount = stages?.length || 0
+  const memberStageMaxHeight = stagesCount * NavSidebar.ITEM_HEIGHT
   const maxInactiveAgendaItemsHeight = Math.max(
     maxSidebarChildrenHeight - memberStageMaxHeight,
     NavSidebar.AGENDA_ITEM_INPUT_HEIGHT
@@ -36,8 +36,8 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
       <ActionSidebarAgendaItemsSection
         gotoStageId={gotoStageId}
         handleMenuClick={handleMenuClick}
-        meeting={meeting}
         maxAgendaItemsHeight={maxAgendaItemsHeight}
+        meeting={meeting}
       />
     )
   }
@@ -45,9 +45,9 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
     <MeetingSidebarTeamMemberStageItems
       gotoStageId={gotoStageId}
       handleMenuClick={handleMenuClick}
+      maxSidebarChildrenHeight={maxSidebarChildrenHeight}
       meeting={meeting}
       phaseType={phaseType}
-      maxSidebarChildrenHeight={maxSidebarChildrenHeight}
     />
   )
 }

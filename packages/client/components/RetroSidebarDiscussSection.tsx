@@ -22,6 +22,8 @@ const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 interface Props extends WithAtmosphereProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
+  isDiscussPhaseActive: boolean
+  maxDiscussHeight: number
   meeting: RetroSidebarDiscussSection_meeting
 }
 
@@ -58,15 +60,23 @@ const ScrollWrapper = styled('div')({
 })
 
 const RetroSidebarDiscussSection = (props: Props) => {
-  const {atmosphere, gotoStageId, handleMenuClick, meeting} = props
+  const {
+    atmosphere,
+    gotoStageId,
+    handleMenuClick,
+    maxDiscussHeight,
+    isDiscussPhaseActive,
+    meeting
+  } = props
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
+  // parent only renders component if discuss phase exists
   const discussPhase = phases!.find(({phaseType}) => phaseType === 'discuss')!
-  // assert that the discuss phase and its stages are non-null
-  // since we render this component when the vote phase is complete
-  // see: RetroSidebarPhaseListItemChildren.tsx
   const {stages} = discussPhase!
   const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
+  const stagesCount = stages!.length
+  const maxHeight = stagesCount * NavSidebar.AGENDA_ITEM_INPUT_HEIGHT
+  const childHeight = Math.min(maxDiscussHeight, maxHeight)
 
   const onDragEnd = (result) => {
     const {source, destination} = result
@@ -106,7 +116,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <MeetingSidebarPhaseItemChild>
+      <MeetingSidebarPhaseItemChild isActive={isDiscussPhaseActive} height={childHeight}>
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
