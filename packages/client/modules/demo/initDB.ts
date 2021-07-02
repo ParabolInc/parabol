@@ -77,7 +77,7 @@ export const JiraProjectKeyLookup = {
     avatar: 'foo',
     service: 'jira'
   }
-}
+} as const
 
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
@@ -164,8 +164,8 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     preferredName,
     integrations: {
       id: 'demoTeamIntegrations',
-      atlassian: {isActive: true, accessToken: '123'},
-      github: {isActive: true, accessToken: '123'},
+      atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
+      github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'},
       slack: initSlackAuth(userId)
     },
     suggestedIntegrations: {

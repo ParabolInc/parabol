@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import IntegrationHashId from 'parabol-client/shared/gqlIds/IntegrationHashId'
+import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import {JiraGetIssueRes, JiraProject} from 'parabol-client/utils/AtlassianManager'
 import getRethink from '../database/rethinkDriver'
 import AtlassianAuth from '../database/types/AtlassianAuth'
@@ -126,7 +126,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: ({cloudId, issueKey}) => IntegrationHashId.join('jira', cloudId, issueKey)
+      cacheKeyFn: ({cloudId, issueKey}) => JiraIssueId.join(cloudId, issueKey)
     }
   )
 }

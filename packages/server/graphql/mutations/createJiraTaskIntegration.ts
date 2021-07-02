@@ -2,7 +2,7 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import IntegrationHashId from '../../../client/shared/gqlIds/IntegrationHashId'
+import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -141,20 +141,20 @@ export default {
     if (res instanceof Error) {
       return standardError(res, {userId: viewerId})
     }
+    const {key: issueKey} = res
     await r
       .table('Task')
       .get(taskId)
       .update({
-        integrationHash: IntegrationHashId.join('jira', cloudId, res.key),
+        integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          id: res.id,
           accessUserId: viewerId,
           service: 'jira',
           projectKey,
           projectName,
           cloudId,
           cloudName,
-          issueKey: res.key
+          issueKey
         },
         updatedAt: now
       })

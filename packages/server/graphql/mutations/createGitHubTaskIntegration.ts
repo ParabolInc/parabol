@@ -2,7 +2,6 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import IntegrationHashId from '../../../client/shared/gqlIds/IntegrationHashId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
@@ -128,7 +127,7 @@ export default {
       .table('Task')
       .get(taskId)
       .update({
-        integrationHash: IntegrationHashId.join('github', nameWithOwner, issueNumber),
+        integrationHash: `${nameWithOwner}:${issueNumber}`,
         integration: {
           accessUserId: viewerId,
           service: 'github',

@@ -44981,7 +44981,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * jira:cloudId:issueKey. equal to Task.integrationHash
+   * GUID cloudId:issueKey
    */
   id: string;
 

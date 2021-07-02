@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import getPhase from '../../utils/getPhase'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
@@ -104,7 +104,7 @@ const pokerSetFinalScore = {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
       const {accessToken} = auth
-      const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
+      const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
       const manager = new AtlassianServerManager(accessToken)
       const team = await dataLoader.get('teams').load(teamId)
       const jiraDimensionFields = team.jiraDimensionFields || []

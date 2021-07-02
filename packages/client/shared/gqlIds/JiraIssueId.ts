@@ -1,5 +1,5 @@
 import JiraProjectKeyId from './JiraProjectKeyId'
-const JiraServiceTaskId = {
+const JiraIssueId = {
   join: (cloudId: string, issueKey: string) => `${cloudId}:${issueKey}`,
   split: (id: string) => {
     const firstColonIdx = id.indexOf(':')
@@ -10,4 +10,4 @@ const JiraServiceTaskId = {
   }
 }
 
-export default JiraServiceTaskId
+export default JiraIssueId

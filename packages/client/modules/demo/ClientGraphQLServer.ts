@@ -1,3 +1,5 @@
+import {ContentState, convertFromRaw} from 'draft-js'
+import {stateToHTML} from 'draft-js-export-html'
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
 import ms from 'ms'
@@ -16,7 +18,13 @@ import Reflection from '../../../server/database/types/Reflection'
 import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import ITask from '../../../server/database/types/Task'
-import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
+import JiraIssueId from '../../shared/gqlIds/JiraIssueId'
+import {
+  ExternalLinks,
+  MeetingSettingsThreshold,
+  RetroDemo,
+  SubscriptionChannel
+} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
@@ -414,13 +422,42 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const project = JiraProjectKeyLookup[projectKey]
+      const {cloudId, cloudName, projectName, avatar} = project
+      const issueKey = this.getTempId(`${projectKey}-`)
+      const {content} = task
+      const rawContent = JSON.parse(content)
+      const {blocks} = rawContent
+      let {text: summary} = blocks[0]
+      // if the summary exceeds 256, repeat it in the body because it probably has entities in it
+      if (summary.length <= 256) {
+        blocks.shift()
+      } else {
+        summary = summary.slice(0, 256)
+      }
+      const contentState =
+        blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
+      const descriptionHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
+        integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
           __typename: 'JiraIssue',
           id: `jira:${taskId}`,
-          ...JiraProjectKeyLookup[projectKey],
-          issueKey: this.getTempId(`${projectKey}-`)
+          issueKey,
+          projectKey,
+          cloudId,
+          cloudName,
+          descriptionHTML,
+          summary,
+          url: ExternalLinks.INTEGRATIONS_JIRA,
+          project: {
+            id: `${projectKey}:id`,
+            key: projectKey,
+            name: projectName,
+            avatar,
+            cloudId
+          }
         }
       })
 

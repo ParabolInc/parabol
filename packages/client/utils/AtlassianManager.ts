@@ -1,5 +1,5 @@
 import AbortController from 'abort-controller'
-import IntegrationHashId from '../shared/gqlIds/IntegrationHashId'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 export interface JiraUser {
   self: string
   key: string
@@ -123,7 +123,14 @@ interface JiraFieldError {
   }
 }
 
-type JiraError = JiraNoAccessError | JiraFieldError
+interface JiraGetError {
+  timestamp: string
+  status: number
+  error: string
+  message: string
+  path: string
+}
+type JiraError = JiraNoAccessError | JiraFieldError | JiraGetError
 
 type JiraIssueProperties = any
 type JiraIssueNames = any
@@ -250,8 +257,11 @@ export default abstract class AtlassianManager {
     if (res instanceof Error) {
       return res
     }
-    const json = (await res.json()) as AtlassianError | JiraNoAccessError | T
+    const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
     if ('message' in json) {
+      if (json.message === 'No message available' && 'error' in json) {
+        return new Error(json.error)
+      }
       return new Error(json.message)
     }
     if ('errorMessages' in json) {
@@ -459,7 +469,7 @@ export default abstract class AtlassianManager {
         descriptionHTML: issueRes.renderedFields.description,
         cloudId,
         issueKey,
-        id: IntegrationHashId.join('jira', cloudId, issueKey)
+        id: JiraIssueId.join(cloudId, issueKey)
       }
     }
   }

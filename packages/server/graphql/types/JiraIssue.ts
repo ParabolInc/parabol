@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import IntegrationHashId from '../../../client/shared/gqlIds/IntegrationHashId'
+import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
@@ -20,9 +20,9 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'jira:cloudId:issueKey. equal to Task.integrationHash',
+      description: 'GUID cloudId:issueKey',
       resolve: ({cloudId, issueKey}) => {
-        return IntegrationHashId.join('jira', cloudId, issueKey)
+        return JiraIssueId.join(cloudId, issueKey)
       }
     },
     teamId: {
