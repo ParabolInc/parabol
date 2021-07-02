@@ -15,8 +15,8 @@ const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
     atlassianIntegration: {
       type: AtlassianIntegration,
       description: 'The newly created auth',
-      resolve: async ({atlassianAuthId}, _args, {dataLoader}) => {
-        return dataLoader.get('atlassianAuths').load(atlassianAuthId)
+      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+        return dataLoader.get('atlassianAuths').load({teamId, userId})
       }
     },
     teamId: {
