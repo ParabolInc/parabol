@@ -54,7 +54,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const stages = phases.find((stage) => stage.phaseType === phaseType)?.stages
   const stagesCount = stages?.length || 0
   const maxHeight = NavSidebar.ITEM_HEIGHT * stagesCount
-  const childHeight = Math.min(maxSidebarChildrenHeight, maxHeight)
+  const childHeight = isActivePhase ? Math.min(maxSidebarChildrenHeight, maxHeight) : 0
 
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage = stages?.find((stage) => stage.teamMemberId === teamMemberId)
@@ -65,7 +65,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
 
   if (!stages) return null
   return (
-    <MeetingSidebarPhaseItemChild isActive={isActivePhase} height={childHeight}>
+    <MeetingSidebarPhaseItemChild height={childHeight}>
       <ScrollStageItems>
         {stages.map((stage) => {
           const {

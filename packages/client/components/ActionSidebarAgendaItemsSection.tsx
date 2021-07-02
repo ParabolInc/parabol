@@ -42,7 +42,7 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   const childHeight = Math.min(maxAgendaItemsHeight, maxHeight)
 
   return (
-    <MeetingSidebarPhaseItemChild isActive height={childHeight}>
+    <MeetingSidebarPhaseItemChild height={childHeight}>
       <AgendaListAndInput
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}

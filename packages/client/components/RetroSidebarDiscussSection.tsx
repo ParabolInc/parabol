@@ -78,7 +78,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const inSync = localStageId === facilitatorStageId
   const stagesCount = stages!.length
   const maxHeight = stagesCount * NavSidebar.ITEM_HEIGHT + SCROLL_PADDING
-  const childHeight = Math.min(maxDiscussHeight, maxHeight)
+  const childHeight = isDiscussPhaseActive ? Math.min(maxDiscussHeight, maxHeight) : 0
 
   const onDragEnd = (result) => {
     const {source, destination} = result
@@ -118,7 +118,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <MeetingSidebarPhaseItemChild isActive={isDiscussPhaseActive} height={childHeight}>
+      <MeetingSidebarPhaseItemChild height={childHeight}>
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (

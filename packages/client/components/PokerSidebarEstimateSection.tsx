@@ -123,7 +123,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <MeetingSidebarPhaseItemChild isActive height={childHeight}>
+      <MeetingSidebarPhaseItemChild height={childHeight}>
         <Droppable droppableId={'TASK'}>
           {(provided) => {
             return (
