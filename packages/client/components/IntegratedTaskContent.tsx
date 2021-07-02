@@ -1,8 +1,16 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {IntegratedTaskContent_task} from '../__generated__/IntegratedTaskContent_task.graphql'
 
+const Content = styled('div')({
+  paddingLeft: 16,
+  paddingRight: 16
+})
+const Summary = styled('div')({
+  fontWeight: 600
+})
 interface Props {
   task: IntegratedTaskContent_task
 }
@@ -12,10 +20,13 @@ const IntegratedTaskContent = (props: Props) => {
   const {integration} = task
   if (!integration) return null
   if (integration.__typename === 'JiraIssue') {
-    const {descriptionHTML} = integration
-return (
-    <div dangerouslySetInnerHTML={{__html: descriptionHTML}}/>
-  )
+    const {descriptionHTML, summary} = integration
+    return (
+      <Content>
+        <Summary>{summary}</Summary>
+        <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+      </Content>
+    )
   }
   return null
 }
@@ -27,6 +38,7 @@ export default createFragmentContainer(IntegratedTaskContent, {
         __typename
         ... on JiraIssue {
           descriptionHTML
+          summary
         }
       }
     }

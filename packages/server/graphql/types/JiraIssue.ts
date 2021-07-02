@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import IntegrationHashId from '../../../client/shared/gqlIds/IntegrationHashId'
+import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -58,19 +59,15 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     projectKey: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The key of the project, which is the prefix to the issueKey',
-      resolve: ({issueKey}) => issueKey.slice(0, issueKey.indexOf('-'))
+      resolve: ({issueKey}) => JiraProjectKeyId.join(issueKey)
     },
     project: {
       type: JiraRemoteProject,
       description: 'The project fetched from jira',
-      resolve: async ({projectKey, teamId, userId, cloudId}, _args, {dataLoader}) => {
+      resolve: async ({issueKey, teamId, userId, cloudId}, _args, {dataLoader}) => {
+        const projectKey = JiraProjectKeyId.join(issueKey)
         return dataLoader.get('jiraRemoteProject').load({cloudId, projectKey, teamId, userId})
       }
-    },
-    key: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'The key of the issue as found in Jira',
-      deprecationReason: 'Use issueKey instead'
     },
     summary: {
       type: GraphQLNonNull(GraphQLString),

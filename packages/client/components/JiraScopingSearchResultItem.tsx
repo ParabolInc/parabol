@@ -49,7 +49,7 @@ interface Props {
 
 const JiraScopingSearchResultItem = (props: Props) => {
   const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {id: serviceTaskId, key, title, url} = issue
+  const {id: serviceTaskId, issueKey, title, url} = issue
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -83,9 +83,9 @@ const JiraScopingSearchResultItem = (props: Props) => {
           href={url}
           rel='noopener noreferrer'
           target='_blank'
-          title={`Jira Issue #${key}`}
+          title={`Jira Issue #${issueKey}`}
         >
-          {key}
+          {issueKey}
           {isTemp && <Ellipsis />}
         </StyledLink>
       </Issue>
@@ -99,7 +99,7 @@ export default createFragmentContainer(JiraScopingSearchResultItem, {
       id
       # use title instead of summary so the optimistic updater will use it for the sidebar
       title
-      key
+      issueKey
       url
     }
   `

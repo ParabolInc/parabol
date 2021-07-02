@@ -93,7 +93,6 @@ const OutcomeCard = memo((props: Props) => {
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
   }`
-
   return (
     <RootCard
       isTaskHovered={isTaskHovered}

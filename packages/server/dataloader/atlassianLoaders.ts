@@ -104,7 +104,7 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
 export const jiraIssue = (parent: RethinkDataLoader) => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
-      const results = Promise.allSettled(
+      const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, cloudId, issueKey}) => {
           const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
           if (!auth) return null

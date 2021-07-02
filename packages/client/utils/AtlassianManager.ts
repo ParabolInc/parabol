@@ -109,7 +109,10 @@ interface JiraCreateIssueResponse {
   self: string
 }
 
-type GetProjectsCallback = (error: AtlassianError | Error | null, result: GetProjectsResult | null) => void
+type GetProjectsCallback = (
+  error: AtlassianError | Error | null,
+  result: GetProjectsResult | null
+) => void
 
 interface JiraNoAccessError {
   errorMessages: ['The app is not installed on this instance.']
@@ -299,7 +302,9 @@ export default abstract class AtlassianManager {
   }
 
   async getAccessibleResources() {
-    return this.get<AccessibleResource[]>('https://api.atlassian.com/oauth/token/accessible-resources')
+    return this.get<AccessibleResource[]>(
+      'https://api.atlassian.com/oauth/token/accessible-resources'
+    )
   }
 
   async getMyself(cloudId: string) {
@@ -332,12 +337,9 @@ export default abstract class AtlassianManager {
 
   async getProjectAvatar(avatarUrl: string) {
     // use fetchWithTimeout because we want a buffer
-    const imageRes = await this.fetchWithTimeout(
-      avatarUrl,
-      {
-        headers: {Authorization: this.headers.Authorization}
-      }
-    )
+    const imageRes = await this.fetchWithTimeout(avatarUrl, {
+      headers: {Authorization: this.headers.Authorization}
+    })
 
     if (!imageRes || imageRes instanceof Error) return ''
     const arrayBuffer = await imageRes.arrayBuffer()
@@ -387,9 +389,12 @@ export default abstract class AtlassianManager {
   }
 
   async convertMarkdownToADF(markdown: string) {
-    return this.post<any>('https://api.atlassian.com/pf-editor-service/convert?from=markdown&to=adf', {
-      input: markdown
-    })
+    return this.post<any>(
+      'https://api.atlassian.com/pf-editor-service/convert?from=markdown&to=adf',
+      {
+        input: markdown
+      }
+    )
   }
 
   async getCreateMeta(cloudId: string, projectKeys?: string[]) {
@@ -420,7 +425,10 @@ export default abstract class AtlassianManager {
         ...issueFields
       } as CreateIssueFields
     }
-    return this.post<JiraCreateIssueResponse>(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue`, payload)
+    return this.post<JiraCreateIssueResponse>(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue`,
+      payload
+    )
   }
 
   async getCloudNameLookup() {
@@ -438,7 +446,9 @@ export default abstract class AtlassianManager {
   async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
     const baseFields = ['summary', 'description']
     const reqFields = [...baseFields, ...extraFieldIds].join(',')
-    const issueRes = await this.get<JiraIssueBean<{description: string, summary: string}, {description: string}>>(
+    const issueRes = await this.get<
+      JiraIssueBean<{description: string; summary: string}, {description: string}>
+    >(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
     )
     if (issueRes instanceof Error) return issueRes
@@ -578,10 +588,10 @@ export default abstract class AtlassianManager {
         [fieldId]: isFinite(storyPoints as number) ? Number(storyPoints) : storyPoints
       }
     }
-    const res = (await this.put(
+    const res = await this.put(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
       payload
-    ))
+    )
     if (res === null) return
     console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
     if (res.message.includes('The app is not installed on this instance')) {
@@ -591,9 +601,7 @@ export default abstract class AtlassianManager {
     }
     if (res.message.startsWith(fieldId)) {
       if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(
-          `Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`
-        )
+        throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
       }
     }
     throw res

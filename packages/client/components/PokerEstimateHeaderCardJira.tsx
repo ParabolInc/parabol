@@ -102,7 +102,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
       </HeaderCardWrapper>
     )
   }
-  const {key, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
+  const {issueKey, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -122,9 +122,9 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
           href={url}
           rel='noopener noreferrer'
           target='_blank'
-          title={`Jira Issue #${key}`}
+          title={`Jira Issue #${issueKey}`}
         >
-          <StyledLabel>{key}</StyledLabel>
+          <StyledLabel>{issueKey}</StyledLabel>
           <StyledIcon>launch</StyledIcon>
         </StyledLink>
       </HeaderCard>
@@ -138,7 +138,7 @@ export default createFragmentContainer(PokerEstimateHeaderCardJira, {
       serviceTaskId
       story {
         ... on JiraIssue {
-          key
+          issueKey
           summary
           descriptionHTML
           url

@@ -101,8 +101,8 @@ export default {
 
     const contentState =
       blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
-    let markdown = stateToMarkdown(contentState)
 
+    let markdown = stateToMarkdown(contentState)
     // const isViewerAllowed = viewerAuth && !(viewerAuth instanceof Error) ? viewerAuth.isActive : false
     if (!validViewerAuth) {
       const creator = await db.read('User', viewerId)

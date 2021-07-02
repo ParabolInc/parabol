@@ -1,17 +1,23 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
 import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {StandardMutation} from '../types/relayMutations'
 import {CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
 
 graphql`
   fragment CreateJiraTaskIntegrationMutation_task on CreateJiraTaskIntegrationPayload {
     task {
+      ...IntegratedTaskContent_task
       integration {
         __typename
         ... on JiraIssue {
           cloudId
+          cloudName
+          url
+          issueKey
+          summary
+          descriptionHTML
           projectKey
           project {
             name

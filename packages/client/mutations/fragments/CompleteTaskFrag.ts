@@ -19,7 +19,7 @@ graphql`
       ... on JiraIssue {
         cloudId
         url
-        key
+        issueKey
         summary
         descriptionHTML
       }

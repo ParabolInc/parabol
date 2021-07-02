@@ -45037,12 +45037,6 @@ export interface IJiraIssue {
   project: IJiraRemoteProject | null;
 
   /**
-   * The key of the issue as found in Jira
-   * @deprecated "Use issueKey instead"
-   */
-  key: string;
-
-  /**
    * The plaintext summary of the jira issue
    */
   summary: string;
