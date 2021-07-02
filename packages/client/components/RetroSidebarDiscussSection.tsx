@@ -52,10 +52,12 @@ const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDrag
   boxShadow: isDragging ? navItemRaised : undefined
 }))
 
+const SCROLL_PADDING = 8
+
 const ScrollWrapper = styled('div')({
   overflow: 'auto',
-  paddingBottom: 8,
-  paddingRight: 8,
+  paddingBottom: SCROLL_PADDING,
+  paddingRight: SCROLL_PADDING,
   height: '100%'
 })
 
@@ -75,7 +77,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
   const stagesCount = stages!.length
-  const maxHeight = stagesCount * NavSidebar.AGENDA_ITEM_INPUT_HEIGHT
+  const maxHeight = stagesCount * NavSidebar.ITEM_HEIGHT + SCROLL_PADDING
   const childHeight = Math.min(maxDiscussHeight, maxHeight)
 
   const onDragEnd = (result) => {

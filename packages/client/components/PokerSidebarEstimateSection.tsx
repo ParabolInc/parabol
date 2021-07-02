@@ -28,10 +28,12 @@ const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDrag
   boxShadow: isDragging ? navItemRaised : undefined
 }))
 
+const SCROLL_PADDING = 8
+
 const ScrollWrapper = styled('div')({
   overflow: 'auto',
-  paddingBottom: 8,
-  paddingRight: 8,
+  paddingBottom: SCROLL_PADDING,
+  paddingRight: SCROLL_PADDING,
   height: '100%'
 })
 
@@ -61,7 +63,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
   const {id: localStageId} = localStage
   const stageSummaries = useMakeStageSummaries(estimatePhase, localStageId)
   const stageSummariesCount = stageSummaries.length
-  const maxHeight = stageSummariesCount * NavSidebar.ITEM_HEIGHT
+  const maxHeight = stageSummariesCount * NavSidebar.ITEM_HEIGHT + SCROLL_PADDING
   const childHeight = Math.min(maxEstimateHeight, maxHeight)
   const inSync = localStageId === facilitatorStageId
 
