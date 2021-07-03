@@ -8,7 +8,7 @@ const MeetingSidebarPhaseItemChild = styled('div')<{
   flexDirection: 'column',
   height,
   overflow: 'hidden', // required for FF68
-  transition: `all 300ms ${BezierCurve.DECELERATE}`
+  transition: `height 300ms ${BezierCurve.DECELERATE}`
 }))
 
 export default MeetingSidebarPhaseItemChild

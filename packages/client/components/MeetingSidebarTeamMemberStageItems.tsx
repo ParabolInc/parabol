@@ -16,16 +16,18 @@ const AvatarBlock = styled('div')({
   width: 32
 })
 
-const ScrollStageItems = styled('div')({
+const ScrollStageItems = styled('div')<{
+  showScrollbar: boolean
+}>(({showScrollbar}) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%', // trickle down height for overflow
   // react-beautiful-dnd supports scrolling on 1 parent
   // this is where we need it, in order to scroll a long list
-  overflow: 'auto',
+  overflow: showScrollbar ? 'auto' : 'hidden',
   paddingRight: 8,
   width: '100%'
-})
+}))
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -55,7 +57,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const stagesCount = stages?.length || 0
   const maxHeight = NavSidebar.ITEM_HEIGHT * stagesCount
   const childHeight = isActivePhase ? Math.min(maxSidebarChildrenHeight, maxHeight) : 0
-
+  const showScrollbar = maxHeight > maxSidebarChildrenHeight
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage = stages?.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
@@ -63,11 +65,10 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
     handleMenuClick()
   }
 
-  if (!stages) return null
   return (
     <MeetingSidebarPhaseItemChild height={childHeight}>
-      <ScrollStageItems>
-        {stages.map((stage) => {
+      <ScrollStageItems showScrollbar={showScrollbar}>
+        {stages!.map((stage) => {
           const {
             id: stageId,
             isComplete,
