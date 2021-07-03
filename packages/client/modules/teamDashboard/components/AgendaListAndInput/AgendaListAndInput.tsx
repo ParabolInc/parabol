@@ -36,9 +36,9 @@ interface Props {
   team: AgendaListAndInput_team
 }
 
-export const getAgendaItems = (meeting: AgendaListAndInput_meeting | null) => {
+const getAgendaItems = (meeting: AgendaListAndInput_meeting | null) => {
   if (!meeting) return null
-  const agendaItemsPhase = meeting.phases!.find((phase) => phase.phaseType === 'agendaitems')!
+  const agendaItemsPhase = meeting.phases.find((phase) => phase.phaseType === 'agendaitems')!
   if (!agendaItemsPhase.stages) return null
   return agendaItemsPhase.stages.map((stage) => stage.agendaItem)
 }
