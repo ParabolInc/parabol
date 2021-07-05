@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import ms from 'ms'
-import getRethink from '../../database/rethinkDriver'
 import AtlassianAuth from '../../database/types/AtlassianAuth'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
@@ -20,6 +19,7 @@ import {JiraIssueConnection} from './JiraIssue'
 import JiraRemoteProject from './JiraRemoteProject'
 import JiraSearchQuery from './JiraSearchQuery'
 import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
+import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -184,20 +184,18 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({id: atlassianAuthId, jiraSearchQueries}: AtlassianAuth) => {
+      resolve: async ({teamId, userId, jiraSearchQueries}) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
-        const searchQueries = jiraSearchQueries || []
-        const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
-        if (unexpiredQueries.length < searchQueries.length) {
-          const r = await getRethink()
-          await r
-            .table('AtlassianAuth')
-            .get(atlassianAuthId)
-            .update({
-              jiraSearchQueries: unexpiredQueries
-            })
-            .run()
+        const unexpiredQueries = jiraSearchQueries.filter(
+          (query) => new Date(query.lastUsedAt) > thresh
+        )
+        if (unexpiredQueries.length < jiraSearchQueries.length) {
+          await updateJiraSearchQueries({
+            jiraSearchQueries,
+            teamId,
+            userId
+          })
         }
         return unexpiredQueries
       }
