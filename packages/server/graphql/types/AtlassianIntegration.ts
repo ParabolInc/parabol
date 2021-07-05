@@ -19,6 +19,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {JiraIssueConnection} from './JiraIssue'
 import JiraRemoteProject from './JiraRemoteProject'
 import JiraSearchQuery from './JiraSearchQuery'
+import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -26,7 +27,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid'
+      description: 'shortid',
+      resolve: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId)
     },
     isActive: {
       description: 'true if the auth is valid, else false',

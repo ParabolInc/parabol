@@ -53476,11 +53476,6 @@ export interface IRemoveAgendaItemPayload {
 export interface IRemoveAtlassianAuthPayload {
   __typename: 'RemoveAtlassianAuthPayload';
   error: IStandardMutationError | null;
-
-  /**
-   * The ID of the authorization removed
-   */
-  authId: string | null;
   teamId: string | null;
 
   /**
