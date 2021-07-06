@@ -4,8 +4,8 @@ import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
-import DiscussPhase from '../../database/types/DiscussPhase'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
@@ -27,7 +27,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
-  const discussPhase = phases.find((phase) => phase.phaseType === 'discuss') as DiscussPhase
+  const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
   const discussionIds = stages.map((stage) => stage.discussionId)
 

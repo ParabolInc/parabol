@@ -20,6 +20,7 @@ export default class MeetingPoker extends Meeting {
   templateId: string
   templateRefId: string
   storyCount?: number
+  commentCount?: number
   constructor(input: Input) {
     const {
       id,

@@ -5,6 +5,52 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.19.0 2021-Jul-01
+
+### Added
+
+- Meeting view animations (#4975)
+
+### Changed
+
+- No more refresh needed on version updates (#5015)
+- Require updatedAt on every doc change for User & Team table (#5079)
+
+### Fixed
+
+- Leaving team removes slack auth (#5055)
+- Poker comment & story count (#5062)
+- Deterministic sort order of jiraDimensionFields (#5070)
+
+## 6.18.0 2021-Jun-23
+
+### Added
+
+- Added update email mutation to intranet schema, #5005
+- Add retro templates, #4069
+
+### Fixed
+
+- Remove null jwt sentry error message
+- Always update the latest timestamp for lastSeenAt in PG
+
+## 6.17.1 2021-Jun-18
+
+### Fixed
+
+- Fix saml exists check in emailPasswordReset
+
+## 6.17.0 2021-Jun-17
+
+### Changed
+
+- Forgot password flow gives user feedback if request was valid, #5033
+
+### Fixed
+
+- Fix inequality btwn User overLimitCopy in rethink and pg, #5020
+- Fix missing teams in rethink but not in pg, #5050
+
 ## 6.16.1 2021-Jun-10
 
 ### Fixed
@@ -18,21 +64,25 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Discussion as first-class entity (#5016)
 
 ## 6.15.0 2021-Jun-10
+
 ### Changed
+
 - Make Slack notification prettier (#4911)
 - Deprecate createXPicturePutUrl mutations (#4342)
 - Ecnrypt database backup (#4603)
 
-
 ## 6.14.0 2021-Jun-2
 
 ### Changed
+
 - Bump dns-packet from 1.3.1 to 1.3.4 (#5000)
 
 ### Added
+
 - Add 120 additional icebreakers (#5004)
 
 ### Fixed
+
 - Add clock tolerance to getVerifiedAuthToken (#5011)
 - Sentry server stack (#4987)
 - UI fix-ups (#5001)

@@ -29,6 +29,14 @@ const maybeUndefinedFieldsDefaultValues: {[Property in keyof Partial<User>]: any
   inactive: false
 }
 
+/**
+ * if a field is explicitly null in RethinkDB,
+ * what value in PG should we expect?
+ */
+const maybeNullFieldsDefaultValues: {[Property in keyof Partial<User>]: any} = {
+  overLimitCopy: ''
+}
+
 const checkUserEq = async (maxErrors = 10) => {
   const r = await getRethink()
   const rethinkQuery = r.table('User').orderBy('updatedAt', {index: 'updatedAt'})
@@ -38,6 +46,7 @@ const checkUserEq = async (maxErrors = 10) => {
     getUsersById,
     alwaysDefinedFields,
     maybeUndefinedFieldsDefaultValues,
+    maybeNullFieldsDefaultValues,
     maxErrors
   )
   return errors

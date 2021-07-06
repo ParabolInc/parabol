@@ -149,20 +149,20 @@ export default class LocalCache<T extends keyof CacheType> {
     }
     return Promise.all(loadPromises)
   }
-  async write<P extends CacheType[T]>(table: T, id: string, updater: Updater<P>) {
+  async write<P extends T>(table: P, id: string, updater: Updater<CacheType[P]>) {
     if (this.hasWriteDispatched) {
       this.hasWriteDispatched = false
-      this.writes = [] as (RWrite<P> & {resolve: (payload: any) => void})[]
+      this.writes = [] as (RWrite<CacheType[P]> & {resolve: (payload: any) => void})[]
       resolvedPromise.then(() => {
         process.nextTick(this.dispatchWriteBatch)
       })
     }
-    return new Promise<P>((resolve) => {
+    return new Promise<CacheType[P]>((resolve) => {
       this.writes.push({id, table, updater, resolve})
     })
   }
 
-  async writeMany<P extends CacheType[T]>(table: T, ids: string[], updater: Updater<P>) {
+  async writeMany<P extends T>(table: P, ids: string[], updater: Updater<CacheType[P]>) {
     return Promise.all(ids.map((id) => this.write(table, id, updater)))
   }
 

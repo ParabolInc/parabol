@@ -32,20 +32,17 @@ const ErrorComponent = (props: Props) => {
   console.error(error)
   const {modalPortal, openPortal, closePortal} = useModal()
   const oldBrowserErrs = ['flatMap is not a function']
-
   const isOldBrowserErr = oldBrowserErrs.find((err) => error.message.includes(err))
   if (isOldBrowserErr) {
     const url = 'https://browser-update.org/update-browser.html'
     return (
       <ErrorBlock>
         {"Oh no! You've found a bug because the browser you're using needs to be updated."}
-        {
-          <Button>
-            <Link href={url} target='_blank' rel='noreferrer'>
-              Update now
-            </Link>
-          </Button>
-        }
+        <Button>
+          <Link href={url} target='_blank' rel='noreferrer'>
+            Update now
+          </Link>
+        </Button>
       </ErrorBlock>
     )
   }

@@ -1,11 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {CHECKIN} from 'parabol-client/utils/constants'
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
-import CheckInPhase from '../../database/types/CheckInPhase'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -52,7 +51,7 @@ export default {
       : convertToTaskContent(makeCheckinQuestion(Math.floor(Math.random() * 1000), teamId))
 
     // RESOLUTION
-    const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN) as CheckInPhase
+    const checkInPhase = getPhase(phases, 'checkin')
 
     // mutative
     checkInPhase.checkInQuestion = normalizedCheckInQuestion

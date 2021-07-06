@@ -63,7 +63,7 @@ const emailPasswordReset = {
         .table('SAML')
         .filter((row) => row('domains').contains(domain))
         .run()
-      if (samlDomainExists) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
+      if (samlDomainExists.length) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
       if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}
       const {id: userId, identities} = user
       const googleIdentity = identities.find(
@@ -89,7 +89,7 @@ const emailPasswordReset = {
         .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
         .run()
 
-      const updates = {identities}
+      const updates = {identities, updatedAt: new Date()}
       await Promise.all([updateUser(updates, userId), db.write('User', userId, updates)])
 
       const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
