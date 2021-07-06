@@ -10,7 +10,7 @@ import {
 import React, {RefObject, Suspense, useRef} from 'react'
 import completeEntity from '../../utils/draftjs/completeEntity'
 import linkify from '../../utils/linkify'
-import {Card} from '../../types/constEnums'
+import {AriaLabels, Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import isAndroid from '../../utils/draftjs/isAndroid'
@@ -198,6 +198,7 @@ const CommentEditor = (props: Props) => {
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback
+            ariaLabel={AriaLabels.COMMENT_EDITOR}
             editorState={editorState}
             placeholder={placeholder}
             onBlur={onBlur}
@@ -208,6 +209,7 @@ const CommentEditor = (props: Props) => {
         </Suspense>
       ) : (
         <Editor
+          ariaLabel={AriaLabels.COMMENT_EDITOR}
           spellCheck
           blockStyleFn={blockStyleFn}
           editorState={editorState}

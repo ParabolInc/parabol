@@ -408,3 +408,8 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
 }
+
+export const enum AriaLabels {
+  COMMENT_EDITOR = 'Comment Editor',
+  TASK_EDITOR = 'Task Editor'
+}
