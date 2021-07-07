@@ -27,7 +27,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid',
+      description: 'Composite key in atlassiani:teamId:userId format',
       resolve: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId)
     },
     isActive: {
