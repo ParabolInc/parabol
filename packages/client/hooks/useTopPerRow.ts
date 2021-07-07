@@ -16,7 +16,8 @@ const useTopPerRow = (
   refs: RefObject<HTMLDivElement>[]
 ) => {
   const [topByRow, setTopByRow] = useState<TopByRow>({})
-  const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
+  const totalRows = // +1 to account for meetingDash height calc
+    !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow) + 1
 
   const getTopByRow = () => {
     if (!meetings.length || !cardsPerRow) return
@@ -55,22 +56,16 @@ const useTopPerRow = (
         addTop(rowIdx + 1, clientHeight)
       }
     })
-    // const finalRowCount = cardsPerRow ? meetings.length % cardsPerRow : 0
-    // const finalRowRefs = refs.slice(refs.length - finalRowCount, refs.length)
-    // const finalRowHeights = finalRowRefs
-    //   .map((ref) => ref.current?.clientHeight)
-    //   .filter((height): height is number => !!height)
-    // const maxHeight = Math.max(...finalRowHeights)
-    // addTop(meetings.length, maxHeight) // get height of final row to calc meetingDash height
-    // console.log('🚀 ~ ____meetings', {
-    //   meetings,
-    //   maxHeight,
-    //   finalRowRefs,
-    //   finalRowHeights,
-    //   finalRowCount,
-    //   len: refs.length
-    // })
+    const finalRowCount = cardsPerRow ? meetings.length % cardsPerRow : 0
+    const finalRowEls = refs
+      .slice(refs.length - finalRowCount, refs.length)
+      .map((finalRowRef) => finalRowRef.current)
 
+    const finalRowHeights = finalRowEls
+      .map((el) => el?.clientHeight)
+      .filter((height): height is number => !!height)
+    const maxHeight = Math.max(...finalRowHeights)
+    addTop(totalRows, maxHeight) // get height of final row to calc meetingDash height
     setTopByRow(topByRow)
   }
 

@@ -13,7 +13,6 @@ import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useTopPerRow from '../hooks/useTopPerRow'
-import useDeepEqual from '../hooks/useDeepEqual'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -76,19 +75,13 @@ const MeetingsDash = (props: Props) => {
   const hasMeetings = activeMeetings.length > 0
   const totalRows = hasMeetings && cardsPerRow ? Math.ceil(activeMeetings.length / cardsPerRow) : 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
-
   if (!viewer || !cardsPerRow) return null
   return (
     <>
       {hasMeetings ? (
         <Wrapper
           maybeTabletPlus={maybeTabletPlus}
-          minHeight={
-            // ElementHeight.MEETING_CARD_MAX -
-            // 60 +
-            // ElementHeight.MEETING_CARD_MARGIN +
-            topByRow[totalRows - 1]?.top + ElementHeight.MEETING_CARD_MARGIN
-          }
+          minHeight={topByRow[totalRows]?.top + ElementHeight.MEETING_CARD_MARGIN}
         >
           {transitioningMeetings.map((meeting, idx) => {
             const ref = refs[idx]
