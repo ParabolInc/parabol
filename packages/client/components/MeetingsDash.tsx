@@ -13,6 +13,7 @@ import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import useCardsPerRow from '../hooks/useCardsPerRow'
 import useTopPerRow from '../hooks/useTopPerRow'
+import useDeepEqual from '../hooks/useDeepEqual'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -68,7 +69,10 @@ const MeetingsDash = (props: Props) => {
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const topByRow = useTopPerRow(cardsPerRow, activeMeetings)
+  const refs = Array(activeMeetings.length)
+    .fill(0)
+    .map(() => React.createRef<HTMLDivElement>())
+  const topByRow = useTopPerRow(cardsPerRow, activeMeetings, refs)
   const hasMeetings = activeMeetings.length > 0
   const totalRows = hasMeetings && cardsPerRow ? Math.ceil(activeMeetings.length / cardsPerRow) : 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
@@ -80,26 +84,25 @@ const MeetingsDash = (props: Props) => {
         <Wrapper
           maybeTabletPlus={maybeTabletPlus}
           minHeight={
-            ElementHeight.MEETING_CARD_WITH_MARGIN * totalRows +
-            ElementHeight.MEETING_CARD_MARGIN +
-            topByRow[totalRows - 1]?.top
+            // ElementHeight.MEETING_CARD_MAX -
+            // 60 +
+            // ElementHeight.MEETING_CARD_MARGIN +
+            topByRow[totalRows - 1]?.top + ElementHeight.MEETING_CARD_MARGIN
           }
         >
           {transitioningMeetings.map((meeting, idx) => {
+            const ref = refs[idx]
             const rowIdx = Math.floor(idx / cardsPerRow)
-            const topForAvatars = topByRow[rowIdx]?.top || 0
+            const top = topByRow[rowIdx]?.top || 0
             const leftMargin = maybeBigDisplay
               ? ElementWidth.MEETING_CARD_LARGE_MARGIN
               : ElementWidth.MEETING_CARD_MARGIN
             return (
               <MeetingCard
                 key={meeting.child.createdAt}
+                meetingInfoRef={ref}
                 left={ElementWidth.MEETING_CARD_WITH_MARGIN * (idx % cardsPerRow) + leftMargin}
-                top={
-                  ElementHeight.MEETING_CARD_WITH_MARGIN * rowIdx +
-                  ElementHeight.MEETING_CARD_MARGIN +
-                  topForAvatars
-                }
+                top={top}
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={meeting.status}
