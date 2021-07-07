@@ -67,7 +67,7 @@ export async function up(): Promise<void> {
       accountId,
       teamId,
       userId,
-      jiraSearchQueries,
+      jiraSearchQueries: jiraSearchQueries || [],
       cloudIds,
       scope: AtlassianManager.SCOPE
     })
