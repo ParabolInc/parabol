@@ -35,7 +35,7 @@ const useTopPerRow = (
   const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
 
   const getTopByRow = () => {
-    if (!cardsPerRow) return
+    if (cardsPerRow === null) return
     const topByRow: TopByRow = {}
     // init topByRow
     for (let meetingIdx = 0; meetingIdx < meetings.length; meetingIdx++) {
@@ -84,11 +84,11 @@ const useTopPerRow = (
       const {clientHeight} = el
       if (!clientHeight) return
       const rowIdx = cardsPerRow === 0 ? 0 : Math.floor(meetingIdx / cardsPerRow)
-      // hacky as children or height of avatars could change
+      // hacky as children or height of avatars could change but the ref height doesn't
+      // initially include the AvatarList height as it uses transitionChildren
       const avatarListEl = el.children[el.children.length - 1]
       const avatarListHeight = avatarListEl.clientHeight
       if (topByRow[rowIdx]) {
-        // avatar list can update after grabbing cardInfoRef height
         const heightDiff =
           connectedUsers.length > 0 && avatarListHeight === 0
             ? +ElementHeight.MEETING_CARD_AVATARS

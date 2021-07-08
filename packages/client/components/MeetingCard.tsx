@@ -59,7 +59,8 @@ const Name = styled('div')({
   lineHeight: '24px',
   // add right padding to keep a long name from falling under the options button
   // add top and bottom padding to keep a single line at 32px to match the options button
-  padding: '4px 32px 4px 0'
+  padding: '4px 32px 4px 0',
+  wordBreak: 'break-word'
 })
 
 const Meta = styled('div')({
