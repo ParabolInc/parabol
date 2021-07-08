@@ -68,7 +68,8 @@ const Meta = styled('div')({
   fontSize: 14,
   lineHeight: '24px',
   // partial grid bottom padding accounts for maybe avatar whitespace and offset
-  paddingBottom: '4px'
+  paddingBottom: '4px',
+  wordBreak: 'break-word'
 })
 
 const MeetingImgWrapper = styled('div')({

@@ -99,7 +99,7 @@ const useTopPerRow = (
         adjustTop(meetingIdx, meetingInfoHeight)
       }
     })
-    const finalRowIdx = cardsPerRow ? Math.floor(meetings.length / cardsPerRow) : 0
+    const finalRowIdx = cardsPerRow ? Math.floor((meetings.length - 1) / cardsPerRow) : 0
     const dashMinHeight = getTopForARow(finalRowIdx + 1, topByRow)
     setDashMinHeight(dashMinHeight)
     setTopByRow(topByRow)
