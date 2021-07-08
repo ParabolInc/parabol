@@ -9,31 +9,14 @@ type Card = {
 }
 type TopByRow = {
   [row: number]: {
-    isShowingAvatars: boolean
     top: number
     maxInfoHeight: number
     cards: Card[]
   }
 }
 
-const getRowMaxHeight = (
-  refs: RefObject<HTMLDivElement>[],
-  rowIdx: number,
-  cardsPerRow: number
-) => {
-  const startIdx = cardsPerRow * rowIdx
-  const endIdx = Math.min(startIdx + cardsPerRow, refs.length)
-  const finalRowEls = refs.slice(startIdx, endIdx).map((finalRowRef) => finalRowRef.current)
-
-  const finalRowHeights = finalRowEls
-    .map((el) => el?.clientHeight)
-    .filter((height): height is number => !!height)
-  const maxInfoHeight = Math.max(...finalRowHeights)
-  return maxInfoHeight
-}
-
 const getTopForARow = (rowIdx: number, topByRow: TopByRow) => {
-  if (rowIdx === 0) return 0
+  if (rowIdx === 0 || !topByRow[rowIdx - 1]) return 0
   const prevTop = topByRow[rowIdx - 1].top
   const prevMaxInfoHeight = topByRow[rowIdx - 1].maxInfoHeight
   const prevMaxCardHeight =
@@ -48,7 +31,7 @@ const useTopPerRow = (
   cardInfoRefs: RefObject<HTMLDivElement>[]
 ) => {
   const [topByRow, setTopByRow] = useState<TopByRow>({})
-  const [dashHeight, setDashHeight] = useState(0)
+  const [dashMinHeight, setDashMinHeight] = useState(0)
   const totalRows = !meetings.length || !cardsPerRow ? 0 : Math.ceil(meetings.length / cardsPerRow)
 
   const getTopByRow = () => {
@@ -61,7 +44,6 @@ const useTopPerRow = (
       const newCard = {cardIdx: meetingIdx, infoHeight: 0}
       const newCards = cardsInRow ? [...cardsInRow, newCard] : [newCard]
       topByRow[rowIdx] = {
-        isShowingAvatars: false,
         top: ElementHeight.MEETING_CARD_MARGIN,
         maxInfoHeight: 0,
         cards: newCards
@@ -86,11 +68,6 @@ const useTopPerRow = (
       topByRow[rowIdx].maxInfoHeight = newMaxInfoHeight
       if (rowIdx === 0) return
       for (let i = rowIdx; i < totalRows; i++) {
-        // const prevTop = topByRow[rowIdx - 1].top
-        // const prevMaxInfoHeight = topByRow[rowIdx - 1].maxInfoHeight
-        // const prevMaxCardHeight =
-        //   prevMaxInfoHeight + ElementHeight.MEETING_CARD_IMG + ElementHeight.MEETING_CARD_MARGIN
-        // const newTop = prevTop + prevMaxCardHeight
         const newTop = getTopForARow(rowIdx, topByRow)
         topByRow[i].top = newTop
       }
@@ -107,37 +84,27 @@ const useTopPerRow = (
       const {clientHeight} = el
       if (!clientHeight) return
       const rowIdx = cardsPerRow === 0 ? 0 : Math.floor(meetingIdx / cardsPerRow)
-      const avatarListEl = el.children[el.children.length - 1] // hackily get the avatarList el
+      // hacky as children or height of avatars could change
+      const avatarListEl = el.children[el.children.length - 1]
       const avatarListHeight = avatarListEl.clientHeight
       if (topByRow[rowIdx]) {
         // avatar list can update after grabbing cardInfoRef height
         const heightDiff =
-          connectedUsers.length && avatarListHeight === 0
+          connectedUsers.length > 0 && avatarListHeight === 0
             ? +ElementHeight.MEETING_CARD_AVATARS
             : connectedUsers.length === 0 && avatarListHeight === ElementHeight.MEETING_CARD_AVATARS
             ? -ElementHeight.MEETING_CARD_AVATARS
             : 0
+        console.log('🚀 ~  heightDiff', {heightDiff, connectedUsers, avatarListHeight})
         const meetingInfoHeight = clientHeight + heightDiff
         adjustTop(meetingIdx, meetingInfoHeight)
       }
     })
-    // const finalRowCount = cardsPerRow ? meetings.length % cardsPerRow : 0
-    const finalRowIdx = Math.floor(cardInfoRefs.length / cardsPerRow)
-    // const dashHeight = getTopForARow(finalRowIdx + 1, topByRow)
-    setDashHeight(dashHeight)
-    // const finalRowEls = cardInfoRefs
-    //   .slice(cardInfoRefs.length - finalRowCount, cardInfoRefs.length)
-    //   .map((finalRowRef) => finalRowRef.current)
-
-    // const finalRowHeights = finalRowEls
-    //   .map((el) => el?.clientHeight)
-    //   .filter((height): height is number => !!height)
-    // const maxInfoHeight = Math.max(...finalRowHeights)
-
+    const finalRowIdx = cardsPerRow ? Math.floor(meetings.length / cardsPerRow) : 0
+    const dashMinHeight = getTopForARow(finalRowIdx + 1, topByRow)
+    setDashMinHeight(dashMinHeight)
     setTopByRow(topByRow)
   }
-
-  const meetingMembers = meetings.map((meeting) => meeting.meetingMembers)
 
   useLayoutEffect(() => {
     if (meetings.length) {
@@ -145,7 +112,7 @@ const useTopPerRow = (
     }
   }, [cardsPerRow, meetings])
 
-  return {topByRow, dashHeight}
+  return {topByRow, dashMinHeight}
 }
 
 export default useTopPerRow

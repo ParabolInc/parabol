@@ -8,7 +8,7 @@ import yellowFlashLine from '../../../static/images/illustrations/yellow-flash-l
 import useBreakpoint from '../hooks/useBreakpoint'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useTransition from '../hooks/useTransition'
-import {Breakpoint, ElementHeight, ElementWidth, Layout} from '../types/constEnums'
+import {Breakpoint, ElementWidth, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import useCardsPerRow from '../hooks/useCardsPerRow'
@@ -71,19 +71,14 @@ const MeetingsDash = (props: Props) => {
   const cardInfoRefs = Array(activeMeetings.length)
     .fill(0)
     .map(() => createRef<HTMLDivElement>())
-  const {topByRow, dashHeight} = useTopPerRow(cardsPerRow, activeMeetings, cardInfoRefs)
+  const {topByRow, dashMinHeight} = useTopPerRow(cardsPerRow, activeMeetings, cardInfoRefs)
   const hasMeetings = activeMeetings.length > 0
-  const totalRows = hasMeetings && cardsPerRow ? Math.ceil(activeMeetings.length / cardsPerRow) : 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
   return (
     <>
       {hasMeetings ? (
-        <Wrapper
-          maybeTabletPlus={maybeTabletPlus}
-          // minHeight={topByRow[totalRows]?.top + ElementHeight.MEETING_CARD_MARGIN}
-          minHeight={dashHeight}
-        >
+        <Wrapper maybeTabletPlus={maybeTabletPlus} minHeight={dashMinHeight}>
           {transitioningMeetings.map((meeting, idx) => {
             const cardInfoRef = cardInfoRefs[idx]
             const rowIdx = Math.floor(idx / cardsPerRow)
