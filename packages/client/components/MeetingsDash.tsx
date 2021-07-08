@@ -71,7 +71,7 @@ const MeetingsDash = (props: Props) => {
   const cardInfoRefs = Array(activeMeetings.length)
     .fill(0)
     .map(() => createRef<HTMLDivElement>())
-  const topByRow = useTopPerRow(cardsPerRow, activeMeetings, cardInfoRefs)
+  const {topByRow, dashHeight} = useTopPerRow(cardsPerRow, activeMeetings, cardInfoRefs)
   const hasMeetings = activeMeetings.length > 0
   const totalRows = hasMeetings && cardsPerRow ? Math.ceil(activeMeetings.length / cardsPerRow) : 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
@@ -81,7 +81,8 @@ const MeetingsDash = (props: Props) => {
       {hasMeetings ? (
         <Wrapper
           maybeTabletPlus={maybeTabletPlus}
-          minHeight={topByRow[totalRows]?.top + ElementHeight.MEETING_CARD_MARGIN}
+          // minHeight={topByRow[totalRows]?.top + ElementHeight.MEETING_CARD_MARGIN}
+          minHeight={dashHeight}
         >
           {transitioningMeetings.map((meeting, idx) => {
             const cardInfoRef = cardInfoRefs[idx]
