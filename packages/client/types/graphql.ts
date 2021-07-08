@@ -45686,11 +45686,6 @@ export interface IReflectPrompt {
   template: IReflectTemplate;
 
   /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string;
-
-  /**
    * The question to answer during the phase of the retrospective (eg What went well?)
    */
   question: string;
