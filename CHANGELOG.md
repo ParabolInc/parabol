@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.20.0 2021-Jul-08
+
+### Added
+
+- Add clarity between comments and task creation (#5049)
+- Add Parabol logo to scope phase area (#5092)
+
+### Changed
+
+- Sort jiraDimensionFields for both RethinkDB & PG (#5108)
+
 ## 6.19.0 2021-Jul-01
 
 ### Added
