@@ -110,7 +110,7 @@ const Options = styled(CardButton)({
 })
 
 interface Props {
-  meetingInfoRef: RefObject<HTMLDivElement>
+  cardInfoRef: RefObject<HTMLDivElement>
   onTransitionEnd: () => void
   meeting: MeetingCard_meeting
   left: number
@@ -131,7 +131,7 @@ const MEETING_TYPE_LABEL = {
 }
 
 const MeetingCard = (props: Props) => {
-  const {meeting, meetingInfoRef, left, status, onTransitionEnd, top} = props
+  const {meeting, cardInfoRef, left, status, onTransitionEnd, top} = props
   const {name, team, id: meetingId, meetingType, phases} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   if (!team) {
@@ -171,7 +171,7 @@ const MeetingCard = (props: Props) => {
           <MeetingImg src={ILLUSTRATIONS[meetingType]} />
         </Link>
       </MeetingImgWrapper>
-      <MeetingInfo ref={meetingInfoRef}>
+      <MeetingInfo ref={cardInfoRef}>
         <TopLine>
           <Link to={`/meet/${meetingId}`}>
             <Name>{name}</Name>

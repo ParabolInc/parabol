@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo} from 'react'
+import React, {createRef, RefObject, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg'
@@ -68,10 +68,10 @@ const MeetingsDash = (props: Props) => {
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const refs = Array(activeMeetings.length)
+  const cardInfoRefs = Array(activeMeetings.length)
     .fill(0)
-    .map(() => React.createRef<HTMLDivElement>())
-  const topByRow = useTopPerRow(cardsPerRow, activeMeetings, refs)
+    .map(() => createRef<HTMLDivElement>())
+  const topByRow = useTopPerRow(cardsPerRow, activeMeetings, cardInfoRefs)
   const hasMeetings = activeMeetings.length > 0
   const totalRows = hasMeetings && cardsPerRow ? Math.ceil(activeMeetings.length / cardsPerRow) : 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
@@ -84,7 +84,7 @@ const MeetingsDash = (props: Props) => {
           minHeight={topByRow[totalRows]?.top + ElementHeight.MEETING_CARD_MARGIN}
         >
           {transitioningMeetings.map((meeting, idx) => {
-            const ref = refs[idx]
+            const cardInfoRef = cardInfoRefs[idx]
             const rowIdx = Math.floor(idx / cardsPerRow)
             const top = topByRow[rowIdx]?.top || 0
             const leftMargin = maybeBigDisplay
@@ -93,7 +93,7 @@ const MeetingsDash = (props: Props) => {
             return (
               <MeetingCard
                 key={meeting.child.createdAt}
-                meetingInfoRef={ref}
+                cardInfoRef={cardInfoRef}
                 left={ElementWidth.MEETING_CARD_WITH_MARGIN * (idx % cardsPerRow) + leftMargin}
                 top={top}
                 meeting={meeting.child}
