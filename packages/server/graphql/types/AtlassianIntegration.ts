@@ -187,12 +187,13 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId, userId, jiraSearchQueries}) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
-        const unexpiredQueries = jiraSearchQueries.filter(
+        const searchQueries = jiraSearchQueries || []
+        const unexpiredQueries = searchQueries.filter(
           (query) => new Date(query.lastUsedAt) > thresh
         )
-        if (unexpiredQueries.length < jiraSearchQueries.length) {
+        if (unexpiredQueries.length < searchQueries.length) {
           await updateJiraSearchQueries({
-            jiraSearchQueries,
+            jiraSearchQueries: searchQueries,
             teamId,
             userId
           })

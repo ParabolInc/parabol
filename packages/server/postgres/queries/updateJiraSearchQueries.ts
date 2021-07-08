@@ -4,7 +4,17 @@ import {
   updateJiraSearchQueriesQuery
 } from './generated/updateJiraSearchQueriesQuery'
 
-const updateJiraSearchQueries = async (params: IUpdateJiraSearchQueriesQueryParams) => {
-  await updateJiraSearchQueriesQuery.run(params, getPg())
+interface UpdateJiraSearchQueryParams
+  extends Omit<IUpdateJiraSearchQueriesQueryParams, 'jiraSearchQueries'> {
+  jiraSearchQueries: {
+    queryString: string
+    projectKeyFilters?: string[]
+    lastUsedAt?: string
+    isJQL: boolean
+  }[]
+}
+
+const updateJiraSearchQueries = async (params: UpdateJiraSearchQueryParams) => {
+  await updateJiraSearchQueriesQuery.run(params as IUpdateJiraSearchQueriesQueryParams, getPg())
 }
 export default updateJiraSearchQueries
