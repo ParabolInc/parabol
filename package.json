@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "7.12.11",
+    "@graphql-codegen/add": "^2.0.2",
     "@graphql-codegen/cli": "^1.21.3",
     "@graphql-codegen/typescript": "^1.21.1",
     "@graphql-codegen/typescript-graphql-request": "^3.2.4",

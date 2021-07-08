@@ -45217,7 +45217,7 @@ export interface IGitHubIntegration {
    * The user that the access token is attached to
    */
   userId: string;
-  api: IGitHubApi | null;
+  api: IXGitHubApi | null;
 }
 
 /**
@@ -54987,8 +54987,8 @@ export interface IXGitHubError {
   path: Array<string> | null;
 }
 
-export interface IGitHubApi {
-  __typename: 'GitHubApi';
+export interface IXGitHubApi {
+  __typename: '_xGitHubApi';
   errors: Array<IXGitHubError> | null;
   query: IXGitHubQuery | null;
   mutation: IXGitHubMutation | null;
