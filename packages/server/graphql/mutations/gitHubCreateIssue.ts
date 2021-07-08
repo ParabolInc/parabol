@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import GitHubCreateIssuePayload from '../types/GitHubCreateIssuePayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import GitHubCreateIssuePayload from '../types/GitHubCreateIssuePayload'
 
 const gitHubCreateIssue = {
   type: GraphQLNonNull(GitHubCreateIssuePayload),
@@ -64,38 +64,46 @@ const gitHubCreateIssue = {
     // RESOLUTION
     const {accessToken} = viewerAuth
     const manager = new GitHubServerManager(accessToken)
-    const repoInfo = await manager.getRepoInfo(nameWithOwner, viewerAuth.login)
-    if ('message' in repoInfo) {
+    const repoInfo = await manager.getRepoInfo({
+      repoOwner,
+      repoName,
+      assigneeLogin: viewerAuth.login
+    })
+    if (repoInfo instanceof Error) {
       return standardError(new Error(repoInfo.message), {userId: viewerId})
     }
-    if (!repoInfo.data || !repoInfo.data.repository || !repoInfo.data.user) {
-      console.log(JSON.stringify(repoInfo))
-      return standardError(new Error(repoInfo.errors![0]), {userId: viewerId})
-    }
-    const {
-      data: {repository, user}
-    } = repoInfo
-    const {id: repositoryId} = repository
-    const {id: ghAssigneeId} = user
-    const createIssueRes = await manager.createIssue({
-      title,
-      repositoryId,
-      assigneeIds: [ghAssigneeId]
-    })
-    if ('message' in createIssueRes) {
-      return standardError(new Error(createIssueRes.message), {userId: viewerId})
-    }
-    const {data: payload} = createIssueRes
-    if (createIssueRes.errors) {
-      return standardError(new Error(createIssueRes.errors[0].message), {userId: viewerId})
-    }
-    if (!payload || !payload.createIssue || !payload.createIssue.issue) {
-      return standardError(new Error('createIssueRes does not contain expected payload'), {
+    const {repository, user} = repoInfo
+    if (!repository || !user) {
+      return standardError(new Error(`${nameWithOwner} is not a valid repository`), {
         userId: viewerId
       })
     }
-    const {createIssue} = payload
-    const issue = createIssue.issue!
+
+    const {id: repositoryId} = repository
+    const {id: ghAssigneeId} = user
+    const createIssueRes = await manager.createIssue({
+      input: {
+        title,
+        repositoryId,
+        assigneeIds: [ghAssigneeId]
+      }
+    })
+    if (createIssueRes instanceof Error) {
+      return standardError(createIssueRes, {userId: viewerId})
+    }
+    const {createIssue} = createIssueRes
+    if (!createIssue) {
+      return standardError(new Error(`Failed to create issue`), {
+        userId: viewerId
+      })
+    }
+    const {issue} = createIssue
+    if (!issue) {
+      return standardError(new Error(`Failed to create issue & return issue`), {
+        userId: viewerId
+      })
+    }
+
     const {id: gitHubIssueId, number: issueNumber} = issue
     const url = `https://github.com/${nameWithOwner}/issues/${issueNumber}`
     const gitHubIssue = {

@@ -1,12 +1,12 @@
 {
   "schema": "packages/server/utils/githubSchema.ts",
-  "documents": "packages/server/utils/githubQueries/*",
+  "documents": "packages/server/utils/githubQueries/*.graphql",
   "generates": {
-    "packages/server/types/typed-document-nodes.ts": {
+    "packages/server/types/githubTypes.ts": {
       "plugins": [
         "typescript",
         "typescript-operations",
-        "typed-document-node"
+        "typescript-graphql-request"
       ]
     }
   }

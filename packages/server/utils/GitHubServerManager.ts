@@ -1,41 +1,64 @@
 import fetch from 'node-fetch'
-import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
-import {GetRepositoriesQuery} from '../../server/types/typed-document-nodes'
-import {getRepositories} from './githubQueries/getRepositories'
+import {Providers} from '../../client/types/constEnums'
+import {FirstParam} from '../../client/types/generics'
+import {getSdk, Sdk} from '../types/githubTypes'
 interface OAuth2Response {
   access_token: string
   error: any
   scope: string
 }
 
-export type GQLResponse<TData> = {
-  data: TData
-  errors?: [
+interface GQLGitHubError {
+  message: string
+  path: [string]
+  extensions: {
+    [key: string]: any
+  }
+  locations: [
     {
-      message: string
-      path: [string]
-      extensions: {
-        [key: string]: any
-      }
-      locations: [
-        {
-          line: number
-          column: number
-        }
-      ]
+      line: number
+      column: number
     }
   ]
 }
+
+interface GQLGitHubSuccess<TData> {
+  data: TData
+}
+
+interface GQLGitHubFailure<TData> {
+  data: TData | null
+  errors: GQLGitHubError[]
+}
+
+// export type GQLResponse<TData> =
+
+const MAX_REQUEST_TIME = 5000
+
+export const gql = (str: ReadonlyArray<string>) => str[0]
 
 // response if the credential is invalid https://docs.github.com/en/developers/apps/authenticating-with-github-apps#authenticating-as-a-github-app
 interface GitHubCredentialError {
   message: string
   documentation_url: string
 }
-type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
+type GitHubResponse<TData> =
+  | GQLGitHubSuccess<TData>
+  | GQLGitHubFailure<TData>
+  | GitHubCredentialError
 
-class GitHubServerManager extends GitHubManager {
+type Operations = {
+  [Op in keyof Sdk]: undefined extends FirstParam<Sdk[Op]>
+  ? (variables?: FirstParam<Sdk[Op]>) => ReturnType<Sdk[Op]> | Error
+  : (variables: FirstParam<Sdk[Op]>) => ReturnType<Sdk[Op]> | Error
+}
+
+// Fix for TS2420 when what you really want to do is write GitHubServerManager implements Operations
+// https://dev.to/raspberrytyler/using-a-typescript-interface-to-define-model-properties-in-objection-js-1231
+interface GitHubServerManager extends Operations { }
+
+class GitHubServerManager implements Operations {
   static async init(code: string) {
     return GitHubServerManager.fetchToken(code)
   }
@@ -63,24 +86,53 @@ class GitHubServerManager extends GitHubManager {
     }
     return {manager: new GitHubServerManager(accessToken), scope}
   }
-  fetch = fetch
+  static SCOPE = Providers.GITHUB_SCOPE
+  accessToken: string
+  protected headers = {
+    Authorization: '',
+    Accept: 'application/json' as const,
+    'Content-Type': 'application/json' as const
+  }
+  protected readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
+    const controller = new AbortController()
+    const {signal} = controller
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, MAX_REQUEST_TIME)
+    try {
+      const res = await this.fetch(url, {...options, signal})
+      clearTimeout(timeout)
+      return res
+    } catch (e) {
+      clearTimeout(timeout)
+      return new Error('GitHub is down')
+    }
+  }
 
-  // TODO: update name to just post once we've moved the GH client manager methods to the server
-  private async serverPost<T>(body: string): Promise<GitHubResponse<T>> {
-    const res = await fetch('https://api.github.com/graphql', {
+  protected request = async <T>(query: T, variables?: Record<string, any>) => {
+    const res = await this.fetchWithTimeout('https://api.github.com/graphql', {
       method: 'POST',
       headers: this.headers,
-      body
+      body: JSON.stringify({query, variables})
     })
-    return await res.json()
+    if (res instanceof Error) {
+      return res
+    }
+    const json = (await res.json()) as GitHubResponse<T>
+    if ('message' in json) {
+      return new Error(json.message)
+    }
+    if (!('errors' in json)) return json.data
+    return new Error(json.errors[0].message)
   }
+  fetch = fetch as any
+  sdk = getSdk(this as any, (action) => action(this.headers))
   constructor(accessToken: string) {
-    super(accessToken)
-  }
-
-  async getRepositories() {
-    const body = JSON.stringify({query: getRepositories, variables: {}})
-    return this.serverPost<GetRepositoriesQuery>(body)
+    this.accessToken = accessToken
+    this.headers.Authorization = `Bearer ${accessToken}`
+    Object.keys(this.sdk).forEach((key) => {
+      this[key] = (...args: any[]) => this.sdk[key](...args)
+    })
   }
 }
 

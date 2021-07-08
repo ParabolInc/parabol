@@ -23,7 +23,7 @@
   },
   "exclude": [
     "**/node_modules",
-    "types/typed-document-nodes.ts"
+    "types/githubTypes.ts"
   ],
   "files": [
     "types/modules.d.ts",

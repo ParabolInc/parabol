@@ -92,35 +92,39 @@ export default {
 
     const manager = new GitHubServerManager(accessToken)
 
-    const repoInfo = await manager.getRepoInfo(nameWithOwner, login)
-    if ('message' in repoInfo) {
-      return {error: repoInfo}
+    const repoInfo = await manager.getRepoInfo({assigneeLogin: login, repoOwner, repoName})
+    if (repoInfo instanceof Error) {
+      return {error: {message: repoInfo.message}}
     }
-    if (!repoInfo.data || !repoInfo.data.repository || !repoInfo.data.user) {
-      console.log(JSON.stringify(repoInfo))
-      return {error: repoInfo.errors![0]}
+
+    const {repository, user} = repoInfo
+    if (!repository || !user) {
+      return {error: {message: 'GitHub repo/user not found'}}
     }
-    const {
-      data: {repository, user}
-    } = repoInfo
+
     const {id: repositoryId} = repository
     const {id: ghAssigneeId} = user
     const createIssueRes = await manager.createIssue({
-      title,
-      body,
-      repositoryId,
-      assigneeIds: [ghAssigneeId]
+      input: {
+        title,
+        body,
+        repositoryId,
+        assigneeIds: [ghAssigneeId]
+      }
     })
-    if ('message' in createIssueRes) {
-      return {error: createIssueRes}
+    if (createIssueRes instanceof Error) {
+      return {error: {message: createIssueRes.message}}
     }
 
-    const {errors, data: payload} = createIssueRes
-    if (!payload || !payload.createIssue || !payload.createIssue.issue) {
-      return {error: errors![0]}
+    const {createIssue} = createIssueRes
+    if (!createIssue) {
+      return {error: {message: 'GitHub create issue failed'}}
     }
-    const {createIssue} = payload
-    const issue = createIssue.issue!
+    const {issue} = createIssue
+    if (!issue) {
+      return {error: {message: 'GitHub create issue failed'}}
+    }
+
     const {number: issueNumber} = issue
 
     await r

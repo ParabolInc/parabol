@@ -25,25 +25,14 @@ export default {
     }
 
     // RESOLUTION
-
     const {manager, scope} = await GitHubServerManager.init(code)
     const {accessToken} = manager
     const profile = await manager.getProfile()
 
-    if ('message' in profile) {
+    if (profile instanceof Error) {
       return standardError(new Error(profile.message), {userId: viewerId})
     }
-
-    if (Array.isArray(profile.errors)) {
-      console.error(profile.errors[0])
-      return standardError(new Error(profile.errors[0].message), {userId: viewerId})
-    }
-
-    const {data: profileData} = profile
-    if (!profileData || !profileData.viewer) {
-      return standardError(new Error('No profileData provided from GitHub'), {userId: viewerId})
-    }
-    const {viewer} = profileData
+    const {viewer} = profile
     const {login} = viewer
 
     await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope})

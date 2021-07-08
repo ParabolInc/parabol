@@ -76,6 +76,10 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           const {cloudId, issueKey} = integration
           return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
         } else if (integration.service === 'github') {
+          const {nameWithOwner, issueNumber} = integration
+          return dataLoader
+            .get('githubIssue')
+            .load({teamId, userId: accessUserId, nameWithOwner, issueNumber})
           // TODO
         }
         return null
