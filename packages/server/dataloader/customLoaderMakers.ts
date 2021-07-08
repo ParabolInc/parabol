@@ -230,13 +230,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
           if (!atlassianAuth?.refreshToken) return null
 
-          const {
-            accessToken: existingAccessToken,
-            refreshToken,
-            accountId,
-            cloudIds,
-            scope
-          } = atlassianAuth
+          const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
@@ -246,15 +240,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
 
-            await upsertAtlassianAuth({
-              accountId,
-              userId,
-              accessToken,
-              refreshToken,
-              cloudIds,
-              teamId,
-              scope
-            })
+            await upsertAtlassianAuth(atlassianAuth)
           }
           return atlassianAuth
         })

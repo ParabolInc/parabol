@@ -10,24 +10,23 @@ interface UpdateJiraSearchQueryParams
     id: string
     queryString: string
     projectKeyFilters?: string[]
-    lastUsedAt?: Date
+    lastUsedAt: Date
     isJQL: boolean
   }[]
 }
 
 const updateJiraSearchQueries = async (params: UpdateJiraSearchQueryParams) => {
   const updateParams = {
+    ...params,
     jiraSearchQueries: params.jiraSearchQueries.map((jsq) => {
       return {
         id: jsq.id,
         queryString: jsq.queryString,
         projectKeyFilters: jsq.projectKeyFilters,
-        lastUsedAt: jsq.lastUsedAt ? jsq.lastUsedAt.toJSON() : undefined,
+        lastUsedAt: jsq.lastUsedAt.toJSON(),
         isJQL: jsq.isJQL
       }
-    }),
-    userId: params.userId,
-    teamId: params.teamId
+    })
   } as IUpdateJiraSearchQueriesQueryParams
 
   await updateJiraSearchQueriesQuery.run(updateParams, getPg())
