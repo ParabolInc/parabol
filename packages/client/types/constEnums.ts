@@ -104,8 +104,7 @@ export const enum ElementHeight {
   REFLECTION_CARD = 44,
   REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
   MEETING_CARD_IMG = 180,
-  MEETING_CARD_MARGIN = 16,
-  MEETING_CARD_MAX = 360
+  MEETING_CARD_MARGIN = 16
 }
 
 export const enum ExternalLinks {

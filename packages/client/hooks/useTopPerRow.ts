@@ -80,9 +80,8 @@ const useTopPerRow = (
       })
       const cardInfoRef = cardInfoRefs[meetingIdx]
       const el = cardInfoRef.current
-      if (!el) return
+      if (!el || !el.clientHeight) return
       const {clientHeight} = el
-      if (!clientHeight) return
       const rowIdx = cardsPerRow === 0 ? 0 : Math.floor(meetingIdx / cardsPerRow)
       // hacky as children or height of avatars could change but the ref height doesn't
       // initially include the AvatarList height as it uses transitionChildren

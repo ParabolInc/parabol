@@ -68,9 +68,13 @@ const MeetingsDash = (props: Props) => {
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const cardInfoRefs = Array(activeMeetings.length)
-    .fill(0)
-    .map(() => createRef<HTMLDivElement>())
+  const cardInfoRefs = useMemo(
+    () =>
+      Array(activeMeetings.length)
+        .fill(0)
+        .map(() => createRef<HTMLDivElement>()),
+    [activeMeetings.length]
+  )
   const {topByRow, dashMinHeight} = useTopPerRow(cardsPerRow, activeMeetings, cardInfoRefs)
   const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
