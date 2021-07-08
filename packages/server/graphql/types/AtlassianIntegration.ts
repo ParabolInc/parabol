@@ -184,13 +184,11 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({teamId, userId, jiraSearchQueries}) => {
+      resolve: async ({teamId, userId, jiraSearchQueries}: AtlassianAuth) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
         const searchQueries = jiraSearchQueries || []
-        const unexpiredQueries = searchQueries.filter(
-          (query) => new Date(query.lastUsedAt) > thresh
-        )
+        const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
         if (unexpiredQueries.length < searchQueries.length) {
           await updateJiraSearchQueries({
             jiraSearchQueries: searchQueries,
