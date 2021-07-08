@@ -79,18 +79,21 @@ const MeetingsDash = (props: Props) => {
     <>
       {hasMeetings ? (
         <Wrapper maybeTabletPlus={maybeTabletPlus} minHeight={dashMinHeight}>
-          {transitioningMeetings.map((meeting, idx) => {
-            const cardInfoRef = cardInfoRefs[idx]
-            const rowIdx = Math.floor(idx / cardsPerRow)
+          {transitioningMeetings.map((meeting) => {
+            const {createdAt, displayIdx} = meeting.child
+            const cardInfoRef = cardInfoRefs[displayIdx]
+            const rowIdx = Math.floor(displayIdx / cardsPerRow)
             const top = topByRow[rowIdx]?.top || 0
             const leftMargin = maybeBigDisplay
               ? ElementWidth.MEETING_CARD_LARGE_MARGIN
               : ElementWidth.MEETING_CARD_MARGIN
             return (
               <MeetingCard
-                key={meeting.child.createdAt}
+                key={createdAt}
                 cardInfoRef={cardInfoRef}
-                left={ElementWidth.MEETING_CARD_WITH_MARGIN * (idx % cardsPerRow) + leftMargin}
+                left={
+                  ElementWidth.MEETING_CARD_WITH_MARGIN * (displayIdx % cardsPerRow) + leftMargin
+                }
                 top={top}
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}

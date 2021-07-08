@@ -95,7 +95,6 @@ const useTopPerRow = (
             : connectedUsers.length === 0 && avatarListHeight === ElementHeight.MEETING_CARD_AVATARS
             ? -ElementHeight.MEETING_CARD_AVATARS
             : 0
-        console.log('🚀 ~  heightDiff', {heightDiff, connectedUsers, avatarListHeight})
         const meetingInfoHeight = clientHeight + heightDiff
         adjustTop(meetingIdx, meetingInfoHeight)
       }
