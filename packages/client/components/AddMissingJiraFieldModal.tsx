@@ -13,7 +13,6 @@ import SecondaryButton from './SecondaryButton'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import AddMissingJiraFieldMutation from '../mutations/AddMissingJiraFieldMutation'
-import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import AtlassianManager from '../utils/AtlassianManager'
 import {AddMissingJiraFieldModal_stage} from '../__generated__/AddMissingJiraFieldModal_stage.graphql'
@@ -95,20 +94,12 @@ const AddMissingJiraFieldModal = (props: Props) => {
       )
     }
 
-    /**
-     * Executed when user successfully finishes the OAuth flow of Adding a new permission [jira:manage-project]
-     */
-    const onAtlassianOAuthCompleted = (code) => {
-      submitMutation()
-
-      AddAtlassianAuthMutation(
-        atmosphere,
-        {code, teamId},
-        {onError, onCompleted: onAddAtlassianAuthCompleted}
-      )
-    }
-
-    AtlassianClientManager.openOAuth(onAtlassianOAuthCompleted, AtlassianManager.MANAGE_SCOPE)
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      {submitting, onError, onCompleted: onAddAtlassianAuthCompleted, submitMutation},
+      AtlassianManager.MANAGE_SCOPE
+    )
   }
 
   return (
