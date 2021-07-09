@@ -13,7 +13,7 @@ const parabolSchema = new GraphQLSchema({
   types: rootTypes
 })
 
-const withGitHubSchema = nestGitHubEndpoint({
+const {schema: withGitHubSchema, githubRequest} = nestGitHubEndpoint({
   parentSchema: parabolSchema,
   parentType: 'GitHubIntegration',
   fieldName: 'api',
@@ -27,4 +27,6 @@ const withLinkedGitHubSchema = mergeSchemas({
     type _xGitHubIssue implements TaskIntegration
   `
 })
+
+export {githubRequest}
 export default withLinkedGitHubSchema

@@ -9,7 +9,6 @@ import {
 import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-// import rootSchema from '../rootSchema'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -78,36 +77,26 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           const {cloudId, issueKey} = integration
           return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
         } else if (integration.service === 'github') {
-          // const {nameWithOwner, issueNumber} = integration
-          // const [repoOwner, repoName] = nameWithOwner.split('/')
-          // const integration = rootSchema.getType('GitHubIntegration')
-          // if (!integration) return
-          // if (!('isTypeOf' in integration)) return
-          // const fields = integration.getFields()
-          // const {api} = fields
-          // const source = {}
-          // const args = {}
-          // if (!api.resolve) return
-          // const infoStr = (stringify as any)(info, {cycles: true})
-          // fs.writeFileSync('infoStr.json', infoStr)
-          // return
-          // const reqStr = print(info.fieldNodes)
-          // fs.writeFileSync('reqStr.graphql', reqStr)
-          return null
-          // return
-          // const partialQueryString = `
-          //   api {
-          //     query {
-          //       repository(owner: "${repoOwner}", name: "${repoName}") {
-          //         issue(number: ${issueNumber}) {
-
-          //   }
-          // `
-          // const result = api.resolve(source, args, context, fixedInfo)
-          // return dataLoader
-          // .get('githubIssue')
-          // .load({teamId, userId: accessUserId, nameWithOwner, issueNumber})
-          // TODO
+          const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
+          if (!githubAuth) return null
+          const {accessToken} = githubAuth
+          const ghContext = {accessToken}
+          const {nameWithOwner, issueNumber} = integration
+          const [repoOwner, repoName] = nameWithOwner.split('/')
+          const wrapper = `
+                {
+                  repository(owner: "${repoOwner}", name: "${repoName}") {
+                    issue(number: ${issueNumber}) {
+                      ...info
+                    }
+                  }
+                }`
+          const {githubRequest} = require('../rootSchema')
+          const {data, errors} = await githubRequest(wrapper, ghContext, context, info)
+          if (errors) {
+            console.log(errors)
+          }
+          return data
         }
         return null
       }
