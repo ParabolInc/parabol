@@ -31,11 +31,7 @@ const TaskIntegrationLink = (props: Props) => {
   const {integration, dataCy, className, children, showJiraLabelPrefix} = props
   if (!integration) return null
   if (integration.__typename === 'JiraIssue') {
-    const {
-      issueKey,
-      projectKey,
-      cloudName
-    } = integration
+    const {issueKey, projectKey, cloudName} = integration
     return (
       <JiraIssueLink
         dataCy={`${dataCy}-jira-issue-link`}
@@ -44,23 +40,26 @@ const TaskIntegrationLink = (props: Props) => {
         cloudName={cloudName}
         className={className}
         showLabelPrefix={showJiraLabelPrefix}
-      >{children}</JiraIssueLink>
+      >
+        {children}
+      </JiraIssueLink>
     )
-  } else if (integration.__typename === 'GitHubIssue') {
-    const {nameWithOwner, issueNumber} = integration
+  } else if (integration.__typename === '_xGitHubIssue') {
+    const {repository, number} = integration
+    const {nameWithOwner} = repository
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
         ? 'https://github.com/ParabolInc/parabol'
-        : `https://www.github.com/${nameWithOwner}/issues/${issueNumber}`
+        : `https://www.github.com/${nameWithOwner}/issues/${number}`
     return (
       <StyledLink
         href={href}
         rel='noopener noreferrer'
         target='_blank'
-        title={`GitHub Issue #${issueNumber} on ${nameWithOwner}`}
+        title={`GitHub Issue #${number} on ${nameWithOwner}`}
         className={className}
       >
-        {`Issue #${issueNumber}`}
+        {`Issue #${number}`}
         {children}
       </StyledLink>
     )
@@ -77,9 +76,11 @@ graphql`
 `
 
 graphql`
-  fragment TaskIntegrationLinkIntegrationGitHub on GitHubIssue {
-    issueNumber
-    nameWithOwner
+  fragment TaskIntegrationLinkIntegrationGitHub on _xGitHubIssue {
+    number
+    repository {
+      nameWithOwner
+    }
   }
 `
 

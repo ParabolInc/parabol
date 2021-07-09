@@ -8,7 +8,14 @@ export const taskIntegrationFields = () => ({
 
 const TaskIntegration = new GraphQLInterfaceType({
   name: 'TaskIntegration',
-  fields: taskIntegrationFields
+  fields: taskIntegrationFields,
+  resolveType: (data) => {
+    const resolveTypeLookup = {
+      github: '_xGitHubIssue',
+      jira: 'JiraIssue'
+    }
+    return resolveTypeLookup[data.service]
+  }
 })
 
 export default TaskIntegration

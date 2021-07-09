@@ -1,8 +1,10 @@
+import AbortController from 'abort-controller'
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
 import {Providers} from '../../client/types/constEnums'
 import {FirstParam} from '../../client/types/generics'
 import {getSdk, Sdk} from '../types/githubTypes'
+
 interface OAuth2Response {
   access_token: string
   error: any
@@ -31,8 +33,6 @@ interface GQLGitHubFailure<TData> {
   data: TData | null
   errors: GQLGitHubError[]
 }
-
-// export type GQLResponse<TData> =
 
 const MAX_REQUEST_TIME = 5000
 
@@ -109,12 +109,14 @@ class GitHubServerManager implements Operations {
     }
   }
 
-  protected request = async <T>(query: T, variables?: Record<string, any>) => {
+  protected rawRequest = async <T>(query: T, variables?: Record<string, any>) => {
+    console.log('req', query, variables)
     const res = await this.fetchWithTimeout('https://api.github.com/graphql', {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({query, variables})
     })
+    console.log('res', res)
     if (res instanceof Error) {
       return res
     }
@@ -126,7 +128,7 @@ class GitHubServerManager implements Operations {
     return new Error(json.errors[0].message)
   }
   fetch = fetch as any
-  sdk = getSdk(this as any, (action) => action(this.headers))
+  sdk = getSdk(this as any)
   constructor(accessToken: string) {
     this.accessToken = accessToken
     this.headers.Authorization = `Bearer ${accessToken}`

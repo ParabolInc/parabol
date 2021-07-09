@@ -45053,10 +45053,10 @@ export interface IJiraIssue {
 }
 
 export type TaskIntegration =
+  | IXGitHubIssue
   | IJiraIssue
   | ITaskIntegrationGitHub
-  | ITaskIntegrationJira
-  | IGitHubIssue;
+  | ITaskIntegrationJira;
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration';

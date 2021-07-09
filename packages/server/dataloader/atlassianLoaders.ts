@@ -40,10 +40,11 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             .run()
 
           if (!atlassianAuth?.refreshToken) {
-            sendToSentry(new Error('No atlassian access token exists for team member'), {
-              userId,
-              tags: {teamId}
-            })
+            // Not always an error! For suggested integrations, this won't exist.
+            // sendToSentry(new Error('No atlassian access token exists for team member'), {
+            //   userId,
+            //   tags: {teamId}
+            // })
             return null
           }
           const {accessToken: existingAccessToken, refreshToken} = atlassianAuth

@@ -9,6 +9,7 @@ import {
 import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+// import rootSchema from '../rootSchema'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -69,17 +70,43 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     integration: {
       type: TaskIntegration,
       description: 'The reference to the single source of truth for this task',
-      resolve: async ({integration, teamId}: DBTask, _args, {dataLoader}) => {
+      resolve: async ({integration, teamId}: DBTask, _args, context, info) => {
+        const {dataLoader} = context
         if (!integration) return null
         const {accessUserId} = integration
         if (integration.service === 'jira') {
           const {cloudId, issueKey} = integration
           return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
         } else if (integration.service === 'github') {
-          const {nameWithOwner, issueNumber} = integration
-          return dataLoader
-            .get('githubIssue')
-            .load({teamId, userId: accessUserId, nameWithOwner, issueNumber})
+          // const {nameWithOwner, issueNumber} = integration
+          // const [repoOwner, repoName] = nameWithOwner.split('/')
+          // const integration = rootSchema.getType('GitHubIntegration')
+          // if (!integration) return
+          // if (!('isTypeOf' in integration)) return
+          // const fields = integration.getFields()
+          // const {api} = fields
+          // const source = {}
+          // const args = {}
+          // if (!api.resolve) return
+          // const infoStr = (stringify as any)(info, {cycles: true})
+          // fs.writeFileSync('infoStr.json', infoStr)
+          // return
+          // const reqStr = print(info.fieldNodes)
+          // fs.writeFileSync('reqStr.graphql', reqStr)
+          return null
+          // return
+          // const partialQueryString = `
+          //   api {
+          //     query {
+          //       repository(owner: "${repoOwner}", name: "${repoName}") {
+          //         issue(number: ${issueNumber}) {
+
+          //   }
+          // `
+          // const result = api.resolve(source, args, context, fixedInfo)
+          // return dataLoader
+          // .get('githubIssue')
+          // .load({teamId, userId: accessUserId, nameWithOwner, issueNumber})
           // TODO
         }
         return null
