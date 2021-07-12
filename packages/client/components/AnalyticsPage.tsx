@@ -75,10 +75,12 @@ const AnalyticsPage = () => {
     const errorProneAt = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
     const expiredErrorProne =
       errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('14d'))
-    if (expiredErrorProne) {
+    const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+    const watchlistEmails = ['albert@symph.co']
+    const isWatchedEmail = email && watchlistEmails.includes(email)
+    if (expiredErrorProne && !isWatchedEmail) {
       window.localStorage.deleteItem(LocalStorageKey.ERROR_PRONE_AT)
-    } else if (logRocketId && errorProneAt) {
-      const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+    } else if ((logRocketId && errorProneAt) || isWatchedEmail) {
       LogRocket.init(logRocketId, {
         release: __APP_VERSION__,
         network: {
