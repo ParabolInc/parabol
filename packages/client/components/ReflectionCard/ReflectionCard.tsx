@@ -28,6 +28,10 @@ import ReactjiSection from './ReactjiSection'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
 import IconLabel from '../IconLabel'
+import useBreakpoint from '../../hooks/useBreakpoint'
+import {Breakpoint} from '../../types/constEnums'
+import {MenuPosition} from '../../hooks/useCoords'
+import useTooltip from '../../hooks/useTooltip'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -86,6 +90,10 @@ const ReflectionCard = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
   const [isHovering, setIsHovering] = useState(false)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
+    HTMLDivElement
+  >(MenuPosition.UPPER_CENTER)
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
@@ -235,9 +243,14 @@ const ReflectionCard = (props: Props) => {
       )}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-      <SearchButton showSearch={showSpotlight && isHovering}>
-        <SearchIcon icon='search' />
+      <SearchButton
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        showSearch={showSpotlight && (isHovering || !isDesktop)}
+      >
+        <SearchIcon ref={tooltipRef} icon='search' />
       </SearchButton>
+      {tooltipPortal('Find similar')}
     </ReflectionCardRoot>
   )
 }
