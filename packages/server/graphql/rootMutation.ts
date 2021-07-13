@@ -132,6 +132,7 @@ import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
+import addMissingJiraField from './mutations/addMissingJiraField'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -271,6 +272,7 @@ export default new GraphQLObjectType<any, Context>({
       updateJiraDimensionField,
       joinMeeting,
       gitHubCreateIssue,
+      addMissingJiraField,
       setPokerSpectate,
       persistGitHubSearchQuery
     } as any)

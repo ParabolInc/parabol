@@ -50981,6 +50981,11 @@ export interface IMutation {
   gitHubCreateIssue: GitHubCreateIssuePayload;
 
   /**
+   * Adds a missing Jira field to a screen currently assigned to a Jira project
+   */
+  addMissingJiraField: AddMissingJiraFieldPayload;
+
+  /**
    * Set whether the user is spectating poker meeting
    */
   setPokerSpectate: SetPokerSpectatePayload;
@@ -52136,6 +52141,11 @@ export interface IGitHubCreateIssueOnMutationArguments {
    * The title of the GH issue
    */
   title: string;
+}
+
+export interface IAddMissingJiraFieldOnMutationArguments {
+  meetingId: string;
+  stageId: string;
 }
 
 export interface ISetPokerSpectateOnMutationArguments {
@@ -54511,6 +54521,22 @@ export interface IGitHubRepository {
    * The owner / repo of the issue as found in GitHub
    */
   nameWithOwner: string;
+}
+
+/**
+ * Return object for AddMissingJiraFieldPayload
+ */
+export type AddMissingJiraFieldPayload =
+  | IErrorPayload
+  | IAddMissingJiraFieldSuccess;
+
+export interface IAddMissingJiraFieldSuccess {
+  __typename: 'AddMissingJiraFieldSuccess';
+
+  /**
+   * Jira field which was just added to an issue screen
+   */
+  dimensionField: IJiraDimensionField | null;
 }
 
 /**
