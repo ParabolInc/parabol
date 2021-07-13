@@ -23,7 +23,10 @@ const handleRemoveAgendaItem = (
     if (!agendaItemPhase) return
     const stages = agendaItemPhase.getLinkedRecords('stages')
     if (!stages) return
-    const stageToRemove = stages.find((stage) => stage.getValue('agendaItemId') === agendaItemId)
+    const stageToRemove = stages.find(
+      (stage) =>
+        stage.getLinkedRecord<AgendaItem_agendaItem>('agendaItem')?.getValue('id') === agendaItemId
+    )
     if (!stageToRemove) return
     const stageId = stageToRemove.getValue('id') as string
     if (!stageId) return

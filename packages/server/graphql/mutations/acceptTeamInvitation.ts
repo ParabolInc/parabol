@@ -10,6 +10,7 @@ import RedisLock from '../../utils/RedisLock'
 import segmentIo from '../../utils/segmentIo'
 import rateLimit from '../rateLimit'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
+import activatePrevSlackAuth from './helpers/activatePrevSlackAuth'
 import handleInvitationToken from './helpers/handleInvitationToken'
 
 export default {
@@ -91,6 +92,7 @@ export default {
         teamId,
         viewerId
       )
+      activatePrevSlackAuth(viewerId, teamId)
       await redisLock.unlock()
       const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
       // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest

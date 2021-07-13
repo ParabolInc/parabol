@@ -32,7 +32,8 @@ function getPairNeFields(
   rethinkRow: RethinkDoc,
   pgRow: PGDoc,
   alwaysDefinedFields: string[],
-  maybeUndefinedFieldsDefaultValues: {[key: string]: any}
+  maybeUndefinedFieldsDefaultValues: {[key: string]: any},
+  maybeNullFieldsDefaultValues?: {[key: string]: any}
 ): string[] {
   const neFields = [] as string[]
 
@@ -42,19 +43,28 @@ function getPairNeFields(
       neFields.push(f)
     }
   }
-  for (const [f, defaultValue] of Object.entries(maybeUndefinedFieldsDefaultValues)) {
-    const [rethinkValue, pgValue] = [rethinkRow[f], pgRow[f]]
-    if (rethinkValue !== undefined) {
-      if (!areEqual(rethinkValue, pgValue)) {
-        neFields.push(f)
-      }
-    } else {
-      if (!areEqual(pgValue, defaultValue)) {
-        neFields.push(f)
-      }
-    }
-  }
+  for (const [maybeUndefinedField, defaultValueForUndefinedField] of Object.entries(
+    maybeUndefinedFieldsDefaultValues
+  )) {
+    const [rethinkValue, pgValue] = [rethinkRow[maybeUndefinedField], pgRow[maybeUndefinedField]]
 
+    if (rethinkValue === undefined) {
+      if (areEqual(pgValue, defaultValueForUndefinedField)) {
+        continue
+      }
+    } else if (rethinkValue === null && pgValue !== null) {
+      if (
+        maybeNullFieldsDefaultValues &&
+        areEqual(maybeNullFieldsDefaultValues[maybeUndefinedField], pgValue)
+      ) {
+        continue
+      }
+    } else if (areEqual(pgValue, rethinkValue)) {
+      continue
+    }
+
+    neFields.push(maybeUndefinedField)
+  }
   return neFields
 }
 
@@ -83,7 +93,7 @@ const getPgRowCount = async (tableName: string) => {
   const queryRes = await pg.query(`
     SELECT COUNT(*) FROM "${tableName}";
   `)
-  return queryRes.rows[0].count
+  return Number(queryRes.rows[0].count)
 }
 
 export async function checkTableEq(
@@ -92,6 +102,7 @@ export async function checkTableEq(
   pgQuery: (ids: string[]) => Promise<PGDoc[] | null>,
   alwaysDefinedFields: string[],
   maybeUndefinedFieldsDefaultValues: {[key: string]: any},
+  maybeNullFieldsDefaultValues: {[key: string]: any},
   maxErrors = 10
 ): Promise<IError> {
   const errors: IError = {
@@ -139,7 +150,8 @@ export async function checkTableEq(
         rethinkRow,
         pgRow,
         alwaysDefinedFields,
-        maybeUndefinedFieldsDefaultValues
+        maybeUndefinedFieldsDefaultValues,
+        maybeNullFieldsDefaultValues
       )
 
       if (neFields.length) {

@@ -1,6 +1,6 @@
+import styled from '@emotion/styled'
 import React, {forwardRef} from 'react'
 import MockFieldLine from '../modules/meeting/components/MockFieldLine'
-import styled from '@emotion/styled'
 
 const Container = styled('div')({
   padding: '0px 16px'
@@ -16,8 +16,8 @@ const MockFieldList = forwardRef(() => {
     <Container>
       {Array.from(Array(3).keys()).map((idx) => {
         return (
-          <Wrapper>
-            <MockFieldLine key={idx} delay={idx * 40} />
+          <Wrapper key={idx}>
+            <MockFieldLine delay={idx * 40} />
           </Wrapper>
         )
       })}

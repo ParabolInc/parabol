@@ -1,9 +1,8 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {AGENDA_ITEMS} from 'parabol-client/utils/constants'
 import makeUpdateAgendaItemSchema from 'parabol-client/validation/makeUpdateAgendaItemSchema'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
-import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -65,9 +64,7 @@ export default {
     const meetingId = actionMeeting?.id ?? null
     if (actionMeeting) {
       const {id: meetingId, phases} = actionMeeting
-      const agendaItemPhase = phases.find(
-        (phase) => phase.phaseType === AGENDA_ITEMS
-      )! as AgendaItemsPhase
+      const agendaItemPhase = getPhase(phases, 'agendaitems')
       const {stages} = agendaItemPhase
       const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
       const getSortOrder = (stage: AgendaItemsStage) => {

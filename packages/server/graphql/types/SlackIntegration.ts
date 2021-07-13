@@ -22,7 +22,7 @@ const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
     isActive: {
       description: 'true if the auth is updated & ready to use for all features, else false',
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: ({botAccessToken}) => !!botAccessToken
+      resolve: ({isActive, botAccessToken}) => !!(isActive && botAccessToken)
     },
     botUserId: {
       type: GraphQLID,

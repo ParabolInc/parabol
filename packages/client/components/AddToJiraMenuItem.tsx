@@ -1,4 +1,4 @@
-import React, {forwardRef, useCallback} from 'react'
+import React, {forwardRef} from 'react'
 import JiraSVG from './JiraSVG'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
@@ -8,7 +8,6 @@ import {MenuMutationProps} from '../hooks/useMutationProps'
 import styled from '@emotion/styled'
 import {ICON_SIZE} from '../styles/typographyV2'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
-import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 
 interface Props {
   teamId: string
@@ -26,21 +25,8 @@ const MenuItemIcon = styled(MenuItemComponentAvatar)({
 const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId} = props
   const atmosphere = useAtmosphere()
-
-  const onAtlassianOAuthCompleted = useCallback(
-    (code) => {
-      if (mutationProps.submitting) {
-        return
-      }
-
-      mutationProps.submitMutation()
-      AddAtlassianAuthMutation(atmosphere, {code, teamId}, mutationProps)
-    },
-    [mutationProps, teamId]
-  )
-
   const onClick = () => {
-    AtlassianClientManager.openOAuth(onAtlassianOAuthCompleted)
+    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   return (
     <MenuItem

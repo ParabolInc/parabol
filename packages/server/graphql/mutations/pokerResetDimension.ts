@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import MeetingMember from '../../database/types/MeetingMember'
@@ -10,6 +9,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerResetDimensionPayload from '../types/PokerResetDimensionPayload'
 import sendPokerMeetingRevoteToSegment from './helpers/sendPokerMeetingRevoteToSegment'
+import getPhase from '../../utils/getPhase'
 
 const pokerResetDimension = {
   type: GraphQLNonNull(PokerResetDimensionPayload),
@@ -61,7 +61,7 @@ const pokerResetDimension = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {

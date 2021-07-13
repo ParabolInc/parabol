@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import EstimatePhase from '../../database/types/EstimatePhase'
+import getPhase from '../../utils/getPhase'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
@@ -66,7 +66,7 @@ const pokerRevealVotes = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {

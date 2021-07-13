@@ -57,6 +57,12 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   }
 
   // RESOLUTION
+  const updates = {
+    orgId,
+    isPaid: Boolean(org.stripeSubscriptionId),
+    tier: org.tier,
+    updatedAt: new Date()
+  }
   const [rethinkResult] = await Promise.all([
     r({
       notifications: (r
@@ -77,11 +83,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       team: (r
         .table('Team')
         .get(teamId)
-        .update({
-          orgId,
-          isPaid: Boolean(org.stripeSubscriptionId),
-          tier: org.tier
-        }) as unknown) as Team,
+        .update(updates) as unknown) as Team,
       newToOrgUserIds: (r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
@@ -96,14 +98,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
         })('userId')
         .coerceTo('array') as unknown) as string[]
     }).run(),
-    updateTeamByTeamId(
-      {
-        orgId,
-        isPaid: Boolean(org.stripeSubscriptionId),
-        tier: org.tier
-      },
-      teamId
-    )
+    updateTeamByTeamId(updates, teamId)
   ])
   const {newToOrgUserIds} = rethinkResult
 

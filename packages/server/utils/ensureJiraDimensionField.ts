@@ -9,6 +9,7 @@ import {
   mergeTeamJiraDimensionFieldsQuery
 } from '../postgres/queries/generated/mergeTeamJiraDimensionFieldsQuery'
 import getPg from '../postgres/getPg'
+import stringify from 'fast-json-stable-stringify'
 
 const ensureJiraDimensionField = async (
   requiredMappers: {cloudId: string; projectKey: string; issueKey: string; dimensionName: string}[],
@@ -55,16 +56,17 @@ const ensureJiraDimensionField = async (
   )
   const fieldsToAdd = newJiraDimensionFields.filter(Boolean)
   if (fieldsToAdd.length === 0) return
+  const sortedJiraDimensionFields = [...currentMappers, ...fieldsToAdd].sort((a, b) =>
+    stringify(a) < stringify(b) ? -1 : 1
+  )
   const r = await getRethink()
   await Promise.all([
     r
       .table('Team')
       .get(teamId)
-      .update((team) => ({
-        jiraDimensionFields: team('jiraDimensionFields')
-          .default([])
-          .union(fieldsToAdd)
-      }))
+      .update({
+        jiraDimensionFields: sortedJiraDimensionFields
+      })
       .run(),
     catchAndLog(() =>
       mergeTeamJiraDimensionFieldsQuery.run(

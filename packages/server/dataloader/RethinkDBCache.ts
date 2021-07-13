@@ -1,7 +1,11 @@
 import getRethink, {DBType} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
+import {OptionalExceptFor} from '../utils/TypeUtil'
 
-export type Updater<T> = Partial<T> | ((doc: RDatum<T>) => any)
+export type Updater<T> =
+  | (T extends {updatedAt: Date} ? OptionalExceptFor<T, 'updatedAt'> : Partial<T>)
+  | ((doc: RDatum<T>) => any)
+
 export interface RRead<T> {
   id: string
   table: T

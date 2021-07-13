@@ -1,5 +1,5 @@
+import getPhase from '../../../utils/getPhase'
 import getRethink from '../../../database/rethinkDriver'
-import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import MeetingAction from '../../../database/types/MeetingAction'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
@@ -21,9 +21,7 @@ const addAgendaItemToActiveActionMeeting = async (
   ) as MeetingAction | undefined
   if (!actionMeeting) return undefined
   const {id: meetingId, phases} = actionMeeting
-  const agendaItemPhase = phases.find(
-    (phase) => phase.phaseType === 'agendaitems'
-  ) as AgendaItemsPhase
+  const agendaItemPhase = getPhase(phases, 'agendaitems')
   if (!agendaItemPhase) return undefined
 
   const {stages} = agendaItemPhase
