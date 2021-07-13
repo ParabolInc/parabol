@@ -1,9 +1,9 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getTeamsByIdQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
-export type MeetingTypeEnum = 'action' | 'retrospective' | 'poker'
+export type MeetingTypeEnum = 'poker' | 'retrospective' | 'action'
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise'
+export type TierEnum = 'enterprise' | 'pro' | 'personal'
 
 export type JsonArray = (null | boolean | number | string | Json[] | {[key: string]: Json})[]
 
@@ -26,6 +26,7 @@ export interface IGetTeamsByIdQueryResult {
   orgId: string
   isOnboardTeam: boolean
   updatedAt: Date
+  eqChecked: Date
   lockMessageHTML: string | null
 }
 

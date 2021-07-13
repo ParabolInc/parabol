@@ -17,18 +17,13 @@ interface AtlassianAuth
 
 const getAtlassianAuthByUserIdTeamId = async (userId: string, teamId: string) => {
   const [res] = await getAtlassianAuthByUserIdTeamIdQuery.run({teamId, userId}, getPg())
-
+  if (!res) return null
   return {
     ...res,
-    jiraSearchQueries: res.jiraSearchQueries.map((jsq: any) => {
-      return {
-        id: jsq.id,
-        queryString: jsq.queryString,
-        projectKeyFilters: jsq.projectKeyFilters,
-        lastUsedAt: new Date(jsq.lastUsedAt),
-        isJQL: jsq.isJQL
-      }
-    })
+    jiraSearchQueries: res.jiraSearchQueries.map((jsq: any) => ({
+      ...jsq,
+      lastUsedAt: new Date(jsq.lastUsedAt)
+    }))
   } as AtlassianAuth
 }
 
