@@ -7,7 +7,7 @@ import ErrorBoundary from './ErrorBoundary'
 import TimelinePriorityTasks from './TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV3'
 import TimelineNewFeature from './TimelineNewFeature'
-import {Breakpoint, DashTimeline, NavSidebar} from '../types/constEnums'
+import {DashTimeline, NavSidebar} from '../types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
 interface Props {
@@ -29,12 +29,6 @@ export const RightDrawer = styled('div')({
   padding: 16,
   [makeMinWidthMediaQuery(MIN_WIDTH)]: {
     display: 'block'
-  },
-  [makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)]: {
-    bottom: 0,
-    position: 'fixed',
-    right: 0,
-    top: 56
   }
 })
 
