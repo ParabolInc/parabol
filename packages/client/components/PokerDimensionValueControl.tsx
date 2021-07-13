@@ -79,7 +79,7 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
-const MissingJiraFieldError = `Update failed! In Jira, add the field`
+const MissingJiraFieldError = `Update failed! In Jira, use "Find my field" to determine the error`
 
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props

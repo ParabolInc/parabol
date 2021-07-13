@@ -785,7 +785,7 @@ export default abstract class AtlassianManager {
     const res = (await this.delete(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/${fieldId}`
     )) as null | AtlassianError | JiraError
-
+    if (res === null) return null
     if (isJiraNoAccessError(res)) {
       return {errorMessage: res.errorMessages[0]}
     }
