@@ -265,7 +265,6 @@ export const templateDimensionsByTemplateId = new LoaderMakerForeign(
         .getAll(r.args(templateIds), {index: 'templateId'})
         // NOTE: isActive must be false so we can see meetings in the past that use a now-inactive template
         // .filter({isActive: true})
-        .filter(row => row.hasFields('removedAt').not())
         .orderBy('sortOrder')
         .run()
     )
