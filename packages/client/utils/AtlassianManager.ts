@@ -12,7 +12,7 @@ export interface JiraApiError {
 export function isJiraApiError<T>(response: T | JiraApiError): response is JiraApiError {
   return 'errorMessage' in response
 }
-4
+
 export interface JiraUser {
   self: string
   key: string
