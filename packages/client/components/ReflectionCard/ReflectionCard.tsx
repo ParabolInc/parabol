@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {
@@ -14,21 +14,42 @@ import useMutationProps from '../../hooks/useMutationProps'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
+import {PALETTE} from '../../styles/paletteV3'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
+import CardButton from '../CardButton'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
+import IconLabel from '../IconLabel'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
 })
+
+const SearchIcon = styled(IconLabel)({
+  color: PALETTE.SLATE_700
+})
+
+const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) => ({
+  bottom: 2,
+  color: PALETTE.SLATE_700,
+  cursor: 'pointer',
+  display: showSearch ? 'block' : 'none',
+  opacity: 1,
+  position: 'absolute',
+  right: 2,
+  zIndex: 2,
+  ':hover': {
+    backgroundColor: PALETTE.SLATE_200
+  }
+}))
 
 interface Props {
   isClipped?: boolean
@@ -64,6 +85,7 @@ const ReflectionCard = (props: Props) => {
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
+  const [isHovering, setIsHovering] = useState(false)
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
@@ -179,8 +201,14 @@ const ReflectionCard = (props: Props) => {
   const clearError = () => {
     onCompleted()
   }
+
+  const showSpotlight = true
   return (
-    <ReflectionCardRoot data-cy={`${dataCy}-root`}>
+    <ReflectionCardRoot
+      data-cy={`${dataCy}-root`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
@@ -206,6 +234,10 @@ const ReflectionCard = (props: Props) => {
         />
       )}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
+      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
+      <SearchButton showSearch={showSpotlight && isHovering}>
+        <SearchIcon icon='search' />
+      </SearchButton>
     </ReflectionCardRoot>
   )
 }
