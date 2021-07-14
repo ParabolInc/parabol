@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import ms from 'ms'
-import getRethink from '../../database/rethinkDriver'
 import AtlassianAuth from '../../database/types/AtlassianAuth'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
@@ -19,6 +18,8 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {JiraIssueConnection} from './JiraIssue'
 import JiraRemoteProject from './JiraRemoteProject'
 import JiraSearchQuery from './JiraSearchQuery'
+import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
+import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -26,7 +27,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid'
+      description: 'Composite key in atlassiani:teamId:userId format',
+      resolve: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId)
     },
     isActive: {
       description: 'true if the auth is valid, else false',
@@ -193,20 +195,17 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({id: atlassianAuthId, jiraSearchQueries}: AtlassianAuth) => {
+      resolve: async ({teamId, userId, jiraSearchQueries}: AtlassianAuth) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
         const searchQueries = jiraSearchQueries || []
         const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
         if (unexpiredQueries.length < searchQueries.length) {
-          const r = await getRethink()
-          await r
-            .table('AtlassianAuth')
-            .get(atlassianAuthId)
-            .update({
-              jiraSearchQueries: unexpiredQueries
-            })
-            .run()
+          await updateJiraSearchQueries({
+            jiraSearchQueries: searchQueries,
+            teamId,
+            userId
+          })
         }
         return unexpiredQueries
       }

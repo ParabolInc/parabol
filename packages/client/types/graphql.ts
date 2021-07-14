@@ -44844,7 +44844,7 @@ export interface IAtlassianIntegration {
   __typename: 'AtlassianIntegration';
 
   /**
-   * shortid
+   * Composite key in atlassiani:teamId:userId format
    */
   id: string;
 
@@ -45734,11 +45734,6 @@ export interface IReflectPrompt {
    * The template that this prompt belongs to
    */
   template: IReflectTemplate;
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string;
 
   /**
    * The question to answer during the phase of the retrospective (eg What went well?)
@@ -51026,6 +51021,11 @@ export interface IMutation {
   gitHubCreateIssue: GitHubCreateIssuePayload;
 
   /**
+   * Adds a missing Jira field to a screen currently assigned to a Jira project
+   */
+  addMissingJiraField: AddMissingJiraFieldPayload;
+
+  /**
    * Set whether the user is spectating poker meeting
    */
   setPokerSpectate: SetPokerSpectatePayload;
@@ -52181,6 +52181,11 @@ export interface IGitHubCreateIssueOnMutationArguments {
    * The title of the GH issue
    */
   title: string;
+}
+
+export interface IAddMissingJiraFieldOnMutationArguments {
+  meetingId: string;
+  stageId: string;
 }
 
 export interface ISetPokerSpectateOnMutationArguments {
@@ -53516,11 +53521,6 @@ export interface IRemoveAgendaItemPayload {
 export interface IRemoveAtlassianAuthPayload {
   __typename: 'RemoveAtlassianAuthPayload';
   error: IStandardMutationError | null;
-
-  /**
-   * The ID of the authorization removed
-   */
-  authId: string | null;
   teamId: string | null;
 
   /**
@@ -54566,6 +54566,22 @@ export interface IGitHubRepository {
    * The owner / repo of the issue as found in GitHub
    */
   nameWithOwner: string;
+}
+
+/**
+ * Return object for AddMissingJiraFieldPayload
+ */
+export type AddMissingJiraFieldPayload =
+  | IErrorPayload
+  | IAddMissingJiraFieldSuccess;
+
+export interface IAddMissingJiraFieldSuccess {
+  __typename: 'AddMissingJiraFieldSuccess';
+
+  /**
+   * Jira field which was just added to an issue screen
+   */
+  dimensionField: IJiraDimensionField | null;
 }
 
 /**

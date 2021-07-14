@@ -2,13 +2,15 @@ import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import {JiraGetIssueRes, JiraProject} from 'parabol-client/utils/AtlassianManager'
-import getRethink from '../database/rethinkDriver'
+import getAtlassianAuthByUserIdTeamId from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import upsertAtlassianAuth from '../postgres/queries/upsertAtlassianAuth'
 import AtlassianAuth from '../database/types/AtlassianAuth'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import sendToSentry from '../utils/sendToSentry'
 import RethinkDataLoader from './RethinkDataLoader'
 
 type TeamUserKey = {teamId: string; userId: string}
+
 export interface JiraRemoteProjectKey {
   userId: string
   teamId: string
@@ -22,23 +24,17 @@ export interface JiraIssueKey {
   cloudId: string
   issueKey: string
 }
-export interface FreshAtlassianAuth extends AtlassianAuth {
+
+export interface FreshAtlassianAuth extends Omit<AtlassianAuth, 'id'> {
   accessToken: string
 }
+
 export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
   return new DataLoader<TeamUserKey, FreshAtlassianAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const r = await getRethink()
-          const atlassianAuth = await r
-            .table('AtlassianAuth')
-            .getAll(userId, {index: 'userId'})
-            .filter({teamId})
-            .nth(0)
-            .default(null)
-            .run()
-
+          const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
           if (!atlassianAuth?.refreshToken) {
             sendToSentry(new Error('No atlassian access token exists for team member'), {
               userId,
@@ -46,6 +42,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             })
             return null
           }
+
           const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
@@ -55,14 +52,10 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             const {accessToken} = manager
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
-            await r
-              .table('AtlassianAuth')
-              .getAll(userId, {index: 'userId'})
-              .filter({teamId})
-              .update({accessToken, updatedAt: now})
-              .run()
+
+            await upsertAtlassianAuth(atlassianAuth)
           }
-          return atlassianAuth as FreshAtlassianAuth
+          return atlassianAuth
         })
       )
       const res = results.map((result) => (result.status === 'fulfilled' ? result.value : null))

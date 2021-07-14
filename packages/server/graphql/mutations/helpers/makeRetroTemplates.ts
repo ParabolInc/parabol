@@ -5,7 +5,6 @@ interface TemplatePrompt {
   description: string
   groupColor: string
   question: string
-  title?: string
   scope?: string
 }
 
@@ -30,7 +29,6 @@ const makeRetroTemplates = (teamId: string, orgId: string, templateObj: Template
           question: prompt.question,
           description: prompt.description,
           groupColor: prompt.groupColor,
-          title: prompt.title,
           removedAt: null
         })
     )

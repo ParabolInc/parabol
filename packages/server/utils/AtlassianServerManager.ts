@@ -58,17 +58,11 @@ class AtlassianServerManager extends AtlassianManager {
 
     const tokenJson = (await tokenRes.json()) as OAuth2Response
 
-    const {access_token: accessToken, refresh_token: refreshToken, error, scope} = tokenJson
+    const {access_token: accessToken, refresh_token: refreshToken, error} = tokenJson
     if (error) {
       throw new Error(`Atlassian: ${error}`)
     }
-    const providedScope = scope.split(' ')
-    const matchingScope =
-      new Set([...AtlassianServerManager.SCOPE.split(' '), ...providedScope]).size ===
-      providedScope.length
-    if (!matchingScope) {
-      throw new Error(`bad scope: ${scope}`)
-    }
+
     return new AtlassianServerManager(accessToken, refreshToken)
   }
 
