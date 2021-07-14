@@ -43951,6 +43951,11 @@ export interface IUser {
   isRemoved: boolean;
 
   /**
+   * true if all user sessions are being recorded in LogRocket, else false
+   */
+  isWatched: boolean;
+
+  /**
    * the endedAt timestamp of the most recent meeting they were a member of
    */
   lastMetAt: any | null;

@@ -17,6 +17,7 @@ export interface IUpdateUserQueryParams {
   picture: string | null | void
   segmentId: string | null | void
   isRemoved: boolean | null | void
+  isWatched: boolean | null | void
   reasonRemoved: string | null | void
   newFeatureId: string | null | void
   identities: JsonArray | null | void
@@ -39,7 +40,7 @@ const updateUserQueryIR: any = {
       name: 'ids',
       codeRefs: {
         defined: {a: 36, b: 38, line: 3, col: 9},
-        used: [{a: 776, b: 778, line: 19, col: 13}]
+        used: [{a: 827, b: 829, line: 20, col: 13}]
       },
       transform: {type: 'array_spread'}
     },
@@ -89,24 +90,29 @@ const updateUserQueryIR: any = {
       codeRefs: {used: [{a: 499, b: 507, line: 14, col: 26}]}
     },
     {
+      name: 'isWatched',
+      transform: {type: 'scalar'},
+      codeRefs: {used: [{a: 550, b: 558, line: 15, col: 26}]}
+    },
+    {
       name: 'reasonRemoved',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 554, b: 566, line: 15, col: 30}]}
+      codeRefs: {used: [{a: 605, b: 617, line: 16, col: 30}]}
     },
     {
       name: 'newFeatureId',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 616, b: 627, line: 16, col: 29}]}
+      codeRefs: {used: [{a: 667, b: 678, line: 17, col: 29}]}
     },
     {
       name: 'identities',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 674, b: 683, line: 17, col: 27}]}
+      codeRefs: {used: [{a: 725, b: 734, line: 18, col: 27}]}
     },
     {
       name: 'overLimitCopy',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 731, b: 743, line: 18, col: 30}]}
+      codeRefs: {used: [{a: 782, b: 794, line: 19, col: 30}]}
     }
   ],
   usedParamSet: {
@@ -119,6 +125,7 @@ const updateUserQueryIR: any = {
     picture: true,
     segmentId: true,
     isRemoved: true,
+    isWatched: true,
     reasonRemoved: true,
     newFeatureId: true,
     identities: true,
@@ -127,8 +134,8 @@ const updateUserQueryIR: any = {
   },
   statement: {
     body:
-      'UPDATE "User" SET\n  email = COALESCE(:email, "email"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),\n  inactive = COALESCE(:inactive, "inactive"),\n  "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),\n  "preferredName" = COALESCE(:preferredName, "preferredName"),\n  tier = COALESCE(:tier, "tier"),\n  picture = COALESCE(:picture, "picture"),\n  "segmentId" = COALESCE(:segmentId, "segmentId"),\n  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),\n  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),\n  "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),\n  "identities" = COALESCE(:identities, "identities"),\n  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy")\nWHERE id IN :ids',
-    loc: {a: 52, b: 778, line: 5, col: 0}
+      'UPDATE "User" SET\n  email = COALESCE(:email, "email"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),\n  inactive = COALESCE(:inactive, "inactive"),\n  "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),\n  "preferredName" = COALESCE(:preferredName, "preferredName"),\n  tier = COALESCE(:tier, "tier"),\n  picture = COALESCE(:picture, "picture"),\n  "segmentId" = COALESCE(:segmentId, "segmentId"),\n  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),\n  "isWatched" = COALESCE(:isWatched, "isWatched"),\n  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),\n  "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),\n  "identities" = COALESCE(:identities, "identities"),\n  "overLimitCopy" = COALESCE(:overLimitCopy, "overLimitCopy")\nWHERE id IN :ids',
+    loc: {a: 52, b: 829, line: 5, col: 0}
   }
 }
 
@@ -145,6 +152,7 @@ const updateUserQueryIR: any = {
  *   picture = COALESCE(:picture, "picture"),
  *   "segmentId" = COALESCE(:segmentId, "segmentId"),
  *   "isRemoved" = COALESCE(:isRemoved, "isRemoved"),
+ *   "isWatched" = COALESCE(:isWatched, "isWatched"),
  *   "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),
  *   "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),
  *   "identities" = COALESCE(:identities, "identities"),

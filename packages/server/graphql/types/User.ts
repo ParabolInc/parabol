@@ -132,6 +132,11 @@ const User = new GraphQLObjectType<any, GQLContext>({
       description: 'true if the user was removed from parabol, else false',
       resolve: ({isRemoved}) => !!isRemoved
     },
+    isWatched: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'true if all user sessions are being recorded in LogRocket, else false',
+      resolve: ({isWatched}) => !!isWatched
+    },
     lastMetAt: {
       type: GraphQLISO8601Type,
       description: 'the endedAt timestamp of the most recent meeting they were a member of',

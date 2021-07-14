@@ -15,6 +15,7 @@ interface Input {
   picture?: string
   inactive?: boolean
   identities?: AuthIdentity[]
+  isWatched?: boolean
   createdAt?: Date
   segmentId?: string | null
   tier?: TierEnum
@@ -38,6 +39,7 @@ export default class User {
   inactive: boolean
   identities: AuthIdentity[]
   isRemoved?: boolean
+  isWatched?: boolean
   createdAt: Date
   segmentId?: string
   tier: TierEnum
@@ -58,6 +60,7 @@ export default class User {
       lastSeenAtURLs,
       identities,
       inactive,
+      isWatched,
       preferredName,
       segmentId,
       tier
@@ -79,6 +82,7 @@ export default class User {
     this.featureFlags = featureFlags || []
     this.identities = identities || []
     this.inactive = inactive || false
+    this.isWatched = isWatched || false
     this.lastSeenAt = lastSeenAt ?? null
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
