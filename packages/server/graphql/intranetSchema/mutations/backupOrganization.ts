@@ -3,12 +3,14 @@ import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import getPg from '../../../postgres/getPg'
-import copyTo from 'pg-copy-streams/copy-to'
-import pgFormat from 'pg-format'
 import path from 'path'
 import childProcess from 'child_process'
 import util from 'util'
-import {PoolClient} from 'pg'
+import getPgConfig from '../../../postgres/getPgConfig'
+import {Client} from 'pg'
+import {getPgMigrationsQuery} from '../../../postgres/queries/generated/getPgMigrationsQuery'
+import {insertPgMigrationsQuery} from '../../../postgres/queries/generated/insertPgMigrationsQuery'
+
 const execFilePromise = util.promisify(childProcess.execFile)
 
 const PG_SCRIPTS_DIR = 'packages/server/postgres/scripts'
@@ -19,54 +21,53 @@ const runExecFilePromise = async (pathToScript: string, scriptArgs: string[]) =>
   console.log(stderr)
 }
 
-const pipeTableRowsToOrgBackupDB = (
-  client: PoolClient,
-  tableName: string,
-  copyToSelectSQL: string,
-  tableSeqName?: string
-) => {
-  const copyFromMetaCommand = pgFormat(`\\copy %I FROM STDIN DELIMITER ',' CSV`, tableName)
-  const psqlScriptPath = path.resolve(process.cwd(), PG_SCRIPTS_DIR, 'psql.sh')
+// const pipeTableRowsToOrgBackupDB = (
+//   tableName: string,
+//   copyToSelectSQL: string,
+//   tableSeqName?: string
+// ) => {
+//   return new Promise(async (resolve, reject) => {
+// const copyFromMetaCommand = pgFormat(`\\copy %I FROM STDIN DELIMITER ',' CSV`, tableName)
+// const psqlScriptPath = path.resolve(process.cwd(), PG_SCRIPTS_DIR, 'psql.sh')
 
-  // TODO: need to kill in case of error
-  const copyFromChild = childProcess.execFile(
-    psqlScriptPath,
-    ['orgBackup', copyFromMetaCommand],
-    (err, stdout, stderr) => {
-      if (err) {
-        console.log(err)
-      }
-      if (stderr) {
-        console.log(stderr)
-      }
-      if (stdout) {
-        console.log(stdout)
-      }
-    }
-  )
+// TODO: need to kill in case of error
+// const copyFromChild = childProcess.execFile(
+//   psqlScriptPath,
+//   ['orgBackup', copyFromMetaCommand],
+//   async (err, stdout, stderr) => {
+//     if (err) { console.log(err) }
+//     if (stderr) { console.log(stderr) }
+//     if (stdout) { console.log(stdout) }
 
-  const copyToSQL = pgFormat(
-    `COPY (${copyToSelectSQL}) TO STDOUT WITH CSV DELIMITER ',';`,
-    tableName
-  )
+//     if (tableSeqName) {
+//       const setSeqSQL = pgFormat(
+//         `SELECT SETVAL('%I', (SELECT MAX(id) FROM %I));`,
+//         tableSeqName,
+//         tableName
+//       )
+//       await runExecFilePromise(psqlScriptPath, ['orgBackup', setSeqSQL])
+//     }
+//     resolve('success')
+//   }
+// )
 
-  return new Promise(async (resolve, reject) => {
-    const copyToRows = client.query(copyTo(copyToSQL))
-    copyToRows.on('end', async (data) => {
-      if (tableSeqName) {
-        const setSeqSQL = pgFormat(
-          `SELECT SETVAL('%I', (SELECT MAX(id) FROM %I));`,
-          tableSeqName,
-          tableName
-        )
-        await runExecFilePromise(psqlScriptPath, ['orgBackup', setSeqSQL])
-      }
-      resolve(data)
-    })
-    copyToRows.on('error', reject)
-    copyToRows.pipe(copyFromChild.stdin)
-  })
-}
+//     const copyFromSQL = pgFormat(
+//       `COPY %I FROM STDIN DELIMITER ',' CSV;`,
+//       tableName
+//     )
+//     const dest = orgBackupClient.query(copyFrom(copyFromSQL))
+
+//     const copyToSQL = pgFormat(
+//       `COPY (${copyToSelectSQL}) TO STDOUT WITH CSV DELIMITER ',';`,
+//       tableName
+//     )
+//     const copyToRows = mainClient.query(copyTo(copyToSQL))
+//     copyToRows.on('error', reject)
+//     dest.on('error', reject)
+//     dest.on('finish', resolve)
+//     copyToRows.pipe(dest)
+//   })
+// }
 
 const backupPgOrganization = async () => {
   const orgBackupDbName = 'orgBackup'
@@ -77,29 +78,26 @@ const backupPgOrganization = async () => {
   const restoreScriptPath = path.resolve(process.cwd(), PG_SCRIPTS_DIR, 'restoreDB.sh')
 
   await runExecFilePromise(dumpScriptPath, [`-Fc --schema-only -f ${schemaDumpFileName}`])
-
   await runExecFilePromise(createScriptPath, [orgBackupDbName])
-
   await runExecFilePromise(restoreScriptPath, [`-d ${orgBackupDbName} ${schemaDumpFileName}`])
 
-  const pg = getPg()
-  const pgClient = await pg.connect()
+  const mainPg = getPg()
+  const mainClient = await mainPg.connect()
 
-  const userSQL = `SELECT * FROM %I`
-  const orgUserAuditSQL = `SELECT * FROM %I`
+  const defaultConfig = getPgConfig()
+  const orgBackupConfig = Object.assign(defaultConfig, {database: orgBackupDbName})
+  const orgBackupClient = new Client(orgBackupConfig)
+  await orgBackupClient.connect()
 
   try {
-    await pipeTableRowsToOrgBackupDB(pgClient, 'User', userSQL)
-    await pipeTableRowsToOrgBackupDB(
-      pgClient,
-      'OrganizationUserAudit',
-      orgUserAuditSQL,
-      'OrganizationUserAudit_id_seq'
-    )
+    let pgMigrations = await getPgMigrationsQuery.run(undefined, mainClient)
+    pgMigrations = pgMigrations.map((m) => Object.assign(m, {id: undefined}))
+    await insertPgMigrationsQuery.run({migrationRows: pgMigrations}, orgBackupClient)
   } catch (e) {
     console.log(e)
   } finally {
-    pgClient.release()
+    mainClient.release()
+    orgBackupClient.end()
   }
 }
 
