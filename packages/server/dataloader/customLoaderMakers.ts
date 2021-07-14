@@ -16,11 +16,13 @@ import {
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import getAtlassianAuthByUserIdTeamId from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
+import upsertAtlassianAuth from '../postgres/queries/upsertAtlassianAuth'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -225,16 +227,9 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
     async (keys) => {
       return promiseAllPartial(
         keys.map(async ({userId, teamId}) => {
-          const r = await getRethink()
-          const atlassianAuth = await r
-            .table('AtlassianAuth')
-            .getAll(userId, {index: 'userId'})
-            .filter({teamId})
-            .nth(0)
-            .default(null)
-            .run()
-
+          const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
           if (!atlassianAuth?.refreshToken) return null
+
           const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
@@ -244,12 +239,8 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             const {accessToken} = manager
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
-            await r
-              .table('AtlassianAuth')
-              .getAll(userId, {index: 'userId'})
-              .filter({teamId})
-              .update({accessToken, updatedAt: now})
-              .run()
+
+            await upsertAtlassianAuth(atlassianAuth)
           }
           return atlassianAuth
         })

@@ -7,7 +7,6 @@ import getPhase from '../../utils/getPhase'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import {TaskServiceEnum} from '../../database/types/Task'
 import updateStage from '../../database/updateStage'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -98,7 +97,7 @@ const pokerSetFinalScore = {
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
-    if ((service as TaskServiceEnum) === 'jira') {
+    if (service === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
       if (!auth) {
         return {error: {message: 'User no longer has access to Atlassian'}}

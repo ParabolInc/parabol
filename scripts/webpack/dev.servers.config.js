@@ -13,7 +13,7 @@ const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js
 
 module.exports = {
   stats: 'minimal',
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   mode: 'development',
   // cache: {
   //   type: 'filesystem',
@@ -32,7 +32,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs',
+    libraryTarget: 'commonjs'
   },
   resolve: {
     alias: {
