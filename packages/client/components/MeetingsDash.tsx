@@ -65,7 +65,6 @@ const MeetingsDash = (props: Props) => {
       displayIdx
     }))
   }, [teams])
-  // const DEBUG_ID = '3IjsskKkEM'
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
@@ -84,7 +83,6 @@ const MeetingsDash = (props: Props) => {
                 <MeetingCard
                   key={id}
                   displayIdx={displayIdx}
-                // setRect={setRect(id)}
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={meeting.status}
