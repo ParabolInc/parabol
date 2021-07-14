@@ -32,6 +32,9 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
+import useMenu from '../../hooks/useMenu'
+import SpotlightModal from '../SpotlightModal'
+import useModal from '../../hooks/useModal'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -94,7 +97,7 @@ const ReflectionCard = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.UPPER_CENTER)
-
+  const {togglePortal, closePortal, modalPortal} = useModal({background: 'transparent'})
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -210,12 +213,17 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
 
+  const toggleHovering = () => {
+    setIsHovering(!isHovering)
+  }
+
   const showSpotlight = true
+  const showSearch = phaseType === 'group' && showSpotlight && (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
       data-cy={`${dataCy}-root`}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseEnter={toggleHovering}
+      onMouseLeave={toggleHovering}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
@@ -244,12 +252,14 @@ const ReflectionCard = (props: Props) => {
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <SearchButton
+        onClick={togglePortal}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
-        showSearch={showSpotlight && (isHovering || !isDesktop)}
+        showSearch={showSearch}
       >
         <SearchIcon ref={tooltipRef} icon='search' />
       </SearchButton>
+      {modalPortal(<SpotlightModal meeting={meeting} />)}
       {tooltipPortal('Find similar')}
     </ReflectionCardRoot>
   )
@@ -276,6 +286,7 @@ export default createFragmentContainer(ReflectionCard, {
   `,
   meeting: graphql`
     fragment ReflectionCard_meeting on RetrospectiveMeeting {
+      ...SpotlightModal_meeting
       id
       localPhase {
         phaseType
