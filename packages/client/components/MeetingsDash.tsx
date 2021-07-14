@@ -1,28 +1,29 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {createRef, RefObject, useMemo} from 'react'
+import React, {RefObject, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg'
 import yellowFlashLine from '../../../static/images/illustrations/yellow-flash-line.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
+import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useTransition from '../hooks/useTransition'
-import {Breakpoint, ElementWidth, Layout} from '../types/constEnums'
+import {Breakpoint, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
-import useCardsPerRow from '../hooks/useCardsPerRow'
-import useTopPerRow from '../hooks/useTopPerRow'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
 
-const Wrapper = styled('div')<{maybeTabletPlus: boolean; minHeight: number}>(
-  ({maybeTabletPlus, minHeight}) => ({
+const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(
+  ({maybeTabletPlus}) => ({
     padding: maybeTabletPlus ? 0 : 16,
-    minHeight
+    display: 'flex',
+    flexWrap: 'wrap',
+    position: 'relative'
   })
 )
 
@@ -64,45 +65,30 @@ const MeetingsDash = (props: Props) => {
       displayIdx
     }))
   }, [teams])
+  // const DEBUG_ID = '3IjsskKkEM'
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const cardInfoRefs = useMemo(
-    () =>
-      Array(activeMeetings.length)
-        .fill(0)
-        .map(() => createRef<HTMLDivElement>()),
-    [activeMeetings.length]
-  )
-  const {topByRow, dashMinHeight} = useTopPerRow(cardsPerRow, activeMeetings, cardInfoRefs)
   const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
   return (
     <>
       {hasMeetings ? (
-        <Wrapper maybeTabletPlus={maybeTabletPlus} minHeight={dashMinHeight}>
+        <Wrapper maybeTabletPlus={maybeTabletPlus}>
           {transitioningMeetings.map((meeting) => {
-            const {createdAt, displayIdx} = meeting.child
-            const cardInfoRef = cardInfoRefs[displayIdx]
-            const rowIdx = Math.floor(displayIdx / cardsPerRow)
-            const top = topByRow[rowIdx]?.top || 0
-            const leftMargin = maybeBigDisplay
-              ? ElementWidth.MEETING_CARD_LARGE_MARGIN
-              : ElementWidth.MEETING_CARD_MARGIN
+            const {child} = meeting
+            const {id, displayIdx} = child
             return (
-              <MeetingCard
-                key={createdAt}
-                cardInfoRef={cardInfoRef}
-                left={
-                  ElementWidth.MEETING_CARD_WITH_MARGIN * (displayIdx % cardsPerRow) + leftMargin
-                }
-                top={top}
+                <MeetingCard
+                  key={id}
+                  displayIdx={displayIdx}
+                // setRect={setRect(id)}
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={meeting.status}
-              />
+                />
             )
           })}
         </Wrapper>
