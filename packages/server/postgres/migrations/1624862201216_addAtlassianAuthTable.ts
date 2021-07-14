@@ -69,7 +69,7 @@ export async function up(): Promise<void> {
       userId,
       jiraSearchQueries: jiraSearchQueries || [],
       cloudIds,
-      scope: AtlassianManager.SCOPE
+      scope: AtlassianManager.SCOPE.join(' ')
     })
   )
   if (auths.length) {
