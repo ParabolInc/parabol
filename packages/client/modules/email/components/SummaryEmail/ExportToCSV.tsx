@@ -304,6 +304,7 @@ class ExportToCSV extends Component<Props> {
     const {newMeeting} = viewer
     if (!newMeeting) return
     const rows = this.getRows(newMeeting)
+    if (rows.length === 0) return
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
