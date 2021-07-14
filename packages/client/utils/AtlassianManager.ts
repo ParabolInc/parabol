@@ -1,5 +1,6 @@
 import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+
 export interface JiraUser {
   self: string
   key: string
@@ -252,6 +253,12 @@ interface JiraPageBean<T> {
   values: T[]
 }
 
+export function isJiraNoAccessError<T>(
+  response: T | JiraNoAccessError
+): response is JiraNoAccessError {
+  return 'errorMessages' in response && response.errorMessages.length > 0
+}
+
 export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
 const MAX_REQUEST_TIME = 5000
@@ -305,7 +312,7 @@ export default abstract class AtlassianManager {
       }
       return new Error(json.message)
     }
-    if ('errorMessages' in json && json.errorMessages.length > 0) {
+    if (isJiraNoAccessError(json)) {
       return new Error(json.errorMessages[0])
     }
     return json
@@ -323,7 +330,7 @@ export default abstract class AtlassianManager {
     if ('message' in json) {
       return new Error(json.message)
     }
-    if ('errorMessages' in json && json.errorMessages.length > 0) {
+    if (isJiraNoAccessError(json)) {
       return new Error(json.errorMessages[0])
     }
     if ('errors' in json) {
@@ -347,7 +354,7 @@ export default abstract class AtlassianManager {
     if ('message' in error) {
       return new Error(error.message)
     }
-    if ('errorMessages' in error && error.errorMessages.length > 0) {
+    if (isJiraNoAccessError(error)) {
       return new Error(error.errorMessages[0])
     }
     if ('errors' in error) {
@@ -370,7 +377,7 @@ export default abstract class AtlassianManager {
     if ('message' in error) {
       return new Error(error.message)
     }
-    if ('errorMessages' in error && error.errorMessages.length > 0) {
+    if (isJiraNoAccessError(error)) {
       return new Error(error.errorMessages[0])
     }
     if ('errors' in error) {
