@@ -50,7 +50,7 @@ export default {
       refreshToken,
       cloudIds,
       teamId,
-      scope: AtlassianServerManager.SCOPE
+      scope: AtlassianServerManager.SCOPE.join(' ')
     })
 
     segmentIo.track({
