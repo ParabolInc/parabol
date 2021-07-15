@@ -1,5 +1,6 @@
 import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+import {SprintPokerErrors} from '../types/errors'
 
 export interface JiraUser {
   self: string
@@ -693,7 +694,7 @@ export default abstract class AtlassianManager {
     }
     if (res.message.startsWith(fieldId)) {
       if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
+        throw new Error(SprintPokerErrors.updateFieldError(fieldName))
       }
     }
     throw res

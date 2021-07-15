@@ -4,7 +4,8 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
-import {Breakpoint, SprintPokerDefaults} from '~/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
+import {SprintPokerErrors} from '~/types/errors'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
@@ -101,7 +102,10 @@ const PokerDimensionValueControl = (props: Props) => {
   }, [serviceFieldName])
   useEffect(() => {
     // reset the pending score only if error is not related to missing Jira field, otherwise we need the value to update once Jira is 'fixed'
-    if (error && !error.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
+    if (
+      error &&
+      !error.message.includes(SprintPokerErrors.updateFieldError(lastServiceFieldNameRef.current))
+    ) {
       // we want this for remote errors but not local errors, so we keep the 2 in different vars
       setPendingScore(finalScore)
     }
@@ -114,7 +118,7 @@ const PokerDimensionValueControl = (props: Props) => {
       onCompleted(res as any, errors)
       const {pokerSetFinalScore} = res
       const {error} = pokerSetFinalScore
-      if (error?.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
+      if (error?.message.includes(SprintPokerErrors.updateFieldError(serviceFieldName))) {
         openPortal()
       }
     }

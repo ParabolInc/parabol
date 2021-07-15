@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SprintPokerErrors} from 'parabol-client/types/errors'
 import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
-import {SprintPokerDefaults, SubscriptionChannel} from '~/types/constEnums'
+import {SubscriptionChannel} from '~/types/constEnums'
 import {JiraScreen} from '~/utils/AtlassianManager'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -156,7 +157,7 @@ const addMissingJiraField = {
     }
 
     if (updatedScreen === null) {
-      return standardError(new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR))
+      return standardError(new Error(SprintPokerErrors.fixMissingFieldError))
     }
 
     // RESOLUTION
