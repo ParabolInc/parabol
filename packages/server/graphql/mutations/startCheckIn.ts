@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
 import generateUID from '../../generateUID'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
@@ -37,7 +38,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const meetingType = 'action'
+    const meetingType: MeetingTypeEnum = 'action'
 
     // RESOLUTION
     const meetingCount = await r
@@ -88,6 +89,10 @@ export default {
     const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
     const agendaItemIds = agendaItems.map(({id}) => id)
 
+    const updates = {
+      lastMeetingType: meetingType,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('MeetingMember')
@@ -96,9 +101,9 @@ export default {
       r
         .table('Team')
         .get(teamId)
-        .update({lastMeetingType: meetingType})
+        .update(updates)
         .run(),
-      updateTeamByTeamId({lastMeetingType: meetingType}, teamId),
+      updateTeamByTeamId(updates, teamId),
       r
         .table('AgendaItem')
         .getAll(r.args(agendaItemIds))

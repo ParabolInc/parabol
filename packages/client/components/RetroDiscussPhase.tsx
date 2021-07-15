@@ -133,7 +133,6 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 
-const allowedThreadables: DiscussionThreadables[] = ['comment', 'task']
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const [callbackRef, phaseRef] = useCallbackRef()
@@ -141,6 +140,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task']
 
   // Uncomment below code to enable Easter Egg:
   // bugs shown on screen when the discussion group title contains "bug"
@@ -209,7 +209,6 @@ const RetroDiscussPhase = (props: Props) => {
               <ThreadColumn isDesktop={isDesktop}>
                 <DiscussionThreadRoot
                   allowedThreadables={allowedThreadables}
-                  isReadOnly={!!endedAt}
                   meetingContentRef={phaseRef}
                   discussionId={discussionId!}
                 />

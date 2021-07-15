@@ -1,5 +1,16 @@
-import AbortController from 'abort-controller'
-import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+
+/**
+ * Jira API throws a lot of different errors that could be placed in a different properties.
+ * This type is used to expose the error under a simple interface for others to consume.
+ */
+export interface JiraApiError {
+  errorMessage: string
+}
+
+export function isJiraApiError<T>(response: T | JiraApiError): response is JiraApiError {
+  return 'errorMessage' in response
+}
+
 export interface JiraUser {
   self: string
   key: string
@@ -75,6 +86,10 @@ export interface AtlassianError {
   message: string
 }
 
+export function isAtlassianError<T>(response: T | AtlassianError): response is AtlassianError {
+  return 'message' in response
+}
+
 interface GetProjectsResult {
   cloudId: string
   newProjects: JiraProject[]
@@ -117,20 +132,24 @@ type GetProjectsCallback = (
 interface JiraNoAccessError {
   errorMessages: ['The app is not installed on this instance.']
 }
+
+export function isJiraNoAccessError<T>(
+  response: T | JiraNoAccessError
+): response is JiraNoAccessError {
+  return 'errorMessages' in response
+}
+
 interface JiraFieldError {
   errors: {
     [fieldName: string]: string
   }
 }
 
-interface JiraGetError {
-  timestamp: string
-  status: number
-  error: string
-  message: string
-  path: string
+export function isJiraFieldError<T>(response: T | JiraFieldError): response is JiraFieldError {
+  return 'errors' in response
 }
-type JiraError = JiraNoAccessError | JiraFieldError | JiraGetError
+
+type JiraError = JiraNoAccessError | JiraFieldError
 
 type JiraIssueProperties = any
 type JiraIssueNames = any
@@ -227,29 +246,72 @@ interface JiraField {
   searchable: boolean
   untranslatedName: string
 }
+
+export interface JiraScreen {
+  id: string
+  name: string
+  description: string
+}
+
+export interface JiraScreenTab {
+  id: string
+  name: string
+}
+
+export interface JiraAddScreenFieldResponse {
+  id: string
+  name: string
+}
+
+interface JiraPageBean<T> {
+  startAt: number
+  maxResults: number
+  total: number
+  isLast: boolean
+  values: T[]
+}
+
+export type JiraScreensResponse = JiraPageBean<JiraScreen>
+
 const MAX_REQUEST_TIME = 5000
+
+export type JiraPermissionScope =
+  | 'read:jira-user'
+  | 'read:jira-work'
+  | 'write:jira-work'
+  | 'offline_access'
+  | 'manage:jira-project'
+
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
-  static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
+  static SCOPE: JiraPermissionScope[] = [
+    'read:jira-user',
+    'read:jira-work',
+    'write:jira-work',
+    'offline_access'
+  ]
+  static MANAGE_SCOPE: JiraPermissionScope[] = [...AtlassianManager.SCOPE, 'manage:jira-project']
   accessToken: string
-  private headers = {
-    Authorization: '',
-    Accept: 'application/json' as const,
-    'Content-Type': 'application/json' as const
-  }
-  private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
-    const controller = new AbortController()
-    const {signal} = controller
-    const timeout = setTimeout(() => {
-      controller.abort()
-    }, MAX_REQUEST_TIME)
-    try {
-      const res = await this.fetch(url, {...options, signal})
-      clearTimeout(timeout)
-      return res
-    } catch (e) {
-      clearTimeout(timeout)
-      return new Error('Atlassian is down')
+  private readonly fetchWithTimeout: (
+    url: string,
+    options: RequestInit,
+    errorResponse?: any
+  ) => ReturnType<typeof fetch>
+  private readonly get: (url: string) => any
+  private readonly post: (url: string, payload: any) => any
+  private readonly put: (url: string, payload: any) => any
+  private readonly delete: (url: string) => any
+  // the any is for node until we can use tsc in nodeland
+  cache: {[key: string]: {result: any; expiration: number | any}} = {}
+  timeout = 5000
+
+  constructor(accessToken: string) {
+    this.accessToken = accessToken
+    const headers = {
+      // an Authorization requires a preflight request, ie reqs are slow
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/json' as const,
+      'Content-Type': 'application/json'
     }
   }
   private readonly get = async <T>(url: string) => {
@@ -278,9 +340,20 @@ export default abstract class AtlassianManager {
     if (res instanceof Error) {
       return res
     }
-    const json = (await res.json()) as JiraError | AtlassianError | T
-    if ('message' in json) {
-      return new Error(json.message)
+
+    this.delete = async (url) => {
+      const res = await this.fetchWithTimeout(url, {
+        method: 'DELETE',
+        headers
+      })
+      if (res.status == 204) return null
+      if ((res as any).code === -1) return res
+      return res.json()
+    }
+
+    this.get = async (url) => {
+      const res = await this.fetchWithTimeout(url, {headers})
+      return (res as any).code === -1 ? res : res.json()
     }
     if ('errorMessages' in json) {
       return new Error(json.errorMessages[0])
@@ -606,14 +679,118 @@ export default abstract class AtlassianManager {
     console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
     if (res.message.includes('The app is not installed on this instance')) {
       throw new Error(
-        'The user who added this issue was removed from Jira. Please remove & re-add the issue'
-      )
-    }
-    if (res.message.startsWith(fieldId)) {
-      if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
+      if ('errorMessages' in res) {
+        const globalError = res.errorMessages?.[0]
+        if (globalError) {
+          if (globalError.includes('The app is not installed on this instance')) {
+            throw new Error(
+              'The user who added this issue was removed from Jira. Please remove & re-add the issue'
+            )
+          }
+          throw new Error(globalError)
+        }
+      }
+      if ('errors' in res) {
+        const fieldError = res.errors[fieldId]
+        if (fieldError.includes('is not on the appropriate screen')) {
+          throw new Error(
+            `Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`
+          )
+        }
+        throw new Error(`Jira: ${fieldError}`)
       }
     }
     throw res
   }
+
+  const res = (await this.get(
+    `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`
+  )) as JiraScreensResponse | AtlassianError | JiraNoAccessError
+
+  if(isJiraNoAccessError(res)) {
+  return {errorMessage: res.errorMessages[0]}
+}
+
+if (isAtlassianError(res)) {
+  return {errorMessage: res.message}
+}
+
+if (!('values' in res)) {
+  return {errorMessage: "Couldn't fetch project screens!"}
+}
+
+return res
+  }
+
+async getScreenTabs(cloudId: string, screenId: string) {
+  const res = (await this.get(
+    `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs`
+  )) as JiraScreenTab[] | AtlassianError | JiraNoAccessError
+
+  if (isJiraNoAccessError(res)) {
+    return {errorMessage: res.errorMessages[0]}
+  }
+
+  if (isAtlassianError(res)) {
+    return {errorMessage: res.message}
+  }
+
+  if (!Array.isArray(res)) {
+    return {errorMessage: `Couldn't fetch screen: ${screenId} tabs!`}
+  }
+
+  return res
+}
+
+async addFieldToScreenTab(cloudId: string, screenId: string, tabId: string, fieldId: string) {
+  const res = (await this.post(
+    `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/`,
+    {fieldId}
+  )) as JiraAddScreenFieldResponse | AtlassianError | JiraError
+
+  if (isJiraNoAccessError(res)) {
+    return {errorMessage: res.errorMessages[0]}
+  }
+
+  if (isJiraFieldError(res)) {
+    return {errorMessage: res.errors[fieldId]}
+  }
+
+  if (isAtlassianError(res)) {
+    return {errorMessage: res.message}
+  }
+
+  if (!('id' in res)) {
+    return {
+      errorMessage: `Couldn't add field: ${fieldId} to a screen: ${screenId} tab: ${tabId}!`
+    }
+  }
+
+  return res
+}
+
+async removeFieldFromScreenTab(
+  cloudId: string,
+  screenId: string,
+  tabId: string,
+  fieldId: string
+) {
+  const res = (await this.delete(
+    `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/${fieldId}`
+  )) as null | AtlassianError | JiraError
+  if (res === null) return null
+  if (isJiraNoAccessError(res)) {
+    return {errorMessage: res.errorMessages[0]}
+  }
+
+  if (isJiraFieldError(res)) {
+    return {errorMessage: res.errors[fieldId]}
+  }
+
+  if (isAtlassianError(res)) {
+    return {errorMessage: res.message}
+  }
+
+  return res
+}
 }

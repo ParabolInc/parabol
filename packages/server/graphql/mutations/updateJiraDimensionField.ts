@@ -121,20 +121,17 @@ const updateJiraDimensionField = {
     const sortedJiraDimensionFields = jiraDimensionFields
       .slice(jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS)
       .sort((a, b) => (stringify(a) < stringify(b) ? -1 : 1))
+    const updates = {
+      jiraDimensionFields: sortedJiraDimensionFields,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('Team')
         .get(teamId)
-        .update({
-          jiraDimensionFields: sortedJiraDimensionFields
-        })
+        .update(updates)
         .run(),
-      updateTeamByTeamId(
-        {
-          jiraDimensionFields: sortedJiraDimensionFields
-        },
-        teamId
-      )
+      updateTeamByTeamId(updates, teamId)
     ])
 
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateJiraDimensionFieldSuccess', data, subOptions)

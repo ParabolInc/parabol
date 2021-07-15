@@ -5,8 +5,7 @@
   It IS used to transform a source stream into a response stream
  */
 import {graphql} from 'graphql'
-import {execute} from 'graphql/execution/execute'
-import {FormattedExecutionResult} from 'graphql/execution/execute'
+import {execute, FormattedExecutionResult} from 'graphql/execution/execute'
 import AuthToken from '../database/types/AuthToken'
 import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
@@ -78,6 +77,8 @@ const executeGraphQL = async (req: GQLRequest) => {
     }
   }
   if (!PROD && response.errors) {
+    const [firstError] = response.errors
+    console.log((firstError as Error).stack)
     console.trace({error: JSON.stringify(response)})
   }
   dataLoader.dispose()

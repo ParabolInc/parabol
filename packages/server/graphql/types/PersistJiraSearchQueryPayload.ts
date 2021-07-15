@@ -9,8 +9,8 @@ export const PersistJiraSearchQuerySuccess = new GraphQLObjectType<any, GQLConte
     atlassianIntegration: {
       type: AtlassianIntegration,
       description: 'The newly created auth',
-      resolve: async ({atlassianAuthId}, _args, {dataLoader}) => {
-        return dataLoader.get('atlassianAuths').load(atlassianAuthId)
+      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+        return await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       }
     }
   })

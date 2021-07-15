@@ -17,14 +17,19 @@ import {DiscussionThreadInput_discussion} from '~/__generated__/DiscussionThread
 import {DiscussionThreadInput_viewer} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
-import CommentSendOrAdd from './CommentSendOrAdd'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import {PALETTE} from '../styles/paletteV3'
+import CreateTaskMutation from '../mutations/CreateTaskMutation'
+import AddTaskButton from './AddTaskButton'
+import SendCommentButton from './SendCommentButton'
+import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
+
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
-  alignItems: 'flex-end',
-  borderRadius: isReply ? '4px 0 0 4px' : undefined,
   display: 'flex',
+  flexDirection: 'column',
+  borderRadius: isReply ? '4px 0 0 4px' : undefined,
   boxShadow: isReply ? Elevation.Z2 : Elevation.DISCUSSION_INPUT,
   opacity: isDisabled ? 0.5 : undefined,
   marginLeft: isReply ? -12 : undefined,
@@ -34,6 +39,12 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   zIndex: 0
 }))
 
+const CommentContainer = styled('div')({
+  display: 'flex',
+  flex: 1,
+  padding: 4
+})
+
 const CommentAvatar = styled(Avatar)({
   margin: 8,
   transition: 'all 150ms'
@@ -42,6 +53,12 @@ const CommentAvatar = styled(Avatar)({
 const EditorWrap = styled('div')({
   flex: 1,
   margin: '14px 0'
+})
+
+const TaskContainer = styled('div')({
+  display: 'flex',
+  borderTop: `1px solid ${PALETTE.SLATE_200}`,
+  padding: 6
 })
 
 interface Props {
@@ -75,14 +92,17 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: discussionId, isAnonymousComment, teamId} = discussion
+  const {id: discussionId, meetingId, isAnonymousComment, teamId} = discussion
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
+  const [canCreateTask, setCanCreateTask] = useState(true)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
+  const allowComments = allowedThreadables.includes('comment')
+
   useEffect(() => {
     const inactiveCommenting = setTimeout(() => {
       if (isCommenting) {
@@ -113,14 +133,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     })
     editorRef.current?.focus()
   }
-  const [canCollapse, setCanCollapse] = useState(isReply)
+
   const hasText = editorState.getCurrentContent().hasText()
-  const commentSubmitState = hasText ? 'send' : canCollapse ? 'add' : 'addExpanded'
-  const collapseAddTask = () => {
-    if (!canCollapse) {
-      setCanCollapse(true)
-    }
-  }
+  const commentSubmitState = hasText ? 'typing' : 'idle'
 
   const addComment = (rawContent: string) => {
     submitMutation()
@@ -144,8 +159,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const ensureCommenting = () => {
     const timestamp = new Date()
     setLastTypedTimestamp(timestamp)
-
-    collapseAddTask()
     if (isAnonymousComment || isCommenting) return
     EditCommentingMutation(
       atmosphere,
@@ -187,33 +200,63 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     addComment(JSON.stringify(convertToRaw(content)))
   }
 
+  const addTask = () => {
+    const {viewerId} = atmosphere
+    const newTask = {
+      status: 'active',
+      sortOrder: dndNoise(),
+      discussionId,
+      meetingId,
+      threadParentId,
+      threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
+      userId: viewerId,
+      teamId
+    } as const
+    CreateTaskMutation(atmosphere, {newTask}, {})
+  }
+
+  useEffect(() => {
+    const focusListener = () => {
+      setCanCreateTask(!isViewerTypingInTask())
+    }
+
+    document.addEventListener('blur', focusListener, true)
+    document.addEventListener('focus', focusListener, true)
+    return () => {
+      document.removeEventListener('blur', focusListener, true)
+      document.removeEventListener('focus', focusListener, true)
+    }
+  }, [])
+
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
-      <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
-      <EditorWrap>
-        <CommentEditor
+      <CommentContainer>
+        <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
+        <EditorWrap>
+          <CommentEditor
+            dataCy={`${dataCy}`}
+            editorRef={editorRef}
+            editorState={editorState}
+            ensureCommenting={ensureCommenting}
+            onBlur={ensureNotCommenting}
+            onSubmit={onSubmit}
+            placeholder={placeholder}
+            setEditorState={setEditorState}
+            teamId={teamId}
+            readOnly={!allowComments}
+          />
+        </EditorWrap>
+        <SendCommentButton
           dataCy={`${dataCy}`}
-          editorRef={editorRef}
-          editorState={editorState}
-          ensureCommenting={ensureCommenting}
-          onBlur={ensureNotCommenting}
-          onSubmit={onSubmit}
-          placeholder={placeholder}
-          setEditorState={setEditorState}
-          teamId={teamId}
-        />
-      </EditorWrap>
-      {allowTasks && (
-        <CommentSendOrAdd
-          dataCy={`${dataCy}`}
-          getMaxSortOrder={getMaxSortOrder}
           commentSubmitState={commentSubmitState}
-          discussion={discussion}
-          threadParentId={threadParentId}
-          collapseAddTask={collapseAddTask}
           onSubmit={onSubmit}
         />
+      </CommentContainer>
+      {allowTasks && (
+        <TaskContainer>
+          <AddTaskButton dataCy={`${dataCy}-add`} onClick={addTask} disabled={!canCreateTask} />
+        </TaskContainer>
       )}
     </Wrapper>
   )
@@ -227,8 +270,8 @@ export default createFragmentContainer(DiscussionThreadInput, {
   `,
   discussion: graphql`
     fragment DiscussionThreadInput_discussion on Discussion {
-      ...CommentSendOrAdd_discussion
       id
+      meetingId
       teamId
       isAnonymousComment
     }

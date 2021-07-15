@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
@@ -25,8 +26,9 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
     dataLoader.get('meetingTemplates').load(templateId),
     dataLoader.get('templateDimensionsByTemplateId').load(templateId)
   ])
+  const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
   const {name: templateName} = template
-  const uniqueScaleIds = Array.from(new Set(dimensions.map(({scaleId}) => scaleId)))
+  const uniqueScaleIds = Array.from(new Set(activeDimensions.map(({scaleId}) => scaleId)))
   const uniqueScales = await dataLoader.get('templateScales').loadMany(uniqueScaleIds)
   const templateScales = uniqueScales.map(({name, values}) => {
     const scale = {name, values}
@@ -36,7 +38,7 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
 
   const templateRef = {
     name: templateName,
-    dimensions: dimensions.map((dimension) => {
+    dimensions: activeDimensions.map((dimension) => {
       const {name, scaleId} = dimension
       const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
       const templateScale = templateScales[scaleIdx]
@@ -80,7 +82,7 @@ export default {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
 
-    const meetingType = 'poker'
+    const meetingType: MeetingTypeEnum = 'poker'
 
     // RESOLUTION
     const meetingId = generateUID()
@@ -142,6 +144,10 @@ export default {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     const {isSpectatingPoker} = teamMember
+    const updates = {
+      lastMeetingType: meetingType,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('MeetingMember')
@@ -157,9 +163,9 @@ export default {
       r
         .table('Team')
         .get(teamId)
-        .update({lastMeetingType: meetingType})
+        .update(updates)
         .run(),
-      updateTeamByTeamId({lastMeetingType: meetingType}, teamId)
+      updateTeamByTeamId(updates, teamId)
     ])
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)

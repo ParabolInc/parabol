@@ -51,7 +51,6 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   maxWidth: 700
 }))
 
-const allowedThreadables: DiscussionThreadables[] = ['comment', 'task']
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const {showSidebar, endedAt, localStage} = meeting
@@ -62,6 +61,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task']
   return (
     <MeetingContent ref={meetingContentRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -82,7 +82,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <DiscussionThreadRoot
               meetingContentRef={meetingContentRef}
               discussionId={discussionId!}
-              isReadOnly={!!endedAt}
               allowedThreadables={allowedThreadables}
             />
           </ThreadColumn>

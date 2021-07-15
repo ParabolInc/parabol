@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getUsersByIdQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise'
+export type TierEnum = 'enterprise' | 'pro' | 'personal'
 
 export type AuthTokenRole = 'su'
 
@@ -36,6 +36,8 @@ export interface IGetUsersByIdQueryResult {
   reasonRemoved: string | null
   rol: AuthTokenRole | null
   payLaterClickCount: number
+  isWatched: boolean | null
+  eqChecked: Date
 }
 
 /** 'GetUsersByIdQuery' query type */

@@ -3,11 +3,16 @@ import {MenuMutationProps} from '../hooks/useMutationProps'
 import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
-import AtlassianManager from './AtlassianManager'
+import AtlassianManager, {JiraPermissionScope} from './AtlassianManager'
 
 class AtlassianClientManager extends AtlassianManager {
   fetch = window.fetch.bind(window)
-  static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+  static openOAuth(
+    atmosphere: Atmosphere,
+    teamId: string,
+    mutationProps: MenuMutationProps,
+    scopes: JiraPermissionScope[] = AtlassianManager.SCOPE
+  ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
@@ -16,7 +21,7 @@ class AtlassianClientManager extends AtlassianManager {
     const uri = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
       window.__ACTION__.atlassian
     }&scope=${encodeURI(
-      AtlassianClientManager.SCOPE
+      scopes.join(' ')
     )}&redirect_uri=${redirect}&state=${providerState}&response_type=code&prompt=consent`
 
     const popup = window.open(

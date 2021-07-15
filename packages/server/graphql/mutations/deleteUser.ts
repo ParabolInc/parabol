@@ -10,6 +10,7 @@ import removeFromOrg from './helpers/removeFromOrg'
 import updateUser from '../../postgres/queries/updateUser'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import removeSlackAuths from './helpers/removeSlackAuths'
+import getDeletedEmail from '../../utils/getDeletedEmail'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -78,8 +79,9 @@ export default {
     // do this after 30 seconds so any segment API calls can still get the email
     const update = {
       isRemoved: true,
-      email: 'DELETED',
-      reasonRemoved: validReason
+      email: getDeletedEmail(userId),
+      reasonRemoved: validReason,
+      updatedAt: new Date()
     }
     setTimeout(() => {
       db.write('User', userIdToDelete, update)

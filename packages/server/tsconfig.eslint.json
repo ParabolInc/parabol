@@ -4,6 +4,7 @@
     "database/types/*",
     "database/migrations/*",
     "postgres/migrations/*",
+    "postgres/queries/generated/*",
     "postgres/migrations/postDeploy/*",
     "postgres/pgmPostDeployConfig.js",
     "graphql/queries",

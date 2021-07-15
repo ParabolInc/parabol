@@ -34,10 +34,11 @@ const flagOverLimit = {
 
     // RESOLUTION
     const userIds = organizationUsers.map(({userId}) => userId)
-    await Promise.all([
-      updateUser({overLimitCopy: copy === null ? '' : copy}, userIds),
-      db.writeMany('User', userIds, {overLimitCopy: copy || null})
-    ])
+    const updates = {
+      overLimitCopy: copy === null ? '' : copy,
+      updatedAt: new Date()
+    }
+    await Promise.all([updateUser(updates, userIds), db.writeMany('User', userIds, updates)])
     return {userIds}
   }
 }

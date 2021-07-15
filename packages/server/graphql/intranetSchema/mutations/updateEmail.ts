@@ -41,13 +41,15 @@ const updateEmail = {
 
     // RESOLUTION
     const {id: userId} = user
+    const updates = {
+      email: newEmail,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('User')
         .get(userId)
-        .update({
-          email: newEmail
-        })
+        .update(updates)
         .run(),
       r
         .table('TeamMember')
@@ -56,7 +58,7 @@ const updateEmail = {
           email: newEmail
         })
         .run(),
-      updateUser({email: newEmail}, userId)
+      updateUser(updates, userId)
     ])
 
     return true
