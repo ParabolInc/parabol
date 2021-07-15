@@ -6,23 +6,24 @@ import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg'
 import yellowFlashLine from '../../../static/images/illustrations/yellow-flash-line.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
+import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useTransition from '../hooks/useTransition'
-import {Breakpoint, ElementHeight, ElementWidth, Layout} from '../types/constEnums'
+import {Breakpoint, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
-import useCardsPerRow from '../hooks/useCardsPerRow'
-import useTopPerRow from '../hooks/useTopPerRow'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
 
-const Wrapper = styled('div')<{maybeTabletPlus: boolean; minHeight: number}>(
-  ({maybeTabletPlus, minHeight}) => ({
+const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(
+  ({maybeTabletPlus}) => ({
     padding: maybeTabletPlus ? 0 : 16,
-    minHeight
+    display: 'flex',
+    flexWrap: 'wrap',
+    position: 'relative'
   })
 )
 
@@ -68,42 +69,24 @@ const MeetingsDash = (props: Props) => {
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const topByRow = useTopPerRow(cardsPerRow, activeMeetings)
   const hasMeetings = activeMeetings.length > 0
-  const totalRows = hasMeetings && cardsPerRow ? Math.ceil(activeMeetings.length / cardsPerRow) : 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
-
   if (!viewer || !cardsPerRow) return null
   return (
     <>
       {hasMeetings ? (
-        <Wrapper
-          maybeTabletPlus={maybeTabletPlus}
-          minHeight={
-            ElementHeight.MEETING_CARD_WITH_MARGIN * totalRows +
-            ElementHeight.MEETING_CARD_MARGIN +
-            topByRow[totalRows - 1]?.top
-          }
-        >
-          {transitioningMeetings.map((meeting, idx) => {
-            const rowIdx = Math.floor(idx / cardsPerRow)
-            const topForAvatars = topByRow[rowIdx]?.top || 0
-            const leftMargin = maybeBigDisplay
-              ? ElementWidth.MEETING_CARD_LARGE_MARGIN
-              : ElementWidth.MEETING_CARD_MARGIN
+        <Wrapper maybeTabletPlus={maybeTabletPlus}>
+          {transitioningMeetings.map((meeting) => {
+            const {child} = meeting
+            const {id, displayIdx} = child
             return (
-              <MeetingCard
-                key={meeting.child.createdAt}
-                left={ElementWidth.MEETING_CARD_WITH_MARGIN * (idx % cardsPerRow) + leftMargin}
-                top={
-                  ElementHeight.MEETING_CARD_WITH_MARGIN * rowIdx +
-                  ElementHeight.MEETING_CARD_MARGIN +
-                  topForAvatars
-                }
+                <MeetingCard
+                  key={id}
+                  displayIdx={displayIdx}
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={meeting.status}
-              />
+                />
             )
           })}
         </Wrapper>

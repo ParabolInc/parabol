@@ -1,5 +1,7 @@
 import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+import {SprintPokerDefaults} from '../types/constEnums'
+
 export interface JiraUser {
   self: string
   key: string
@@ -227,10 +229,57 @@ interface JiraField {
   searchable: boolean
   untranslatedName: string
 }
+
+export interface JiraScreen {
+  id: string
+  name: string
+  description: string
+}
+
+export interface JiraScreenTab {
+  id: string
+  name: string
+}
+
+export interface JiraAddScreenFieldResponse {
+  id: string
+  name: string
+}
+
+interface JiraPageBean<T> {
+  startAt: number
+  maxResults: number
+  total: number
+  isLast: boolean
+  values: T[]
+}
+
+export function isJiraNoAccessError<T>(
+  response: T | JiraNoAccessError
+): response is JiraNoAccessError {
+  return 'errorMessages' in response && response.errorMessages.length > 0
+}
+
+export type JiraScreensResponse = JiraPageBean<JiraScreen>
+
 const MAX_REQUEST_TIME = 5000
+
+export type JiraPermissionScope =
+  | 'read:jira-user'
+  | 'read:jira-work'
+  | 'write:jira-work'
+  | 'offline_access'
+  | 'manage:jira-project'
+
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
-  static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
+  static SCOPE: JiraPermissionScope[] = [
+    'read:jira-user',
+    'read:jira-work',
+    'write:jira-work',
+    'offline_access'
+  ]
+  static MANAGE_SCOPE: JiraPermissionScope[] = [...AtlassianManager.SCOPE, 'manage:jira-project']
   accessToken: string
   private headers = {
     Authorization: '',
@@ -264,7 +313,7 @@ export default abstract class AtlassianManager {
       }
       return new Error(json.message)
     }
-    if ('errorMessages' in json) {
+    if (isJiraNoAccessError(json)) {
       return new Error(json.errorMessages[0])
     }
     return json
@@ -282,7 +331,7 @@ export default abstract class AtlassianManager {
     if ('message' in json) {
       return new Error(json.message)
     }
-    if ('errorMessages' in json) {
+    if (isJiraNoAccessError(json)) {
       return new Error(json.errorMessages[0])
     }
     if ('errors' in json) {
@@ -302,8 +351,42 @@ export default abstract class AtlassianManager {
     }
 
     if (res.status == 204) return null
-    const error = (await res.json()) as AtlassianError
-    return new Error(error.message)
+    const error = (await res.json()) as AtlassianError | JiraError
+    if ('message' in error) {
+      return new Error(error.message)
+    }
+    if (isJiraNoAccessError(error)) {
+      return new Error(error.errorMessages[0])
+    }
+    if ('errors' in error) {
+      const errorFieldName = Object.keys(error.errors)[0]
+      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+    }
+    return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
+  }
+  private readonly delete = async (url) => {
+    const res = await this.fetchWithTimeout(url, {
+      method: 'DELETE',
+      headers: this.headers
+    })
+    if (res instanceof Error) {
+      return res
+    }
+
+    if (res.status == 204) return null
+    const error = (await res.json()) as AtlassianError | JiraError
+    if ('message' in error) {
+      return new Error(error.message)
+    }
+    if (isJiraNoAccessError(error)) {
+      return new Error(error.errorMessages[0])
+    }
+    if ('errors' in error) {
+      const errorFieldName = Object.keys(error.errors)[0]
+      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+    }
+
+    return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
   }
 
   constructor(accessToken: string) {
@@ -590,9 +673,7 @@ export default abstract class AtlassianManager {
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
-    fieldId: string,
-    fieldName: string
-  ) {
+    fieldId: string) {
     const payload = {
       fields: {
         [fieldId]: isFinite(storyPoints as number) ? Number(storyPoints) : storyPoints
@@ -611,9 +692,39 @@ export default abstract class AtlassianManager {
     }
     if (res.message.startsWith(fieldId)) {
       if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
+        throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
       }
     }
     throw res
+  }
+
+  async getScreens(cloudId: string) {
+    return this.get<JiraScreensResponse>(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`
+    )
+  }
+
+  async getScreenTabs(cloudId: string, screenId: string) {
+    return this.get<JiraScreenTab[]>(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs`
+    )
+  }
+
+  async addFieldToScreenTab(cloudId: string, screenId: string, tabId: string, fieldId: string) {
+    return this.post<JiraAddScreenFieldResponse>(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/`,
+      {fieldId}
+    )
+  }
+
+  async removeFieldFromScreenTab(
+    cloudId: string,
+    screenId: string,
+    tabId: string,
+    fieldId: string
+  ) {
+    return this.delete(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/${fieldId}`
+    )
   }
 }

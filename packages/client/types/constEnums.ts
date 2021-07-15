@@ -100,10 +100,11 @@ export const enum ElementWidth {
 }
 
 export const enum ElementHeight {
+  MEETING_CARD_AVATARS = 32,
   REFLECTION_CARD = 44,
   REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
-  MEETING_CARD_MARGIN = 16,
-  MEETING_CARD_WITH_MARGIN = 272
+  MEETING_CARD_IMG = 180,
+  MEETING_CARD_MARGIN = 16
 }
 
 export const enum ExternalLinks {
@@ -407,5 +408,11 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
   JIRA_FIELD_NULL_LABEL = 'Do Not Update',
-  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
+  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
+  JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error'
+}
+
+export const enum AriaLabels {
+  COMMENT_EDITOR = 'Comment Editor',
+  TASK_EDITOR = 'Task Editor'
 }

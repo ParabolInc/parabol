@@ -47,7 +47,9 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({githubSearchQueries, teamId, userId}) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
-        const unexpiredQueries = githubSearchQueries.filter((query) => query.lastUsedAt > thresh)
+        const unexpiredQueries = githubSearchQueries.filter(
+          (query) => new Date(query.lastUsedAt) > thresh
+        )
         if (unexpiredQueries.length < githubSearchQueries.length) {
           await updateGitHubSearchQueries({teamId, userId, githubSearchQueries: unexpiredQueries})
         }

@@ -3,7 +3,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
-import {FreshAtlassianAuth} from '../../dataloader/atlassianLoaders'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -12,7 +12,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
 
-const getJiraField = async (fieldName: string, cloudId: string, auth: FreshAtlassianAuth) => {
+const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
   // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
   // differently and can't be found on Jira fields list
   const customFields = [SprintPokerDefaults.JIRA_FIELD_COMMENT, SprintPokerDefaults.JIRA_FIELD_NULL]
@@ -121,20 +121,17 @@ const updateJiraDimensionField = {
     const sortedJiraDimensionFields = jiraDimensionFields
       .slice(jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS)
       .sort((a, b) => (stringify(a) < stringify(b) ? -1 : 1))
+    const updates = {
+      jiraDimensionFields: sortedJiraDimensionFields,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('Team')
         .get(teamId)
-        .update({
-          jiraDimensionFields: sortedJiraDimensionFields
-        })
+        .update(updates)
         .run(),
-      updateTeamByTeamId(
-        {
-          jiraDimensionFields: sortedJiraDimensionFields
-        },
-        teamId
-      )
+      updateTeamByTeamId(updates, teamId)
     ])
 
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateJiraDimensionFieldSuccess', data, subOptions)

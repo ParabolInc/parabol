@@ -48,15 +48,14 @@ const CommentingStatusBlock = styled('div')({
 })
 
 export type DiscussionThreadables = 'task' | 'comment'
+
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   editorRef: RefObject<HTMLTextAreaElement>
-  isReadOnly?: boolean
   discussion: DiscussionThreadList_discussion
   preferredNames: string[] | null
   threadables: DiscussionThreadList_threadables
   viewer: DiscussionThreadList_viewer
-
   dataCy: string
 }
 
@@ -64,7 +63,6 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {
     allowedThreadables,
     editorRef,
-    isReadOnly,
     discussion,
     threadables,
     dataCy,
@@ -78,7 +76,10 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     return (
       <EmptyWrapper>
         {allowTasks && <Header>{'Discussion & Takeaway Tasks'}</Header>}
-        <DiscussionThreadListEmptyState allowTasks={allowTasks} isReadOnly={isReadOnly} />
+        <DiscussionThreadListEmptyState
+          allowTasks={allowTasks}
+          isReadOnly={allowedThreadables.length === 0}
+        />
         <CommentingStatusBlock>
           <CommentingStatusText preferredNames={preferredNames} />
         </CommentingStatusBlock>

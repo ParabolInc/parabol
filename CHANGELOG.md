@@ -5,6 +5,48 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.21.0 2021-Jul-15
+### Added
+
+- Add Story Points to required screen from within Parabol (#4880)
+
+### Fixed
+- Fix template dimension "ghosts" (#5128)
+
+### Changed
+
+- Deprecate retro template prompt title field (#5120)
+- Migrating AtlassianAuth table to Postgres (#5085, #5135)
+- Impose unique email constraint for User table in Postgres (#5093)
+
+## 6.20.0 2021-Jul-08
+
+### Added
+
+- Add clarity between comments and task creation (#5049)
+- Add Parabol logo to scope phase area (#5092)
+
+### Changed
+
+- Sort jiraDimensionFields for both RethinkDB & PG (#5108)
+
+## 6.19.0 2021-Jul-01
+
+### Added
+
+- Meeting view animations (#4975)
+
+### Changed
+
+- No more refresh needed on version updates (#5015)
+- Require updatedAt on every doc change for User & Team table (#5079)
+
+### Fixed
+
+- Leaving team removes slack auth (#5055)
+- Poker comment & story count (#5062)
+- Deterministic sort order of jiraDimensionFields (#5070)
+
 ## 6.18.0 2021-Jun-23
 
 ### Added

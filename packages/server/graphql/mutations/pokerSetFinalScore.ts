@@ -3,15 +3,14 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
-import getPhase from '../../utils/getPhase'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import {TaskServiceEnum} from '../../database/types/Task'
 import updateStage from '../../database/updateStage'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -98,7 +97,7 @@ const pokerSetFinalScore = {
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
-    if ((service as TaskServiceEnum) === 'jira') {
+    if (service === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
       if (!auth) {
         return {error: {message: 'User no longer has access to Atlassian'}}
@@ -129,7 +128,7 @@ const pokerSetFinalScore = {
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
         const {fieldId} = dimensionField!
         try {
-          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId, fieldName)
+          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId)
         } catch (e) {
           return {error: {message: e.message}}
         }
