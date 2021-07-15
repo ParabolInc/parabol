@@ -1,4 +1,4 @@
-mutation createIssueMutation($input: CreateIssueInput!) {
+mutation createIssue($input: CreateIssueInput!) {
   createIssue(input: $input) {
     issue {
       assignees(first: 5) {

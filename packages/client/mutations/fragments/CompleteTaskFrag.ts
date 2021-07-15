@@ -13,7 +13,7 @@ graphql`
     dueDate
     integration {
       __typename
-      ... on GitHubIssue {
+      ... on _xGitHubIssue {
         url
       }
       ... on JiraIssue {

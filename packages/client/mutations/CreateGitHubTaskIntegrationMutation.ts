@@ -8,9 +8,11 @@ graphql`
   fragment CreateGitHubTaskIntegrationMutation_task on CreateGitHubTaskIntegrationPayload {
     task {
       integration {
-        ... on GitHubIssue {
-          issueNumber
-          nameWithOwner
+        ... on _xGitHubIssue {
+          number
+          repository {
+            nameWithOwner
+          }
         }
         ...TaskIntegrationLinkIntegrationGitHub
       }
@@ -43,12 +45,15 @@ const CreateGitHubTaskIntegrationMutation: StandardMutation<TCreateGitHubTaskInt
       const now = new Date()
       const task = store.get(taskId)
       if (!task) return
+      const integrationRepository = createProxyRecord(store, '_xGitHubRepository', {
+        nameWithOwner
+      })
       const optimisticIntegration = {
-        nameWithOwner,
-        issueNumber: 0,
+        number: 0,
         updatedAt: now.toJSON()
       } as const
-      const integration = createProxyRecord(store, 'GitHubIssue', optimisticIntegration)
+      const integration = createProxyRecord(store, '_xGitHubIssue', optimisticIntegration)
+      integration.setLinkedRecord(integrationRepository, 'repository')
       task.setLinkedRecord(integration, 'integration')
     },
     onCompleted,

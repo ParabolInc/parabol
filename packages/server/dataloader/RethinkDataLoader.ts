@@ -1,13 +1,14 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
+import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import fkLoader from './fkLoader'
 import * as foreignLoaderMakers from './foreignLoaderMakers'
+import * as githubLoaders from './githubLoaders'
 import LoaderMakerForeign from './LoaderMakerForeign'
 import LoaderMakerPrimary from './LoaderMakerPrimary'
 import pkLoader from './pkLoader'
 import * as primaryLoaderMakers from './primaryLoaderMakers'
-import * as atlassianLoaders from './atlassianLoaders'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -17,7 +18,8 @@ const loaderMakers = {
   ...primaryLoaderMakers,
   ...foreignLoaderMakers,
   ...customLoaderMakers,
-  ...atlassianLoaders
+  ...atlassianLoaders,
+  ...githubLoaders
 } as const
 
 type LoaderMakers = typeof loaderMakers
@@ -33,7 +35,7 @@ type ForeignLoaders = keyof ForeignLoaderMakers
 type Unforeign<T> = T extends LoaderMakerForeign<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
-type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders
+type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof githubLoaders
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RethinkDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
@@ -41,13 +43,13 @@ type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
 type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
   ? TypeFromCustom<LoaderName>
   : DataLoader<
-      string,
-      LoaderName extends ForeignLoaders
-        ? TypeFromForeign<LoaderName>[]
-        : LoaderName extends PrimaryLoaders
-        ? TypeFromPrimary<LoaderName>
-        : never
-    >
+    string,
+    LoaderName extends ForeignLoaders
+    ? TypeFromForeign<LoaderName>[]
+    : LoaderName extends PrimaryLoaders
+    ? TypeFromPrimary<LoaderName>
+    : never
+  >
 
 export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>

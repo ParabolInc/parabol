@@ -8,8 +8,8 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {SprintPokerDefaults} from '~/types/constEnums'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
+import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import db from '../../db'

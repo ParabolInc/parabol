@@ -47,7 +47,7 @@ const NullableTask = (props: Props) => {
     ]
   )
 
-  const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId || integration?.__typename === 'JiraIssue'
+  const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId || integration
   return showOutcome ? (
     <OutcomeCardContainer
       dataCy={`${dataCy}`}

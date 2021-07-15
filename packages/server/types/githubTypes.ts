@@ -1,4 +1,10 @@
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+import { GraphQLClient } from 'graphql-request';
+import * as Dom from 'graphql-request/dist/types.dom';
+import { GraphQLError } from 'graphql-request/dist/types';
+import { print } from 'graphql'
+import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -19662,36 +19668,97 @@ export type ViewerHovercardContext = HovercardContext & {
 };
 
 
-export type GetRepositoriesQueryVariables = Exact<{ [key: string]: never; }>;
+export const RepoFragFragmentDoc = gql`
+    fragment repoFrag on RepositoryConnection {
+  nodes {
+    nameWithOwner
+    updatedAt
+    viewerCanAdminister
+  }
+}
+    `;
+export const CreateIssueDocument = gql`
+    mutation createIssue($input: CreateIssueInput!) {
+  createIssue(input: $input) {
+    issue {
+      assignees(first: 5) {
+        nodes {
+          id
+          login
+        }
+      }
+      id
+      number
+    }
+  }
+}
+    `;
+export const GetProfileDocument = gql`
+    query getProfile {
+  viewer {
+    id
+    login
+  }
+}
+    `;
+export const GetRepoInfoDocument = gql`
+    query getRepoInfo($assigneeLogin: String!, $repoOwner: String!, $repoName: String!) {
+  user(login: $assigneeLogin) {
+    id
+    avatarUrl
+  }
+  repository(owner: $repoOwner, name: $repoName) {
+    id
+  }
+}
+    `;
+export const GetRepositoriesDocument = gql`
+    query getRepositories {
+  viewer {
+    organizations(first: 100) {
+      nodes {
+        repositories(
+          first: 100
+          isLocked: false
+          orderBy: {field: UPDATED_AT, direction: DESC}
+        ) {
+          ...repoFrag
+        }
+      }
+    }
+    repositories(
+      first: 100
+      isLocked: false
+      orderBy: {field: UPDATED_AT, direction: DESC}
+    ) {
+      ...repoFrag
+    }
+  }
+}
+    ${RepoFragFragmentDoc}`;
+
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string) => Promise<T>;
 
 
-export type GetRepositoriesQuery = (
-  { __typename?: 'Query' }
-  & { viewer: (
-    { __typename?: 'User' }
-    & { organizations: (
-      { __typename?: 'OrganizationConnection' }
-      & { nodes?: Maybe<Array<Maybe<(
-        { __typename?: 'Organization' }
-        & { repositories: (
-          { __typename?: 'RepositoryConnection' }
-          & RepoFragFragment
-        ) }
-      )>>> }
-    ), repositories: (
-      { __typename?: 'RepositoryConnection' }
-      & RepoFragFragment
-    ) }
-  ) }
-);
-
-export type RepoFragFragment = (
-  { __typename?: 'RepositoryConnection' }
-  & { nodes?: Maybe<Array<Maybe<(
-    { __typename?: 'Repository' }
-    & Pick<Repository, 'nameWithOwner' | 'updatedAt' | 'viewerCanAdminister'>
-  )>>> }
-);
-
-export const RepoFragFragmentDoc: DocumentNode<RepoFragFragment, unknown> = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"repoFrag"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RepositoryConnection"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nameWithOwner"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"viewerCanAdminister"}}]}}]}}]};
-export const GetRepositoriesDocument: DocumentNode<GetRepositoriesQuery, GetRepositoriesQueryVariables> = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getRepositories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewer"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organizations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"100"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"isLocked"},"value":{"kind":"BooleanValue","value":false}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"UPDATED_AT"}},{"kind":"ObjectField","name":{"kind":"Name","value":"direction"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"repoFrag"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"repositories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"isLocked"},"value":{"kind":"BooleanValue","value":false}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"field"},"value":{"kind":"EnumValue","value":"UPDATED_AT"}},{"kind":"ObjectField","name":{"kind":"Name","value":"direction"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"repoFrag"}}]}}]}}]}},...RepoFragFragmentDoc.definitions]};
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action();
+const CreateIssueDocumentString = print(CreateIssueDocument);
+const GetProfileDocumentString = print(GetProfileDocument);
+const GetRepoInfoDocumentString = print(GetRepoInfoDocument);
+const GetRepositoriesDocumentString = print(GetRepositoriesDocument);
+export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
+  return {
+    createIssue(variables: CreateIssueMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<{ data?: CreateIssueMutation | undefined; extensions?: any; headers: Dom.Headers; status: number; errors?: GraphQLError[] | undefined; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<CreateIssueMutation>(CreateIssueDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'createIssue');
+    },
+    getProfile(variables?: GetProfileQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<{ data?: GetProfileQuery | undefined; extensions?: any; headers: Dom.Headers; status: number; errors?: GraphQLError[] | undefined; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetProfileQuery>(GetProfileDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getProfile');
+    },
+    getRepoInfo(variables: GetRepoInfoQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<{ data?: GetRepoInfoQuery | undefined; extensions?: any; headers: Dom.Headers; status: number; errors?: GraphQLError[] | undefined; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetRepoInfoQuery>(GetRepoInfoDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRepoInfo');
+    },
+    getRepositories(variables?: GetRepositoriesQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<{ data?: GetRepositoriesQuery | undefined; extensions?: any; headers: Dom.Headers; status: number; errors?: GraphQLError[] | undefined; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<GetRepositoriesQuery>(GetRepositoriesDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRepositories');
+    }
+  };
+}
+export type Sdk = ReturnType<typeof getSdk>;

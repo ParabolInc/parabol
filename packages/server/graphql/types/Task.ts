@@ -69,14 +69,34 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     integration: {
       type: TaskIntegration,
       description: 'The reference to the single source of truth for this task',
-      resolve: async ({integration, teamId}: DBTask, _args, {dataLoader}) => {
+      resolve: async ({integration, teamId}: DBTask, _args, context, info) => {
+        const {dataLoader} = context
         if (!integration) return null
         const {accessUserId} = integration
         if (integration.service === 'jira') {
           const {cloudId, issueKey} = integration
           return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
         } else if (integration.service === 'github') {
-          // TODO
+          const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
+          if (!githubAuth) return null
+          const {accessToken} = githubAuth
+          const ghContext = {accessToken}
+          const {nameWithOwner, issueNumber} = integration
+          const [repoOwner, repoName] = nameWithOwner.split('/')
+          const wrapper = `
+                {
+                  repository(owner: "${repoOwner}", name: "${repoName}") {
+                    issue(number: ${issueNumber}) {
+                      ...info
+                    }
+                  }
+                }`
+          const {githubRequest} = require('../rootSchema')
+          const {data, errors} = await githubRequest(wrapper, ghContext, context, info)
+          if (errors) {
+            console.log(errors)
+          }
+          return data
         }
         return null
       }

@@ -47,9 +47,7 @@ import initDB, {
   DemoDiscussion,
   demoTeamId,
   DemoThreadableEdge,
-  demoViewerId,
-  GitHubProjectKeyLookup,
-  JiraProjectKeyLookup,
+  demoViewerId, JiraProjectKeyLookup,
   RetroDemoDB
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
@@ -401,10 +399,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
         integration: {
-          __typename: 'TaskIntegrationGitHub',
+          __typename: '_xGitHubIssue',
           id: `${taskId}:GitHub`,
-          ...GitHubProjectKeyLookup[nameWithOwner],
-          issueNumber: this.getTempId('')
+          repository: {
+            nameWithOwner
+          },
+          number: this.getTempId('')
         }
       })
 

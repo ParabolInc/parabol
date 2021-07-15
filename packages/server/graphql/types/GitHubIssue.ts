@@ -5,12 +5,10 @@ import GitHubRepository from './GitHubRepository'
 import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
-import TaskIntegration from './TaskIntegration'
 
 const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIssue',
   description: 'The GitHub Issue that comes direct from GitHub',
-  interfaces: () => [TaskIntegration],
   isTypeOf: ({repository, title}) => !!(repository && title),
   fields: () => ({
     id: {

@@ -10,7 +10,8 @@ module.exports = {
   customScalars: {
     Email: 'string',
     DateTime: 'string',
-    URL: 'string'
+    URL: 'string',
+    _xGitHubHTML: 'string'
   },
   extensions: ['js', 'ts', 'tsx'],
   noFutureProofEnums: true,
