@@ -20,6 +20,12 @@ import {getGitHubAuthByTeamIdQuery} from '../../../postgres/queries/generated/ge
 import {insertGitHubAuthWithAllColumnsQuery} from '../../../postgres/queries/generated/insertGitHubAuthWithAllColumnsQuery'
 import {getDiscussionByTeamIdQuery} from '../../../postgres/queries/generated/getDiscussionByTeamIdQuery'
 import {insertDiscussionWithAllColumnsQuery} from '../../../postgres/queries/generated/insertDiscussionWithAllColumnsQuery'
+import {getUsersByIdQuery} from '../../../postgres/queries/generated/getUsersByIdQuery'
+import {insertUserWithAllColumnsQuery} from '../../../postgres/queries/generated/insertUserWithAllColumnsQuery'
+import {getTemplateRefByIdsQuery} from '../../../postgres/queries/generated/getTemplateRefByIdsQuery'
+import {insertTemplateRefWithAllColumnsQuery} from '../../../postgres/queries/generated/insertTemplateRefWithAllColumnsQuery'
+import {getTemplateScaleRefByIdsQuery} from '../../../postgres/queries/generated/getTemplateScaleRefByIdsQuery'
+import {insertTemplateScaleRefWithAllColumnsQuery} from '../../../postgres/queries/generated/insertTemplateScaleRefWithAllColumnsQuery'
 
 const execFilePromise = util.promisify(childProcess.execFile)
 
@@ -85,6 +91,42 @@ const backupPgOrganization = async (orgIds: string[]) => {
     const discussions = await getDiscussionByTeamIdQuery.run({teamIds}, mainClient)
     !!discussions.length &&
       (await insertDiscussionWithAllColumnsQuery.run({discussions}, orgBackupClient))
+
+    const r = await getRethink()
+    const userIds = await r
+      .table('TeamMember')
+      .getAll(r.args(teamIds), {index: 'teamId'})('userId')
+      .coerceTo('array')
+      .distinct()
+      .run()
+
+    const users = await getUsersByIdQuery.run({ids: userIds}, mainClient)
+    !!users.length && (await insertUserWithAllColumnsQuery.run({users}, orgBackupClient))
+
+    const templateRefIds = await (r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter((row) => row.hasFields('templateRefId')) as any)('templateRefId')
+      .coerceTo('array')
+      .run()
+
+    const templateRefs = await getTemplateRefByIdsQuery.run({ids: templateRefIds}, mainClient)
+    !!templateRefs.length &&
+      (await insertTemplateRefWithAllColumnsQuery.run({refs: templateRefs}, orgBackupClient))
+
+    const scaleRefIds = Array.from(
+      new Set(
+        templateRefs.reduce(
+          (acc, curr) =>
+            acc.concat((curr as any).template.dimensions.map(({scaleRefId}) => scaleRefId)),
+          []
+        )
+      )
+    )
+
+    const scaleRefs = await getTemplateScaleRefByIdsQuery.run({ids: scaleRefIds}, mainClient)
+    !!scaleRefs.length &&
+      (await insertTemplateScaleRefWithAllColumnsQuery.run({refs: scaleRefs}, orgBackupClient))
   } catch (e) {
     console.log(e)
   } finally {
@@ -106,10 +148,9 @@ const backupOrganization = {
     requireSU(authToken)
 
     // RESOLUTION
-    await backupPgOrganization(orgIds)
-
     const r = await getRethink()
     r
+    await backupPgOrganization(orgIds)
 
     // create the DB
     // try {
