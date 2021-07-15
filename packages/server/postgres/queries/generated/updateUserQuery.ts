@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/updateUserQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise'
+export type TierEnum = 'enterprise' | 'pro' | 'personal'
 
 export type JsonArray = (null | boolean | number | string | Json[] | {[key: string]: Json})[]
 

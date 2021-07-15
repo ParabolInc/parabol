@@ -4,7 +4,7 @@ import {
   IGetAtlassianAuthByUserIdTeamIdQueryResult
 } from './generated/getAtlassianAuthByUserIdTeamIdQuery'
 
-interface AtlassianAuth
+export interface AtlassianAuth
   extends Omit<IGetAtlassianAuthByUserIdTeamIdQueryResult, 'jiraSearchQueries'> {
   jiraSearchQueries: {
     id: string
