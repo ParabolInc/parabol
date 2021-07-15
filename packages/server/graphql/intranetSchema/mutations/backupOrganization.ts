@@ -10,6 +10,12 @@ import getPgConfig from '../../../postgres/getPgConfig'
 import {Client} from 'pg'
 import {getPgMigrationsQuery} from '../../../postgres/queries/generated/getPgMigrationsQuery'
 import {insertPgMigrationsQuery} from '../../../postgres/queries/generated/insertPgMigrationsQuery'
+import {getPgPostDeployMigrationsQuery} from '../../../postgres/queries/generated/getPgPostDeployMigrationsQuery'
+import {insertPgPostDeployMigrationsQuery} from '../../../postgres/queries/generated/insertPgPostDeployMigrationsQuery'
+import {getOrgUserAuditByOrgIdQuery} from '../../../postgres/queries/generated/getOrgUserAuditByOrgIdQuery'
+import {insertOrgUserAuditQuery} from '../../../postgres/queries/generated/insertOrgUserAuditQuery'
+import {getTeamsByOrgIdQuery} from '../../../postgres/queries/generated/getTeamsByOrgIdQuery'
+import {insertTeamsQuery} from '../../../postgres/queries/generated/insertTeamsQuery'
 
 const execFilePromise = util.promisify(childProcess.execFile)
 
@@ -21,55 +27,7 @@ const runExecFilePromise = async (pathToScript: string, scriptArgs: string[]) =>
   console.log(stderr)
 }
 
-// const pipeTableRowsToOrgBackupDB = (
-//   tableName: string,
-//   copyToSelectSQL: string,
-//   tableSeqName?: string
-// ) => {
-//   return new Promise(async (resolve, reject) => {
-// const copyFromMetaCommand = pgFormat(`\\copy %I FROM STDIN DELIMITER ',' CSV`, tableName)
-// const psqlScriptPath = path.resolve(process.cwd(), PG_SCRIPTS_DIR, 'psql.sh')
-
-// TODO: need to kill in case of error
-// const copyFromChild = childProcess.execFile(
-//   psqlScriptPath,
-//   ['orgBackup', copyFromMetaCommand],
-//   async (err, stdout, stderr) => {
-//     if (err) { console.log(err) }
-//     if (stderr) { console.log(stderr) }
-//     if (stdout) { console.log(stdout) }
-
-//     if (tableSeqName) {
-//       const setSeqSQL = pgFormat(
-//         `SELECT SETVAL('%I', (SELECT MAX(id) FROM %I));`,
-//         tableSeqName,
-//         tableName
-//       )
-//       await runExecFilePromise(psqlScriptPath, ['orgBackup', setSeqSQL])
-//     }
-//     resolve('success')
-//   }
-// )
-
-//     const copyFromSQL = pgFormat(
-//       `COPY %I FROM STDIN DELIMITER ',' CSV;`,
-//       tableName
-//     )
-//     const dest = orgBackupClient.query(copyFrom(copyFromSQL))
-
-//     const copyToSQL = pgFormat(
-//       `COPY (${copyToSelectSQL}) TO STDOUT WITH CSV DELIMITER ',';`,
-//       tableName
-//     )
-//     const copyToRows = mainClient.query(copyTo(copyToSQL))
-//     copyToRows.on('error', reject)
-//     dest.on('error', reject)
-//     dest.on('finish', resolve)
-//     copyToRows.pipe(dest)
-//   })
-// }
-
-const backupPgOrganization = async () => {
+const backupPgOrganization = async (orgIds: string[]) => {
   const orgBackupDbName = 'orgBackup'
   const schemaDumpFileName = 'schemaDump.tar.gz'
 
@@ -84,15 +42,36 @@ const backupPgOrganization = async () => {
   const mainPg = getPg()
   const mainClient = await mainPg.connect()
 
+  // TODO: limit the number of max connections
   const defaultConfig = getPgConfig()
   const orgBackupConfig = Object.assign(defaultConfig, {database: orgBackupDbName})
   const orgBackupClient = new Client(orgBackupConfig)
   await orgBackupClient.connect()
 
+  // make postgres use seq generator so orgBackup will has correct seq values
+  const removeId = (row) => Object.assign(row, {id: undefined})
+
   try {
-    let pgMigrations = await getPgMigrationsQuery.run(undefined, mainClient)
-    pgMigrations = pgMigrations.map((m) => Object.assign(m, {id: undefined}))
-    await insertPgMigrationsQuery.run({migrationRows: pgMigrations}, orgBackupClient)
+    const pgMigrations = (await getPgMigrationsQuery.run(undefined, mainClient)).map(removeId)
+    !!pgMigrations.length &&
+      (await insertPgMigrationsQuery.run({migrationRows: pgMigrations}, orgBackupClient))
+
+    const pgPostDeployMigrations = (
+      await getPgPostDeployMigrationsQuery.run(undefined, mainClient)
+    ).map(removeId)
+    !!pgPostDeployMigrations.length &&
+      (await insertPgPostDeployMigrationsQuery.run(
+        {migrationRows: pgPostDeployMigrations},
+        orgBackupClient
+      ))
+
+    const auditRows = (await getOrgUserAuditByOrgIdQuery.run({orgIds}, mainClient)).map(removeId)
+    !!auditRows.length && (await insertOrgUserAuditQuery.run({auditRows}, orgBackupClient))
+
+    const teams = await getTeamsByOrgIdQuery.run({orgIds}, mainClient)
+    !!teams.length && (await insertTeamsQuery.run({teams}, orgBackupClient))
+    const teamIds = teams.map(({id}) => id)
+    teamIds
   } catch (e) {
     console.log(e)
   } finally {
@@ -114,7 +93,7 @@ const backupOrganization = {
     requireSU(authToken)
 
     // RESOLUTION
-    await backupPgOrganization()
+    await backupPgOrganization(orgIds)
 
     const r = await getRethink()
     r
