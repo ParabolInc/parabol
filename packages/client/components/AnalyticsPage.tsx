@@ -18,6 +18,7 @@ const query = graphql`
   query AnalyticsPageQuery {
     viewer {
       email
+      isWatched
     }
   }
 `
@@ -70,15 +71,18 @@ const AnalyticsPage = () => {
     }
   )
   const atmosphere = useAtmosphere()
-  useEffect(() => {
+
+  const initLogRocket = async () => {
     const logRocketId = window.__ACTION__.logRocket
     const errorProneAt = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
     const expiredErrorProne =
       errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('30d'))
-    if (expiredErrorProne) {
+    const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+    const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {})
+    const isWatched = res?.viewer?.isWatched
+    if (expiredErrorProne && !isWatched) {
       window.localStorage.deleteItem(LocalStorageKey.ERROR_PRONE_AT)
-    } else if (logRocketId && errorProneAt) {
-      const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+    } else if (logRocketId && (errorProneAt || isWatched)) {
       LogRocket.init(logRocketId, {
         release: __APP_VERSION__,
         network: {
@@ -95,6 +99,9 @@ const AnalyticsPage = () => {
         })
       }
     }
+  }
+  useEffect(() => {
+    initLogRocket()
   }, [])
 
   useEffect(() => {
