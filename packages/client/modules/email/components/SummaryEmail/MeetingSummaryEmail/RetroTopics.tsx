@@ -40,27 +40,35 @@ const RetroTopics = (props: Props) => {
           {plural(stages.length, RETRO_TOPIC_LABEL)}
         </td>
       </tr>
-      {stages.map((stage, idx) => {
-        const topicUrlPath = `/meet/${meetingId}/discuss/${idx + 1}`
-        const topicUrl = isEmail
-          ? makeAppURL(appOrigin, topicUrlPath, {
-              searchParams: {
-                utm_source: 'summary email',
-                utm_medium: 'email',
-                utm_campaign: 'after-meeting'
-              }
-            })
-          : topicUrlPath
-        return (
-          <RetroTopic
-            key={stage.id}
-            isDemo={isDemo}
-            isEmail={isEmail}
-            stage={stage}
-            to={topicUrl}
-          />
-        )
-      })}
+      {stages.length ? (
+        stages.map((stage, idx) => {
+          const topicUrlPath = `/meet/${meetingId}/discuss/${idx + 1}`
+          const topicUrl = isEmail
+            ? makeAppURL(appOrigin, topicUrlPath, {
+                searchParams: {
+                  utm_source: 'summary email',
+                  utm_medium: 'email',
+                  utm_campaign: 'after-meeting'
+                }
+              })
+            : topicUrlPath
+          return (
+            <RetroTopic
+              key={stage.id}
+              isDemo={isDemo}
+              isEmail={isEmail}
+              stage={stage}
+              to={topicUrl}
+            />
+          )
+        })
+      ) : (
+        <tr>
+          <td align='center' style={{paddingTop: 20}}>
+            No new topics...
+          </td>
+        </tr>
+      )}
       <EmailBorderBottom />
     </>
   )

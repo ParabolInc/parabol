@@ -2,9 +2,23 @@ import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphq
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import {GQLContext} from '../graphql'
+import Discussion from './Discussion'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
+
+const createEmptyDiscussion = (id) => ({
+  id,
+  teamId: '',
+  meetingId: '',
+  createdAt: '',
+  discussionTopicId: '',
+  discussionTopicType: '',
+  commentCount: 0,
+  thread: {
+    edges: []
+  }
+})
 
 const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroDiscussStage',
@@ -14,6 +28,14 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...newMeetingStageFields(),
     ...discussionThreadStageFields(),
+    discussion: {
+      type: GraphQLNonNull(Discussion),
+      description: 'The discussion about the stage or a dummy data when there is no disscussion',
+      resolve: async ({discussionId}, _args, {dataLoader}) => {
+        const discussion = await dataLoader.get('discussions').load(discussionId)
+        return discussion ?? createEmptyDiscussion(discussionId)
+      }
+    },
     reflectionGroupId: {
       type: GraphQLNonNull(GraphQLID),
       description: 'foreign key. use reflectionGroup'
