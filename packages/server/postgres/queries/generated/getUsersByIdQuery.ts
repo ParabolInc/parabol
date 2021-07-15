@@ -36,8 +36,8 @@ export interface IGetUsersByIdQueryResult {
   reasonRemoved: string | null
   rol: AuthTokenRole | null
   payLaterClickCount: number
-  isWatched: boolean | null
   eqChecked: Date
+  isWatched: boolean
 }
 
 /** 'GetUsersByIdQuery' query type */

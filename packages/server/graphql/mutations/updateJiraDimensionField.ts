@@ -1,8 +1,9 @@
+import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
-import {FreshAtlassianAuth} from '../../dataloader/customLoaderMakers'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -10,9 +11,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
-import stringify from 'fast-json-stable-stringify'
 
-const getJiraField = async (fieldName: string, cloudId: string, auth: FreshAtlassianAuth) => {
+const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
   // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
   // differently and can't be found on Jira fields list
   const customFields = [SprintPokerDefaults.JIRA_FIELD_COMMENT, SprintPokerDefaults.JIRA_FIELD_NULL]
@@ -23,6 +23,7 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: FreshAtlas
   const {accessToken} = auth
   const manager = new AtlassianServerManager(accessToken)
   const fields = await manager.getFields(cloudId)
+  if (fields instanceof Error) return null
   const selectedField = fields.find((field) => field.name === fieldName)
   if (!selectedField) return null
   const {id: fieldId, schema} = selectedField

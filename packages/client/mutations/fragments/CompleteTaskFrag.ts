@@ -12,10 +12,16 @@ graphql`
     }
     dueDate
     integration {
-      ... on TaskIntegrationGitHub {
-        service
-        nameWithOwner
-        issueNumber
+      __typename
+      ... on GitHubIssue {
+        url
+      }
+      ... on JiraIssue {
+        cloudId
+        url
+        issueKey
+        summary
+        descriptionHTML
       }
     }
     meetingId

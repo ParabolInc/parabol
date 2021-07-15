@@ -113,6 +113,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
+  INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/'
@@ -407,7 +408,8 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
   JIRA_FIELD_NULL_LABEL = 'Do Not Update',
-  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
+  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
+  JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error'
 }
 
 export const enum AriaLabels {

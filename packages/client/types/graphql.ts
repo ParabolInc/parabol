@@ -44439,7 +44439,16 @@ export interface ITask {
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails>;
+
+  /**
+   * The reference to the single source of truth for this task
+   */
   integration: TaskIntegration | null;
+
+  /**
+   * A hash of the integrated task
+   */
+  integrationHash: string | null;
 
   /**
    * the foreign key for the meeting the task was created in
@@ -44977,7 +44986,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * cloudId:key. equal to the serviceTaskId on the EstimateStage
+   * GUID cloudId:issueKey
    */
   id: string;
 
@@ -44991,6 +45000,16 @@ export interface IJiraIssue {
    * Alias for summary used by the Story interface
    */
   title: string;
+
+  /**
+   * The parabol teamId this issue was fetched for
+   */
+  teamId: string;
+
+  /**
+   * The parabol userId this issue was fetched for
+   */
+  userId: string;
 
   /**
    * The ID of the jira cloud where the issue lives
@@ -45010,7 +45029,17 @@ export interface IJiraIssue {
   /**
    * The key of the issue as found in Jira
    */
-  key: string;
+  issueKey: string;
+
+  /**
+   * The key of the project, which is the prefix to the issueKey
+   */
+  projectKey: string;
+
+  /**
+   * The project fetched from jira
+   */
+  project: IJiraRemoteProject | null;
 
   /**
    * The plaintext summary of the jira issue
@@ -45028,18 +45057,15 @@ export interface IJiraIssue {
   descriptionHTML: string;
 }
 
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
+export type TaskIntegration =
+  | IJiraIssue
+  | ITaskIntegrationGitHub
+  | ITaskIntegrationJira
+  | IGitHubIssue;
 
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration';
+  id: string;
 }
 
 /**
@@ -45048,6 +45074,16 @@ export interface IStandardMutationError {
 export interface IJiraRemoteProject {
   __typename: 'JiraRemoteProject';
   id: string;
+
+  /**
+   * The parabol teamId this issue was fetched for
+   */
+  teamId: string;
+
+  /**
+   * The parabol userId this issue was fetched for
+   */
+  userId: string;
   self: string;
 
   /**
@@ -45083,6 +45119,20 @@ export interface IJiraRemoteProjectCategory {
   id: string;
   name: string;
   description: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
 }
 
 /**
@@ -46409,14 +46459,6 @@ export interface ITaskEditorDetails {
    * The name of the userId editing the task
    */
   preferredName: string;
-}
-
-export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira;
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration';
-  id: string;
-  service: TaskServiceEnum;
 }
 
 /**
@@ -50089,7 +50131,6 @@ export interface IActionMeetingSettings {
 export interface ITaskIntegrationGitHub {
   __typename: 'TaskIntegrationGitHub';
   id: string;
-  service: TaskServiceEnum;
   nameWithOwner: string | null;
   issueNumber: number | null;
 }
@@ -50100,7 +50141,6 @@ export interface ITaskIntegrationGitHub {
 export interface ITaskIntegrationJira {
   __typename: 'TaskIntegrationJira';
   id: string;
-  service: TaskServiceEnum;
 
   /**
    * The project key used by jira as a more human readable proxy for a projectId
@@ -54499,6 +54539,16 @@ export interface IGitHubIssue {
    * The url to access the issue
    */
   url: any;
+
+  /**
+   * The name of the repository with owner
+   */
+  nameWithOwner: string;
+
+  /**
+   * The issue number
+   */
+  issueNumber: number;
 
   /**
    * The repository that the issue belongs to

@@ -1,22 +1,35 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import GitHubRepository from './GitHubRepository'
 import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
-import GitHubRepository from './GitHubRepository'
+import TaskIntegration from './TaskIntegration'
 
 const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIssue',
   description: 'The GitHub Issue that comes direct from GitHub',
+  interfaces: () => [TaskIntegration],
+  isTypeOf: ({repository, title}) => !!(repository && title),
   fields: () => ({
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The id of the issue as found in GitHub'
+      // TODO fix me
+      // resolve: ()
     },
     url: {
       type: GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue'
+    },
+    nameWithOwner: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The name of the repository with owner'
+    },
+    issueNumber: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The issue number'
     },
     repository: {
       type: GraphQLNonNull(GitHubRepository),

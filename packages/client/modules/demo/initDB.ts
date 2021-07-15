@@ -1,7 +1,6 @@
 import {PALETTE} from '~/styles/paletteV3'
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
-import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
@@ -68,7 +67,7 @@ export const JiraProjectKeyLookup = {
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
-    service: 'jira' as TaskServiceEnum
+    service: 'jira'
   },
   [JiraSecretKey]: {
     projectKey: JiraSecretKey,
@@ -76,15 +75,15 @@ export const JiraProjectKeyLookup = {
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
-    service: 'jira' as TaskServiceEnum
+    service: 'jira'
   }
-}
+} as const
 
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
     nameWithOwner: GitHubDemoKey,
-    service: 'github' as TaskServiceEnum
+    service: 'github'
   }
 }
 
@@ -165,8 +164,8 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     preferredName,
     integrations: {
       id: 'demoTeamIntegrations',
-      atlassian: {isActive: true, accessToken: '123'},
-      github: {isActive: true, accessToken: '123'},
+      atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
+      github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'},
       slack: initSlackAuth(userId)
     },
     suggestedIntegrations: {

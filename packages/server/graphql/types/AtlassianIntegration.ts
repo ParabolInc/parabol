@@ -130,21 +130,31 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         const {error, issues} = issueRes
         const mappedIssues = issues.map((issue) => ({
           ...issue,
+          teamId,
+          userId,
           updatedAt: new Date()
         }))
-        return connectionFromTasks(mappedIssues, first, error ? {message: error} : undefined)
+        return connectionFromTasks(
+          mappedIssues,
+          first,
+          error ? {message: error.message} : undefined
+        )
       }
     },
     projects: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async ({accessToken, cloudIds, userId}, _args, {authToken}) => {
+      resolve: async ({accessToken, cloudIds, teamId, userId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         const manager = new AtlassianServerManager(accessToken)
         const projects = await manager.getAllProjects(cloudIds)
-        return projects
+        return projects.map((project) => ({
+          ...project,
+          teamId,
+          userId
+        }))
       }
     },
     jiraFields: {
@@ -160,6 +170,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         if (!accessToken) return []
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
+        if (fields instanceof Error) return []
         const VALID_TYPES = ['string', 'number']
         const INVALID_WORDS = ['color', 'name', 'description', 'environment']
         const uniqueFieldNames = Array.from(

@@ -1,17 +1,17 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import AddMissingJiraFieldPayload from '../types/AddMissingJiraFieldPayload'
-import {GQLContext} from '../graphql'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import MeetingPoker from '../../database/types/MeetingPoker'
+import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
+import {SprintPokerDefaults, SubscriptionChannel} from '~/types/constEnums'
+import {JiraScreen} from '~/utils/AtlassianManager'
 import EstimatePhase from '../../database/types/EstimatePhase'
+import MeetingPoker from '../../database/types/MeetingPoker'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
-import JiraServiceTaskId from '~/shared/gqlIds/JiraServiceTaskId'
-import publish from '../../utils/publish'
-import {SubscriptionChannel} from '~/types/constEnums'
-import {isJiraApiError, JiraScreen} from '~/utils/AtlassianManager'
-import standardError from '../../utils/standardError'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import {isNotNull} from '../../utils/predicates'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import AddMissingJiraFieldPayload from '../types/AddMissingJiraFieldPayload'
 
 const addMissingJiraField = {
   type: GraphQLNonNull(AddMissingJiraFieldPayload),
@@ -76,7 +76,7 @@ const addMissingJiraField = {
       return {error: {message: 'User no longer has access to Atlassian'}}
     }
     const {accessToken} = auth
-    const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
+    const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
     const manager = new AtlassianServerManager(accessToken)
     const team = await dataLoader.get('teams').load(teamId)
     const jiraDimensionFields = team.jiraDimensionFields || []
@@ -86,11 +86,11 @@ const addMissingJiraField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
-    const {fieldType, fieldId, fieldName} = dimensionField
+    const {fieldType, fieldId} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
-    if (isJiraApiError(screensResponse)) {
-      return {error: {message: screensResponse.errorMessage}}
+    if (screensResponse instanceof Error) {
+      return {error: {message: screensResponse.message}}
     }
 
     const {values: screens} = screensResponse
@@ -106,7 +106,7 @@ const addMissingJiraField = {
       await Promise.all(
         screens.map(async (screen) => {
           const screenTabsResponse = await manager.getScreenTabs(cloudId, screen.id)
-          if (isJiraApiError(screenTabsResponse)) {
+          if (screenTabsResponse instanceof Error) {
             return null
           }
 
@@ -131,13 +131,13 @@ const addMissingJiraField = {
       const screen = possibleScreens[i]
       const {screenId, tabId} = screen
       const addFieldResponse = await manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
-      if (isJiraApiError(addFieldResponse)) {
+      if (addFieldResponse instanceof Error) {
         continue
       }
 
       try {
         // if we can update the field that was previously missing it means we've added it to the right screen
-        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, fieldId, fieldName)
+        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, fieldId)
         updatedScreen = screen
         break
       } catch (e) {
@@ -156,7 +156,7 @@ const addMissingJiraField = {
     }
 
     if (updatedScreen === null) {
-      return standardError(new Error(`Couldn't fix the missing field!`))
+      return standardError(new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR))
     }
 
     // RESOLUTION

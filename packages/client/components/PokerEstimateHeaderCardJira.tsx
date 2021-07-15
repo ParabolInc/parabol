@@ -6,7 +6,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {DeepNonNullable} from '../types/generics'
 import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
@@ -88,7 +88,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   if (!story) {
     // Jira is down, show something
-    const {issueKey} = JiraServiceTaskId.split(serviceTaskId)
+    const {issueKey} = JiraIssueId.split(serviceTaskId)
     return (
       <HeaderCardWrapper isDesktop={isDesktop}>
         <HeaderCard>
@@ -102,7 +102,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
       </HeaderCardWrapper>
     )
   }
-  const {key, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
+  const {issueKey, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -122,9 +122,9 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
           href={url}
           rel='noopener noreferrer'
           target='_blank'
-          title={`Jira Issue #${key}`}
+          title={`Jira Issue #${issueKey}`}
         >
-          <StyledLabel>{key}</StyledLabel>
+          <StyledLabel>{issueKey}</StyledLabel>
           <StyledIcon>launch</StyledIcon>
         </StyledLink>
       </HeaderCard>
@@ -138,7 +138,7 @@ export default createFragmentContainer(PokerEstimateHeaderCardJira, {
       serviceTaskId
       story {
         ... on JiraIssue {
-          key
+          issueKey
           summary
           descriptionHTML
           url

@@ -4,7 +4,7 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, SprintPokerDefaults} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
@@ -79,8 +79,6 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
-const MissingJiraFieldError = `Update failed! In Jira, use "Find my field" to determine the error`
-
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
   const {id: stageId, dimensionRef, finalScoreError, meetingId, service, serviceField} = stage
@@ -103,7 +101,7 @@ const PokerDimensionValueControl = (props: Props) => {
   }, [serviceFieldName])
   useEffect(() => {
     // reset the pending score only if error is not related to missing Jira field, otherwise we need the value to update once Jira is 'fixed'
-    if (error && !error.message.includes(MissingJiraFieldError)) {
+    if (error && !error.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
       // we want this for remote errors but not local errors, so we keep the 2 in different vars
       setPendingScore(finalScore)
     }
@@ -116,7 +114,7 @@ const PokerDimensionValueControl = (props: Props) => {
       onCompleted(res as any, errors)
       const {pokerSetFinalScore} = res
       const {error} = pokerSetFinalScore
-      if (error?.message.includes(MissingJiraFieldError)) {
+      if (error?.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
         openPortal()
       }
     }

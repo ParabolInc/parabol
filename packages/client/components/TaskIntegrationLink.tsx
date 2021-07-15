@@ -4,7 +4,6 @@ import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
-import {TaskIntegrationLinkIntegrationJira} from '../__generated__/TaskIntegrationLinkIntegrationJira.graphql'
 import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import JiraIssueLink from './JiraIssueLink'
 
@@ -31,13 +30,12 @@ interface Props {
 const TaskIntegrationLink = (props: Props) => {
   const {integration, dataCy, className, children, showJiraLabelPrefix} = props
   if (!integration) return null
-  const {service} = integration
-  if (service === 'jira') {
+  if (integration.__typename === 'JiraIssue') {
     const {
       issueKey,
       projectKey,
       cloudName
-    } = (integration as unknown) as TaskIntegrationLinkIntegrationJira
+    } = integration
     return (
       <JiraIssueLink
         dataCy={`${dataCy}-jira-issue-link`}
@@ -45,11 +43,10 @@ const TaskIntegrationLink = (props: Props) => {
         projectKey={projectKey}
         cloudName={cloudName}
         className={className}
-        children={children}
         showLabelPrefix={showJiraLabelPrefix}
-      />
+      >{children}</JiraIssueLink>
     )
-  } else if (service === 'github') {
+  } else if (integration.__typename === 'GitHubIssue') {
     const {nameWithOwner, issueNumber} = integration
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
@@ -72,7 +69,7 @@ const TaskIntegrationLink = (props: Props) => {
 }
 
 graphql`
-  fragment TaskIntegrationLinkIntegrationJira on TaskIntegrationJira {
+  fragment TaskIntegrationLinkIntegrationJira on JiraIssue {
     issueKey
     projectKey
     cloudName
@@ -80,7 +77,7 @@ graphql`
 `
 
 graphql`
-  fragment TaskIntegrationLinkIntegrationGitHub on TaskIntegrationGitHub {
+  fragment TaskIntegrationLinkIntegrationGitHub on GitHubIssue {
     issueNumber
     nameWithOwner
   }
@@ -89,7 +86,7 @@ graphql`
 export default createFragmentContainer(TaskIntegrationLink, {
   integration: graphql`
     fragment TaskIntegrationLink_integration on TaskIntegration {
-      service
+      __typename
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
     }

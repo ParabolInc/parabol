@@ -1,19 +1,27 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
 import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {StandardMutation} from '../types/relayMutations'
 import {CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
 
 graphql`
   fragment CreateJiraTaskIntegrationMutation_task on CreateJiraTaskIntegrationPayload {
     task {
+      ...IntegratedTaskContent_task
       integration {
-        service
-        ... on TaskIntegrationJira {
+        __typename
+        ... on JiraIssue {
           cloudId
+          cloudName
+          url
+          issueKey
+          summary
+          descriptionHTML
           projectKey
-          projectName
+          project {
+            name
+          }
         }
         ...TaskIntegrationLinkIntegrationJira
       }
@@ -65,7 +73,9 @@ const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegra
       )
       const hasMore = suggestedIntegrations.getValue('hasMore')
       if (!existingIntegration || !hasMore) {
-        const projectName = integration.getValue('projectName')
+        const project = integration.getLinkedRecord('project')
+        if (!project) return
+        const projectName = project.getValue('projectName')
         const cloudId = integration.getValue('cloudId')
         if (!projectName || !cloudId) return
         const nextItem = {

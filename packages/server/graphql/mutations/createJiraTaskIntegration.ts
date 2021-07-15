@@ -2,6 +2,7 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -100,8 +101,8 @@ export default {
 
     const contentState =
       blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
-    let markdown = stateToMarkdown(contentState)
 
+    let markdown = stateToMarkdown(contentState)
     // const isViewerAllowed = viewerAuth && !(viewerAuth instanceof Error) ? viewerAuth.isActive : false
     if (!validViewerAuth) {
       const creator = await db.read('User', viewerId)
@@ -112,22 +113,13 @@ export default {
     const {accessToken} = validViewerAuth || validAssigneeAuth
     const manager = new AtlassianServerManager(accessToken)
 
-    const [sites, issueMetaRes, description] = await Promise.all([
-      manager.getAccessibleResources(),
+    const [cloudName, issueMetaRes, description] = await Promise.all([
+      dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId: viewerId}),
       manager.getCreateMeta(cloudId, [projectKey]),
       manager.convertMarkdownToADF(markdown)
-    ] as const)
-    if ('message' in sites) {
-      return standardError(new Error(sites.message), {userId: viewerId})
-    }
-    if ('message' in issueMetaRes) {
-      return standardError(new Error(issueMetaRes.message), {userId: viewerId})
-    }
-    if ('errors' in issueMetaRes) {
-      return standardError(new Error(Object.values(issueMetaRes.errors)[0]), {userId: viewerId})
-    }
-    if ('errorMessages' in issueMetaRes) {
-      return {error: {message: issueMetaRes.errorMessages[0]}}
+    ])
+    if (issueMetaRes instanceof Error) {
+      return standardError(issueMetaRes, {userId: viewerId})
     }
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
@@ -146,29 +138,23 @@ export default {
       }
     }
     const res = await manager.createIssue(cloudId, projectKey, payload)
-    if ('message' in res) {
-      return standardError(new Error(res.message), {userId: viewerId})
+    if (res instanceof Error) {
+      return standardError(res, {userId: viewerId})
     }
-    if ('errors' in res) {
-      return standardError(new Error(Object.values(res.errors)[0]), {userId: viewerId})
-    }
-    if ('errorMessages' in res) {
-      return {error: {message: res.errorMessages[0]}}
-    }
-
-    const cloud = sites.find((site) => site.id === cloudId)!
+    const {key: issueKey} = res
     await r
       .table('Task')
       .get(taskId)
       .update({
+        integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          id: res.id,
+          accessUserId: viewerId,
           service: 'jira',
           projectKey,
           projectName,
           cloudId,
-          cloudName: cloud.name,
-          issueKey: res.key
+          cloudName,
+          issueKey
         },
         updatedAt: now
       })

@@ -1,8 +1,9 @@
-import TaskIntegration from '../../graphql/types/TaskIntegration'
+import TaskIntegration from './TaskIntegration'
 
 interface Input {
+  accessUserId: string
   projectKey: string
-  projectName: string
+  projectName?: string
   cloudId: string
   issueKey: string
   cloudName: string
@@ -10,13 +11,14 @@ interface Input {
 
 export default class TaskIntegrationJira extends TaskIntegration {
   projectKey: string
-  projectName: string
+  projectName?: string
   cloudId: string
   issueKey: string
   cloudName: string
+  service!: 'jira'
   constructor(input: Input) {
-    const {projectKey, projectName, cloudId, cloudName, issueKey} = input
-    super({service: 'jira'})
+    const {accessUserId, projectKey, projectName, cloudId, cloudName, issueKey} = input
+    super({accessUserId, service: 'jira'})
     this.projectKey = projectKey
     this.projectName = projectName
     this.cloudId = cloudId
