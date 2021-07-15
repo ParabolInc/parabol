@@ -135,7 +135,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
     isWatched: {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if all user sessions are being recorded in LogRocket, else false',
-      resolve: ({isWatched}) => !!isWatched
+      resolve: ({isWatched}) => isWatched
     },
     lastMetAt: {
       type: GraphQLISO8601Type,
