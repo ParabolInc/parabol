@@ -16,6 +16,10 @@ import {getOrgUserAuditByOrgIdQuery} from '../../../postgres/queries/generated/g
 import {insertOrgUserAuditQuery} from '../../../postgres/queries/generated/insertOrgUserAuditQuery'
 import {getTeamsByOrgIdQuery} from '../../../postgres/queries/generated/getTeamsByOrgIdQuery'
 import {insertTeamsQuery} from '../../../postgres/queries/generated/insertTeamsQuery'
+import {getGitHubAuthByTeamIdQuery} from '../../../postgres/queries/generated/getGitHubAuthByTeamIdQuery'
+import {insertGitHubAuthWithAllColumnsQuery} from '../../../postgres/queries/generated/insertGitHubAuthWithAllColumnsQuery'
+import {getDiscussionByTeamIdQuery} from '../../../postgres/queries/generated/getDiscussionByTeamIdQuery'
+import {insertDiscussionWithAllColumnsQuery} from '../../../postgres/queries/generated/insertDiscussionWithAllColumnsQuery'
 
 const execFilePromise = util.promisify(childProcess.execFile)
 
@@ -65,13 +69,22 @@ const backupPgOrganization = async (orgIds: string[]) => {
         orgBackupClient
       ))
 
-    const auditRows = (await getOrgUserAuditByOrgIdQuery.run({orgIds}, mainClient)).map(removeId)
-    !!auditRows.length && (await insertOrgUserAuditQuery.run({auditRows}, orgBackupClient))
-
     const teams = await getTeamsByOrgIdQuery.run({orgIds}, mainClient)
     !!teams.length && (await insertTeamsQuery.run({teams}, orgBackupClient))
     const teamIds = teams.map(({id}) => id)
-    teamIds
+
+    // by organizations
+    const auditRows = (await getOrgUserAuditByOrgIdQuery.run({orgIds}, mainClient)).map(removeId)
+    !!auditRows.length && (await insertOrgUserAuditQuery.run({auditRows}, orgBackupClient))
+
+    // by teams
+    const githubAuths = await getGitHubAuthByTeamIdQuery.run({teamIds}, mainClient)
+    !!githubAuths.length &&
+      (await insertGitHubAuthWithAllColumnsQuery.run({auths: githubAuths}, orgBackupClient))
+
+    const discussions = await getDiscussionByTeamIdQuery.run({teamIds}, mainClient)
+    !!discussions.length &&
+      (await insertDiscussionWithAllColumnsQuery.run({discussions}, orgBackupClient))
   } catch (e) {
     console.log(e)
   } finally {
