@@ -20,7 +20,8 @@ import InactiveTag from './Tag/InactiveTag'
 const MeetingName = styled('div')({
   fontSize: 20,
   fontWeight: 600,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  wordBreak: 'break-word'
 })
 
 const EditableMeetingName = MeetingName.withComponent(EditableText)

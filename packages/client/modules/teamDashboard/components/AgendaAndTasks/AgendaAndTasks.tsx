@@ -10,7 +10,7 @@ import styled from '@emotion/styled'
 
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
-import {AppBar, Breakpoint, NavSidebar, RightSidebar, ZIndex} from '../../../../types/constEnums'
+import {AppBar, Breakpoint, RightSidebar, ZIndex} from '../../../../types/constEnums'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
@@ -32,7 +32,6 @@ const TasksMain = styled('div')({
   height: '100%',
   overflow: 'auto',
   [desktopDashWidestMediaQuery]: {
-    paddingLeft: NavSidebar.WIDTH,
     paddingRight: RightSidebar.WIDTH
   }
 })
