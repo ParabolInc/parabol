@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.21.0 2021-Jul-15
+### Added
+
+- Add Story Points to required screen from within Parabol (#4880)
+
+### Fixed
+- Fix template dimension "ghosts" (#5128)
+
+### Changed
+
+- Deprecate retro template prompt title field (#5120)
+- Migrating AtlassianAuth table to Postgres (#5085, #5135)
+- Impose unique email constraint for User table in Postgres (#5093)
+
 ## 6.20.0 2021-Jul-08
 
 ### Added
