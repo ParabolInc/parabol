@@ -86,7 +86,7 @@ const addMissingJiraField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
-    const {fieldType, fieldId, fieldName} = dimensionField
+    const {fieldType, fieldId} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
     if (screensResponse instanceof Error) {
@@ -137,7 +137,7 @@ const addMissingJiraField = {
 
       try {
         // if we can update the field that was previously missing it means we've added it to the right screen
-        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, fieldId, fieldName)
+        await manager.updateStoryPoints(cloudId, issueKey, dummyValue, fieldId)
         updatedScreen = screen
         break
       } catch (e) {

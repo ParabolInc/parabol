@@ -3,7 +3,6 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
-import getPhase from '../../utils/getPhase'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -11,6 +10,7 @@ import updateStage from '../../database/updateStage'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -128,7 +128,7 @@ const pokerSetFinalScore = {
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
         const {fieldId} = dimensionField!
         try {
-          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId, fieldName)
+          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId)
         } catch (e) {
           return {error: {message: e.message}}
         }

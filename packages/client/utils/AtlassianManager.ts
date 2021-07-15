@@ -1,5 +1,6 @@
 import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+import {SprintPokerDefaults} from '../types/constEnums'
 
 export interface JiraUser {
   self: string
@@ -672,9 +673,7 @@ export default abstract class AtlassianManager {
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
-    fieldId: string,
-    fieldName: string
-  ) {
+    fieldId: string) {
     const payload = {
       fields: {
         [fieldId]: isFinite(storyPoints as number) ? Number(storyPoints) : storyPoints
@@ -693,7 +692,7 @@ export default abstract class AtlassianManager {
     }
     if (res.message.startsWith(fieldId)) {
       if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
+        throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
       }
     }
     throw res
