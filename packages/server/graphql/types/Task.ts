@@ -9,6 +9,7 @@ import {
 import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import {GitHubRequest} from '../rootSchema'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -80,10 +81,10 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
           if (!githubAuth) return null
           const {accessToken} = githubAuth
-          const ghContext = {accessToken}
+          const endpointContext = {accessToken}
           const {nameWithOwner, issueNumber} = integration
           const [repoOwner, repoName] = nameWithOwner.split('/')
-          const wrapper = `
+          const query = `
                 {
                   repository(owner: "${repoOwner}", name: "${repoName}") {
                     issue(number: ${issueNumber}) {
@@ -91,8 +92,13 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                     }
                   }
                 }`
-          const {githubRequest} = require('../rootSchema')
-          const {data, errors} = await githubRequest(wrapper, ghContext, context, info)
+          const githubRequest = (info.schema as any).githubRequest as GitHubRequest
+          const {data, errors} = await githubRequest({
+            query,
+            endpointContext,
+            batchRef: context,
+            info
+          })
           if (errors) {
             console.log(errors)
           }

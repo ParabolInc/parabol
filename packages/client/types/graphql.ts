@@ -51021,11 +51021,6 @@ export interface IMutation {
   joinMeeting: JoinMeetingPayload;
 
   /**
-   * Create an issue in GitHub
-   */
-  gitHubCreateIssue: GitHubCreateIssuePayload;
-
-  /**
    * Adds a missing Jira field to a screen currently assigned to a Jira project
    */
   addMissingJiraField: AddMissingJiraFieldPayload;
@@ -52164,28 +52159,6 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
 
 export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
-}
-
-export interface IGitHubCreateIssueOnMutationArguments {
-  /**
-   * The id of the meeting where the GitHub issue is being created
-   */
-  meetingId: string;
-
-  /**
-   * The owner/repo string
-   */
-  nameWithOwner: string;
-
-  /**
-   * The id of the team that is creating the issue
-   */
-  teamId: string;
-
-  /**
-   * The title of the GH issue
-   */
-  title: string;
 }
 
 export interface IAddMissingJiraFieldOnMutationArguments {
@@ -54499,81 +54472,6 @@ export interface IJoinMeetingSuccess {
 }
 
 /**
- * Return object for GitHubCreateIssuePayload
- */
-export type GitHubCreateIssuePayload =
-  | IErrorPayload
-  | IGitHubCreateIssueSuccess;
-
-export interface IGitHubCreateIssueSuccess {
-  __typename: 'GitHubCreateIssueSuccess';
-
-  /**
-   * The GitHub Issue that comes directly from GitHub
-   */
-  gitHubIssue: IGitHubIssue;
-
-  /**
-   * The id of the meeting where the GitHub issue is being created
-   */
-  meetingId: string;
-
-  /**
-   * The id of the team that is creating the GitHub issue
-   */
-  teamId: string;
-}
-
-/**
- * The GitHub Issue that comes direct from GitHub
- */
-export interface IGitHubIssue {
-  __typename: 'GitHubIssue';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * The url to access the issue
-   */
-  url: any;
-
-  /**
-   * The name of the repository with owner
-   */
-  nameWithOwner: string;
-
-  /**
-   * The issue number
-   */
-  issueNumber: number;
-
-  /**
-   * The repository that the issue belongs to
-   */
-  repository: IGitHubRepository;
-
-  /**
-   * The title of the GitHub issue
-   */
-  title: string;
-}
-
-/**
- * A repository that comes directly from GitHub
- */
-export interface IGitHubRepository {
-  __typename: 'GitHubRepository';
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
-}
-
-/**
  * Return object for AddMissingJiraFieldPayload
  */
 export type AddMissingJiraFieldPayload =
@@ -54679,7 +54577,6 @@ export type MeetingSubscriptionPayload =
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
-  | IGitHubCreateIssueSuccess
   | ISetPokerSpectateSuccess;
 
 export interface IAddReactjiToReflectionSuccess {

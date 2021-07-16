@@ -5,7 +5,7 @@
     "packages/server/types/githubTypes.ts": {
       "plugins": [
         "typescript",
-        "typescript-graphql-request",
+        "typescript-operations",
         "add"
       ],
       "config": {

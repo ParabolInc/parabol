@@ -3,12 +3,20 @@ import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {
+  CreateIssueMutation,
+  CreateIssueMutationVariables,
+  GetRepoInfoQuery,
+  GetRepoInfoQueryVariables
+} from '../../types/githubTypes'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import GitHubServerManager from '../../utils/GitHubServerManager'
+import createIssueMutation from '../../utils/githubQueries/createIssue.graphql'
+import getRepoInfo from '../../utils/githubQueries/getRepoInfo.graphql'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import {GitHubRequest} from '../rootSchema'
 import CreateGitHubTaskIntegrationPayload from '../types/CreateGitHubTaskIntegrationPayload'
 
 type CreateGitHubTaskIntegrationMutationVariables = {
@@ -31,8 +39,10 @@ export default {
   resolve: async (
     _source: any,
     {nameWithOwner, taskId}: CreateGitHubTaskIntegrationMutationVariables,
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+    context: GQLContext,
+    info
   ) => {
+    const {authToken, dataLoader, socketId: mutatorId} = context
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -89,12 +99,27 @@ export default {
     const contentState =
       blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
     const body = stateToMarkdown(contentState)
+    const githubRequest = info.schema.githubRequest as GitHubRequest
+    const endpointContext = {accessToken}
+    const {data: repoInfo, errors} = await githubRequest<
+      GetRepoInfoQuery,
+      GetRepoInfoQueryVariables
+    >({
+      query: getRepoInfo,
+      variables: {
+        assigneeLogin: login,
+        repoName,
+        repoOwner
+      },
+      info,
+      endpointContext,
+      batchRef: context
+    })
 
-    const manager = new GitHubServerManager(accessToken)
-
-    const repoInfo = await manager.getRepoInfo({assigneeLogin: login, repoOwner, repoName})
-    if (repoInfo instanceof Error) {
-      return {error: {message: repoInfo.message}}
+    if (errors) {
+      return {
+        error: {message: errors[0].message}
+      }
     }
 
     const {repository, user} = repoInfo
@@ -104,19 +129,28 @@ export default {
 
     const {id: repositoryId} = repository
     const {id: ghAssigneeId} = user
-    const createIssueRes = await manager.createIssue({
-      input: {
-        title,
-        body,
-        repositoryId,
-        assigneeIds: [ghAssigneeId]
-      }
+    const {data: createIssueData, errors: createIssueErrors} = await githubRequest<
+      CreateIssueMutation,
+      CreateIssueMutationVariables
+    >({
+      query: createIssueMutation,
+      variables: {
+        input: {
+          title,
+          body,
+          repositoryId,
+          assigneeIds: [ghAssigneeId]
+        }
+      },
+      info,
+      endpointContext,
+      batchRef: context
     })
-    if (createIssueRes instanceof Error) {
-      return {error: {message: createIssueRes.message}}
+    if (createIssueErrors instanceof Error) {
+      return {error: {message: createIssueErrors[0].message}}
     }
 
-    const {createIssue} = createIssueRes
+    const {createIssue} = createIssueData
     if (!createIssue) {
       return {error: {message: 'GitHub create issue failed'}}
     }

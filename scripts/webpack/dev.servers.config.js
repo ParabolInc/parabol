@@ -40,7 +40,7 @@ module.exports = {
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT
     },
-    extensions: ['.js', '.json', '.ts', '.tsx'],
+    extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
     unsafeCache: true,
     // this is run outside the server dir, but we want to favor using modules from the server dir
     modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]

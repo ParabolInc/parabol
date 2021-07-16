@@ -1,17 +1,21 @@
-import GitHubServerManager from '../../../utils/GitHubServerManager'
+import {GraphQLResolveInfo} from 'graphql'
+import {GetRepositoriesQuery} from '../../../types/githubTypes'
+import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
 import {DataLoaderWorker} from '../../graphql'
+import {GitHubRequest} from '../../rootSchema'
 
-namespace GetReposQueryData {
-  export type ViewerOrganizationsNodes = any
-  export type ViewerRepositoriesNodes = any
+interface Repo {
+  nameWithOwner: string
+}
+interface GetRepoOrg {
+  repositories: {
+    nodes: Repo[]
+  }
 }
 
-const getUniqueRepos = (
-  orgs: (GetReposQueryData.ViewerOrganizationsNodes | null)[],
-  personalRepos: (GetReposQueryData.ViewerRepositoriesNodes | null)[]
-) => {
+const getUniqueRepos = <T extends GetRepoOrg, V extends Repo>(orgs: T[], personalRepos: V[]) => {
   const repoSet = new Set()
-  const repos = [] as GetReposQueryData.ViewerRepositoriesNodes[]
+  const repos = [] as Repo[]
 
   // add in the organization repos
   for (let i = 0; i < orgs.length; i++) {
@@ -37,21 +41,34 @@ const getUniqueRepos = (
   return repos
 }
 
-const fetchGitHubRepos = async (teamId: string, userId: string, dataLoader: DataLoaderWorker) => {
+const fetchGitHubRepos = async (
+  teamId: string,
+  userId: string,
+  dataLoader: DataLoaderWorker,
+  context: any,
+  info: GraphQLResolveInfo
+) => {
   const auth = await dataLoader.get('githubAuth').load({teamId, userId})
   if (!auth) return []
   const {accessToken} = auth
-  const manager = new GitHubServerManager(accessToken)
-  const repos = await manager.getRepositories()
-  if (repos instanceof Error) {
-    console.error(repos.message)
+  const endpointContext = {accessToken}
+  const githubRequest = (info.schema as any).githubRequest as GitHubRequest
+  const {data, errors} = await githubRequest<GetRepositoriesQuery>({
+    query: getRepositories,
+    batchRef: context,
+    endpointContext,
+    info
+  })
+  console.log({data, errors})
+  if (errors) {
+    console.error(errors[0].message)
     return []
   }
-  const {viewer} = repos
+  const {viewer} = data
   const {organizations, repositories} = viewer
   const orgs = organizations.nodes || []
   const personalRepos = repositories.nodes || []
-  const uniqueRepos = getUniqueRepos(orgs, personalRepos)
+  const uniqueRepos = getUniqueRepos(orgs as any, personalRepos as any)
   return uniqueRepos.map((repo) => ({
     id: repo.nameWithOwner,
     service: 'github',

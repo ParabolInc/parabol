@@ -53,14 +53,14 @@ const transformRules = (projectRoot) => {
       }
     },
     {
-      test: /GitHubManager\.ts/,
       // things that need inline-import
-      include: path.join(CLIENT_ROOT, 'utils'),
+      include: path.join(SERVER_ROOT, 'graphql'),
       use: [
         {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true,
+            // for whatever reason, .graphql files are not invalidated
+            // cacheDirectory: true,
             babelrc: false,
             plugins: [
               [

@@ -1,3 +1,4 @@
+import {GraphQLResolveInfo} from 'graphql'
 import {DataLoaderWorker} from '../../graphql'
 import fetchAtlassianProjects from './fetchAtlassianProjects'
 import fetchGitHubRepos from './fetchGitHubRepos'
@@ -5,11 +6,13 @@ import fetchGitHubRepos from './fetchGitHubRepos'
 const fetchAllIntegrations = async (
   dataLoader: DataLoaderWorker,
   teamId: string,
-  userId: string
+  userId: string,
+  context: any,
+  info: GraphQLResolveInfo
 ) => {
   const [atlassianProjects, githubRepos] = await Promise.all([
     fetchAtlassianProjects(dataLoader, teamId, userId),
-    fetchGitHubRepos(teamId, userId, dataLoader)
+    fetchGitHubRepos(teamId, userId, dataLoader, context, info)
   ])
   const allIntegrations = [...atlassianProjects, ...githubRepos]
   const getValue = (item) => (item.nameWithOwner || item.projectName).toLowerCase()

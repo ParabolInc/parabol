@@ -9,6 +9,8 @@ graphql`
     task {
       integration {
         ... on _xGitHubIssue {
+          bodyHTML
+          title
           number
           repository {
             nameWithOwner
