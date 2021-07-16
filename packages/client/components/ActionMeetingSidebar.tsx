@@ -1,15 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
-import {ActionMeetingSidebar_meeting, NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeetingSidebar_meeting.graphql'
+import {
+  ActionMeetingSidebar_meeting,
+  NewMeetingPhaseTypeEnum
+} from '../__generated__/ActionMeetingSidebar_meeting.graphql'
 import ActionSidebarPhaseListItemChildren from './ActionSidebarPhaseListItemChildren'
 import MeetingNavList from './MeetingNavList'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
+import useMaxChildHeight from '../hooks/useMaxChildHeight'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -24,9 +29,11 @@ const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates', 'age
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
   const atmosphere = useAtmosphere()
+  const navPhasesRef = useRef<HTMLDivElement>(null)
   const {viewerId} = atmosphere
   const {team, settings} = meeting
   const {agendaItems} = team
+  const maxChildHeight = useMaxChildHeight(navPhasesRef, agendaItems.length)
   const {phaseTypes} = settings
   const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
@@ -40,6 +47,7 @@ const ActionMeetingSidebar = (props: Props) => {
       handleMenuClick={handleMenuClick}
       toggleSidebar={toggleSidebar}
       meeting={meeting}
+      navPhasesRef={navPhasesRef}
     >
       <MeetingNavList>
         {phaseTypes
@@ -77,6 +85,7 @@ const ActionMeetingSidebar = (props: Props) => {
                   gotoStageId={gotoStageId}
                   handleMenuClick={handleMenuClick}
                   phaseType={phaseType}
+                  maxChildHeight={maxChildHeight}
                   meeting={meeting}
                 />
               </NewMeetingSidebarPhaseListItem>

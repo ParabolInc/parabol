@@ -16,7 +16,7 @@ const AvatarBlock = styled('div')({
   width: 32
 })
 
-const ScrollStageItems = styled('div') < {isActive: boolean}>(({isActive}) => ({
+const ScrollStageItems = styled('div')<{isActive: boolean}>(({isActive}) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%', // trickle down height for overflow
@@ -30,18 +30,25 @@ const ScrollStageItems = styled('div') < {isActive: boolean}>(({isActive}) => ({
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
+  maxChildHeight: number | null
   meeting: MeetingSidebarTeamMemberStageItems_meeting
   phaseType: NewMeetingPhaseTypeEnum
 }
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
-  const {gotoStageId, handleMenuClick, meeting, phaseType} = props
-  const {id: meetingId, facilitatorStageId, facilitatorUserId, localPhase, localStage, phases} = meeting
+  const {gotoStageId, handleMenuClick, maxChildHeight, meeting, phaseType} = props
+  const {
+    id: meetingId,
+    facilitatorStageId,
+    facilitatorUserId,
+    localPhase,
+    localStage,
+    phases
+  } = meeting
   const sidebarPhase = phases.find((phase) => phase.phaseType === phaseType)!
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
-    const teamMemberStage =
-      sidebarPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
+    const teamMemberStage = sidebarPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
     gotoStageId(teamMemberStageId).catch()
     handleMenuClick()
@@ -51,8 +58,12 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const isActive = localPhase.phaseType === sidebarPhase.phaseType
   const isViewerFacilitator = viewerId === facilitatorUserId
   const {height, ref} = useAnimatedPhaseListChildren(isActive, sidebarPhase.stages.length)
+  const childHeight =
+    typeof height === 'number' && maxChildHeight !== null
+      ? Math.min(maxChildHeight, height)
+      : height
   return (
-    <MeetingSidebarPhaseItemChild height={isActive ? height : 0}>
+    <MeetingSidebarPhaseItemChild height={isActive ? childHeight : 0}>
       <ScrollStageItems isActive={isActive} ref={ref}>
         {sidebarPhase.stages.map((stage) => {
           const {
@@ -66,7 +77,9 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
           if (!teamMember) {
             Sentry.captureException(
               new Error(
-                `Team member is undefined. teamMemberId is ${teamMemberId}. phaseType is ${phaseType}. stageId is ${stageId}. meetingId is ${meetingId}. localStageId is ${localStageId}. stage is ${JSON.stringify(stage)}.`
+                `Team member is undefined. teamMemberId is ${teamMemberId}. phaseType is ${phaseType}. stageId is ${stageId}. meetingId is ${meetingId}. localStageId is ${localStageId}. stage is ${JSON.stringify(
+                  stage
+                )}.`
               )
             )
             return null

@@ -11,11 +11,12 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   phaseType: NewMeetingPhaseTypeEnum
+  maxChildHeight: number | null
   meeting: ActionSidebarPhaseListItemChildren_meeting
 }
 
 const ActionSidebarPhaseListItemChildren = (props: Props) => {
-  const {gotoStageId, handleMenuClick, phaseType, meeting} = props
+  const {gotoStageId, handleMenuClick, phaseType, maxChildHeight, meeting} = props
   if (phaseType === 'agendaitems') {
     return (
       <ActionSidebarAgendaItemsSection
@@ -30,6 +31,7 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
       phaseType={phaseType}
       gotoStageId={gotoStageId}
       handleMenuClick={handleMenuClick}
+      maxChildHeight={maxChildHeight}
       meeting={meeting}
     />
   )
