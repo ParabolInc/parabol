@@ -4,8 +4,6 @@ import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import getPg from '../../../postgres/getPg'
 import path from 'path'
-import childProcess from 'child_process'
-import util from 'util'
 import getPgConfig from '../../../postgres/getPgConfig'
 import {Client} from 'pg'
 import {getPgMigrationsQuery} from '../../../postgres/queries/generated/getPgMigrationsQuery'
@@ -27,45 +25,43 @@ import {insertTemplateRefWithAllColumnsQuery} from '../../../postgres/queries/ge
 import {getTemplateScaleRefByIdsQuery} from '../../../postgres/queries/generated/getTemplateScaleRefByIdsQuery'
 import {insertTemplateScaleRefWithAllColumnsQuery} from '../../../postgres/queries/generated/insertTemplateScaleRefWithAllColumnsQuery'
 import PROD from '../../../PROD'
+import runExecFilePromise from '../../../utils/runExecFilePromise'
 
-const execFilePromise = util.promisify(childProcess.execFile)
+const PG_ORG_BACKUP_DB_NAME = 'orgBackup'
 
-const PG_SCRIPTS_DIR = 'packages/server/postgres/scripts'
-
-const runExecFilePromise = async (pathToScript: string, scriptArgs: string[]) => {
-  const {stdout, stderr} = await execFilePromise(pathToScript, scriptArgs)
-  console.log(stdout)
-  console.log(stderr)
-}
-
-const backupPgOrganization = async (orgIds: string[]) => {
-  const orgBackupDbName = 'orgBackup'
+const createEmptyOrgBackupDB = async () => {
+  const pg_scripts_dir = 'packages/server/postgres/scripts'
   const schemaDumpFile = 'artifacts/schemaDump.tar.gz'
 
-  const dumpScriptPath = path.resolve(process.cwd(), PG_SCRIPTS_DIR, 'dump.sh')
-  const createScriptPath = path.resolve(process.cwd(), PG_SCRIPTS_DIR, 'createDB.sh')
-  const restoreScriptPath = path.resolve(process.cwd(), PG_SCRIPTS_DIR, 'restoreDB.sh')
+  const dumpScriptPath = path.resolve(process.cwd(), pg_scripts_dir, 'dump.sh')
+  const createScriptPath = path.resolve(process.cwd(), pg_scripts_dir, 'createDB.sh')
+  const restoreScriptPath = path.resolve(process.cwd(), pg_scripts_dir, 'restoreDB.sh')
 
   await runExecFilePromise(dumpScriptPath, [`-Fc --schema-only -f ${schemaDumpFile}`])
-  await runExecFilePromise(createScriptPath, [orgBackupDbName])
-  await runExecFilePromise(restoreScriptPath, [`-d ${orgBackupDbName} ${schemaDumpFile}`])
+  await runExecFilePromise(createScriptPath, [PG_ORG_BACKUP_DB_NAME])
+  await runExecFilePromise(restoreScriptPath, [`-d ${PG_ORG_BACKUP_DB_NAME} ${schemaDumpFile}`])
+}
+
+// make insert use seq generator so tables with seq will has correct seq values
+const removeId = (row) => Object.assign(row, {id: undefined})
+
+const backupPgOrganization = async (orgIds: string[]) => {
+  await createEmptyOrgBackupDB()
 
   const mainPg = getPg()
   const mainClient = await mainPg.connect()
 
-  const defaultConfig = getPgConfig()
-  const orgBackupConfig = Object.assign(defaultConfig, {
-    database: orgBackupDbName,
+  const orgBackupConfig = Object.assign(getPgConfig(), {
+    database: PG_ORG_BACKUP_DB_NAME,
     max: PROD ? 5 : 1
   })
   const orgBackupClient = new Client(orgBackupConfig)
   await orgBackupClient.connect()
 
+  // rethink client for when we need to join with rethink
   const r = await getRethink()
 
-  // make postgres use seq generator so tables with seq will has correct seq values
-  const removeId = (row) => Object.assign(row, {id: undefined})
-
+  // collect all backup writes here
   const writePromises: Promise<any>[] = []
 
   try {
@@ -92,7 +88,9 @@ const backupPgOrganization = async (orgIds: string[]) => {
     teams.length && writePromises.push(insertTeamsQuery.run({teams}, orgBackupClient))
 
     auditRows.length &&
-      writePromises.push(insertOrgUserAuditQuery.run({auditRows}, orgBackupClient))
+      writePromises.push(
+        insertOrgUserAuditQuery.run({auditRows: auditRows.map(removeId)}, orgBackupClient)
+      )
 
     const teamIds = teams.map(({id}) => id)
 
