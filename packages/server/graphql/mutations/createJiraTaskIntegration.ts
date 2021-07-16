@@ -1,8 +1,8 @@
-import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
+import splitDraftContent from '../../../client/utils/draftjs/splitDraftContent'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -89,19 +89,7 @@ export default {
     }
 
     // RESOLUTION
-    const rawContent = JSON.parse(rawContentStr)
-    const {blocks} = rawContent
-    let {text: summary} = blocks[0]
-    // if the summary exceeds 256, repeat it in the body because it probably has entities in it
-    if (summary.length <= 256) {
-      blocks.shift()
-    } else {
-      summary = summary.slice(0, 256)
-    }
-
-    const contentState =
-      blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
-
+    const {title: summary, contentState} = splitDraftContent(rawContentStr)
     let markdown = stateToMarkdown(contentState)
     // const isViewerAllowed = viewerAuth && !(viewerAuth instanceof Error) ? viewerAuth.isActive : false
     if (!validViewerAuth) {

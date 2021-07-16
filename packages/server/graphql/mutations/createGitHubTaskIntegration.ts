@@ -1,7 +1,7 @@
-import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import splitDraftContent from '../../../client/utils/draftjs/splitDraftContent'
 import getRethink from '../../database/rethinkDriver'
 import {
   CreateIssueMutation,
@@ -87,17 +87,7 @@ export default {
       )
     }
     const {accessToken, login} = viewerAuth
-    const rawContent = JSON.parse(rawContentStr)
-    const {blocks} = rawContent
-    let {text: title} = blocks[0]
-    // if the title exceeds 256, repeat it in the body because it probably has entities in it
-    if (title.length <= 256) {
-      blocks.shift()
-    } else {
-      title = title.slice(0, 256)
-    }
-    const contentState =
-      blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
+    const {title, contentState} = splitDraftContent(rawContentStr)
     const body = stateToMarkdown(contentState)
     const githubRequest = info.schema.githubRequest as GitHubRequest
     const endpointContext = {accessToken}

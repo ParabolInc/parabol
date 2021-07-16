@@ -25,8 +25,6 @@ import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeti
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import SuggestedIntegrationGitHub from './types/SuggestedIntegrationGitHub'
 import SuggestedIntegrationJira from './types/SuggestedIntegrationJira'
-import TaskIntegrationGitHub from './types/TaskIntegrationGitHub'
-import TaskIntegrationJira from './types/TaskIntegrationJira'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
@@ -66,8 +64,6 @@ const rootTypes = [
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
   ActionMeetingSettings,
-  TaskIntegrationGitHub,
-  TaskIntegrationJira,
   SuggestedIntegrationGitHub,
   SuggestedIntegrationJira,
   Comment

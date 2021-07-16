@@ -1,6 +1,10 @@
 {
   "schema": "packages/server/utils/githubSchema.ts",
-  "documents": "packages/server/utils/githubQueries/*.graphql",
+  "documents": {
+    "packages/server/utils/githubQueries/*.graphql": {
+      "loader": "./scripts/codegenDocLoader.js"
+    }
+  },
   "generates": {
     "packages/server/types/githubTypes.ts": {
       "plugins": [
@@ -9,7 +13,6 @@
         "add"
       ],
       "config": {
-        "rawRequest": true,
         "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck"
       }
     }

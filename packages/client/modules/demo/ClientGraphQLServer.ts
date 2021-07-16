@@ -1,4 +1,3 @@
-import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToHTML} from 'draft-js-export-html'
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
@@ -30,6 +29,7 @@ import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
+import splitDraftContent from '../../utils/draftjs/splitDraftContent'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
@@ -47,7 +47,8 @@ import initDB, {
   DemoDiscussion,
   demoTeamId,
   DemoThreadableEdge,
-  demoViewerId, JiraProjectKeyLookup,
+  demoViewerId,
+  JiraProjectKeyLookup,
   RetroDemoDB
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
@@ -396,11 +397,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const {content} = task
+      const {title, contentState} = splitDraftContent(content)
+      const bodyHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
         integration: {
           __typename: '_xGitHubIssue',
           id: `${taskId}:GitHub`,
+          title,
+          bodyHTML,
           repository: {
             nameWithOwner
           },
@@ -426,17 +432,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const {cloudId, cloudName, projectName, avatar} = project
       const issueKey = this.getTempId(`${projectKey}-`)
       const {content} = task
-      const rawContent = JSON.parse(content)
-      const {blocks} = rawContent
-      let {text: summary} = blocks[0]
-      // if the summary exceeds 256, repeat it in the body because it probably has entities in it
-      if (summary.length <= 256) {
-        blocks.shift()
-      } else {
-        summary = summary.slice(0, 256)
-      }
-      const contentState =
-        blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
+      const {title, contentState} = splitDraftContent(content)
       const descriptionHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
@@ -449,7 +445,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           cloudId,
           cloudName,
           descriptionHTML,
-          summary,
+          summary: title,
           url: ExternalLinks.INTEGRATIONS_JIRA,
           project: {
             id: `${projectKey}:id`,

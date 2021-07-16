@@ -1,8 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
+import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {CreateGitHubTaskIntegrationMutation as TCreateGitHubTaskIntegrationMutation} from '../__generated__/CreateGitHubTaskIntegrationMutation.graphql'
+import {
+  CreateGitHubTaskIntegrationMutation as TCreateGitHubTaskIntegrationMutation
+} from '../__generated__/CreateGitHubTaskIntegrationMutation.graphql'
 
 graphql`
   fragment CreateGitHubTaskIntegrationMutation_task on CreateGitHubTaskIntegrationPayload {
@@ -50,7 +54,13 @@ const CreateGitHubTaskIntegrationMutation: StandardMutation<TCreateGitHubTaskInt
       const integrationRepository = createProxyRecord(store, '_xGitHubRepository', {
         nameWithOwner
       })
+      const contentStr = task.getValue('content') as string
+      if (!contentStr) return
+      const {title, contentState} = splitDraftContent(contentStr)
+      const bodyHTML = stateToHTML(contentState)
       const optimisticIntegration = {
+        title,
+        bodyHTML,
         number: 0,
         updatedAt: now.toJSON()
       } as const
