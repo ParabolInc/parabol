@@ -47691,7 +47691,7 @@ export interface IRetroDiscussStage {
   discussionId: string;
 
   /**
-   * The discussion about the stage or a dummy data when there is no disscussion id
+   * The discussion about the stage or a dummy data when there is no disscussion
    */
   discussion: IDiscussion;
 

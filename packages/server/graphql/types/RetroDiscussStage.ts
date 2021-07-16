@@ -7,8 +7,8 @@ import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionTh
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
 
-const createEmptyDiscussion = (id) => ({
-  id,
+const DUMMY_DISCUSSION = {
+  id: 'dummy-discussion-id',
   teamId: '',
   meetingId: '',
   createdAt: '',
@@ -18,7 +18,7 @@ const createEmptyDiscussion = (id) => ({
   thread: {
     edges: []
   }
-})
+}
 
 const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroDiscussStage',
@@ -31,9 +31,9 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
     discussion: {
       type: GraphQLNonNull(Discussion),
       description: 'The discussion about the stage or a dummy data when there is no disscussion',
-      resolve: async ({discussionId}, _args, {dataLoader}) => {
-        const discussion = await dataLoader.get('discussions').load(discussionId)
-        return discussion ?? createEmptyDiscussion(discussionId)
+      resolve: async ({discussionId, reflectionGroupId}, _args, {dataLoader}) => {
+        const isDummy = reflectionGroupId === ''
+        return isDummy ? DUMMY_DISCUSSION : dataLoader.get('discussions').load(discussionId)
       }
     },
     reflectionGroupId: {
