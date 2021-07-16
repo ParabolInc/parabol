@@ -26,6 +26,7 @@ import {getTemplateRefByIdsQuery} from '../../../postgres/queries/generated/getT
 import {insertTemplateRefWithAllColumnsQuery} from '../../../postgres/queries/generated/insertTemplateRefWithAllColumnsQuery'
 import {getTemplateScaleRefByIdsQuery} from '../../../postgres/queries/generated/getTemplateScaleRefByIdsQuery'
 import {insertTemplateScaleRefWithAllColumnsQuery} from '../../../postgres/queries/generated/insertTemplateScaleRefWithAllColumnsQuery'
+import PROD from '../../../PROD'
 
 const execFilePromise = util.promisify(childProcess.execFile)
 
@@ -52,9 +53,11 @@ const backupPgOrganization = async (orgIds: string[]) => {
   const mainPg = getPg()
   const mainClient = await mainPg.connect()
 
-  // TODO: limit the number of max connections
   const defaultConfig = getPgConfig()
-  const orgBackupConfig = Object.assign(defaultConfig, {database: orgBackupDbName})
+  const orgBackupConfig = Object.assign(defaultConfig, {
+    database: orgBackupDbName,
+    max: PROD ? 5 : 1
+  })
   const orgBackupClient = new Client(orgBackupConfig)
   await orgBackupClient.connect()
 
