@@ -7,7 +7,6 @@
 .heapsnapshot
 .history/
 .idea/
-artifacts/
 build/
 coverage/
 dev/
