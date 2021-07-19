@@ -40,7 +40,6 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
       phaseType={phaseType}
     />
   )
-  return null
 }
 
 export default createFragmentContainer(RetroSidebarPhaseListItemChildren, {
