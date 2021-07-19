@@ -32,6 +32,7 @@ extend type RetrospectiveMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  topBarHeight: Int
 }
 
 extend type Team {

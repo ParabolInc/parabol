@@ -87,6 +87,7 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
+  const topBarHeight = meeting?.topBarHeight
   const {id: reflectionId, content, promptId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
@@ -97,7 +98,7 @@ const ReflectionCard = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.UPPER_CENTER)
-  const {togglePortal, closePortal, modalPortal} = useModal({background: 'transparent'})
+  const {togglePortal, modalPortal} = useModal({background: 'transparent'})
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -298,6 +299,7 @@ export default createFragmentContainer(ReflectionCard, {
           isComplete
         }
       }
+      topBarHeight
     }
   `
 })

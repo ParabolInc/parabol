@@ -1,9 +1,11 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
 import React from 'react'
+import {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
@@ -18,6 +20,9 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
+import useRetroGroupTopBar from '../hooks/useRetroGroupTopBar'
+
+const MeetingTopBarWrapper = styled('div')()
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroGroupPhase_meeting
@@ -25,20 +30,26 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroGroupPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
+  const topBarRef = useRef<HTMLDivElement>(null)
   const [callbackRef, phaseRef] = useCallbackRef()
-  const {endedAt, showSidebar} = meeting
+  const {id: meetingId, endedAt, showSidebar} = meeting
+  useRetroGroupTopBar(topBarRef, meetingId)
 
   return (
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
-        <MeetingTopBar
-          avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!showSidebar}
-          toggleSidebar={toggleSidebar}
-        >
-          <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
-          <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
-        </MeetingTopBar>
+        <MeetingTopBarWrapper ref={topBarRef}>
+          <MeetingTopBar
+            avatarGroup={avatarGroup}
+            isMeetingSidebarCollapsed={!showSidebar}
+            toggleSidebar={toggleSidebar}
+          >
+            <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
+            <PhaseHeaderDescription>
+              {'Drag cards to group by common topics'}
+            </PhaseHeaderDescription>
+          </MeetingTopBar>
+        </MeetingTopBarWrapper>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} canUndo={true} />
           <MeetingPhaseWrapper>
@@ -56,6 +67,7 @@ export default createFragmentContainer(RetroGroupPhase, {
       ...StageTimerControl_meeting
       ...StageTimerDisplay_meeting
       ...GroupingKanban_meeting
+      id
       endedAt
       showSidebar
     }
