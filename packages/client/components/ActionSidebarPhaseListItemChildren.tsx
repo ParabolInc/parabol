@@ -28,11 +28,11 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
   }
   return (
     <MeetingSidebarTeamMemberStageItems
-      phaseType={phaseType}
       gotoStageId={gotoStageId}
       handleMenuClick={handleMenuClick}
       maxChildHeight={maxChildHeight}
       meeting={meeting}
+      phaseType={phaseType}
     />
   )
 }

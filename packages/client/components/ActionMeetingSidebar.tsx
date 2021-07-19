@@ -29,13 +29,17 @@ const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates', 'age
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
   const atmosphere = useAtmosphere()
-  const navPhasesRef = useRef<HTMLDivElement>(null)
   const {viewerId} = atmosphere
   const {team, settings} = meeting
   const {agendaItems} = team
-  const maxChildHeight = useMaxChildHeight(navPhasesRef, agendaItems.length)
   const {phaseTypes} = settings
   const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} = meeting
+  const navPhasesRef = useRef<HTMLDivElement>(null)
+  const maxChildHeight = useMaxChildHeight(
+    navPhasesRef,
+    collapsiblePhases.length,
+    agendaItems.length === 0
+  )
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''

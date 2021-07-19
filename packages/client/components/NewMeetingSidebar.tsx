@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode, useRef, useState, useLayoutEffect} from 'react'
+import React, {ReactNode} from 'react'
 import {RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
