@@ -5,7 +5,6 @@ import graphql from 'babel-plugin-relay/macro'
  *
  */
 import React from 'react'
-import {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
@@ -20,7 +19,6 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
-import useRetroGroupTopBar from '../hooks/useRetroGroupTopBar'
 
 const MeetingTopBarWrapper = styled('div')()
 
@@ -30,15 +28,13 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroGroupPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const topBarRef = useRef<HTMLDivElement>(null)
   const [callbackRef, phaseRef] = useCallbackRef()
-  const {id: meetingId, endedAt, showSidebar} = meeting
-  useRetroGroupTopBar(topBarRef, meetingId)
+  const {endedAt, showSidebar} = meeting
 
   return (
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
-        <MeetingTopBarWrapper ref={topBarRef}>
+        <MeetingTopBarWrapper>
           <MeetingTopBar
             avatarGroup={avatarGroup}
             isMeetingSidebarCollapsed={!showSidebar}
@@ -67,7 +63,6 @@ export default createFragmentContainer(RetroGroupPhase, {
       ...StageTimerControl_meeting
       ...StageTimerDisplay_meeting
       ...GroupingKanban_meeting
-      id
       endedAt
       showSidebar
     }

@@ -32,7 +32,6 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
-import useMenu from '../../hooks/useMenu'
 import SpotlightModal from '../SpotlightModal'
 import useModal from '../../hooks/useModal'
 
@@ -97,7 +96,7 @@ const ReflectionCard = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.UPPER_CENTER)
-  const {togglePortal, closePortal, modalPortal, loadingDelay} = useModal()
+  const {togglePortal, modalPortal} = useModal()
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
