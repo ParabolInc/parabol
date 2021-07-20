@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
+import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import fkLoader from './fkLoader'
 import * as foreignLoaderMakers from './foreignLoaderMakers'
@@ -7,7 +8,6 @@ import LoaderMakerForeign from './LoaderMakerForeign'
 import LoaderMakerPrimary from './LoaderMakerPrimary'
 import pkLoader from './pkLoader'
 import * as primaryLoaderMakers from './primaryLoaderMakers'
-import * as atlassianLoaders from './atlassianLoaders'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>

@@ -45057,11 +45057,7 @@ export interface IJiraIssue {
   descriptionHTML: string;
 }
 
-export type TaskIntegration =
-  | IJiraIssue
-  | ITaskIntegrationGitHub
-  | ITaskIntegrationJira
-  | IGitHubIssue;
+export type TaskIntegration = IXGitHubIssue | IJiraIssue;
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration';
@@ -45222,7 +45218,7 @@ export interface IGitHubIntegration {
    * The user that the access token is attached to
    */
   userId: string;
-  api: IGitHubApi | null;
+  api: IXGitHubApi | null;
 }
 
 /**
@@ -50128,49 +50124,6 @@ export interface IActionMeetingSettings {
 /**
  * The details associated with a task integrated with GitHub
  */
-export interface ITaskIntegrationGitHub {
-  __typename: 'TaskIntegrationGitHub';
-  id: string;
-  nameWithOwner: string | null;
-  issueNumber: number | null;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ITaskIntegrationJira {
-  __typename: 'TaskIntegrationJira';
-  id: string;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project as defined by jira
-   */
-  projectName: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The issue key used by jira as a more human readable proxy for the id field
-   */
-  issueKey: string;
-
-  /**
-   * The psuedo-domain to use to generate a base url
-   */
-  cloudName: string;
-}
-
-/**
- * The details associated with a task integrated with GitHub
- */
 export interface ISuggestedIntegrationGitHub {
   __typename: 'SuggestedIntegrationGitHub';
   id: string;
@@ -51019,11 +50972,6 @@ export interface IMutation {
    * Create a meeting member for a user
    */
   joinMeeting: JoinMeetingPayload;
-
-  /**
-   * Create an issue in GitHub
-   */
-  gitHubCreateIssue: GitHubCreateIssuePayload;
 
   /**
    * Adds a missing Jira field to a screen currently assigned to a Jira project
@@ -52164,28 +52112,6 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
 
 export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
-}
-
-export interface IGitHubCreateIssueOnMutationArguments {
-  /**
-   * The id of the meeting where the GitHub issue is being created
-   */
-  meetingId: string;
-
-  /**
-   * The owner/repo string
-   */
-  nameWithOwner: string;
-
-  /**
-   * The id of the team that is creating the issue
-   */
-  teamId: string;
-
-  /**
-   * The title of the GH issue
-   */
-  title: string;
 }
 
 export interface IAddMissingJiraFieldOnMutationArguments {
@@ -54499,81 +54425,6 @@ export interface IJoinMeetingSuccess {
 }
 
 /**
- * Return object for GitHubCreateIssuePayload
- */
-export type GitHubCreateIssuePayload =
-  | IErrorPayload
-  | IGitHubCreateIssueSuccess;
-
-export interface IGitHubCreateIssueSuccess {
-  __typename: 'GitHubCreateIssueSuccess';
-
-  /**
-   * The GitHub Issue that comes directly from GitHub
-   */
-  gitHubIssue: IGitHubIssue;
-
-  /**
-   * The id of the meeting where the GitHub issue is being created
-   */
-  meetingId: string;
-
-  /**
-   * The id of the team that is creating the GitHub issue
-   */
-  teamId: string;
-}
-
-/**
- * The GitHub Issue that comes direct from GitHub
- */
-export interface IGitHubIssue {
-  __typename: 'GitHubIssue';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * The url to access the issue
-   */
-  url: any;
-
-  /**
-   * The name of the repository with owner
-   */
-  nameWithOwner: string;
-
-  /**
-   * The issue number
-   */
-  issueNumber: number;
-
-  /**
-   * The repository that the issue belongs to
-   */
-  repository: IGitHubRepository;
-
-  /**
-   * The title of the GitHub issue
-   */
-  title: string;
-}
-
-/**
- * A repository that comes directly from GitHub
- */
-export interface IGitHubRepository {
-  __typename: 'GitHubRepository';
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
-}
-
-/**
  * Return object for AddMissingJiraFieldPayload
  */
 export type AddMissingJiraFieldPayload =
@@ -54679,7 +54530,6 @@ export type MeetingSubscriptionPayload =
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
-  | IGitHubCreateIssueSuccess
   | ISetPokerSpectateSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
@@ -55008,8 +54858,8 @@ export interface IXGitHubError {
   path: Array<string> | null;
 }
 
-export interface IGitHubApi {
-  __typename: 'GitHubApi';
+export interface IXGitHubApi {
+  __typename: '_xGitHubApi';
   errors: Array<IXGitHubError> | null;
   query: IXGitHubQuery | null;
   mutation: IXGitHubMutation | null;

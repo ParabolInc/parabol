@@ -6,7 +6,9 @@ import {IntegratedTaskContent_task} from '../__generated__/IntegratedTaskContent
 
 const Content = styled('div')({
   paddingLeft: 16,
-  paddingRight: 16
+  paddingRight: 16,
+  maxHeight: 320,
+  overflow: 'auto'
 })
 const Summary = styled('div')({
   fontWeight: 600
@@ -27,6 +29,14 @@ const IntegratedTaskContent = (props: Props) => {
         <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
       </Content>
     )
+  } else if (integration.__typename === '_xGitHubIssue') {
+    const {bodyHTML, title} = integration
+    return (
+      <Content>
+        <Summary>{title}</Summary>
+        <div dangerouslySetInnerHTML={{__html: bodyHTML}} />
+      </Content>
+    )
   }
   return null
 }
@@ -39,6 +49,10 @@ export default createFragmentContainer(IntegratedTaskContent, {
         ... on JiraIssue {
           descriptionHTML
           summary
+        }
+        ... on _xGitHubIssue {
+          bodyHTML
+          title
         }
       }
     }
