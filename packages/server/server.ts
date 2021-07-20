@@ -12,6 +12,7 @@ import githubWebhookHandler from './integrations/githubWebhookHandler'
 import listenHandler from './listenHandler'
 import PWAHandler from './PWAHandler'
 import selfHostedHandler from './selfHostedHandler'
+import jiraImagesHandler from './jiraImagesHandler'
 import handleClose from './socketHandlers/handleClose'
 import handleMessage from './socketHandlers/handleMessage'
 import handleOpen from './socketHandlers/handleOpen'
@@ -22,6 +23,7 @@ import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 import PROD from './PROD'
 import {r} from 'rethinkdb-ts'
+import {JIRA_IMAGES_ENDPOINT} from './utils/atlassian/jiraImages'
 
 if (PROD) {
   tracer.init()
@@ -45,6 +47,7 @@ uws
   .get('/sse/*', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
   .get('/self-hosted/*', selfHostedHandler)
+  .get(`${JIRA_IMAGES_ENDPOINT}/*`, jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
