@@ -40,8 +40,8 @@ const DiscussionThreadListEmptyState = (props: Props) => {
   const readOnlyMessage = allowTasks
     ? 'No comments or tasks were added here'
     : 'No comments were added here'
-  const message = `Start the conversation ${
-    allowTasks ? 'or add takeaway task cards' : ''
+  const message = `Start the conversation${
+    allowTasks ? ' or add takeaway task cards' : ''
   } to capture next steps.`
 
   return (
