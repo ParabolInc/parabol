@@ -7,9 +7,13 @@ import MenuItem from './MenuItem'
 import {createFragmentContainer} from 'react-relay'
 import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
 import {MeetingControlBarEnum, NavSidebar} from '../types/constEnums'
+import {cardShadow} from '../styles/elevation'
+import {PALETTE} from '../styles/paletteV3'
+import ReflectionCard from './ReflectionCard/ReflectionCard'
 
 interface Props {
   meeting: SpotlightModal_meeting
+  reflection: SpotlightModal_reflection
 }
 
 const StyledMenu = styled(Menu)<{showSidebar: boolean}>(({showSidebar}) => ({
@@ -24,34 +28,100 @@ const StyledMenu = styled(Menu)<{showSidebar: boolean}>(({showSidebar}) => ({
   borderRadius: 4
 }))
 
-const StyledMenuItem = styled(MenuItem)({
-  position: 'relative',
-  border: '2px solid red'
+const SelectedReflection = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  width: '100%',
+  height: '50%',
+  border: '2px solid red',
+  background: PALETTE.SLATE_100,
+  padding: 16
 })
 
-const ModalContainer = styled('div')<{showSidebar: boolean}>(({showSidebar}) => ({
+const RelevantReflections = styled('div')({
+  display: 'flex',
+  height: '50%',
+  width: '100%',
   border: '2px solid red',
-  width: `calc(100vw - ${showSidebar ? NavSidebar.WIDTH : 0}px)`,
-  height: `calc(100vh - ${MeetingControlBarEnum.HEIGHT}px)`,
-  right: 0,
-  position: 'fixed',
-  top: 0
-}))
+  padding: 16
+})
+
+const Title = styled('div')({
+  color: PALETTE.SLATE_800,
+  fontSize: 16,
+  fontWeight: 600
+})
+
+const ModalContainer = styled('div')<{showSidebar: boolean; topBarHeight: number}>(
+  ({showSidebar, topBarHeight}) => ({
+    background: '#FFFF',
+    // border: '2px solid red',
+    borderRadius: 8,
+    boxShadow: cardShadow,
+    width: `calc(100vw - ${(showSidebar ? NavSidebar.WIDTH : 0) + 24}px)`,
+    height: `calc(100vh - ${MeetingControlBarEnum.HEIGHT + 16 + topBarHeight}px)`,
+    right: 12,
+    position: 'fixed',
+    // left: 0
+    top: `${topBarHeight}px`
+  })
+)
 
 const SpotlightModal = (props: Props) => {
-  const {meeting} = props
-  const {showSidebar} = meeting
+  const {meeting, reflection} = props
+  const {showSidebar, topBarHeight} = meeting
   return (
-    // <StyledMenu ariaLabel='Search for similar reflections' {...menuProps} showSidebar={showSidebar}>
-    <ModalContainer showSidebar={showSidebar}>test</ModalContainer>
-    // </StyledMenu>
+    <ModalContainer showSidebar={showSidebar} topBarHeight={topBarHeight}>
+      <SelectedReflection>
+        <Title>Find cards with similar reflections</Title>
+        <ReflectionCard reflection={reflection} meeting={meeting} />
+      </SelectedReflection>
+      <RelevantReflections>
+        <Title>Test</Title>
+      </RelevantReflections>
+    </ModalContainer>
   )
 }
 
 export default createFragmentContainer(SpotlightModal, {
+  reflection: graphql`
+    fragment SpotlightModal_reflection on RetroReflection {
+      ...ColorBadge_reflection
+      id
+      isViewerCreator
+      isEditing
+      meetingId
+      reflectionGroupId
+      promptId
+      content
+      reactjis {
+        ...ReactjiSection_reactjis
+        id
+        isViewerReactji
+      }
+      sortOrder
+    }
+  `,
   meeting: graphql`
     fragment SpotlightModal_meeting on RetrospectiveMeeting {
+      id
       showSidebar
+      topBarHeight
+      localStage {
+        isComplete
+        phaseType
+      }
+      localPhase {
+        phaseType
+      }
+      phases {
+        phaseType
+        stages {
+          id
+          isComplete
+          phaseType
+        }
+      }
     }
   `
 })

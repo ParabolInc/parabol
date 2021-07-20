@@ -87,7 +87,6 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
-  const topBarHeight = meeting?.topBarHeight
   const {id: reflectionId, content, promptId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
@@ -98,7 +97,7 @@ const ReflectionCard = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.UPPER_CENTER)
-  const {togglePortal, modalPortal} = useModal({background: 'transparent'})
+  const {togglePortal, closePortal, modalPortal, loadingDelay} = useModal()
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -221,48 +220,50 @@ const ReflectionCard = (props: Props) => {
   const showSpotlight = true
   const showSearch = phaseType === 'group' && showSpotlight && (isHovering || !isDesktop)
   return (
-    <ReflectionCardRoot
-      data-cy={`${dataCy}-root`}
-      onMouseEnter={toggleHovering}
-      onMouseLeave={toggleHovering}
-    >
-      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-      <ReflectionEditorWrapper
-        dataCy={`editor-wrapper`}
-        isClipped={isClipped}
-        ariaLabel='Edit this reflection'
-        editorRef={editorRef}
-        editorState={editorState}
-        onBlur={handleEditorBlur}
-        onFocus={handleEditorFocus}
-        handleReturn={handleReturn}
-        handleKeyDownFallback={handleKeyDownFallback}
-        placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
-        readOnly={readOnly}
-        setEditorState={setEditorState}
-        userSelect={userSelect}
-      />
-      {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
-      {!readOnly && (
-        <ReflectionCardDeleteButton
-          dataCy={`reflection-delete`}
-          meetingId={meetingId}
-          reflectionId={reflectionId}
-        />
-      )}
-      {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
-      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-      <SearchButton
-        onClick={togglePortal}
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-        showSearch={showSearch}
+    <>
+      <ReflectionCardRoot
+        data-cy={`${dataCy}-root`}
+        onMouseEnter={toggleHovering}
+        onMouseLeave={toggleHovering}
       >
-        <SearchIcon ref={tooltipRef} icon='search' />
-      </SearchButton>
-      {modalPortal(<SpotlightModal meeting={meeting} />)}
-      {tooltipPortal('Find similar')}
-    </ReflectionCardRoot>
+        <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
+        <ReflectionEditorWrapper
+          dataCy={`editor-wrapper`}
+          isClipped={isClipped}
+          ariaLabel='Edit this reflection'
+          editorRef={editorRef}
+          editorState={editorState}
+          onBlur={handleEditorBlur}
+          onFocus={handleEditorFocus}
+          handleReturn={handleReturn}
+          handleKeyDownFallback={handleKeyDownFallback}
+          placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
+          readOnly={readOnly}
+          setEditorState={setEditorState}
+          userSelect={userSelect}
+        />
+        {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
+        {!readOnly && (
+          <ReflectionCardDeleteButton
+            dataCy={`reflection-delete`}
+            meetingId={meetingId}
+            reflectionId={reflectionId}
+          />
+        )}
+        {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
+        <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
+        <SearchButton
+          onClick={togglePortal}
+          onMouseEnter={openTooltip}
+          onMouseLeave={closeTooltip}
+          showSearch={showSearch}
+        >
+          <SearchIcon ref={tooltipRef} icon='search' />
+        </SearchButton>
+        {tooltipPortal('Find similar')}
+      </ReflectionCardRoot>
+      {modalPortal(<SpotlightModal meeting={meeting} reflection={reflection} />)}
+    </>
   )
 }
 
@@ -270,6 +271,7 @@ export default createFragmentContainer(ReflectionCard, {
   reflection: graphql`
     fragment ReflectionCard_reflection on RetroReflection {
       ...ColorBadge_reflection
+      ...SpotlightModal_reflection
       isViewerCreator
       id
       isEditing
@@ -299,7 +301,6 @@ export default createFragmentContainer(ReflectionCard, {
           isComplete
         }
       }
-      topBarHeight
     }
   `
 })
