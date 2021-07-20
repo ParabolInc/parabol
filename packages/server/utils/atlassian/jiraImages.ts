@@ -44,13 +44,6 @@ export const updateJiraImageUrls = (
   return {updatedDescription: $.html(), imageUrlToHash}
 }
 
-export const createParabolImageUrl = (hashedImageUrl: string): string => {
-  //locally API lives on different port than the frontend application
-  return `${
-    !PROD ? `http://localhost:${process.env.SOCKET_PORT}` : ''
-  }${JIRA_IMAGES_ENDPOINT}/${hashedImageUrl}`
-}
-
 export const downloadAndCacheImages = async (
   authToken: string,
   imageUrlToHash: Map<string, string>
@@ -67,7 +60,14 @@ export const downloadAndCacheImages = async (
   await Promise.all(promises)
 }
 
-export const downloadAndCacheImage = async (
+const createParabolImageUrl = (hashedImageUrl: string): string => {
+  //locally API lives on different port than the frontend application
+  return `${
+    !PROD ? `http://localhost:${process.env.SOCKET_PORT}` : ''
+  }${JIRA_IMAGES_ENDPOINT}/${hashedImageUrl}`
+}
+
+const downloadAndCacheImage = async (
   redis: Redis.Redis,
   authToken: string,
   hashedImageUrl: string,
@@ -82,7 +82,7 @@ export const downloadAndCacheImage = async (
   }
 }
 
-export const fetchImage = async (authToken: string, url: string): Promise<Buffer> => {
+const fetchImage = async (authToken: string, url: string): Promise<Buffer> => {
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${authToken}`
@@ -91,7 +91,7 @@ export const fetchImage = async (authToken: string, url: string): Promise<Buffer
   return response.buffer()
 }
 
-export const createImageUrlHash = (imageUrl: string): string => {
+const createImageUrlHash = (imageUrl: string): string => {
   const serverSecret = process.env.SERVER_SECRET
   if (!serverSecret) {
     throw new Error('Missing SERVER_SECRET environment variable!')
