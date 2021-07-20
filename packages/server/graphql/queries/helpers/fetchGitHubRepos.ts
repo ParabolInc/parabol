@@ -59,7 +59,6 @@ const fetchGitHubRepos = async (
     endpointContext,
     info
   })
-  console.log({data, errors})
   if (errors) {
     console.error(errors[0].message)
     return []

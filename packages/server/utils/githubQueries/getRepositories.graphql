@@ -13,7 +13,7 @@ query getRepositories {
   }
 }
 
-fragment repoFrag on _xGitHubRepositoryConnection {
+fragment repoFrag on RepositoryConnection {
   nodes {
     nameWithOwner
     updatedAt

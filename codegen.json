@@ -1,10 +1,6 @@
 {
   "schema": "packages/server/utils/githubSchema.ts",
-  "documents": {
-    "packages/server/utils/githubQueries/*.graphql": {
-      "loader": "./scripts/codegenDocLoader.js"
-    }
-  },
+  "documents": "packages/server/utils/githubQueries/*.graphql",
   "generates": {
     "packages/server/types/githubTypes.ts": {
       "plugins": [

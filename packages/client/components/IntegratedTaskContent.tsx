@@ -6,7 +6,9 @@ import {IntegratedTaskContent_task} from '../__generated__/IntegratedTaskContent
 
 const Content = styled('div')({
   paddingLeft: 16,
-  paddingRight: 16
+  paddingRight: 16,
+  maxHeight: 320,
+  overflow: 'auto'
 })
 const Summary = styled('div')({
   fontWeight: 600

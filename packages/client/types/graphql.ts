@@ -45057,10 +45057,7 @@ export interface IJiraIssue {
   descriptionHTML: string;
 }
 
-export type TaskIntegration =
-  | IXGitHubIssue
-  | IJiraIssue
-  | ITaskIntegrationGitHub;
+export type TaskIntegration = IXGitHubIssue | IJiraIssue;
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration';
@@ -50122,16 +50119,6 @@ export interface IActionMeetingSettings {
    * The team these settings belong to
    */
   team: ITeam;
-}
-
-/**
- * The details associated with a task integrated with GitHub
- */
-export interface ITaskIntegrationGitHub {
-  __typename: 'TaskIntegrationGitHub';
-  id: string;
-  nameWithOwner: string | null;
-  issueNumber: number | null;
 }
 
 /**
