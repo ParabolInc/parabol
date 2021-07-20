@@ -42,7 +42,7 @@ const DiscussionThreadListEmptyState = (props: Props) => {
     : 'No comments were added here'
   const message = `Start the conversation ${
     allowTasks ? 'or add takeaway task cards' : ''
-  }to capture next steps.`
+  } to capture next steps.`
 
   return (
     <DiscussionThreadEmptyStateRoot>
