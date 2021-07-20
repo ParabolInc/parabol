@@ -76,18 +76,25 @@ const downloadAndCacheImage = async (
   try {
     redis.setBuffer(hashedImageUrl, NO_IMAGE_BUFFER)
     const imageBuffer = await fetchImage(authToken, imageUrl)
+    if (!imageBuffer) return
     redis.setBuffer(hashedImageUrl, imageBuffer, 'PX', IMAGE_TTL_MS)
   } catch (error) {
     console.error(error)
   }
 }
 
-const fetchImage = async (authToken: string, url: string): Promise<Buffer> => {
+const fetchImage = async (authToken: string, url: string): Promise<Buffer | null> => {
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${authToken}`
     }
   })
+
+  if (response.status !== 200) {
+    console.warn('Fetching image failed', response.status)
+    return null
+  }
+
   return response.buffer()
 }
 
