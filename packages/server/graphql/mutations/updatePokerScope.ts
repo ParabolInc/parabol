@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
@@ -119,7 +119,7 @@ const updatePokerScope = {
         }))
         newDiscussions.push(...discussions)
         stages.push(...newStages)
-        const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
+        const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
         const firstDimensionName = dimensions[0].name
         if (service === 'jira') {
           const existingMapper = requiredJiraMappers.find((mapper) => {

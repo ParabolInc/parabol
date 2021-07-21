@@ -1,16 +1,18 @@
-import TaskIntegration from '../../graphql/types/TaskIntegration'
+import TaskIntegration from './TaskIntegration'
 
 interface Input {
+  accessUserId: string
   nameWithOwner: string
-  issueNumber: string
+  issueNumber: string | number
 }
 
 export default class TaskIntegrationGitHub extends TaskIntegration {
   nameWithOwner: string
-  issueNumber: string
+  issueNumber: string | number
+  service!: 'github'
   constructor(input: Input) {
-    const {nameWithOwner, issueNumber} = input
-    super({service: 'github'})
+    const {accessUserId, nameWithOwner, issueNumber} = input
+    super({accessUserId, service: 'github'})
     this.nameWithOwner = nameWithOwner
     this.issueNumber = issueNumber
   }

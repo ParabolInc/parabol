@@ -4,7 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
 import {JiraFieldMenu_viewer} from '../__generated__/JiraFieldMenu_viewer.graphql'
@@ -29,7 +29,7 @@ const JiraFieldMenu = (props: Props) => {
   const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
-  const {cloudId, projectKey} = JiraServiceTaskId.split(serviceTaskId)
+  const {cloudId, projectKey} = JiraIssueId.split(serviceTaskId)
   const handleClick = (fieldName: string) => () => {
     UpdateJiraDimensionFieldMutation(atmosphere, {
       dimensionName,

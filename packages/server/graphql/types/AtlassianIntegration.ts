@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import ms from 'ms'
-import getRethink from '../../database/rethinkDriver'
 import AtlassianAuth from '../../database/types/AtlassianAuth'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
@@ -19,6 +18,8 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {JiraIssueConnection} from './JiraIssue'
 import JiraRemoteProject from './JiraRemoteProject'
 import JiraSearchQuery from './JiraSearchQuery'
+import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
+import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -26,7 +27,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid'
+      description: 'Composite key in atlassiani:teamId:userId format',
+      resolve: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId)
     },
     isActive: {
       description: 'true if the auth is valid, else false',
@@ -128,21 +130,31 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         const {error, issues} = issueRes
         const mappedIssues = issues.map((issue) => ({
           ...issue,
+          teamId,
+          userId,
           updatedAt: new Date()
         }))
-        return connectionFromTasks(mappedIssues, first, error ? {message: error} : undefined)
+        return connectionFromTasks(
+          mappedIssues,
+          first,
+          error ? {message: error.message} : undefined
+        )
       }
     },
     projects: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async ({accessToken, cloudIds, userId}, _args, {authToken}) => {
+      resolve: async ({accessToken, cloudIds, teamId, userId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         const manager = new AtlassianServerManager(accessToken)
         const projects = await manager.getAllProjects(cloudIds)
-        return projects
+        return projects.map((project) => ({
+          ...project,
+          teamId,
+          userId
+        }))
       }
     },
     jiraFields: {
@@ -158,6 +170,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         if (!accessToken) return []
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
+        if (fields instanceof Error) return []
         const VALID_TYPES = ['string', 'number']
         const INVALID_WORDS = ['color', 'name', 'description', 'environment']
         const uniqueFieldNames = Array.from(
@@ -182,20 +195,17 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({id: atlassianAuthId, jiraSearchQueries}: AtlassianAuth) => {
+      resolve: async ({teamId, userId, jiraSearchQueries}: AtlassianAuth) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
         const searchQueries = jiraSearchQueries || []
         const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
         if (unexpiredQueries.length < searchQueries.length) {
-          const r = await getRethink()
-          await r
-            .table('AtlassianAuth')
-            .get(atlassianAuthId)
-            .update({
-              jiraSearchQueries: unexpiredQueries
-            })
-            .run()
+          await updateJiraSearchQueries({
+            jiraSearchQueries: searchQueries,
+            teamId,
+            userId
+          })
         }
         return unexpiredQueries
       }

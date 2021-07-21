@@ -3,7 +3,7 @@ import React from 'react'
 import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {JiraFieldMenuRoot_stage} from '../__generated__/JiraFieldMenuRoot_stage.graphql'
 import JiraFieldMenu from './JiraFieldMenu'
 
@@ -23,7 +23,7 @@ interface Props {
 const JiraFieldMenuRoot = (props: Props) => {
   const {menuProps, stage} = props
   const {serviceTaskId, teamId} = stage
-  const {cloudId} = JiraServiceTaskId.split(serviceTaskId)
+  const {cloudId} = JiraIssueId.split(serviceTaskId)
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer

@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import JiraSearchQuery from '../../database/types/JiraSearchQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JiraSearchQueryInput from '../types/JiraSearchQueryInput'
 import PersistJiraSearchQueryPayload from '../types/PersistJiraSearchQueryPayload'
+import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 
 const persistJiraSearchQuery = {
   type: GraphQLNonNull(PersistJiraSearchQueryPayload),
@@ -27,7 +27,6 @@ const persistJiraSearchQuery = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const MAX_QUERIES = 5
@@ -45,7 +44,7 @@ const persistJiraSearchQuery = {
     atlassianAuth.jiraSearchQueries = atlassianAuth.jiraSearchQueries || []
     const {queryString, isJQL, projectKeyFilters, isRemove} = input
     projectKeyFilters.sort()
-    const {id: atlassianAuthId, jiraSearchQueries} = atlassianAuth
+    const {jiraSearchQueries} = atlassianAuth
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
     const searchQueryStrings = jiraSearchQueries.map(({queryString, projectKeyFilters}) =>
       JSON.stringify({queryString, projectKeyFilters})
@@ -78,15 +77,9 @@ const persistJiraSearchQuery = {
       jiraSearchQueries.unshift(newQuery)
       jiraSearchQueries.slice(0, MAX_QUERIES)
     }
-    const data = {atlassianAuthId}
+    const data = {teamId, userId: viewerId}
     if (isChange) {
-      await r
-        .table('AtlassianAuth')
-        .get(atlassianAuthId)
-        .update({
-          jiraSearchQueries
-        })
-        .run()
+      await updateJiraSearchQueries({jiraSearchQueries, teamId, userId: viewerId})
       publish(
         SubscriptionChannel.NOTIFICATION,
         viewerId,

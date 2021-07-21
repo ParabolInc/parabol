@@ -7,6 +7,7 @@ import {Link} from 'react-router-dom'
 import poker from '../../../static/images/illustrations/poker-mtg-color-bg.svg'
 import retrospective from '../../../static/images/illustrations/retro-mtg-color-bg.svg'
 import action from '../../../static/images/illustrations/standup-mtg-color-bg.svg'
+import useAnimatedMeetingCard from '../hooks/useAnimatedMeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
@@ -24,22 +25,20 @@ import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 
+
 const CardWrapper = styled('div')<{
   maybeTabletPlus: boolean
-  left: number
-  status: number
-  top: number
-}>(({maybeTabletPlus, left, status, top}) => ({
+  status: TransitionStatus
+}>(({maybeTabletPlus, status}) => ({
   background: Card.BACKGROUND_COLOR,
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: Elevation.CARD_SHADOW,
   flexShrink: 0,
   maxWidth: '100%',
-  transform: maybeTabletPlus ? `translate(${left}px, ${top}px)` : undefined,
-  transition: `transform 300ms ${BezierCurve.DECELERATE}, box-shadow 100ms ${BezierCurve.DECELERATE}`,
+  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
   marginBottom: maybeTabletPlus ? 0 : 16,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  position: maybeTabletPlus ? 'absolute' : 'inherit',
+  margin: 8,
   width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
   userSelect: 'none',
   ':hover': {
@@ -59,7 +58,8 @@ const Name = styled('div')({
   lineHeight: '24px',
   // add right padding to keep a long name from falling under the options button
   // add top and bottom padding to keep a single line at 32px to match the options button
-  padding: '4px 32px 4px 0'
+  padding: '4px 32px 4px 0',
+  wordBreak: 'break-word'
 })
 
 const Meta = styled('div')({
@@ -67,7 +67,8 @@ const Meta = styled('div')({
   fontSize: 14,
   lineHeight: '24px',
   // partial grid bottom padding accounts for maybe avatar whitespace and offset
-  paddingBottom: '4px'
+  paddingBottom: '4px',
+  wordBreak: 'break-word'
 })
 
 const MeetingImgWrapper = styled('div')({
@@ -112,9 +113,8 @@ const Options = styled(CardButton)({
 interface Props {
   onTransitionEnd: () => void
   meeting: MeetingCard_meeting
-  left: number
-  status: number
-  top: number
+  status: TransitionStatus
+  displayIdx: number
 }
 
 const ILLUSTRATIONS = {
@@ -130,7 +130,7 @@ const MEETING_TYPE_LABEL = {
 }
 
 const MeetingCard = (props: Props) => {
-  const {meeting, left, status, onTransitionEnd, top} = props
+  const {meeting, status, onTransitionEnd, displayIdx} = props
   const {name, team, id: meetingId, meetingType, phases} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   if (!team) {
@@ -147,6 +147,7 @@ const MeetingCard = (props: Props) => {
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const ref = useAnimatedMeetingCard(displayIdx, status)
   const popTooltip = () => {
     openTooltip()
     setTimeout(() => {
@@ -155,13 +156,13 @@ const MeetingCard = (props: Props) => {
   }
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
-  >(MenuPosition.UPPER_RIGHT)
+    >(MenuPosition.UPPER_RIGHT)
+
   return (
     <CardWrapper
-      left={left}
+      ref={ref}
       maybeTabletPlus={maybeTabletPlus}
       status={status}
-      top={top}
       onTransitionEnd={onTransitionEnd}
     >
       <MeetingImgWrapper>

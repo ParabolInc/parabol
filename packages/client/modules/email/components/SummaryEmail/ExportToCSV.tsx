@@ -9,7 +9,7 @@ import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/w
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
-import JiraServiceTaskId from '../../../../shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../../../../shared/gqlIds/JiraIssueId'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -165,7 +165,7 @@ class ExportToCSV extends Component<Props> {
       const {finalScore, dimensionRef, story, scores, serviceTaskId} = stage
       const {name} = dimensionRef!
 
-      const {issueKey} = JiraServiceTaskId.split(serviceTaskId!)
+      const {issueKey} = JiraIssueId.split(serviceTaskId!)
       const title = story?.title ?? issueKey
       const voteCount = scores!.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
@@ -304,6 +304,7 @@ class ExportToCSV extends Component<Props> {
     const {newMeeting} = viewer
     if (!newMeeting) return
     const rows = this.getRows(newMeeting)
+    if (rows.length === 0) return
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)

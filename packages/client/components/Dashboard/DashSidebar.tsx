@@ -2,9 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {PALETTE} from '../../styles/paletteV3'
-import {AppBar, Breakpoint, NavSidebar} from '../../types/constEnums'
+import {NavSidebar} from '../../types/constEnums'
 import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import LeftDashNavItem from './LeftDashNavItem'
@@ -19,13 +18,7 @@ const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   userSelect: 'none',
   transition: `all 300ms`,
   transform: isOpen ? undefined : `translateX(-${NavSidebar.WIDTH}px)`,
-  width: isOpen ? NavSidebar.WIDTH : 0,
-  [makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)]: {
-    bottom: 0,
-    left: 0,
-    top: AppBar.HEIGHT,
-    zIndex: 2
-  }
+  width: isOpen ? NavSidebar.WIDTH : 0
 }))
 
 const Contents = styled('div')({

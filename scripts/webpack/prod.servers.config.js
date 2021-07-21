@@ -45,7 +45,7 @@ module.exports = ({isDeploy}) => ({
       'parabol-client': CLIENT_ROOT,
       'parabol-server': SERVER_ROOT
     },
-    extensions: ['.js', '.json', '.ts', '.tsx'],
+    extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
     // this is run outside the server dir, but we want to favor using modules from the server dir
     modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
   },

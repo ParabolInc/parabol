@@ -17,6 +17,7 @@ export interface TaskInput {
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
+  integrationHash?: string
   meetingId?: string | null
   plaintextContent?: string
   sortOrder?: number | null
@@ -37,6 +38,7 @@ export default class Task {
   doneMeetingId?: string
   dueDate?: Date | null
   integration?: TaskIntegrationJira | TaskIntegrationGitHub
+  integrationHash?: string
   meetingId?: string
   plaintextContent: string
   sortOrder: number
@@ -60,6 +62,7 @@ export default class Task {
       createdBy,
       doneMeetingId,
       dueDate,
+      integrationHash,
       plaintextContent,
       sortOrder,
       status,
@@ -77,6 +80,7 @@ export default class Task {
     this.createdBy = createdBy
     this.doneMeetingId = doneMeetingId
     this.dueDate = dueDate || undefined
+    this.integrationHash = integrationHash
     this.meetingId = meetingId || undefined
     this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.sortOrder = sortOrder || dndNoise()

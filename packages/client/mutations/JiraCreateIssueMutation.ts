@@ -1,19 +1,19 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
-import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
-import {JiraCreateIssueMutation as TJiraCreateIssueMutation} from '~/__generated__/JiraCreateIssueMutation.graphql'
-import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
+import {commitMutation} from 'react-relay'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
+import {JiraCreateIssueMutation as TJiraCreateIssueMutation} from '~/__generated__/JiraCreateIssueMutation.graphql'
+import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
+import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
     jiraIssue {
       id
       cloudId
-      key
+      issueKey
       summary
       title
       descriptionHTML
@@ -72,7 +72,7 @@ const JiraCreateIssueMutation: StandardMutation<TJiraCreateIssueMutation> = (
       const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
         cloudId,
         url: '',
-        key: `${projectKey}-?`,
+        issueKey: `${projectKey}-?`,
         summary,
         title: summary,
         descriptionHTML: ''

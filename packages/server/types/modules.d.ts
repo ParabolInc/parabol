@@ -4,6 +4,11 @@ declare module '*.png'
 
 declare module '*.svg'
 
+declare module '*.graphql' {
+  const value: string
+  export = value
+}
+
 declare const __PRODUCTION__: string
 declare const __STATIC_IMAGES__: string
 declare const __SOCKET_PORT__: string

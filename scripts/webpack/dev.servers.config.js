@@ -13,7 +13,7 @@ const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js
 
 module.exports = {
   stats: 'minimal',
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   mode: 'development',
   // cache: {
   //   type: 'filesystem',
@@ -32,7 +32,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs',
+    libraryTarget: 'commonjs'
   },
   resolve: {
     alias: {
@@ -40,7 +40,7 @@ module.exports = {
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT
     },
-    extensions: ['.js', '.json', '.ts', '.tsx'],
+    extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
     unsafeCache: true,
     // this is run outside the server dir, but we want to favor using modules from the server dir
     modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]

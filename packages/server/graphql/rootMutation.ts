@@ -6,6 +6,7 @@ import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
+import addMissingJiraField from './mutations/addMissingJiraField'
 import addOrg from './mutations/addOrg'
 import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
@@ -45,7 +46,6 @@ import endDraggingReflection from './mutations/endDraggingReflection'
 import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
-import gitHubCreateIssue from './mutations/gitHubCreateIssue'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
@@ -60,6 +60,7 @@ import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
 import payLater from './mutations/payLater'
+import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerResetDimension from './mutations/pokerResetDimension'
@@ -131,7 +132,6 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
-import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -270,7 +270,7 @@ export default new GraphQLObjectType<any, Context>({
       movePokerTemplateScaleValue,
       updateJiraDimensionField,
       joinMeeting,
-      gitHubCreateIssue,
+      addMissingJiraField,
       setPokerSpectate,
       persistGitHubSearchQuery
     } as any)

@@ -1,3 +1,4 @@
+import {stateToHTML} from 'draft-js-export-html'
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
 import ms from 'ms'
@@ -16,12 +17,19 @@ import Reflection from '../../../server/database/types/Reflection'
 import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import ITask from '../../../server/database/types/Task'
-import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
+import JiraIssueId from '../../shared/gqlIds/JiraIssueId'
+import {
+  ExternalLinks,
+  MeetingSettingsThreshold,
+  RetroDemo,
+  SubscriptionChannel
+} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
+import splitDraftContent from '../../utils/draftjs/splitDraftContent'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
@@ -40,7 +48,6 @@ import initDB, {
   demoTeamId,
   DemoThreadableEdge,
   demoViewerId,
-  GitHubProjectKeyLookup,
   JiraProjectKeyLookup,
   RetroDemoDB
 } from './initDB'
@@ -390,13 +397,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const {content} = task
+      const {title, contentState} = splitDraftContent(content)
+      const bodyHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
         integration: {
-          __typename: 'TaskIntegrationGitHub',
+          __typename: '_xGitHubIssue',
           id: `${taskId}:GitHub`,
-          ...GitHubProjectKeyLookup[nameWithOwner],
-          issueNumber: this.getTempId('')
+          title,
+          bodyHTML,
+          repository: {
+            nameWithOwner
+          },
+          number: this.getTempId('')
         }
       })
 
@@ -414,13 +428,32 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const project = JiraProjectKeyLookup[projectKey]
+      const {cloudId, cloudName, projectName, avatar} = project
+      const issueKey = this.getTempId(`${projectKey}-`)
+      const {content} = task
+      const {title, contentState} = splitDraftContent(content)
+      const descriptionHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
+        integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          __typename: 'TaskIntegrationJira',
-          id: `${taskId}:jira`,
-          ...JiraProjectKeyLookup[projectKey],
-          issueKey: this.getTempId(`${projectKey}-`)
+          __typename: 'JiraIssue',
+          id: `jira:${taskId}`,
+          issueKey,
+          projectKey,
+          cloudId,
+          cloudName,
+          descriptionHTML,
+          summary: title,
+          url: ExternalLinks.INTEGRATIONS_JIRA,
+          project: {
+            id: `${projectKey}:id`,
+            key: projectKey,
+            name: projectName,
+            avatar,
+            cloudId
+          }
         }
       })
 

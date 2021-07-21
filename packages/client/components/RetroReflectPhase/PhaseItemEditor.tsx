@@ -33,6 +33,7 @@ interface Props {
   promptId: string
   stackTopRef: RefObject<HTMLDivElement>
   dataCy: string
+  readOnly?: boolean
 }
 
 const PhaseItemEditor = (props: Props) => {
@@ -44,7 +45,8 @@ const PhaseItemEditor = (props: Props) => {
     stackTopRef,
     cardsInFlightRef,
     forceUpdateColumn,
-    dataCy
+    dataCy,
+    readOnly
   } = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
@@ -180,6 +182,7 @@ const PhaseItemEditor = (props: Props) => {
           keyBindingFn={ensureEditing}
           placeholder='My reflection… (press enter to add)'
           setEditorState={setEditorState}
+          readOnly={readOnly}
         />
       </ReflectionCardRoot>
       {portal(

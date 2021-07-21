@@ -40,6 +40,7 @@ import signups from './queries/signups'
 import user from './queries/user'
 import users from './queries/users'
 import updateEmail from './mutations/updateEmail'
+import updateWatchlist from './mutations/updateWatchlist'
 
 const query = new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
@@ -90,7 +91,8 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       stripeUpdateCreditCard,
       stripeUpdateInvoiceItem,
       stripeInvoiceFinalized,
-      updateEmail
+      updateEmail,
+      updateWatchlist
     } as any)
 })
 

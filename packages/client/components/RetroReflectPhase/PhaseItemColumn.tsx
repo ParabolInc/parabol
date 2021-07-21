@@ -142,7 +142,7 @@ interface Props {
 const PhaseItemColumn = (props: Props) => {
   const {idx, meeting, phaseRef, prompt, isDesktop} = props
   const {id: promptId, editorIds, question, groupColor, description} = prompt
-  const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
+  const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups, endedAt} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
   const {stages: groupStages} = groupPhase
@@ -229,6 +229,7 @@ const PhaseItemColumn = (props: Props) => {
                   forceUpdateColumn={forceUpdateColumn}
                   promptId={promptId}
                   stackTopRef={stackTopRef}
+                  readOnly={!!endedAt}
                 />
               </EditorAndStatus>
             </EditorSection>
@@ -271,6 +272,7 @@ export default createFragmentContainer(PhaseItemColumn, {
       ...ReflectionStack_meeting
       facilitatorUserId
       id
+      endedAt
       localPhase {
         id
         phaseType

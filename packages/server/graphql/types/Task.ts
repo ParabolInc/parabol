@@ -6,8 +6,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import {GitHubRequest} from '../rootSchema'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -66,7 +68,48 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       resolve: (source: any) => source.editors ?? []
     },
     integration: {
-      type: TaskIntegration
+      type: TaskIntegration,
+      description: 'The reference to the single source of truth for this task',
+      resolve: async ({integration, teamId}: DBTask, _args, context, info) => {
+        const {dataLoader} = context
+        if (!integration) return null
+        const {accessUserId} = integration
+        if (integration.service === 'jira') {
+          const {cloudId, issueKey} = integration
+          return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+        } else if (integration.service === 'github') {
+          const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
+          if (!githubAuth) return null
+          const {accessToken} = githubAuth
+          const endpointContext = {accessToken}
+          const {nameWithOwner, issueNumber} = integration
+          const [repoOwner, repoName] = nameWithOwner.split('/')
+          const query = `
+                {
+                  repository(owner: "${repoOwner}", name: "${repoName}") {
+                    issue(number: ${issueNumber}) {
+                      ...info
+                    }
+                  }
+                }`
+          const githubRequest = (info.schema as any).githubRequest as GitHubRequest
+          const {data, errors} = await githubRequest({
+            query,
+            endpointContext,
+            batchRef: context,
+            info
+          })
+          if (errors) {
+            console.log(errors)
+          }
+          return data
+        }
+        return null
+      }
+    },
+    integrationHash: {
+      type: GraphQLID,
+      description: 'A hash of the integrated task'
     },
     meetingId: {
       type: GraphQLID,

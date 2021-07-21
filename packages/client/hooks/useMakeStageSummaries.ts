@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {
   TaskServiceEnum,
   useMakeStageSummaries_phase
@@ -21,7 +21,7 @@ interface StageSummary {
 const getIssueKey = (service: TaskServiceEnum, serviceTaskId: string) => {
   switch (service) {
     case 'jira':
-      return JiraServiceTaskId.split(serviceTaskId).issueKey
+      return JiraIssueId.split(serviceTaskId).issueKey
     case 'PARABOL':
       return null
     case 'github':

@@ -4,7 +4,6 @@ import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
-import {TaskIntegrationLinkIntegrationJira} from '../__generated__/TaskIntegrationLinkIntegrationJira.graphql'
 import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import JiraIssueLink from './JiraIssueLink'
 
@@ -31,13 +30,8 @@ interface Props {
 const TaskIntegrationLink = (props: Props) => {
   const {integration, dataCy, className, children, showJiraLabelPrefix} = props
   if (!integration) return null
-  const {service} = integration
-  if (service === 'jira') {
-    const {
-      issueKey,
-      projectKey,
-      cloudName
-    } = (integration as unknown) as TaskIntegrationLinkIntegrationJira
+  if (integration.__typename === 'JiraIssue') {
+    const {issueKey, projectKey, cloudName} = integration
     return (
       <JiraIssueLink
         dataCy={`${dataCy}-jira-issue-link`}
@@ -45,25 +39,27 @@ const TaskIntegrationLink = (props: Props) => {
         projectKey={projectKey}
         cloudName={cloudName}
         className={className}
-        children={children}
         showLabelPrefix={showJiraLabelPrefix}
-      />
+      >
+        {children}
+      </JiraIssueLink>
     )
-  } else if (service === 'github') {
-    const {nameWithOwner, issueNumber} = integration
+  } else if (integration.__typename === '_xGitHubIssue') {
+    const {repository, number} = integration
+    const {nameWithOwner} = repository
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
         ? 'https://github.com/ParabolInc/parabol'
-        : `https://www.github.com/${nameWithOwner}/issues/${issueNumber}`
+        : `https://www.github.com/${nameWithOwner}/issues/${number}`
     return (
       <StyledLink
         href={href}
         rel='noopener noreferrer'
         target='_blank'
-        title={`GitHub Issue #${issueNumber} on ${nameWithOwner}`}
+        title={`GitHub Issue #${number} on ${nameWithOwner}`}
         className={className}
       >
-        {`Issue #${issueNumber}`}
+        {`Issue #${number}`}
         {children}
       </StyledLink>
     )
@@ -72,7 +68,7 @@ const TaskIntegrationLink = (props: Props) => {
 }
 
 graphql`
-  fragment TaskIntegrationLinkIntegrationJira on TaskIntegrationJira {
+  fragment TaskIntegrationLinkIntegrationJira on JiraIssue {
     issueKey
     projectKey
     cloudName
@@ -80,16 +76,18 @@ graphql`
 `
 
 graphql`
-  fragment TaskIntegrationLinkIntegrationGitHub on TaskIntegrationGitHub {
-    issueNumber
-    nameWithOwner
+  fragment TaskIntegrationLinkIntegrationGitHub on _xGitHubIssue {
+    number
+    repository {
+      nameWithOwner
+    }
   }
 `
 
 export default createFragmentContainer(TaskIntegrationLink, {
   integration: graphql`
     fragment TaskIntegrationLink_integration on TaskIntegration {
-      service
+      __typename
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
     }
