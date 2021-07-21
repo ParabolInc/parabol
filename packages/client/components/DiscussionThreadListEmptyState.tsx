@@ -3,9 +3,12 @@ import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import TangledArrowSVG from './TangledArrowSVG'
 import EmptyDiscussionSVG from './EmptyDiscussionSVG'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+
+const mobileBreakpoint = makeMinWidthMediaQuery(380)
 
 const DiscussionThreadEmptyStateRoot = styled('div')({
-  padding: 24,
+  padding: '12px 24px',
   margin: 'auto',
   display: 'flex',
   flexDirection: 'column',
@@ -13,13 +16,20 @@ const DiscussionThreadEmptyStateRoot = styled('div')({
 })
 
 const EmptyDiscussionContainer = styled('div')({
-  width: 260,
-  margin: '14px auto'
+  width: 160,
+  margin: '14px auto',
+  [mobileBreakpoint]: {
+    width: 260
+  }
 })
 
 const TangledArrowContainer = styled('div')({
-  width: 76,
-  margin: '48px auto 0px auto'
+  display: 'none',
+  margin: '48px auto 0px auto',
+  [mobileBreakpoint]: {
+    width: 76,
+    display: 'block'
+  }
 })
 
 const Message = styled('div')({
