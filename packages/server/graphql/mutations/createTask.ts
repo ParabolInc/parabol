@@ -1,4 +1,4 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -7,7 +7,7 @@ import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
-import Task, {TaskStatusEnum} from '../../database/types/Task'
+import Task, {TaskServiceEnum, TaskStatusEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -18,6 +18,7 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
+import createTaskInService from './helpers/createTaskInService'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
 
 const validateTaskMeetingId = async (
@@ -160,6 +161,10 @@ const handleAddTaskNotifications = async (
   })
 }
 
+export interface CreateTaskIntegrationInput {
+  service: TaskServiceEnum
+  serviceProjectHash: string
+}
 export type CreateTaskInput = {
   newTask: {
     content?: string | null
@@ -172,6 +177,7 @@ export type CreateTaskInput = {
     status: TaskStatusEnum
     teamId: string
     userId?: string | null
+    integration?: CreateTaskIntegrationInput
   }
 }
 
@@ -191,8 +197,10 @@ export default {
   async resolve(
     _source,
     {newTask}: CreateTaskInput,
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+    context: GQLContext,
+    info: GraphQLResolveInfo
   ) {
+    const {authToken, dataLoader, socketId: mutatorId} = context
     const r = await getRethink()
     const operationId = dataLoader.share()
     const viewerId = getUserId(authToken)
@@ -222,8 +230,24 @@ export default {
       return standardError(new Error(firstError), {userId: viewerId})
     }
 
-    // RESOLUTION
     const content = normalizeRawDraftJS(newTask.content)
+
+    // see if the task already exists
+    const integrationRes = await createTaskInService(
+      newTask.integration,
+      content,
+      viewerId,
+      teamId,
+      context,
+      info
+    )
+    if (integrationRes.error) {
+      return integrationRes
+    }
+    // RESOLUTION
+
+    // push to integration
+    const {integrationHash, integration} = integrationRes
     const task = new Task({
       content,
       createdBy: viewerId,
@@ -232,6 +256,8 @@ export default {
       status,
       teamId,
       discussionId,
+      integrationHash,
+      integration,
       threadSortOrder,
       threadParentId,
       userId

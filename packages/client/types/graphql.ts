@@ -52812,6 +52812,19 @@ export interface ICreateTaskInput {
    * userId, the owner of the task. This can be null if the task is not assigned to anyone.
    */
   userId?: string | null;
+  integration?: ICreateTaskIntegrationInput | null;
+}
+
+export interface ICreateTaskIntegrationInput {
+  /**
+   * The service to push this new task to
+   */
+  service: TaskServiceEnum;
+
+  /**
+   * The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
+   */
+  serviceProjectHash: string;
 }
 
 /**
