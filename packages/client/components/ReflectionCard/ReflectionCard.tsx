@@ -96,7 +96,7 @@ const ReflectionCard = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.UPPER_CENTER)
-  const {togglePortal, modalPortal} = useModal()
+  const {closePortal, togglePortal, modalPortal} = useModal()
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -261,7 +261,9 @@ const ReflectionCard = (props: Props) => {
         </SearchButton>
         {tooltipPortal('Find similar')}
       </ReflectionCardRoot>
-      {modalPortal(<SpotlightModal meeting={meeting} reflection={reflection} />)}
+      {modalPortal(
+        <SpotlightModal closePortal={closePortal} meeting={meeting} reflection={reflection} />
+      )}
     </>
   )
 }
