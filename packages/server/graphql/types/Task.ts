@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
@@ -85,7 +86,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           const {accessToken} = githubAuth
           const endpointContext = {accessToken}
           const {nameWithOwner, issueNumber} = integration
-          const [repoOwner, repoName] = nameWithOwner.split('/')
+          const {repoOwner, repoName} = GitHubRepoId.split(nameWithOwner)
           const query = `
                 {
                   repository(owner: "${repoOwner}", name: "${repoName}") {
