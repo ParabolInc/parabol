@@ -1,4 +1,5 @@
 import cheerio from 'cheerio'
+import base64url from 'base64url'
 import crypto from 'crypto'
 import fetch from 'node-fetch'
 import ms from 'ms'
@@ -87,19 +88,10 @@ const fetchImage = async (authToken: string, url: string) => {
 }
 
 const createImageUrlHash = (imageUrl: string) => {
-  return toBase64url(
+  return base64url.encode(
     crypto
       .createHmac('sha256', serverSecret)
       .update(imageUrl)
       .digest('base64')
   )
-}
-
-// https://en.wikipedia.org/wiki/Base64#The_URL_applications
-// https://www.lytzen.name/2019/09/25/can-a-hash-have-a-slash.html
-const toBase64url = (base64: string) => {
-  return base64
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
 }
