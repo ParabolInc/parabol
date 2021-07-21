@@ -83,10 +83,9 @@ const getReadOnly = (
 
 const ReflectionCard = (props: Props) => {
   const {meeting, reflection, isClipped, stackCount, showReactji, dataCy} = props
-  const {meetingId, reactjis} = reflection
+  const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
-  const {id: reflectionId, content, promptId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -218,6 +217,7 @@ const ReflectionCard = (props: Props) => {
 
   const showSpotlight = true
   const showSearch = phaseType === 'group' && showSpotlight && (isHovering || !isDesktop)
+  if (!meeting) return null
   return (
     <>
       <ReflectionCardRoot

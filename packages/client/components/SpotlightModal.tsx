@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
+import {SpotlightModal_reflection} from '~/__generated__/SpotlightModal_reflection.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import ReflectionCard from './ReflectionCard/ReflectionCard'
 import MenuItemLabel from './MenuItemLabel'
@@ -11,12 +12,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import {ElementWidth} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
-
-interface Props {
-  closePortal: () => void
-  meeting: SpotlightModal_meeting
-  reflection: SpotlightModal_reflection
-}
+import purpleLines from '../styles/theme/images/purpleLines.svg'
 
 const ModalContainer = styled('div')({
   background: '#FFFF',
@@ -55,17 +51,12 @@ const Title = styled('div')({
   height: 'fit-content'
 })
 
-const EmptyState = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column'
-})
-
 const Content = styled('div')({
   width: '30%',
   display: 'flex',
   justifyContent: 'center',
-  flexWrap: 'wrap'
+  flexWrap: 'wrap',
+  alignItems: 'center'
 })
 
 const Message = styled('div')({
@@ -121,8 +112,8 @@ const CardWrapper = styled('div')({
 const StyledCloseButton = styled(PlainButton)({
   height: 24,
   position: 'absolute',
-  top: 6,
-  right: 6
+  top: 8,
+  right: 8
 })
 
 const CloseIcon = styled(Icon)({
@@ -133,6 +124,40 @@ const CloseIcon = styled(Icon)({
     color: PALETTE.SLATE_800
   }
 })
+
+const EmptyState = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  flexWrap: 'wrap'
+})
+
+const MessageWrapper = styled('div')({
+  display: 'flex',
+  width: '80%',
+  flexDirection: 'column',
+  height: 'fit-content'
+})
+
+const Emoji = styled('div')({
+  textAlign: 'center',
+  paddingBottom: 4,
+  width: '100%'
+})
+
+const Img = styled('img')<{isFlipped?: boolean}>(({isFlipped}) => ({
+  display: 'block',
+  width: 24,
+  height: 24,
+  transform: isFlipped ? `scaleX(-1)` : `scaleX(1)`
+}))
+
+interface Props {
+  closePortal: () => void
+  meeting: SpotlightModal_meeting
+  reflection: SpotlightModal_reflection
+}
 
 const SpotlightModal = (props: Props) => {
   const {closePortal, meeting, reflection} = props
@@ -166,9 +191,13 @@ const SpotlightModal = (props: Props) => {
         <Content>
           {reflectionsCountDummy === 0 ? (
             <EmptyState>
-              <Message>😔</Message>
-              <Message>No reflections match this card.</Message>
-              <Message>Try searching for specific keywords.</Message>
+              <Emoji>😔</Emoji>
+              <Img src={purpleLines} />
+              <MessageWrapper>
+                <Message>No reflections match this card.</Message>
+                <Message>Try searching for specific keywords.</Message>
+              </MessageWrapper>
+              <Img isFlipped src={purpleLines} />
             </EmptyState>
           ) : null}
         </Content>
