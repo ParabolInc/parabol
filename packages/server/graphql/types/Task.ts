@@ -58,8 +58,10 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     },
     estimates: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
-      description: 'A list of estimates for the story, created in a poker meeting',
-      resolve: (source: any) => source.estimates ?? []
+      description: 'A list of the most recent estimates for the task',
+      resolve: async ({id: taskId}, _args, {dataLoader}) => {
+        return dataLoader.get('latestTaskEstimates').load(taskId)
+      }
     },
     editors: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEditorDetails))),

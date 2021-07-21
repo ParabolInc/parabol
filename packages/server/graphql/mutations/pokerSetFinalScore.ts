@@ -4,10 +4,10 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import appOrigin from '../../appOrigin'
-import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
+import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -36,7 +36,6 @@ const pokerSetFinalScore = {
     {meetingId, stageId, finalScore},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -92,11 +91,12 @@ const pokerSetFinalScore = {
 
     // RESOLUTION
     // update integration
-    const {creatorUserId, dimensionRefIdx, service, serviceTaskId} = stage
+    const {creatorUserId, dimensionRefIdx, service, serviceTaskId, discussionId} = stage
     const templateRef = await getTemplateRefById(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
+    let jiraFieldId: string | undefined = undefined
     if (service === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
       if (!auth) {
@@ -127,27 +127,25 @@ const pokerSetFinalScore = {
         }
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
         const {fieldId} = dimensionField!
+        jiraFieldId = fieldId
         try {
           await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId)
         } catch (e) {
           return {error: {message: e.message}}
         }
       }
-    } else {
-      // this is a parabol task
-      await r
-        .table('Task')
-        .get(serviceTaskId)
-        .update((row) => ({
-          estimates: row('estimates')
-            .default([])
-            .append({
-              name: dimensionName,
-              label: finalScore
-            })
-        }))
-        .run()
     }
+    await insertTaskEstimate({
+      changeSource: 'meeting',
+      discussionId,
+      jiraFieldId,
+      label: finalScore,
+      name: dimensionName,
+      meetingId,
+      stageId,
+      taskId: serviceTaskId,
+      userId: viewerId
+    })
     // Integration push success! update DB
     // update cache
     stage.finalScore = finalScore

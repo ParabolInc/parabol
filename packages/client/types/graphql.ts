@@ -44431,7 +44431,7 @@ export interface ITask {
   dueDate: any | null;
 
   /**
-   * A list of estimates for the story, created in a poker meeting
+   * A list of the most recent estimates for the task
    */
   estimates: Array<ITaskEstimate>;
 
@@ -46433,6 +46433,21 @@ export interface ITaskEstimate {
   __typename: 'TaskEstimate';
 
   /**
+   * The ID of the estimate
+   */
+  id: string;
+
+  /**
+   * The timestamp the estimate was created
+   */
+  createdAt: any;
+
+  /**
+   * The source that a change came in through
+   */
+  changeSource: ChangeSourceEnum;
+
+  /**
    * The name of the estimate dimension
    */
   name: string;
@@ -46441,6 +46456,45 @@ export interface ITaskEstimate {
    * The human-readable label for the estimate
    */
   label: string;
+
+  /**
+   * *The taskId that the estimate refers to
+   */
+  taskId: string;
+
+  /**
+   * The userId that added the estimate
+   */
+  userId: string;
+
+  /**
+   * *The meetingId that the estimate occured in, if any
+   */
+  meetingId: string | null;
+
+  /**
+   * The meeting stageId the estimate occurred in, if any
+   */
+  stageId: string | null;
+
+  /**
+   * The discussionId where the estimated was discussed
+   */
+  discussionId: string | null;
+
+  /**
+   * If the task comes from jira, this is the jira field that the estimate refers to
+   */
+  jiraFieldId: string | null;
+}
+
+/**
+ * The source that a change to a record came in through
+ */
+export const enum ChangeSourceEnum {
+  meeting = 'meeting',
+  task = 'task',
+  external = 'external'
 }
 
 export interface ITaskEditorDetails {
