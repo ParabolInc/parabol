@@ -1,18 +1,15 @@
 import cheerio from 'cheerio'
 import crypto from 'crypto'
 import fetch from 'node-fetch'
-import Redis from 'ioredis'
 import ms from 'ms'
 import getRedis from '../getRedis'
-import PROD from '../../PROD'
 
 export const NO_IMAGE_BUFFER = Buffer.from('X')
 export const IMAGE_TTL_MS = ms('2h')
-export const JIRA_IMAGES_ENDPOINT = '/jira-attachemenets'
 
-type UpdateJiraImagesResult = {
-  updatedDescription: string
-  imageUrlToHash: Map<string, string>
+const serverSecret = process.env.SERVER_SECRET
+if (!serverSecret) {
+  throw new Error('Missing SERVER_SECRET environment variable!')
 }
 
 /**
@@ -20,11 +17,8 @@ type UpdateJiraImagesResult = {
  * @param {string} descriptionHTML - HTML string of related Jira issue description
  * @returns {UpdateJiraImagesResult} - Map of orginal image urls to hashed image urls and updated description
  */
-export const updateJiraImageUrls = (
-  cloudId: string,
-  descriptionHTML: string
-): UpdateJiraImagesResult => {
-  const imageUrlToHash: Map<string, string> = new Map()
+export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) => {
+  const imageUrlToHash = {} as Record<string, string>
   const projectBaseUrl = `https://api.atlassian.com/ex/jira/${cloudId}`
 
   const $ = cheerio.load(descriptionHTML)
@@ -36,7 +30,7 @@ export const updateJiraImageUrls = (
 
       const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
       const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
-      imageUrlToHash.set(absoluteImageUrl, hashedImageUrl)
+      imageUrlToHash[absoluteImageUrl] = hashedImageUrl
 
       $(img).attr('src', createParabolImageUrl(hashedImageUrl))
     })
@@ -46,44 +40,38 @@ export const updateJiraImageUrls = (
 
 export const downloadAndCacheImages = async (
   authToken: string,
-  imageUrlToHash: Map<string, string>
+  imageUrlToHash: Record<string, string>
 ) => {
-  const redis = getRedis()
-  const promises: Promise<void>[] = []
-  for (const [imageUrl, hashedImageUrl] of imageUrlToHash) {
-    const cachedImage = await redis.get(hashedImageUrl)
-    if (cachedImage) return // skip if already cached
-
-    promises.push(downloadAndCacheImage(redis, authToken, hashedImageUrl, imageUrl))
-  }
-
-  await Promise.all(promises)
+  await Promise.all(
+    Object.entries(imageUrlToHash).map(([imageUrl, hash]) =>
+      downloadAndCacheImage(authToken, hash, imageUrl)
+    )
+  )
 }
 
-const createParabolImageUrl = (hashedImageUrl: string): string => {
-  //locally API lives on different port than the frontend application
-  return `${
-    !PROD ? `http://localhost:${process.env.SOCKET_PORT}` : ''
-  }${JIRA_IMAGES_ENDPOINT}/${hashedImageUrl}`
+const createParabolImageUrl = (hashedImageUrl: string) => {
+  return `/jira-attachements/${hashedImageUrl}`
 }
 
 const downloadAndCacheImage = async (
-  redis: Redis.Redis,
   authToken: string,
   hashedImageUrl: string,
   imageUrl: string
 ) => {
-  try {
-    redis.setBuffer(hashedImageUrl, NO_IMAGE_BUFFER)
-    const imageBuffer = await fetchImage(authToken, imageUrl)
-    if (!imageBuffer) return
-    redis.setBuffer(hashedImageUrl, imageBuffer, 'PX', IMAGE_TTL_MS)
-  } catch (error) {
-    console.error(error)
+  const redis = getRedis()
+  const isImageAlreadyCached = await redis.exists(hashedImageUrl)
+  if (isImageAlreadyCached) return
+
+  redis.setBuffer(hashedImageUrl, NO_IMAGE_BUFFER, 'PX', IMAGE_TTL_MS)
+  const imageBuffer = await fetchImage(authToken, imageUrl)
+  if (!imageBuffer) {
+    await redis.del(hashedImageUrl)
+    return
   }
+  redis.setBuffer(hashedImageUrl, imageBuffer, 'PX', IMAGE_TTL_MS)
 }
 
-const fetchImage = async (authToken: string, url: string): Promise<Buffer | null> => {
+const fetchImage = async (authToken: string, url: string) => {
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${authToken}`
@@ -98,14 +86,20 @@ const fetchImage = async (authToken: string, url: string): Promise<Buffer | null
   return response.buffer()
 }
 
-const createImageUrlHash = (imageUrl: string): string => {
-  const serverSecret = process.env.SERVER_SECRET
-  if (!serverSecret) {
-    throw new Error('Missing SERVER_SECRET environment variable!')
-  }
+const createImageUrlHash = (imageUrl: string) => {
+  return toBase64url(
+    crypto
+      .createHmac('sha256', serverSecret)
+      .update(imageUrl)
+      .digest('base64')
+  )
+}
 
-  return crypto
-    .createHmac('sha256', serverSecret)
-    .update(imageUrl)
-    .digest('base64')
+// https://en.wikipedia.org/wiki/Base64#The_URL_applications
+// https://www.lytzen.name/2019/09/25/can-a-hash-have-a-slash.html
+const toBase64url = (base64: string) => {
+  return base64
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
 }

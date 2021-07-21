@@ -23,7 +23,6 @@ import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 import PROD from './PROD'
 import {r} from 'rethinkdb-ts'
-import {JIRA_IMAGES_ENDPOINT} from './utils/atlassian/jiraImages'
 
 if (PROD) {
   tracer.init()
@@ -47,7 +46,7 @@ uws
   .get('/sse/*', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
   .get('/self-hosted/*', selfHostedHandler)
-  .get(`${JIRA_IMAGES_ENDPOINT}/*`, jiraImagesHandler)
+  .get('/jira-attachements/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)

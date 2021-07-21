@@ -1,37 +1,30 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
-import {NO_IMAGE_BUFFER, JIRA_IMAGES_ENDPOINT} from './utils/atlassian/jiraImages'
+import {NO_IMAGE_BUFFER} from './utils/atlassian/jiraImages'
 import getRedis from './utils/getRedis'
 
-const WAIT_MS = 500
-
-function wait(delayMS: number) {
-  return new Promise((resolve) => setTimeout(resolve, delayMS))
-}
-
-const getImageFromCache = async (fileName: string) => {
+const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
   const redis = getRedis()
-  let imageBuffer = await redis.getBuffer(fileName)
-  if (imageBuffer.compare(NO_IMAGE_BUFFER) === 0) {
-    await wait(WAIT_MS) // try again after 500 ms
-    imageBuffer = await redis.getBuffer(fileName)
+  const imageBuffer = await redis.getBuffer(fileName)
+  if (imageBuffer === null || imageBuffer.length === 0) return NO_IMAGE_BUFFER
+  if (imageBuffer.length > 1) return imageBuffer
+  if (tryAgain) {
+    await sleep(500)
+    return getImageFromCache(fileName, false)
   }
-  return imageBuffer
+  return NO_IMAGE_BUFFER
 }
 
-const ROUTE = `${JIRA_IMAGES_ENDPOINT}/`
 const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  const fileName = req.getUrl().slice(ROUTE.length)
-  const imageBuffer = await getImageFromCache(fileName)
-  if (imageBuffer.compare(NO_IMAGE_BUFFER) === 0) {
-    //TODO: send placeholder image
-  }
-
-  res
-    .writeStatus('200')
-    .writeHeader('Content-Type', 'image/png')
-    .writeHeader('Content-Length', imageBuffer.length.toString())
-    .end(imageBuffer)
+  const fileName = req.getParameter(0)
+  const imageBuffer = await getImageFromCache(fileName, true)
+  res.cork(() => {
+    res
+      .writeStatus('200')
+      .writeHeader('Content-Type', 'image/png')
+      .end(imageBuffer)
+  })
 })
 
 export default jiraImagesHandler
