@@ -38,6 +38,11 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       description:
         'The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue'
     },
+    // taskId will replace service + serviceTaskId in a subsequent PR
+    taskId: {
+      type: GraphQLID,
+      description: 'The ID that points to the issue that exists in parabol'
+    },
     service: {
       type: GraphQLNonNull(TaskServiceEnum),
       description: 'The service the task is connected to',

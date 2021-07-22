@@ -48330,6 +48330,11 @@ export interface IEstimateStage {
   creatorUserId: string;
 
   /**
+   * The ID that points to the issue that exists in parabol
+   */
+  taskId: string | null;
+
+  /**
    * The service the task is connected to
    */
   service: TaskServiceEnum;

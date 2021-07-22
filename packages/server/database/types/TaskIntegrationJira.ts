@@ -1,4 +1,4 @@
-import TaskIntegration from './TaskIntegration'
+import BaseTaskIntegration from './BaseTaskIntegration'
 
 interface Input {
   accessUserId: string
@@ -6,7 +6,7 @@ interface Input {
   issueKey: string
 }
 
-export default class TaskIntegrationJira extends TaskIntegration {
+export default class TaskIntegrationJira extends BaseTaskIntegration {
   cloudId: string
   issueKey: string
   service!: 'jira'
