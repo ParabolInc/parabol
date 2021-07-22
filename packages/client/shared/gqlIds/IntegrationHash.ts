@@ -23,11 +23,12 @@ const IntegrationHash = {
       }
     }
     if (service === 'jira') {
-      const {cloudId, issueKey} = JiraIssueId.split(integrationHash)
+      const {cloudId, issueKey, projectKey} = JiraIssueId.split(integrationHash)
       return {
         service,
         cloudId,
-        issueKey
+        issueKey,
+        projectKey
       }
     }
     return null

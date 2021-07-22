@@ -151,7 +151,15 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       type: Story,
       description:
         'the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed',
-      resolve: async ({service, serviceTaskId, teamId, creatorUserId}, _args, {dataLoader}) => {
+      resolve: async (
+        {service, serviceTaskId, teamId, creatorUserId, taskId},
+        _args,
+        {dataLoader}
+      ) => {
+        if (taskId) {
+          return dataLoader.get('tasks').load(taskId)
+        }
+        // DEPRECATED & WILL BE REMOVED SOON
         if (service === 'jira') {
           const {cloudId, issueKey} = JiraIssueId.split(serviceTaskId)
           return dataLoader

@@ -7,19 +7,32 @@ const useGetUsedServiceTaskIds = (phaseRef: any) => {
   return useMemo(() => {
     const estimatePhase = readInlineData<useGetUsedServiceTaskIds_phase>(
       graphql`
-      fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
-        stages {
-          serviceTaskId
+        fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
+          stages {
+            serviceTaskId
+            story {
+              ... on Task {
+                __typename
+                integrationHash
+              }
+            }
+          }
         }
-      }
-    `,
+      `,
       phaseRef
     )
     const {stages} = estimatePhase
     const usedServiceTaskIds = new Set<string>()
     stages.forEach((stage) => {
-      const {serviceTaskId} = stage
+      const {serviceTaskId, story} = stage
+      console.log({serviceTaskId, story})
       usedServiceTaskIds.add(serviceTaskId)
+      if (story?.__typename === 'Task') {
+        const {integrationHash} = story
+        if (integrationHash) {
+          usedServiceTaskIds.add(integrationHash)
+        }
+      }
     })
     return usedServiceTaskIds
   }, [phaseRef])
