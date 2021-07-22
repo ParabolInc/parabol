@@ -5,24 +5,25 @@ import {createFragmentContainer} from 'react-relay'
 import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
 import {SpotlightModal_reflection} from '~/__generated__/SpotlightModal_reflection.graphql'
 import {PALETTE} from '../styles/paletteV3'
-import ReflectionCard from './ReflectionCard/ReflectionCard'
 import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import {ElementWidth} from '../types/constEnums'
+import {Breakpoint, ElementWidth} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
 import purpleLines from '../styles/theme/images/purpleLines.svg'
+import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
+import useBreakpoint from '../hooks/useBreakpoint'
 
-const ModalContainer = styled('div')({
+const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   background: '#FFFF',
-  width: '80vw',
+  width: isDesktop ? '80vw' : '90vw',
   height: '80vh',
   display: 'flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
   borderRadius: 8
-})
+}))
 
 const SelectedReflection = styled('div')({
   display: 'flex',
@@ -36,7 +37,7 @@ const SelectedReflection = styled('div')({
   borderRadius: '8px 8px 0px 0px'
 })
 
-const SimilarReflections = styled('div')({
+const SimilarReflectionGroups = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   height: '66.6%',
@@ -48,11 +49,13 @@ const Title = styled('div')({
   color: PALETTE.SLATE_800,
   fontSize: 16,
   fontWeight: 600,
-  height: 'fit-content'
+  height: 'fit-content',
+  width: '100%',
+  textAlign: 'center'
 })
 
 const Content = styled('div')({
-  width: '30%',
+  width: 'fit-content',
   display: 'flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
@@ -72,15 +75,16 @@ const Message = styled('div')({
 
 const SearchInput = styled('input')({
   appearance: 'none',
+  border: `1px solid ${PALETTE.SKY_500}`,
   borderRadius: 4,
+  boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`,
+  color: PALETTE.SLATE_700,
   display: 'block',
   fontSize: 14,
   lineHeight: '24px',
   outline: 'none',
   padding: '6px 0 6px 39px',
-  width: '100%',
-  border: `1px solid ${PALETTE.SKY_500}`,
-  boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`
+  width: '100%'
 })
 
 const SearchItem = styled(MenuItemLabel)({
@@ -95,7 +99,6 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   position: 'absolute',
   left: 8,
   margin: 0,
-  pointerEvents: 'none',
   top: 8
 })
 
@@ -135,7 +138,7 @@ const EmptyState = styled('div')({
 
 const MessageWrapper = styled('div')({
   display: 'flex',
-  width: '80%',
+  padding: '0px 8px',
   flexDirection: 'column',
   height: 'fit-content'
 })
@@ -161,14 +164,26 @@ interface Props {
 
 const SpotlightModal = (props: Props) => {
   const {closePortal, meeting, reflection} = props
-  const reflectionsCountDummy = 0
+  const reflectionGroupsCount = 0
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') closePortal()
+  }
   return (
-    <ModalContainer>
+    <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
       <SelectedReflection>
         <Content>
           <Title>Find cards with similar reflections</Title>
           <CardWrapper>
-            <ReflectionCard reflection={reflection} meeting={meeting} />
+            <DraggableReflectionCard
+              isReadOnly
+              hideSpotlight
+              isDraggable={false}
+              staticIdx={0}
+              staticReflections={[reflection]}
+              reflection={reflection}
+              meeting={meeting}
+            />
           </CardWrapper>
         </Content>
         <SearchItem>
@@ -187,9 +202,9 @@ const SpotlightModal = (props: Props) => {
           <CloseIcon>close</CloseIcon>
         </StyledCloseButton>
       </SelectedReflection>
-      <SimilarReflections>
+      <SimilarReflectionGroups>
         <Content>
-          {reflectionsCountDummy === 0 ? (
+          {reflectionGroupsCount === 0 ? (
             <EmptyState>
               <Emoji>😔</Emoji>
               <Img src={purpleLines} />
@@ -201,7 +216,7 @@ const SpotlightModal = (props: Props) => {
             </EmptyState>
           ) : null}
         </Content>
-      </SimilarReflections>
+      </SimilarReflectionGroups>
     </ModalContainer>
   )
 }
@@ -228,6 +243,7 @@ export default createFragmentContainer(SpotlightModal, {
   meeting: graphql`
     fragment SpotlightModal_meeting on RetrospectiveMeeting {
       id
+      teamId
       localStage {
         isComplete
         phaseType

@@ -58,7 +58,9 @@ const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) =>
 }))
 
 interface Props {
+  hideSpotlight?: boolean
   isClipped?: boolean
+  isReadOnly?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
   stackCount?: number
@@ -82,9 +84,19 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meeting, reflection, isClipped, stackCount, showReactji, dataCy} = props
+  const {
+    meeting,
+    reflection,
+    hideSpotlight,
+    isClipped,
+    isReadOnly,
+    stackCount,
+    showReactji,
+    dataCy
+  } = props
   const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
+  const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
@@ -185,7 +197,9 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
+  const readOnly = isReadOnly
+    ? isReadOnly
+    : getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
   const onToggleReactji = (emojiId: string) => {
@@ -211,19 +225,20 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
 
-  const toggleHovering = () => {
-    setIsHovering(!isHovering)
-  }
-
   const showSpotlight = true
-  const showSearch = phaseType === 'group' && showSpotlight && (isHovering || !isDesktop)
+  const showSearch =
+    phaseType === 'group' &&
+    !hideSpotlight &&
+    !isComplete &&
+    showSpotlight &&
+    (isHovering || !isDesktop)
   if (!meeting) return null
   return (
     <>
       <ReflectionCardRoot
         data-cy={`${dataCy}-root`}
-        onMouseEnter={toggleHovering}
-        onMouseLeave={toggleHovering}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
         <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
         <ReflectionEditorWrapper

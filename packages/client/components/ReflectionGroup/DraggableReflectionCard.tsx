@@ -45,8 +45,10 @@ const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDragga
 export type ReflectionDragState = ReturnType<typeof makeDragState>
 
 interface Props {
+  hideSpotlight?: boolean
   isClipped?: boolean
   isDraggable?: boolean
+  isReadOnly?: boolean
   meeting: DraggableReflectionCard_meeting
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
@@ -65,7 +67,9 @@ export interface TargetBBox {
 
 const DraggableReflectionCard = (props: Props) => {
   const {
+    hideSpotlight,
     isClipped,
+    isReadOnly,
     reflection,
     staticIdx,
     staticReflections,
@@ -102,7 +106,9 @@ const DraggableReflectionCard = (props: Props) => {
       <ReflectionCard
         dataCy={dataCy}
         reflection={reflection}
+        hideSpotlight={hideSpotlight}
         isClipped={isClipped}
+        isReadOnly={isReadOnly}
         meeting={meeting}
       />
     </DragWrapper>
