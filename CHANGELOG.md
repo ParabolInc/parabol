@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.22.0 2021-Jul-22
+### Added
+
+- Added FLIP animations to meeting cards  (#5138)
+- Added emails and domain to updateWatchlist (#5144)
+- Added TaskEstimate table (#5198)
+
+### Fixed
+- Fixed long meeting names throwing off meetings view (#5118)
+- Fixed dashboard padding (#5129)
+- Fixed summary review not working properly (#5137)
+
+### Changed
+
+- Jira Task sync (#5095)
+- Task sync GitHub (#5114)
+- Backfill email field for deleted users in RethinkDB to match with PG (#5170)
+- createTask accepts optional integration (#5199)
+
 ## 6.21.0 2021-Jul-15
 ### Added
 
