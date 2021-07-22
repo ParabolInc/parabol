@@ -20,7 +20,9 @@ export interface IUpdateTeamByOrgIdQueryParams {
 }
 
 /** 'UpdateTeamByOrgIdQuery' return type */
-export type IUpdateTeamByOrgIdQueryResult = void
+export interface IUpdateTeamByOrgIdQueryResult {
+  id: string
+}
 
 /** 'UpdateTeamByOrgIdQuery' query type */
 export interface IUpdateTeamByOrgIdQueryQuery {
@@ -89,8 +91,8 @@ const updateTeamByOrgIdQueryIR: any = {
   },
   statement: {
     body:
-      'UPDATE "Team" SET\n  "name" = COALESCE(:name, "name"),\n  "isArchived" = COALESCE(:isArchived, "isArchived"),\n  "isPaid" = COALESCE(:isPaid, "isPaid"),\n  "jiraDimensionFields" = COALESCE(:jiraDimensionFields, "jiraDimensionFields"),\n  "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),\n  "tier" = COALESCE(:tier, "tier"),\n  "orgId" = COALESCE(:orgId, "orgId"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt")\nWHERE "orgId" = :orgId',
-    loc: {a: 37, b: 483, line: 4, col: 0}
+      'UPDATE "Team" SET\n  "name" = COALESCE(:name, "name"),\n  "isArchived" = COALESCE(:isArchived, "isArchived"),\n  "isPaid" = COALESCE(:isPaid, "isPaid"),\n  "jiraDimensionFields" = COALESCE(:jiraDimensionFields, "jiraDimensionFields"),\n  "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),\n  "tier" = COALESCE(:tier, "tier"),\n  "orgId" = COALESCE(:orgId, "orgId"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt")\nWHERE "orgId" = :orgId\nRETURNING "id"',
+    loc: {a: 37, b: 498, line: 4, col: 0}
   }
 }
 
@@ -107,6 +109,7 @@ const updateTeamByOrgIdQueryIR: any = {
  *   "orgId" = COALESCE(:orgId, "orgId"),
  *   "updatedAt" = COALESCE(:updatedAt, "updatedAt")
  * WHERE "orgId" = :orgId
+ * RETURNING "id"
  * ```
  */
 export const updateTeamByOrgIdQuery = new PreparedQuery<

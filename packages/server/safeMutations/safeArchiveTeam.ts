@@ -22,7 +22,7 @@ const safeArchiveTeam = async (teamId: string) => {
     isArchived: true,
     updatedAt: new Date()
   }
-  const [rethinkResult] = await Promise.all([
+  const [rethinkResult, pgResult] = await Promise.all([
     r({
       team: (r
         .table('Team')
@@ -49,7 +49,8 @@ const safeArchiveTeam = async (teamId: string) => {
     }).run(),
     updateTeamByTeamId(updates, teamId)
   ])
-  return {...rethinkResult, users}
+  const result = Object.assign({}, rethinkResult, {team: pgResult})
+  return {...result, users}
 }
 
 export default safeArchiveTeam
