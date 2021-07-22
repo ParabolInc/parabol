@@ -138,14 +138,14 @@ const updatePokerScope = {
     )
 
     additiveUpdatesWithTaskIds.forEach((update) => {
-      const {service, serviceTaskId, taskId} = update
+      const {serviceTaskId, taskId} = update
       const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
       const newStages = dimensions.map(
         (_, idx) =>
           new EstimateStage({
             creatorUserId: viewerId,
-            service,
-            serviceTaskId,
+            service: 'PARABOL',
+            serviceTaskId: taskId,
             sortOrder: lastSortOrder + 1,
             taskId,
             durations: undefined,

@@ -25,7 +25,6 @@ const useGetUsedServiceTaskIds = (phaseRef: any) => {
     const usedServiceTaskIds = new Set<string>()
     stages.forEach((stage) => {
       const {serviceTaskId, story} = stage
-      console.log({serviceTaskId, story})
       usedServiceTaskIds.add(serviceTaskId)
       if (story?.__typename === 'Task') {
         const {integrationHash} = story
