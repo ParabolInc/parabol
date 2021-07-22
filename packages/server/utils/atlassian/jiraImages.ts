@@ -1,9 +1,10 @@
 import cheerio from 'cheerio'
 import base64url from 'base64url'
 import crypto from 'crypto'
-import fetch from 'node-fetch'
+import path from 'path'
 import ms from 'ms'
 import getRedis from '../getRedis'
+import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 
 export const NO_IMAGE_BUFFER = Buffer.from('X')
 export const IMAGE_TTL_MS = ms('2h')
@@ -15,8 +16,9 @@ if (!serverSecret) {
 
 /**
  * Parses a JIRA issue description and replaces the image urls with Parabol's image urls
+ * where the image urls are hashed and look like this: `/jira-attachements/<hash>.[ext]`
  * @param {string} descriptionHTML - HTML string of related Jira issue description
- * @returns {UpdateJiraImagesResult} - Map of orginal image urls to hashed image urls and updated description
+ * @returns {UpdateJiraImagesResult} - Record of orginal image urls to hashed image urls
  */
 export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) => {
   const imageUrlToHash = {} as Record<string, string>
@@ -30,22 +32,25 @@ export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) =>
       if (!imageUrl) return
 
       const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
-      const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
-      imageUrlToHash[absoluteImageUrl] = hashedImageUrl
+      const extname = path.extname(absoluteImageUrl)
+      const imageUrlWithoutExt = absoluteImageUrl.replace(extname, '')
+      const hashedImageUrl = createImageUrlHash(imageUrlWithoutExt)
+      const hashedImageWithExt = `${hashedImageUrl}${extname}`
+      imageUrlToHash[absoluteImageUrl] = hashedImageWithExt
 
-      $(img).attr('src', createParabolImageUrl(hashedImageUrl))
+      $(img).attr('src', createParabolImageUrl(hashedImageWithExt))
     })
 
   return {updatedDescription: $.html(), imageUrlToHash}
 }
 
 export const downloadAndCacheImages = async (
-  authToken: string,
+  manager: AtlassianManager,
   imageUrlToHash: Record<string, string>
 ) => {
   await Promise.all(
     Object.entries(imageUrlToHash).map(([imageUrl, hash]) =>
-      downloadAndCacheImage(authToken, hash, imageUrl)
+      downloadAndCacheImage(manager, hash, imageUrl)
     )
   )
 }
@@ -55,7 +60,7 @@ const createParabolImageUrl = (hashedImageUrl: string) => {
 }
 
 const downloadAndCacheImage = async (
-  authToken: string,
+  manager: AtlassianManager,
   hashedImageUrl: string,
   imageUrl: string
 ) => {
@@ -64,27 +69,12 @@ const downloadAndCacheImage = async (
   if (isImageAlreadyCached) return
 
   redis.setBuffer(hashedImageUrl, NO_IMAGE_BUFFER, 'PX', IMAGE_TTL_MS)
-  const imageBuffer = await fetchImage(authToken, imageUrl)
+  const imageBuffer = await manager.getImage(imageUrl)
   if (!imageBuffer) {
     await redis.del(hashedImageUrl)
     return
   }
   redis.setBuffer(hashedImageUrl, imageBuffer, 'PX', IMAGE_TTL_MS)
-}
-
-const fetchImage = async (authToken: string, url: string) => {
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${authToken}`
-    }
-  })
-
-  if (response.status !== 200) {
-    console.warn('Fetching image failed', response.status)
-    return null
-  }
-
-  return response.buffer()
 }
 
 const createImageUrlHash = (imageUrl: string) => {

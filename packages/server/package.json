@@ -31,6 +31,7 @@
     "@types/graphql": "^14.5.0",
     "@types/ioredis": "^4.0.10",
     "@types/jsonwebtoken": "^8.3.0",
+    "@types/mime-types": "^2.1.0",
     "@types/ms": "^0.7.30",
     "@types/react-relay": "^7.0.3",
     "@types/relay-runtime": "^8.0.2",

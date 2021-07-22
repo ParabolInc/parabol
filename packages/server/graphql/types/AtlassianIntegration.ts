@@ -134,7 +134,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
             issue.cloudId,
             issue.descriptionHTML
           )
-          downloadAndCacheImages(accessToken, imageUrlToHash)
+          downloadAndCacheImages(manager, imageUrlToHash)
 
           return {
             ...issue,

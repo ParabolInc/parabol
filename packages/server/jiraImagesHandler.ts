@@ -1,4 +1,5 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import mime from 'mime-types'
 import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import {NO_IMAGE_BUFFER} from './utils/atlassian/jiraImages'
@@ -19,10 +20,13 @@ const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
 const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const fileName = req.getParameter(0)
   const imageBuffer = await getImageFromCache(fileName, true)
+  const mimeType = mime.lookup(fileName)
+  const contentType = mimeType ? mimeType : 'image/png'
+
   res.cork(() => {
     res
       .writeStatus('200')
-      .writeHeader('Content-Type', 'image/png')
+      .writeHeader('Content-Type', contentType)
       .end(imageBuffer)
   })
 })

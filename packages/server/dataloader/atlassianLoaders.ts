@@ -109,7 +109,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
             cloudId,
             issueRes.fields.descriptionHTML
           )
-          downloadAndCacheImages(accessToken, imageUrlToHash)
+          downloadAndCacheImages(manager, imageUrlToHash)
 
           return {
             ...issueRes.fields,
