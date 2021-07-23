@@ -52,18 +52,18 @@ const MeetingInfo = styled('div')({
   padding: '8px 8px 8px 16px'
 })
 
-const Name = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 20,
-  lineHeight: '24px',
+const Name = styled('span')({
+  color: PALETTE.SLATE_800,
+  fontSize: 22,
+  lineHeight: '26px',
   // add right padding to keep a long name from falling under the options button
   // add top and bottom padding to keep a single line at 32px to match the options button
   padding: '4px 32px 4px 0',
   wordBreak: 'break-word'
 })
 
-const Meta = styled('div')({
-  color: PALETTE.SLATE_600,
+const Meta = styled('span')({
+  color: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '24px',
   // partial grid bottom padding accounts for maybe avatar whitespace and offset
@@ -72,12 +72,15 @@ const Meta = styled('div')({
 })
 
 const MeetingImgWrapper = styled('div')({
+  background: PALETTE.GRAPE_700,
+  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
+  display: 'block',
   position: 'relative'
 })
 
-const MeetingTypeLabel = styled('div')({
+const MeetingTypeLabel = styled('span')({
   color: PALETTE.WHITE,
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 600,
   left: 16,
   lineHeight: '16px',
@@ -156,7 +159,7 @@ const MeetingCard = (props: Props) => {
   }
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
-    >(MenuPosition.UPPER_RIGHT)
+  >(MenuPosition.UPPER_RIGHT)
 
   return (
     <CardWrapper
