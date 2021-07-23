@@ -116,8 +116,10 @@ const ReflectionGroup = (props: Props) => {
   })
   const onClick = () => {
     if (isEditing) return
-    const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
-    if (wasDrag) return
+    const isNotDraggable = staticReflections.some(
+      (reflection) => reflection.isDropping || reflection.inSpotlight
+    )
+    if (isNotDraggable) return
     if (reflections.length === 1) {
       if (!isDragPhase) return
       setIsEditing(true)
@@ -241,6 +243,7 @@ export default createFragmentContainer(ReflectionGroup, {
         isViewerDragging
         isDropping
         isEditing
+        inSpotlight
         remoteDrag {
           dragUserId
         }

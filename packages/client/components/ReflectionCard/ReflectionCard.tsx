@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {
@@ -58,7 +58,6 @@ const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) =>
 }))
 
 interface Props {
-  hideSpotlight?: boolean
   isClipped?: boolean
   isReadOnly?: boolean
   reflection: ReflectionCard_reflection
@@ -84,17 +83,16 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
+  const {meeting, reflection, isClipped, isReadOnly, stackCount, showReactji, dataCy} = props
   const {
-    meeting,
-    reflection,
-    hideSpotlight,
-    isClipped,
-    isReadOnly,
-    stackCount,
-    showReactji,
-    dataCy
-  } = props
-  const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
+    id: reflectionId,
+    content,
+    promptId,
+    isViewerCreator,
+    meetingId,
+    reactjis,
+    inSpotlight
+  } = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
@@ -107,7 +105,7 @@ const ReflectionCard = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.UPPER_CENTER)
-  const {closePortal, togglePortal, modalPortal} = useModal()
+  const {closePortal, openPortal, modalPortal} = useModal()
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -225,10 +223,29 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
 
+  const openSpotlight = (e: MouseEvent) => {
+    e.stopPropagation()
+    openPortal()
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflection = store.get(reflectionId)
+      if (!reflection) return
+      reflection.setValue(true, 'inSpotlight')
+    })
+  }
+
+  const closeSpotlight = () => {
+    closePortal()
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflection = store.get(reflectionId)
+      if (!reflection) return
+      reflection.setValue(false, 'inSpotlight')
+    })
+  }
+
   const showSpotlight = true
   const showSearch =
     phaseType === 'group' &&
-    !hideSpotlight &&
+    !inSpotlight &&
     !isComplete &&
     showSpotlight &&
     (isHovering || !isDesktop)
@@ -267,7 +284,7 @@ const ReflectionCard = (props: Props) => {
         {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
         <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
         <SearchButton
-          onClick={togglePortal}
+          onClick={openSpotlight}
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
           showSearch={showSearch}
@@ -277,7 +294,7 @@ const ReflectionCard = (props: Props) => {
         {tooltipPortal('Find similar')}
       </ReflectionCardRoot>
       {modalPortal(
-        <SpotlightModal closePortal={closePortal} meeting={meeting} reflection={reflection} />
+        <SpotlightModal closeSpotlight={closeSpotlight} meeting={meeting} reflection={reflection} />
       )}
     </>
   )
@@ -291,6 +308,7 @@ export default createFragmentContainer(ReflectionCard, {
       isViewerCreator
       id
       isEditing
+      inSpotlight
       meetingId
       reflectionGroupId
       promptId
@@ -309,6 +327,9 @@ export default createFragmentContainer(ReflectionCard, {
       id
       localPhase {
         phaseType
+      }
+      localStage {
+        isComplete
       }
       phases {
         phaseType

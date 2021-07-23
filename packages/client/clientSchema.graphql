@@ -70,6 +70,7 @@ extend type RetroReflection {
   remoteDrag: RemoteReflectionDrag
   ignoreDragStarts: [ID!]
   isEditing: Boolean
+  inSpotlight: Boolean
 }
 
 extend type ReflectPrompt {

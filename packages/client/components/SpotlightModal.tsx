@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {KeyboardEvent} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -11,9 +11,9 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
-import purpleLines from '../styles/theme/images/purpleLines.svg'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import useBreakpoint from '../hooks/useBreakpoint'
+import SpotlightEmptyState from './SpotlightEmptyState'
 
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   background: '#FFFF',
@@ -55,22 +55,10 @@ const Title = styled('div')({
 })
 
 const Content = styled('div')({
-  width: 'fit-content',
   display: 'flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
   alignItems: 'center'
-})
-
-const Message = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  justifyContent: 'center',
-  textAlign: 'center',
-  fontSize: 14,
-  lineHeight: '20px',
-  color: PALETTE.SLATE_700
 })
 
 const SearchInput = styled('input')({
@@ -98,7 +86,6 @@ const SearchItem = styled(MenuItemLabel)({
 const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   position: 'absolute',
   left: 8,
-  margin: 0,
   top: 8
 })
 
@@ -108,7 +95,6 @@ const SearchIcon = styled(Icon)({
 })
 
 const CardWrapper = styled('div')({
-  height: 'fit-content',
   paddingTop: 16
 })
 
@@ -128,47 +114,20 @@ const CloseIcon = styled(Icon)({
   }
 })
 
-const EmptyState = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: '100%',
-  flexWrap: 'wrap'
-})
-
-const MessageWrapper = styled('div')({
-  display: 'flex',
-  padding: '0px 8px',
-  flexDirection: 'column',
-  height: 'fit-content'
-})
-
-const Emoji = styled('div')({
-  textAlign: 'center',
-  paddingBottom: 4,
-  width: '100%'
-})
-
-const Img = styled('img')<{isFlipped?: boolean}>(({isFlipped}) => ({
-  display: 'block',
-  width: 24,
-  height: 24,
-  transform: isFlipped ? `scaleX(-1)` : `scaleX(1)`
-}))
-
 interface Props {
-  closePortal: () => void
+  closeSpotlight: () => void
   meeting: SpotlightModal_meeting
   reflection: SpotlightModal_reflection
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closePortal, meeting, reflection} = props
-  const reflectionGroupsCount = 0
+  const {closeSpotlight, meeting, reflection} = props
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape') closePortal()
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') closeSpotlight()
   }
+  const spotlightReflection = {...reflection, inSpotlight: true}
+  const reflectionGroupsCount = 0
   return (
     <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
       <SelectedReflection>
@@ -177,11 +136,8 @@ const SpotlightModal = (props: Props) => {
           <CardWrapper>
             <DraggableReflectionCard
               isReadOnly
-              hideSpotlight
-              isDraggable={false}
               staticIdx={0}
-              staticReflections={[reflection]}
-              reflection={reflection}
+              reflection={spotlightReflection}
               meeting={meeting}
             />
           </CardWrapper>
@@ -198,24 +154,12 @@ const SpotlightModal = (props: Props) => {
             type='text'
           />
         </SearchItem>
-        <StyledCloseButton onClick={closePortal}>
+        <StyledCloseButton onClick={closeSpotlight}>
           <CloseIcon>close</CloseIcon>
         </StyledCloseButton>
       </SelectedReflection>
       <SimilarReflectionGroups>
-        <Content>
-          {reflectionGroupsCount === 0 ? (
-            <EmptyState>
-              <Emoji>😔</Emoji>
-              <Img src={purpleLines} />
-              <MessageWrapper>
-                <Message>No reflections match this card.</Message>
-                <Message>Try searching for specific keywords.</Message>
-              </MessageWrapper>
-              <Img isFlipped src={purpleLines} />
-            </EmptyState>
-          ) : null}
-        </Content>
+        <Content>{reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}</Content>
       </SimilarReflectionGroups>
     </ModalContainer>
   )
@@ -244,17 +188,16 @@ export default createFragmentContainer(SpotlightModal, {
     fragment SpotlightModal_meeting on RetrospectiveMeeting {
       id
       teamId
-      localStage {
-        isComplete
+      localPhase {
         phaseType
       }
-      localPhase {
+      localStage {
+        isComplete
         phaseType
       }
       phases {
         phaseType
         stages {
-          id
           isComplete
           phaseType
         }

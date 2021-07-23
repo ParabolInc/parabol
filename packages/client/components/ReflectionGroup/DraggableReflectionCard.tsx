@@ -45,14 +45,13 @@ const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDragga
 export type ReflectionDragState = ReturnType<typeof makeDragState>
 
 interface Props {
-  hideSpotlight?: boolean
   isClipped?: boolean
   isDraggable?: boolean
   isReadOnly?: boolean
   meeting: DraggableReflectionCard_meeting
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
-  staticReflections: DraggableReflectionCard_staticReflections
+  staticReflections?: DraggableReflectionCard_staticReflections
   swipeColumn?: SwipeColumn
   dataCy?: string
 }
@@ -67,7 +66,6 @@ export interface TargetBBox {
 
 const DraggableReflectionCard = (props: Props) => {
   const {
-    hideSpotlight,
     isClipped,
     isReadOnly,
     reflection,
@@ -80,9 +78,9 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing} = reflection
+  const {isDropping, isEditing, inSpotlight} = reflection
   const [drag] = useState(makeDragState)
-  const staticReflectionCount = staticReflections.length
+  const staticReflectionCount = staticReflections?.length || 0
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -92,7 +90,7 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-  const isDragPhase = phaseType === 'group' && !isComplete
+  const isDragPhase = phaseType === 'group' && !isComplete && !inSpotlight
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
@@ -106,7 +104,6 @@ const DraggableReflectionCard = (props: Props) => {
       <ReflectionCard
         dataCy={dataCy}
         reflection={reflection}
-        hideSpotlight={hideSpotlight}
         isClipped={isClipped}
         isReadOnly={isReadOnly}
         meeting={meeting}
@@ -130,6 +127,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
       isEditing
       reflectionGroupId
       promptId
+      inSpotlight
       isViewerDragging
       isViewerCreator
       isDropping
