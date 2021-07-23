@@ -53,9 +53,10 @@ const MeetingInfo = styled('div')({
 })
 
 const Name = styled('span')({
-  color: PALETTE.SLATE_800,
-  fontSize: 22,
-  lineHeight: '26px',
+  color: PALETTE.SLATE_700,
+  display: 'block',
+  fontSize: 20,
+  lineHeight: '24px',
   // add right padding to keep a long name from falling under the options button
   // add top and bottom padding to keep a single line at 32px to match the options button
   padding: '4px 32px 4px 0',
@@ -63,7 +64,8 @@ const Name = styled('span')({
 })
 
 const Meta = styled('span')({
-  color: PALETTE.SLATE_700,
+  color: PALETTE.SLATE_800,
+  display: 'block',
   fontSize: 14,
   lineHeight: '24px',
   // partial grid bottom padding accounts for maybe avatar whitespace and offset
