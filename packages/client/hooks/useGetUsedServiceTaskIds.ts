@@ -10,9 +10,11 @@ const useGetUsedServiceTaskIds = (phaseRef: any) => {
         fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
           stages {
             serviceTaskId
+            taskId
             story {
               ... on Task {
                 __typename
+                id
                 integrationHash
               }
             }
@@ -24,12 +26,16 @@ const useGetUsedServiceTaskIds = (phaseRef: any) => {
     const {stages} = estimatePhase
     const usedServiceTaskIds = new Set<string>()
     stages.forEach((stage) => {
-      const {serviceTaskId, story} = stage
-      usedServiceTaskIds.add(serviceTaskId)
-      if (story?.__typename === 'Task') {
-        const {integrationHash} = story
-        if (integrationHash) {
-          usedServiceTaskIds.add(integrationHash)
+      const {serviceTaskId, story, taskId} = stage
+      if (!taskId) {
+        // this is a legacy story
+        usedServiceTaskIds.add(serviceTaskId)
+      } else {
+        if (story?.__typename === 'Task') {
+          const {id: taskId, integrationHash} = story
+          // a new serviceTaskId uniquely identifies an issue that doesn't exist in our system yet (integrationHash)
+          // if it's a vanilla parabol task, then we just use that
+          usedServiceTaskIds.add(integrationHash ?? taskId)
         }
       }
     })

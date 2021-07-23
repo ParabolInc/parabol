@@ -145,7 +145,8 @@ const updatePokerScope = {
           new EstimateStage({
             creatorUserId: viewerId,
             service: 'PARABOL',
-            serviceTaskId: taskId,
+            // integrationHash if integrated, else taskId
+            serviceTaskId,
             sortOrder: lastSortOrder + 1,
             taskId,
             durations: undefined,
@@ -156,7 +157,7 @@ const updatePokerScope = {
         id: stage.discussionId,
         meetingId,
         teamId,
-        discussionTopicId: serviceTaskId,
+        discussionTopicId: taskId,
         discussionTopicType: 'task' as const
       }))
       // MUTATIVE
@@ -164,7 +165,7 @@ const updatePokerScope = {
       stages.push(...newStages)
     })
 
-    if (stages.length > Threshold.MAX_POKER_STORIES) {
+    if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
       return {error: {message: 'Story limit reached'}}
     }
     await r

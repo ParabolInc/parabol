@@ -57,11 +57,47 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
       resolve: async (
-        {dimensionRefIdx, meetingId, service, serviceTaskId, teamId},
+        {dimensionRefIdx, meetingId, service, serviceTaskId, teamId, taskId},
         _args,
         {dataLoader}
       ) => {
-        if (service === 'jira') {
+        const NULL_FIELD = {name: '', type: 'string'}
+        if (!taskId) {
+          // LEGACY
+          if (service === 'jira') {
+            const [meeting, team] = await Promise.all([
+              dataLoader.get('newMeetings').load(meetingId),
+              dataLoader.get('teams').load(teamId)
+            ])
+            const {templateRefId} = meeting
+            const templateRef = await getTemplateRefById(templateRefId)
+            const {dimensions} = templateRef
+            const dimensionRef = dimensions[dimensionRefIdx]
+            const {name: dimensionName} = dimensionRef
+            const {cloudId, projectKey} = JiraIssueId.split(serviceTaskId)
+            const jiraDimensionFields = team.jiraDimensionFields || []
+            const existingDimensionField = jiraDimensionFields.find(
+              (field) =>
+                field.dimensionName === dimensionName &&
+                field.cloudId === cloudId &&
+                field.projectKey === projectKey
+            )
+
+            if (existingDimensionField)
+              return {
+                name: existingDimensionField.fieldName,
+                type: existingDimensionField.fieldType
+              }
+
+            return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
+          }
+          return NULL_FIELD
+        }
+        const task = await dataLoader.get('tasks').load(taskId)
+        if (!task) return NULL_FIELD
+        const {integration} = task
+        if (!integration) return NULL_FIELD
+        if (integration.service === 'jira') {
           const [meeting, team] = await Promise.all([
             dataLoader.get('newMeetings').load(meetingId),
             dataLoader.get('teams').load(teamId)
@@ -81,11 +117,14 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
           )
 
           if (existingDimensionField)
-            return {name: existingDimensionField.fieldName, type: existingDimensionField.fieldType}
+            return {
+              name: existingDimensionField.fieldName,
+              type: existingDimensionField.fieldType
+            }
 
           return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
         }
-        return {name: '', type: 'string'}
+        return NULL_FIELD
       }
     },
     sortOrder: {

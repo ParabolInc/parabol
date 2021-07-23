@@ -50649,6 +50649,10 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+
+  /**
+   * @deprecated "Use createTask"
+   */
   jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**

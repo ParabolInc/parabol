@@ -63,14 +63,11 @@ const addMissingJiraField = {
     }
 
     // RESOLUTION
-    const {dimensionRefIdx, service, serviceTaskId} = stage
+    const {dimensionRefIdx, serviceTaskId} = stage
     const templateRef = await getTemplateRefById(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
-    if (service !== 'jira') {
-      return {error: {message: 'Non Jira service'}}
-    }
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (!auth) {
       return {error: {message: 'User no longer has access to Atlassian'}}

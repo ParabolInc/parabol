@@ -4,7 +4,6 @@ import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useSetFinalScoreError from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
 import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
@@ -28,14 +27,13 @@ interface Props {
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {viewerId} = atmosphere
   const {meeting, stage, isInitialStageRender} = props
   const {id: meetingId, facilitatorUserId} = meeting
   const {id: stageId, finalScore, dimensionRef, scores} = stage
   const {scale} = dimensionRef
   const {values: scaleValues} = scale
-  useSetFinalScoreError(stageId, error)
   const {rows, topLabel} = useMemo(() => {
     const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage['scores'][0][]}
     let highScore = 0
