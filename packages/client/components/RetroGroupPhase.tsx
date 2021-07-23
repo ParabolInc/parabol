@@ -20,8 +20,6 @@ import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 
-const MeetingTopBarWrapper = styled('div')()
-
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroGroupPhase_meeting
 }
@@ -34,18 +32,14 @@ const RetroGroupPhase = (props: Props) => {
   return (
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
-        <MeetingTopBarWrapper>
-          <MeetingTopBar
-            avatarGroup={avatarGroup}
-            isMeetingSidebarCollapsed={!showSidebar}
-            toggleSidebar={toggleSidebar}
-          >
-            <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
-            <PhaseHeaderDescription>
-              {'Drag cards to group by common topics'}
-            </PhaseHeaderDescription>
-          </MeetingTopBar>
-        </MeetingTopBarWrapper>
+        <MeetingTopBar
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!showSidebar}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
+          <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
+        </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} canUndo={true} />
           <MeetingPhaseWrapper>
