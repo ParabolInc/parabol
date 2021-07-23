@@ -31,7 +31,6 @@ const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) =
 }))
 
 const Task = styled('div')({
-  paddingLeft: 16,
   width: '100%'
 })
 
