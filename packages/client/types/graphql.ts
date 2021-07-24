@@ -54161,12 +54161,12 @@ export interface IUpdatePokerScopeSuccess {
 
 export interface IUpdatePokerScopeItemInput {
   /**
-   * The service where the task comes from
+   * The location of the single source of truth (e.g. a jira-integrated parabol task would be "jira")
    */
   service: TaskServiceEnum;
 
   /**
-   * A JSON commposite key used to fetch the task from the service
+   * If vanilla parabol task, taskId. If integrated parabol task, integrationHash
    */
   serviceTaskId: string;
 

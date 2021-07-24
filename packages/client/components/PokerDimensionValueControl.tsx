@@ -6,6 +6,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint, SprintPokerDefaults} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useForceUpdate from '../hooks/useForceUpdate'
 import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
@@ -94,6 +95,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const [cardScore, setCardScore] = useState(finalScore)
   const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
+  const forceUpdate = useForceUpdate()
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
@@ -109,6 +111,11 @@ const PokerDimensionValueControl = (props: Props) => {
       const {error} = pokerSetFinalScore
       if (error?.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
         openPortal()
+      }
+      if (!error) {
+        // set field A to 1, change fields to B, then submit again. it should not say update
+        lastSubmittedFieldRef.current = serviceFieldName
+        forceUpdate()
       }
     }
     PokerSetFinalScoreMutation(
