@@ -10,6 +10,7 @@ export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTagEnum = 'private' | 'archived'
 export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira'
 
+export type TaskIntegration = TaskIntegrationJira | TaskIntegrationGitHub
 export interface TaskInput {
   id?: string
   content: string
@@ -17,7 +18,7 @@ export interface TaskInput {
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
-  integration?: TaskIntegrationJira | TaskIntegrationGitHub
+  integration?: TaskIntegration
 
   integrationHash?: string
   meetingId?: string | null
@@ -39,7 +40,7 @@ export default class Task {
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
-  integration?: TaskIntegrationJira | TaskIntegrationGitHub
+  integration?: TaskIntegration
   integrationHash?: string
   meetingId?: string
   plaintextContent: string

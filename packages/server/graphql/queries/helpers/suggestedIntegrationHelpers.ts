@@ -60,7 +60,6 @@ export const getTeamIntegrationsByUserId = async (
       row('integration')('service'),
       row('integration')('nameWithOwner').default(null),
       row('integration')('projectKey').default(null),
-      row('integration')('projectName').default(null),
       row('integration')('avatar').default(null),
       row('integration')('cloudId').default(null)
     ]) as any)
@@ -72,9 +71,8 @@ export const getTeamIntegrationsByUserId = async (
       service: row('group')(1),
       nameWithOwner: row('group')(2),
       projectKey: row('group')(3),
-      projectName: row('group')(4),
-      avatar: row('group')(5),
-      cloudId: row('group')(6),
+      avatar: row('group')(4),
+      cloudId: row('group')(5),
       lastUsedAt: row('reduction')
     }))
     .run()

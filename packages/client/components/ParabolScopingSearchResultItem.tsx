@@ -4,20 +4,20 @@ import {convertToRaw} from 'draft-js'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
-import {AreaEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
+import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import {Threshold} from '../types/constEnums'
-import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
+import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {AreaEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import TaskEditor from './TaskEditor/TaskEditor'
 
@@ -31,7 +31,6 @@ const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) =
 }))
 
 const Task = styled('div')({
-  paddingLeft: 16,
   width: '100%'
 })
 
@@ -165,6 +164,16 @@ export default createFragmentContainer(ParabolScopingSearchResultItem, {
       # grab title so the optimistic updater can use it to update sidebar
       title
       updatedAt
+      integration {
+        ... on JiraIssue {
+          __typename
+          title
+        }
+        ... on _xGitHubIssue {
+          __typename
+          title
+        }
+      }
     }
   `
 })

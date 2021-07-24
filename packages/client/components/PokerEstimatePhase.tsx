@@ -1,8 +1,14 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import useGotoStageId from '~/hooks/useGotoStageId'
+import useRightDrawer from '~/hooks/useRightDrawer'
+import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {PokerEstimatePhase_meeting} from '../__generated__/PokerEstimatePhase_meeting.graphql'
+import ErrorBoundary from './ErrorBoundary'
 import EstimatePhaseArea from './EstimatePhaseArea'
 import EstimatePhaseDiscussionDrawer from './EstimatePhaseDiscussionDrawer'
 import MeetingContent from './MeetingContent'
@@ -10,16 +16,9 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
-import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
-import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
+import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
-import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
-import useBreakpoint from '~/hooks/useBreakpoint'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import styled from '@emotion/styled'
-import useGotoStageId from '~/hooks/useGotoStageId'
-import useRightDrawer from '~/hooks/useRightDrawer'
-import ErrorBoundary from './ErrorBoundary'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
@@ -59,7 +58,6 @@ const PokerEstimatePhase = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleDrawer = useRightDrawer(meetingId)
   if (!localStage) return null
-  const {service} = localStage
   return (
     <MeetingContent>
       <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
@@ -76,8 +74,7 @@ const PokerEstimatePhase = (props: Props) => {
         </MeetingTopBar>
         <StoryAndEstimateWrapper>
           <ErrorBoundary>
-            {service === 'jira' && <PokerEstimateHeaderCardJira stage={localStage} />}
-            {service === 'PARABOL' && <PokerEstimateHeaderCardParabol stage={localStage} />}
+            <PokerEstimateHeaderCard stage={localStage} />
           </ErrorBoundary>
           <EstimateAreaWrapper>
             <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
@@ -96,13 +93,6 @@ const PokerEstimatePhase = (props: Props) => {
   )
 }
 
-graphql`
-  fragment PokerEstimatePhaseStage on EstimateStage {
-    ...PokerEstimateHeaderCardJira_stage
-    ...PokerEstimateHeaderCardParabol_stage
-    service
-  }
-`
 export default createFragmentContainer(PokerEstimatePhase, {
   meeting: graphql`
     fragment PokerEstimatePhase_meeting on PokerMeeting {
@@ -112,12 +102,12 @@ export default createFragmentContainer(PokerEstimatePhase, {
       isCommentUnread
       isRightDrawerOpen
       localStage {
-        ...PokerEstimatePhaseStage @relay(mask: false)
+        ...PokerEstimateHeaderCard_stage
       }
       phases {
         ... on EstimatePhase {
           stages {
-            ...PokerEstimatePhaseStage @relay(mask: false)
+            ...PokerEstimateHeaderCard_stage
           }
         }
       }

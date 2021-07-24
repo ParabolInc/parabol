@@ -48330,6 +48330,11 @@ export interface IEstimateStage {
   creatorUserId: string;
 
   /**
+   * The ID that points to the issue that exists in parabol
+   */
+  taskId: string | null;
+
+  /**
    * The service the task is connected to
    */
   service: TaskServiceEnum;
@@ -50644,6 +50649,10 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+
+  /**
+   * @deprecated "Use createTask"
+   */
   jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
@@ -54152,12 +54161,12 @@ export interface IUpdatePokerScopeSuccess {
 
 export interface IUpdatePokerScopeItemInput {
   /**
-   * The service where the task comes from
+   * The location of the single source of truth (e.g. a jira-integrated parabol task would be "jira")
    */
   service: TaskServiceEnum;
 
   /**
-   * A JSON commposite key used to fetch the task from the service
+   * If vanilla parabol task, taskId. If integrated parabol task, integrationHash
    */
   serviceTaskId: string;
 

@@ -1,14 +1,14 @@
-import TaskIntegration from './TaskIntegration'
+import BaseTaskIntegration from './BaseTaskIntegration'
 
 interface Input {
   accessUserId: string
   nameWithOwner: string
-  issueNumber: string | number
+  issueNumber: number
 }
 
-export default class TaskIntegrationGitHub extends TaskIntegration {
+export default class TaskIntegrationGitHub extends BaseTaskIntegration {
   nameWithOwner: string
-  issueNumber: string | number
+  issueNumber: number
   service!: 'github'
   constructor(input: Input) {
     const {accessUserId, nameWithOwner, issueNumber} = input

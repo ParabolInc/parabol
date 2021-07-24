@@ -22,7 +22,8 @@ const createJiraTask = async (
   if (issueMetaRes instanceof Error) return {error: issueMetaRes}
   const {projects} = issueMetaRes
   // should always be the first and only item in the project arr
-  const project = projects.find((project) => project.key === projectKey)!
+  const project = projects.find((project) => project.key === projectKey)
+  if (!project) return {error: new Error('Project does not exist')}
   const {issuetypes} = project
   const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
   const payload = {
