@@ -60,7 +60,12 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     estimates: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
       description: 'A list of the most recent estimates for the task',
-      resolve: async ({id: taskId}, _args, {dataLoader}) => {
+      resolve: async ({id: taskId, integration, teamId}: DBTask, _args, {dataLoader}) => {
+        if (integration?.service === 'jira') {
+          const {accessUserId, cloudId, issueKey} = integration
+          // this dataloader has the side effect of guaranteeing fresh estimates
+          await dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+        }
         return dataLoader.get('latestTaskEstimates').load(taskId)
       }
     },
