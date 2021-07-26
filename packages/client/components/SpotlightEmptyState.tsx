@@ -6,7 +6,7 @@ import {PALETTE} from '../styles/paletteV3'
 const EmptyState = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
+  alignContent: 'center',
   flexWrap: 'wrap'
 })
 
@@ -33,19 +33,27 @@ const Message = styled('div')({
   justifyContent: 'center',
   fontSize: 14,
   lineHeight: '20px',
+  textAlign: 'center',
   color: PALETTE.SLATE_700
+})
+
+const Content = styled('div')({
+  display: 'flex',
+  alignItems: 'center'
 })
 
 const SpotlightEmptyState = () => {
   return (
     <EmptyState>
       <Emoji>😔</Emoji>
-      <Img src={purpleLines} />
-      <MessageWrapper>
-        <Message>No reflections match this card.</Message>
-        <Message>Try searching for specific keywords.</Message>
-      </MessageWrapper>
-      <Img isFlipped src={purpleLines} />
+      <Content>
+        <Img src={purpleLines} />
+        <MessageWrapper>
+          <Message>No reflections match this card.</Message>
+          <Message>Try searching for specific keywords.</Message>
+        </MessageWrapper>
+        <Img isFlipped src={purpleLines} />
+      </Content>
     </EmptyState>
   )
 }

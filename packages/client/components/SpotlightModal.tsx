@@ -14,27 +14,31 @@ import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import SpotlightEmptyState from './SpotlightEmptyState'
+import {Elevation} from '../styles/elevation'
 
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   background: '#FFFF',
-  width: isDesktop ? '80vw' : '90vw',
-  height: '80vh',
+  borderRadius: 8,
+  boxShadow: Elevation.Z8,
   display: 'flex',
-  justifyContent: 'center',
   flexWrap: 'wrap',
-  borderRadius: 8
+  height: '80vh',
+  justifyContent: 'center',
+  overflow: 'hidden',
+  width: isDesktop ? '80vw' : '90vw'
 }))
 
 const SelectedReflection = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  width: '100%',
-  height: '33.3%',
+  alignItems: 'flex-start',
   background: PALETTE.SLATE_100,
+  borderRadius: '8px 8px 0px 0px',
+  display: 'flex',
+  flexWrap: 'wrap',
+  height: '33.3%',
+  justifyContent: 'center',
   padding: 16,
   position: 'relative',
-  alignItems: 'flex-start',
-  borderRadius: '8px 8px 0px 0px'
+  width: '100%'
 })
 
 const SimilarReflectionGroups = styled('div')({
@@ -50,15 +54,22 @@ const Title = styled('div')({
   fontSize: 16,
   fontWeight: 600,
   height: 'fit-content',
-  width: '100%',
   textAlign: 'center'
+})
+
+const TopRow = styled('div')({
+  width: `calc(100% - 48px)`,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'
 })
 
 const Content = styled('div')({
   display: 'flex',
-  justifyContent: 'center',
-  flexWrap: 'wrap',
-  alignItems: 'center'
+  alignItems: 'center',
+  height: '100%',
+  position: 'absolute',
+  top: 0
 })
 
 const SearchInput = styled('input')({
@@ -72,7 +83,10 @@ const SearchInput = styled('input')({
   lineHeight: '24px',
   outline: 'none',
   padding: '6px 0 6px 39px',
-  width: '100%'
+  width: '100%',
+  '::placeholder': {
+    color: PALETTE.SLATE_600
+  }
 })
 
 const SearchItem = styled(MenuItemLabel)({
@@ -95,14 +109,13 @@ const SearchIcon = styled(Icon)({
 })
 
 const CardWrapper = styled('div')({
-  paddingTop: 16
+  // paddingTop: 16
 })
 
 const StyledCloseButton = styled(PlainButton)({
   height: 24,
   position: 'absolute',
-  top: 8,
-  right: 8
+  right: 16
 })
 
 const CloseIcon = styled(Icon)({
@@ -131,8 +144,13 @@ const SpotlightModal = (props: Props) => {
   return (
     <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
       <SelectedReflection>
-        <Content>
+        <TopRow>
           <Title>Find cards with similar reflections</Title>
+          <StyledCloseButton onClick={closeSpotlight}>
+            <CloseIcon>close</CloseIcon>
+          </StyledCloseButton>
+        </TopRow>
+        <Content>
           <CardWrapper>
             <DraggableReflectionCard
               isReadOnly
@@ -154,12 +172,9 @@ const SpotlightModal = (props: Props) => {
             type='text'
           />
         </SearchItem>
-        <StyledCloseButton onClick={closeSpotlight}>
-          <CloseIcon>close</CloseIcon>
-        </StyledCloseButton>
       </SelectedReflection>
       <SimilarReflectionGroups>
-        <Content>{reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}</Content>
+        {reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}
       </SimilarReflectionGroups>
     </ModalContainer>
   )

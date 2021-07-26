@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
