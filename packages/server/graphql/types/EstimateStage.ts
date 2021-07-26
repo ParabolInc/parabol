@@ -21,6 +21,7 @@ import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import ServiceField from './ServiceField'
 import Story from './Story'
+import Task from './Task'
 import TaskServiceEnum from './TaskServiceEnum'
 import TemplateDimensionRef from './TemplateDimensionRef'
 import User from './User'
@@ -184,6 +185,14 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
           ...score,
           stageId
         }))
+      }
+    },
+    task: {
+      type: Task,
+      description:
+        'The task referenced in the stage, as it exists in Parabol. null if the task was deleted',
+      resolve: async ({taskId}, _args, {dataLoader}) => {
+        return dataLoader.get('tasks').load(taskId)
       }
     },
     story: {
