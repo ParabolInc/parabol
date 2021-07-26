@@ -11,7 +11,6 @@ import EditCommentingPayload from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
-import {GitHubCreateIssueSuccess} from './GitHubCreateIssuePayload'
 import JiraCreateIssuePayload from './JiraCreateIssuePayload'
 import {JoinMeetingSuccess} from './JoinMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
@@ -37,7 +36,6 @@ import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 
 const types = [
-  // DEPRECATED
   AddCommentSuccess,
   AddReactjiToReflectionSuccess,
   AddReactjiToReactableSuccess,
@@ -72,7 +70,6 @@ const types = [
   PokerAnnounceDeckHoverSuccess,
   PokerSetFinalScoreSuccess,
   JoinMeetingSuccess,
-  GitHubCreateIssueSuccess,
   SetPokerSpectateSuccess
 ]
 

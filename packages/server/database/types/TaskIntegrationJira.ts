@@ -1,28 +1,23 @@
-import TaskIntegration from './TaskIntegration'
+import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
+import BaseTaskIntegration from './BaseTaskIntegration'
 
 interface Input {
   accessUserId: string
-  projectKey: string
-  projectName?: string
   cloudId: string
   issueKey: string
-  cloudName: string
 }
 
-export default class TaskIntegrationJira extends TaskIntegration {
-  projectKey: string
-  projectName?: string
+export default class TaskIntegrationJira extends BaseTaskIntegration {
   cloudId: string
   issueKey: string
-  cloudName: string
+  projectKey: string
   service!: 'jira'
   constructor(input: Input) {
-    const {accessUserId, projectKey, projectName, cloudId, cloudName, issueKey} = input
+    const {accessUserId, cloudId, issueKey} = input
     super({accessUserId, service: 'jira'})
+    const {projectKey} = JiraIssueId.split(issueKey)
     this.projectKey = projectKey
-    this.projectName = projectName
     this.cloudId = cloudId
     this.issueKey = issueKey
-    this.cloudName = cloudName
   }
 }

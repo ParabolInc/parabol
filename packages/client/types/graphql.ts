@@ -44431,7 +44431,7 @@ export interface ITask {
   dueDate: any | null;
 
   /**
-   * A list of estimates for the story, created in a poker meeting
+   * A list of the most recent estimates for the task
    */
   estimates: Array<ITaskEstimate>;
 
@@ -45057,11 +45057,7 @@ export interface IJiraIssue {
   descriptionHTML: string;
 }
 
-export type TaskIntegration =
-  | IJiraIssue
-  | ITaskIntegrationGitHub
-  | ITaskIntegrationJira
-  | IGitHubIssue;
+export type TaskIntegration = IXGitHubIssue | IJiraIssue;
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration';
@@ -45222,7 +45218,7 @@ export interface IGitHubIntegration {
    * The user that the access token is attached to
    */
   userId: string;
-  api: IGitHubApi | null;
+  api: IXGitHubApi | null;
 }
 
 /**
@@ -46437,6 +46433,21 @@ export interface ITaskEstimate {
   __typename: 'TaskEstimate';
 
   /**
+   * The ID of the estimate
+   */
+  id: string;
+
+  /**
+   * The timestamp the estimate was created
+   */
+  createdAt: any;
+
+  /**
+   * The source that a change came in through
+   */
+  changeSource: ChangeSourceEnum;
+
+  /**
    * The name of the estimate dimension
    */
   name: string;
@@ -46445,6 +46456,45 @@ export interface ITaskEstimate {
    * The human-readable label for the estimate
    */
   label: string;
+
+  /**
+   * *The taskId that the estimate refers to
+   */
+  taskId: string;
+
+  /**
+   * The userId that added the estimate
+   */
+  userId: string;
+
+  /**
+   * *The meetingId that the estimate occured in, if any
+   */
+  meetingId: string | null;
+
+  /**
+   * The meeting stageId the estimate occurred in, if any
+   */
+  stageId: string | null;
+
+  /**
+   * The discussionId where the estimated was discussed
+   */
+  discussionId: string | null;
+
+  /**
+   * If the task comes from jira, this is the jira field that the estimate refers to
+   */
+  jiraFieldId: string | null;
+}
+
+/**
+ * The source that a change to a record came in through
+ */
+export const enum ChangeSourceEnum {
+  meeting = 'meeting',
+  task = 'task',
+  external = 'external'
 }
 
 export interface ITaskEditorDetails {
@@ -47733,7 +47783,7 @@ export interface IRetroDiscussStage {
   discussionId: string;
 
   /**
-   * The discussion about the stage
+   * The discussion about the stage or a dummy data when there is no disscussion
    */
   discussion: IDiscussion;
 
@@ -48278,6 +48328,11 @@ export interface IEstimateStage {
    * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
    */
   creatorUserId: string;
+
+  /**
+   * The ID that points to the issue that exists in parabol
+   */
+  taskId: string | null;
 
   /**
    * The service the task is connected to
@@ -50128,49 +50183,6 @@ export interface IActionMeetingSettings {
 /**
  * The details associated with a task integrated with GitHub
  */
-export interface ITaskIntegrationGitHub {
-  __typename: 'TaskIntegrationGitHub';
-  id: string;
-  nameWithOwner: string | null;
-  issueNumber: number | null;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ITaskIntegrationJira {
-  __typename: 'TaskIntegrationJira';
-  id: string;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project as defined by jira
-   */
-  projectName: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The issue key used by jira as a more human readable proxy for the id field
-   */
-  issueKey: string;
-
-  /**
-   * The psuedo-domain to use to generate a base url
-   */
-  cloudName: string;
-}
-
-/**
- * The details associated with a task integrated with GitHub
- */
 export interface ISuggestedIntegrationGitHub {
   __typename: 'SuggestedIntegrationGitHub';
   id: string;
@@ -50637,6 +50649,10 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+
+  /**
+   * @deprecated "Use createTask"
+   */
   jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
@@ -51019,11 +51035,6 @@ export interface IMutation {
    * Create a meeting member for a user
    */
   joinMeeting: JoinMeetingPayload;
-
-  /**
-   * Create an issue in GitHub
-   */
-  gitHubCreateIssue: GitHubCreateIssuePayload;
 
   /**
    * Adds a missing Jira field to a screen currently assigned to a Jira project
@@ -52166,28 +52177,6 @@ export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
 }
 
-export interface IGitHubCreateIssueOnMutationArguments {
-  /**
-   * The id of the meeting where the GitHub issue is being created
-   */
-  meetingId: string;
-
-  /**
-   * The owner/repo string
-   */
-  nameWithOwner: string;
-
-  /**
-   * The id of the team that is creating the issue
-   */
-  teamId: string;
-
-  /**
-   * The title of the GH issue
-   */
-  title: string;
-}
-
 export interface IAddMissingJiraFieldOnMutationArguments {
   meetingId: string;
   stageId: string;
@@ -52832,6 +52821,19 @@ export interface ICreateTaskInput {
    * userId, the owner of the task. This can be null if the task is not assigned to anyone.
    */
   userId?: string | null;
+  integration?: ICreateTaskIntegrationInput | null;
+}
+
+export interface ICreateTaskIntegrationInput {
+  /**
+   * The service to push this new task to
+   */
+  service: TaskServiceEnum;
+
+  /**
+   * The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
+   */
+  serviceProjectHash: string;
 }
 
 /**
@@ -54159,12 +54161,12 @@ export interface IUpdatePokerScopeSuccess {
 
 export interface IUpdatePokerScopeItemInput {
   /**
-   * The service where the task comes from
+   * The location of the single source of truth (e.g. a jira-integrated parabol task would be "jira")
    */
   service: TaskServiceEnum;
 
   /**
-   * A JSON commposite key used to fetch the task from the service
+   * If vanilla parabol task, taskId. If integrated parabol task, integrationHash
    */
   serviceTaskId: string;
 
@@ -54499,81 +54501,6 @@ export interface IJoinMeetingSuccess {
 }
 
 /**
- * Return object for GitHubCreateIssuePayload
- */
-export type GitHubCreateIssuePayload =
-  | IErrorPayload
-  | IGitHubCreateIssueSuccess;
-
-export interface IGitHubCreateIssueSuccess {
-  __typename: 'GitHubCreateIssueSuccess';
-
-  /**
-   * The GitHub Issue that comes directly from GitHub
-   */
-  gitHubIssue: IGitHubIssue;
-
-  /**
-   * The id of the meeting where the GitHub issue is being created
-   */
-  meetingId: string;
-
-  /**
-   * The id of the team that is creating the GitHub issue
-   */
-  teamId: string;
-}
-
-/**
- * The GitHub Issue that comes direct from GitHub
- */
-export interface IGitHubIssue {
-  __typename: 'GitHubIssue';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * The url to access the issue
-   */
-  url: any;
-
-  /**
-   * The name of the repository with owner
-   */
-  nameWithOwner: string;
-
-  /**
-   * The issue number
-   */
-  issueNumber: number;
-
-  /**
-   * The repository that the issue belongs to
-   */
-  repository: IGitHubRepository;
-
-  /**
-   * The title of the GitHub issue
-   */
-  title: string;
-}
-
-/**
- * A repository that comes directly from GitHub
- */
-export interface IGitHubRepository {
-  __typename: 'GitHubRepository';
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
-}
-
-/**
  * Return object for AddMissingJiraFieldPayload
  */
 export type AddMissingJiraFieldPayload =
@@ -54679,7 +54606,6 @@ export type MeetingSubscriptionPayload =
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
-  | IGitHubCreateIssueSuccess
   | ISetPokerSpectateSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
@@ -55008,8 +54934,8 @@ export interface IXGitHubError {
   path: Array<string> | null;
 }
 
-export interface IGitHubApi {
-  __typename: 'GitHubApi';
+export interface IXGitHubApi {
+  __typename: '_xGitHubApi';
   errors: Array<IXGitHubError> | null;
   query: IXGitHubQuery | null;
   mutation: IXGitHubMutation | null;

@@ -7,7 +7,8 @@ import fetchAllIntegrations from './helpers/fetchAllIntegrations'
 export default {
   description: 'All the integrations that the user could possibly use',
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SuggestedIntegration))),
-  resolve: async ({teamId, userId}, _args, {authToken, dataLoader}: GQLContext) => {
+  resolve: async ({teamId, userId}, _args, context: GQLContext, info) => {
+    const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -19,6 +20,6 @@ export default {
         return []
       }
     }
-    return fetchAllIntegrations(dataLoader, teamId, userId)
+    return fetchAllIntegrations(dataLoader, teamId, userId, context, info)
   }
 }

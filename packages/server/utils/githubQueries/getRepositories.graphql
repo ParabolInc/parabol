@@ -1,14 +1,14 @@
-query getRepos {
+query getRepositories {
   viewer {
     organizations(first: 100) {
       nodes {
         repositories(first: 100, isLocked: false, orderBy: {field: UPDATED_AT, direction: DESC}) {
-          ...repoFrag
+            ...repoFrag
         }
       }
     }
     repositories(first: 100, isLocked: false, orderBy: {field: UPDATED_AT, direction: DESC}) {
-      ...repoFrag
+        ...repoFrag
     }
   }
 }

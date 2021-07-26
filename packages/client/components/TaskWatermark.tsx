@@ -4,7 +4,7 @@ import GitHubSVG from './GitHubSVG'
 import JiraSVG from './JiraSVG'
 
 const iconLookup = {
-  GitHubIssue: GitHubSVG,
+  _xGitHubIssue: GitHubSVG,
   JiraIssue: JiraSVG
 }
 

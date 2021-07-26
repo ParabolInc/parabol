@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
+import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
+import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
@@ -102,15 +104,20 @@ const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegra
       const now = new Date()
       const task = store.get(taskId)
       if (!task) return
+      const contentStr = task.getValue('content') as string
+      if (!contentStr) return
+      const {title: summary, contentState} = splitDraftContent(contentStr)
+      const descriptionHTML = stateToHTML(contentState)
       const optimisticIntegration = {
-        service: 'jira',
+        summary,
+        descriptionHTML,
         projectKey,
         cloudId,
         issueKey: '?',
         cloudName: '',
         updatedAt: now.toJSON()
       } as const
-      const integration = createProxyRecord(store, 'TaskIntegrationJira', optimisticIntegration)
+      const integration = createProxyRecord(store, 'JiraIssue', optimisticIntegration)
       task.setLinkedRecord(integration, 'integration')
     },
     onCompleted,

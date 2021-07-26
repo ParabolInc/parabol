@@ -6,17 +6,16 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
-import GitHubCreateIssueMutation from '~/mutations/GitHubCreateIssueMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import {NewGitHubIssueInput_meeting} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
 import {NewGitHubIssueInput_viewer} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
+import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
+import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
 import NewGitHubIssueMenu from './NewGitHubIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
-import Legitity from '../validation/Legitity'
-import useForm from '../hooks/useForm'
 import StyledError from './StyledError'
 
 const StyledButton = styled(PlainButton)({
@@ -151,7 +150,7 @@ const NewGitHubIssueInput = (props: Props) => {
       teamId,
       meetingId
     }
-    GitHubCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
+    console.log('TODO create task with integration', variables, atmosphere, onCompleted, onError)
   }
 
   if (!isEditing) return null

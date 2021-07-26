@@ -54,6 +54,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
         if (!stage) return null
         const {creatorUserId, service} = stage
         if (service === 'jira') {
+          // DEPRECATED
           const {cloudId, issueKey} = JiraIssueId.split(serviceTaskId)
           const res = await dataLoader
             .get('jiraIssue')
