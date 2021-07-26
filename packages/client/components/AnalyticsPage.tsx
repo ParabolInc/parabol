@@ -81,7 +81,7 @@ const AnalyticsPage = () => {
     const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {})
     const isWatched = res?.viewer?.isWatched
     if (expiredErrorProne && !isWatched) {
-      window.localStorage.deleteItem(LocalStorageKey.ERROR_PRONE_AT)
+      window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
     } else if (logRocketId && (errorProneAt || isWatched)) {
       LogRocket.init(logRocketId, {
         release: __APP_VERSION__,
