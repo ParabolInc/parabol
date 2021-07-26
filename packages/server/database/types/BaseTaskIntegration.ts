@@ -1,4 +1,3 @@
-import generateUID from '../../generateUID'
 import {TaskServiceEnum} from './Task'
 
 interface Input {
@@ -6,8 +5,7 @@ interface Input {
   service: TaskServiceEnum
 }
 
-export default class TaskIntegration {
-  id = generateUID()
+export default abstract class BaseTaskIntegration {
   service: TaskServiceEnum
   accessUserId: string
   constructor(input: Input) {

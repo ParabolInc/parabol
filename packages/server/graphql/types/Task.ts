@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
@@ -58,8 +59,10 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     },
     estimates: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
-      description: 'A list of estimates for the story, created in a poker meeting',
-      resolve: (source: any) => source.estimates ?? []
+      description: 'A list of the most recent estimates for the task',
+      resolve: async ({id: taskId}, _args, {dataLoader}) => {
+        return dataLoader.get('latestTaskEstimates').load(taskId)
+      }
     },
     editors: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEditorDetails))),
@@ -83,7 +86,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           const {accessToken} = githubAuth
           const endpointContext = {accessToken}
           const {nameWithOwner, issueNumber} = integration
-          const [repoOwner, repoName] = nameWithOwner.split('/')
+          const {repoOwner, repoName} = GitHubRepoId.split(nameWithOwner)
           const query = `
                 {
                   repository(owner: "${repoOwner}", name: "${repoName}") {

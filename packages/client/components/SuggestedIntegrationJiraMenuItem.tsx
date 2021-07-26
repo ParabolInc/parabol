@@ -16,7 +16,8 @@ interface Props {
 
 const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
   const {suggestedIntegration, onClick, query} = props
-  const {projectName} = suggestedIntegration
+  const {remoteProject, projectKey} = suggestedIntegration
+  const projectName = remoteProject?.name ?? projectKey
   return (
     <MenuItem
       ref={ref}
@@ -36,7 +37,10 @@ const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => 
 export default createFragmentContainer(SuggestedIntegrationJiraMenuItem, {
   suggestedIntegration: graphql`
     fragment SuggestedIntegrationJiraMenuItem_suggestedIntegration on SuggestedIntegrationJira {
-      projectName
+      projectKey
+      remoteProject {
+        name
+      }
     }
   `
 })

@@ -20,6 +20,7 @@ type JiraCreateIssueMutationVariables = {
 export default {
   name: 'JiraCreateIssue',
   type: JiraCreateIssuePayload,
+  deprecationReason: 'Use createTask',
   args: {
     cloudId: {
       type: new GraphQLNonNull(GraphQLID),

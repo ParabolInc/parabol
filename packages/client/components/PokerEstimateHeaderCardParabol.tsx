@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
 import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import TaskIntegrationLink from '~/components/TaskIntegrationLink'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useEditorState from '~/hooks/useEditorState'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
@@ -13,11 +12,9 @@ import {Breakpoint} from '~/types/constEnums'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
-import {ICON_SIZE} from '../styles/typographyV2'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
-import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
+import {PokerEstimateHeaderCardParabol_task} from '../__generated__/PokerEstimateHeaderCardParabol_task.graphql'
 import CardButton from './CardButton'
-import Icon from './Icon'
 import IconLabel from './IconLabel'
 import TaskEditor from './TaskEditor/TaskEditor'
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -38,17 +35,6 @@ const HeaderCard = styled('div')({
   position: 'relative'
 })
 
-const ErrorCard = styled('div')({
-  alignItems: 'flex-start',
-  background: PALETTE.WHITE,
-  borderRadius: 4,
-  boxShadow: Elevation.Z1,
-  padding: '12px 8px 12px 16px',
-  maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
-  margin: '0 auto',
-  width: '100%'
-})
-
 const CardIcons = styled('div')({
   alignItems: 'center',
   display: 'flex'
@@ -65,25 +51,6 @@ const EditorWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   transition: 'all 300ms'
 }))
 
-const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
-  color: PALETTE.SKY_500,
-  display: 'flex',
-  fontSize: 12,
-  lineHeight: '20px',
-  textDecoration: 'none',
-  padding: '0 0',
-  '&:hover,:focus': {
-    textDecoration: 'none'
-  },
-  marginTop: 4,
-  width: 'fit-content'
-})
-
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
-  paddingLeft: 4
-})
-
 const StyledTaskEditor = styled(TaskEditor)({
   width: '100%',
   padding: '0 0',
@@ -96,37 +63,13 @@ const Content = styled('div')({
   paddingRight: 4
 })
 
-const CardTitle = styled('h1')({
-  fontSize: 16,
-  lineHeight: '24px',
-  margin: '0 0 8px'
-})
-
-const CardTitleWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  width: '100%'
-})
-
-const CardDescription = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontWeight: 'normal',
-  lineHeight: '20px',
-  fontSize: 14,
-  margin: 0,
-  height: '100%'
-})
-
 interface Props {
-  stage: PokerEstimateHeaderCardParabol_stage
+  task: PokerEstimateHeaderCardParabol_task
 }
 
 const PokerEstimateHeaderCardParabol = (props: Props) => {
-  const {stage} = props
-  const story = stage.story as Extract<typeof stage['story'], {__typename: 'Task'}> | null
-  const content = story?.content
-  const taskId = story?.id ?? ''
+  const {task} = props
+  const {id: taskId, content} = task
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -139,22 +82,8 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     [taskId]
   )
   const {useTaskChild} = useTaskChildFocus(taskId)
-  if (!story) {
-    // the Parabol task may have been removed
-    return (
-      <HeaderCardWrapper isDesktop={isDesktop}>
-        <ErrorCard>
-          <CardTitleWrapper>
-            <CardTitle>{`That story doesn't exist!`}</CardTitle>
-          </CardTitleWrapper>
-          <CardDescription>
-            {`The story was deleted. You can add another story in the Scope phase.`}
-          </CardDescription>
-        </ErrorCard>
-      </HeaderCardWrapper>
-    )
-  }
-  const {teamId, integration} = story
+
+  const {teamId} = task
   const onBlur = () => {
     if (isAndroid) {
       const editorEl = editorRef.current
@@ -197,13 +126,6 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
               useTaskChild={useTaskChild}
             />
           </EditorWrapper>
-          <StyledTaskIntegrationLink
-            dataCy={`task`}
-            integration={integration || null}
-            showJiraLabelPrefix={false}
-          >
-            <StyledIcon>launch</StyledIcon>
-          </StyledTaskIntegrationLink>
         </Content>
         <CardIcons>
           <CardButton>
@@ -216,21 +138,13 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
 }
 
 export default createFragmentContainer(PokerEstimateHeaderCardParabol, {
-  stage: graphql`
-    fragment PokerEstimateHeaderCardParabol_stage on EstimateStage {
-      story {
-        ... on Task {
-          __typename
-          id
-          title
-          integration {
-            ...TaskIntegrationLink_integration
-          }
-          plaintextContent
-          content
-          teamId
-        }
-      }
+  task: graphql`
+    fragment PokerEstimateHeaderCardParabol_task on Task {
+      id
+      title
+      plaintextContent
+      content
+      teamId
     }
   `
 })

@@ -2,18 +2,19 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
-import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
-import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
-import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
-import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
-import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
-import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import NewIntegrationRecordButton from './NewIntegrationRecordButton'
-import dndNoise from '~/utils/dndNoise'
-import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import useMutationProps from '~/hooks/useMutationProps'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import dndNoise from '~/utils/dndNoise'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
+import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
+import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -74,6 +75,18 @@ const ParabolScopingSearchResults = (props: Props) => {
       />
       <ResultScroller>
         {edges.map(({node}) => {
+          const {integration} = node
+          if (integration?.__typename === 'JiraIssue') {
+            return (
+              <JiraScopingSearchResultItem
+                key={node.id}
+                issue={integration}
+                meetingId={meetingId}
+                persistQuery={() => {}}
+                usedServiceTaskIds={usedServiceTaskIds}
+              />
+            )
+          }
           return (
             <ParabolScopingSearchResultItem
               key={node.id}
@@ -124,6 +137,12 @@ export default createPaginationContainer(
             node {
               ...ParabolScopingSearchResultItem_task
               id
+              integration {
+                ... on JiraIssue {
+                  __typename
+                  ...JiraScopingSearchResultItem_issue
+                }
+              }
             }
           }
           pageInfo {
