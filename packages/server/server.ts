@@ -46,7 +46,7 @@ uws
   .get('/sse/*', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
   .get('/self-hosted/*', selfHostedHandler)
-  .get('/jira-attachements/:fileName', jiraImagesHandler)
+  .get('/jira-attachments/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)

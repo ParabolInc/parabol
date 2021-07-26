@@ -56,7 +56,7 @@ export const downloadAndCacheImages = async (
 }
 
 const createParabolImageUrl = (hashedImageUrl: string) => {
-  return `/jira-attachements/${hashedImageUrl}`
+  return `/jira-attachments/${hashedImageUrl}`
 }
 
 const downloadAndCacheImage = async (

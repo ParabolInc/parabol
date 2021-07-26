@@ -48,7 +48,7 @@ module.exports = {
       '/sse-ping': {
         target: `http://localhost:${SOCKET_PORT}`
       },
-      '/jira-attachements': {
+      '/jira-attachments': {
         target: `http://localhost:${SOCKET_PORT}`
       }
     }
