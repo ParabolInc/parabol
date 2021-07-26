@@ -1,5 +1,4 @@
 import Redis from 'ioredis'
-import {GQLRequest} from '../graphql/executeGraphQL'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
@@ -10,7 +9,6 @@ interface Job {
 }
 
 const {SERVER_ID, REDIS_URL} = process.env
-
 export default class PubSubPromise<Request, Response> {
   jobs = {} as {[jobId: string]: Job}
   publisher = new Redis(REDIS_URL)
@@ -39,27 +37,12 @@ export default class PubSubPromise<Request, Response> {
   }
 
   publish = (request: Request) => {
-    return new Promise<Response>((resolve) => {
+    return new Promise<Response>((resolve, reject) => {
       const nextJob = numToBase64(this.jobCounter++)
       const jobId = `${SERVER_ID}:${nextJob}`
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
-        const errorMessage = `GQL Executor took more than ${MAX_TIMEOUT}ms to respond`
-        const {
-          authToken,
-          query = '',
-          variables = '',
-          docId = ''
-        } = (request as unknown) as GQLRequest
-        sendToSentry(new Error(errorMessage), {
-          tags: {
-            authToken: JSON.stringify(authToken),
-            query,
-            variables: JSON.stringify(variables),
-            docId
-          }
-        })
-        return {data: null, errors: [{message: errorMessage}]}
+        reject(new Error('TIMEOUT'))
       }, MAX_TIMEOUT)
       const previousJob = this.jobs[jobId]
       if (previousJob) {
