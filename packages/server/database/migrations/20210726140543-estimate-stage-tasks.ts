@@ -83,6 +83,7 @@ export const up = async function(r: R) {
             meetingId,
             sortOrder: dndNoise(),
             status: 'future',
+            tags: ['archived'],
             teamId,
             integrationHash: serviceTaskId,
             integration: {
