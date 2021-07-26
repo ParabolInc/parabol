@@ -1,13 +1,13 @@
-import {useRef, useEffect} from 'react'
+import {useEffect} from 'react'
+import useEventCallback from './useEventCallback'
 
 export const useBeforeUnload = (callback: () => any) => {
-  const callbackRef = useRef(callback)
+  const cb = useEventCallback(callback)
 
   useEffect(() => {
-    const onUnload = callbackRef.current
-    window.addEventListener('beforeunload', onUnload)
+    window.addEventListener('beforeunload', cb)
     return () => {
-      window.removeEventListener('beforeunload', onUnload)
+      window.removeEventListener('beforeunload', cb)
     }
-  }, [callbackRef])
+  }, [cb])
 }
