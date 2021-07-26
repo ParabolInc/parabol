@@ -33,7 +33,7 @@ export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) =>
 
       const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
       const extname = path.extname(absoluteImageUrl)
-      const imageUrlWithoutExt = absoluteImageUrl.replace(extname, '')
+      const imageUrlWithoutExt = absoluteImageUrl.slice(0, absoluteImageUrl.length - extname.length)
       const hashedImageUrl = createImageUrlHash(imageUrlWithoutExt)
       const hashedImageWithExt = `${hashedImageUrl}${extname}`
       imageUrlToHash[absoluteImageUrl] = hashedImageWithExt
@@ -68,13 +68,13 @@ const downloadAndCacheImage = async (
   const isImageAlreadyCached = await redis.exists(hashedImageUrl)
   if (isImageAlreadyCached) return
 
-  redis.setBuffer(hashedImageUrl, NO_IMAGE_BUFFER, 'PX', IMAGE_TTL_MS)
+  await redis.setBuffer(hashedImageUrl, NO_IMAGE_BUFFER, 'PX', IMAGE_TTL_MS)
   const imageBuffer = await manager.getImage(imageUrl)
   if (!imageBuffer) {
     await redis.del(hashedImageUrl)
     return
   }
-  redis.setBuffer(hashedImageUrl, imageBuffer, 'PX', IMAGE_TTL_MS)
+  return redis.setBuffer(hashedImageUrl, imageBuffer, 'PX', IMAGE_TTL_MS)
 }
 
 const createImageUrlHash = (imageUrl: string) => {
@@ -82,6 +82,6 @@ const createImageUrlHash = (imageUrl: string) => {
     crypto
       .createHmac('sha256', serverSecret)
       .update(imageUrl)
-      .digest('base64')
+      .digest()
   )
 }
