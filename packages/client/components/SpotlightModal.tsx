@@ -45,7 +45,6 @@ const SimilarReflectionGroups = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   height: '66.6%',
-  width: '100%',
   padding: 16
 })
 
@@ -53,7 +52,6 @@ const Title = styled('div')({
   color: PALETTE.SLATE_800,
   fontSize: 16,
   fontWeight: 600,
-  height: 'fit-content',
   textAlign: 'center'
 })
 
@@ -108,10 +106,6 @@ const SearchIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD24
 })
 
-const CardWrapper = styled('div')({
-  // paddingTop: 16
-})
-
 const StyledCloseButton = styled(PlainButton)({
   height: 24,
   position: 'absolute',
@@ -151,14 +145,12 @@ const SpotlightModal = (props: Props) => {
           </StyledCloseButton>
         </TopRow>
         <Content>
-          <CardWrapper>
-            <DraggableReflectionCard
-              isReadOnly
-              staticIdx={0}
-              reflection={spotlightReflection}
-              meeting={meeting}
-            />
-          </CardWrapper>
+          <DraggableReflectionCard
+            isReadOnly
+            staticIdx={0}
+            reflection={spotlightReflection}
+            meeting={meeting}
+          />
         </Content>
         <SearchItem>
           <StyledMenuItemIcon>
