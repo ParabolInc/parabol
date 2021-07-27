@@ -133,7 +133,6 @@ const SpotlightModal = (props: Props) => {
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') closeSpotlight()
   }
-  const spotlightReflection = {...reflection, inSpotlight: true}
   const reflectionGroupsCount = 0
   return (
     <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
@@ -146,10 +145,11 @@ const SpotlightModal = (props: Props) => {
         </TopRow>
         <Content>
           <DraggableReflectionCard
+            inSpotlight
             isReadOnly
             staticIdx={0}
-            reflection={spotlightReflection}
-            meeting={meeting}
+            reflection={reflection as any}
+            meeting={meeting as any}
           />
         </Content>
         <SearchItem>

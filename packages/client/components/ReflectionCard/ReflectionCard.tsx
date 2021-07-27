@@ -59,6 +59,7 @@ const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) =>
 
 interface Props {
   isClipped?: boolean
+  inSpotlight?: boolean
   isReadOnly?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
@@ -83,16 +84,17 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meeting, reflection, isClipped, isReadOnly, stackCount, showReactji, dataCy} = props
   const {
-    id: reflectionId,
-    content,
-    promptId,
-    isViewerCreator,
-    meetingId,
-    reactjis,
-    inSpotlight
-  } = reflection
+    meeting,
+    reflection,
+    isClipped,
+    inSpotlight,
+    isReadOnly,
+    stackCount,
+    showReactji,
+    dataCy
+  } = props
+  const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
@@ -308,7 +310,6 @@ export default createFragmentContainer(ReflectionCard, {
       isViewerCreator
       id
       isEditing
-      inSpotlight
       meetingId
       reflectionGroupId
       promptId

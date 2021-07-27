@@ -45,6 +45,7 @@ const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDragga
 export type ReflectionDragState = ReturnType<typeof makeDragState>
 
 interface Props {
+  inSpotlight?: boolean
   isClipped?: boolean
   isDraggable?: boolean
   isReadOnly?: boolean
@@ -68,6 +69,7 @@ const DraggableReflectionCard = (props: Props) => {
   const {
     isClipped,
     isReadOnly,
+    inSpotlight,
     reflection,
     staticIdx,
     staticReflections,
@@ -78,7 +80,7 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing, inSpotlight} = reflection
+  const {isDropping, isEditing} = reflection
   const [drag] = useState(makeDragState)
   const staticReflectionCount = staticReflections?.length || 0
   const {onMouseDown} = useDraggableReflectionCard(
@@ -105,6 +107,7 @@ const DraggableReflectionCard = (props: Props) => {
         dataCy={dataCy}
         reflection={reflection}
         isClipped={isClipped}
+        inSpotlight={inSpotlight}
         isReadOnly={isReadOnly}
         meeting={meeting}
       />
