@@ -167,7 +167,7 @@ export default createFragmentContainer(ParabolScopingSearchResultItem, {
       integration {
         ... on JiraIssue {
           __typename
-          title
+          summary
         }
         ... on _xGitHubIssue {
           __typename

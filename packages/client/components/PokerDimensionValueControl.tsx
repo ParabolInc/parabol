@@ -81,7 +81,7 @@ interface Props {
 
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
-  const {id: stageId, dimensionRef, meetingId, service, serviceField, story} = stage
+  const {id: stageId, dimensionRef, meetingId, serviceField, task} = stage
   const finalScore = stage.finalScore || ''
   const {name: serviceFieldName, type: serviceFieldType} = serviceField
   const {scale} = dimensionRef
@@ -163,9 +163,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && cardScore === finalScore
-  const isJiraLegacy = service === 'jira'
-  const isJiraNew = story?.integration?.__typename === 'JiraIssue'
-  const isJira = isJiraLegacy || isJiraNew
+  const isJira = task?.integration?.__typename === 'JiraIssue'
   const handleLabelClick = () => inputRef.current!.focus()
   const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (
@@ -233,12 +231,9 @@ export default createFragmentContainer(PokerDimensionValueControl, {
         name
         type
       }
-      service
-      story {
-        ... on Task {
-          integration {
-            __typename
-          }
+      task {
+        integration {
+          __typename
         }
       }
       dimensionRef {

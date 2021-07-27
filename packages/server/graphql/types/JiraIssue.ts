@@ -8,16 +8,14 @@ import GraphQLURLType from './GraphQLURLType'
 import JiraRemoteProject from './JiraRemoteProject'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
-import Story, {storyFields} from './Story'
 import TaskIntegration from './TaskIntegration'
 
 const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraIssue',
   description: 'The Jira Issue that comes direct from Jira',
-  interfaces: () => [Story, TaskIntegration],
+  interfaces: () => [TaskIntegration],
   isTypeOf: ({cloudId, issueKey}) => !!(cloudId && issueKey),
   fields: () => ({
-    ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'GUID cloudId:issueKey',
@@ -72,13 +70,6 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     summary: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The plaintext summary of the jira issue'
-    },
-    title: {
-      type: GraphQLNonNull(GraphQLString),
-      description: 'Alias for summary used by the Story interface',
-      resolve: ({summary}) => {
-        return summary
-      }
     },
     description: {
       type: GraphQLNonNull(GraphQLString),

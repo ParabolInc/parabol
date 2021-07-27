@@ -11,7 +11,6 @@ import EditCommentingPayload from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
-import JiraCreateIssuePayload from './JiraCreateIssuePayload'
 import {JoinMeetingSuccess} from './JoinMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
@@ -48,7 +47,6 @@ const types = [
   EditReflectionPayload,
   EndDraggingReflectionPayload,
   FlagReadyToAdvanceSuccess,
-  JiraCreateIssuePayload,
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,

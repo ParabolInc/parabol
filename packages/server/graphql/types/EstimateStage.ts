@@ -20,9 +20,7 @@ import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionTh
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import ServiceField from './ServiceField'
-import Story from './Story'
 import Task from './Task'
-import TaskServiceEnum from './TaskServiceEnum'
 import TemplateDimensionRef from './TemplateDimensionRef'
 import User from './User'
 
@@ -36,23 +34,11 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     ...discussionThreadStageFields(),
     creatorUserId: {
       type: GraphQLNonNull(GraphQLID),
-      description:
-        'The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue'
+      description: 'The id of the user that added this stage.'
     },
-    // taskId will replace service + serviceTaskId in a subsequent PR
     taskId: {
-      type: GraphQLID,
-      description: 'The ID that points to the issue that exists in parabol'
-    },
-    service: {
-      type: GraphQLNonNull(TaskServiceEnum),
-      description: 'The service the task is connected to',
-      resolve: ({service}) => service || 'PARABOL'
-    },
-    serviceTaskId: {
       type: GraphQLNonNull(GraphQLID),
-      description:
-        'The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId'
+      description: 'The ID that points to the issue that exists in parabol'
     },
     serviceField: {
       type: GraphQLNonNull(ServiceField),
@@ -193,28 +179,6 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
         'The task referenced in the stage, as it exists in Parabol. null if the task was deleted',
       resolve: async ({taskId}, _args, {dataLoader}) => {
         return dataLoader.get('tasks').load(taskId)
-      }
-    },
-    story: {
-      type: Story,
-      description:
-        'the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed',
-      resolve: async (
-        {service, serviceTaskId, teamId, creatorUserId, taskId},
-        _args,
-        {dataLoader}
-      ) => {
-        if (taskId) {
-          return dataLoader.get('tasks').load(taskId)
-        }
-        // DEPRECATED & WILL BE REMOVED SOON
-        if (service === 'jira') {
-          const {cloudId, issueKey} = JiraIssueId.split(serviceTaskId)
-          return dataLoader
-            .get('jiraIssue')
-            .load({cloudId, issueKey, teamId, userId: creatorUserId})
-        }
-        return dataLoader.get('tasks').load(serviceTaskId)
       }
     },
     isVoting: {

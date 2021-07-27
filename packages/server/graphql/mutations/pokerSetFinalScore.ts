@@ -5,7 +5,6 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import {TaskServiceEnum} from '../../database/types/Task'
 import updateStage from '../../database/updateStage'
 import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
@@ -92,24 +91,18 @@ const pokerSetFinalScore = {
 
     // RESOLUTION
     // update integration
-    const {creatorUserId, dimensionRefIdx, service, serviceTaskId, discussionId, taskId} = stage
+    const {dimensionRefIdx, serviceTaskId, discussionId, taskId} = stage
     const templateRef = await getTemplateRefById(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
     let jiraFieldId: string | undefined = undefined
-    const getIsJira = async (service: TaskServiceEnum, taskId?: string) => {
-      if (service === 'jira') return true
-      if (!taskId) return false
-      const task = await dataLoader.get('tasks').load(taskId)
-      if (!task) return false
-      const {integration} = task
-      if (!integration) return false
-      return integration.service === 'jira'
-    }
-    const isJira = await getIsJira(service, taskId)
-    if (isJira) {
-      const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
+
+    const task = await dataLoader.get('tasks').load(taskId)
+    const {integration} = task
+    if (integration?.service === 'jira') {
+      const {accessUserId} = integration
+      const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId})
       if (!auth) {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }

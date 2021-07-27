@@ -49,7 +49,7 @@ interface Props {
 
 const JiraScopingSearchResultItem = (props: Props) => {
   const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {id: serviceTaskId, issueKey, title, url} = issue
+  const {id: serviceTaskId, issueKey, summary, url} = issue
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -78,7 +78,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
     <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
-        <Title>{title}</Title>
+        <Title>{summary}</Title>
         <StyledLink
           href={url}
           rel='noopener noreferrer'
@@ -97,8 +97,7 @@ export default createFragmentContainer(JiraScopingSearchResultItem, {
   issue: graphql`
     fragment JiraScopingSearchResultItem_issue on JiraIssue {
       id
-      # use title instead of summary so the optimistic updater will use it for the sidebar
-      title
+      summary
       issueKey
       url
     }

@@ -144,7 +144,6 @@ const updatePokerScope = {
         (_, idx) =>
           new EstimateStage({
             creatorUserId: viewerId,
-            service: 'PARABOL',
             // integrationHash if integrated, else taskId
             serviceTaskId,
             sortOrder: lastSortOrder + 1,

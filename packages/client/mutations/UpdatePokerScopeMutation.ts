@@ -25,11 +25,9 @@ graphql`
             ...EstimatePhaseDiscussionDrawerEstimateStage
             id
             isNavigableByFacilitator
-            service
-            serviceTaskId
             sortOrder
             isVoting
-            creatorUserId
+            taskId
             dimensionRef {
               name
               scale {
@@ -83,7 +81,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {viewerId} = atmosphere
       const {meetingId, updates} = variables
       const meeting = store.get<Meeting>(meetingId)
       if (!meeting) return
@@ -95,11 +92,11 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
       const [firstStage] = stages
       const dimensionRefIds = [] as string[]
       if (firstStage) {
-        const firstStageServiceTaskId = firstStage.getValue('serviceTaskId')
-        const stagesForServiceTaskId = stages.filter(
-          (stage) => stage.getValue('serviceTaskId') === firstStageServiceTaskId
+        const firstStageTaskId = firstStage.getValue('taskId')
+        const stagesForTaskId = stages.filter(
+          (stage) => stage.getValue('taskId') === firstStageTaskId
         )
-        const prevDimensionRefIds = stagesForServiceTaskId.map((stage) => {
+        const prevDimensionRefIds = stagesForTaskId.map((stage) => {
           const dimensionRef = stage.getLinkedRecord('dimensionRef')
           return dimensionRef?.getValue('id') ?? ''
         }) as string[]
@@ -120,12 +117,16 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
         dimensionRefIds.push(dimensionRefId)
       }
       updates.forEach((update) => {
-        const {service, serviceTaskId, action} = update
+        const {serviceTaskId, action} = update
 
         if (action === 'ADD') {
-          const stageExists = !!stages.find(
-            (stage) => stage.getValue('serviceTaskId') === serviceTaskId
+          const stageTasks = stages.map((stage) =>
+            stage.getLinkedRecord<{integrationHash: string}>('task')
           )
+          const stageIntegrationHashes = stageTasks.map(
+            (task) => task?.getValue('integrationHash') ?? ''
+          )
+          const stageExists = stageIntegrationHashes.includes(serviceTaskId)
           if (stageExists) return
           const lastSortOrder = stages[stages.length - 1]?.getValue('sortOrder') ?? -1
 
@@ -135,9 +136,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
           })
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
             const nextEstimateStage = createProxyRecord(store, 'EstimateStage', {
-              creatorUserId: viewerId,
-              service,
-              serviceTaskId,
               sortOrder: lastSortOrder + 1,
               durations: undefined,
               dimensionRefIdx,
@@ -151,19 +149,18 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
             if (dimensionRef) {
               nextEstimateStage.setLinkedRecord(dimensionRef, 'dimensionRef')
             }
-            const story = store.get(serviceTaskId)
-            if (story) {
-              nextEstimateStage.setLinkedRecord(story, 'story')
-            }
+            // NEED TO OPTIMISTICALLY CREATE TASK?
             return nextEstimateStage
           })
 
           const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
-          const nextStages = stages.filter(
-            (stage) => stage.getValue('serviceTaskId') !== serviceTaskId
-          )
+          const nextStages = stages.filter((stage) => {
+            const task = stage.getLinkedRecord('task')
+            const integrationHash = task?.getValue('integrationHash')
+            return integrationHash !== serviceTaskId
+          })
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         }
       })

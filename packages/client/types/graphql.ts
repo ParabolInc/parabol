@@ -44360,7 +44360,7 @@ export interface ITask {
   __typename: 'Task';
 
   /**
-   * serviceTaskId
+   * shortid
    */
   id: string;
 
@@ -44408,17 +44408,6 @@ export interface ITask {
    * The timestamp the item was updated
    */
   updatedAt: any;
-
-  /**
-   * A list of users currently commenting
-   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * The first block of the content
-   */
-  title: string;
 
   /**
    * The agenda item that the task was created in, if any
@@ -44489,6 +44478,11 @@ export interface ITask {
    * The team this task belongs to
    */
   team: ITeam;
+
+  /**
+   * The first block of the content
+   */
+  title: string;
 
   /**
    * * The userId, index useful for server-side methods getting all tasks under a user. This can be null if the task is not assigned to anyone.
@@ -44564,51 +44558,6 @@ export interface IThreadable {
 }
 
 /**
- * An entity that can be used in a poker meeting and receive estimates
- */
-export type Story = ITask | IJiraIssue;
-
-/**
- * An entity that can be used in a poker meeting and receive estimates
- */
-export interface IStory {
-  __typename: 'Story';
-
-  /**
-   * serviceTaskId
-   */
-  id: string;
-
-  /**
-   * A list of users currently commenting
-   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * The title, independent of the story type
-   */
-  title: string;
-}
-
-/**
- * The user that is commenting
- */
-export interface ICommentorDetails {
-  __typename: 'CommentorDetails';
-
-  /**
-   * The userId of the person commenting
-   */
-  userId: string;
-
-  /**
-   * The preferred name of the user commenting
-   */
-  preferredName: string;
-}
-
-/**
  * A request placeholder that will likely turn into 1 or more tasks
  */
 export interface IAgendaItem {
@@ -44679,6 +44628,23 @@ export interface IAgendaItem {
    * The team member that created the agenda item
    */
   teamMember: ITeamMember;
+}
+
+/**
+ * The user that is commenting
+ */
+export interface ICommentorDetails {
+  __typename: 'CommentorDetails';
+
+  /**
+   * The userId of the person commenting
+   */
+  userId: string;
+
+  /**
+   * The preferred name of the user commenting
+   */
+  preferredName: string;
 }
 
 /**
@@ -44989,17 +44955,6 @@ export interface IJiraIssue {
    * GUID cloudId:issueKey
    */
   id: string;
-
-  /**
-   * A list of users currently commenting
-   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * Alias for summary used by the Story interface
-   */
-  title: string;
 
   /**
    * The parabol teamId this issue was fetched for
@@ -48325,24 +48280,14 @@ export interface IEstimateStage {
   discussion: IDiscussion;
 
   /**
-   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   * The id of the user that added this stage.
    */
   creatorUserId: string;
 
   /**
    * The ID that points to the issue that exists in parabol
    */
-  taskId: string | null;
-
-  /**
-   * The service the task is connected to
-   */
-  service: TaskServiceEnum;
-
-  /**
-   * The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId
-   */
-  serviceTaskId: string;
+  taskId: string;
 
   /**
    * The field name used by the service for this dimension
@@ -48388,11 +48333,6 @@ export interface IEstimateStage {
    * The task referenced in the stage, as it exists in Parabol. null if the task was deleted
    */
   task: ITask | null;
-
-  /**
-   * the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed
-   */
-  story: Story | null;
 
   /**
    * true when the participants are still voting and results are hidden. false when votes are revealed
@@ -50105,7 +50045,7 @@ export interface IPokerMeeting {
   /**
    * A single story created in a Sprint Poker meeting
    */
-  story: Story | null;
+  story: ITask | null;
 
   /**
    * The ID of the template used for the meeting. Note the underlying template could have changed!

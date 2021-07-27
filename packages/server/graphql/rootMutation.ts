@@ -49,7 +49,6 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
-import jiraCreateIssue from './mutations/jiraCreateIssue'
 import joinMeeting from './mutations/joinMeeting'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
@@ -189,7 +188,6 @@ export default new GraphQLObjectType<any, Context>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
-      jiraCreateIssue,
       loginWithGoogle,
       loginWithPassword,
       movePokerTemplateDimension,
