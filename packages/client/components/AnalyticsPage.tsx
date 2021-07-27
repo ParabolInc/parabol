@@ -76,7 +76,7 @@ const AnalyticsPage = () => {
     const logRocketId = window.__ACTION__.logRocket
     const errorProneAt = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
     const expiredErrorProne =
-      errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('30d'))
+      errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('14d'))
     const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
     const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {})
     const isWatched = res?.viewer?.isWatched
