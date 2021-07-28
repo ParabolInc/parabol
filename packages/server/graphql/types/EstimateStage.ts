@@ -8,7 +8,6 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -43,48 +42,14 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     serviceField: {
       type: GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
-      resolve: async (
-        {dimensionRefIdx, meetingId, service, serviceTaskId, teamId, taskId},
-        _args,
-        {dataLoader}
-      ) => {
+      resolve: async ({dimensionRefIdx, meetingId, teamId, taskId}, _args, {dataLoader}) => {
         const NULL_FIELD = {name: '', type: 'string'}
-        if (!taskId) {
-          // LEGACY
-          if (service === 'jira') {
-            const [meeting, team] = await Promise.all([
-              dataLoader.get('newMeetings').load(meetingId),
-              dataLoader.get('teams').load(teamId)
-            ])
-            const {templateRefId} = meeting
-            const templateRef = await getTemplateRefById(templateRefId)
-            const {dimensions} = templateRef
-            const dimensionRef = dimensions[dimensionRefIdx]
-            const {name: dimensionName} = dimensionRef
-            const {cloudId, projectKey} = JiraIssueId.split(serviceTaskId)
-            const jiraDimensionFields = team.jiraDimensionFields || []
-            const existingDimensionField = jiraDimensionFields.find(
-              (field) =>
-                field.dimensionName === dimensionName &&
-                field.cloudId === cloudId &&
-                field.projectKey === projectKey
-            )
-
-            if (existingDimensionField)
-              return {
-                name: existingDimensionField.fieldName,
-                type: existingDimensionField.fieldType
-              }
-
-            return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
-          }
-          return NULL_FIELD
-        }
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
         const {integration} = task
         if (!integration) return NULL_FIELD
         if (integration.service === 'jira') {
+          const {cloudId, projectKey} = integration
           const [meeting, team] = await Promise.all([
             dataLoader.get('newMeetings').load(meetingId),
             dataLoader.get('teams').load(teamId)
@@ -94,7 +59,6 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
           const {dimensions} = templateRef
           const dimensionRef = dimensions[dimensionRefIdx]
           const {name: dimensionName} = dimensionRef
-          const {cloudId, projectKey} = JiraIssueId.split(serviceTaskId)
           const jiraDimensionFields = team.jiraDimensionFields || []
           const existingDimensionField = jiraDimensionFields.find(
             (field) =>
@@ -141,7 +105,20 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     },
     finalScore: {
       type: GraphQLString,
-      description: 'the final score, as defined by the facilitator'
+      description: 'the final score, as defined by the facilitator',
+      resolve: async ({taskId, meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
+        const [meeting, estimates] = await Promise.all([
+          dataLoader.get('newMeetings').load(meetingId),
+          dataLoader.get('meetingTaskEstimates').load({taskId, meetingId})
+        ])
+        const {templateRefId} = meeting
+        const templateRef = await getTemplateRefById(templateRefId)
+        const {dimensions} = templateRef
+        const dimensionRef = dimensions[dimensionRefIdx]
+        const {name: dimensionName} = dimensionRef
+        const dimensionEstimate = estimates.find((estimate) => estimate.name === dimensionName)
+        return dimensionEstimate?.label ?? null
+      }
     },
     hoveringUserIds: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
