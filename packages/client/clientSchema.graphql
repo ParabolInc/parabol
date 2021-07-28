@@ -104,7 +104,3 @@ extend type Discussion {
   isAnonymousComment: Boolean
   replyingToCommentId: String
 }
-
-extend type ThreadableConnection {
-  commentors: [User!]!
-}

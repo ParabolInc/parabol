@@ -3,7 +3,6 @@ import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
-import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
 import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
@@ -68,7 +67,6 @@ const updateHandlers = {
   CreateReflectionPayload: createReflectionMeetingUpdater,
   DeleteCommentSuccess: deleteCommentMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
-  EditCommentingPayload: editCommentingMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
