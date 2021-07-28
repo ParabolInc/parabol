@@ -1,10 +1,10 @@
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {promises as fsp} from 'fs'
 import mime from 'mime-types'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
 import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getRedis from './utils/getRedis'
-import jiraPlaceholder from '../../static/images/jira/placeholder.png'
 
 const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
   const redis = getRedis()
@@ -34,19 +34,19 @@ const servePlaceholderImage = async (res: HttpResponse) => {
 const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const fileName = req.getParameter(0)
   if (!fileName) {
-    servePlaceholderImage(res)
+    await servePlaceholderImage(res)
     return
   }
 
   const mimeType = mime.lookup(fileName)
   if (!mimeType || !mimeType.startsWith('image/')) {
-    servePlaceholderImage(res)
+    await servePlaceholderImage(res)
     return
   }
 
   const imageBuffer = await getImageFromCache(fileName, true)
   if (!imageBuffer) {
-    servePlaceholderImage(res)
+    await servePlaceholderImage(res)
     return
   }
 
