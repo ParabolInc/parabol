@@ -173,7 +173,7 @@ const MeetingCard = (props: Props) => {
       <MeetingImgWrapper>
         <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
         <Link to={`/meet/${meetingId}`}>
-          <MeetingImg src={ILLUSTRATIONS[meetingType]} />
+          <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
         </Link>
       </MeetingImgWrapper>
       <MeetingInfo>
