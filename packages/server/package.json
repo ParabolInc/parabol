@@ -137,7 +137,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
-    "uWebSockets.js": "https://github.com/tiffanyhan/uWebSockets.js/tarball/2e733751ce4765c23ca96e3e57265069536ac173"
+    "uWebSockets.js": "https://github.com/adaniels-parabol/uWebSockets.js/tarball/binaries"
   },
   "jest": {
     "modulePaths": [
