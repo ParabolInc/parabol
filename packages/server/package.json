@@ -116,7 +116,7 @@
     "ioredis": "^4.11.2",
     "jsonwebtoken": "^8.5.0",
     "mailcomposer": "^4.0.1",
-    "mailgun-js": "^0.22.0",
+    "mailgun.js": "^3.5.2",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "nest-graphql-endpoint": "^0.2.2",
