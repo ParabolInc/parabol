@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.23.0 2021-Jul-28
+
+### Added
+
+- Improved discussion thread empty state (#5192)
+- Added poker support for parabol tasks with integrated issues (#5205)
+- Added archive button to poker meeting timeline events (#5229)
+- Proxy Jira images through Parabol (#5190)
+- Added empty alt property to meeting card images (#5232)
+
+### Changed
+
+- Updated meeting cards styles for improved contrast and HTML semantics (#5209)
+- Make team members query order-by case insensitive (#5224)
+- Improved handling of slow responding gql executor (#5210)
+
+### Fixed
+
+- Keep Parabol poker estimates synced with Jira(#5220)
+- Fix nonexistent localStorage method invocation (#5223)
+- Fix buggy comment status text not going away (#5197)
+
 ## 6.22.0 2021-Jul-22
 ### Added
 
