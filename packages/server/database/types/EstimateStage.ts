@@ -5,6 +5,7 @@ import {TaskServiceEnum} from './Task'
 
 interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   creatorUserId: string
+  taskId: string
   service: TaskServiceEnum
   serviceTaskId: string
   sortOrder: number
@@ -19,6 +20,7 @@ export default class EstimateStage extends GenericMeetingStage {
   creatorUserId: string
   service: TaskServiceEnum
   serviceTaskId: string
+  taskId: string
   sortOrder: number
   dimensionRefIdx: number
   finalScore?: number
@@ -35,13 +37,15 @@ export default class EstimateStage extends GenericMeetingStage {
       sortOrder,
       scores,
       dimensionRefIdx,
-      discussionId
+      discussionId,
+      taskId
     } = input
     this.creatorUserId = creatorUserId
     this.service = service
     this.serviceTaskId = serviceTaskId
     this.sortOrder = sortOrder
     this.scores = scores || []
+    this.taskId = taskId
     this.isNavigable = true
     this.isNavigableByFacilitator = true
     this.isVoting = true

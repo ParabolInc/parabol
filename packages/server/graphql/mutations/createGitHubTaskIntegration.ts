@@ -1,23 +1,15 @@
-import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import splitDraftContent from '../../../client/utils/draftjs/splitDraftContent'
+import GitHubIssueId from '../../../client/shared/gqlIds/GitHubIssueId'
+import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import getRethink from '../../database/rethinkDriver'
-import {
-  CreateIssueMutation,
-  CreateIssueMutationVariables,
-  GetRepoInfoQuery,
-  GetRepoInfoQueryVariables
-} from '../../types/githubTypes'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import createIssueMutation from '../../utils/githubQueries/createIssue.graphql'
-import getRepoInfo from '../../utils/githubQueries/getRepoInfo.graphql'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import {GitHubRequest} from '../rootSchema'
 import CreateGitHubTaskIntegrationPayload from '../types/CreateGitHubTaskIntegrationPayload'
+import createGitHubTask from './helpers/createGitHubTask'
 
 type CreateGitHubTaskIntegrationMutationVariables = {
   nameWithOwner: string
@@ -69,7 +61,7 @@ export default {
         {userId: viewerId}
       )
     }
-    const [repoOwner, repoName] = nameWithOwner.split('/')
+    const {repoOwner, repoName} = GitHubRepoId.split(nameWithOwner)
     if (!repoOwner || !repoName) {
       return standardError(new Error(`${nameWithOwner} is not a valid repository`), {
         userId: viewerId
@@ -86,76 +78,24 @@ export default {
         {userId: viewerId}
       )
     }
-    const {accessToken, login} = viewerAuth
-    const {title, contentState} = splitDraftContent(rawContentStr)
-    const body = stateToMarkdown(contentState)
-    const githubRequest = info.schema.githubRequest as GitHubRequest
-    const endpointContext = {accessToken}
-    const {data: repoInfo, errors} = await githubRequest<
-      GetRepoInfoQuery,
-      GetRepoInfoQueryVariables
-    >({
-      query: getRepoInfo,
-      variables: {
-        assigneeLogin: login,
-        repoName,
-        repoOwner
-      },
-      info,
-      endpointContext,
-      batchRef: context
-    })
 
-    if (errors) {
-      return {
-        error: {message: errors[0].message}
-      }
+    const res = await createGitHubTask(
+      rawContentStr,
+      repoOwner,
+      repoName,
+      viewerAuth,
+      context,
+      info
+    )
+    if (res.error) {
+      return {error: {message: res.error.message}}
     }
-
-    const {repository, user} = repoInfo
-    if (!repository || !user) {
-      return {error: {message: 'GitHub repo/user not found'}}
-    }
-
-    const {id: repositoryId} = repository
-    const {id: ghAssigneeId} = user
-    const {data: createIssueData, errors: createIssueErrors} = await githubRequest<
-      CreateIssueMutation,
-      CreateIssueMutationVariables
-    >({
-      query: createIssueMutation,
-      variables: {
-        input: {
-          title,
-          body,
-          repositoryId,
-          assigneeIds: [ghAssigneeId]
-        }
-      },
-      info,
-      endpointContext,
-      batchRef: context
-    })
-    if (createIssueErrors instanceof Error) {
-      return {error: {message: createIssueErrors[0].message}}
-    }
-
-    const {createIssue} = createIssueData
-    if (!createIssue) {
-      return {error: {message: 'GitHub create issue failed'}}
-    }
-    const {issue} = createIssue
-    if (!issue) {
-      return {error: {message: 'GitHub create issue failed'}}
-    }
-
-    const {number: issueNumber} = issue
-
+    const {issueNumber} = res
     await r
       .table('Task')
       .get(taskId)
       .update({
-        integrationHash: `${nameWithOwner}:${issueNumber}`,
+        integrationHash: GitHubIssueId.join(nameWithOwner, issueNumber),
         integration: {
           accessUserId: viewerId,
           service: 'github',

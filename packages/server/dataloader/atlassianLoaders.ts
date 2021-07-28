@@ -5,8 +5,11 @@ import {JiraGetIssueRes, JiraProject} from 'parabol-client/utils/AtlassianManage
 import getAtlassianAuthByUserIdTeamId, {
   AtlassianAuth
 } from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuth from '../postgres/queries/upsertAtlassianAuth'
+import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
+import {isNotNull} from '../utils/predicates'
 import sendToSentry from '../utils/sendToSentry'
 import RethinkDataLoader from './RethinkDataLoader'
 
@@ -23,6 +26,7 @@ export interface JiraIssueKey {
   userId: string
   cloudId: string
   issueKey: string
+  taskId?: string
 }
 
 export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
@@ -95,18 +99,57 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId, cloudId, issueKey}) => {
-          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
+        keys.map(async ({teamId, userId, cloudId, issueKey, taskId}) => {
+          const [auth, estimates] = await Promise.all([
+            parent.get('freshAtlassianAuth').load({teamId, userId}),
+            taskId ? parent.get('latestTaskEstimates').load(taskId) : []
+          ])
           if (!auth) return null
           const {accessToken} = auth
           const manager = new AtlassianServerManager(accessToken)
-          const issueRes = await manager.getIssue(cloudId, issueKey)
+          const estimateFieldIds = estimates
+            .map((estimate) => estimate.jiraFieldId)
+            .filter(isNotNull)
+
+          const issueRes = await manager.getIssue(cloudId, issueKey, estimateFieldIds)
           if (issueRes instanceof Error) {
             sendToSentry(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
             return null
           }
+          const {fields} = issueRes
+
+          const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
+            cloudId,
+            issueRes.fields.descriptionHTML
+          )
+          downloadAndCacheImages(manager, imageUrlToHash)
+
+          // update our records
+          await Promise.all(
+            estimates.map((estimate) => {
+              const {jiraFieldId, label, discussionId, dimensionName, taskId, userId} = estimate
+              const freshEstimate = String(fields[jiraFieldId])
+              if (freshEstimate === label) return undefined
+              // mutate current dataloader
+              estimate.label = freshEstimate
+              return insertTaskEstimate({
+                changeSource: 'external',
+                // keep the link to the discussion alive, if possible
+                discussionId,
+                jiraFieldId,
+                label: freshEstimate,
+                name: dimensionName,
+                meetingId: null,
+                stageId: null,
+                taskId,
+                userId
+              })
+            })
+          )
+
           return {
-            ...issueRes.fields,
+            ...fields,
+            descriptionHTML: updatedDescription,
             teamId,
             userId
           }

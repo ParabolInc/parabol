@@ -44431,7 +44431,7 @@ export interface ITask {
   dueDate: any | null;
 
   /**
-   * A list of estimates for the story, created in a poker meeting
+   * A list of the most recent estimates for the task
    */
   estimates: Array<ITaskEstimate>;
 
@@ -46433,6 +46433,21 @@ export interface ITaskEstimate {
   __typename: 'TaskEstimate';
 
   /**
+   * The ID of the estimate
+   */
+  id: string;
+
+  /**
+   * The timestamp the estimate was created
+   */
+  createdAt: any;
+
+  /**
+   * The source that a change came in through
+   */
+  changeSource: ChangeSourceEnum;
+
+  /**
    * The name of the estimate dimension
    */
   name: string;
@@ -46441,6 +46456,45 @@ export interface ITaskEstimate {
    * The human-readable label for the estimate
    */
   label: string;
+
+  /**
+   * *The taskId that the estimate refers to
+   */
+  taskId: string;
+
+  /**
+   * The userId that added the estimate
+   */
+  userId: string;
+
+  /**
+   * *The meetingId that the estimate occured in, if any
+   */
+  meetingId: string | null;
+
+  /**
+   * The meeting stageId the estimate occurred in, if any
+   */
+  stageId: string | null;
+
+  /**
+   * The discussionId where the estimated was discussed
+   */
+  discussionId: string | null;
+
+  /**
+   * If the task comes from jira, this is the jira field that the estimate refers to
+   */
+  jiraFieldId: string | null;
+}
+
+/**
+ * The source that a change to a record came in through
+ */
+export const enum ChangeSourceEnum {
+  meeting = 'meeting',
+  task = 'task',
+  external = 'external'
 }
 
 export interface ITaskEditorDetails {
@@ -48274,6 +48328,11 @@ export interface IEstimateStage {
    * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
    */
   creatorUserId: string;
+
+  /**
+   * The ID that points to the issue that exists in parabol
+   */
+  taskId: string | null;
 
   /**
    * The service the task is connected to
@@ -50590,6 +50649,10 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+
+  /**
+   * @deprecated "Use createTask"
+   */
   jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
@@ -52758,6 +52821,19 @@ export interface ICreateTaskInput {
    * userId, the owner of the task. This can be null if the task is not assigned to anyone.
    */
   userId?: string | null;
+  integration?: ICreateTaskIntegrationInput | null;
+}
+
+export interface ICreateTaskIntegrationInput {
+  /**
+   * The service to push this new task to
+   */
+  service: TaskServiceEnum;
+
+  /**
+   * The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
+   */
+  serviceProjectHash: string;
 }
 
 /**
@@ -54085,12 +54161,12 @@ export interface IUpdatePokerScopeSuccess {
 
 export interface IUpdatePokerScopeItemInput {
   /**
-   * The service where the task comes from
+   * The location of the single source of truth (e.g. a jira-integrated parabol task would be "jira")
    */
   service: TaskServiceEnum;
 
   /**
-   * A JSON commposite key used to fetch the task from the service
+   * If vanilla parabol task, taskId. If integrated parabol task, integrationHash
    */
   serviceTaskId: string;
 

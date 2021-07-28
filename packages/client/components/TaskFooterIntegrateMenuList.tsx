@@ -19,9 +19,9 @@ import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
+import MenuSearch from './MenuSearch'
 import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
-import MenuSearch from './MenuSearch'
 
 interface Props {
   menuProps: MenuProps
@@ -59,7 +59,7 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
-const getValue = (item: any) => (item.projectName || item.nameWithOwner).toLowerCase()
+const getValue = (item: any) => (item.remoteProject?.name || item.nameWithOwner).toLowerCase()
 
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {mutationProps, menuProps, placeholder, suggestedIntegrations, task} = props
@@ -151,7 +151,9 @@ graphql`
     id
     service
     ... on SuggestedIntegrationJira {
-      projectName
+      remoteProject {
+        name
+      }
       projectKey
       cloudId
     }

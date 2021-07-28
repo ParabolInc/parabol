@@ -2,10 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
-import {
-  TaskServiceEnum,
-  useMakeStageSummaries_phase
-} from '../__generated__/useMakeStageSummaries_phase.graphql'
+import {useMakeStageSummaries_phase} from '../__generated__/useMakeStageSummaries_phase.graphql'
 
 interface StageSummary {
   title: string
@@ -16,19 +13,6 @@ interface StageSummary {
   sortOrder: number
   stageIds: string[]
   finalScores: (string | null)[]
-}
-
-const getIssueKey = (service: TaskServiceEnum, serviceTaskId: string) => {
-  switch (service) {
-    case 'jira':
-      return JiraIssueId.split(serviceTaskId).issueKey
-    case 'PARABOL':
-      return null
-    case 'github':
-      return serviceTaskId
-    default:
-      return null
-  }
 }
 
 const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
@@ -45,8 +29,26 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
           service
           serviceTaskId
           story {
-            id
-            title
+            ... on Task {
+              __typename
+              title
+              integration {
+                ... on JiraIssue {
+                  __typename
+                  issueKey
+                  title
+                }
+                ... on _xGitHubIssue {
+                  __typename
+                  title
+                  number
+                }
+              }
+            }
+            ... on JiraIssue {
+              __typename
+              title
+            }
           }
         }
       }
@@ -59,21 +61,67 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
     const summaries = [] as StageSummary[]
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i]
-      const {serviceTaskId, story, service} = stage
+      const {serviceTaskId, story} = stage
       const batch = [stage]
       for (let j = i + 1; j < stages.length; j++) {
         const nextStage = stages[j]
         if (nextStage.serviceTaskId !== serviceTaskId) break
         batch.push(nextStage)
       }
-      const issueKey = getIssueKey(service, serviceTaskId)
-      const rawTitle = story?.title ?? null
-      const title = rawTitle ?? issueKey ?? '<Unknown Story>'
-      const subtitle = rawTitle ? issueKey ?? '' : ''
-
+      const getSummary = () => {
+        if (!story) {
+          // can remove during #5163
+          // the service is down
+          if (stage.service === 'jira') {
+            return {
+              title: '<Unknown Story>',
+              subtitle: JiraIssueId.split(serviceTaskId).issueKey
+            }
+          }
+          return {
+            title: '<Unknown Story>',
+            subtitle: ''
+          }
+        }
+        if (story.__typename === 'Task') {
+          const {integration, title} = story
+          if (!integration) {
+            // pure parabol task
+            return {
+              title,
+              subtitle: ''
+            }
+          }
+          if (integration.__typename === 'JiraIssue') {
+            // jira-integration parabol card
+            return {
+              title: integration.title,
+              subtitle: integration.issueKey
+            }
+          } else if (integration.__typename === '_xGitHubIssue') {
+            return {
+              title: integration.title,
+              subtitle: String(integration.number)
+            }
+          }
+          return {
+            title: '<Unknown Story>',
+            subtitle: ''
+          }
+        }
+        if (story.__typename === 'JiraIssue') {
+          return {
+            title: story.title,
+            subtitle: JiraIssueId.split(serviceTaskId).issueKey
+          }
+        }
+        return {
+          title: '<Unknown Story>',
+          subtitle: ''
+        }
+      }
       summaries.push({
-        title,
-        subtitle,
+        ...getSummary(),
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),

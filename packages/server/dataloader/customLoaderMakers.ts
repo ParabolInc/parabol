@@ -9,9 +9,11 @@ import {
   getDiscussionsByIdQuery,
   IGetDiscussionsByIdQueryResult
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
+import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
@@ -85,6 +87,18 @@ export const commentCountByDiscussionId = (parent: RethinkDataLoader) => {
         lookup[group] = reduction
       })
       return discussionIds.map((discussionId) => lookup[discussionId] || 0)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const latestTaskEstimates = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
+    async (taskIds) => {
+      const rows = await getLatestTaskEstimates(taskIds)
+      return taskIds.map((taskId) => rows.filter((row) => row.taskId === taskId))
     },
     {
       ...parent.dataLoaderOptions
@@ -166,8 +180,8 @@ export const userTasks = (parent: RethinkDataLoader) => {
                 archived
                   ? task('tags').contains('archived')
                   : task('tags')
-                    .contains('archived')
-                    .not()
+                      .contains('archived')
+                      .not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true

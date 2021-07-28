@@ -139,7 +139,7 @@ interface IsValidAuthRes {
 }
 
 abstract class SlackManager {
-  static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read'
+  static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read,groups:read'
   token: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland

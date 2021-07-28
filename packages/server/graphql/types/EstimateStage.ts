@@ -38,6 +38,11 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       description:
         'The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue'
     },
+    // taskId will replace service + serviceTaskId in a subsequent PR
+    taskId: {
+      type: GraphQLID,
+      description: 'The ID that points to the issue that exists in parabol'
+    },
     service: {
       type: GraphQLNonNull(TaskServiceEnum),
       description: 'The service the task is connected to',
@@ -52,11 +57,47 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
       resolve: async (
-        {dimensionRefIdx, meetingId, service, serviceTaskId, teamId},
+        {dimensionRefIdx, meetingId, service, serviceTaskId, teamId, taskId},
         _args,
         {dataLoader}
       ) => {
-        if (service === 'jira') {
+        const NULL_FIELD = {name: '', type: 'string'}
+        if (!taskId) {
+          // LEGACY
+          if (service === 'jira') {
+            const [meeting, team] = await Promise.all([
+              dataLoader.get('newMeetings').load(meetingId),
+              dataLoader.get('teams').load(teamId)
+            ])
+            const {templateRefId} = meeting
+            const templateRef = await getTemplateRefById(templateRefId)
+            const {dimensions} = templateRef
+            const dimensionRef = dimensions[dimensionRefIdx]
+            const {name: dimensionName} = dimensionRef
+            const {cloudId, projectKey} = JiraIssueId.split(serviceTaskId)
+            const jiraDimensionFields = team.jiraDimensionFields || []
+            const existingDimensionField = jiraDimensionFields.find(
+              (field) =>
+                field.dimensionName === dimensionName &&
+                field.cloudId === cloudId &&
+                field.projectKey === projectKey
+            )
+
+            if (existingDimensionField)
+              return {
+                name: existingDimensionField.fieldName,
+                type: existingDimensionField.fieldType
+              }
+
+            return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
+          }
+          return NULL_FIELD
+        }
+        const task = await dataLoader.get('tasks').load(taskId)
+        if (!task) return NULL_FIELD
+        const {integration} = task
+        if (!integration) return NULL_FIELD
+        if (integration.service === 'jira') {
           const [meeting, team] = await Promise.all([
             dataLoader.get('newMeetings').load(meetingId),
             dataLoader.get('teams').load(teamId)
@@ -76,11 +117,14 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
           )
 
           if (existingDimensionField)
-            return {name: existingDimensionField.fieldName, type: existingDimensionField.fieldType}
+            return {
+              name: existingDimensionField.fieldName,
+              type: existingDimensionField.fieldType
+            }
 
           return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
         }
-        return {name: '', type: 'string'}
+        return NULL_FIELD
       }
     },
     sortOrder: {
@@ -146,7 +190,15 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       type: Story,
       description:
         'the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed',
-      resolve: async ({service, serviceTaskId, teamId, creatorUserId}, _args, {dataLoader}) => {
+      resolve: async (
+        {service, serviceTaskId, teamId, creatorUserId, taskId},
+        _args,
+        {dataLoader}
+      ) => {
+        if (taskId) {
+          return dataLoader.get('tasks').load(taskId)
+        }
+        // DEPRECATED & WILL BE REMOVED SOON
         if (service === 'jira') {
           const {cloudId, issueKey} = JiraIssueId.split(serviceTaskId)
           return dataLoader

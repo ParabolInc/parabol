@@ -1,18 +1,30 @@
+import stringify from 'fast-json-stable-stringify'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import getRethink from '../database/rethinkDriver'
 import JiraDimensionField from '../database/types/JiraDimensionField'
 import {DataLoaderWorker} from '../graphql/graphql'
-import AtlassianServerManager from './AtlassianServerManager'
-import catchAndLog from '../postgres/utils/catchAndLog'
+import getPg from '../postgres/getPg'
 import {
   IMergeTeamJiraDimensionFieldsQueryParams,
   mergeTeamJiraDimensionFieldsQuery
 } from '../postgres/queries/generated/mergeTeamJiraDimensionFieldsQuery'
-import getPg from '../postgres/getPg'
-import stringify from 'fast-json-stable-stringify'
+import catchAndLog from '../postgres/utils/catchAndLog'
+import AtlassianServerManager from './AtlassianServerManager'
+
+interface Mapper {
+  cloudId: string
+  projectKey: string
+  issueKey: string
+  dimensionName: string
+}
+
+const hashMapper = (mapper: Mapper) => {
+  const {cloudId, projectKey, dimensionName} = mapper
+  return JSON.stringify({cloudId, projectKey, dimensionName})
+}
 
 const ensureJiraDimensionField = async (
-  requiredMappers: {cloudId: string; projectKey: string; issueKey: string; dimensionName: string}[],
+  requiredMappers: Mapper[],
   teamId: string,
   userId: string,
   dataLoader: DataLoaderWorker
@@ -20,15 +32,21 @@ const ensureJiraDimensionField = async (
   if (requiredMappers.length === 0) return
   const team = await dataLoader.get('teams').load(teamId)
   const currentMappers = team.jiraDimensionFields || []
-  const missingMappers = requiredMappers.filter(({cloudId, projectKey, dimensionName}) => {
-    return !currentMappers.find((curMapper) => {
-      return (
-        curMapper.cloudId === cloudId &&
-        curMapper.projectKey === projectKey &&
-        curMapper.dimensionName === dimensionName
-      )
-    })
+  const seenHashes = new Set<string>()
+  const missingMappers = [] as Mapper[]
+
+  currentMappers.forEach((mapper) => {
+    seenHashes.add(hashMapper(mapper))
   })
+
+  requiredMappers.forEach((requiredMapper) => {
+    const hash = hashMapper(requiredMapper)
+    if (seenHashes.has(hash)) return
+    seenHashes.add(hash)
+    missingMappers.push(requiredMapper)
+  })
+  if (missingMappers.length === 0) return
+
   const fieldNamesToTry = [
     SprintPokerDefaults.JIRA_FIELD_DEFAULT,
     SprintPokerDefaults.JIRA_FIELD_LEGACY_DEFAULT
