@@ -14112,7 +14112,7 @@ relay-config@^8.0.0:
   dependencies:
     cosmiconfig "^5.0.5"
 
-relay-runtime@10.1.0, relay-runtime@11.0.2, relay-runtime@8.0.0, relay-runtime@^11.0.2, "relay-runtime@https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817F":
+relay-runtime@10.1.0, relay-runtime@11.0.2, relay-runtime@8.0.0, relay-runtime@^11.0.2:
   version "11.0.2"
   resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-11.0.2.tgz#c3650477d45665b9628b852b35f203e361ad55e8"
   integrity sha512-xxZkIRnL8kNE1cxmwDXX8P+wSeWLR+0ACFyAiAhvfWWAyjXb+bhjJ2FSsRGlNYfkqaTNEuDqpnodQV1/fF7Idw==
