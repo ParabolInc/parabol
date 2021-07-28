@@ -7,6 +7,7 @@ import getAtlassianAuthByUserIdTeamId, {
 } from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuth from '../postgres/queries/upsertAtlassianAuth'
+import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import {isNotNull} from '../utils/predicates'
 import sendToSentry from '../utils/sendToSentry'
@@ -116,6 +117,13 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
             return null
           }
           const {fields} = issueRes
+
+          const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
+            cloudId,
+            issueRes.fields.descriptionHTML
+          )
+          downloadAndCacheImages(manager, imageUrlToHash)
+
           // update our records
           await Promise.all(
             estimates.map((estimate) => {
@@ -141,6 +149,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
 
           return {
             ...fields,
+            descriptionHTML: updatedDescription,
             teamId,
             userId
           }
