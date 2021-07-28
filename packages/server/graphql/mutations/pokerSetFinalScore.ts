@@ -154,7 +154,7 @@ const pokerSetFinalScore = {
       name: dimensionName,
       meetingId,
       stageId,
-      taskId: serviceTaskId,
+      taskId,
       userId: viewerId
     })
     // Integration push success! update DB

@@ -23,7 +23,7 @@ const handleEditCommenting = (payload, store) => {
   const newCommentors = [] as RecordProxy<Commentor>[]
   for (let ii = 0; ii < commentors.length; ii++) {
     const commentor = commentors[ii]
-    if (commentor.getValue('id') !== commentorId) {
+    if (commentor.getValue('userId') !== commentorId) {
       newCommentors.push(commentor)
     }
   }
