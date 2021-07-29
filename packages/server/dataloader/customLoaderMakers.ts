@@ -17,6 +17,8 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
+import {TemplateRef} from '../postgres/queries/getTemplateRefsById'
+import getTemplateRefsById from '../postgres/queries/getTemplateRefsById'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
@@ -329,6 +331,18 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const templateRefs = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, TemplateRef, string>(
+    async (refIds) => {
+      const templateRefs = await getTemplateRefsById(refIds)
+      return refIds.map((refId) => templateRefs.find((ref) => ref.id === refId)!)
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

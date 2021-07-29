@@ -6,7 +6,6 @@ import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -19,6 +18,7 @@ import PokerSetFinalScorePayload from '../types/PokerSetFinalScorePayload'
 const pokerSetFinalScore = {
   type: GraphQLNonNull(PokerSetFinalScorePayload),
   description: 'Update the final score field & push to the associated integration',
+  deprecationReason: 'Use setTaskEstimate. Can delete this mutation Aug 15-2021',
   args: {
     meetingId: {
       type: GraphQLNonNull(GraphQLID)
@@ -92,7 +92,7 @@ const pokerSetFinalScore = {
     // RESOLUTION
     // update integration
     const {dimensionRefIdx, serviceTaskId, discussionId, taskId} = stage
-    const templateRef = await getTemplateRefById(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef

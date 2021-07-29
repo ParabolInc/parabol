@@ -5,7 +5,6 @@ import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {TaskServiceEnum} from '../../database/types/Task'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import insertDiscussions, {InputDiscussions} from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
@@ -108,7 +107,7 @@ const updatePokerScope = {
     })
 
     // add stages
-    const templateRef = await getTemplateRefById(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
     const {dimensions} = templateRef
     const firstDimensionName = dimensions[0].name
     const newDiscussions = [] as InputDiscussions

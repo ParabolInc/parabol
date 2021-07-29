@@ -50958,6 +50958,7 @@ export interface IMutation {
 
   /**
    * Update the final score field & push to the associated integration
+   * @deprecated "Use setTaskEstimate. Can delete this mutation Aug 15-2021"
    */
   pokerSetFinalScore: PokerSetFinalScorePayload;
 
@@ -50986,6 +50987,11 @@ export interface IMutation {
    */
   setPokerSpectate: SetPokerSpectatePayload;
   persistGitHubSearchQuery: PersistGitHubSearchQueryPayload;
+
+  /**
+   * Update a task estimate
+   */
+  setTaskEstimate: SetTaskEstimatePayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -52119,6 +52125,10 @@ export interface IPersistGitHubSearchQueryOnMutationArguments {
    * true if this query should be deleted
    */
   isRemove?: boolean | null;
+}
+
+export interface ISetTaskEstimateOnMutationArguments {
+  taskEstimate: ITaskEstimateInput;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -54451,6 +54461,36 @@ export interface IPersistGitHubSearchQuerySuccess {
   githubIntegration: IGitHubIntegration;
 }
 
+/**
+ * Return object for SetTaskEstimatePayload
+ */
+export type SetTaskEstimatePayload = IErrorPayload | ISetTaskEstimateSuccess;
+
+export interface ISetTaskEstimateSuccess {
+  __typename: 'SetTaskEstimateSuccess';
+  task: ITask;
+
+  /**
+   * The stage that holds the updated finalScore, if meetingId was provided
+   */
+  stage: IEstimateStage | null;
+}
+
+export interface ITaskEstimateInput {
+  taskId: string;
+
+  /**
+   * The new estimate value
+   */
+  value: string;
+
+  /**
+   * The name of the estimate, e.g. Story Points
+   */
+  dimensionName: string;
+  meetingId?: string | null;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -54498,7 +54538,8 @@ export type MeetingSubscriptionPayload =
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
-  | ISetPokerSpectateSuccess;
+  | ISetPokerSpectateSuccess
+  | ISetTaskEstimateSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
   __typename: 'AddReactjiToReflectionSuccess';

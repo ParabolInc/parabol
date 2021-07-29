@@ -12,7 +12,6 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import db from '../../db'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
@@ -55,7 +54,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
             dataLoader.get('teams').load(teamId)
           ])
           const {templateRefId} = meeting
-          const templateRef = await getTemplateRefById(templateRefId)
+          const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
           const {dimensions} = templateRef
           const dimensionRef = dimensions[dimensionRefIdx]
           const {name: dimensionName} = dimensionRef
@@ -92,7 +91,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {templateRefId} = meeting as MeetingPoker
-        const templateRef = await getTemplateRefById(templateRefId)
+        const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
         const {dimensions} = templateRef
         const {name, scaleRefId} = dimensions[dimensionRefIdx]
         return {
@@ -112,7 +111,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
           dataLoader.get('meetingTaskEstimates').load({taskId, meetingId})
         ])
         const {templateRefId} = meeting
-        const templateRef = await getTemplateRefById(templateRefId)
+        const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
         const {dimensions} = templateRef
         const dimensionRef = dimensions[dimensionRefIdx]
         const {name: dimensionName} = dimensionRef
