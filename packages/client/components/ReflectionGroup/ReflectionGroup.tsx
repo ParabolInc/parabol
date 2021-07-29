@@ -61,7 +61,7 @@ const ReflectionWrapper = styled('div')<{
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
-  openSpotlight: (reflectionId: string) => void
+  openSpotlight?: (reflectionId: string) => void
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
@@ -159,6 +159,7 @@ const ReflectionGroup = (props: Props) => {
           closePortal={collapse}
           meeting={meeting}
           reflectionGroupId={reflectionGroupId}
+          openSpotlight={openSpotlight}
         />
       )}
       <Group

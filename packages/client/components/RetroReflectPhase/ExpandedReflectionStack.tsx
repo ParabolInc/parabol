@@ -72,6 +72,7 @@ interface Props {
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   reflectionGroupId?: string
+  openSpotlight?: (reflectionId: string) => void
 }
 
 const ExpandedReflectionStack = (props: Props) => {
@@ -85,7 +86,8 @@ const ExpandedReflectionStack = (props: Props) => {
     closePortal,
     reflections,
     reflectionGroupId,
-    meeting
+    meeting,
+    openSpotlight
   } = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
@@ -118,6 +120,7 @@ const ExpandedReflectionStack = (props: Props) => {
                   key={reflection.id}
                   reflection={reflection}
                   meeting={meeting}
+                  openSpotlight={openSpotlight}
                   idx={idx}
                   setItemsRef={setItemsRef}
                   staticReflections={staticReflections}
