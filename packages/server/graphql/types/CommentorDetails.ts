@@ -5,7 +5,7 @@ const CommentorDetails = new GraphQLObjectType<any, GQLContext>({
   name: 'CommentorDetails',
   description: 'The user that is commenting',
   fields: () => ({
-    userId: {
+    id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId of the person commenting'
     },

@@ -44600,7 +44600,7 @@ export interface ICommentorDetails {
   /**
    * The userId of the person commenting
    */
-  userId: string;
+  id: string;
 
   /**
    * The preferred name of the user commenting
@@ -47044,6 +47044,11 @@ export interface IDiscussion {
   commentCount: number;
 
   /**
+   * The users writing a comment right now
+   */
+  commentors: Array<ICommentorDetails>;
+
+  /**
    * The comments & tasks thread in the discussion
    */
   thread: IThreadableConnection;
@@ -47092,11 +47097,6 @@ export interface IThreadableConnection {
    * Any errors that prevented the query from returning the full results
    */
   error: string | null;
-
-  /**
-   * A list of userIds currently commenting
-   */
-  commentorIds: Array<string>;
 }
 
 /**
@@ -50598,7 +50598,7 @@ export interface IMutation {
   /**
    * Track which users are commenting
    */
-  editCommenting: IEditCommentingPayload | null;
+  editCommenting: EditCommentingPayload | null;
 
   /**
    * Finish a sprint poker meeting
@@ -52955,24 +52955,23 @@ export interface IEmailPasswordResetSuccess {
   success: boolean | null;
 }
 
-export interface IEditCommentingPayload {
-  __typename: 'EditCommentingPayload';
+/**
+ * Return object for EditCommentingPayload
+ */
+export type EditCommentingPayload = IErrorPayload | IEditCommentingSuccess;
 
-  /**
-   * true if the user is commenting, false if the user has stopped commenting
-   */
-  isCommenting: boolean;
-
-  /**
-   * The user that is commenting or has stopped commenting
-   */
-  commentor: IUser | null;
-  meetingId: string;
+export interface IEditCommentingSuccess {
+  __typename: 'EditCommentingSuccess';
 
   /**
    * The discussion the comment was created in
    */
   discussionId: string;
+
+  /**
+   * The discussion where the commenting state changed
+   */
+  discussion: IDiscussion;
 }
 
 /**
@@ -54580,7 +54579,7 @@ export type MeetingSubscriptionPayload =
   | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
   | IDragEstimatingTaskSuccess
-  | IEditCommentingPayload
+  | IEditCommentingSuccess
   | IEditReflectionPayload
   | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess

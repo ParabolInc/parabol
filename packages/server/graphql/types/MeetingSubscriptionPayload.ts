@@ -7,7 +7,7 @@ import CreateReflectionPayload from './CreateReflectionPayload'
 import {DeleteCommentSuccess} from './DeleteCommentPayload'
 import DragDiscussionTopicPayload from './DragDiscussionTopicPayload'
 import {DragEstimatingTaskSuccess} from './DragEstimatingTaskPayload'
-import EditCommentingPayload from './EditCommentingPayload'
+import {EditCommentingSuccess} from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
@@ -44,7 +44,7 @@ const types = [
   DeleteCommentSuccess,
   DragDiscussionTopicPayload,
   DragEstimatingTaskSuccess,
-  EditCommentingPayload,
+  EditCommentingSuccess,
   EditReflectionPayload,
   EndDraggingReflectionPayload,
   FlagReadyToAdvanceSuccess,
