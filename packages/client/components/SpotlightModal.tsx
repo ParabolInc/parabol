@@ -145,8 +145,6 @@ const SpotlightModal = (props: Props) => {
         </TopRow>
         <Content>
           <DraggableReflectionCard
-            inSpotlight
-            isReadOnly
             staticIdx={0}
             reflection={spotlightReflection}
             meeting={meeting}

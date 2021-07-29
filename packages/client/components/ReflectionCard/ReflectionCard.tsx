@@ -57,8 +57,6 @@ const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) =>
 
 interface Props {
   isClipped?: boolean
-  inSpotlight?: boolean
-  isReadOnly?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
   openSpotlight?: (reflectionId: string) => void
@@ -83,21 +81,13 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {
-    meeting,
-    reflection,
-    isClipped,
-    inSpotlight,
-    isReadOnly,
-    openSpotlight,
-    stackCount,
-    showReactji,
-    dataCy
-  } = props
+  const {meeting, reflection, isClipped, openSpotlight, stackCount, showReactji, dataCy} = props
   const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
+  const spotlightReflectionId = meeting?.spotlightReflection?.id
+  const inSpotlight = reflectionId === spotlightReflectionId
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -196,8 +186,8 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = isReadOnly
-    ? isReadOnly
+  const readOnly = inSpotlight
+    ? inSpotlight
     : getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
@@ -317,6 +307,9 @@ export default createFragmentContainer(ReflectionCard, {
           id
           isComplete
         }
+      }
+      spotlightReflection {
+        id
       }
     }
   `
