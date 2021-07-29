@@ -1,6 +1,7 @@
 version: 2.0
 jobs:
   build:
+    resource_class: large
     docker:
       - image: circleci/node:14.10
       - image: rethinkdb:2.4.0
