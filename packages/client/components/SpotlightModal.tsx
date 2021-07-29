@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
-import {SpotlightModal_reflection} from '~/__generated__/SpotlightModal_reflection.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
@@ -124,16 +123,17 @@ const CloseIcon = styled(Icon)({
 interface Props {
   closeSpotlight: () => void
   meeting: SpotlightModal_meeting
-  reflection: SpotlightModal_reflection
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, reflection} = props
+  const {closeSpotlight, meeting} = props
+  const {spotlightReflection} = meeting
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') closeSpotlight()
   }
   const reflectionGroupsCount = 0
+  if (!spotlightReflection) return null
   return (
     <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
       <SelectedReflection>
@@ -148,8 +148,9 @@ const SpotlightModal = (props: Props) => {
             inSpotlight
             isReadOnly
             staticIdx={0}
-            reflection={reflection as any}
-            meeting={meeting as any}
+            reflection={spotlightReflection}
+            meeting={meeting}
+            staticReflections={null}
           />
         </Content>
         <SearchItem>
@@ -173,26 +174,9 @@ const SpotlightModal = (props: Props) => {
 }
 
 export default createFragmentContainer(SpotlightModal, {
-  reflection: graphql`
-    fragment SpotlightModal_reflection on RetroReflection {
-      ...ColorBadge_reflection
-      id
-      isViewerCreator
-      isEditing
-      meetingId
-      reflectionGroupId
-      promptId
-      content
-      reactjis {
-        ...ReactjiSection_reactjis
-        id
-        isViewerReactji
-      }
-      sortOrder
-    }
-  `,
   meeting: graphql`
     fragment SpotlightModal_meeting on RetrospectiveMeeting {
+      ...DraggableReflectionCard_meeting
       id
       teamId
       localPhase {
@@ -208,6 +192,9 @@ export default createFragmentContainer(SpotlightModal, {
           isComplete
           phaseType
         }
+      }
+      spotlightReflection {
+        ...DraggableReflectionCard_reflection
       }
     }
   `

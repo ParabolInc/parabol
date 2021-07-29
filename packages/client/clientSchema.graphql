@@ -32,6 +32,7 @@ extend type RetrospectiveMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  spotlightReflection: RetroReflection
 }
 
 extend type Team {
@@ -70,7 +71,6 @@ extend type RetroReflection {
   remoteDrag: RemoteReflectionDrag
   ignoreDragStarts: [ID!]
   isEditing: Boolean
-  inSpotlight: Boolean
 }
 
 extend type ReflectPrompt {

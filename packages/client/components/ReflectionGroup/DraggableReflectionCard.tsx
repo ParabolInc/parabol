@@ -50,9 +50,10 @@ interface Props {
   isDraggable?: boolean
   isReadOnly?: boolean
   meeting: DraggableReflectionCard_meeting
+  openSpotlight?: (reflectionId: string) => void
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
-  staticReflections?: DraggableReflectionCard_staticReflections
+  staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
 }
@@ -74,6 +75,7 @@ const DraggableReflectionCard = (props: Props) => {
     staticIdx,
     staticReflections,
     meeting,
+    openSpotlight,
     isDraggable,
     swipeColumn,
     dataCy
@@ -92,7 +94,7 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-  const isDragPhase = phaseType === 'group' && !isComplete && !inSpotlight
+  const isDragPhase = phaseType === 'group' && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
@@ -110,6 +112,7 @@ const DraggableReflectionCard = (props: Props) => {
         inSpotlight={inSpotlight}
         isReadOnly={isReadOnly}
         meeting={meeting}
+        openSpotlight={openSpotlight}
       />
     </DragWrapper>
   )
@@ -130,7 +133,6 @@ export default createFragmentContainer(DraggableReflectionCard, {
       isEditing
       reflectionGroupId
       promptId
-      inSpotlight
       isViewerDragging
       isViewerCreator
       isDropping

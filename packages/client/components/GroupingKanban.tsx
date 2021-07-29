@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -12,6 +12,9 @@ import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
+import useModal from '../hooks/useModal'
+import useAtmosphere from '../hooks/useAtmosphere'
+import SpotlightModal from './SpotlightModal'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -35,12 +38,14 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {reflectionGroups, phases} = meeting
+  const {id: meetingId, reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const [callbackRef, columnsRef] = useCallbackRef()
+  const atmosphere = useAtmosphere()
   useHideBodyScroll()
+  const {closePortal, openPortal, modalPortal} = useModal()
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -69,6 +74,19 @@ const GroupingKanban = (props: Props) => {
     const nextIdx = Math.min(reflectPromptsCount - 1, Math.max(0, activeIdx + offset))
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
+
+  const openSpotlight = (reflectionId: string) => {
+    openPortal()
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)
+      const reflection = store.get(reflectionId)
+      if (!reflection || !meeting) return
+      meeting.setLinkedRecord(reflection, 'spotlightReflection')
+    })
+  }
+
+  const closeSpotlight = () => closePortal()
+
   if (!phaseRef.current) return null
   return (
     <PortalProvider>
@@ -86,6 +104,7 @@ const GroupingKanban = (props: Props) => {
               isDesktop={isDesktop}
               key={prompt.id}
               meeting={meeting}
+              openSpotlight={openSpotlight}
               phaseRef={phaseRef}
               prompt={prompt}
               reflectionGroups={groupsByPrompt[prompt.id] || []}
@@ -95,6 +114,7 @@ const GroupingKanban = (props: Props) => {
           ))}
         </ColumnWrapper>
       </ColumnsBlock>
+      {modalPortal(<SpotlightModal closeSpotlight={closeSpotlight} meeting={meeting} />)}
     </PortalProvider>
   )
 }
@@ -103,6 +123,8 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
+      ...SpotlightModal_meeting
+      id
       phases {
         ... on ReflectPhase {
           phaseType

@@ -32,8 +32,6 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
-import SpotlightModal from '../SpotlightModal'
-import useModal from '../../hooks/useModal'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -63,6 +61,7 @@ interface Props {
   isReadOnly?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
+  openSpotlight?: (reflectionId: string) => void
   stackCount?: number
   showOriginFooter?: boolean
   showReactji?: boolean
@@ -90,6 +89,7 @@ const ReflectionCard = (props: Props) => {
     isClipped,
     inSpotlight,
     isReadOnly,
+    openSpotlight,
     stackCount,
     showReactji,
     dataCy
@@ -107,7 +107,6 @@ const ReflectionCard = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.UPPER_CENTER)
-  const {closePortal, openPortal, modalPortal} = useModal()
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -225,23 +224,11 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
 
-  const openSpotlight = (e: MouseEvent) => {
+  const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    openPortal()
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflection = store.get(reflectionId)
-      if (!reflection) return
-      reflection.setValue(true, 'inSpotlight')
-    })
-  }
-
-  const closeSpotlight = () => {
-    closePortal()
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflection = store.get(reflectionId)
-      if (!reflection) return
-      reflection.setValue(false, 'inSpotlight')
-    })
+    if (openSpotlight) {
+      openSpotlight(reflectionId)
+    }
   }
 
   const showSpotlight = true // TODO: dummy feature flag. Change to false before merging PR
@@ -251,54 +238,48 @@ const ReflectionCard = (props: Props) => {
     !isComplete &&
     showSpotlight &&
     (isHovering || !isDesktop)
-  if (!meeting) return null
   return (
-    <>
-      <ReflectionCardRoot
-        data-cy={`${dataCy}-root`}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-        <ReflectionEditorWrapper
-          dataCy={`editor-wrapper`}
-          isClipped={isClipped}
-          ariaLabel='Edit this reflection'
-          editorRef={editorRef}
-          editorState={editorState}
-          onBlur={handleEditorBlur}
-          onFocus={handleEditorFocus}
-          handleReturn={handleReturn}
-          handleKeyDownFallback={handleKeyDownFallback}
-          placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
-          readOnly={readOnly}
-          setEditorState={setEditorState}
-          userSelect={userSelect}
+    <ReflectionCardRoot
+      data-cy={`${dataCy}-root`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
+      <ReflectionEditorWrapper
+        dataCy={`editor-wrapper`}
+        isClipped={isClipped}
+        ariaLabel='Edit this reflection'
+        editorRef={editorRef}
+        editorState={editorState}
+        onBlur={handleEditorBlur}
+        onFocus={handleEditorFocus}
+        handleReturn={handleReturn}
+        handleKeyDownFallback={handleKeyDownFallback}
+        placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
+        readOnly={readOnly}
+        setEditorState={setEditorState}
+        userSelect={userSelect}
+      />
+      {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
+      {!readOnly && (
+        <ReflectionCardDeleteButton
+          dataCy={`reflection-delete`}
+          meetingId={meetingId}
+          reflectionId={reflectionId}
         />
-        {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
-        {!readOnly && (
-          <ReflectionCardDeleteButton
-            dataCy={`reflection-delete`}
-            meetingId={meetingId}
-            reflectionId={reflectionId}
-          />
-        )}
-        {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
-        <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-        <SearchButton
-          onClick={openSpotlight}
-          onMouseEnter={openTooltip}
-          onMouseLeave={closeTooltip}
-          showSearch={showSearch}
-        >
-          <SearchIcon ref={tooltipRef} icon='search' />
-        </SearchButton>
-        {tooltipPortal('Find similar')}
-      </ReflectionCardRoot>
-      {modalPortal(
-        <SpotlightModal closeSpotlight={closeSpotlight} meeting={meeting} reflection={reflection} />
       )}
-    </>
+      {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
+      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
+      <SearchButton
+        onClick={handleClickSpotlight}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        showSearch={showSearch}
+      >
+        <SearchIcon ref={tooltipRef} icon='search' />
+      </SearchButton>
+      {tooltipPortal('Find similar')}
+    </ReflectionCardRoot>
   )
 }
 
@@ -306,7 +287,6 @@ export default createFragmentContainer(ReflectionCard, {
   reflection: graphql`
     fragment ReflectionCard_reflection on RetroReflection {
       ...ColorBadge_reflection
-      ...SpotlightModal_reflection
       isViewerCreator
       id
       isEditing
@@ -324,7 +304,6 @@ export default createFragmentContainer(ReflectionCard, {
   `,
   meeting: graphql`
     fragment ReflectionCard_meeting on RetrospectiveMeeting {
-      ...SpotlightModal_meeting
       id
       localPhase {
         phaseType

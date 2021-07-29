@@ -77,6 +77,7 @@ interface Props {
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
+  openSpotlight: (reflectionId: string) => void
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
@@ -90,6 +91,7 @@ const GroupingKanbanColumn = (props: Props) => {
     isAnyEditing,
     isDesktop,
     meeting,
+    openSpotlight,
     reflectionGroups,
     phaseRef,
     prompt,
@@ -172,6 +174,7 @@ const GroupingKanbanColumn = (props: Props) => {
                       dataCy={`${question}-group-${idx}`}
                       key={reflectionGroup.id}
                       meeting={meeting}
+                      openSpotlight={openSpotlight}
                       phaseRef={phaseRef}
                       reflectionGroup={reflectionGroup}
                       swipeColumn={swipeColumn}

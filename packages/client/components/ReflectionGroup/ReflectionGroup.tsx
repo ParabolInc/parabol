@@ -61,13 +61,14 @@ const ReflectionWrapper = styled('div')<{
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
+  openSpotlight: (reflectionId: string) => void
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
+  const {meeting, openSpotlight, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -116,10 +117,8 @@ const ReflectionGroup = (props: Props) => {
   })
   const onClick = () => {
     if (isEditing) return
-    const isNotDraggable = staticReflections.some(
-      (reflection) => reflection.isDropping || reflection.inSpotlight
-    )
-    if (isNotDraggable) return
+    const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
+    if (wasDrag) return
     if (reflections.length === 1) {
       if (!isDragPhase) return
       setIsEditing(true)
@@ -197,6 +196,7 @@ const ReflectionGroup = (props: Props) => {
                   isClipped={staticIdx !== 0}
                   isDraggable={staticIdx === 0}
                   meeting={meeting}
+                  openSpotlight={openSpotlight}
                   reflection={reflection}
                   staticReflections={staticReflections}
                   swipeColumn={swipeColumn}
@@ -243,7 +243,6 @@ export default createFragmentContainer(ReflectionGroup, {
         isViewerDragging
         isDropping
         isEditing
-        inSpotlight
         remoteDrag {
           dragUserId
         }
