@@ -25,7 +25,11 @@ export const up = async function (r: R) {
             phase.merge({
               stages: phase('stages').map((stage) =>
                 stage.merge({
-                  taskId: r(stageIdTaskIdLookup)(stage('id')).default(stage('serviceTaskId'))
+                  taskId: r.branch(
+                    stage('taskId'),
+                    stage('taskId'),
+                    r(stageIdTaskIdLookup)(stage('id')).default(stage('serviceTaskId'))
+                  )
                 })
               )
             }),
