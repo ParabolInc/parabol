@@ -1,11 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {Fragment} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
-import {ActionMeetingSidebar_meeting, NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeetingSidebar_meeting.graphql'
+import {
+  ActionMeetingSidebar_meeting,
+  NewMeetingPhaseTypeEnum
+} from '../__generated__/ActionMeetingSidebar_meeting.graphql'
 import ActionSidebarPhaseListItemChildren from './ActionSidebarPhaseListItemChildren'
 import MeetingNavList from './MeetingNavList'
 import NewMeetingSidebar from './NewMeetingSidebar'
@@ -56,30 +59,31 @@ const ActionMeetingSidebar = (props: Props) => {
             const phaseCount =
               phaseType === 'agendaitems' && agendaItems ? agendaItems.length : undefined
             return (
-              <NewMeetingSidebarPhaseListItem
-                handleClick={canNavigate ? handleClick : undefined}
-                isActive={
-                  phaseType === 'agendaitems'
-                    ? localPhaseType !== '' && blackList.includes(localPhaseType)
-                    : localPhaseType === phaseType
-                }
-                isCollapsible={collapsiblePhases.includes(phaseType)}
-                isFacilitatorPhase={phaseType === facilitatorPhaseType}
-                isUnsyncedFacilitatorPhase={
-                  isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
-                }
-                isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-                key={phaseType}
-                phaseCount={phaseCount}
-                phaseType={phaseType}
-              >
+              <Fragment key={phaseType}>
+                <NewMeetingSidebarPhaseListItem
+                  handleClick={canNavigate ? handleClick : undefined}
+                  isActive={
+                    phaseType === 'agendaitems'
+                      ? localPhaseType !== '' && blackList.includes(localPhaseType)
+                      : localPhaseType === phaseType
+                  }
+                  isCollapsible={collapsiblePhases.includes(phaseType)}
+                  isFacilitatorPhase={phaseType === facilitatorPhaseType}
+                  isUnsyncedFacilitatorPhase={
+                    isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
+                  }
+                  isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+                  key={phaseType}
+                  phaseCount={phaseCount}
+                  phaseType={phaseType}
+                />
                 <ActionSidebarPhaseListItemChildren
                   gotoStageId={gotoStageId}
                   handleMenuClick={handleMenuClick}
                   phaseType={phaseType}
                   meeting={meeting}
                 />
-              </NewMeetingSidebarPhaseListItem>
+              </Fragment>
             )
           })}
       </MeetingNavList>

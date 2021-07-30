@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react'
 
 const useAnimatedPhaseListChildren = (isActive: boolean, itemCount: number) => {
-  const [height, setHeight] = useState(isActive ? '100%' : 0)
+  const [height, setHeight] = useState(isActive ? 'fit-content' : 0)
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const scrollHeight = ref.current?.scrollHeight
@@ -19,7 +19,7 @@ const useAnimatedPhaseListChildren = (isActive: boolean, itemCount: number) => {
     }
     wasActiveRef.current = isActive
   }, [isActive])
-  return {height, ref}
+  return {height: isActive ? height : 0, ref}
 }
 
 export default useAnimatedPhaseListChildren
