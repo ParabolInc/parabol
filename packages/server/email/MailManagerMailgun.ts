@@ -4,12 +4,10 @@ import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerMailgun extends MailManager {
-  //mailgun = new Mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN})
   mailgun = new Mailgun(FormData);
   mailgunClient = this.mailgun.client({
     username: 'api',
-    key: process.env.MAILGUN_API_KEY || '',
-    public_key: process.env.MAILGUN_PUBLIC_KEY
+    key: process.env.MAILGUN_API_KEY || ''
   });
   async sendEmail(options: MailManagerOptions) {
     const {subject, body, to, attachments, html, tags} = options
