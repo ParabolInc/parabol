@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.23.1 2021-Jul-30
+
+### Fixed
+
+- Run autopauseUsers in batches to avoid crashing RethinkDB
+
 ## 6.23.0 2021-Jul-28
 
 ### Added
