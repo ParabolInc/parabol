@@ -47,7 +47,7 @@
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817F",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817",
     "immutable": "3.8.2"
   },
   "devDependencies": {

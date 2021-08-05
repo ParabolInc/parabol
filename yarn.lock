@@ -14012,9 +14012,9 @@ relay-config@^8.0.0:
   dependencies:
     cosmiconfig "^5.0.5"
 
-relay-runtime@10.1.0, relay-runtime@8.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817F":
+relay-runtime@10.1.0, relay-runtime@8.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817":
   version "8.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817F#b4910c79ba8ef4ccf47e2d2123fe915cfadd4b48"
+  resolved "https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817#b4910c79ba8ef4ccf47e2d2123fe915cfadd4b48"
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
