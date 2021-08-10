@@ -41,7 +41,8 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    const {teamIds} = await resolveDowngradeToPersonal(orgId, stripeSubscriptionId!, viewerId)
+    await resolveDowngradeToPersonal(orgId, stripeSubscriptionId!, viewerId)
+    const {teamIds} = await dataLoader.get('teamsByOrgId').load(orgId)
     const data = {orgId, teamIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToPersonalPayload', data, subOptions)
 

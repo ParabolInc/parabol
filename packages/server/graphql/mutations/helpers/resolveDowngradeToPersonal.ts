@@ -19,7 +19,7 @@ const resolveDowngradeToPersonal = async (
     console.log(e)
   }
 
-  const [, teamIds] = await Promise.all([
+  await Promise.all([
     r({
       org: r
         .table('Organization')
@@ -61,7 +61,6 @@ const resolveDowngradeToPersonal = async (
       orgId
     }
   })
-  return {teamIds}
 }
 
 export default resolveDowngradeToPersonal
