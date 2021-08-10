@@ -3,7 +3,6 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import Notification from '../../database/types/Notification'
-import Organization from '../../database/types/Organization'
 import Team from '../../database/types/Team'
 import db from '../../db'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
@@ -17,10 +16,11 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const [{org}, team] = await Promise.all([
-    r({
-      org: (r.table('Organization').get(orgId) as unknown) as Organization
-    }).run(),
+  const [org, team] = await Promise.all([
+    r
+      .table('Organization')
+      .get(orgId)
+      .run(),
     getTeamsById([teamId])[0]
   ])
   const {orgId: currentOrgId} = team
