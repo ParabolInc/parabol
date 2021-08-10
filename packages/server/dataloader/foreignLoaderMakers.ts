@@ -2,7 +2,7 @@ import TimelineEventCheckinComplete from 'parabol-server/database/types/Timeline
 import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
 import LoaderMakerForeign from './LoaderMakerForeign'
-import getTeamsByOrgId from '../postgres/queries/getTeamsByOrgId'
+import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 
 export const activeMeetingsByTeamId = new LoaderMakerForeign(
   'newMeetings',
@@ -318,7 +318,7 @@ export const suggestedActionsByUserId = new LoaderMakerForeign(
 )
 
 export const teamsByOrgId = new LoaderMakerForeign('teams', 'orgId', async (orgIds) => {
-  return await getTeamsByOrgId(orgIds, {isArchived: false})
+  return await getTeamsByOrgIds(orgIds, {isArchived: false})
 })
 
 export const tasksByDiscussionId = new LoaderMakerForeign(

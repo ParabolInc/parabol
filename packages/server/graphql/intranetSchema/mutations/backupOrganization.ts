@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
-import getTeamsByOrgId from '../../../postgres/queries/getTeamsByOrgId'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 
@@ -53,7 +53,7 @@ const backupOrganization = {
       .run()
 
     // get all the teams for the orgIds
-    const team = await getTeamsByOrgId(orgIds)
+    const team = await getTeamsByOrgIds(orgIds)
     const teamIds = team.map((team) => team.id)
     await r({
       // easy things to clone

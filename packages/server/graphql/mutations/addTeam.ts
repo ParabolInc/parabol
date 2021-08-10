@@ -16,7 +16,7 @@ import NewTeamInput from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import {TierEnum} from '../../database/types/Invoice'
-import getTeamsByOrgId from '../../postgres/queries/getTeamsByOrgId'
+import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -40,7 +40,7 @@ export default {
       }
 
       // VALIDATION
-      const orgTeams = await getTeamsByOrgId(orgId, {isArchived: false})
+      const orgTeams = await getTeamsByOrgIds(orgId, {isArchived: false})
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
         data: {newTeam},

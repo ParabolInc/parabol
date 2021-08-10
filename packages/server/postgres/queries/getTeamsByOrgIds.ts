@@ -6,21 +6,18 @@ import {
 import getPg from '../getPg'
 import catchAndLog from '../utils/catchAndLog'
 
-const getTeamsByOrgId = async (
-  orgIds: string | string[],
+const getTeamsByOrgIds = async (
+  orgIds: string[],
   options: Partial<Omit<IGetTeamsByOrgIdQueryParams, 'orgId'>> = {}
 ): Promise<IGetTeamsByOrgIdQueryResult[]> => {
-  orgIds = typeof orgIds === 'string' ? [orgIds] : orgIds
-  const orgs = await catchAndLog(() =>
-    getTeamsByOrgIdQuery.run(
-      {
-        orgIds,
-        ...options
-      } as IGetTeamsByOrgIdQueryParams,
-      getPg()
-    )
-  )
+  const {isArchived, ...otherOptions} = options
+  const queryParameters: IGetTeamsByOrgIdQueryParams = {
+    orgIds,
+    isArchived: !!isArchived,
+    ...otherOptions
+  }
+  const orgs = await catchAndLog(() => getTeamsByOrgIdQuery.run(queryParameters, getPg()))
   return orgs === null ? [] : orgs
 }
 
-export default getTeamsByOrgId
+export default getTeamsByOrgIds

@@ -6,7 +6,7 @@ import db from '../../../db'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToPersonal from './resolveDowngradeToPersonal'
-import getTeamsByOrgId from '../../../postgres/queries/getTeamsByOrgId'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 
 const removeFromOrg = async (
   userId: string,
@@ -16,7 +16,7 @@ const removeFromOrg = async (
 ) => {
   const r = await getRethink()
   const now = new Date()
-  const orgTeams = await getTeamsByOrgId(orgId)
+  const orgTeams = await getTeamsByOrgIds([orgId])
   const teamIds = orgTeams.map((team) => team.id)
   const teamMemberIds = (await r
     .table('TeamMember')

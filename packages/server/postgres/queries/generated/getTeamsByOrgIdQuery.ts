@@ -50,19 +50,13 @@ const getTeamsByOrgIdQueryIR: any = {
     {
       name: 'isArchived',
       transform: {type: 'scalar'},
-      codeRefs: {
-        used: [
-          {a: 117, b: 126, line: 7, col: 11},
-          {a: 167, b: 176, line: 7, col: 61}
-        ]
-      }
+      codeRefs: {used: [{a: 126, b: 135, line: 7, col: 20}]}
     }
   ],
   usedParamSet: {orgIds: true, isArchived: true},
   statement: {
-    body:
-      'SELECT * FROM "Team"\nWHERE "orgId" IN :orgIds\nAND (CAST(:isArchived AS BOOLEAN) IS NULL OR "isArchived" = :isArchived)',
-    loc: {a: 60, b: 177, line: 5, col: 0}
+    body: 'SELECT * FROM "Team"\nWHERE "orgId" IN :orgIds\nAND "isArchived" = :isArchived',
+    loc: {a: 60, b: 135, line: 5, col: 0}
   }
 }
 
@@ -71,7 +65,7 @@ const getTeamsByOrgIdQueryIR: any = {
  * ```
  * SELECT * FROM "Team"
  * WHERE "orgId" IN :orgIds
- * AND (CAST(:isArchived AS BOOLEAN) IS NULL OR "isArchived" = :isArchived)
+ * AND "isArchived" = :isArchived
  * ```
  */
 export const getTeamsByOrgIdQuery = new PreparedQuery<
