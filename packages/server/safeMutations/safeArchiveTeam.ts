@@ -49,8 +49,7 @@ const safeArchiveTeam = async (teamId: string) => {
     }).run(),
     updateTeamByTeamId(updates, teamId)
   ])
-  const result = Object.assign({}, rethinkResult, {team: pgResult})
-  return {...result, users}
+  return {...rethinkResult, team: pgResult, users}
 }
 
 export default safeArchiveTeam
