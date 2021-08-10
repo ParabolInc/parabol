@@ -15,7 +15,6 @@ import getGitHubAuthByUserIdTeamId, {
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getTeamsById, {IGetTeamsByIdResult} from '../postgres/queries/getTeamsById'
-import catchAndLog from '../postgres/utils/catchAndLog'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
@@ -62,9 +61,7 @@ export const users = () => {
 export const teams = (parent: RethinkDataLoader) =>
   new DataLoader<string, IGetTeamsByIdResult, string>(
     async (teamIds) => {
-      const teams = (await catchAndLog(() =>
-        getTeamsById(teamIds as string[])
-      )) as IGetTeamsByIdResult[]
+      const teams = (await getTeamsById(teamIds as string[])) as IGetTeamsByIdResult[]
       return normalizeRethinkDbResults(teamIds, teams)
     },
     {
