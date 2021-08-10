@@ -8,7 +8,7 @@ import teamNameValidation from 'parabol-client/validation/teamNameValidation'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import getTeamByTeamId from '../../postgres/queries/getTeamByTeamId'
+import getTeamsById from '../../postgres/queries/getTeamsById'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -32,7 +32,7 @@ export default {
     }
 
     // VALIDATION
-    const team = await getTeamByTeamId(teamId)
+    const team = await getTeamsById([teamId])[0]
     const orgTeams = await dataLoader.get('teamsByOrgId').load(team.orgId)
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)

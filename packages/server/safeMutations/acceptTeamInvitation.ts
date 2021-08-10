@@ -5,11 +5,11 @@ import OrganizationUser from '../database/types/OrganizationUser'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import User from '../database/types/User'
 import generateUID from '../generateUID'
+import getTeamsById from '../postgres/queries/getTeamsById'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
-import getTeamByTeamId from '../postgres/queries/getTeamByTeamId'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = await getRethink()
@@ -62,7 +62,7 @@ const acceptTeamInvitation = async (teamId: string, userId: string) => {
             .coerceTo('array')
         }) as unknown) as User & {organizationUsers: OrganizationUser[]}
     }).run(),
-    getTeamByTeamId(teamId)
+    getTeamsById([teamId])[0]
   ])
   const {orgId} = team
   const {email, organizationUsers} = user

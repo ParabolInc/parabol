@@ -6,6 +6,7 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import generateUID from '../../generateUID'
+import getTeamsById from '../../postgres/queries/getTeamsById'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -15,7 +16,6 @@ import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import getTeamByTeamId from '../../postgres/queries/getTeamByTeamId'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -61,7 +61,7 @@ export default {
       meetingType,
       dataLoader
     )
-    const team = await getTeamByTeamId(teamId)
+    const team = await getTeamsById([teamId])[0]
     const organization = await r
       .table('Organization')
       .get(team.orgId)

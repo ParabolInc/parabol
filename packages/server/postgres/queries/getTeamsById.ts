@@ -4,8 +4,8 @@ import catchAndLog from '../utils/catchAndLog'
 
 export interface IGetTeamsByIdResult extends IGetTeamsByIdQueryResult {}
 
-const getTeamsById = async (userIds: string[]) => {
-  return await catchAndLog(() => getTeamsByIdQuery.run({ids: userIds}, getPg()))
+const getTeamsById = async (teamIds: string[]) => {
+  return await catchAndLog(() => getTeamsByIdQuery.run({ids: teamIds}, getPg()))
 }
 
 export default getTeamsById

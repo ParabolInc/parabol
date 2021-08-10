@@ -6,12 +6,12 @@ import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import User from '../../database/types/User'
 import db from '../../db'
+import getTeamsById from '../../postgres/queries/getTeamsById'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
-import getTeamByTeamId from '../../postgres/queries/getTeamByTeamId'
 
 const resolveMx = promisify(dns.resolveMx, dns)
 
@@ -60,7 +60,7 @@ export default {
         teamId
       } = teamInvitation
       const [team, inviter] = await Promise.all([
-        getTeamByTeamId(teamId),
+        getTeamsById([teamId])[0],
         db.read('User', invitedBy)
       ])
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)
