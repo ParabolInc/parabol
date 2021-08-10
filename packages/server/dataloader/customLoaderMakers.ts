@@ -61,7 +61,7 @@ export const users = () => {
 export const teams = (parent: RethinkDataLoader) =>
   new DataLoader<string, IGetTeamsByIdResult, string>(
     async (teamIds) => {
-      const teams = (await getTeamsById(teamIds as string[])) as IGetTeamsByIdResult[]
+      const teams = await getTeamsById(teamIds)
       return normalizeRethinkDbResults(teamIds, teams)
     },
     {
