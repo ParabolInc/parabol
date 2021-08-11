@@ -21,7 +21,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       .table('Organization')
       .get(orgId)
       .run(),
-    getTeamsById([teamId])[0]
+    getTeamsById([teamId])[0] ?? null
   ])
   const {orgId: currentOrgId} = team
   if (!su) {

@@ -38,7 +38,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return standardError(new Error('User not on team'), {userId: viewerId})
     }
 
     const meetingType: MeetingTypeEnum = 'retrospective'
@@ -61,7 +61,7 @@ export default {
       meetingType,
       dataLoader
     )
-    const team = await getTeamsById([teamId])[0]
+    const team = (await getTeamsById([teamId])[0]) ?? null
     const organization = await r
       .table('Organization')
       .get(team.orgId)

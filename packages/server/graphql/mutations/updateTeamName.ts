@@ -28,11 +28,11 @@ export default {
     // AUTH
     const teamId = updatedTeam.id
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return standardError(new Error('User not on team'), {userId: viewerId})
     }
 
     // VALIDATION
-    const team = await getTeamsById([teamId])[0]
+    const team = (await getTeamsById([teamId])[0]) ?? null
     const orgTeams = await dataLoader.get('teamsByOrgId').load(team.orgId)
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)

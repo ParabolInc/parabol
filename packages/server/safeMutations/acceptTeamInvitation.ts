@@ -59,7 +59,7 @@ const acceptTeamInvitation = async (teamId: string, userId: string) => {
           .coerceTo('array')
       })
       .run(),
-    getTeamsById([teamId])[0]
+    getTeamsById([teamId])[0] ?? null
   ])
   const {orgId} = team
   const {email, organizationUsers} = user
