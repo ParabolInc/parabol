@@ -48,7 +48,6 @@ const RetroMeetingSidebar = (props: Props) => {
   const isViewerFacilitator = facilitatorUserId === viewerId
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
-  console.log('🚀 ~  localPhaseType', {localPhaseType, localPhase})
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
