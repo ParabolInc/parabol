@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import useRouter from '~/hooks/useRouter'
-import React from 'react'
+import React, {Fragment} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {
@@ -48,6 +48,7 @@ const RetroMeetingSidebar = (props: Props) => {
   const isViewerFacilitator = facilitatorUserId === viewerId
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
+  console.log('🚀 ~  localPhaseType', {localPhaseType, localPhase})
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -71,26 +72,27 @@ const RetroMeetingSidebar = (props: Props) => {
           const phaseCount =
             phaseType === 'discuss' && showDiscussSection ? discussPhase.stages.length : undefined
           return (
-            <NewMeetingSidebarPhaseListItem
-              handleClick={canNavigate ? handleClick : undefined}
-              isActive={phaseType === 'discuss' ? false : localPhaseType === phaseType}
-              isCollapsible={collapsiblePhases.includes(phaseType)}
-              isFacilitatorPhase={phaseType === facilitatorPhaseType}
-              isUnsyncedFacilitatorPhase={
-                isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
-              }
-              isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-              key={phaseType}
-              phaseCount={phaseCount}
-              phaseType={phaseType}
-            >
+            <Fragment key={phaseType}>
+              <NewMeetingSidebarPhaseListItem
+                handleClick={canNavigate ? handleClick : undefined}
+                isActive={phaseType === 'discuss' ? false : localPhaseType === phaseType}
+                isCollapsible={collapsiblePhases.includes(phaseType)}
+                isFacilitatorPhase={phaseType === facilitatorPhaseType}
+                isUnsyncedFacilitatorPhase={
+                  isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
+                }
+                isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+                key={phaseType}
+                phaseCount={phaseCount}
+                phaseType={phaseType}
+              />
               <RetroSidebarPhaseListItemChildren
                 gotoStageId={gotoStageId}
                 handleMenuClick={handleMenuClick}
                 phaseType={phaseType}
                 meeting={meeting}
               />
-            </NewMeetingSidebarPhaseListItem>
+            </Fragment>
           )
         })}
         {endedAt && (

@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {Fragment} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {
@@ -70,26 +71,27 @@ const PokerMeetingSidebar = (props: Props) => {
               ? new Set(estimatePhase.stages.map(({serviceTaskId}) => serviceTaskId)).size
               : undefined
           return (
-            <NewMeetingSidebarPhaseListItem
-              handleClick={canNavigate ? handleClick : undefined}
-              isActive={phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType}
-              isCollapsible={collapsiblePhases.includes(phaseType)}
-              isFacilitatorPhase={phaseType === facilitatorPhaseType}
-              isUnsyncedFacilitatorPhase={
-                isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
-              }
-              isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-              key={phaseType}
-              phaseCount={phaseCount}
-              phaseType={phaseType}
-            >
+            <Fragment key={phaseType}>
+              <NewMeetingSidebarPhaseListItem
+                handleClick={canNavigate ? handleClick : undefined}
+                isActive={phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType}
+                isCollapsible={collapsiblePhases.includes(phaseType)}
+                isFacilitatorPhase={phaseType === facilitatorPhaseType}
+                isUnsyncedFacilitatorPhase={
+                  isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
+                }
+                isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+                key={phaseType}
+                phaseCount={phaseCount}
+                phaseType={phaseType}
+              />
               <PokerSidebarPhaseListItemChildren
                 gotoStageId={gotoStageId}
                 handleMenuClick={handleMenuClick}
                 phaseType={phaseType}
                 meeting={meeting}
               />
-            </NewMeetingSidebarPhaseListItem>
+            </Fragment>
           )
         })}
         {endedAt && (
