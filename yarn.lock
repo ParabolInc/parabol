@@ -12854,10 +12854,10 @@ mediasoup-client@^3.6.21:
     sdp-transform "^2.14.0"
     supports-color "^7.2.0"
 
-mediasoup@^3.6.36:
-  version "3.7.19"
-  resolved "https://registry.yarnpkg.com/mediasoup/-/mediasoup-3.7.19.tgz#c077e140c4f0f7b0a64880e1997cf595cf09fc59"
-  integrity sha512-Qd7o+Nyw72Pvg6/qBp5oXY2xmSOu37RXlqKm41L3yncT7+C5KOmbgpIRgA9g11HGrvmeAsh3eXOO04et8b+//g==
+mediasoup@^3.6.21:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/mediasoup/-/mediasoup-3.8.1.tgz#b1998d6bf1a73efb41b2e8827930436de243af7d"
+  integrity sha512-7s68Sp/gJEj4DS77M7a7HlaxiYJkiSpOY//yWu73zvPuRYWEdL9VXN5AUi38i7GcPnF+KSb0Wt3cJiiTo6TVzw==
   dependencies:
     "@types/node" "^14.14.43"
     awaitqueue "^2.3.3"
@@ -12865,7 +12865,7 @@ mediasoup@^3.6.36:
     h264-profile-level-id "^1.0.1"
     netstring "^0.3.0"
     random-number "^0.0.9"
-    supports-color "^9.0.1"
+    supports-color "^9.0.2"
     uuid "^8.3.2"
 
 mem@^8.0.0:
@@ -14514,9 +14514,9 @@ path-key@^3.0.0, path-key@^3.1.0:
   integrity sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==
 
 path-parse@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
-  integrity sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
+  integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
 
 path-proxy@~1.0.0:
   version "1.0.0"
@@ -17523,10 +17523,10 @@ supports-color@^7.2.0:
   dependencies:
     has-flag "^4.0.0"
 
-supports-color@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-9.0.1.tgz#bcc43ff901cb8088d680144ac0b6553d242abd26"
-  integrity sha512-e8HnXOAd61fVNyYRcKoqGNpnpceN/+IbDlWCBVjeqfASq/kbH4JwNj1Y4TFrve+w838Ff4eupPKXtY03zhCBKQ==
+supports-color@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-9.0.2.tgz#50f082888e4b0a4e2ccd2d0b4f9ef4efcd332485"
+  integrity sha512-ii6tc8ImGFrgMPYq7RVAMKkhPo9vk8uA+D3oKbJq/3Pk2YSMv1+9dUAesa9UxMbxBTvxwKTQffBahNVNxEvM8Q==
   dependencies:
     has-flag "^5.0.0"
 
