@@ -12854,10 +12854,10 @@ mediasoup-client@^3.6.21:
     sdp-transform "^2.14.0"
     supports-color "^7.2.0"
 
-mediasoup@^3.6.36:
-  version "3.7.19"
-  resolved "https://registry.yarnpkg.com/mediasoup/-/mediasoup-3.7.19.tgz#c077e140c4f0f7b0a64880e1997cf595cf09fc59"
-  integrity sha512-Qd7o+Nyw72Pvg6/qBp5oXY2xmSOu37RXlqKm41L3yncT7+C5KOmbgpIRgA9g11HGrvmeAsh3eXOO04et8b+//g==
+mediasoup@^3.6.21:
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/mediasoup/-/mediasoup-3.8.0.tgz#0db17dd4268a301c18349b84bbb74953ec910baf"
+  integrity sha512-am2dcZl6l1K4gXLVS4/NPdRMouGeia92FS6d5ub5frRjtfZcySPvvIBUu4WdTSvXDQgtxr2eBI/a2p4bwIQJ9g==
   dependencies:
     "@types/node" "^14.14.43"
     awaitqueue "^2.3.3"
@@ -12865,7 +12865,7 @@ mediasoup@^3.6.36:
     h264-profile-level-id "^1.0.1"
     netstring "^0.3.0"
     random-number "^0.0.9"
-    supports-color "^9.0.1"
+    supports-color "^9.0.2"
     uuid "^8.3.2"
 
 mem@^8.0.0:
@@ -17523,10 +17523,10 @@ supports-color@^7.2.0:
   dependencies:
     has-flag "^4.0.0"
 
-supports-color@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-9.0.1.tgz#bcc43ff901cb8088d680144ac0b6553d242abd26"
-  integrity sha512-e8HnXOAd61fVNyYRcKoqGNpnpceN/+IbDlWCBVjeqfASq/kbH4JwNj1Y4TFrve+w838Ff4eupPKXtY03zhCBKQ==
+supports-color@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-9.0.2.tgz#50f082888e4b0a4e2ccd2d0b4f9ef4efcd332485"
+  integrity sha512-ii6tc8ImGFrgMPYq7RVAMKkhPo9vk8uA+D3oKbJq/3Pk2YSMv1+9dUAesa9UxMbxBTvxwKTQffBahNVNxEvM8Q==
   dependencies:
     has-flag "^5.0.0"
 
@@ -17617,9 +17617,9 @@ tar-stream@^2.0.0:
     readable-stream "^3.1.1"
 
 tar@^4.4.10, tar@^4.4.12, tar@^4.4.2, tar@^4.4.8:
-  version "4.4.13"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-4.4.13.tgz#43b364bc52888d555298637b10d60790254ab525"
-  integrity sha512-w2VwSrBoHa5BsSyH+KxEqeQBAllHhccyMFVHtGtdMpF4W7IRWfZjFiQceJPChOeTsSDVUpER2T8FA93pr0L+QA==
+  version "4.4.15"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-4.4.15.tgz#3caced4f39ebd46ddda4d6203d48493a919697f8"
+  integrity sha512-ItbufpujXkry7bHH9NpQyTXPbJ72iTlXgkBAYsAjDXk3Ds8t/3NfO5P4xZGy7u+sYuQUbimgzswX4uQIEeNVOA==
   dependencies:
     chownr "^1.1.1"
     fs-minipass "^1.2.5"
