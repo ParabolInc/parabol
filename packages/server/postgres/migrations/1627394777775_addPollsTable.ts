@@ -10,29 +10,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   await client.connect()
 
   await client.query(`
-    DO $$
-    BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'PollStatusEnum') THEN
-        CREATE TYPE "PollStatusEnum" AS ENUM (
-          'creating',
-          'active',
-          'editing',
-          'ended'
-        );
-      END IF;
-    END
-    $$;
-
     CREATE TABLE IF NOT EXISTS "Poll" (
       "id" VARCHAR(100) PRIMARY KEY NOT NULL,
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "deletedAt" TIMESTAMP WITH TIME ZONE DEFAULT NULL, 
+      "endedAt" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
       "createdById" VARCHAR(100) NOT NULL REFERENCES "User"("id"),
       "discussionId" VARCHAR(100) NOT NULL REFERENCES "Discussion"("id"),
-      "winningOptionId" VARCHAR(100),
-      "title" VARCHAR(3000),
-      "status" "PollStatusEnum" NOT NULL DEFAULT 'creating'
+      "title" VARCHAR(300)
     );
     CREATE INDEX IF NOT EXISTS "idx_Poll_discussionId" ON "Poll"("discussionId");
 
@@ -42,7 +28,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "pollId" VARCHAR(100) NOT NULL REFERENCES "Poll"("id") ON DELETE CASCADE,
       "voteUserIds" VARCHAR(100)[] NOT NULL DEFAULT array[]::VARCHAR[],
-      "title" VARCHAR(3000)
+      "title" VARCHAR(100)
     );
     CREATE INDEX IF NOT EXISTS "idx_PollOption_pollId" ON "PollOption"("pollId");
   `)
@@ -53,6 +39,5 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 export async function down(pgm: MigrationBuilder): Promise<void> {
   await pgm.db.query(`
     DROP TABLE IF EXISTS "PollOption", "Poll";
-    DROP TYPE IF EXISTS "PollStatusEnum";
   `)
 }
