@@ -48385,6 +48385,11 @@ export interface IEstimateStage {
   scores: Array<IEstimateUserScore>;
 
   /**
+   * The task referenced in the stage, as it exists in Parabol. null if the task was deleted
+   */
+  task: ITask | null;
+
+  /**
    * the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed
    */
   story: Story | null;
