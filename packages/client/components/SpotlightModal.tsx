@@ -8,13 +8,15 @@ import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import {Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import SpotlightEmptyState from './SpotlightEmptyState'
 import {Elevation} from '../styles/elevation'
+import {DECELERATE, fadeUp} from '../styles/animation'
 
+const SELECTED_HEIGHT_PERC = 33.3
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   background: '#FFFF',
   borderRadius: 8,
@@ -25,7 +27,9 @@ const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   justifyContent: 'center',
   overflow: 'hidden',
   width: isDesktop ? '80vw' : '90vw',
-  zIndex: ZIndex.DIALOG
+  zIndex: ZIndex.DIALOG,
+  animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
+  opacity: 0
 }))
 
 const SelectedReflection = styled('div')({
@@ -34,7 +38,7 @@ const SelectedReflection = styled('div')({
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
   flexWrap: 'wrap',
-  height: '33.3%',
+  height: `${SELECTED_HEIGHT_PERC}%`,
   justifyContent: 'center',
   padding: 16,
   position: 'relative',
@@ -44,7 +48,7 @@ const SelectedReflection = styled('div')({
 const SimilarReflectionGroups = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  height: '66.6%',
+  height: `${SELECTED_HEIGHT_PERC * 2}%`,
   padding: 16
 })
 
@@ -62,12 +66,13 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const Content = styled('div')({
+const ReflectionWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  height: '100%',
   position: 'absolute',
-  top: 0
+  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${ElementHeight.REFLECTION_CARD / 2}px)`, // half of the top section minus half the height of
+  left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
+  zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
 })
 
 const SearchInput = styled('input')({
@@ -121,14 +126,6 @@ const CloseIcon = styled(Icon)({
   }
 })
 
-const Scrim = styled('div')({
-  height: '100%',
-  position: 'fixed',
-  width: '100%',
-  top: 0,
-  left: 0
-})
-
 interface Props {
   closeSpotlight: () => void
   meeting: SpotlightModal_meeting
@@ -146,7 +143,6 @@ const SpotlightModal = (props: Props) => {
   if (!spotlightReflection) return null
   return (
     <>
-      <Scrim onClick={closeSpotlight} />
       <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
         <SelectedReflection>
           <TopRow>
@@ -155,14 +151,6 @@ const SpotlightModal = (props: Props) => {
               <CloseIcon>close</CloseIcon>
             </StyledCloseButton>
           </TopRow>
-          <Content ref={flipRef}>
-            <DraggableReflectionCard
-              staticIdx={0}
-              reflection={spotlightReflection}
-              meeting={meeting}
-              staticReflections={null}
-            />
-          </Content>
           <SearchItem>
             <StyledMenuItemIcon>
               <SearchIcon>search</SearchIcon>
@@ -180,6 +168,14 @@ const SpotlightModal = (props: Props) => {
           {reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}
         </SimilarReflectionGroups>
       </ModalContainer>
+      <ReflectionWrapper ref={flipRef}>
+        <DraggableReflectionCard
+          staticIdx={0}
+          reflection={spotlightReflection}
+          meeting={meeting}
+          staticReflections={null}
+        />
+      </ReflectionWrapper>
     </>
   )
 }

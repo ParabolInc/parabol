@@ -51,7 +51,13 @@ const GroupingKanban = (props: Props) => {
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
-  const {closePortal, openPortal, modalPortal} = useModal({noClose: true})
+  const closeSpotlight = () => {
+    closePortal()
+    flipReverse()
+  }
+  const {closePortal, openPortal, modalPortal} = useModal({
+    onClose: closeSpotlight
+  })
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -93,11 +99,6 @@ const GroupingKanban = (props: Props) => {
       if (!reflection || !meeting) return
       meeting.setLinkedRecord(reflection, 'spotlightReflection')
     })
-  }
-
-  const closeSpotlight = () => {
-    closePortal()
-    flipReverse()
   }
 
   if (!phaseRef.current) return null
