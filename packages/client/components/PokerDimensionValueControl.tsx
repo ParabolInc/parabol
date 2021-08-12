@@ -106,9 +106,6 @@ const PokerDimensionValueControl = (props: Props) => {
   }, [finalScore])
   const submitScore = (finalScore: string, forceRetry?: boolean) => {
     if (!forceRetry && (submitting || !isStale || !isLocallyValidatedRef.current)) {
-      console.warn(
-        `submitting: ${submitting}, isStale: ${isStale}, last: ${lastSubmittedFieldRef.current}`
-      )
       return
     }
     submitMutation()
