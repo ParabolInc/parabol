@@ -129,6 +129,15 @@ const PokerDimensionValueControl = (props: Props) => {
     )
   }
 
+  const submitCardScore = () => {
+    lastCardScoreRef.current = cardScore
+    submitScore(cardScore)
+  }
+
+  const submitLastCardScore = () => {
+    submitScore(lastCardScoreRef.current, true)
+  }
+
   useResizeFontForElement(inputRef, cardScore, 12, 18)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +162,7 @@ const PokerDimensionValueControl = (props: Props) => {
     // keydown required because escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
-      submitScore(cardScore)
+      submitCardScore()
       inputRef.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
@@ -161,15 +170,6 @@ const PokerDimensionValueControl = (props: Props) => {
       inputRef.current?.blur()
       isLocallyValidatedRef.current = true
     }
-  }
-
-  const submitCardScore = () => {
-    lastCardScoreRef.current = cardScore
-    submitScore(cardScore)
-  }
-
-  const submitLastCardScore = () => {
-    submitScore(lastCardScoreRef.current, true)
   }
 
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
