@@ -4,7 +4,6 @@ import {
   IGetTeamsByOrgIdQueryResult
 } from './generated/getTeamsByOrgIdQuery'
 import getPg from '../getPg'
-import catchAndLog from '../utils/catchAndLog'
 
 const getTeamsByOrgIds = async (
   orgIds: string[],
@@ -16,7 +15,7 @@ const getTeamsByOrgIds = async (
     isArchived: !!isArchived,
     ...otherOptions
   }
-  const teams = await catchAndLog(() => getTeamsByOrgIdQuery.run(queryParameters, getPg()))
+  const teams = await getTeamsByOrgIdQuery.run(queryParameters, getPg())
   return teams === null ? [] : teams
 }
 

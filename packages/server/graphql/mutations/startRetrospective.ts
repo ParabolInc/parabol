@@ -61,7 +61,7 @@ export default {
       meetingType,
       dataLoader
     )
-    const team = (await getTeamsById([teamId])[0]) ?? null
+    const team = (await getTeamsById([teamId]))[0] ?? null
     const organization = await r
       .table('Organization')
       .get(team.orgId)
