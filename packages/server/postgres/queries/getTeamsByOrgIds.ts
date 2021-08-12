@@ -16,8 +16,8 @@ const getTeamsByOrgIds = async (
     isArchived: !!isArchived,
     ...otherOptions
   }
-  const orgs = await catchAndLog(() => getTeamsByOrgIdQuery.run(queryParameters, getPg()))
-  return orgs === null ? [] : orgs
+  const teams = await catchAndLog(() => getTeamsByOrgIdQuery.run(queryParameters, getPg()))
+  return teams === null ? [] : teams
 }
 
 export default getTeamsByOrgIds
