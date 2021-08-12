@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useRef} from 'react'
+import React, {MutableRefObject, RefObject, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import useDeepEqual from '~/hooks/useDeepEqual'
@@ -77,7 +77,10 @@ interface Props {
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
-  openSpotlight: (reflectionId: string) => void
+  openSpotlight: (
+    reflectionId: string,
+    reflectionRef: MutableRefObject<HTMLDivElement | null>
+  ) => void
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups

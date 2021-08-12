@@ -8,7 +8,7 @@ import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import {Breakpoint, ElementWidth} from '../types/constEnums'
+import {Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -24,7 +24,8 @@ const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '80vh',
   justifyContent: 'center',
   overflow: 'hidden',
-  width: isDesktop ? '80vw' : '90vw'
+  width: isDesktop ? '80vw' : '90vw',
+  zIndex: ZIndex.DIALOG
 }))
 
 const SelectedReflection = styled('div')({
@@ -120,13 +121,22 @@ const CloseIcon = styled(Icon)({
   }
 })
 
+const Scrim = styled('div')({
+  height: '100%',
+  position: 'fixed',
+  width: '100%',
+  top: 0,
+  left: 0
+})
+
 interface Props {
   closeSpotlight: () => void
   meeting: SpotlightModal_meeting
+  flipRef: (instance: HTMLDivElement) => void
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting} = props
+  const {closeSpotlight, meeting, flipRef} = props
   const {spotlightReflection} = meeting
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -135,39 +145,42 @@ const SpotlightModal = (props: Props) => {
   const reflectionGroupsCount = 0
   if (!spotlightReflection) return null
   return (
-    <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
-      <SelectedReflection>
-        <TopRow>
-          <Title>Find cards with similar reflections</Title>
-          <StyledCloseButton onClick={closeSpotlight}>
-            <CloseIcon>close</CloseIcon>
-          </StyledCloseButton>
-        </TopRow>
-        <Content>
-          <DraggableReflectionCard
-            staticIdx={0}
-            reflection={spotlightReflection}
-            meeting={meeting}
-            staticReflections={null}
-          />
-        </Content>
-        <SearchItem>
-          <StyledMenuItemIcon>
-            <SearchIcon>search</SearchIcon>
-          </StyledMenuItemIcon>
-          <SearchInput
-            autoFocus
-            autoComplete='off'
-            name='search'
-            placeholder='Or search for keywords...'
-            type='text'
-          />
-        </SearchItem>
-      </SelectedReflection>
-      <SimilarReflectionGroups>
-        {reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}
-      </SimilarReflectionGroups>
-    </ModalContainer>
+    <>
+      <Scrim onClick={closeSpotlight} />
+      <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
+        <SelectedReflection>
+          <TopRow>
+            <Title>Find cards with similar reflections</Title>
+            <StyledCloseButton onClick={closeSpotlight}>
+              <CloseIcon>close</CloseIcon>
+            </StyledCloseButton>
+          </TopRow>
+          <Content ref={flipRef}>
+            <DraggableReflectionCard
+              staticIdx={0}
+              reflection={spotlightReflection}
+              meeting={meeting}
+              staticReflections={null}
+            />
+          </Content>
+          <SearchItem>
+            <StyledMenuItemIcon>
+              <SearchIcon>search</SearchIcon>
+            </StyledMenuItemIcon>
+            <SearchInput
+              autoFocus
+              autoComplete='off'
+              name='search'
+              placeholder='Or search for keywords...'
+              type='text'
+            />
+          </SearchItem>
+        </SelectedReflection>
+        <SimilarReflectionGroups>
+          {reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}
+        </SimilarReflectionGroups>
+      </ModalContainer>
+    </>
   )
 }
 

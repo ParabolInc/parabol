@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useState} from 'react'
+import React, {MutableRefObject, RefObject, useMemo, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -15,6 +15,8 @@ import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import useModal from '../hooks/useModal'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SpotlightModal from './SpotlightModal'
+import {useRef} from 'react'
+import useFlip from '../hooks/useFlip'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -42,10 +44,14 @@ const GroupingKanban = (props: Props) => {
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
+  const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
+  const [flipRef, flipReverse] = useFlip({
+    firstRef: spotlightReflectionRef
+  })
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
-  const {closePortal, openPortal, modalPortal} = useModal()
+  const {closePortal, openPortal, modalPortal} = useModal({noClose: true})
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -75,7 +81,11 @@ const GroupingKanban = (props: Props) => {
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
-  const openSpotlight = (reflectionId: string) => {
+  const openSpotlight = (
+    reflectionId: string,
+    reflectionRef: MutableRefObject<HTMLDivElement | null>
+  ) => {
+    spotlightReflectionRef.current = reflectionRef.current
     openPortal()
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
@@ -85,7 +95,10 @@ const GroupingKanban = (props: Props) => {
     })
   }
 
-  const closeSpotlight = () => closePortal()
+  const closeSpotlight = () => {
+    closePortal()
+    flipReverse()
+  }
 
   if (!phaseRef.current) return null
   return (
@@ -114,7 +127,9 @@ const GroupingKanban = (props: Props) => {
           ))}
         </ColumnWrapper>
       </ColumnsBlock>
-      {modalPortal(<SpotlightModal closeSpotlight={closeSpotlight} meeting={meeting} />)}
+      {modalPortal(
+        <SpotlightModal closeSpotlight={closeSpotlight} meeting={meeting} flipRef={flipRef} />
+      )}
     </PortalProvider>
   )
 }

@@ -5,6 +5,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {commitLocalUpdate} from 'relay-runtime'
 import {RefCallbackInstance} from '../../types/generics'
 import {ElementWidth} from '../../types/constEnums'
+import {MutableRefObject} from 'react'
 
 const ModalReflectionWrapper = styled('div')({
   padding: ElementWidth.REFLECTION_CARD_PADDING
@@ -14,7 +15,10 @@ interface Props {
   idx: number
   reflection: any
   meeting: any
-  openSpotlight?: (reflectionId: string) => void
+  openSpotlight?: (
+    reflectionId: string,
+    reflectionRef: MutableRefObject<HTMLDivElement | null>
+  ) => void
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   staticReflections: readonly any[]
 }
