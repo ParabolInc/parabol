@@ -93,17 +93,24 @@ const PokerDimensionValueControl = (props: Props) => {
   const lastSubmittedFieldRef = useRef(serviceFieldName)
   const isLocallyValidatedRef = useRef(true)
   const [cardScore, setCardScore] = useState(finalScore)
+  const lastCardScoreRef = useRef(finalScore)
   const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
   const forceUpdate = useForceUpdate()
+
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
     lastSubmittedFieldRef.current = serviceFieldName
     isLocallyValidatedRef.current = true
   }, [finalScore])
-  const submitScore = () => {
-    if (submitting || !isStale || !isLocallyValidatedRef.current) return
+  const submitScore = (finalScore: string, forceRetry?: boolean) => {
+    if (!forceRetry && (submitting || !isStale || !isLocallyValidatedRef.current)) {
+      console.warn(
+        `submitting: ${submitting}, isStale: ${isStale}, last: ${lastSubmittedFieldRef.current}`
+      )
+      return
+    }
     submitMutation()
     const handleCompleted = (res: PokerSetFinalScoreMutationResponse, errors) => {
       onCompleted(res as any, errors)
@@ -120,7 +127,7 @@ const PokerDimensionValueControl = (props: Props) => {
     }
     PokerSetFinalScoreMutation(
       atmosphere,
-      {finalScore: cardScore, meetingId, stageId},
+      {finalScore, meetingId, stageId},
       {onError, onCompleted: handleCompleted}
     )
   }
@@ -149,7 +156,7 @@ const PokerDimensionValueControl = (props: Props) => {
     // keydown required because escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
-      submitScore()
+      submitScore(cardScore)
       inputRef.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
@@ -158,6 +165,16 @@ const PokerDimensionValueControl = (props: Props) => {
       isLocallyValidatedRef.current = true
     }
   }
+
+  const submitCardScore = () => {
+    lastCardScoreRef.current = cardScore
+    submitScore(cardScore)
+  }
+
+  const submitLastCardScore = () => {
+    submitScore(lastCardScoreRef.current, true)
+  }
+
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === cardScore)
   const scaleColor = matchingScale?.color
@@ -190,7 +207,7 @@ const PokerDimensionValueControl = (props: Props) => {
             canUpdate={isStale}
             stage={stage}
             error={errorStr}
-            submitScore={submitScore}
+            submitScore={submitCardScore}
             clearError={onCompleted}
             inputRef={inputRef}
             isFacilitator={isFacilitator}
@@ -200,7 +217,7 @@ const PokerDimensionValueControl = (props: Props) => {
           <>
             {isStale ? (
               <>
-                <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
+                <StyledLinkButton onClick={submitCardScore}>{'Update'}</StyledLinkButton>
                 {errorStr && <ErrorMessage>{errorStr}</ErrorMessage>}
               </>
             ) : (
@@ -212,7 +229,7 @@ const PokerDimensionValueControl = (props: Props) => {
       {modalPortal(
         <AddMissingJiraFieldModal
           stage={stage}
-          submitScore={submitScore}
+          submitScore={submitLastCardScore}
           closePortal={closePortal}
         />
       )}
