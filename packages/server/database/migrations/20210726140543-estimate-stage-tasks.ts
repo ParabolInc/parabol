@@ -25,7 +25,11 @@ export const up = async function(r: R) {
             phase.merge({
               stages: phase('stages').map((stage) =>
                 stage.merge({
-                  taskId: r(stageIdTaskIdLookup)(stage('id')).default(stage('serviceTaskId'))
+                  taskId: r.branch(
+                    stage('taskId'),
+                    stage('taskId'),
+                    r(stageIdTaskIdLookup)(stage('id')).default(stage('serviceTaskId'))
+                  )
                 })
               )
             }),
@@ -58,6 +62,7 @@ export const up = async function(r: R) {
       const {stages} = phase
       const stageIdToTaskId = {} as Record<string, string>
       stages.forEach((stage) => {
+        if (stage.taskId) return
         const {
           id: stageId,
           service,
@@ -87,6 +92,7 @@ export const up = async function(r: R) {
             teamId,
             integrationHash: serviceTaskId,
             integration: {
+              service: 'jira',
               cloudId,
               issueKey,
               projectKey,

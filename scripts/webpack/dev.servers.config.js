@@ -71,7 +71,16 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: ['ignore-loader']
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              publicPath: (url) => {
+                return `dev/${url}`
+              }
+            }
+          }
+        ]
       }
     ]
   }

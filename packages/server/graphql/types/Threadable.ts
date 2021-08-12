@@ -85,12 +85,6 @@ const {connectionType, edgeType} = connectionDefinitions({
       type: GraphQLString,
       description: 'Any errors that prevented the query from returning the full results'
     },
-    commentorIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
-      description: 'A list of userIds currently commenting',
-      // WE CURRENTLY DON'T USE THIS, LET'S PUT THIS STUFF IN REDIS SOON!
-      resolve: () => []
-    },
     pageInfo: {
       type: PageInfo,
       description: 'Page info with strings (sortOrder) as cursors'

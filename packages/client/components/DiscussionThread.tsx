@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
@@ -35,6 +36,7 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, allowedThreadables, width, viewer} = props
+  const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -49,10 +51,11 @@ const DiscussionThread = (props: Props) => {
       isDrawer
     ) || allowedThreadables.length === 0
   const {discussion} = viewer
-  const commentors = discussion?.thread?.commentors ?? []
-  const preferredNames = useMemo(() => commentors.map(({preferredName}) => preferredName), [
-    commentors
-  ])
+  const commentors = discussion?.commentors ?? []
+  const preferredNames = useMemo(
+    () => commentors.filter(({id}) => id !== viewerId).map(({preferredName}) => preferredName),
+    [viewerId, discussion]
+  )
   if (!discussion) {
     return <div>No discussion found!</div>
   }
@@ -99,11 +102,12 @@ export default createFragmentContainer(DiscussionThread, {
         ...DiscussionThreadList_discussion
         id
         replyingToCommentId
+        commentors {
+          id
+          preferredName
+          __typename
+        }
         thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-          commentors {
-            id
-            preferredName
-          }
           edges {
             node {
               threadSortOrder

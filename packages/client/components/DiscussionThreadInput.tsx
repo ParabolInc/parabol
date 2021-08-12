@@ -25,6 +25,7 @@ import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import AddTaskButton from './AddTaskButton'
 import SendCommentButton from './SendCommentButton'
 import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
+import {useBeforeUnload} from '../hooks/useBeforeUnload'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -102,6 +103,17 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
+
+  useBeforeUnload(() => {
+    EditCommentingMutation(
+      atmosphere,
+      {
+        isCommenting: false,
+        discussionId
+      },
+      {onError, onCompleted}
+    )
+  })
 
   useEffect(() => {
     const inactiveCommenting = setTimeout(() => {

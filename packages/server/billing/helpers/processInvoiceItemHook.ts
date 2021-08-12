@@ -11,6 +11,7 @@
  */
 
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import sleep from '../../../client/utils/sleep'
 import getRethink from '../../database/rethinkDriver'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import {toEpochSeconds} from '../../utils/epochTime'
@@ -44,9 +45,8 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
   if (lockTTL > 0) {
     // it's possible that the subscription is unlocked before this is up & another call jumps in line
     // but the work to be done is decided after the lock, not before, so order isn't important
-    setTimeout(() => {
-      processInvoiceItemHook(stripeSubscriptionId)
-    }, lockTTL)
+    await sleep(lockTTL)
+    processInvoiceItemHook(stripeSubscriptionId)
     return
   }
 
@@ -77,7 +77,8 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     getSafeProrationDate(stripeSubscriptionId, tentativeProrationDate),
     manager.retrieveSubscription(stripeSubscriptionId)
   ])
-  const stripeQty = stripeSubscription!.quantity || 0
+  if (!stripeSubscription) return
+  const stripeQty = stripeSubscription.quantity || 0
   const nextQuantity = stripeQty + getTypeDelta(type)
   await Promise.all([
     r
