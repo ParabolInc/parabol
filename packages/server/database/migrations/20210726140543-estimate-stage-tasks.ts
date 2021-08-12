@@ -7,7 +7,7 @@ import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import EstimatePhase from '../types/EstimatePhase'
 
-export const up = async function (r: R) {
+export const up = async function(r: R) {
   const BATCH_SIZE = 1000
   const plaintextContent = `Task imported from jira`
   const content = convertToTaskContent(plaintextContent)
@@ -92,6 +92,7 @@ export const up = async function (r: R) {
             teamId,
             integrationHash: serviceTaskId,
             integration: {
+              service: 'jira',
               cloudId,
               issueKey,
               projectKey,
@@ -147,6 +148,6 @@ export const up = async function (r: R) {
   }
 }
 
-export const down = async function () {
+export const down = async function() {
   // noop. it's just a taskId field & there's no way to discriminate between old vs new
 }
