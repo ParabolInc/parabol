@@ -54,6 +54,12 @@ const GroupingKanban = (props: Props) => {
   const closeSpotlight = () => {
     closePortal()
     flipReverse()
+    spotlightReflectionRef.current = null
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)
+      if (!meeting) return
+      meeting.setValue(null, 'spotlightReflection')
+    })
   }
   const {closePortal, openPortal, modalPortal} = useModal({
     onClose: closeSpotlight
