@@ -29,7 +29,7 @@ import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
 import IconLabel from '../IconLabel'
 import useBreakpoint from '../../hooks/useBreakpoint'
-import {Breakpoint} from '../../types/constEnums'
+import {Breakpoint, ZIndex} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 
@@ -45,11 +45,11 @@ const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) =>
   bottom: 2,
   color: PALETTE.SLATE_700,
   cursor: 'pointer',
-  display: showSearch ? 'block' : 'none',
   opacity: 1,
   position: 'absolute',
   right: 2,
-  zIndex: 2,
+  visibility: showSearch ? 'visible' : 'hidden',
+  zIndex: ZIndex.TOOLTIP,
   ':hover': {
     backgroundColor: PALETTE.SLATE_200
   }

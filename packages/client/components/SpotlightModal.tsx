@@ -18,6 +18,7 @@ import {DECELERATE, fadeUp} from '../styles/animation'
 
 const SELECTED_HEIGHT_PERC = 33.3
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
   background: '#FFFF',
   borderRadius: 8,
   boxShadow: Elevation.Z8,
@@ -25,11 +26,10 @@ const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flexWrap: 'wrap',
   height: '80vh',
   justifyContent: 'center',
+  opacity: 0,
   overflow: 'hidden',
   width: isDesktop ? '80vw' : '90vw',
-  zIndex: ZIndex.DIALOG,
-  animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
-  opacity: 0
+  zIndex: ZIndex.SPOTLIGHT_MODAL
 }))
 
 const SelectedReflection = styled('div')({
