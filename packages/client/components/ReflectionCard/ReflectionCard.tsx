@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {MouseEvent, MutableRefObject, useEffect, useRef, useState} from 'react'
+import React, {MouseEvent, RefObject, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {
@@ -59,10 +59,7 @@ interface Props {
   isClipped?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
-  openSpotlight?: (
-    reflectionId: string,
-    reflectionRef: MutableRefObject<HTMLDivElement | null>
-  ) => void
+  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
   stackCount?: number
   showOriginFooter?: boolean
   showReactji?: boolean
@@ -92,7 +89,7 @@ const ReflectionCard = (props: Props) => {
   const spotlightReflectionId = meeting?.spotlightReflection?.id
   const inSpotlight = reflectionId === spotlightReflectionId
   const atmosphere = useAtmosphere()
-  const reflectionRef = useRef<HTMLDivElement | null>(null)
+  const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
@@ -190,9 +187,7 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = inSpotlight
-    ? inSpotlight
-    : getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
+  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
   const onToggleReactji = (emojiId: string) => {

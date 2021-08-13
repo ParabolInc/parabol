@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {MutableRefObject, useState} from 'react'
+import React, {RefObject, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
@@ -48,10 +48,7 @@ interface Props {
   isClipped?: boolean
   isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting
-  openSpotlight?: (
-    reflectionId: string,
-    reflectionRef: MutableRefObject<HTMLDivElement | null>
-  ) => void
+  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
   staticReflections: DraggableReflectionCard_staticReflections | null

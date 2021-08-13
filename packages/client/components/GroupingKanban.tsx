@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {MutableRefObject, RefObject, useMemo, useState} from 'react'
+import React, {RefObject, useMemo, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -93,10 +93,7 @@ const GroupingKanban = (props: Props) => {
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
-  const openSpotlight = (
-    reflectionId: string,
-    reflectionRef: MutableRefObject<HTMLDivElement | null>
-  ) => {
+  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     spotlightReflectionRef.current = reflectionRef.current
     openPortal()
     commitLocalUpdate(atmosphere, (store) => {

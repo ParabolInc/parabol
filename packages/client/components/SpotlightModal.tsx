@@ -32,7 +32,7 @@ const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   zIndex: ZIndex.SPOTLIGHT_MODAL
 }))
 
-const SelectedReflection = styled('div')({
+const SelectedReflectionSection = styled('div')({
   alignItems: 'flex-start',
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
@@ -70,7 +70,7 @@ const ReflectionWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
-  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${ElementHeight.REFLECTION_CARD / 2}px)`, // half of the top section minus half the height of
+  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${ElementHeight.REFLECTION_CARD / 2}px)`,
   left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
 })
@@ -144,7 +144,7 @@ const SpotlightModal = (props: Props) => {
   return (
     <>
       <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
-        <SelectedReflection>
+        <SelectedReflectionSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>
             <StyledCloseButton onClick={closeSpotlight}>
@@ -163,7 +163,7 @@ const SpotlightModal = (props: Props) => {
               type='text'
             />
           </SearchItem>
-        </SelectedReflection>
+        </SelectedReflectionSection>
         <SimilarReflectionGroups>
           {reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}
         </SimilarReflectionGroups>

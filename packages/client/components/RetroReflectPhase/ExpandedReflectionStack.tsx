@@ -1,4 +1,4 @@
-import React, {ReactNode, Ref, RefObject, useMemo, useEffect, MutableRefObject} from 'react'
+import React, {ReactNode, Ref, RefObject, useMemo, useEffect} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV3'
 import {BBox} from '../../types/animations'
@@ -72,10 +72,7 @@ interface Props {
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   reflectionGroupId?: string
-  openSpotlight?: (
-    reflectionId: string,
-    reflectionRef: MutableRefObject<HTMLDivElement | null>
-  ) => void
+  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
 }
 
 const ExpandedReflectionStack = (props: Props) => {

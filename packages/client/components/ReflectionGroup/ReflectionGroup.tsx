@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {MutableRefObject, RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -61,10 +61,7 @@ const ReflectionWrapper = styled('div')<{
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
-  openSpotlight?: (
-    reflectionId: string,
-    reflectionRef: MutableRefObject<HTMLDivElement | null>
-  ) => void
+  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string

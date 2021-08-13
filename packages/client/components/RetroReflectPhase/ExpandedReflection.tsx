@@ -1,11 +1,10 @@
 import DraggableReflectionCard from '../ReflectionGroup/DraggableReflectionCard'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, RefObject} from 'react'
 import styled from '@emotion/styled'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {commitLocalUpdate} from 'relay-runtime'
 import {RefCallbackInstance} from '../../types/generics'
 import {ElementWidth} from '../../types/constEnums'
-import {MutableRefObject} from 'react'
 
 const ModalReflectionWrapper = styled('div')({
   padding: ElementWidth.REFLECTION_CARD_PADDING
@@ -15,10 +14,7 @@ interface Props {
   idx: number
   reflection: any
   meeting: any
-  openSpotlight?: (
-    reflectionId: string,
-    reflectionRef: MutableRefObject<HTMLDivElement | null>
-  ) => void
+  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   staticReflections: readonly any[]
 }
