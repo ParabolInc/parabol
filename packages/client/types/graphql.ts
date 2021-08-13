@@ -50823,7 +50823,7 @@ export interface IMutation {
   removeTeamMember: IRemoveTeamMemberPayload | null;
 
   /**
-   * Reset meeting to a previously completed stage
+   * Reset a retro meeting to group stage
    */
   resetMeetingToStage: IResetMeetingToStagePayload;
 

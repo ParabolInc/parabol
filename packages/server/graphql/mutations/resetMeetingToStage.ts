@@ -1,20 +1,36 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {DISCUSS, GROUP, VOTE} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
+import DiscussPhase from '../../database/types/DiscussPhase'
+import DiscussStage from '../../database/types/DiscussStage'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import ResetMeetingToStagePayload from '../types/ResetMeetingToStagePayload'
-import createNewMeetingPhases, {primePhases} from './helpers/createNewMeetingPhases'
+import {primePhases} from './helpers/createNewMeetingPhases'
+
+const resetMeetingPhase = (phase: GenericMeetingPhase) => {
+  const newStages = phase.stages.map(({id}) => {
+    const newStage =
+      phase.phaseType === DISCUSS
+        ? new DiscussStage({sortOrder: 0, reflectionGroupId: ''})
+        : new GenericMeetingStage({phaseType: phase.phaseType})
+    newStage.id = id
+    return newStage
+  })
+  phase.stages = newStages
+}
 
 const resetMeetingToStage = {
   type: GraphQLNonNull(ResetMeetingToStagePayload),
-  description: `Reset meeting to a previously completed stage`,
+  description: `Reset a retro meeting to group stage`,
   args: {
     meetingId: {
       type: GraphQLNonNull(GraphQLID)
@@ -30,9 +46,12 @@ const resetMeetingToStage = {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {createdBy, facilitatorUserId, phases, teamId, meetingType, meetingCount} = meeting
+    const {createdBy, facilitatorUserId, phases, meetingType} = meeting
+    if (meetingType != 'retrospective') {
+      return standardError(new Error('Meeting type is not retrospective'), {userId: viewerId})
+    }
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== createdBy)
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
@@ -56,43 +75,31 @@ const resetMeetingToStage = {
       return standardError(new Error('The meeting has already ended'), {userId: viewerId})
 
     // RESOLUTION
-    // TODO don't create all the phases from scratch
-    const createdPhases = await createNewMeetingPhases(
-      viewerId,
-      teamId,
-      meetingId,
-      meetingCount,
-      meetingType,
-      dataLoader
-    )
-    const discussionIds = [] as string[]
-    let shouldResetStage = false
+    let discussionIds = [] as string[]
     let resetToPhaseIndex = -1
     const newPhases = [] as GenericMeetingPhase[]
     for (const [phaseIndex, phase] of phases.entries()) {
-      const {stages} = phase
-      if (!stages) continue
-      const newStages = [] as GenericMeetingStage[]
-      for (const [stageIndex, stage] of stages.entries()) {
-        if (stage.discussionId) {
-          discussionIds.push(stage.discussionId)
-        }
-        if (stage.id === stageId) {
-          shouldResetStage = true
+      const {phaseType} = phase
+      switch (phaseType) {
+        case GROUP: {
           resetToPhaseIndex = phaseIndex
+          resetMeetingPhase(phase)
+          break
         }
-        if (!shouldResetStage) {
-          newStages.push(stage)
-          continue
+        case VOTE: {
+          resetMeetingPhase(phase)
+          break
         }
-        const resettedStage = createdPhases[phaseIndex]?.stages[stageIndex]
-        if (!resettedStage) continue
-        newStages.push(Object.assign(resettedStage, {id: stage.id}))
+        case DISCUSS: {
+          discussionIds = (phase as DiscussPhase).stages.map(({discussionId}) => discussionId) ?? []
+          resetMeetingPhase(phase)
+          break
+        }
       }
-      phase.stages = newStages
       newPhases.push(phase)
     }
     primePhases(newPhases, resetToPhaseIndex)
+    meeting.phases = newPhases
 
     const reflectionGroups = await dataLoader
       .get('retroReflectionGroupsByMeetingId')
