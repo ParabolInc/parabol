@@ -73,22 +73,22 @@ const ActionMeeting = (props: Props) => {
       </ResponsiveDashSidebar>
       <MeetingArea>
         <Suspense fallback={''}>
-        <Phase
-          meeting={meeting}
-          toggleSidebar={toggleSidebar}
-          avatarGroup={
-            <NewMeetingAvatarGroup
-              allowVideo={allowVideo}
-              room={room}
-              peers={peers}
-              producers={producers}
-              consumers={consumers}
-              mediaRoom={mediaRoom}
-              meeting={meeting}
-            />
-          }
+          <Phase
+            meeting={meeting}
+            toggleSidebar={toggleSidebar}
+            avatarGroup={
+              <NewMeetingAvatarGroup
+                allowVideo={allowVideo}
+                room={room}
+                peers={peers}
+                producers={producers}
+                consumers={consumers}
+                mediaRoom={mediaRoom}
+                meeting={meeting}
+              />
+            }
           />
-          </Suspense>
+        </Suspense>
       </MeetingArea>
       <MeetingControlBar
         meeting={meeting}

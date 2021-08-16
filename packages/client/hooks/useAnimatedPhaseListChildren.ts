@@ -11,13 +11,16 @@ const useAnimatedPhaseListChildren = (isActive: boolean, itemCount: number) => {
   const wasActiveRef = useRef(isActive)
   useEffect(() => {
     if (isActive === wasActiveRef.current) return
-    if (isActive) {
-      ref.current!.style.overflow = 'hidden'
-      setTimeout(() => {
-        ref.current!.style.overflow = ''
-      }, 300)
-    }
     wasActiveRef.current = isActive
+    if (!isActive) return
+    ref.current!.style.overflow = 'hidden'
+    const ANIMATION_DURATION = 300
+    const timeout = setTimeout(() => {
+      ref.current!.style.overflow = ''
+    }, ANIMATION_DURATION)
+    return () => {
+      clearTimeout(timeout)
+    }
   }, [isActive])
   return {height: isActive ? height : 0, ref}
 }
