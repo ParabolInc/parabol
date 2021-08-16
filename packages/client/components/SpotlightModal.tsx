@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
+import {SpotlightModal_viewer} from '~/__generated__/SpotlightModal_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
@@ -130,10 +131,11 @@ interface Props {
   closeSpotlight: () => void
   meeting: SpotlightModal_meeting
   flipRef: (instance: HTMLDivElement) => void
+  viewer: SpotlightModal_viewer
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, flipRef} = props
+  const {closeSpotlight, meeting, flipRef, viewer} = props
   const {spotlightReflection} = meeting
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -203,13 +205,17 @@ export default createFragmentContainer(SpotlightModal, {
       spotlightReflection {
         ...DraggableReflectionCard_reflection
       }
-      viewerMeetingMember {
-        user {
-          similarReflectionGroups(meetingId: $meetingId, reflectionId: "", searchQuery: "") {
-            id
-            title
-          }
-        }
+    }
+  `,
+  viewer: graphql`
+    fragment SpotlightModal_viewer on User {
+      similarReflectionGroups(
+        meetingId: $meetingId
+        reflectionId: $reflectionId
+        searchQuery: $searchQuery
+      ) {
+        id
+        title
       }
     }
   `

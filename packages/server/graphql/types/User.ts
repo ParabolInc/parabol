@@ -410,15 +410,22 @@ const User = new GraphQLObjectType<any, GQLContext>({
           description: 'The id of the meeting where the Spotlight is being rendered'
         },
         reflectionId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The id of the selected reflection in the Spotlight'
+          type: GraphQLID,
+          description:
+            'The id of the selected reflection in the Spotlight. Null if there is no Spotlight reflection'
         },
         searchQuery: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Only return reflection groups that match the search query'
         }
       },
-      resolve: async (_source, {reflectionId, searchQuery, meetingId}, {dataLoader}) => {
+      resolve: async ({id: userId}, {meetingId, reflectionId, searchQuery}, {dataLoader}) => {
+        if (!meetingId || !reflectionId) return []
+        const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+        const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
+        const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
+        const isValidReflection =
+          retroReflection.meetingId === meetingId && meetingIds.includes(meetingId)
         const reflectionGroups = await dataLoader
           .get('retroReflectionGroupsByMeetingId')
           .load(meetingId)
