@@ -32,6 +32,7 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint, ZIndex} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
+import {DECELERATE} from '../../styles/animation'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -215,10 +216,20 @@ const ReflectionCard = (props: Props) => {
 
   const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    if (openSpotlight && reflectionRef.current) {
+    const el = reflectionRef.current
+    if (openSpotlight && el) {
       openSpotlight(reflectionId, reflectionRef)
+      el.style.transition = `opacity 200ms ${DECELERATE}`
+      el.style.opacity = '0'
     }
   }
+
+  useEffect(() => {
+    const el = reflectionRef.current
+    if (el && !inSpotlight) {
+      el.style.opacity = '1'
+    }
+  }, [inSpotlight])
 
   const showSpotlight = true // TODO: dummy feature flag. Change to false before merging PR
   const showSearch =
