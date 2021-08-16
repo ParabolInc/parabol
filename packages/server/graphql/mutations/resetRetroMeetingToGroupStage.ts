@@ -13,7 +13,7 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import ResetMeetingToStagePayload from '../types/ResetMeetingToStagePayload'
+import ResetRetroMeetingToGroupStagePayload from '../types/ResetRetroMeetingToGroupStagePayload'
 import {primePhases} from './helpers/createNewMeetingPhases'
 
 const resetMeetingPhase = (phase: GenericMeetingPhase) => {
@@ -28,8 +28,8 @@ const resetMeetingPhase = (phase: GenericMeetingPhase) => {
   phase.stages = newStages
 }
 
-const resetMeetingToStage = {
-  type: GraphQLNonNull(ResetMeetingToStagePayload),
+const resetRetroMeetingToGroupStage = {
+  type: GraphQLNonNull(ResetRetroMeetingToGroupStagePayload),
   description: `Reset a retro meeting to group stage`,
   args: {
     meetingId: {
@@ -136,9 +136,15 @@ const resetMeetingToStage = {
     const data = {
       meetingId
     }
-    publish(SubscriptionChannel.MEETING, meetingId, 'ResetMeetingToStagePayload', data, subOptions)
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'ResetRetroMeetingToGroupStagePayload',
+      data,
+      subOptions
+    )
     return data
   }
 }
 
-export default resetMeetingToStage
+export default resetRetroMeetingToGroupStage

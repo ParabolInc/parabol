@@ -3,13 +3,13 @@ import {commitMutation} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import {SimpleMutation} from '../types/relayMutations'
 import {
-  ResetMeetingToStageMutation as TResetMeetingToStageMutation,
-  ResetMeetingToStageMutationVariables
-} from '../__generated__/ResetMeetingToStageMutation.graphql'
+  ResetRetroMeetingToGroupStageMutation as TResetRetroMeetingToGroupStageMutation,
+  ResetRetroMeetingToGroupStageMutationVariables
+} from '../__generated__/ResetRetroMeetingToGroupStageMutation.graphql'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 
 graphql`
-  fragment ResetMeetingToStageMutation_meeting on ResetMeetingToStagePayload {
+  fragment ResetRetroMeetingToGroupStageMutation_meeting on ResetRetroMeetingToGroupStagePayload {
     meeting {
       id
       phases {
@@ -38,17 +38,17 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation ResetMeetingToStageMutation($meetingId: ID!, $stageId: ID!) {
-    resetMeetingToStage(meetingId: $meetingId, stageId: $stageId) {
+  mutation ResetRetroMeetingToGroupStageMutation($meetingId: ID!, $stageId: ID!) {
+    resetRetroMeetingToGroupStage(meetingId: $meetingId, stageId: $stageId) {
       error {
         message
       }
-      ...ResetMeetingToStageMutation_meeting @relay(mask: false)
+      ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
     }
   }
 `
 
-export const resetMeetingToStageUpdater = (payload, {store}) => {
+export const resetRetroMeetingToGroupStageUpdater = (payload, {store}) => {
   const meeting = payload.getLinkedRecord('meeting')
   const phases = meeting.getLinkedRecords('phases')
   const discussPhase = phases.find((phase) => phase?.getValue('phaseType') === 'discuss')
@@ -61,19 +61,19 @@ export const resetMeetingToStageUpdater = (payload, {store}) => {
   })
 }
 
-const ResetMeetingToStageMutation: SimpleMutation<TResetMeetingToStageMutation> = (
+const ResetRetroMeetingToGroupStageMutation: SimpleMutation<TResetRetroMeetingToGroupStageMutation> = (
   atmosphere: Atmosphere,
-  variables: ResetMeetingToStageMutationVariables
+  variables: ResetRetroMeetingToGroupStageMutationVariables
 ) => {
-  return commitMutation<TResetMeetingToStageMutation>(atmosphere, {
+  return commitMutation<TResetRetroMeetingToGroupStageMutation>(atmosphere, {
     mutation,
     updater: (store) => {
-      const payload = store.getRootField('resetMeetingToStage')
+      const payload = store.getRootField('resetRetroMeetingToGroupStage')
       if (!payload) return
-      resetMeetingToStageUpdater(payload, {store})
+      resetRetroMeetingToGroupStageUpdater(payload, {store})
     },
     variables
   })
 }
 
-export default ResetMeetingToStageMutation
+export default ResetRetroMeetingToGroupStageMutation

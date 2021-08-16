@@ -20,7 +20,7 @@ import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
 import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
-import ResetMeetingToStagePayload from './ResetMeetingToStagePayload'
+import ResetRetroMeetingToGroupStagePayload from './ResetRetroMeetingToGroupStagePayload'
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
 import {SetPokerSpectateSuccess} from './SetPokerSpectatePayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
@@ -52,7 +52,7 @@ const types = [
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
-  ResetMeetingToStagePayload,
+  ResetRetroMeetingToGroupStagePayload,
   SetPhaseFocusPayload,
   SetStageTimerPayload,
   StartDraggingReflectionPayload,

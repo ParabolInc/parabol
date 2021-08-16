@@ -1,5 +1,5 @@
 import React from 'react'
-import ResetMeetingToStageMutation from '~/mutations/ResetMeetingToStageMutation'
+import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'
 import useModal from '~/hooks/useModal'
@@ -34,7 +34,7 @@ const UndoableGroupPhaseControl = (props: Props) => {
   const atmosphere = useAtmosphere()
   useHotkey('i d i d n t m e a n t o', () => {
     console.log('didntmean')
-    ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId})
+    ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId, stageId: resetToStageId})
   })
   return (
     <>

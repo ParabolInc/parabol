@@ -1,6 +1,6 @@
 import React from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import ResetMeetingToStageMutation from '~/mutations/ResetMeetingToStageMutation'
+import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import DialogContainer from '~/components/DialogContainer'
 import DialogContent from '~/components/DialogContent'
 import DialogTitle from '~/components/DialogTitle'
@@ -32,7 +32,7 @@ const UndoableGroupPhaseDialog = (props: Props) => {
   const {closePortal, meetingId, resetToStageId} = props
   const atmosphere = useAtmosphere()
   const handleConfirm = () => {
-    ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId}) && closePortal()
+    ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId, stageId: resetToStageId}) && closePortal()
   }
   return (
     <DialogContainer>
