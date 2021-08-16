@@ -18,6 +18,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       "endedAt" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
       "createdById" VARCHAR(100) NOT NULL REFERENCES "User"("id"),
       "discussionId" VARCHAR(100) NOT NULL REFERENCES "Discussion"("id"),
+      "teamId" VARCHAR(100) NOT NULL REFERENCES "Team"("id"),
+      "meetingId" VARCHAR(100),
       "title" VARCHAR(300)
     );
     CREATE INDEX IF NOT EXISTS "idx_Poll_discussionId" ON "Poll"("discussionId");
