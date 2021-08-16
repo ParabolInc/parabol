@@ -44069,6 +44069,11 @@ export interface IUser {
    * a string with message stating that the user is over the free tier limit, else null
    */
   overLimitCopy: string | null;
+
+  /**
+   * The reflection groups that are similar to the selected reflection in the Spotlight
+   */
+  similarReflectionGroups: Array<IRetroReflectionGroup>;
   tasks: ITaskConnection;
 
   /**
@@ -44207,6 +44212,23 @@ export interface IOrganizationUserOnUserArguments {
    * the orgId
    */
   orgId: string;
+}
+
+export interface ISimilarReflectionGroupsOnUserArguments {
+  /**
+   * The id of the meeting where the Spotlight is being rendered
+   */
+  meetingId: string;
+
+  /**
+   * The id of the selected reflection in the Spotlight
+   */
+  reflectionId: string;
+
+  /**
+   * Only return reflection groups that match the search query
+   */
+  searchQuery: string;
 }
 
 export interface ITasksOnUserArguments {
@@ -47125,6 +47147,262 @@ export const enum NotificationEnum {
 }
 
 /**
+ * A reflection group created during the group phase of a retrospective
+ */
+export interface IRetroReflectionGroup {
+  __typename: 'RetroReflectionGroup';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * A list of users currently commenting
+   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * True if the group has not been removed, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The foreign key to link a reflection group to its meeting
+   */
+  meetingId: string;
+
+  /**
+   * The retrospective meeting this reflection was created in
+   */
+  meeting: IRetrospectiveMeeting;
+  prompt: IReflectPrompt;
+
+  /**
+   * The foreign key to link a reflection group to its prompt. Immutable.
+   */
+  promptId: string;
+  reflections: Array<IRetroReflection>;
+
+  /**
+   * Our auto-suggested title, to be compared to the actual title for analytics
+   */
+  smartTitle: string | null;
+
+  /**
+   * The sort order of the reflection group
+   */
+  sortOrder: number;
+
+  /**
+   * The team that is running the retro
+   */
+  team: ITeam | null;
+
+  /**
+   * The title of the grouping of the retrospective reflections
+   */
+  title: string | null;
+
+  /**
+   * true if a user wrote the title, else false
+   */
+  titleIsUserDefined: boolean;
+
+  /**
+   * The timestamp the meeting was updated at
+   */
+  updatedAt: any | null;
+
+  /**
+   * A list of voterIds (userIds). Not available to team to preserve anonymity
+   */
+  voterIds: Array<string>;
+
+  /**
+   * The number of votes this group has received
+   */
+  voteCount: number;
+
+  /**
+   * The number of votes the viewer has given this group
+   */
+  viewerVoteCount: number | null;
+}
+
+/**
+ * A reflection created during the reflect phase of a retrospective
+ */
+export interface IRetroReflection {
+  __typename: 'RetroReflection';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>;
+
+  /**
+   * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
+   */
+  autoReflectionGroupId: string | null;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any | null;
+
+  /**
+   * The userId that created the reflection (or unique Id if not a team member)
+   */
+  creatorId: string | null;
+
+  /**
+   * an array of all the socketIds that are currently editing the reflection
+   */
+  editorIds: Array<string>;
+
+  /**
+   * True if the reflection was not removed, else false
+   */
+  isActive: boolean;
+
+  /**
+   * true if the viewer (userId) is the creator of the retro reflection, else false
+   */
+  isViewerCreator: boolean;
+
+  /**
+   * The stringified draft-js content
+   */
+  content: string;
+
+  /**
+   * The entities (i.e. nouns) parsed from the content and their respective salience
+   */
+  entities: Array<IGoogleAnalyzedEntity>;
+
+  /**
+   * The foreign key to link a reflection to its meeting
+   */
+  meetingId: string;
+
+  /**
+   * The retrospective meeting this reflection was created in
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The plaintext version of content
+   */
+  plaintextContent: string;
+
+  /**
+   * The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.
+   */
+  promptId: string;
+  prompt: IReflectPrompt;
+
+  /**
+   * The foreign key to link a reflection to its group
+   */
+  reflectionGroupId: string;
+
+  /**
+   * The group the reflection belongs to, if any
+   */
+  retroReflectionGroup: IRetroReflectionGroup | null;
+
+  /**
+   * The sort order of the reflection in the group (increments starting from 0)
+   */
+  sortOrder: number;
+
+  /**
+   * The team that is running the meeting that contains this reflection
+   */
+  team: ITeam;
+
+  /**
+   * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
+   */
+  updatedAt: any | null;
+}
+
+/**
+ * An item that can have reactjis
+ */
+export type Reactable = IRetroReflection | IComment;
+
+/**
+ * An item that can have reactjis
+ */
+export interface IReactable {
+  __typename: 'Reactable';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>;
+}
+
+/**
+ * An aggregate of reactji metadata
+ */
+export interface IReactji {
+  __typename: 'Reactji';
+
+  /**
+   * composite of entity:reactjiId
+   */
+  id: string;
+
+  /**
+   * The number of users who have added this reactji
+   */
+  count: number;
+
+  /**
+   * true if the viewer is included in the count, else false
+   */
+  isViewerReactji: boolean;
+}
+
+export interface IGoogleAnalyzedEntity {
+  __typename: 'GoogleAnalyzedEntity';
+
+  /**
+   * The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.
+   */
+  lemma: string;
+
+  /**
+   * The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun.
+   */
+  name: string;
+
+  /**
+   * The salience of the entity in the provided text. The salience of all entities always sums to 1
+   */
+  salience: number;
+}
+
+/**
  * The response to a teamInvitation query
  */
 export interface ITeamInvitationPayload {
@@ -47734,262 +48012,6 @@ export interface IDiscussionThreadStage {
    * The discussion about the stage
    */
   discussion: IDiscussion;
-}
-
-/**
- * A reflection group created during the group phase of a retrospective
- */
-export interface IRetroReflectionGroup {
-  __typename: 'RetroReflectionGroup';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * A list of users currently commenting
-   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * True if the group has not been removed, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The foreign key to link a reflection group to its meeting
-   */
-  meetingId: string;
-
-  /**
-   * The retrospective meeting this reflection was created in
-   */
-  meeting: IRetrospectiveMeeting;
-  prompt: IReflectPrompt;
-
-  /**
-   * The foreign key to link a reflection group to its prompt. Immutable.
-   */
-  promptId: string;
-  reflections: Array<IRetroReflection>;
-
-  /**
-   * Our auto-suggested title, to be compared to the actual title for analytics
-   */
-  smartTitle: string | null;
-
-  /**
-   * The sort order of the reflection group
-   */
-  sortOrder: number;
-
-  /**
-   * The team that is running the retro
-   */
-  team: ITeam | null;
-
-  /**
-   * The title of the grouping of the retrospective reflections
-   */
-  title: string | null;
-
-  /**
-   * true if a user wrote the title, else false
-   */
-  titleIsUserDefined: boolean;
-
-  /**
-   * The timestamp the meeting was updated at
-   */
-  updatedAt: any | null;
-
-  /**
-   * A list of voterIds (userIds). Not available to team to preserve anonymity
-   */
-  voterIds: Array<string>;
-
-  /**
-   * The number of votes this group has received
-   */
-  voteCount: number;
-
-  /**
-   * The number of votes the viewer has given this group
-   */
-  viewerVoteCount: number | null;
-}
-
-/**
- * A reflection created during the reflect phase of a retrospective
- */
-export interface IRetroReflection {
-  __typename: 'RetroReflection';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>;
-
-  /**
-   * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
-   */
-  autoReflectionGroupId: string | null;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any | null;
-
-  /**
-   * The userId that created the reflection (or unique Id if not a team member)
-   */
-  creatorId: string | null;
-
-  /**
-   * an array of all the socketIds that are currently editing the reflection
-   */
-  editorIds: Array<string>;
-
-  /**
-   * True if the reflection was not removed, else false
-   */
-  isActive: boolean;
-
-  /**
-   * true if the viewer (userId) is the creator of the retro reflection, else false
-   */
-  isViewerCreator: boolean;
-
-  /**
-   * The stringified draft-js content
-   */
-  content: string;
-
-  /**
-   * The entities (i.e. nouns) parsed from the content and their respective salience
-   */
-  entities: Array<IGoogleAnalyzedEntity>;
-
-  /**
-   * The foreign key to link a reflection to its meeting
-   */
-  meetingId: string;
-
-  /**
-   * The retrospective meeting this reflection was created in
-   */
-  meeting: IRetrospectiveMeeting;
-
-  /**
-   * The plaintext version of content
-   */
-  plaintextContent: string;
-
-  /**
-   * The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.
-   */
-  promptId: string;
-  prompt: IReflectPrompt;
-
-  /**
-   * The foreign key to link a reflection to its group
-   */
-  reflectionGroupId: string;
-
-  /**
-   * The group the reflection belongs to, if any
-   */
-  retroReflectionGroup: IRetroReflectionGroup | null;
-
-  /**
-   * The sort order of the reflection in the group (increments starting from 0)
-   */
-  sortOrder: number;
-
-  /**
-   * The team that is running the meeting that contains this reflection
-   */
-  team: ITeam;
-
-  /**
-   * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
-   */
-  updatedAt: any | null;
-}
-
-/**
- * An item that can have reactjis
- */
-export type Reactable = IRetroReflection | IComment;
-
-/**
- * An item that can have reactjis
- */
-export interface IReactable {
-  __typename: 'Reactable';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>;
-}
-
-/**
- * An aggregate of reactji metadata
- */
-export interface IReactji {
-  __typename: 'Reactji';
-
-  /**
-   * composite of entity:reactjiId
-   */
-  id: string;
-
-  /**
-   * The number of users who have added this reactji
-   */
-  count: number;
-
-  /**
-   * true if the viewer is included in the count, else false
-   */
-  isViewerReactji: boolean;
-}
-
-export interface IGoogleAnalyzedEntity {
-  __typename: 'GoogleAnalyzedEntity';
-
-  /**
-   * The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.
-   */
-  lemma: string;
-
-  /**
-   * The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun.
-   */
-  name: string;
-
-  /**
-   * The salience of the entity in the provided text. The salience of all entities always sums to 1
-   */
-  salience: number;
 }
 
 /**

@@ -30,6 +30,7 @@ import MeetingMember from './MeetingMember'
 import NewFeatureBroadcast from './NewFeatureBroadcast'
 import Organization from './Organization'
 import OrganizationUser from './OrganizationUser'
+import RetroReflectionGroup from './RetroReflectionGroup'
 import SuggestedAction from './SuggestedAction'
 import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
@@ -397,6 +398,31 @@ const User = new GraphQLObjectType<any, GQLContext>({
         )
         if (isAnyMemberOfPaidOrg) return null
         return source.overLimitCopy
+      }
+    },
+    similarReflectionGroups: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
+      description:
+        'The reflection groups that are similar to the selected reflection in the Spotlight',
+      args: {
+        meetingId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The id of the meeting where the Spotlight is being rendered'
+        },
+        reflectionId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The id of the selected reflection in the Spotlight'
+        },
+        searchQuery: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Only return reflection groups that match the search query'
+        }
+      },
+      resolve: async (_source, {reflectionId, searchQuery, meetingId}, {dataLoader}) => {
+        const reflectionGroups = await dataLoader
+          .get('retroReflectionGroupsByMeetingId')
+          .load(meetingId)
+        return reflectionGroups
       }
     },
     tasks: require('../queries/tasks').default,

@@ -203,6 +203,14 @@ export default createFragmentContainer(SpotlightModal, {
       spotlightReflection {
         ...DraggableReflectionCard_reflection
       }
+      viewerMeetingMember {
+        user {
+          similarReflectionGroups(meetingId: $meetingId, reflectionId: "", searchQuery: "") {
+            id
+            title
+          }
+        }
+      }
     }
   `
 })
