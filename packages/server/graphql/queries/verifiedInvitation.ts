@@ -59,10 +59,11 @@ export default {
         meetingId: maybeMeetingId,
         teamId
       } = teamInvitation
-      const [team, inviter] = await Promise.all([
-        getTeamsById([teamId])[0] ?? null,
+      const [teams, inviter] = await Promise.all([
+        getTeamsById([teamId]),
         db.read('User', invitedBy)
       ])
+      const team = teams[0] ?? null
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)
       const meetingType = bestMeeting?.meetingType ?? null
       const meetingId = bestMeeting?.id ?? null

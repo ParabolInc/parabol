@@ -47,7 +47,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
 const acceptTeamInvitation = async (teamId: string, userId: string) => {
   const r = await getRethink()
   const now = new Date()
-  const [{user}, team] = await Promise.all([
+  const [user, teams] = await Promise.all([
     r
       .table('User')
       .get(userId)
@@ -59,8 +59,9 @@ const acceptTeamInvitation = async (teamId: string, userId: string) => {
           .coerceTo('array')
       })
       .run(),
-    getTeamsById([teamId])[0] ?? null
+    getTeamsById([teamId])
   ])
+  const team = teams[0] ?? null
   const {orgId} = team
   const {email, organizationUsers} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)

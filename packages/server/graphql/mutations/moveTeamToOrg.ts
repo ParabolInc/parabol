@@ -16,13 +16,14 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const [org, team] = await Promise.all([
+  const [org, teams] = await Promise.all([
     r
       .table('Organization')
       .get(orgId)
       .run(),
-    getTeamsById([teamId])[0] ?? null
+    getTeamsById([teamId])
   ])
+  const team = teams[0] ?? null
   const {orgId: currentOrgId} = team
   if (!su) {
     const userId = getUserId(authToken)
