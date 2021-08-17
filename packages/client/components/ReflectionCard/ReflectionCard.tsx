@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {MouseEvent, RefObject, useEffect, useRef, useState} from 'react'
+import React, {MouseEvent, RefObject, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {
@@ -94,6 +94,7 @@ const ReflectionCard = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
   const [isHovering, setIsHovering] = useState(false)
+  const [selectedForSpotlight, setSelectedForSpotlight] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
@@ -187,7 +188,9 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
+  const readOnly = inSpotlight
+    ? inSpotlight
+    : getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
   const onToggleReactji = (emojiId: string) => {
@@ -215,10 +218,20 @@ const ReflectionCard = (props: Props) => {
 
   const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    if (openSpotlight && reflectionRef.current) {
+    const el = reflectionRef.current
+    if (openSpotlight && el) {
       openSpotlight(reflectionId, reflectionRef)
+      setSelectedForSpotlight(true)
     }
   }
+
+  useLayoutEffect(() => {
+    // the same reflection card can exist in the kanban and spotlight
+    // when the spotlight closes, make the kanban reflection visible again
+    if (!inSpotlight && selectedForSpotlight) {
+      setSelectedForSpotlight(false)
+    }
+  }, [inSpotlight])
 
   const showSpotlight = true // TODO: dummy feature flag. Change to false before merging PR
   const showSearch =
@@ -233,6 +246,7 @@ const ReflectionCard = (props: Props) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       ref={reflectionRef}
+      selectedForSpotlight={selectedForSpotlight}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper

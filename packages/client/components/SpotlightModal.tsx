@@ -142,7 +142,6 @@ const SpotlightModal = (props: Props) => {
     if (e.key === 'Escape') closeSpotlight()
   }
   const reflectionGroupsCount = 0
-  if (!spotlightReflection) return null
   return (
     <>
       <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
@@ -171,12 +170,14 @@ const SpotlightModal = (props: Props) => {
         </SimilarReflectionGroups>
       </ModalContainer>
       <ReflectionWrapper ref={flipRef}>
-        <DraggableReflectionCard
-          staticIdx={0}
-          reflection={spotlightReflection}
-          meeting={meeting}
-          staticReflections={null}
-        />
+        {spotlightReflection && (
+          <DraggableReflectionCard
+            isDraggable
+            reflection={spotlightReflection}
+            meeting={meeting}
+            staticReflections={null}
+          />
+        )}
       </ReflectionWrapper>
     </>
   )

@@ -50,7 +50,7 @@ interface Props {
   meeting: DraggableReflectionCard_meeting
   openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
   reflection: DraggableReflectionCard_reflection
-  staticIdx: number
+  staticIdx?: number
   staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
@@ -68,7 +68,7 @@ const DraggableReflectionCard = (props: Props) => {
   const {
     isClipped,
     reflection,
-    staticIdx,
+    staticIdx = 0,
     staticReflections,
     meeting,
     openSpotlight,
