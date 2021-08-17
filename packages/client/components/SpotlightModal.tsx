@@ -170,7 +170,7 @@ const SpotlightModal = (props: Props) => {
       </ModalContainer>
       <ReflectionWrapper ref={flipRef}>
         <DraggableReflectionCard
-          staticIdx={0}
+          isDraggable
           reflection={spotlightReflection}
           meeting={meeting}
           staticReflections={null}
