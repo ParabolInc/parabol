@@ -47422,11 +47422,6 @@ export interface IReflectPhase {
   focusedPrompt: IReflectPrompt | null;
 
   /**
-   * FK. The ID of the template used during the reflect phase
-   */
-  promptTemplateId: string;
-
-  /**
    * The prompts used during the reflect phase
    */
   reflectPrompts: Array<IReflectPrompt>;
