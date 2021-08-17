@@ -44216,14 +44216,9 @@ export interface IOrganizationUserOnUserArguments {
 
 export interface ISimilarReflectionGroupsOnUserArguments {
   /**
-   * The id of the meeting where the Spotlight is being rendered
+   * The id of the selected reflection in the Spotlight. Null if there is no Spotlight reflection
    */
-  meetingId: string;
-
-  /**
-   * The id of the selected reflection in the Spotlight
-   */
-  reflectionId: string;
+  reflectionId?: string | null;
 
   /**
    * Only return reflection groups that match the search query

@@ -135,7 +135,7 @@ interface Props {
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, flipRef, viewer} = props
+  const {closeSpotlight, meeting, flipRef} = props
   const {spotlightReflection} = meeting
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -209,11 +209,7 @@ export default createFragmentContainer(SpotlightModal, {
   `,
   viewer: graphql`
     fragment SpotlightModal_viewer on User {
-      similarReflectionGroups(
-        meetingId: $meetingId
-        reflectionId: $reflectionId
-        searchQuery: $searchQuery
-      ) {
+      similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
         id
         title
       }

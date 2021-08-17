@@ -4,9 +4,10 @@ import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 import SpotlightModal from './SpotlightModal'
+import {SpotlightRoot_meeting} from '~/__generated__/SpotlightRoot_meeting.graphql'
 
 const query = graphql`
-  query SpotlightRootQuery($meetingId: ID!, $reflectionId: ID, $searchQuery: String!) {
+  query SpotlightRootQuery($reflectionId: ID, $searchQuery: String!) {
     viewer {
       ...SpotlightModal_viewer
     }
@@ -15,19 +16,19 @@ const query = graphql`
 
 interface Props {
   closeSpotlight: () => void
-  meeting: any
+  meeting: SpotlightRoot_meeting
   flipRef: (instance: HTMLDivElement) => void
 }
 
 const SpotlightRoot = (props: Props) => {
   const {closeSpotlight, meeting, flipRef} = props
-  const {id: meetingId, spotlightReflection} = meeting
+  const {spotlightReflection} = meeting
   const reflectionId = spotlightReflection?.id
-  const searchQuery = ''
+  const searchQuery = '' // TODO: implement searchQuery
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
-      variables={{meetingId, reflectionId, searchQuery}}
+      variables={{reflectionId, searchQuery}}
       environment={atmosphere}
       query={query}
       fetchPolicy={'store-or-network' as any}
