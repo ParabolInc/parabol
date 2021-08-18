@@ -118,10 +118,11 @@ const setTaskEstimate = {
           return {error: {message: res.message}}
         }
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
-        jiraFieldId = dimensionField?.fieldId
-        const {fieldId} = dimensionField!
+        const {fieldId, fieldType} = dimensionField!
+        jiraFieldId = fieldId
         try {
-          await manager.updateStoryPoints(cloudId, issueKey, value, fieldId)
+          const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
+          await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
           return {error: {message: e.message}}
         }

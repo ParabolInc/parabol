@@ -688,7 +688,7 @@ export default abstract class AtlassianManager {
   ) {
     const payload = {
       fields: {
-        [fieldId]: isFinite(storyPoints as number) ? Number(storyPoints) : storyPoints
+        [fieldId]: storyPoints
       }
     }
     const res = await this.put(
@@ -696,7 +696,6 @@ export default abstract class AtlassianManager {
       payload
     )
     if (res === null) return
-    console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
     if (res.message.includes('The app is not installed on this instance')) {
       throw new Error(
         'The user who added this issue was removed from Jira. Please remove & re-add the issue'
