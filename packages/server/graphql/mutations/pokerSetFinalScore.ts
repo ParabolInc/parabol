@@ -134,9 +134,7 @@ const pokerSetFinalScore = {
         jiraFieldId = fieldId
         try {
           const updatedStoryPoints =
-            dimensionField?.fieldType === 'string' || !isFinite(Number(finalScore))
-              ? finalScore
-              : Number(finalScore)
+            dimensionField?.fieldType === 'string' ? finalScore : Number(finalScore)
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
           return {error: {message: e.message}}

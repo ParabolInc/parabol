@@ -121,10 +121,7 @@ const setTaskEstimate = {
         const {fieldId} = dimensionField!
         jiraFieldId = fieldId
         try {
-          const updatedStoryPoints =
-            dimensionField?.fieldType === 'string' || !isFinite(Number(value))
-              ? value
-              : Number(value)
+          const updatedStoryPoints = dimensionField?.fieldType === 'string' ? value : Number(value)
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
           return {error: {message: e.message}}
