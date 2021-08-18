@@ -93,7 +93,6 @@ const PokerDimensionValueControl = (props: Props) => {
   const lastSubmittedFieldRef = useRef(serviceFieldName)
   const isLocallyValidatedRef = useRef(true)
   const [cardScore, setCardScore] = useState(finalScore)
-  const lastCardScoreRef = useRef(finalScore)
   const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
   const forceUpdate = useForceUpdate()
@@ -104,8 +103,8 @@ const PokerDimensionValueControl = (props: Props) => {
     lastSubmittedFieldRef.current = serviceFieldName
     isLocallyValidatedRef.current = true
   }, [finalScore])
-  const submitScore = (finalScore: string, forceRetry?: boolean) => {
-    if (!forceRetry && (submitting || !isStale || !isLocallyValidatedRef.current)) {
+  const submitScore = () => {
+    if (submitting || !isStale || !isLocallyValidatedRef.current) {
       return
     }
     submitMutation()
@@ -115,6 +114,10 @@ const PokerDimensionValueControl = (props: Props) => {
       const {error} = setTaskEstimate
       if (error?.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
         openPortal()
+        // in case of error this will set the old value after the useEffect related to final score
+        setImmediate(() => {
+          setCardScore(cardScore)
+        })
       }
       if (!error) {
         // set field A to 1, change fields to B, then submit again. it should not say update
@@ -124,18 +127,9 @@ const PokerDimensionValueControl = (props: Props) => {
     }
     SetTaskEstimateMutation(
       atmosphere,
-      {taskEstimate: {taskId, dimensionName, meetingId, value: finalScore}},
+      {taskEstimate: {taskId, dimensionName, meetingId, value: cardScore}},
       {onError, onCompleted: handleCompleted, stageId}
     )
-  }
-
-  const submitCardScore = () => {
-    lastCardScoreRef.current = cardScore
-    submitScore(cardScore)
-  }
-
-  const submitLastCardScore = () => {
-    submitScore(lastCardScoreRef.current, true)
   }
 
   useResizeFontForElement(inputRef, cardScore, 12, 18)
@@ -162,7 +156,7 @@ const PokerDimensionValueControl = (props: Props) => {
     // keydown required because escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
-      submitCardScore()
+      submitScore()
       inputRef.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
@@ -202,7 +196,7 @@ const PokerDimensionValueControl = (props: Props) => {
             canUpdate={isStale}
             stage={stage}
             error={errorStr}
-            submitScore={submitCardScore}
+            submitScore={submitScore}
             clearError={onCompleted}
             inputRef={inputRef}
             isFacilitator={isFacilitator}
@@ -212,7 +206,7 @@ const PokerDimensionValueControl = (props: Props) => {
           <>
             {isStale ? (
               <>
-                <StyledLinkButton onClick={submitCardScore}>{'Update'}</StyledLinkButton>
+                <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
                 {errorStr && <ErrorMessage>{errorStr}</ErrorMessage>}
               </>
             ) : (
@@ -224,7 +218,7 @@ const PokerDimensionValueControl = (props: Props) => {
       {modalPortal(
         <AddMissingJiraFieldModal
           stage={stage}
-          submitScore={submitLastCardScore}
+          submitScore={submitScore}
           closePortal={closePortal}
         />
       )}
