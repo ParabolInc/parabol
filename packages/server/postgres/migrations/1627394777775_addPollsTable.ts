@@ -19,6 +19,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       "createdById" VARCHAR(100) NOT NULL REFERENCES "User"("id"),
       "discussionId" VARCHAR(100) NOT NULL REFERENCES "Discussion"("id"),
       "teamId" VARCHAR(100) NOT NULL REFERENCES "Team"("id"),
+      "threadSortOrder" DOUBLE PRECISION NOT NULL,
       "meetingId" VARCHAR(100),
       "title" VARCHAR(300)
     );
