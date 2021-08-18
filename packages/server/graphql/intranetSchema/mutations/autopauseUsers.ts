@@ -1,8 +1,8 @@
 import {GraphQLInt} from 'graphql'
+import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
-import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 
 const autopauseUsers = {
   type: GraphQLInt,
@@ -16,33 +16,37 @@ const autopauseUsers = {
 
     // RESOLUTION
     const activeThresh = new Date(Date.now() - Threshold.AUTO_PAUSE)
-    const usersToPause = await r
+    const userIdsToPause = await r
       .table('User')
       .filter((user) => user('lastSeenAt').le(activeThresh))
       .filter({
         inactive: false
-      })
-      .merge((user) => ({
-        orgIds: r
-          .table('OrganizationUser')
-          .getAll(user('id'), {index: 'userId'})
-          .filter({removedAt: null})('orgId')
-          .coerceTo('array')
-      }))
+      })('id')
       .run()
 
-    await Promise.all(
-      usersToPause.map((user) => {
-        try {
-          return adjustUserCount(user.id, user.orgIds, InvoiceItemType.AUTO_PAUSE_USER)
-        } catch (e) {
-          console.warn(`Error adjusting user count: ${e}`)
-        }
-        return undefined
-      })
-    )
+    const BATCH_SIZE = 100
+    for (let i = 0; i < 1e5; i++) {
+      const skip = i * BATCH_SIZE
+      const userIdBatch = userIdsToPause.slice(skip, skip + BATCH_SIZE)
+      if (userIdBatch.length < 1) break
+      const results = (await (r
+        .table('OrganizationUser')
+        .getAll(r.args(userIdBatch), {index: 'userId'})
+        .filter({removedAt: null})
+        .group('userId') as any)('orgId').run()) as {group: string; reduction: string[]}[]
+      await Promise.allSettled(
+        results.map(async ({group: userId, reduction: orgIds}) => {
+          try {
+            return await adjustUserCount(userId, orgIds, InvoiceItemType.AUTO_PAUSE_USER)
+          } catch (e) {
+            console.warn(`Error adjusting user count`)
+          }
+          return undefined
+        })
+      )
+    }
 
-    return usersToPause.length
+    return userIdsToPause.length
   }
 }
 

@@ -4,7 +4,7 @@ import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
+import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import {PokerCards} from '../types/constEnums'
 import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
@@ -31,8 +31,8 @@ const PokerDiscussVoting = (props: Props) => {
   const {viewerId} = atmosphere
   const {meeting, stage, isInitialStageRender} = props
   const {id: meetingId, facilitatorUserId} = meeting
-  const {id: stageId, finalScore, dimensionRef, scores} = stage
-  const {scale} = dimensionRef
+  const {id: stageId, finalScore, dimensionRef, scores, taskId} = stage
+  const {name: dimensionName, scale} = dimensionRef
   const {values: scaleValues} = scale
   const {rows, topLabel} = useMemo(() => {
     const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage['scores'][0][]}
@@ -83,10 +83,10 @@ const PokerDiscussVoting = (props: Props) => {
                 // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
                 if (submitting || !label || finalScore === label) return
                 submitMutation()
-                PokerSetFinalScoreMutation(
+                SetTaskEstimateMutation(
                   atmosphere,
-                  {finalScore: label, meetingId, stageId},
-                  {onError, onCompleted}
+                  {taskEstimate: {taskId, dimensionName, meetingId, value: label}},
+                  {onError, onCompleted, stageId}
                 )
               }
             : undefined
@@ -111,7 +111,9 @@ export default createFragmentContainer(PokerDiscussVoting, {
       ...PokerDimensionValueControl_stage
       id
       finalScore
+      taskId
       dimensionRef {
+        name
         scale {
           values {
             ...PokerVotingRow_scaleValue

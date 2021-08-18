@@ -3,7 +3,6 @@ import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
-import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
 import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
@@ -24,9 +23,9 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
+      ...SetTaskEstimateMutation_meeting @relay(mask: false)
       ...SetPokerSpectateMutation_team @relay(mask: false)
       ...JoinMeetingMutation_meeting @relay(mask: false)
-      ...PokerSetFinalScoreMutation_meeting @relay(mask: false)
       ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
       ...PokerResetDimensionMutation_meeting @relay(mask: false)
       ...PokerRevealVotesMutation_meeting @relay(mask: false)
@@ -68,7 +67,6 @@ const updateHandlers = {
   CreateReflectionPayload: createReflectionMeetingUpdater,
   DeleteCommentSuccess: deleteCommentMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
-  EditCommentingPayload: editCommentingMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,

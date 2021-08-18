@@ -67,7 +67,7 @@ const PokerMeetingSidebar = (props: Props) => {
           })!
           const phaseCount =
             phaseType === 'ESTIMATE'
-              ? new Set(estimatePhase.stages.map(({serviceTaskId}) => serviceTaskId)).size
+              ? new Set(estimatePhase.stages.map(({taskId}) => taskId)).size
               : undefined
           return (
             <NewMeetingSidebarPhaseListItem
@@ -136,7 +136,7 @@ export default createFragmentContainer(PokerMeetingSidebar, {
           isNavigable
           isNavigableByFacilitator
           ... on EstimateStage {
-            serviceTaskId
+            taskId
           }
         }
       }

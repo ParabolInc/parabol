@@ -1,5 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getRedis from '../../utils/getRedis'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -41,12 +43,31 @@ export default {
     }
 
     // RESOLUTION
+    const redis = getRedis()
+    const key = `commenting:${discussionId}`
+    if (isCommenting) {
+      const [numAddedRes] = await redis
+        .multi()
+        .sadd(key, viewerId)
+        .pexpire(key, ms('5m'))
+        .exec()
+      const numAdded = numAddedRes[1]
+      if (numAdded !== 1) {
+        // this is primarily to avoid publishing a useless message to the pubsub
+        return {error: {message: 'Already commenting'}}
+      }
+    } else {
+      const numRemoved = await redis.srem(key, viewerId)
+      if (numRemoved !== 1) {
+        return {error: {message: 'Not commenting'}}
+      }
+    }
+
+    // RESOLUTION
     const data = {
-      commentorId: viewerId,
-      isCommenting,
       discussionId
     }
-    publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingSuccess', data, subOptions)
 
     return data
   }
