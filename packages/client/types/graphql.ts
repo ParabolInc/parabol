@@ -51759,7 +51759,6 @@ export interface IResetPasswordOnMutationArguments {
 
 export interface IResetRetroMeetingToGroupStageOnMutationArguments {
   meetingId: string;
-  stageId: string;
 }
 
 export interface ISegmentEventTrackOnMutationArguments {

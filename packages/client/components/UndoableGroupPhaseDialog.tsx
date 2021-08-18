@@ -12,7 +12,6 @@ import {PALETTE} from '~/styles/paletteV3'
 interface Props {
   closePortal: () => void
   meetingId: string
-  resetToStageId: string
 }
 
 const ButtonGroup = styled('div')({
@@ -29,10 +28,10 @@ const StyledButton = styled(FlatButton)({
 })
 
 const UndoableGroupPhaseDialog = (props: Props) => {
-  const {closePortal, meetingId, resetToStageId} = props
+  const {closePortal, meetingId} = props
   const atmosphere = useAtmosphere()
   const handleConfirm = () => {
-    ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId, stageId: resetToStageId}) && closePortal()
+    ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId}) && closePortal()
   }
   return (
     <DialogContainer>

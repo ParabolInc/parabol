@@ -1,14 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {DISCUSS, GROUP, VOTE} from '../../../client/utils/constants'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import DiscussPhase from '../../database/types/DiscussPhase'
-import DiscussStage from '../../database/types/DiscussStage'
-import GenericMeetingPhase, {
-  NewMeetingPhaseTypeEnum
-} from '../../database/types/GenericMeetingPhase'
-import GenericMeetingStage from '../../database/types/GenericMeetingStage'
+import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -16,30 +11,15 @@ import standardError from '../../utils/standardError'
 import ResetRetroMeetingToGroupStagePayload from '../types/ResetRetroMeetingToGroupStagePayload'
 import {primePhases} from './helpers/createNewMeetingPhases'
 
-const resetMeetingPhase = (phase: GenericMeetingPhase) => {
-  const newStages = phase.stages.map(({id}) => {
-    const newStage =
-      phase.phaseType === DISCUSS
-        ? new DiscussStage({sortOrder: 0, reflectionGroupId: ''})
-        : new GenericMeetingStage({phaseType: phase.phaseType})
-    newStage.id = id
-    return newStage
-  })
-  phase.stages = newStages
-}
-
 const resetRetroMeetingToGroupStage = {
   type: GraphQLNonNull(ResetRetroMeetingToGroupStagePayload),
   description: `Reset a retro meeting to group stage`,
   args: {
     meetingId: {
       type: GraphQLNonNull(GraphQLID)
-    },
-    stageId: {
-      type: GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {meetingId, stageId}, {authToken, socketId: mutatorId, dataLoader}) => {
+  resolve: async (_source, {meetingId}, {authToken, socketId: mutatorId, dataLoader}) => {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -59,45 +39,50 @@ const resetRetroMeetingToGroupStage = {
     }
 
     // VALIDATION
-    const foundResponse = findStageById(phases, stageId)
-    if (!foundResponse)
-      return standardError(new Error('Meeting stage not found'), {userId: viewerId})
-    const {stage: resetToStage} = foundResponse
+    const groupPhase = phases.find((phase) => phase.phaseType === GROUP)
+    if (!groupPhase) return standardError(new Error('Group phase not found'), {userId: viewerId})
+    const resetToStage = groupPhase.stages.find((stage) => stage.phaseType === GROUP)
+    if (!resetToStage) return standardError(new Error('Group stage not found'), {userId: viewerId})
     if (!resetToStage.isNavigableByFacilitator)
-      return standardError(new Error('Stage has not started'), {userId: viewerId})
+      return standardError(new Error('Group stage has not started'), {userId: viewerId})
     if (!resetToStage.isComplete)
-      return standardError(new Error('Stage has not finished'), {userId: viewerId})
-    if ((resetToStage.phaseType as NewMeetingPhaseTypeEnum) !== 'group')
-      return standardError(new Error('Resetting to this stage type is not supported'), {
-        userId: viewerId
-      })
+      return standardError(new Error('Group stage has not finished'), {userId: viewerId})
     if (meeting.endedAt)
       return standardError(new Error('The meeting has already ended'), {userId: viewerId})
 
     // RESOLUTION
-    let discussionIds = [] as string[]
+    const discussionPhase = phases.find((phase) => phase.phaseType === DISCUSS) as DiscussPhase
+    const discussionIdsToDelete =
+      discussionPhase?.stages?.map(({discussionId}) => discussionId) ?? []
     let resetToPhaseIndex = -1
-    const newPhases = [] as GenericMeetingPhase[]
-    for (const [phaseIndex, phase] of phases.entries()) {
-      const {phaseType} = phase
-      switch (phaseType) {
+
+    const newPhases = phases.map((phase, index) => {
+      switch (phase.phaseType) {
+        case CHECKIN:
+        case REFLECT:
+          return phase
         case GROUP: {
-          resetToPhaseIndex = phaseIndex
-          resetMeetingPhase(phase)
-          break
+          resetToPhaseIndex = index
+          const newGroupPhase = new GenericMeetingPhase(phase.phaseType)
+          newGroupPhase.id = phase.id
+          newGroupPhase.stages[0].id = phase.stages[0].id
+          return newGroupPhase
         }
         case VOTE: {
-          resetMeetingPhase(phase)
-          break
+          const newVotePhase = new GenericMeetingPhase(phase.phaseType)
+          newVotePhase.id = phase.id
+          return newVotePhase
         }
         case DISCUSS: {
-          discussionIds = (phase as DiscussPhase).stages.map(({discussionId}) => discussionId) ?? []
-          resetMeetingPhase(phase)
-          break
+          const newDiscussPhase = new DiscussPhase([])
+          newDiscussPhase.id = phase.id
+          return newDiscussPhase
         }
+        default:
+          throw new Error(`Unhandled phaseType: ${phase.phaseType}`)
       }
-      newPhases.push(phase)
-    }
+    })
+
     primePhases(newPhases, resetToPhaseIndex)
     meeting.phases = newPhases
 
@@ -111,12 +96,12 @@ const resetRetroMeetingToGroupStage = {
     await Promise.all([
       r
         .table('Comment')
-        .getAll(r.args(discussionIds), {index: 'discussionId'})
+        .getAll(r.args(discussionIdsToDelete), {index: 'discussionId'})
         .delete()
         .run(),
       r
         .table('Task')
-        .getAll(r.args(discussionIds), {index: 'discussionId'})
+        .getAll(r.args(discussionIdsToDelete), {index: 'discussionId'})
         .delete()
         .run(),
       r
