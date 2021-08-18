@@ -77,7 +77,11 @@ const ParabolScopingSearchResultItem = (props: Props) => {
         }
       ]
     } as UpdatePokerScopeMutationVariables
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    UpdatePokerScopeMutation(atmosphere, variables, {
+      onError,
+      onCompleted,
+      contents: [plaintextContent]
+    })
   }
 
   const handleTaskUpdate = () => {
