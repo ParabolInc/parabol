@@ -82,6 +82,18 @@ export const resolveGQLStageFromId = (stageId: string, meeting: Meeting) => {
   }
 }
 
+export const augmentDBStage = (
+  stage: GenericMeetingStage,
+  meetingId: string,
+  phaseType: NewMeetingPhaseTypeEnum,
+  teamId: string
+) => ({
+  ...stage,
+  meetingId,
+  phaseType,
+  teamId
+})
+
 export const resolveGQLStagesFromPhase = ({
   meetingId,
   phaseType,
@@ -93,12 +105,7 @@ export const resolveGQLStagesFromPhase = ({
   stages: GenericMeetingStage[]
   teamId: string
 }) => {
-  return stages.map((stage) => ({
-    ...stage,
-    meetingId,
-    phaseType,
-    teamId
-  }))
+  return stages.map((stage) => augmentDBStage(stage, meetingId, phaseType, teamId))
 }
 
 export const resolveUnlockedStages = async ({meetingId, unlockedStageIds}, _args, {dataLoader}) => {

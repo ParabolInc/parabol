@@ -3,7 +3,7 @@ import {R} from 'rethinkdb-ts'
 import dndNoise from '../../../client/utils/dndNoise'
 import convertToTaskContent from '../../../client/utils/draftjs/convertToTaskContent'
 import generateUID from '../../generateUID'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
+import getTemplateRefsById from '../../postgres/queries/getTemplateRefsById'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import EstimatePhase from '../types/EstimatePhase'
 
@@ -56,7 +56,7 @@ export const up = async function(r: R) {
     const estimatesToInsert = []
     const stageUpdates = curMeetings.map(async (meeting) => {
       const {id: meetingId, teamId, phases, templateRefId} = meeting
-      const templateRef = await getTemplateRefById(templateRefId)
+      const [templateRef] = await getTemplateRefsById([templateRefId])
       const phase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
       if (!phase) return
       const {stages} = phase

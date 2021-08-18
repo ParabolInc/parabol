@@ -77,7 +77,11 @@ const ParabolScopingSearchResultItem = (props: Props) => {
         }
       ]
     } as UpdatePokerScopeMutationVariables
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    UpdatePokerScopeMutation(atmosphere, variables, {
+      onError,
+      onCompleted,
+      contents: [plaintextContent]
+    })
   }
 
   const handleTaskUpdate = () => {
@@ -167,7 +171,7 @@ export default createFragmentContainer(ParabolScopingSearchResultItem, {
       integration {
         ... on JiraIssue {
           __typename
-          title
+          summary
         }
         ... on _xGitHubIssue {
           __typename

@@ -134,7 +134,6 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
         task.setValue(nextTags, 'tags')
         const plaintextContent = extractTextFromDraftString(content)
         task.setValue(plaintextContent, 'plaintextContent')
-        task.setValue(plaintextContent, 'title')
       }
       handleUpsertTasks(task as any, store)
     },

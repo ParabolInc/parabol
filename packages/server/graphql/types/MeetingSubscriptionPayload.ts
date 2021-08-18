@@ -11,7 +11,6 @@ import {EditCommentingSuccess} from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
-import JiraCreateIssuePayload from './JiraCreateIssuePayload'
 import {JoinMeetingSuccess} from './JoinMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
@@ -33,6 +32,7 @@ import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
+import {SetTaskEstimateSuccess} from './SetTaskEstimatePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 
 const types = [
@@ -48,7 +48,6 @@ const types = [
   EditReflectionPayload,
   EndDraggingReflectionPayload,
   FlagReadyToAdvanceSuccess,
-  JiraCreateIssuePayload,
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
@@ -70,7 +69,8 @@ const types = [
   PokerAnnounceDeckHoverSuccess,
   PokerSetFinalScoreSuccess,
   JoinMeetingSuccess,
-  SetPokerSpectateSuccess
+  SetPokerSpectateSuccess,
+  SetTaskEstimateSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

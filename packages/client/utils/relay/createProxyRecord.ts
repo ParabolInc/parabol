@@ -1,42 +1,29 @@
-// const isRelayScalarValue = (val) => {
-//  return (typeof val !== 'object');
-// };
-//
-// const getSetMethod = (val) => {
-//  if (isRelayScalarValue(val)) return 'setValue';
-//  if (Array.isArray(val)) {
-//    return isRelayScalarValue(val[0]) ? 'setValue' : 'setLinkedRecords';
-//  }
-//  return 'setLinkedRecord';
-// };
-
 import {RecordProxy, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {Primitive} from 'relay-runtime/lib/store/RelayStoreTypes'
 import clientTempId from './clientTempId'
 
-// interface PRecord {
-//   // id?: string,
-//   [key: string]: any
-// }
-
-const createProxyRecord = <T, N extends string>(
+const createProxyRecord = <
+  T extends {
+    id?: string
+    [key: string]: Primitive | Primitive[]
+  },
+  N extends string
+>(
   store: RecordSourceSelectorProxy<any> | RecordSourceProxy,
   type: N,
   record: T
-): RecordProxy<T & {__typename: N}> => {
-  // @ts-ignore
+) => {
   const id = record.id || clientTempId()
   const newRecord = store.create(id, type)
-  // default to this
   newRecord.setValue(id, 'id')
   const keys = Object.keys(record)
   for (let ii = 0; ii < keys.length; ii++) {
     const key = keys[ii]
     const val = record[key]
-    // const setMethod = getSetMethod(val);
+    // It's impossible to handle setLinkedRecords for empty arrays because we can't determine if it's a value or a link
     newRecord.setValue(val, key)
   }
-  // @ts-ignore
-  return newRecord
+  return newRecord as RecordProxy<T & {__typename: N; id: string}>
 }
 
 export default createProxyRecord
