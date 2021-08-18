@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
-import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {useMakeStageSummaries_phase} from '../__generated__/useMakeStageSummaries_phase.graphql'
 
 interface StageSummary {
@@ -26,28 +25,20 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
           isComplete
           isNavigable
           sortOrder
-          service
-          serviceTaskId
-          story {
-            ... on Task {
-              __typename
-              title
-              integration {
-                ... on JiraIssue {
-                  __typename
-                  issueKey
-                  title
-                }
-                ... on _xGitHubIssue {
-                  __typename
-                  title
-                  number
-                }
+          taskId
+          task {
+            title
+            integration {
+              ... on JiraIssue {
+                __typename
+                issueKey
+                summary
               }
-            }
-            ... on JiraIssue {
-              __typename
-              title
+              ... on _xGitHubIssue {
+                __typename
+                title
+                number
+              }
             }
           }
         }
@@ -57,62 +48,41 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
   )
   return useMemo(() => {
     const {stages} = estimatePhase
-    const serviceTaskSet = new Set<string>()
     const summaries = [] as StageSummary[]
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i]
-      const {serviceTaskId, story} = stage
+      const {taskId, task} = stage
       const batch = [stage]
       for (let j = i + 1; j < stages.length; j++) {
         const nextStage = stages[j]
-        if (nextStage.serviceTaskId !== serviceTaskId) break
+        if (nextStage.taskId !== taskId) break
         batch.push(nextStage)
       }
       const getSummary = () => {
-        if (!story) {
-          // can remove during #5163
-          // the service is down
-          if (stage.service === 'jira') {
-            return {
-              title: '<Unknown Story>',
-              subtitle: JiraIssueId.split(serviceTaskId).issueKey
-            }
-          }
+        if (!task) {
           return {
             title: '<Unknown Story>',
             subtitle: ''
           }
         }
-        if (story.__typename === 'Task') {
-          const {integration, title} = story
-          if (!integration) {
-            // pure parabol task
-            return {
-              title,
-              subtitle: ''
-            }
-          }
-          if (integration.__typename === 'JiraIssue') {
-            // jira-integration parabol card
-            return {
-              title: integration.title,
-              subtitle: integration.issueKey
-            }
-          } else if (integration.__typename === '_xGitHubIssue') {
-            return {
-              title: integration.title,
-              subtitle: String(integration.number)
-            }
-          }
+        const {integration, title} = task
+        if (!integration) {
+          // pure parabol task
           return {
-            title: '<Unknown Story>',
+            title,
             subtitle: ''
           }
         }
-        if (story.__typename === 'JiraIssue') {
+        if (integration.__typename === 'JiraIssue') {
+          // jira-integration parabol card
           return {
-            title: story.title,
-            subtitle: JiraIssueId.split(serviceTaskId).issueKey
+            title: integration.summary,
+            subtitle: integration.issueKey
+          }
+        } else if (integration.__typename === '_xGitHubIssue') {
+          return {
+            title: integration.title,
+            subtitle: String(integration.number)
           }
         }
         return {
@@ -129,7 +99,6 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         stageIds: batch.map(({id}) => id),
         finalScores: batch.map(({finalScore}) => finalScore)
       })
-      serviceTaskSet.add(serviceTaskId)
       i += batch.length - 1
     }
     return summaries

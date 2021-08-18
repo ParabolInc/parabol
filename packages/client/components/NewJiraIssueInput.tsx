@@ -179,7 +179,11 @@ const NewJiraIssueInput = (props: Props) => {
           } as const
         ]
       }
-      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
+        onError,
+        onCompleted,
+        contents: [newIssueTitle]
+      })
     }
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
