@@ -7,7 +7,7 @@ import getRethink from '../../../database/rethinkDriver'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
-import User from '../../../database/types/User'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const logFailedLogin = async (ip: string, email: string) => {
   const r = await getRethink()
@@ -24,12 +24,9 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
   const r = await getRethink()
   const yesterday = new Date(Date.now() - ms('1d'))
   const email = denormEmail.toLowerCase().trim()
-  const {existingUser, failOnAccount, failOnTime} = await r({
-    existingUser: (r
-      .table('User')
-      .getAll(email, {index: 'email'})
-      .nth(0)
-      .default(null) as unknown) as User,
+
+  const existingUser = await getUserByEmail(email)
+  const {failOnAccount, failOnTime} = await r({
     failOnAccount: (r
       .table('FailedAuthRequest')
       .getAll(ip, {index: 'ip'})

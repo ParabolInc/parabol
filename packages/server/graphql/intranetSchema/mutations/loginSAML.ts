@@ -4,6 +4,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
@@ -88,15 +89,12 @@ const loginSAML = {
       return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
     }
 
-    const user = await r
-      .table('User')
-      .getAll(email, {index: 'email'})
-      .nth(0)
-      .default(null)
-      .run()
+    const user = await getUserByEmail(email)
     if (user) {
       return {
-        authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol}))
+        authToken: encodeAuthToken(
+          new AuthToken({sub: user.id, tms: user.tms, rol: user.rol ?? undefined})
+        )
       }
     }
 

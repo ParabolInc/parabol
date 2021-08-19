@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
 import AuthToken from '../../database/types/AuthToken'
 import User from '../../database/types/User'
@@ -15,6 +14,7 @@ import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
 import updateUser from '../../postgres/queries/updateUser'
 import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 const loginWithGoogle = {
   type: new GraphQLNonNull(LoginWithGooglePayload),
@@ -35,8 +35,6 @@ const loginWithGoogle = {
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
     async (_source, {code, invitationToken, segmentId}, context: GQLContext) => {
-      const r = await getRethink()
-
       // VALIDATION
       const manager = await GoogleServerManager.init(code)
       const {id} = manager
@@ -49,12 +47,7 @@ const loginWithGoogle = {
         return {error: {message: 'Email is too long'}}
       }
 
-      const existingUser = await r
-        .table('User')
-        .getAll(email, {index: 'email'})
-        .nth(0)
-        .default(null)
-        .run()
+      const existingUser = await getUserByEmail(email)
 
       if (existingUser) {
         const {id: viewerId, identities, rol} = existingUser
