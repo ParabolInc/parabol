@@ -18,7 +18,6 @@ import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import {MeetingTypeEnum} from '../../../database/types/Meeting'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
@@ -75,8 +74,6 @@ const createNewMeetingPhases = async (
   meetingType: MeetingTypeEnum,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
-  const now = new Date()
   const [meetingSettings, stageDurations] = await Promise.all([
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
     getPastStageDurations(teamId)
@@ -96,17 +93,7 @@ const createNewMeetingPhases = async (
             stages: [new CheckInStage(facilitatorTeamMemberId)]
           })
         case REFLECT:
-          const {selectedTemplateId} = meetingSettings as MeetingSettingsRetrospective
-          asyncSideEffects.push(
-            r
-              .table('MeetingTemplate')
-              .get(selectedTemplateId)
-              .update({
-                lastUsedAt: now
-              })
-              .run()
-          )
-          return new ReflectPhase(teamId, selectedTemplateId, durations)
+          return new ReflectPhase(teamId, durations)
         case DISCUSS:
           const discussPhase = new DiscussPhase(durations)
           const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
