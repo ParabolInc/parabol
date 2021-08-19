@@ -1,4 +1,4 @@
-import React, {KeyboardEvent} from 'react'
+import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -136,13 +136,10 @@ const SpotlightModal = (props: Props) => {
   const {closeSpotlight, meeting, flipRef} = props
   const {spotlightReflection} = meeting
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Escape') closeSpotlight()
-  }
   const reflectionGroupsCount = 0
   return (
     <>
-      <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
+      <ModalContainer isDesktop={isDesktop}>
         <SelectedReflectionSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>

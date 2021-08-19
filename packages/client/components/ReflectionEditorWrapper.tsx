@@ -169,7 +169,11 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
         this.removeModal()
       } else {
         const el = this.props.editorRef.current
-        el && el.blur()
+        // add to callback queue so we can check activeElement and
+        // determine whether modal should close in expandedReflectionStack
+        setTimeout(() => {
+          el && el.blur()
+        }, 0)
       }
       return null
     }
@@ -197,7 +201,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
         }
       }
     }
-    return 'not-handled' as 'not-handled'
+    return 'not-handled' as const
   }
 
   removeModal = () => {

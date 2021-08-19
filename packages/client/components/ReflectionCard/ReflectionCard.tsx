@@ -230,7 +230,7 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const showSpotlight = true // TODO: dummy feature flag. Change to false before merging PR
+  const showSpotlight = false
   const showSearch =
     phaseType === 'group' &&
     !inSpotlight &&

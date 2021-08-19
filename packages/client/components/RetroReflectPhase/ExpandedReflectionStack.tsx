@@ -95,7 +95,8 @@ const ExpandedReflectionStack = (props: Props) => {
   }, [phaseRef.current])
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      const {activeElement, body} = document
+      if (e.key === 'Escape' && activeElement === body) {
         closePortal()
       }
     }

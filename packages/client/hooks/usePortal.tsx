@@ -80,11 +80,15 @@ const usePortal = (options: UsePortalOptions = {}) => {
       const hasChildModal = children.some((child) => child.id)
       if (hasChildModal) return
       const {activeElement, body} = document
-      if (activeElement && activeElement !== body) {
-        const {contentEditable, tagName} = activeElement as HTMLElement
+      if (activeElement && activeElement !== body && activeElement instanceof HTMLElement) {
+        const {contentEditable, tagName} = activeElement
         // if viewer is typing something, don't close the portal on escape
         if (tagName === 'INPUT' || tagName === 'TEXTAREA' || contentEditable === 'true') {
-          return
+          const value = (activeElement as HTMLInputElement).value
+          if (value && value.length > 0) {
+            activeElement.blur()
+            return
+          }
         }
       }
       // give focus back to the thing that opened it
