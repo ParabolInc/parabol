@@ -9,24 +9,24 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
-Add accordion animation to sidebar #5086
-Remove promptTemplateId from ReflectPhase #3949
+- Add accordion animation to sidebar #5086
+- Remove promptTemplateId from ReflectPhase #3949
 
 ### Changed
 
-Refactor pokerSetFinalScore to setTaskEstimate #5171
-DB migration: migrate jira poker stages to jira-integrated stages #5161
-Redis: Persist discussion commentors #5022
-Updated tar, mediasoup-client dependencies
+- Refactor pokerSetFinalScore to setTaskEstimate #5171
+- DB migration: migrate jira poker stages to jira-integrated stages #5161
+- Redis: Persist discussion commentors #5022
+- Updated tar, mediasoup-client dependencies
 
 ### Fixed
 
-Final score not updating #5283
-Invites are broken - Cannot destructure property 'isConnected' of 'n' as it is null. #5282
-Server error when voting, unable to advance meeting #5249
-Jira integration - 'Fix it for me' doesn't work #5251
-Grouping kanban columns are not centered on Safari #5263
-Unable to archive poker meetings #5228
+- Final score not updating #5283
+- Invites are broken - Cannot destructure property 'isConnected' of 'n' as it is null. #5282
+- Server error when voting, unable to advance meeting #5249
+- Jira integration - 'Fix it for me' doesn't work #5251
+- Grouping kanban columns are not centered on Safari #5263
+- Unable to archive poker meetings #5228
 
 ## 6.23.2 2021-Aug-19
 
