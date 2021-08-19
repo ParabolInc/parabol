@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/insertUserQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
-export type TierEnum = 'enterprise' | 'pro' | 'personal'
+export type TierEnum = 'personal' | 'pro' | 'enterprise'
 
 export type stringArray = string[]
 
