@@ -10,6 +10,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Added
 
 Add accordion animation to sidebar #5086
+Remove promptTemplateId from ReflectPhase #3949
 
 ### Changed
 
