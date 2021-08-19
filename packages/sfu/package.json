@@ -1,6 +1,6 @@
 {
   "name": "parabol-sfu",
-  "version": "6.23.1",
+  "version": "6.23.2",
   "description": "A signaling and relay server for forwarding media streams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
@@ -28,8 +28,8 @@
     "awaitqueue": "^2.1.1",
     "express": "^4.17.1",
     "mediasoup": "^3.6.21",
-    "parabol-client": "^6.23.0",
-    "parabol-server": "^6.23.1",
+    "parabol-client": "^6.23.2",
+    "parabol-server": "^6.23.2",
     "protoo-server": "^4.0.4"
   }
 }
