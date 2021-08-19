@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useState} from 'react'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
 import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
 import {SwipeColumn} from '../GroupingKanban'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 
 export interface DropZoneBBox {
@@ -48,7 +49,7 @@ interface Props {
   isClipped?: boolean
   isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting
-  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
+  openSpotlight?: OpenSpotlight
   reflection: DraggableReflectionCard_reflection
   staticIdx?: number
   staticReflections: DraggableReflectionCard_staticReflections | null

@@ -72,12 +72,14 @@ const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>
   })
 )
 
+export type OpenSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
+
 interface Props {
   columnsRef: RefObject<HTMLDivElement>
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
-  openSpotlight: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
+  openSpotlight: OpenSpotlight
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups

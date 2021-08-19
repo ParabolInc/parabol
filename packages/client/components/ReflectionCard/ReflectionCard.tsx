@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {MouseEvent, RefObject, useEffect, useLayoutEffect, useRef, useState} from 'react'
+import React, {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {
@@ -32,6 +32,7 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint, ZIndex} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -59,7 +60,7 @@ interface Props {
   isClipped?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
-  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
+  openSpotlight?: OpenSpotlight
   stackCount?: number
   showOriginFooter?: boolean
   showReactji?: boolean
@@ -70,9 +71,11 @@ const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
   phaseType: NewMeetingPhaseTypeEnum,
   stackCount: number | undefined,
-  phases: any | null
+  phases: any | null,
+  inSpotlight: boolean
 ) => {
   const {isViewerCreator, isEditing, id} = reflection
+  if (inSpotlight) return true
   if (phases && isPhaseComplete('group', phases)) return true
   if (!isViewerCreator || isTempId(id)) return true
   if (phaseType === 'reflect') return stackCount && stackCount > 1
@@ -94,7 +97,6 @@ const ReflectionCard = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
   const [isHovering, setIsHovering] = useState(false)
-  const [selectedForSpotlight, setSelectedForSpotlight] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
@@ -188,9 +190,13 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = inSpotlight
-    ? inSpotlight
-    : getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
+  const readOnly = getReadOnly(
+    reflection,
+    phaseType as NewMeetingPhaseTypeEnum,
+    stackCount,
+    phases,
+    inSpotlight
+  )
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
   const onToggleReactji = (emojiId: string) => {
@@ -221,17 +227,8 @@ const ReflectionCard = (props: Props) => {
     const el = reflectionRef.current
     if (openSpotlight && el) {
       openSpotlight(reflectionId, reflectionRef)
-      setSelectedForSpotlight(true)
     }
   }
-
-  useLayoutEffect(() => {
-    // the same reflection card can exist in the kanban and spotlight
-    // when the spotlight closes, make the kanban reflection visible again
-    if (!inSpotlight && selectedForSpotlight) {
-      setSelectedForSpotlight(false)
-    }
-  }, [inSpotlight])
 
   const showSpotlight = true // TODO: dummy feature flag. Change to false before merging PR
   const showSearch =
@@ -246,7 +243,7 @@ const ReflectionCard = (props: Props) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       ref={reflectionRef}
-      selectedForSpotlight={selectedForSpotlight}
+      selectedForSpotlight={!!openSpotlight && inSpotlight}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
