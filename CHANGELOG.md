@@ -20,6 +20,8 @@ Updated tar, mediasoup-client dependencies
 
 ### Fixed
 
+Final score not updating #5283
+Invites are broken - Cannot destructure property 'isConnected' of 'n' as it is null. #5282
 Server error when voting, unable to advance meeting #5249
 Jira integration - 'Fix it for me' doesn't work #5251
 Grouping kanban columns are not centered on Safari #5263
