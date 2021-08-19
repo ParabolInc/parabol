@@ -28,6 +28,13 @@ Jira integration - 'Fix it for me' doesn't work #5251
 Grouping kanban columns are not centered on Safari #5263
 Unable to archive poker meetings #5228
 
+## 6.23.2 2021-Aug-19
+
+### Fixed
+
+- Support debugging production mode locally (#5284)
+- Remove logRocket from SSR client keys (#5284)
+
 ## 6.23.1 2021-Jul-30
 
 ### Fixed
