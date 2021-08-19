@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.23.2 2021-Aug-19
+
+### Fixed
+
+- Support debugging production mode locally (#5284)
+- Remove logRocket from SSR client keys (#5284)
+
 ## 6.23.1 2021-Jul-30
 
 ### Fixed
