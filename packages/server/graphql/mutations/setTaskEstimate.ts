@@ -143,7 +143,7 @@ const setTaskEstimate = {
 
     const data = {meetingId, stageId, taskId}
     if (meetingId) {
-      publish(SubscriptionChannel.MEETING, meetingId, 'PokerSetFinalScoreSuccess', data, subOptions)
+      publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimateSuccess', data, subOptions)
     }
     return data
   }
