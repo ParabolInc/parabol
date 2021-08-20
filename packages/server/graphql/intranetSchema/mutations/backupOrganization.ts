@@ -11,20 +11,16 @@ import getPg from '../../../postgres/getPg'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 
 const execFilePromise = util.promisify(childProcess.execFile)
+const PROJECT_ROOT = getProjectRoot()
 
-const dumpPgSchema = async () => {
-  const PROJECT_ROOT = getProjectRoot()
+const dumpPg = async (options: string) => {
   const pathToDumpScriptFromPackage = `postgres/scripts/dump.sh`
-
   const absPathToDumpScript = path.resolve(
     PROJECT_ROOT,
     'packages/server',
     pathToDumpScriptFromPackage
   )
-  const absTargetLocation = path.resolve(PROJECT_ROOT, 'artifacts/schemaDump.tar.gz')
-  const {stdout, stderr} = await execFilePromise(absPathToDumpScript, [
-    `-Fc --schema-only -f ${absTargetLocation} --schema=public`
-  ])
+  const {stdout, stderr} = await execFilePromise(absPathToDumpScript, [options])
   console.info(`${pathToDumpScriptFromPackage}:`, stdout)
   console.error(`${pathToDumpScriptFromPackage}:`, stderr)
 }
@@ -134,9 +130,14 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
 }
 
 const backupPgOrganization = async (orgIds: string[]) => {
-  await dumpPgSchema()
+  const schemaTargetLocation = path.resolve(PROJECT_ROOT, 'artifacts/schemaDump.tar.gz')
+  const schemaOpts = `-Fc --schema-only --file ${schemaTargetLocation} --schema=public`
+  const dataTargetLocation = path.resolve(PROJECT_ROOT, 'artifacts/orgBackupData.tar.gz')
+  const dataOpts = `-Fc --data-only --file ${dataTargetLocation} --schema="orgBackup"`
+
+  await dumpPg(schemaOpts)
   await dumpPgDataToOrgBackupSchema(orgIds)
-  orgIds
+  await dumpPg(dataOpts)
 }
 
 const backupOrganization = {
