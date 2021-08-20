@@ -11,7 +11,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
 import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
-import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
@@ -33,7 +32,11 @@ const ParabolScopingSearchResults = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
   useEffect(() => {
-    if (incomingEdges) setEdges(incomingEdges)
+    if (!incomingEdges) return
+    const unintegratedTaskEdges = incomingEdges.filter(
+      (edge) => edge.node && !edge.node.integrationHash
+    )
+    setEdges(unintegratedTaskEdges)
   }, [incomingEdges])
   const {id: meetingId, phases, teamId} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
@@ -75,18 +78,6 @@ const ParabolScopingSearchResults = (props: Props) => {
       />
       <ResultScroller>
         {edges.map(({node}) => {
-          const {integration} = node
-          if (integration?.__typename === 'JiraIssue') {
-            return (
-              <JiraScopingSearchResultItem
-                key={node.id}
-                issue={integration}
-                meetingId={meetingId}
-                persistQuery={() => {}}
-                usedServiceTaskIds={usedServiceTaskIds}
-              />
-            )
-          }
           return (
             <ParabolScopingSearchResultItem
               key={node.id}
@@ -137,12 +128,7 @@ export default createPaginationContainer(
             node {
               ...ParabolScopingSearchResultItem_task
               id
-              integration {
-                ... on JiraIssue {
-                  __typename
-                  ...JiraScopingSearchResultItem_issue
-                }
-              }
+              integrationHash
             }
           }
           pageInfo {

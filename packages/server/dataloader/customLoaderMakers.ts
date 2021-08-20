@@ -14,6 +14,11 @@ import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
+import getMeetingTaskEstimates, {
+  MeetingTaskEstimatesResult
+} from '../postgres/queries/getMeetingTaskEstimates'
+import {TemplateRef} from '../postgres/queries/getTemplateRefsById'
+import getTemplateRefsById from '../postgres/queries/getTemplateRefsById'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
@@ -102,6 +107,24 @@ export const latestTaskEstimates = (parent: RethinkDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const meetingTaskEstimates = (parent: RethinkDataLoader) => {
+  return new DataLoader<{meetingId: string; taskId: string}, MeetingTaskEstimatesResult[], string>(
+    async (keys) => {
+      const meetingIds = keys.map(({meetingId}) => meetingId)
+      const taskIds = keys.map(({taskId}) => taskId)
+
+      const rows = await getMeetingTaskEstimates(taskIds, meetingIds)
+      return keys.map(({meetingId, taskId}) =>
+        rows.filter((row) => row.taskId === taskId && row.meetingId === meetingId)
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.meetingId}:${key.taskId}`
     }
   )
 }
@@ -308,6 +331,18 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const templateRefs = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, TemplateRef, string>(
+    async (refIds) => {
+      const templateRefs = await getTemplateRefsById(refIds)
+      return refIds.map((refId) => templateRefs.find((ref) => ref.id === refId)!)
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

@@ -4,7 +4,6 @@ import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import JiraIssueId from '../../../../../shared/gqlIds/JiraIssueId'
 import makeAppURL from '../../../../../utils/makeAppURL'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailBorderBottom from './EmailBorderBottom'
@@ -47,12 +46,12 @@ interface Props {
 
 const SummaryPokerStories = (props: Props) => {
   const {appOrigin, isEmail, meeting} = props
-  const {id: meetingId, phases, meetingType} = meeting
-  if (meetingType !== 'poker') return null
-  const estimatePhase = phases?.find((phase) => phase?.phaseType === 'ESTIMATE')
+  const {id: meetingId, phases} = meeting
+  if (meeting.__typename !== 'PokerMeeting') return null
+  const estimatePhase = phases?.find((phase) => phase?.__typename === 'EstimatePhase')
   if (!estimatePhase) return null
   const stages = estimatePhase.stages!
-  const usedServiceTaskIds = new Set<string>()
+  const usedTaskIds = new Set<string>()
   return (
     <>
       <tr>
@@ -60,21 +59,26 @@ const SummaryPokerStories = (props: Props) => {
           <table width='80%' height='100%' align='center' bgcolor={'#FFFFFF'} style={tableStyles}>
             <tbody>
               {stages.map((stage, idx) => {
-                const {id, story, finalScore, serviceTaskId} = stage
-                if (usedServiceTaskIds.has(serviceTaskId)) return null
-                usedServiceTaskIds.add(serviceTaskId)
+                const {id, task, finalScore, taskId} = stage
+                if (usedTaskIds.has(taskId) || !task) return null
+                usedTaskIds.add(taskId)
                 const isLast = idx === stages.length - 1
-                const {issueKey} = JiraIssueId.split(serviceTaskId)
-                const title = story?.title ?? issueKey
-                const urlPath = `/meet/${meetingId}/estimate/${usedServiceTaskIds.size}`
+                let title = task.title
+                const {integration} = task
+                if (integration?.__typename === 'JiraIssue') {
+                  title = integration.summary
+                } else if (integration?.__typename === '_xGitHubIssue') {
+                  title = integration.title
+                }
+                const urlPath = `/meet/${meetingId}/estimate/${usedTaskIds.size}`
                 const to = isEmail
                   ? makeAppURL(appOrigin, urlPath, {
-                    searchParams: {
-                      utm_source: 'summary email',
-                      utm_medium: 'email',
-                      utm_campaign: 'after-meeting'
-                    }
-                  })
+                      searchParams: {
+                        utm_source: 'summary email',
+                        utm_medium: 'email',
+                        utm_campaign: 'after-meeting'
+                      }
+                    })
                   : urlPath
                 return (
                   <tr style={rowStyle} key={id}>
@@ -102,16 +106,31 @@ export default createFragmentContainer(SummaryPokerStories, {
   meeting: graphql`
     fragment SummaryPokerStories_meeting on NewMeeting {
       id
-      meetingType
-      phases {
-        phaseType
-        ... on EstimatePhase {
-          stages {
-            id
-            finalScore
-            serviceTaskId
-            story {
-              title
+      ... on PokerMeeting {
+        __typename
+        phases {
+          phaseType
+          ... on EstimatePhase {
+            __typename
+            stages {
+              id
+              finalScore
+              taskId
+              task {
+                title
+                integration {
+                  ... on JiraIssue {
+                    __typename
+                    summary
+                    issueKey
+                  }
+                  ... on _xGitHubIssue {
+                    __typename
+                    number
+                    title
+                  }
+                }
+              }
             }
           }
         }

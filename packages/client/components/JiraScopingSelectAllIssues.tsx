@@ -40,7 +40,6 @@ interface Props {
 
 const JiraScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issues} = props
-  const serviceTaskIds = issues.map((issueEdge) => issueEdge.node.id)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(issues, usedServiceTaskIds)
@@ -48,23 +47,28 @@ const JiraScopingSelectAllIssues = (props: Props) => {
   const onClick = () => {
     if (submitting) return
     submitMutation()
+    const serviceTaskIds = issues.map((issueEdge) => issueEdge.node.id)
     const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
     const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
       (serviceTaskId) =>
-      ({
-        service: 'jira',
-        serviceTaskId,
-        action
-      } as const)
+        ({
+          service: 'jira',
+          serviceTaskId,
+          action
+        } as const)
     )
 
     const variables = {
       meetingId,
       updates
     }
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    const contents = updates.map((update) => {
+      const issue = issues.find((issueEdge) => issueEdge.node.id === update.serviceTaskId)
+      return issue?.node.summary ?? 'Unknown Story'
+    })
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
@@ -87,6 +91,7 @@ export default createFragmentContainer(JiraScopingSelectAllIssues, {
     fragment JiraScopingSelectAllIssues_issues on JiraIssueEdge @relay(plural: true) {
       node {
         id
+        summary
       }
     }
   `

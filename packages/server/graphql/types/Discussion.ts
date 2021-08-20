@@ -1,6 +1,16 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
+import db from '../../db'
+import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
+import CommentorDetails from './CommentorDetails'
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {ThreadableConnection} from './Threadable'
@@ -37,6 +47,17 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       description: 'The number of comments contained in the thread',
       resolve: async ({id: discussionId}, _args, {dataLoader}) => {
         return dataLoader.get('commentCountByDiscussionId').load(discussionId)
+      }
+    },
+    commentors: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(CommentorDetails))),
+      description: 'The users writing a comment right now',
+      resolve: async ({id: discussionId}) => {
+        const redis = getRedis()
+        const userIds = await redis.smembers(`commenting:${discussionId}`)
+        if (userIds.length === 0) return []
+        const users = await db.readMany('User', userIds)
+        return users
       }
     },
     thread: {

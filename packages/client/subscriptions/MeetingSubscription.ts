@@ -3,7 +3,6 @@ import {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
-import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
 import {
   MeetingSubscription as TMeetingSubscription,
   MeetingSubscriptionVariables
@@ -19,7 +18,7 @@ import {
 import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
 import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
-import {resetMeetingToStageUpdater} from '../mutations/ResetMeetingToStageMutation'
+import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 
@@ -27,9 +26,9 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
+      ...SetTaskEstimateMutation_meeting @relay(mask: false)
       ...SetPokerSpectateMutation_team @relay(mask: false)
       ...JoinMeetingMutation_meeting @relay(mask: false)
-      ...PokerSetFinalScoreMutation_meeting @relay(mask: false)
       ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
       ...PokerResetDimensionMutation_meeting @relay(mask: false)
       ...PokerRevealVotesMutation_meeting @relay(mask: false)
@@ -45,7 +44,7 @@ const subscription = graphql`
       ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)
-      ...ResetMeetingToStageMutation_meeting @relay(mask: false)
+      ...ResetRetroMeetingToGroupStageMutation_meeting @relay(mask: false)
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
       ...SetStageTimerMutation_meeting @relay(mask: false)
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
@@ -71,12 +70,11 @@ const updateHandlers = {
   CreateReflectionPayload: createReflectionMeetingUpdater,
   DeleteCommentSuccess: deleteCommentMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
-  EditCommentingPayload: editCommentingMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
-  ResetMeetingToStagePayload: resetMeetingToStageUpdater,
+  ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater
 }

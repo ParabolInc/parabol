@@ -102,7 +102,6 @@ export default class Atmosphere extends Environment {
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
   userId: string | null = null // DEPRECATED
-
   constructor() {
     super({
       store,
