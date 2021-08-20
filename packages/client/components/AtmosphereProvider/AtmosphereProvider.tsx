@@ -1,4 +1,5 @@
 import React, {Component, ReactNode} from 'react'
+import {RelayEnvironmentProvider} from 'react-relay'
 import Atmosphere from '../../Atmosphere'
 import TLocalAtmosphere from '../../modules/demo/LocalAtmosphere'
 
@@ -36,8 +37,11 @@ class AtmosphereProvider extends Component<Props> {
   render() {
     if (!this.atmosphere) return null
     return (
+      // AtmosphereContext is now only used in the HOC withAtmosphere
       <AtmosphereContext.Provider value={this.atmosphere}>
-        {this.props.children}
+        <RelayEnvironmentProvider environment={this.atmosphere as any}>
+          {this.props.children}
+        </RelayEnvironmentProvider>
       </AtmosphereContext.Provider>
     )
   }
