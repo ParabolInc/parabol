@@ -1,17 +1,35 @@
-import {useEffect} from 'react'
+import areEqual from 'fbjs/lib/areEqual'
+import {useEffect, useRef} from 'react'
 import {PreloadableConcreteRequest, useQueryLoader} from 'react-relay'
 import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
-import useDeepEqual from './useDeepEqual'
+import useAtmosphere from './useAtmosphere'
 
 const useQueryLoaderNow = <TQuery extends OperationType>(
   preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
-  variables?: VariablesOf<TQuery>
+  variables: VariablesOf<TQuery> = {}
 ) => {
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
-  const memoVars = useDeepEqual(variables)
+  const varRef = useRef(variables)
+  const atmosphere = useAtmosphere()
+  if (!areEqual(variables, varRef.current)) {
+    varRef.current = variables
+  }
+  // refetch when variables change
   useEffect(() => {
     loadQuery(variables || {}, {fetchPolicy: 'store-or-network'})
-  }, [memoVars])
+  }, [varRef.current])
+
+  // refetch when reconnected to server
+  useEffect(() => {
+    const refresh = () => {
+      loadQuery(varRef.current, {fetchPolicy: 'network-only'})
+    }
+    atmosphere.retries.add(refresh)
+    return () => {
+      atmosphere.retries.delete(refresh)
+    }
+  }, [])
+
   return queryRef
 }
 

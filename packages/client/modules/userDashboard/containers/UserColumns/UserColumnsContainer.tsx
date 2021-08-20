@@ -20,7 +20,7 @@ const UserColumnsContainer = (props: Props) => {
     const nodes = tasks.edges.map(({node}) => node)
     const dashSearchNodes = dashSearch
       ? nodes.filter((task) => {
-          return task.contentText && task.contentText.match(dashSearchRegex)
+          return task.plaintextContent?.match(dashSearchRegex)
         })
       : nodes
 
@@ -87,8 +87,8 @@ export default createFragmentContainer(UserColumnsContainer, {
             ...TaskColumns_tasks
             # grab these so we can sort correctly
             id
-            content @__clientField(handle: "contentText")
-            contentText
+            content
+            plaintextContent
             status
             sortOrder
             teamId

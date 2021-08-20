@@ -45,20 +45,20 @@ const TeamContainer = (props: Props) => {
     queryRef
   )
   const viewer = data.viewer!
-  console.log('teamContainer', {data})
+  const {team} = viewer
   const {history, match} = useRouter()
   const {location} = window
   const {pathname} = location
   useEffect(() => {
-    if (viewer && !viewer.team) {
+    if (!team) {
       history.replace({
         pathname: `/invitation-required`,
         search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
       })
     }
   })
-  if (viewer && !viewer.team) return null
-  const team = viewer && viewer.team
+  if (!team) return null
+
   const isSettings = Boolean(
     matchPath(pathname, {
       path: '/team/:teamId/settings'
