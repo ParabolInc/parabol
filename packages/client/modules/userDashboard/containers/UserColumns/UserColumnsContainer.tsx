@@ -1,20 +1,53 @@
-import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
-import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
-import getSafeRegex from '../../../../utils/getSafeRegex'
+import React, {useMemo} from 'react'
+import {useFragment} from 'react-relay'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
+import getSafeRegex from '../../../../utils/getSafeRegex'
+import {UserColumnsContainer_viewer$key} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 
 interface Props {
-  viewer: UserColumnsContainer_viewer
+  viewerRef: UserColumnsContainer_viewer$key
 }
 
 const UserColumnsContainer = (props: Props) => {
-  const {viewer} = props
+  const {viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment UserColumnsContainer_viewer on User {
+        id
+        dashSearch
+        teams {
+          id
+          teamMembers(sortBy: "preferredName") {
+            userId
+            preferredName
+          }
+          ...TaskColumns_teams
+        }
+        tasks(first: 1000, after: $after, userIds: $userIds, teamIds: $teamIds)
+          @connection(key: "UserColumnsContainer_tasks", filters: ["userIds", "teamIds"]) {
+          edges {
+            node {
+              ...TaskColumns_tasks
+              # grab these so we can sort correctly
+              id
+              content
+              plaintextContent
+              status
+              sortOrder
+              teamId
+              userId
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)
-  const {dashSearch, tasks} = viewer
+  const {dashSearch, tasks, teams} = viewer
   const filteredTasks = useMemo(() => {
     const dashSearchRegex = getSafeRegex(dashSearch, 'i')
     const nodes = tasks.edges.map(({node}) => node)
@@ -35,67 +68,30 @@ const UserColumnsContainer = (props: Props) => {
       ...node
     }))
   }, [teamIds, userIds, tasks, dashSearch])
-  {
-    const {
-      viewer: {teams}
-    } = props
+  // iff 1 user is selected, we show team names at the footer; otherwise we show task owner name
+  const areaForTaskCard = userIds && userIds.length === 1 ? 'userDash' : 'teamDash'
+  const filteredTeams = userIds
+    ? teams.filter(({teamMembers, id: teamId}) => {
+        const inTeam = !!teamMembers.find(({userId}) => userIds.includes(userId))
+        const teamFiltered = teamIds ? teamIds.includes(teamId) : true
+        return teamFiltered && inTeam
+      })
+    : teamIds
+    ? teams.filter(({id}) => teamIds.includes(id))
+    : teams
 
-    // iff 1 user is selected, we show team names at the footer; otherwise we show task owner name
-    const areaForTaskCard = userIds && userIds.length === 1 ? 'userDash' : 'teamDash'
-    const filteredTeams = userIds
-      ? teams.filter(({teamMembers, id: teamId}) => {
-          const inTeam = !!teamMembers.find(({userId}) => userIds.includes(userId))
-          const teamFiltered = teamIds ? teamIds.includes(teamId) : true
-          return teamFiltered && inTeam
-        })
-      : teamIds
-      ? teams.filter(({id}) => teamIds.includes(id))
-      : teams
-
-    if (filteredTeams.length) {
-      return (
-        <TaskColumns
-          area={areaForTaskCard}
-          tasks={filteredTasks}
-          myTeamMemberId={toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)}
-          teams={filteredTeams}
-        />
-      )
-    } else {
-      return null
-    }
+  if (filteredTeams.length) {
+    return (
+      <TaskColumns
+        area={areaForTaskCard}
+        tasks={filteredTasks}
+        myTeamMemberId={toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)}
+        teams={filteredTeams}
+      />
+    )
+  } else {
+    return null
   }
 }
 
-export default createFragmentContainer(UserColumnsContainer, {
-  viewer: graphql`
-    fragment UserColumnsContainer_viewer on User {
-      id
-      dashSearch
-      teams {
-        id
-        teamMembers(sortBy: "preferredName") {
-          userId
-          preferredName
-        }
-        ...TaskColumns_teams
-      }
-      tasks(first: 1000, after: $after, userIds: $userIds, teamIds: $teamIds)
-        @connection(key: "UserColumnsContainer_tasks", filters: ["userIds", "teamIds"]) {
-        edges {
-          node {
-            ...TaskColumns_tasks
-            # grab these so we can sort correctly
-            id
-            content
-            plaintextContent
-            status
-            sortOrder
-            teamId
-            userId
-          }
-        }
-      }
-    }
-  `
-})
+export default UserColumnsContainer
