@@ -99,7 +99,8 @@ const TeamArchive = (props: Props) => {
         ...TeamArchive_query
       }
     `,
-    queryRef
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
   )
 
   const {data, hasNext, isLoadingNext, loadNext} = usePaginationFragment<

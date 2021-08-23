@@ -20,7 +20,8 @@ const MyDashboardTasksAndHeader = (props: Props) => {
         }
       }
     `,
-    queryRef
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
   )
   const viewer = data.viewer!
   return (

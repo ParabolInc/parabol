@@ -120,7 +120,8 @@ const AgendaAndTasks = (props: Props) => {
         }
       }
     `,
-    queryRef
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
   )
 
   const viewer = data.viewer!

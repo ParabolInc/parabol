@@ -42,7 +42,8 @@ const TeamContainer = (props: Props) => {
         }
       }
     `,
-    queryRef
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
   )
   const viewer = data.viewer!
   const {team} = viewer
