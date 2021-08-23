@@ -36,7 +36,7 @@ const GraphqlContainer = () => {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        [atmosphere.authorizationHeader]: `Bearer ${atmosphere.authToken}`
+        'x-application-authorization': `Bearer ${atmosphere.authToken}`
       },
       body: JSON.stringify({query, variables, isPrivate: currentSchema === 'Private'})
     })
