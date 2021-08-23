@@ -100,6 +100,6 @@ extend type AgendaItemsStage {
 }
 
 extend type Discussion {
-  isAnonymousComment: Boolean
-  replyingToCommentId: String
+  isAnonymousComment: Boolean!
+  replyingToCommentId: String!
 }
