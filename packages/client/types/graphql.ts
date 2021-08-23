@@ -44498,7 +44498,7 @@ export interface ITask {
 /**
  * An item that can be put in a thread
  */
-export type Threadable = ITask | IComment;
+export type Threadable = ITask | IComment | IPoll;
 
 /**
  * An item that can be put in a thread
@@ -50987,6 +50987,7 @@ export interface IMutation {
    * Update a task estimate
    */
   setTaskEstimate: SetTaskEstimatePayload;
+  createPoll: CreatePollPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -52123,6 +52124,13 @@ export interface IPersistGitHubSearchQueryOnMutationArguments {
 
 export interface ISetTaskEstimateOnMutationArguments {
   taskEstimate: ITaskEstimateInput;
+}
+
+export interface ICreatePollOnMutationArguments {
+  /**
+   * The new poll including title and poll options
+   */
+  newPoll: ICreatePollInput;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -54482,6 +54490,165 @@ export interface ITaskEstimateInput {
    */
   dimensionName: string;
   meetingId?: string | null;
+}
+
+/**
+ * Return object for CreatePollPayload
+ */
+export type CreatePollPayload = IErrorPayload | ICreatePollSuccess;
+
+export interface ICreatePollSuccess {
+  __typename: 'CreatePollSuccess';
+
+  /**
+   * The id of the meeting where the poll was added
+   */
+  meetingId: string;
+
+  /**
+   * the poll just created
+   */
+  poll: IPoll;
+}
+
+/**
+ * A poll created during the meeting
+ */
+export interface IPoll {
+  __typename: 'Poll';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The rich text body of the item
+   */
+  content: string;
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId that created the item
+   */
+  createdBy: string | null;
+
+  /**
+   * The user that created the item
+   */
+  createdByUser: IUser | null;
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>;
+
+  /**
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
+   */
+  discussionId: string | null;
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null;
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null;
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any;
+
+  /**
+   * the foreign key for the meeting the task was created in
+   */
+  meetingId: string | null;
+
+  /**
+   * The id of the team (indexed). Needed for subscribing to archived tasks
+   */
+  teamId: string;
+
+  /**
+   * The team this task belongs to
+   */
+  team: ITeam;
+
+  /**
+   * Poll title
+   */
+  title: string;
+
+  /**
+   * A list of the most recent estimates for the task
+   */
+  options: Array<IPollOption>;
+}
+
+/**
+ * Poll options for a given poll
+ */
+export interface IPollOption {
+  __typename: 'PollOption';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any;
+
+  /**
+   * The id of the poll (indexed)
+   */
+  pollId: string;
+
+  /**
+   * The poll this option belongs to
+   */
+  poll: ITeam;
+
+  /**
+   * The ids of the users who voted for this option
+   */
+  voteUserIds: Array<string>;
+
+  /**
+   * Poll option title
+   */
+  title: string;
+}
+
+export interface ICreatePollInput {
+  /**
+   * Foreign key for the discussion this was created in
+   */
+  discussionId: string;
+  title: string;
+  options: Array<IPollOptionInput>;
+}
+
+export interface IPollOptionInput {
+  /**
+   * Poll option title
+   */
+  title: string;
 }
 
 export interface ISubscription {

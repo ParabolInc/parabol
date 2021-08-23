@@ -11,6 +11,7 @@ import {GQLContext} from '../graphql'
 import Comment from './Comment'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfo from './PageInfo'
+import Poll from './Poll'
 import Task from './Task'
 
 export const threadableFields = () => ({
@@ -67,8 +68,16 @@ const Threadable = new GraphQLInterfaceType({
   name: 'Threadable',
   description: 'An item that can be put in a thread',
   fields: threadableFields,
-  resolveType: ({status}) => {
-    return status ? Task : Comment
+  resolveType: ({status, options}) => {
+    if (status) {
+      return Task
+    }
+
+    if (options) {
+      return Poll
+    }
+
+    return Comment
   }
 })
 

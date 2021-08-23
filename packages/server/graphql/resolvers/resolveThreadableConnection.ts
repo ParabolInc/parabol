@@ -3,11 +3,12 @@ import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'
 
 const resolveThreadableConnection = async (discussionId, {dataLoader}) => {
-  const [comments, tasks] = await Promise.all([
+  const [comments, tasks, polls] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').load(discussionId),
-    dataLoader.get('tasksByDiscussionId').load(discussionId)
+    dataLoader.get('tasksByDiscussionId').load(discussionId),
+    dataLoader.get('pollsByDiscussionId').load(discussionId)
   ])
-  const threadables = [...comments, ...tasks] as Threadable[]
+  const threadables = [...comments, ...tasks, ...polls] as Threadable[]
   const threadablesByParentId = {} as {[parentId: string]: Threadable[]}
 
   const rootThreadables = [] as Threadable[]
@@ -28,7 +29,10 @@ const resolveThreadableConnection = async (discussionId, {dataLoader}) => {
   rootThreadables.forEach((threadable) => {
     const {id: threadableId} = threadable
     const replies = threadablesByParentId[threadableId]
-    const isActive = (threadable as TaskDB).status || (threadable as Comment).isActive
+    const isActive =
+      (threadable as TaskDB).status ||
+      (threadable as Comment).isActive ||
+      (threadable as Poll).deletedAt === null
     if (!isActive && !replies) return
     filteredThreadables.push(threadable)
     if (replies) {

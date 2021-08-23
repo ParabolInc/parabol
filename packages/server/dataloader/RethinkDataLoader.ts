@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
+import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import fkLoader from './fkLoader'
@@ -17,7 +18,8 @@ const loaderMakers = {
   ...primaryLoaderMakers,
   ...foreignLoaderMakers,
   ...customLoaderMakers,
-  ...atlassianLoaders
+  ...atlassianLoaders,
+  ...pollLoaders
 } as const
 
 type LoaderMakers = typeof loaderMakers
