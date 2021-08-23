@@ -18,17 +18,6 @@ interface Props {
 
 const PokerSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, meeting} = props
-  const {localPhase} = meeting
-  const showCheckInSection = localPhase && localPhase.phaseType === phaseType
-  if (phaseType === 'checkin' && showCheckInSection) {
-    return (
-      <MeetingSidebarTeamMemberStageItems
-        gotoStageId={gotoStageId}
-        handleMenuClick={handleMenuClick}
-        meeting={meeting}
-      />
-    )
-  }
   if (phaseType === 'ESTIMATE') {
     return (
       <PokerSidebarEstimateSection
@@ -38,7 +27,14 @@ const PokerSidebarPhaseListItemChildren = (props: Props) => {
       />
     )
   }
-  return null
+  return (
+    <MeetingSidebarTeamMemberStageItems
+      gotoStageId={gotoStageId}
+      handleMenuClick={handleMenuClick}
+      meeting={meeting}
+      phaseType={phaseType}
+    />
+  )
 }
 
 export default createFragmentContainer(PokerSidebarPhaseListItemChildren, {
@@ -46,9 +42,6 @@ export default createFragmentContainer(PokerSidebarPhaseListItemChildren, {
     fragment PokerSidebarPhaseListItemChildren_meeting on PokerMeeting {
       ...MeetingSidebarTeamMemberStageItems_meeting
       ...PokerSidebarEstimateSection_meeting
-      localPhase {
-        phaseType
-      }
       phases {
         phaseType
         stages {

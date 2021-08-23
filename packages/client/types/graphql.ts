@@ -47377,11 +47377,6 @@ export interface IReflectPhase {
   focusedPrompt: IReflectPrompt | null;
 
   /**
-   * FK. The ID of the template used during the reflect phase
-   */
-  promptTemplateId: string;
-
-  /**
    * The prompts used during the reflect phase
    */
   reflectPrompts: Array<IReflectPrompt>;
@@ -50758,14 +50753,14 @@ export interface IMutation {
   removeTeamMember: IRemoveTeamMemberPayload | null;
 
   /**
-   * Reset meeting to a previously completed stage
-   */
-  resetMeetingToStage: IResetMeetingToStagePayload;
-
-  /**
    * Reset the password for an account
    */
   resetPassword: IResetPasswordPayload;
+
+  /**
+   * Reset a retro meeting to group stage
+   */
+  resetRetroMeetingToGroupStage: IResetRetroMeetingToGroupStagePayload;
 
   /**
    * track an event in segment, like when errors are hit
@@ -51659,11 +51654,6 @@ export interface IRemoveTeamMemberOnMutationArguments {
   teamMemberId: string;
 }
 
-export interface IResetMeetingToStageOnMutationArguments {
-  meetingId: string;
-  stageId: string;
-}
-
 export interface IResetPasswordOnMutationArguments {
   /**
    * the password reset token
@@ -51674,6 +51664,10 @@ export interface IResetPasswordOnMutationArguments {
    * The new password for the account
    */
   newPassword: string;
+}
+
+export interface IResetRetroMeetingToGroupStageOnMutationArguments {
+  meetingId: string;
 }
 
 export interface ISegmentEventTrackOnMutationArguments {
@@ -53689,12 +53683,6 @@ export interface IRemoveTeamMemberPayload {
   kickOutNotification: INotifyKickedOut | null;
 }
 
-export interface IResetMeetingToStagePayload {
-  __typename: 'ResetMeetingToStagePayload';
-  error: IStandardMutationError | null;
-  meeting: NewMeeting | null;
-}
-
 export interface IResetPasswordPayload {
   __typename: 'ResetPasswordPayload';
   error: IStandardMutationError | null;
@@ -53709,6 +53697,12 @@ export interface IResetPasswordPayload {
    * the user that changed their password
    */
   user: IUser | null;
+}
+
+export interface IResetRetroMeetingToGroupStagePayload {
+  __typename: 'ResetRetroMeetingToGroupStagePayload';
+  error: IStandardMutationError | null;
+  meeting: NewMeeting | null;
 }
 
 export interface ISegmentEventTrackOptions {
@@ -54519,7 +54513,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
-  | IResetMeetingToStagePayload
+  | IResetRetroMeetingToGroupStagePayload
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload

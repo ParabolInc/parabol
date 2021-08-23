@@ -96,6 +96,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
   const forceUpdate = useForceUpdate()
+
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
@@ -103,7 +104,9 @@ const PokerDimensionValueControl = (props: Props) => {
     isLocallyValidatedRef.current = true
   }, [finalScore])
   const submitScore = () => {
-    if (submitting || !isStale || !isLocallyValidatedRef.current) return
+    if (submitting || !isStale || !isLocallyValidatedRef.current) {
+      return
+    }
     submitMutation()
     const handleCompleted = (res: SetTaskEstimateMutationResponse, errors) => {
       onCompleted(res as any, errors)
@@ -111,6 +114,10 @@ const PokerDimensionValueControl = (props: Props) => {
       const {error} = setTaskEstimate
       if (error?.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
         openPortal()
+        // in case of error this will set the old value after the useEffect related to final score
+        setImmediate(() => {
+          setCardScore(cardScore)
+        })
       }
       if (!error) {
         // set field A to 1, change fields to B, then submit again. it should not say update
@@ -158,6 +165,7 @@ const PokerDimensionValueControl = (props: Props) => {
       isLocallyValidatedRef.current = true
     }
   }
+
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === cardScore)
   const scaleColor = matchingScale?.color

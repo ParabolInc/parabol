@@ -5,6 +5,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.24.0 2021-Aug-19
+
+### Added
+
+- Add accordion animation to sidebar #5086
+- Remove promptTemplateId from ReflectPhase #3949
+
+### Changed
+
+- Refactor pokerSetFinalScore to setTaskEstimate #5171
+- DB migration: migrate jira poker stages to jira-integrated stages #5161
+- Redis: Persist discussion commentors #5022
+- Updated tar, mediasoup-client dependencies
+
+### Fixed
+
+- Final score not updating #5283
+- Invites are broken - Cannot destructure property 'isConnected' of 'n' as it is null. #5282
+- Server error when voting, unable to advance meeting #5249
+- Jira integration - 'Fix it for me' doesn't work #5251
+- Grouping kanban columns are not centered on Safari #5263
+- Unable to archive poker meetings #5228
+
+## 6.23.2 2021-Aug-19
+
+### Fixed
+
+- Support debugging production mode locally (#5284)
+- Remove logRocket from SSR client keys (#5284)
+
 ## 6.23.1 2021-Jul-30
 
 ### Fixed
@@ -34,13 +64,15 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fix buggy comment status text not going away (#5197)
 
 ## 6.22.0 2021-Jul-22
+
 ### Added
 
-- Added FLIP animations to meeting cards  (#5138)
+- Added FLIP animations to meeting cards (#5138)
 - Added emails and domain to updateWatchlist (#5144)
 - Added TaskEstimate table (#5198)
 
 ### Fixed
+
 - Fixed long meeting names throwing off meetings view (#5118)
 - Fixed dashboard padding (#5129)
 - Fixed summary review not working properly (#5137)
@@ -53,11 +85,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - createTask accepts optional integration (#5199)
 
 ## 6.21.0 2021-Jul-15
+
 ### Added
 
 - Add Story Points to required screen from within Parabol (#4880)
 
 ### Fixed
+
 - Fix template dimension "ghosts" (#5128)
 
 ### Changed

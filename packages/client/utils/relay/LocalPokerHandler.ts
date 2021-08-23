@@ -10,7 +10,7 @@ const defaults = [
     type: 'JiraSearchQuery',
     defaultQuery: {
       queryString: '',
-      projectKeyFilters: [],
+      projectKeyFilters: [] as string[],
       isJQL: false
     }
   },
