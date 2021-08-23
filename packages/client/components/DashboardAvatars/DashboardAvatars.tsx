@@ -4,23 +4,23 @@ import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import useAvatarsOverflow from '../../hooks/useAvatarsOverflow'
 import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
 import DashboardAvatar from './DashboardAvatar'
+import hexToRGB from '../../utils/hexToRgb'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const AvatarsList = styled('div')({
   display: 'flex',
   flexWrap: 'wrap',
-  justifyContent: 'flex-start',
+  justifyContent: 'center',
   marginTop: 16,
-  width: '75%',
+  // width: '75%',
   [desktopBreakpoint]: {
     marginTop: 0,
-    width: `${24 * 10}px` // TODO: change to the correct measurement
+    width: `${22 * 10}px` // TODO: change to the correct measurement
   }
 })
 
@@ -35,28 +35,32 @@ const ItemBlock = styled('div')({
   marginRight: 8,
   position: 'relative',
   [desktopBreakpoint]: {
+    display: 'flex',
+    alignItems: 'center',
     marginRight: 0,
     marginBottom: 4
   }
 })
 
-interface Props {
-  team: DashboardAvatars_team
-}
-
 const OverflowCount = styled('div')({
   alignItems: 'center',
+  border: `2px solid ${PALETTE.SLATE_200}`,
   backgroundColor: PALETTE.SKY_400,
   borderRadius: '50%',
   display: 'flex',
-  height: 24,
+  height: 28,
   justifyContent: 'center',
   color: '#fff',
   fontSize: 12,
   fontWeight: 600,
   overflow: 'hidden',
   userSelect: 'none',
-  width: 24
+  width: 28,
+  zIndex: 10,
+  '&:hover': {
+    cursor: 'pointer',
+    opacity: 0.75
+  }
 })
 
 const Label = styled('div')({
@@ -67,12 +71,16 @@ const Label = styled('div')({
   width: '100%'
 })
 
+interface Props {
+  team: DashboardAvatars_team
+}
+
 const DashboardAvatars = (props: Props) => {
   const {team} = props
   const {isLead: isViewerLead, teamMembers} = team
   const wrapperRef = useRef<HTMLDivElement>(null)
   const avatarsRef = useRef<HTMLDivElement>(null)
-  const maxAvatars = useAvatarsOverflow(wrapperRef, avatarsRef)
+  const maxAvatars = 9 // useAvatarsOverflow(wrapperRef, avatarsRef)
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
   return (

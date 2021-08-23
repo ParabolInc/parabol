@@ -9,21 +9,30 @@ import useMenu from '../../hooks/useMenu'
 import useModal from '../../hooks/useModal'
 import lazyPreload from '../../utils/lazyPreload'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import {PALETTE} from '../../styles/paletteV3'
 
 interface Props {
   isViewerLead: boolean
   teamMember: DashboardAvatar_teamMember
 }
 
-const AvatarAndTag = styled('div')<{isConnected?: boolean}>(({isConnected}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  opacity: isConnected ? 1 : 0.35,
-  ':hover': {
-    opacity: 0.5
-  }
-}))
+const AvatarWrapper = styled('div')({
+  width: 20
+})
+
+const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(
+  ({isConnected, picture}) => ({
+    // opacity causes transparency making overlap look bad. change img instead
+    backgroundImage: `${
+      isConnected ? '' : 'linear-gradient(rgba(255,255,255,.65), rgba(255,255,255,.65)),'
+    } url(${picture}), url(${defaultUserAvatar})`,
+    border: `2px solid ${PALETTE.SLATE_200}`,
+    ':hover': {
+      backgroundImage: `linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)),
+    url(${picture}), url(${defaultUserAvatar})`
+    }
+  })
+)
 
 const TeamMemberAvatarMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'TeamMemberAvatarMenu' */ './TeamMemberAvatarMenu')
@@ -66,13 +75,14 @@ const DashboardAvatar = (props: Props) => {
   } = useModal()
   const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
   return (
-    <AvatarAndTag onMouseEnter={TeamMemberAvatarMenu.preload} isConnected={!!isConnected}>
-      <Avatar
+    <AvatarWrapper onMouseEnter={TeamMemberAvatarMenu.preload}>
+      <StyledAvatar
         {...teamMember}
+        isConnected={!!isConnected}
         onClick={togglePortal}
         picture={picture || defaultUserAvatar}
         ref={originRef}
-        size={24}
+        size={28}
       />
       {menuPortal(
         <TeamMemberAvatarMenu
@@ -88,7 +98,7 @@ const DashboardAvatar = (props: Props) => {
       {portalPromote(<PromoteTeamMemberModal teamMember={teamMember} closePortal={closePromote} />)}
       {portalRemove(<RemoveTeamMemberModal teamMember={teamMember} closePortal={closeRemove} />)}
       {portalLeave(<LeaveTeamModal teamMember={teamMember} closePortal={closeLeave} />)}
-    </AvatarAndTag>
+    </AvatarWrapper>
   )
 }
 
