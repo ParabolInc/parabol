@@ -9,6 +9,7 @@ import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import getTeamsById from '../../postgres/queries/getTeamsById'
+import {GQLContext} from '../graphql'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -18,7 +19,7 @@ export default {
       description: 'The input object containing the teamId and any modified fields'
     }
   },
-  async resolve(_source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
