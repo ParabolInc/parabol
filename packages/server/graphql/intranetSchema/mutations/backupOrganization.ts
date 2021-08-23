@@ -64,17 +64,7 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
       'CREATE TABLE "orgBackup"."Discussion" AS (SELECT * FROM "Discussion" WHERE "teamId" = ANY ($1));',
       [teamIds]
     )
-    await client.query(
-      'CREATE TABLE "orgBackup"."Poll" AS (SELECT * FROM "Poll" WHERE "teamId" = ANY ($1));',
-      [teamIds]
-    )
-    const polls = await client.query('SELECT "id" FROM "orgBackup"."Poll";')
-    const pollIds = polls.rows.map((poll) => poll.id)
 
-    await client.query(
-      'CREATE TABLE "orgBackup"."PollOption" AS (SELECT * FROM "PollOption" WHERE "pollId" = ANY ($1));',
-      [pollIds]
-    )
     const [userIds, meetings] = await Promise.all([
       r
         .table('TeamMember')
