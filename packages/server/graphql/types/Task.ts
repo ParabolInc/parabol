@@ -14,7 +14,6 @@ import {GitHubRequest} from '../rootSchema'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
-import Story, {storyFields} from './Story'
 import TaskEditorDetails from './TaskEditorDetails'
 import TaskEstimate from './TaskEstimate'
 import TaskIntegration from './TaskIntegration'
@@ -25,11 +24,10 @@ import Threadable, {threadableFields} from './Threadable'
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
-  interfaces: () => [Threadable, Story],
+  interfaces: () => [Threadable],
   isTypeOf: ({status}) => !!status,
   fields: () => ({
     ...(threadableFields() as any),
-    ...storyFields(),
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',
@@ -60,7 +58,12 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     estimates: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
       description: 'A list of the most recent estimates for the task',
-      resolve: async ({id: taskId}, _args, {dataLoader}) => {
+      resolve: async ({id: taskId, integration, teamId}: DBTask, _args, {dataLoader}) => {
+        if (integration?.service === 'jira') {
+          const {accessUserId, cloudId, issueKey} = integration
+          // this dataloader has the side effect of guaranteeing fresh estimates
+          await dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+        }
         return dataLoader.get('latestTaskEstimates').load(taskId)
       }
     },

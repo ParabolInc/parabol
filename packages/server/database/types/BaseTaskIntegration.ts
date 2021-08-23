@@ -5,7 +5,7 @@ interface Input {
   service: TaskServiceEnum
 }
 
-export default class TaskIntegration {
+export default abstract class BaseTaskIntegration {
   service: TaskServiceEnum
   accessUserId: string
   constructor(input: Input) {

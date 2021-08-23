@@ -3,6 +3,8 @@ import GitHubIssueId from '../../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
+import TaskIntegrationGitHub from '../../../database/types/TaskIntegrationGitHub'
+import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
 import createGitHubTask from './createGitHubTask'
@@ -31,12 +33,11 @@ const createTaskInService = async (
     if (jiraTaskRes.error) return {error: jiraTaskRes.error}
     const {issueKey} = jiraTaskRes
     return {
-      integration: {
-        service,
+      integration: new TaskIntegrationJira({
         accessUserId,
         cloudId,
         issueKey
-      },
+      }),
       integrationHash: JiraIssueId.join(cloudId, issueKey)
     }
   } else if (service === 'github') {
@@ -58,12 +59,11 @@ const createTaskInService = async (
     }
     const {issueNumber} = githubTaskRes
     return {
-      integration: {
-        service,
+      integration: new TaskIntegrationGitHub({
         accessUserId,
         nameWithOwner: serviceProjectHash,
         issueNumber
-      },
+      }),
       integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber)
     }
   }

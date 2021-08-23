@@ -30,7 +30,7 @@ import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+  ; (RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
 interface QuerySubscription {
   subKey: string
@@ -105,8 +105,6 @@ export default class Atmosphere extends Environment {
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
   userId: string | null = null // DEPRECATED
-  authorizationHeader: string = __PRODUCTION__ ? 'X-Application-Authorization' : 'Authorization'
-  
   constructor() {
     super({
       store,
@@ -120,7 +118,7 @@ export default class Atmosphere extends Environment {
   fetchPing = async (connectionId?: string) => {
     return fetch('/sse-ping', {
       headers: {
-        [this.authorizationHeader]: `Bearer ${this.authToken}`,
+        'x-application-authorization': `Bearer ${this.authToken}`,
         'x-correlation-id': connectionId || ''
       }
     })
@@ -130,7 +128,7 @@ export default class Atmosphere extends Environment {
     return fetch('/sse-ping', {
       method: 'POST',
       headers: {
-        [this.authorizationHeader]: `Bearer ${this.authToken}`,
+        'x-application-authorization': `Bearer ${this.authToken}`,
         'x-correlation-id': connectionId || ''
       },
       body: data
@@ -141,7 +139,7 @@ export default class Atmosphere extends Environment {
     const uploadables = body.payload.uploadables
     const headers = {
       accept: 'application/json',
-      [this.authorizationHeader]: this.authToken ? `Bearer ${this.authToken}` : '',
+      'x-application-authorization': this.authToken ? `Bearer ${this.authToken}` : '',
       'x-correlation-id': connectionId || ''
     }
     /* if uploadables, don't set content type bc we want the browser to set it */
@@ -408,8 +406,8 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
-    // remove all records
-    ;(this.getStore().getSource() as any).clear()
+      // remove all records
+      ; (this.getStore().getSource() as any).clear()
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null

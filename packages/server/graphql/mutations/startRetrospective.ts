@@ -85,10 +85,14 @@ export default {
     })
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-    await r
-      .table('NewMeeting')
-      .insert(meeting)
-      .run()
+    const now = new Date()
+    await r({
+      template: r
+        .table('MeetingTemplate')
+        .get(selectedTemplateId)
+        .update({lastUsedAt: now}),
+      meeting: r.table('NewMeeting').insert(meeting)
+    }).run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)

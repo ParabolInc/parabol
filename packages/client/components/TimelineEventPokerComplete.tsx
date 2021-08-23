@@ -67,7 +67,6 @@ export default createFragmentContainer(TimelineEventPokerComplete, {
           ... on EstimatePhase {
             stages {
               id
-              serviceTaskId
             }
           }
         }

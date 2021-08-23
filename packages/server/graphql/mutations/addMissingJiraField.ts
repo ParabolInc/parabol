@@ -4,7 +4,6 @@ import {SprintPokerDefaults, SubscriptionChannel} from '~/types/constEnums'
 import {JiraScreen} from '~/utils/AtlassianManager'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import {isNotNull} from '../../utils/predicates'
@@ -63,14 +62,11 @@ const addMissingJiraField = {
     }
 
     // RESOLUTION
-    const {dimensionRefIdx, service, serviceTaskId} = stage
-    const templateRef = await getTemplateRefById(templateRefId)
+    const {dimensionRefIdx, serviceTaskId} = stage
+    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
-    if (service !== 'jira') {
-      return {error: {message: 'Non Jira service'}}
-    }
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (!auth) {
       return {error: {message: 'User no longer has access to Atlassian'}}

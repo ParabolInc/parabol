@@ -88,10 +88,7 @@ export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | '
   voterIds: any
 }
 
-export type IDiscussPhase = Omit<
-  DiscussPhase,
-  'readyToAdvance' | 'endAt' | 'startAt' | 'promptTemplateId'
-> & {
+export type IDiscussPhase = Omit<DiscussPhase, 'readyToAdvance' | 'endAt' | 'startAt'> & {
   readyToAdvance: any
   startAt: string | Date
   endAt: string | Date

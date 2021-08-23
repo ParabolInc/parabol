@@ -100,15 +100,7 @@ extend type AgendaItemsStage {
   localScheduledEndTime: String
 }
 
-extend type EstimateStage {
-  finalScoreError: String
-}
-
 extend type Discussion {
   isAnonymousComment: Boolean
   replyingToCommentId: String
-}
-
-extend type ThreadableConnection {
-  commentors: [User!]!
 }

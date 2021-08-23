@@ -1,21 +1,11 @@
 import styled from '@emotion/styled'
-import React, {ReactNode} from 'react'
+import React from 'react'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql.ts'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql.ts'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
 import Icon from './Icon'
-
-const NavListItem = styled('li')<{phaseType: NewMeetingPhaseTypeEnum}>(({phaseType}) => ({
-  fontWeight: 600,
-  display: 'flex',
-  flexDirection: 'column',
-  margin: 0,
-  // hack to work around broken flexbox
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
-  minHeight: phaseType === 'agendaitems' ? 98 : 40
-}))
 
 const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
   {
@@ -84,6 +74,7 @@ const NavListItemLink = styled('div')<LinkProps>(
     minHeight: 40,
     textDecoration: 'none',
     userSelect: 'none',
+    fontWeight: 600,
     ':hover,:focus': {
       backgroundColor: PALETTE.SLATE_100
     }
@@ -126,7 +117,6 @@ const StyledBadge = styled(Badge)({
 })
 
 interface Props {
-  children?: ReactNode
   handleClick?: () => void
   isActive: boolean
   isCollapsible?: boolean
@@ -139,7 +129,6 @@ interface Props {
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
   const {
-    children,
     handleClick,
     isActive,
     isCollapsible,
@@ -154,33 +143,30 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   const Image = phaseImageLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
   return (
-    <NavListItem phaseType={phaseType}>
-      <NavListItemLink
-        isActive={isActive}
-        isCollapsible={isCollapsible}
-        isDisabled={!handleClick}
-        isFacilitatorPhase={isFacilitatorPhase}
-        isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-        onClick={handleClick}
-        title={label}
-      >
-        {icon && (
-          <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
-        )}
-        {Image && (
-          <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
-            <Image />
-          </NavItemSVG>
-        )}
-        <NavItemLabel>{label}</NavItemLabel>
-        {showPhaseCount && (
-          <PhaseCountBlock>
-            <StyledBadge>{phaseCount}</StyledBadge>
-          </PhaseCountBlock>
-        )}
-      </NavListItemLink>
-      {children}
-    </NavListItem>
+    <NavListItemLink
+      isActive={isActive}
+      isCollapsible={isCollapsible}
+      isDisabled={!handleClick}
+      isFacilitatorPhase={isFacilitatorPhase}
+      isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+      onClick={handleClick}
+      title={label}
+    >
+      {icon && (
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
+      )}
+      {Image && (
+        <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+          <Image />
+        </NavItemSVG>
+      )}
+      <NavItemLabel>{label}</NavItemLabel>
+      {showPhaseCount && (
+        <PhaseCountBlock>
+          <StyledBadge>{phaseCount}</StyledBadge>
+        </PhaseCountBlock>
+      )}
+    </NavListItemLink>
   )
 }
 

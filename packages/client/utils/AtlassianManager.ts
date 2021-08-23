@@ -428,6 +428,16 @@ export default abstract class AtlassianManager {
     )
   }
 
+  async getImage(imageUrl: string) {
+    const imageRes = await this.fetchWithTimeout(imageUrl, {
+      headers: {Authorization: this.headers.Authorization}
+    })
+
+    if (!imageRes || imageRes instanceof Error) return null
+    const arrayBuffer = await imageRes.arrayBuffer()
+    return Buffer.from(arrayBuffer)
+  }
+
   async getProjectAvatar(avatarUrl: string) {
     // use fetchWithTimeout because we want a buffer
     const imageRes = await this.fetchWithTimeout(avatarUrl, {
@@ -440,6 +450,7 @@ export default abstract class AtlassianManager {
     const contentType = imageRes.headers.get('content-type')
     return `data:${contentType};base64,${buffer}`
   }
+
   async getAllProjects(cloudIds: string[]) {
     const projects = [] as (JiraProject & {cloudId: string})[]
     let error: Error | undefined
@@ -673,10 +684,11 @@ export default abstract class AtlassianManager {
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
-    fieldId: string) {
+    fieldId: string
+  ) {
     const payload = {
       fields: {
-        [fieldId]: isFinite(storyPoints as number) ? Number(storyPoints) : storyPoints
+        [fieldId]: storyPoints
       }
     }
     const res = await this.put(
@@ -684,7 +696,6 @@ export default abstract class AtlassianManager {
       payload
     )
     if (res === null) return
-    console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
     if (res.message.includes('The app is not installed on this instance')) {
       throw new Error(
         'The user who added this issue was removed from Jira. Please remove & re-add the issue'

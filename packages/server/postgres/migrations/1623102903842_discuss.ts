@@ -127,7 +127,7 @@ export async function up(): Promise<void> {
         const {stages} = phase
         const discussionIds = stages.map(() => generateUID())
         stages.forEach((stage, idx) => {
-          const {service, serviceTaskId} = stage
+          const {service, serviceTaskId} = stage as any
           const discussionId = discussionIds[idx]
           threadIdToDiscussionId.push([serviceTaskId, discussionId])
           discussions.push({

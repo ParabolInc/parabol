@@ -64,25 +64,34 @@ module.exports = ({isDeploy}) => ({
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
     }),
     isDeploy &&
-    new S3Plugin({
-      s3Options: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        region: process.env.AWS_REGION
-      },
-      s3UploadOptions: {
-        Bucket: process.env.AWS_S3_BUCKET
-      },
-      basePath: getS3BasePath(),
-      directory: distPath
-    })
+      new S3Plugin({
+        s3Options: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          region: process.env.AWS_REGION
+        },
+        s3UploadOptions: {
+          Bucket: process.env.AWS_S3_BUCKET
+        },
+        basePath: getS3BasePath(),
+        directory: distPath
+      })
   ].filter(Boolean),
   module: {
     rules: [
       ...transformRules(PROJECT_ROOT),
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: ['ignore-loader']
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              publicPath: (url) => {
+                return `dist/${url}`
+              }
+            }
+          }
+        ]
       }
     ]
   }

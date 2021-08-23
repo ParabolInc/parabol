@@ -7,18 +7,23 @@ const useGetUsedServiceTaskIds = (phaseRef: any) => {
   return useMemo(() => {
     const estimatePhase = readInlineData<useGetUsedServiceTaskIds_phase>(
       graphql`
-      fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
-        stages {
-          serviceTaskId
+        fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
+          stages {
+            taskId
+            task {
+              integrationHash
+            }
+          }
         }
-      }
-    `,
+      `,
       phaseRef
     )
     const {stages} = estimatePhase
     const usedServiceTaskIds = new Set<string>()
     stages.forEach((stage) => {
-      const {serviceTaskId} = stage
+      const {task, taskId} = stage
+      const serviceTaskId = task?.integrationHash ?? taskId
+      // a new serviceTaskId uniquely identifies an issue that doesn't exist in our system yet (integrationHash)
       usedServiceTaskIds.add(serviceTaskId)
     })
     return usedServiceTaskIds
