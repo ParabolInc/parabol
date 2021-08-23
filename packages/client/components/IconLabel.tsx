@@ -3,22 +3,22 @@ import styled from '@emotion/styled'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
 
-const LabelBlock = styled('div')({
+const LabelBlock = styled('div')<{labelBelow?: boolean}>(({labelBelow}) => ({
   alignItems: 'center',
   display: 'flex',
-  justifyContent: 'center'
-})
+  justifyContent: 'center',
+  flexDirection: labelBelow ? 'column' : undefined
+}))
 
-const Label = styled('div')<Pick<Props, 'iconAfter'>>(({iconAfter}) => {
-  const gutter = '8px'
-  return {
+const Label = styled('div')<{iconAfter?: boolean; labelBelow?: boolean}>(
+  ({iconAfter, labelBelow}) => ({
     color: 'inherit',
     fontSize: 'inherit',
     lineHeight: 'inherit',
-    margin: iconAfter ? `0 ${gutter} 0 0` : `0 0 0 ${gutter}`,
+    margin: labelBelow ? `4px 0 0 0` : iconAfter ? `0 8px 0 0` : `0 0 0 8px`,
     whiteSpace: 'nowrap'
-  }
-})
+  })
+)
 
 const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconLarge'>>(
   ({iconAfter, iconLarge}) => ({
@@ -34,19 +34,30 @@ interface Props {
   iconAfter?: boolean
   iconLarge?: boolean
   label?: ReactNode
+  labelBelow?: boolean
   onMouseEnter?(): void
   onMouseLeave?(): void
   onClick?(): void
 }
 
 const IconLabel = forwardRef((props: Props, ref: any) => {
-  const {icon, label, onClick, onMouseEnter, onMouseLeave, iconAfter, iconLarge} = props
+  const {icon, label, labelBelow, onClick, onMouseEnter, onMouseLeave, iconAfter, iconLarge} = props
   return (
-    <LabelBlock ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onClick}>
+    <LabelBlock
+      ref={ref}
+      labelBelow={labelBelow}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={onClick}
+    >
       <StyledIcon iconAfter={iconAfter} iconLarge={iconLarge}>
         {icon}
       </StyledIcon>
-      {label && <Label iconAfter={iconAfter}>{label}</Label>}
+      {label && (
+        <Label iconAfter={iconAfter} labelBelow={labelBelow}>
+          {label}
+        </Label>
+      )}
     </LabelBlock>
   )
 })

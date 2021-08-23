@@ -18,7 +18,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
-import {TeamTasksHeader_viewer} from '../../../../__generated__/TeamTasksHeader_viewer.graphql'
+import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -91,30 +91,26 @@ const TeamHeaderAndAvatars = styled('div')({
   }
 })
 
-const AvatarsAndAgendaToggle = styled('div')({
+const Avatars = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'space-between',
-  flexWrap: 'wrap',
+  flexDirection: 'row',
   [desktopBreakpoint]: {
+    // flexDirection: 'column',
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    width: '50%'
+    alignItems: 'flex-end'
   }
 })
 
 interface Props {
   team: TeamTasksHeader_team
-  viewer: TeamTasksHeader_viewer
 }
 
 const TeamTasksHeader = (props: Props) => {
-  const {team, viewer} = props
-  const teamMember = viewer.teamMember!
-  const {hideAgenda} = teamMember
+  const {team} = props
   const {history} = useRouter()
-  const {organization, id: teamId, name: teamName, teamMemberFilter} = team
+  const {organization, id: teamId, name: teamName, teamMemberFilter, teamMembers} = team
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
   const {name: orgName, id: orgId} = organization
@@ -156,10 +152,11 @@ const TeamTasksHeader = (props: Props) => {
             </ClassNames>
           </TeamLinks>
         </TeamMeta>
-        <AvatarsAndAgendaToggle>
+        <Avatars>
           <DashboardAvatars team={team} />
-          <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
-        </AvatarsAndAgendaToggle>
+          <InviteTeamMemberAvatar teamId={teamId} teamMembers={teamMembers} />
+          <AgendaToggle teamId={teamId} />
+        </Avatars>
       </TeamHeaderAndAvatars>
       <DashSectionControls>
         {/* Filter by Owner */}
@@ -195,14 +192,12 @@ export default createFragmentContainer(TeamTasksHeader, {
       teamMemberFilter {
         preferredName
       }
-      ...TeamDashTeamMemberMenu_team
-    }
-  `,
-  viewer: graphql`
-    fragment TeamTasksHeader_viewer on User {
-      teamMember(teamId: $teamId) {
-        hideAgenda
+      teamMembers(sortBy: "preferredName") {
+        ...InviteTeamMemberAvatar_teamMembers
+        ...DashboardAvatar_teamMember
+        id
       }
+      ...TeamDashTeamMemberMenu_team
     }
   `
 })

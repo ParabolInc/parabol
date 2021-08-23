@@ -73,7 +73,7 @@ const DashboardAvatar = (props: Props) => {
         onClick={togglePortal}
         picture={picture || defaultUserAvatar}
         ref={originRef}
-        size={32}
+        size={24}
       />
       {menuPortal(
         <TeamMemberAvatarMenu

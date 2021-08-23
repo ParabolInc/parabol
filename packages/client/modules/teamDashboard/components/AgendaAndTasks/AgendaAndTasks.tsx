@@ -5,9 +5,7 @@ import {AgendaAndTasks_viewer} from '~/__generated__/AgendaAndTasks_viewer.graph
 import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-
 import styled from '@emotion/styled'
-
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
 import {AppBar, Breakpoint, RightSidebar, ZIndex} from '../../../../types/constEnums'
@@ -117,7 +115,7 @@ const AgendaAndTasks = (props: Props) => {
       {/* Tasks */}
       <TasksMain>
         <TasksHeader>
-          <TeamTasksHeaderContainer team={team} viewer={viewer} />
+          <TeamTasksHeaderContainer team={team} />
         </TasksHeader>
         <TasksContent>
           <TeamColumnsContainer viewer={viewer} />
@@ -151,7 +149,6 @@ export default createFragmentContainer(AgendaAndTasks, {
       teamMember(teamId: $teamId) {
         hideAgenda
       }
-      ...TeamTasksHeaderContainer_viewer
       ...TeamColumnsContainer_viewer
     }
   `

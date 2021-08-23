@@ -7,7 +7,6 @@ import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import useAvatarsOverflow from '../../hooks/useAvatarsOverflow'
 import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
-import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 import ErrorBoundary from '../ErrorBoundary'
 import DashboardAvatar from './DashboardAvatar'
 
@@ -15,19 +14,20 @@ const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const AvatarsList = styled('div')({
   display: 'flex',
+  flexWrap: 'wrap',
   justifyContent: 'flex-start',
   marginTop: 16,
   width: '75%',
   [desktopBreakpoint]: {
-    justifyContent: 'flex-end',
     marginTop: 0,
-    width: '100%'
+    width: `${24 * 10}px` // TODO: change to the correct measurement
   }
 })
 
 const ScrollContainer = styled('div')({
   display: 'flex',
-  maxWidth: '100%',
+  justifyContent: 'center',
+  width: '100%',
   overflow: 'hidden'
 })
 
@@ -35,9 +35,8 @@ const ItemBlock = styled('div')({
   marginRight: 8,
   position: 'relative',
   [desktopBreakpoint]: {
-    marginBottom: 8,
-    marginLeft: 8,
-    marginRight: 0
+    marginRight: 0,
+    marginBottom: 4
   }
 })
 
@@ -50,19 +49,27 @@ const OverflowCount = styled('div')({
   backgroundColor: PALETTE.SKY_400,
   borderRadius: '50%',
   display: 'flex',
-  height: 32,
+  height: 24,
   justifyContent: 'center',
   color: '#fff',
   fontSize: 12,
   fontWeight: 600,
   overflow: 'hidden',
   userSelect: 'none',
-  width: 32
+  width: 24
+})
+
+const Label = styled('div')({
+  fontSize: 12,
+  fontWeight: 600,
+  color: PALETTE.SLATE_700,
+  textAlign: 'center',
+  width: '100%'
 })
 
 const DashboardAvatars = (props: Props) => {
   const {team} = props
-  const {id: teamId, isLead: isViewerLead, teamMembers} = team
+  const {isLead: isViewerLead, teamMembers} = team
   const wrapperRef = useRef<HTMLDivElement>(null)
   const avatarsRef = useRef<HTMLDivElement>(null)
   const maxAvatars = useAvatarsOverflow(wrapperRef, avatarsRef)
@@ -71,9 +78,6 @@ const DashboardAvatars = (props: Props) => {
   return (
     <AvatarsList ref={wrapperRef}>
       <ScrollContainer ref={avatarsRef}>
-        <ItemBlock>
-          <AddTeamMemberAvatarButton teamId={teamId} teamMembers={teamMembers} />
-        </ItemBlock>
         {visibleAvatars.map((teamMember) => {
           return (
             <ItemBlock key={`dbAvatar${teamMember.id}`}>
@@ -89,6 +93,7 @@ const DashboardAvatars = (props: Props) => {
           </ItemBlock>
         )}
       </ScrollContainer>
+      <Label>Manage Team</Label>
     </AvatarsList>
   )
 }
@@ -96,7 +101,6 @@ const DashboardAvatars = (props: Props) => {
 export default createFragmentContainer(DashboardAvatars, {
   team: graphql`
     fragment DashboardAvatars_team on Team {
-      id
       isLead
       teamMembers(sortBy: "preferredName") {
         ...AddTeamMemberAvatarButton_teamMembers
