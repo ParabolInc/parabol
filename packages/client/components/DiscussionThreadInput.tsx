@@ -104,15 +104,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
-  useInitialLocalState(
-    (store) => {
-      store
-        .get(discussionId)
-        ?.setValue(false, 'isAnonymousComment')
-        .setValue('', 'replyingToCommentId')
-    },
-    [discussionId]
-  )
+  useInitialLocalState(discussionId, 'isAnonymousComment', false)
+  useInitialLocalState(discussionId, 'replyingToCommentId', '')
   useBeforeUnload(() => {
     EditCommentingMutation(
       atmosphere,

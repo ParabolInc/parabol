@@ -39,7 +39,7 @@ class AtmosphereProvider extends Component<Props> {
     return (
       // AtmosphereContext is now only used in the HOC withAtmosphere
       <AtmosphereContext.Provider value={this.atmosphere}>
-        <RelayEnvironmentProvider environment={this.atmosphere as any}>
+        <RelayEnvironmentProvider environment={this.atmosphere}>
           {this.props.children}
         </RelayEnvironmentProvider>
       </AtmosphereContext.Provider>
