@@ -3,9 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import {MenuPosition} from '../hooks/useCoords'
 import useModal from '../hooks/useModal'
-import useTooltip from '../hooks/useTooltip'
 import {InviteTeamMemberAvatar_teamMembers} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import IconLabel from './IconLabel'
@@ -36,22 +34,12 @@ const Label = styled('div')({
 
 const InviteTeamMemberAvatar = (props: Props) => {
   const {meetingId, teamId, teamMembers} = props
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
-    MenuPosition.UPPER_CENTER
-  )
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   return (
     <>
-      <InviteButton
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-        onClick={toggleModal}
-        ref={originRef}
-        palette='blue'
-      >
+      <InviteButton onClick={toggleModal}>
         <IconLabel icon='person_add' iconLarge label={<Label>Invite</Label>} labelBelow />
       </InviteButton>
-      {tooltipPortal('Invite to Team')}
       {modalPortal(
         <AddTeamMemberModal
           closePortal={closeModal}

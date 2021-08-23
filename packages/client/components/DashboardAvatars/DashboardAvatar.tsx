@@ -15,14 +15,15 @@ interface Props {
   teamMember: DashboardAvatar_teamMember
 }
 
-const AvatarAndTag = styled('div')({
+const AvatarAndTag = styled('div')<{isConnected?: boolean}>(({isConnected}) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  opacity: isConnected ? 1 : 0.35,
   ':hover': {
     opacity: 0.5
   }
-})
+}))
 
 const TeamMemberAvatarMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'TeamMemberAvatarMenu' */ './TeamMemberAvatarMenu')
@@ -65,11 +66,9 @@ const DashboardAvatar = (props: Props) => {
   } = useModal()
   const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
   return (
-    <AvatarAndTag onMouseEnter={TeamMemberAvatarMenu.preload}>
+    <AvatarAndTag onMouseEnter={TeamMemberAvatarMenu.preload} isConnected={!!isConnected}>
       <Avatar
         {...teamMember}
-        hasBadge
-        isConnected={!!isConnected}
         onClick={togglePortal}
         picture={picture || defaultUserAvatar}
         ref={originRef}
