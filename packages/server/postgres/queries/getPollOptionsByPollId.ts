@@ -1,0 +1,10 @@
+import {MaybeReadonly} from '../../../client/types/generics'
+import {getPollOptionsByPollIdQuery} from './generated/getPollsOptionsByPollIdQuery'
+import getPg from '../getPg'
+import catchAndLog from '../utils/catchAndLog'
+
+const getPollOptionsByPollId = async (pollIds: MaybeReadonly<number[]>) => {
+  return await catchAndLog(() => getPollOptionsByPollIdQuery.run({ids: pollIds as any}, getPg()))
+}
+
+export default getPollOptionsByPollId

@@ -31,8 +31,8 @@ const resolveThreadableConnection = async (discussionId, {dataLoader}) => {
     const replies = threadablesByParentId[threadableId]
     const isActive =
       (threadable as TaskDB).status ||
-      (threadable as Comment).isActive ||
-      (threadable as Poll).deletedAt === null
+      (threadable as Comment).isActive /*||
+      (threadable as Poll).deletedAt === null*/
     if (!isActive && !replies) return
     filteredThreadables.push(threadable)
     if (replies) {
