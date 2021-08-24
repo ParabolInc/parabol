@@ -1,10 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
-import {MeetingSelector_viewer} from '~/__generated__/MeetingSelector_viewer.graphql'
 import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
@@ -12,11 +10,10 @@ import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import lazyPreload from '../utils/lazyPreload'
-
+import {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 interface Props {
   meetingId: string
-  viewer: MeetingSelector_viewer
-  retry(): void
+  queryRef: PreloadedQuery<MeetingSelectorQuery>
 }
 
 const meetingLookup = {
@@ -26,10 +23,27 @@ const meetingLookup = {
 }
 
 const MeetingSelector = (props: Props) => {
-  const {meetingId, viewer, retry} = props
-  const {isConnected, meeting} = viewer
+  const {meetingId, queryRef} = props
+
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
+  const data = usePreloadedQuery<MeetingSelectorQuery>(
+    graphql`
+      query MeetingSelectorQuery($meetingId: ID!) {
+        viewer {
+          isConnected
+          meeting(meetingId: $meetingId) {
+            ...MeetingSelector_meeting @relay(mask: false)
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+
+  const {viewer} = data
+  const {isConnected, meeting} = viewer
   useEffect(() => {
     if (!meeting) {
       history.replace({
@@ -38,6 +52,7 @@ const MeetingSelector = (props: Props) => {
       })
     }
   }, [])
+
   useEffect(() => {
     if (!meetingId || !isConnected) return
     const location = `/meet/${meetingId}`
@@ -50,7 +65,6 @@ const MeetingSelector = (props: Props) => {
       SetAppLocationMutation(atmosphere, {location: null})
     }
   }, [isConnected])
-  useStoreQueryRetry(retry)
   useSubscription('MeetingSelector', NotificationSubscription)
   useSubscription('MeetingSelector', OrganizationSubscription)
   useSubscription('MeetingSelector', TaskSubscription)
@@ -70,13 +84,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(MeetingSelector, {
-  viewer: graphql`
-    fragment MeetingSelector_viewer on User {
-      isConnected
-      meeting(meetingId: $meetingId) {
-        ...MeetingSelector_meeting @relay(mask: false)
-      }
-    }
-  `
-})
+export default MeetingSelector

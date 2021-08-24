@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.24.1 2021-Aug-23
+
+### Fixed
+
+- Remove logrocket from client, it was still running even without a key
+
 ## 6.24.0 2021-Aug-19
 
 ### Added

@@ -10,7 +10,6 @@ import {
 } from '../types/relayMutations'
 import extractTextFromDraftString from '../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
-import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
 import getInProxy from '../utils/relay/getInProxy'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
@@ -70,12 +69,6 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
 
   const addedNotification = payload.getLinkedRecord('addedNotification')
   handleAddNotifications(addedNotification as any, store)
-  if (task) {
-    ContentFilterHandler.update(store, {
-      dataID: task.getDataID(),
-      fieldKey: 'content'
-    })
-  }
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const viewerId = viewer && viewer.getDataID()
   const privatizedTaskId = payload.getValue('privatizedTaskId')

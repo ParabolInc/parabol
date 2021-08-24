@@ -1,9 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
-import {requestSubscription, Variables} from 'relay-runtime'
+import {requestSubscription} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
-import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
+import {
+  MeetingSubscription as TMeetingSubscription,
+  MeetingSubscriptionVariables
+} from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
 import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'
@@ -78,10 +81,10 @@ const updateHandlers = {
 
 const MeetingSubscription = (
   atmosphere: Atmosphere,
-  variables: Variables,
+  variables: MeetingSubscriptionVariables,
   router: {history: RouterProps['history']}
 ) => {
-  return requestSubscription<MeetingSubscriptionResponse>(atmosphere, {
+  return requestSubscription<TMeetingSubscription>(atmosphere, {
     subscription,
     variables,
     updater: (store) => {
