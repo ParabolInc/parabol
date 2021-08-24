@@ -53,7 +53,7 @@ const MyDashboardTimeline = (props: Props) => {
       UNSTABLE_renderPolicy: 'full'
     }
   )
-  const viewer = data.viewer!
+  const {viewer} = data
   useDocumentTitle('My Timeline | Parabol', 'Timeline')
   return (
     <FeedAndDrawer>

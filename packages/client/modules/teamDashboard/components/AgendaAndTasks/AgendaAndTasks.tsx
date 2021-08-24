@@ -124,7 +124,7 @@ const AgendaAndTasks = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  const viewer = data.viewer!
+  const {viewer} = data
   const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!

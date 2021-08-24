@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {fetchQuery} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {getSAMLIdPQuery, getSAMLIdPQueryVariables} from '../__generated__/getSAMLIdPQuery.graphql'
 
@@ -10,14 +9,8 @@ const query = graphql`
 `
 
 const getSAMLIdP = async (atmosphere: Atmosphere, variables: getSAMLIdPQueryVariables) => {
-  let res
-  try {
-    res = await fetchQuery<getSAMLIdPQuery>(atmosphere, query, variables).toPromise()
-  } catch (e) {
-    // server error, probably rate limited
-    return null
-  }
-  return res && res.SAMLIdP
+  const res = await atmosphere.fetchQuery<getSAMLIdPQuery>(query, variables)
+  return res?.SAMLIdP ?? null
 }
 
 export default getSAMLIdP

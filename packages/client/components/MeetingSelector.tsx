@@ -42,7 +42,7 @@ const MeetingSelector = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  const viewer = data.viewer!
+  const {viewer} = data
   const {isConnected, meeting} = viewer
   useEffect(() => {
     if (!meeting) {

@@ -11,9 +11,12 @@ import {
   CacheConfig,
   Environment,
   FetchFunction,
+  fetchQuery,
   GraphQLResponse,
+  GraphQLTaggedNode,
   Network,
   Observable,
+  OperationType,
   RecordSource,
   RelayFeatureFlags,
   RequestParameters,
@@ -287,6 +290,20 @@ export default class Atmosphere extends Environment {
     })
   }
 
+  fetchQuery = async <T extends OperationType>(
+    taggedNode: GraphQLTaggedNode,
+    variables: Variables = {}
+  ) => {
+    let res: T['response']
+    try {
+      res = await fetchQuery<T>(this, taggedNode, variables, {
+        fetchPolicy: 'store-or-network'
+      }).toPromise()
+    } catch (e) {
+      return null
+    }
+    return res
+  }
   getAuthToken = (global: Window) => {
     if (!global) return
     const authToken = global.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)

@@ -44332,12 +44332,12 @@ export interface IPageInfoDateCursor {
   /**
    * When paginating backwards, the cursor to continue.
    */
-  startCursor: string | null;
+  startCursor: any | null;
 
   /**
    * When paginating forwards, the cursor to continue.
    */
-  endCursor: string | null;
+  endCursor: any | null;
 }
 
 /**
@@ -50247,7 +50247,7 @@ export interface IComment {
 
 export interface IQuery {
   __typename: 'Query';
-  viewer: IUser | null;
+  viewer: IUser;
   getDemoEntities: IGetDemoEntitiesPayload;
   massInvitation: IMassInvitationPayload;
   verifiedInvitation: IVerifiedInvitationPayload;

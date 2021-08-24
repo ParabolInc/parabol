@@ -8,7 +8,6 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
-import {fetchQuery} from 'react-relay'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -316,11 +315,10 @@ class ExportToCSV extends Component<Props> {
     const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = this.props
     if (submitting) return
     submitMutation()
-    const data = await fetchQuery<ExportToCSVQuery>(atmosphere, query, {meetingId}).toPromise()
+    const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {meetingId})
     onCompleted()
     if (!data) return
     const {viewer} = data
-    if (!viewer) return
     const {newMeeting} = viewer
     if (!newMeeting) return
     const rows = this.getRows(newMeeting)

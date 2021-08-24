@@ -45,7 +45,7 @@ const TeamContainer = (props: Props) => {
     queryRef,
     {UNSTABLE_renderPolicy: 'full'}
   )
-  const viewer = data.viewer!
+  const {viewer} = data
   const {team} = viewer
   const {history, match} = useRouter()
   const {location} = window
