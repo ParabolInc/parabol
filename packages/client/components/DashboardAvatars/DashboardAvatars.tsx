@@ -8,7 +8,6 @@ import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
 import DashboardAvatar from './DashboardAvatar'
-import hexToRGB from '../../utils/hexToRgb'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -36,9 +35,8 @@ const ItemBlock = styled('div')({
   position: 'relative',
   [desktopBreakpoint]: {
     display: 'flex',
-    alignItems: 'center',
-    marginRight: 0,
-    marginBottom: 4
+    alignItems: 'flex-start',
+    marginRight: 0
   }
 })
 
@@ -58,8 +56,7 @@ const OverflowCount = styled('div')({
   width: 28,
   zIndex: 10,
   '&:hover': {
-    cursor: 'pointer',
-    opacity: 0.75
+    cursor: 'pointer'
   }
 })
 

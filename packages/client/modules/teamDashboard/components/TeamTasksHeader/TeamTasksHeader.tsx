@@ -47,10 +47,7 @@ const DashHeading = styled('div')({
   color: PALETTE.SLATE_700,
   display: 'flex',
   fontSize: 24,
-  lineHeight: '32px',
-  [desktopBreakpoint]: {
-    marginBottom: 8
-  }
+  lineHeight: '24px'
 })
 
 const linkStyles = {
@@ -99,7 +96,7 @@ const Avatars = styled('div')({
   [desktopBreakpoint]: {
     // flexDirection: 'column',
     display: 'flex',
-    alignItems: 'flex-end'
+    alignItems: 'flex-start'
   }
 })
 
