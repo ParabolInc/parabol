@@ -140,7 +140,7 @@ const TeamArchive = (props: Props) => {
     viewerRef
   )
 
-  const viewer = data.viewer!
+  const {viewer} = data
   const team = useFragment(
     graphql`
       fragment TeamArchive_team on Team {

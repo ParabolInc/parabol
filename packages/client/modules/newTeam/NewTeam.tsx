@@ -83,7 +83,7 @@ const NewTeam = (props: Props) => {
     queryRef,
     {UNSTABLE_renderPolicy: 'full'}
   )
-  const viewer = data.viewer!
+  const {viewer} = data
   const {organizations} = viewer
 
   return (

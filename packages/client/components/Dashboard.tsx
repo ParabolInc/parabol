@@ -108,7 +108,7 @@ const Dashboard = (props: Props) => {
     queryRef,
     {UNSTABLE_renderPolicy: 'full'}
   )
-  const viewer = data.viewer!
+  const {viewer} = data
   const {teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()

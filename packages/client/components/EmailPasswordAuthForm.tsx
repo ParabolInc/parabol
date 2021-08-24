@@ -1,31 +1,31 @@
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import styled from '@emotion/styled'
-import ErrorAlert from './ErrorAlert/ErrorAlert'
-import PrimaryButton from './PrimaryButton'
-import RaisedButton from './RaisedButton'
-import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
-import {emailRegex} from '../validation/regex'
-import Legitity from '../validation/Legitity'
-import EmailInputField from './EmailInputField'
-import PasswordInputField from './PasswordInputField'
-import getSAMLIdP from '../utils/getSAMLIdP'
-import getValidRedirectParam from '../utils/getValidRedirectParam'
-import {LocalStorageKey} from '../types/constEnums'
-import StyledTip from './StyledTip'
-import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
-import getTokenFromSSO from '../utils/getTokenFromSSO'
-import PlainButton from './PlainButton/PlainButton'
-import {PALETTE} from '../styles/paletteV3'
-import getSSODomainFromEmail from '../utils/getSSODomainFromEmail'
+import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import Atmosphere from '../Atmosphere'
-import useMutationProps from '../hooks/useMutationProps'
-import useForm from '../hooks/useForm'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useForm from '../hooks/useForm'
+import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
-import getAnonymousId from '../utils/getAnonymousId'
+import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
+import {PALETTE} from '../styles/paletteV3'
+import {LocalStorageKey} from '../types/constEnums'
+import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
+import getAnonymousId from '../utils/getAnonymousId'
+import getSAMLIdP from '../utils/getSAMLIdP'
+import getSSODomainFromEmail from '../utils/getSSODomainFromEmail'
+import getTokenFromSSO from '../utils/getTokenFromSSO'
+import getValidRedirectParam from '../utils/getValidRedirectParam'
+import Legitity from '../validation/Legitity'
+import {emailRegex} from '../validation/regex'
+import EmailInputField from './EmailInputField'
+import ErrorAlert from './ErrorAlert/ErrorAlert'
 import {AuthPageSlug} from './GenericAuthentication'
+import PasswordInputField from './PasswordInputField'
+import PlainButton from './PlainButton/PlainButton'
+import PrimaryButton from './PrimaryButton'
+import RaisedButton from './RaisedButton'
+import StyledTip from './StyledTip'
 
 interface Props {
   email: string
@@ -125,7 +125,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         setPendingDomain(domain)
         const url = await getSSOUrl(atmosphere, email)
         setSSODomain(domain)
-        setSSOURL(url)
+        setSSOURL(url || '')
       }
     }
   }

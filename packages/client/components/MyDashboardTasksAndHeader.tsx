@@ -23,7 +23,7 @@ const MyDashboardTasksAndHeader = (props: Props) => {
     queryRef,
     {UNSTABLE_renderPolicy: 'full'}
   )
-  const viewer = data.viewer!
+  const {viewer} = data
   return (
     <>
       <UserTasksHeader viewerRef={viewer} />
