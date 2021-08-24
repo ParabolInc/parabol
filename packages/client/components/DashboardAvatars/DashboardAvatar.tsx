@@ -10,6 +10,8 @@ import useModal from '../../hooks/useModal'
 import lazyPreload from '../../utils/lazyPreload'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {PALETTE} from '../../styles/paletteV3'
+import {ElementWidth} from '../../types/constEnums'
+import useTooltip from '../../hooks/useTooltip'
 
 interface Props {
   isViewerLead: boolean
@@ -61,8 +63,10 @@ const DashboardAvatar = (props: Props) => {
   if (!user) {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
   }
-  const {isConnected} = user
-  const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {isConnected, preferredName} = user
+  const {togglePortal, originRef, menuProps, menuPortal} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT
+  )
   const {
     closePortal: closePromote,
     togglePortal: togglePromote,
@@ -74,15 +78,24 @@ const DashboardAvatar = (props: Props) => {
     modalPortal: portalRemove
   } = useModal()
   const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
+    HTMLDivElement
+  >(MenuPosition.UPPER_CENTER)
+
+  const handleMouseEnter = () => {
+    TeamMemberAvatarMenu.preload()
+    openTooltip()
+  }
+
   return (
-    <AvatarWrapper onMouseEnter={TeamMemberAvatarMenu.preload}>
+    <AvatarWrapper onMouseEnter={handleMouseEnter} onMouseLeave={closeTooltip} ref={originRef}>
       <StyledAvatar
         {...teamMember}
         isConnected={!!isConnected}
         onClick={togglePortal}
         picture={picture || defaultUserAvatar}
-        ref={originRef}
-        size={28}
+        ref={tooltipRef}
+        size={ElementWidth.DASHBOARD_AVATAR}
       />
       {menuPortal(
         <TeamMemberAvatarMenu
@@ -98,6 +111,7 @@ const DashboardAvatar = (props: Props) => {
       {portalPromote(<PromoteTeamMemberModal teamMember={teamMember} closePortal={closePromote} />)}
       {portalRemove(<RemoveTeamMemberModal teamMember={teamMember} closePortal={closeRemove} />)}
       {portalLeave(<LeaveTeamModal teamMember={teamMember} closePortal={closeLeave} />)}
+      {tooltipPortal(preferredName)}
     </AvatarWrapper>
   )
 }
@@ -113,6 +127,7 @@ export default createFragmentContainer(DashboardAvatar, {
       picture
       user {
         isConnected
+        preferredName
       }
     }
   `

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, ElementWidth} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
@@ -11,22 +11,21 @@ import DashboardAvatar from './DashboardAvatar'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
-const AvatarsList = styled('div')({
+const AvatarsList = styled('div')<{maxAvatars: number}>(({maxAvatars}) => ({
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
   marginTop: 16,
-  // width: '75%',
+  flexDirection: 'column',
   [desktopBreakpoint]: {
     marginTop: 0,
-    width: `${22 * 10}px` // TODO: change to the correct measurement
+    maxWidth: `${ElementWidth.DASHBOARD_AVATAR * maxAvatars}px`
   }
-})
+}))
 
 const ScrollContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  width: '100%',
   overflow: 'hidden'
 })
 
@@ -65,7 +64,9 @@ const Label = styled('div')({
   fontWeight: 600,
   color: PALETTE.SLATE_700,
   textAlign: 'center',
-  width: '100%'
+  '&:hover': {
+    cursor: 'pointer'
+  }
 })
 
 interface Props {
@@ -77,11 +78,12 @@ const DashboardAvatars = (props: Props) => {
   const {isLead: isViewerLead, teamMembers} = team
   const wrapperRef = useRef<HTMLDivElement>(null)
   const avatarsRef = useRef<HTMLDivElement>(null)
-  const maxAvatars = 9 // useAvatarsOverflow(wrapperRef, avatarsRef)
+  // useAvatarsOverflow(wrapperRef, avatarsRef)
+  const maxAvatars = 10 // adjust for screen widths
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
   return (
-    <AvatarsList ref={wrapperRef}>
+    <AvatarsList maxAvatars={maxAvatars} ref={wrapperRef}>
       <ScrollContainer ref={avatarsRef}>
         {visibleAvatars.map((teamMember) => {
           return (
