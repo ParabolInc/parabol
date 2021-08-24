@@ -24,11 +24,17 @@ export default class RedisLockQueue {
   checkLock = async () => {
     // Add an event to the queue only once
     if (!this.queued) {
-      const resultingListLength = await this.redis.rpush(this.queueKey, this.uid)
+      // Use transaction to add an event to the queue and set initial LIST TTL
+      const res = await this.redis
+        .multi()
+        .rpush(this.queueKey, this.uid)
+        // TODO: Use NX option to set TTL only on LIST creation (Redis 7.0 required)
+        .pexpire(this.queueKey, this.ttl)
+        .exec()
       this.queued = true
-      // If the resulting LIST length is 1, we're already first on the list
+      const resultingListLength = res[0][1]
       if (resultingListLength === 1) {
-        // No lock
+        // If the resulting LIST length is 1, we're already first on the list, return no lock
         return false
       }
     }
@@ -41,6 +47,12 @@ export default class RedisLockQueue {
     }
     if (head === this.uid) {
       // We are the first on the list, no lock
+      // Refresh TTL on the LIST before running the event
+      const newTTL = await this.redis.pexpire(this.queueKey, this.ttl)
+      if (newTTL === 0) {
+        // TTL was not set because queue disappeared
+        throw new Error(`Could not achieve lock for ${this.queueKey}. Unable to set TTL`)
+      }
       return false
     }
     return true
@@ -53,12 +65,6 @@ export default class RedisLockQueue {
     for (let i = 0; i < 1000; i++) {
       const hasLock = await this.checkLock()
       if (!hasLock) {
-        // Refresh or set TTL on the list before running the event
-        const ttl = await this.redis.pexpire(this.queueKey, this.ttl)
-        if (ttl === 0) {
-          // TTL was not set, because queue is not exists for some reason
-          throw new Error(`Could not achieve lock for ${this.queueKey}. Unable to set TTL`)
-        }
         return
       } else {
         await sleep(checkAfterMs)
