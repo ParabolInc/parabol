@@ -34,7 +34,7 @@ const ToggleManageTeamMutation: StandardMutation<TToggleManageTeamMutation> = (
     updater: (store) => {
       const {viewerId} = atmosphere
       const {teamId} = variables
-      const payload = store.getRootField('toggleAgendaList')
+      const payload = store.getRootField('hideManageTeam')
       if (!payload) return
       const nextValue = payload.getValue('hideManageTeam')
       const teamMemberId = toTeamMemberId(teamId, viewerId)

@@ -13,6 +13,7 @@ import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContai
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import CloseAgenda from '../AgendaToggle/CloseAgenda'
+import CloseManageTeam from '../ManageTeam/CloseManageTeam'
 
 const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
@@ -136,7 +137,7 @@ const AgendaAndTasks = (props: Props) => {
           <AgendaContent>
             <AgendaHeader>
               <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
-              <CloseAgenda hideAgenda={hideManageTeam} teamId={teamId} />
+              <CloseManageTeam hideManageTeam={hideManageTeam} teamId={teamId} />
             </AgendaHeader>
           </AgendaContent>
         )}

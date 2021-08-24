@@ -1,21 +1,18 @@
 import React from 'react'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
 import IconButton from '../../../../components/IconButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props {
   hideAgenda?: boolean
-  onCompleted: CompletedHandler
-  onError: ErrorHandler
   teamId: string
 }
 
 const CloseAgenda = (props: Props) => {
-  const {atmosphere, hideAgenda, submitMutation, submitting, onError, onCompleted, teamId} = props
+  const {hideAgenda, teamId} = props
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const toggleHide = () => {
     if (!submitting) {
       submitMutation()
@@ -33,4 +30,4 @@ const CloseAgenda = (props: Props) => {
   )
 }
 
-export default withMutationProps(withAtmosphere(CloseAgenda))
+export default CloseAgenda
