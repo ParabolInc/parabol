@@ -106,13 +106,12 @@ const AgendaAndTasks = (props: Props) => {
   const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!
-  const {hideAgenda} = teamMember
+  const {hideAgenda, hideManageTeam} = teamMember
   const {teamId, teamName} = team
   useStoreQueryRetry(retry)
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (
     <RootBlock>
-      {/* Tasks */}
       <TasksMain>
         <TasksHeader>
           <TeamTasksHeaderContainer team={team} />
@@ -121,7 +120,6 @@ const AgendaAndTasks = (props: Props) => {
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
       </TasksMain>
-      {/* Agenda */}
       <AgendaMain hideAgenda={hideAgenda}>
         {!hideAgenda && (
           <AgendaContent>
@@ -130,6 +128,16 @@ const AgendaAndTasks = (props: Props) => {
               <CloseAgenda hideAgenda={hideAgenda} teamId={teamId} />
             </AgendaHeader>
             <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team!} />
+          </AgendaContent>
+        )}
+      </AgendaMain>
+      <AgendaMain hideAgenda={hideManageTeam}>
+        {!hideManageTeam && (
+          <AgendaContent>
+            <AgendaHeader>
+              <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
+              <CloseAgenda hideAgenda={hideManageTeam} teamId={teamId} />
+            </AgendaHeader>
           </AgendaContent>
         )}
       </AgendaMain>
@@ -148,6 +156,7 @@ export default createFragmentContainer(AgendaAndTasks, {
       }
       teamMember(teamId: $teamId) {
         hideAgenda
+        hideManageTeam
       }
       ...TeamColumnsContainer_viewer
     }

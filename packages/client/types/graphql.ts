@@ -44689,6 +44689,11 @@ export interface ITeamMember {
   hideAgenda: boolean;
 
   /**
+   * hide the manage team sidebar on the dashboard
+   */
+  hideManageTeam: boolean;
+
+  /**
    * The user email
    */
   email: any;
@@ -50987,6 +50992,11 @@ export interface IMutation {
    * Update a task estimate
    */
   setTaskEstimate: SetTaskEstimatePayload;
+
+  /**
+   * Show/hide the manage team sidebar
+   */
+  toggleManageTeam: ToggleManageTeamPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -52123,6 +52133,13 @@ export interface IPersistGitHubSearchQueryOnMutationArguments {
 
 export interface ISetTaskEstimateOnMutationArguments {
   taskEstimate: ITaskEstimateInput;
+}
+
+export interface IToggleManageTeamOnMutationArguments {
+  /**
+   * the team to hide the manage team sidebar for
+   */
+  teamId: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -54482,6 +54499,20 @@ export interface ITaskEstimateInput {
    */
   dimensionName: string;
   meetingId?: string | null;
+}
+
+/**
+ * Return object for ToggleManageTeamPayload
+ */
+export type ToggleManageTeamPayload = IErrorPayload | IToggleManageTeamSuccess;
+
+export interface IToggleManageTeamSuccess {
+  __typename: 'ToggleManageTeamSuccess';
+
+  /**
+   * Show/hide the manage team sidebar
+   */
+  hideManageTeam: boolean;
 }
 
 export interface ISubscription {

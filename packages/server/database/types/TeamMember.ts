@@ -4,6 +4,7 @@ interface Input {
   isNotRemoved?: boolean
   isLead?: boolean
   hideAgenda?: boolean
+  hideManageTeam?: boolean
   isSpectatingPoker?: boolean
   email: string
   picture: string
@@ -19,6 +20,7 @@ export default class TeamMember {
   isLead: boolean
   isSpectatingPoker: boolean
   hideAgenda: boolean
+  hideManageTeam: boolean
   email: string
   picture: string
   preferredName: string
@@ -31,6 +33,7 @@ export default class TeamMember {
       teamId,
       email,
       hideAgenda,
+      hideManageTeam,
       isLead,
       isNotRemoved,
       picture,
@@ -42,6 +45,7 @@ export default class TeamMember {
     this.teamId = teamId
     this.email = email
     this.hideAgenda = hideAgenda || false
+    this.hideManageTeam = hideManageTeam || false
     this.isLead = isLead || false
     this.isSpectatingPoker = isSpectatingPoker || false
     this.isNotRemoved = isNotRemoved === undefined ? true : isNotRemoved

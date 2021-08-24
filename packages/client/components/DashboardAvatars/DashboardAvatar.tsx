@@ -5,13 +5,15 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../Avatar/Avatar'
 import {MenuPosition} from '../../hooks/useCoords'
-import useMenu from '../../hooks/useMenu'
 import useModal from '../../hooks/useModal'
 import lazyPreload from '../../utils/lazyPreload'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {PALETTE} from '../../styles/paletteV3'
 import {ElementWidth} from '../../types/constEnums'
 import useTooltip from '../../hooks/useTooltip'
+import useMutationProps from '../../hooks/useMutationProps'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
 
 interface Props {
   isViewerLead: boolean
@@ -58,15 +60,14 @@ const LeaveTeamModal = lazyPreload(() =>
 
 const DashboardAvatar = (props: Props) => {
   const {isViewerLead, teamMember} = props
-  const {isLead, picture} = teamMember
+  const {isLead, picture, teamId} = teamMember
   const {user} = teamMember
   if (!user) {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
   }
   const {isConnected, preferredName} = user
-  const {togglePortal, originRef, menuProps, menuPortal} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT
-  )
+  const atmosphere = useAtmosphere()
+  const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {
     closePortal: closePromote,
     togglePortal: togglePromote,
@@ -78,26 +79,35 @@ const DashboardAvatar = (props: Props) => {
     modalPortal: portalRemove
   } = useModal()
   const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.UPPER_CENTER)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
 
   const handleMouseEnter = () => {
     TeamMemberAvatarMenu.preload()
     openTooltip()
   }
 
+  const handleClick = () => {
+    closeTooltip()
+    // togglePortal()
+    if (!submitting) {
+      submitMutation()
+      ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
+    }
+  }
+
   return (
-    <AvatarWrapper onMouseEnter={handleMouseEnter} onMouseLeave={closeTooltip} ref={originRef}>
+    <AvatarWrapper onMouseEnter={handleMouseEnter} onMouseLeave={closeTooltip}>
       <StyledAvatar
         {...teamMember}
         isConnected={!!isConnected}
-        onClick={togglePortal}
+        onClick={handleClick}
         picture={picture || defaultUserAvatar}
-        ref={tooltipRef}
+        ref={originRef}
         size={ElementWidth.DASHBOARD_AVATAR}
       />
-      {menuPortal(
+      {/* {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}
           isLead={Boolean(isLead)}
@@ -107,7 +117,7 @@ const DashboardAvatar = (props: Props) => {
           toggleRemove={toggleRemove}
           toggleLeave={toggleLeave}
         />
-      )}
+      )} */}
       {portalPromote(<PromoteTeamMemberModal teamMember={teamMember} closePortal={closePromote} />)}
       {portalRemove(<RemoveTeamMemberModal teamMember={teamMember} closePortal={closeRemove} />)}
       {portalLeave(<LeaveTeamModal teamMember={teamMember} closePortal={closeLeave} />)}
@@ -125,6 +135,7 @@ export default createFragmentContainer(DashboardAvatar, {
       ...RemoveTeamMemberModal_teamMember
       isLead
       picture
+      teamId
       user {
         isConnected
         preferredName
