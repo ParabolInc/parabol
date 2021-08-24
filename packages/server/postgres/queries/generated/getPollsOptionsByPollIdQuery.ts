@@ -5,7 +5,7 @@ export type stringArray = string[]
 
 /** 'GetPollOptionsByPollIdQuery' parameters type */
 export interface IGetPollOptionsByPollIdQueryParams {
-  ids: Array<number | null | void>
+  pollIds: Array<number | null | void>
 }
 
 /** 'GetPollOptionsByPollIdQuery' return type */
@@ -28,18 +28,18 @@ const getPollOptionsByPollIdQueryIR: any = {
   name: 'getPollOptionsByPollIdQuery',
   params: [
     {
-      name: 'ids',
+      name: 'pollIds',
       codeRefs: {
-        defined: {a: 48, b: 50, line: 3, col: 9},
-        used: [{a: 104, b: 106, line: 6, col: 13}]
+        defined: {a: 48, b: 54, line: 3, col: 9},
+        used: [{a: 114, b: 120, line: 6, col: 19}]
       },
       transform: {type: 'array_spread'}
     }
   ],
-  usedParamSet: {ids: true},
+  usedParamSet: {pollIds: true},
   statement: {
-    body: 'SELECT * FROM "PollOption"\nWHERE id in :ids',
-    loc: {a: 64, b: 106, line: 5, col: 0}
+    body: 'SELECT * FROM "PollOption"\nWHERE "pollId" in :pollIds',
+    loc: {a: 68, b: 120, line: 5, col: 0}
   }
 }
 
@@ -47,7 +47,7 @@ const getPollOptionsByPollIdQueryIR: any = {
  * Query generated from SQL:
  * ```
  * SELECT * FROM "PollOption"
- * WHERE id in :ids
+ * WHERE "pollId" in :pollIds
  * ```
  */
 export const getPollOptionsByPollIdQuery = new PreparedQuery<

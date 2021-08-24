@@ -1,6 +1,6 @@
 /*
   @name getPollOptionsByPollIdQuery
-  @param ids -> (...)
+  @param pollIds -> (...)
 */
 SELECT * FROM "PollOption"
-WHERE id in :ids;
+WHERE "pollId" in :pollIds;

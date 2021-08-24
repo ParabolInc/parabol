@@ -54639,7 +54639,13 @@ export interface ICreatePollInput {
   /**
    * Foreign key for the discussion this was created in
    */
+  teamId: string;
+
+  /**
+   * Foreign key for the discussion this was created in
+   */
   discussionId: string;
+  threadSortOrder?: number | null;
   title: string;
   options: Array<IPollOptionInput>;
 }

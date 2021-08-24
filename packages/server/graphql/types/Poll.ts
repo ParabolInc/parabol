@@ -11,7 +11,7 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
   name: 'Poll',
   description: 'A poll created during the meeting',
   interfaces: () => [Threadable],
-  isTypeOf: ({options}) => !!options,
+  isTypeOf: ({title}) => !!title,
   fields: () => ({
     ...(threadableFields() as any),
     meetingId: {
