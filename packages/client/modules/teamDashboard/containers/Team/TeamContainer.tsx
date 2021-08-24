@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense, useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import ErrorBoundary from '~/components/ErrorBoundary'
 import useRouter from '../../../../hooks/useRouter'
-import {TeamContainer_viewer} from '../../../../__generated__/TeamContainer_viewer.graphql'
+import {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
 import Team from '../../components/Team/Team'
 
 const AgendaTasks = lazy(() =>
@@ -22,24 +22,44 @@ const ArchivedTasks = lazy(() =>
 
 interface Props {
   teamId: string
-  viewer: TeamContainer_viewer
+  queryRef: PreloadedQuery<TeamContainerQuery>
+  // not sure if we still need these, but not trying to break stuff during the Relay Refactor
+  location: any
+  match: any
 }
 
 const TeamContainer = (props: Props) => {
-  const {teamId, viewer} = props
+  const {teamId, queryRef} = props
+  const data = usePreloadedQuery<TeamContainerQuery>(
+    graphql`
+      query TeamContainerQuery($teamId: ID!) {
+        viewer {
+          team(teamId: $teamId) {
+            ...Team_team
+            ...TeamArchive_team
+            name
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  const viewer = data.viewer!
+  const {team} = viewer
   const {history, match} = useRouter()
   const {location} = window
   const {pathname} = location
   useEffect(() => {
-    if (viewer && !viewer.team) {
+    if (!team) {
       history.replace({
         pathname: `/invitation-required`,
         search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
       })
     }
   })
-  if (viewer && !viewer.team) return null
-  const team = viewer && viewer.team
+  if (!team) return null
+
   const isSettings = Boolean(
     matchPath(pathname, {
       path: '/team/:teamId/settings'
@@ -66,14 +86,4 @@ const TeamContainer = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TeamContainer, {
-  viewer: graphql`
-    fragment TeamContainer_viewer on User {
-      team(teamId: $teamId) {
-        name
-        ...Team_team
-        ...TeamArchive_team
-      }
-    }
-  `
-})
+export default TeamContainer

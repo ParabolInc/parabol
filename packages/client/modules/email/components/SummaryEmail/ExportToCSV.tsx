@@ -316,8 +316,9 @@ class ExportToCSV extends Component<Props> {
     const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = this.props
     if (submitting) return
     submitMutation()
-    const data = await fetchQuery<ExportToCSVQuery>(atmosphere, query, {meetingId})
+    const data = await fetchQuery<ExportToCSVQuery>(atmosphere, query, {meetingId}).toPromise()
     onCompleted()
+    if (!data) return
     const {viewer} = data
     if (!viewer) return
     const {newMeeting} = viewer

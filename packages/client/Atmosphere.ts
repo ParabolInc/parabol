@@ -30,7 +30,8 @@ import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-  ; (RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+  ; (RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
   subKey: string
@@ -43,11 +44,7 @@ interface Subscriptions {
 }
 
 export type SubscriptionRequestor = {
-  (
-    atmosphere: Atmosphere,
-    variables: Variables,
-    router: {history: RouterProps['history']}
-  ): Disposable
+  (atmosphere: Atmosphere, variables: any, router: {history: RouterProps['history']}): Disposable
   key: string
 }
 
@@ -81,7 +78,7 @@ export interface AtmosphereEvents {
   removeGitHubRepo: () => void
 }
 
-const store = new Store(new RecordSource())
+const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
 
 export default class Atmosphere extends Environment {
   static getKey = (name: string, variables: Variables | undefined) => {
@@ -142,7 +139,7 @@ export default class Atmosphere extends Environment {
       'x-application-authorization': this.authToken ? `Bearer ${this.authToken}` : '',
       'x-correlation-id': connectionId || ''
     }
-    /* if uploadables, don't set content type bc we want the browser to set it */
+    /* if uploadables, don't set content type bc we want the browser to set it o*/
     if (!uploadables) headers['content-type'] = 'application/json'
     const res = await fetch('/graphql', {
       method: 'POST',

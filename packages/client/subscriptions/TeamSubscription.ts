@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
-import {requestSubscription, Variables} from 'relay-runtime'
+import {requestSubscription} from 'relay-runtime'
 import {endCheckInTeamOnNext, endCheckInTeamUpdater} from '~/mutations/EndCheckInMutation'
 import {
   endRetrospectiveTeamOnNext,
@@ -33,7 +33,10 @@ import {
   removeTeamMemberTeamUpdater
 } from '../mutations/RemoveTeamMemberMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
-import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
+import {
+  TeamSubscription as TTeamSubscription,
+  TeamSubscriptionVariables
+} from '../__generated__/TeamSubscription.graphql'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -114,10 +117,10 @@ const updateHandlers = {
 
 const TeamSubscription = (
   atmosphere: Atmosphere,
-  variables: Variables,
+  variables: TeamSubscriptionVariables,
   router: {history: RouterProps['history']}
 ) => {
-  return requestSubscription<TeamSubscriptionResponse>(atmosphere, {
+  return requestSubscription<TTeamSubscription>(atmosphere, {
     subscription,
     variables,
     updater: (store) => {

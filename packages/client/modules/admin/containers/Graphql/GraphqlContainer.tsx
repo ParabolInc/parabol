@@ -1,13 +1,13 @@
+import styled from '@emotion/styled'
 import GraphiQL from 'graphiql'
+import {Fetcher} from 'graphiql/dist/components/GraphiQL'
 import {ToolbarSelect, ToolbarSelectOption} from 'graphiql/dist/components/ToolbarSelect'
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
-import styled from '@emotion/styled'
-import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
+import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
 import {AuthTokenRole, LocalStorageKey} from '../../../../types/constEnums'
-import {Fetcher} from 'graphiql/dist/components/GraphiQL'
 
 const GQL = styled('div')({
   margin: 0,
@@ -62,7 +62,7 @@ const GraphqlContainer = () => {
           />
           <GraphiQL.Group>
             <span>Schema: </span>
-            <ToolbarSelect title='Schema' label='Schema' >
+            <ToolbarSelect title='Schema' label='Schema'>
               <ToolbarSelectOption
                 label='Public'
                 value='Public'

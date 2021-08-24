@@ -64,17 +64,17 @@ const useAllIntegrations = (
   useEffect(() => {
     isMountedRef.current = true
     const fetchIntegrations = async () => {
-      const {viewer} = await fetchQuery<useAllIntegrationsQuery>(atmosphere, gqlQuery, {
+      const res = await fetchQuery<useAllIntegrationsQuery>(atmosphere, gqlQuery, {
         teamId,
         userId
-      })
-      if (!viewer || !viewer.teamMember) {
+      }).toPromise()
+      if (!res?.viewer?.teamMember) {
         if (isMountedRef.current) {
           setStatus('error')
         }
         return
       }
-      const {teamMember} = viewer
+      const {teamMember} = res.viewer
       const {allAvailableIntegrations} = teamMember
       if (isMountedRef.current) {
         setFetchedItems(allAvailableIntegrations)

@@ -1,17 +1,17 @@
+import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useEffect, useState} from 'react'
 import {readInlineData} from 'relay-runtime'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import graphql from 'babel-plugin-relay/macro'
 import useRouter from '~/hooks/useRouter'
-import {useSnacksForNewMeetings_meetings} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
+import {useSnacksForNewMeetings_meetings$key} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
 
 const useSnacksForNewMeetings = (meetingsRef: any) => {
   const [dismissedMeetingIds] = useState(() => new Set<string>())
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const meetings = meetingsRef.map((meetingRef) =>
-    readInlineData<useSnacksForNewMeetings_meetings>(
+    readInlineData<useSnacksForNewMeetings_meetings$key>(
       graphql`
         fragment useSnacksForNewMeetings_meetings on NewMeeting @inline {
           id

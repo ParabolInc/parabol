@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {
-  NewMeetingPhaseTypeEnum,
-  fromStageIdToUrl_meeting
-} from '~/__generated__/fromStageIdToUrl_meeting.graphql'
 import {readInlineData} from 'relay-runtime'
+import {
+  fromStageIdToUrl_meeting$key,
+  NewMeetingPhaseTypeEnum
+} from '~/__generated__/fromStageIdToUrl_meeting.graphql'
 import {RetroDemo} from '../../types/constEnums'
 import findStageById from './findStageById'
 import getMeetingPathParams from './getMeetingPathParams'
@@ -25,7 +25,7 @@ const phaseIsMultiStage = {
 
 // I think there's a TS bug where when i make a readonly array of an omit it returns the vals
 const fromStageIdToUrl = (stageId: string, meetingRef: any, fallbackStageId: string) => {
-  const meeting = readInlineData<fromStageIdToUrl_meeting>(
+  const meeting = readInlineData<fromStageIdToUrl_meeting$key>(
     graphql`
       fragment fromStageIdToUrl_meeting on NewMeeting @inline {
         phases {

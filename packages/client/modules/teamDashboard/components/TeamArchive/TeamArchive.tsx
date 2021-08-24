@@ -1,19 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
-import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import getSafeRegex from '~/utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import {TeamArchive_team} from '~/__generated__/TeamArchive_team.graphql'
-import {TeamArchive_viewer} from '~/__generated__/TeamArchive_viewer.graphql'
+import {TeamArchive_team$key} from '~/__generated__/TeamArchive_team.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, MathEnum} from '../../../../types/constEnums'
+import {TeamArchiveArchivedTasksQuery} from '../../../../__generated__/TeamArchiveArchivedTasksQuery.graphql'
+import {TeamArchiveQuery} from '../../../../__generated__/TeamArchiveQuery.graphql'
+import {TeamArchive_query$key} from '../../../../__generated__/TeamArchive_query.graphql'
+import UserTasksHeader from '../../../userDashboard/components/UserTasksHeader/UserTasksHeader'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
-
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
 
@@ -84,15 +86,77 @@ const LinkSpan = styled('div')({
 })
 
 interface Props {
-  relay: RelayPaginationProp
-  viewer: TeamArchive_viewer
+  queryRef: PreloadedQuery<TeamArchiveQuery>
   returnToTeamId?: string
-  team?: TeamArchive_team
+  teamRef?: TeamArchive_team$key
 }
 
 const TeamArchive = (props: Props) => {
-  const {viewer, relay, team, returnToTeamId} = props
-  const {hasMore, isLoading, loadMore} = relay
+  const {returnToTeamId, queryRef, teamRef} = props
+  const viewerRef = usePreloadedQuery<TeamArchiveQuery>(
+    graphql`
+      query TeamArchiveQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
+        ...TeamArchive_query
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+
+  const {data, hasNext, isLoadingNext, loadNext} = usePaginationFragment<
+    TeamArchiveArchivedTasksQuery,
+    TeamArchive_query$key
+  >(
+    graphql`
+      fragment TeamArchive_query on Query @refetchable(queryName: "TeamArchiveArchivedTasksQuery") {
+        viewer {
+          ...UserTasksHeader_viewer
+          dashSearch
+          archivedTasks: tasks(
+            first: $first
+            after: $after
+            userIds: $userIds
+            teamIds: $teamIds
+            archived: true
+          ) @connection(key: "TeamArchive_archivedTasks", filters: ["userIds", "teamIds"]) {
+            edges {
+              cursor
+              node {
+                id
+                teamId
+                userId
+                content
+                ...NullableTask_task
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+
+  const viewer = data.viewer!
+  const team = useFragment(
+    graphql`
+      fragment TeamArchive_team on Team {
+        teamMemberFilter {
+          id
+        }
+        teamMembers(sortBy: "preferredName") {
+          id
+          picture
+          preferredName
+        }
+      }
+    `,
+    teamRef || null
+  )
+
   const {teamMembers, teamMemberFilter} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const {archivedTasks, dashSearch} = viewer
@@ -100,11 +164,11 @@ const TeamArchive = (props: Props) => {
   const teamMemberFilteredTasks = useMemo(() => {
     const edges = teamMemberFilterId
       ? archivedTasks?.edges.filter((edge) => {
-        return (
-          edge.node.userId &&
-          toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
-        )
-      })
+          return (
+            edge.node.userId &&
+            toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
+          )
+        })
       : archivedTasks.edges
     return {...archivedTasks, edges: edges}
   }, [archivedTasks?.edges, teamMemberFilterId, teamMembers])
@@ -130,8 +194,8 @@ const TeamArchive = (props: Props) => {
   }
   const isRowLoaded = ({index}) => index < edges.length
   const maybeLoadMore = () => {
-    if (!hasMore() || isLoading()) return
-    loadMore(columnCount * 10)
+    if (!hasNext || isLoadingNext) return
+    loadNext(columnCount * 10)
   }
   const [cellCache] = useState(
     () =>
@@ -223,142 +287,71 @@ const TeamArchive = (props: Props) => {
   }
 
   return (
-    <Root>
-      {returnToTeamId && (
-        <Header>
-          <TeamArchiveHeader teamId={returnToTeamId} />
-          <Border />
-        </Header>
-      )}
-      <Body>
-        {edges.length ? (
-          <CardGrid>
-            <InfiniteLoader
-              isRowLoaded={isRowLoaded}
-              loadMoreRows={maybeLoadMore}
-              rowCount={MathEnum.MAX_INT}
-            >
-              {({onRowsRendered, registerChild}) => {
-                _onRowsRenderedRef.current = onRowsRendered
-                return (
-                  <div style={{flex: '1 1 auto'}}>
-                    <AutoSizer>
-                      {({height, width}) => {
-                        return (
-                          <Grid
-                            cellRenderer={rowRenderer}
-                            columnCount={columnCount}
-                            columnWidth={CARD_WIDTH}
-                            deferredMeasurementCache={cellCache}
-                            estimatedColumnSize={CARD_WIDTH}
-                            estimatedRowSize={182}
-                            height={height}
-                            onRowsRendered={onRowsRendered}
-                            onSectionRendered={_onSectionRendered}
-                            ref={(c) => {
-                              gridRef.current = c
-                              registerChild(c)
-                            }}
-                            rowCount={Math.ceil(edges.length / columnCount)}
-                            rowHeight={cellCache.rowHeight}
-                            style={{outline: 'none'}}
-                            width={width}
-                          />
-                        )
-                      }}
-                    </AutoSizer>
-                  </div>
-                )
-              }}
-            </InfiniteLoader>
-          </CardGrid>
-        ) : (
-          <EmptyMsg>
-            <span>
-              {'🤓'}
-              {' Hi there! There are zero archived tasks. '}
-              {'Nothing to see here. How about a fun rally video? '}
-              <LinkSpan>{getRallyLink()}!</LinkSpan>
-            </span>
-          </EmptyMsg>
+    <>
+      {!returnToTeamId && <UserTasksHeader viewerRef={viewer} />}
+      <Root>
+        {returnToTeamId && (
+          <Header>
+            <TeamArchiveHeader teamId={returnToTeamId} />
+            <Border />
+          </Header>
         )}
-      </Body>
-    </Root>
+        <Body>
+          {edges.length ? (
+            <CardGrid>
+              <InfiniteLoader
+                isRowLoaded={isRowLoaded}
+                loadMoreRows={maybeLoadMore}
+                rowCount={MathEnum.MAX_INT}
+              >
+                {({onRowsRendered, registerChild}) => {
+                  _onRowsRenderedRef.current = onRowsRendered
+                  return (
+                    <div style={{flex: '1 1 auto'}}>
+                      <AutoSizer>
+                        {({height, width}) => {
+                          return (
+                            <Grid
+                              cellRenderer={rowRenderer}
+                              columnCount={columnCount}
+                              columnWidth={CARD_WIDTH}
+                              deferredMeasurementCache={cellCache}
+                              estimatedColumnSize={CARD_WIDTH}
+                              estimatedRowSize={182}
+                              height={height}
+                              onRowsRendered={onRowsRendered}
+                              onSectionRendered={_onSectionRendered}
+                              ref={(c) => {
+                                gridRef.current = c
+                                registerChild(c)
+                              }}
+                              rowCount={Math.ceil(edges.length / columnCount)}
+                              rowHeight={cellCache.rowHeight}
+                              style={{outline: 'none'}}
+                              width={width}
+                            />
+                          )
+                        }}
+                      </AutoSizer>
+                    </div>
+                  )
+                }}
+              </InfiniteLoader>
+            </CardGrid>
+          ) : (
+            <EmptyMsg>
+              <span>
+                {'🤓'}
+                {' Hi there! There are zero archived tasks. '}
+                {'Nothing to see here. How about a fun rally video? '}
+                <LinkSpan>{getRallyLink()}!</LinkSpan>
+              </span>
+            </EmptyMsg>
+          )}
+        </Body>
+      </Root>
+    </>
   )
 }
 
-export default createPaginationContainer(
-  TeamArchive,
-  {
-    viewer: graphql`
-      fragment TeamArchive_viewer on User {
-        dashSearch
-        archivedTasks: tasks(
-          first: $first
-          after: $after
-          userIds: $userIds
-          teamIds: $teamIds
-          archived: true
-        ) @connection(key: "TeamArchive_archivedTasks", filters: ["userIds", "teamIds"]) {
-          edges {
-            cursor
-            node {
-              id
-              teamId
-              userId
-              content
-              ...NullableTask_task
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    `,
-    team: graphql`
-      fragment TeamArchive_team on Team {
-        teamMemberFilter {
-          id
-        }
-        teamMembers(sortBy: "preferredName") {
-          id
-          picture
-          preferredName
-        }
-      }
-    `
-  },
-  {
-    direction: 'forward',
-    getConnectionFromProps(props) {
-      return props.viewer && props.viewer.archivedTasks
-    },
-    getFragmentVariables(prevVars, totalCount) {
-      return {
-        ...prevVars,
-        first: totalCount
-      }
-    },
-    getVariables(_props, {count, cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: count,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query TeamArchivePaginationQuery(
-        $first: Int!
-        $after: DateTime
-        $teamIds: [ID!]
-        $userIds: [ID!]
-      ) {
-        viewer {
-          ...TeamArchive_viewer
-        }
-      }
-    `
-  }
-)
+export default TeamArchive

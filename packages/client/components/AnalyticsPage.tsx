@@ -78,7 +78,7 @@ const AnalyticsPage = () => {
     const expiredErrorProne =
       errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('14d'))
     const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
-    const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {})
+    const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {}).toPromise()
     const isWatched = res?.viewer?.isWatched
     if (expiredErrorProne && !isWatched) {
       window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
@@ -115,7 +115,7 @@ const AnalyticsPage = () => {
       return
     }
     const cacheEmail = async () => {
-      const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {})
+      const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {}).toPromise()
       const nextEmail = res?.viewer?.email
       if (!nextEmail) return
       window.localStorage.setItem(LocalStorageKey.EMAIL, nextEmail)

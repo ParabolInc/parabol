@@ -12,7 +12,7 @@ const query = graphql`
 const getSAMLIdP = async (atmosphere: Atmosphere, variables: getSAMLIdPQueryVariables) => {
   let res
   try {
-    res = await fetchQuery<getSAMLIdPQuery>(atmosphere, query, variables)
+    res = await fetchQuery<getSAMLIdPQuery>(atmosphere, query, variables).toPromise()
   } catch (e) {
     // server error, probably rate limited
     return null
