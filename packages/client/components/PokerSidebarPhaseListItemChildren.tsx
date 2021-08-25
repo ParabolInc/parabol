@@ -27,14 +27,17 @@ const PokerSidebarPhaseListItemChildren = (props: Props) => {
       />
     )
   }
-  return (
-    <MeetingSidebarTeamMemberStageItems
-      gotoStageId={gotoStageId}
-      handleMenuClick={handleMenuClick}
-      meeting={meeting}
-      phaseType={phaseType}
-    />
-  )
+  if (phaseType === 'checkin') {
+    return (
+      <MeetingSidebarTeamMemberStageItems
+        gotoStageId={gotoStageId}
+        handleMenuClick={handleMenuClick}
+        meeting={meeting}
+        phaseType={phaseType}
+      />
+    )
+  }
+  return null
 }
 
 export default createFragmentContainer(PokerSidebarPhaseListItemChildren, {
