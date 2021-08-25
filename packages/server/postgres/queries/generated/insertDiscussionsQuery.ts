@@ -3,20 +3,20 @@ import {PreparedQuery} from '@pgtyped/query'
 
 export type DiscussionTopicTypeEnum =
   | 'agendaItem'
-  | 'reflectionGroup'
-  | 'task'
   | 'githubIssue'
   | 'jiraIssue'
+  | 'reflectionGroup'
+  | 'task'
 
 /** 'InsertDiscussionsQuery' parameters type */
 export interface IInsertDiscussionsQueryParams {
-  discussions: Array<{
+  discussions: readonly {
     id: string | null | void
     teamId: string | null | void
     meetingId: string | null | void
     discussionTopicId: string | null | void
     discussionTopicType: DiscussionTopicTypeEnum | null | void
-  }>
+  }[]
 }
 
 /** 'InsertDiscussionsQuery' return type */

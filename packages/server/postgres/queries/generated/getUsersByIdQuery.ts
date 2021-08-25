@@ -1,17 +1,17 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getUsersByIdQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise'
-
 export type AuthTokenRole = 'su'
 
-export type stringArray = string[]
+export type TierEnum = 'enterprise' | 'personal' | 'pro'
 
 export type JsonArray = (null | boolean | number | string | Json[] | {[key: string]: Json})[]
 
+export type stringArray = string[]
+
 /** 'GetUsersByIdQuery' parameters type */
 export interface IGetUsersByIdQueryParams {
-  ids: Array<string | null | void>
+  ids: readonly (string | null | void)[]
 }
 
 /** 'GetUsersByIdQuery' return type */

@@ -3,10 +3,10 @@ import {PreparedQuery} from '@pgtyped/query'
 
 /** 'InsertPollOptionQuery' parameters type */
 export interface IInsertPollOptionQueryParams {
-  pollOptions: Array<{
+  pollOptions: readonly {
     pollId: number | null | void
     title: string | null | void
-  }>
+  }[]
 }
 
 /** 'InsertPollOptionQuery' return type */

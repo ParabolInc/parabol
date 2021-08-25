@@ -5,7 +5,7 @@ export type stringArray = string[]
 
 /** 'GetPollOptionsByPollIdQuery' parameters type */
 export interface IGetPollOptionsByPollIdQueryParams {
-  pollIds: Array<number | null | void>
+  pollIds: readonly (number | null | void)[]
 }
 
 /** 'GetPollOptionsByPollIdQuery' return type */

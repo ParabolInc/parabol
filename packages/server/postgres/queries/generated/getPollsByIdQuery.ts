@@ -3,7 +3,7 @@ import {PreparedQuery} from '@pgtyped/query'
 
 /** 'GetPollsByIdQuery' parameters type */
 export interface IGetPollsByIdQueryParams {
-  ids: Array<number | null | void>
+  ids: readonly (number | null | void)[]
 }
 
 /** 'GetPollsByIdQuery' return type */

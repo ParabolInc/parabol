@@ -3,10 +3,10 @@ import {PreparedQuery} from '@pgtyped/query'
 
 /** 'UpdateUserTiersQuery' parameters type */
 export interface IUpdateUserTiersQueryParams {
-  users: Array<{
+  users: readonly {
     tier: string | null | void
     id: string | null | void
-  }>
+  }[]
 }
 
 /** 'UpdateUserTiersQuery' return type */

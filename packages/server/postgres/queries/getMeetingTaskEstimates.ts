@@ -9,11 +9,8 @@ export interface MeetingTaskEstimatesResult extends IGetMeetingTaskEstimatesQuer
   stageId: string
 }
 
-const getMeetingTaskEstimates = async (
-  taskIds: MaybeReadonly<string[]>,
-  meetingIds: MaybeReadonly<string[]>
-) => {
-  return getLatestTaskEstimatesQuery.run({taskIds, meetingIds} as any, getPg()) as Promise<
+const getMeetingTaskEstimates = async (taskIds: MaybeReadonly<string[]>) => {
+  return getLatestTaskEstimatesQuery.run({taskIds}, getPg()) as Promise<
     MeetingTaskEstimatesResult[]
   >
 }

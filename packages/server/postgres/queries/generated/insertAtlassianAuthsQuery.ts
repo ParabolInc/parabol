@@ -7,7 +7,7 @@ export type stringArray = string[]
 
 /** 'InsertAtlassianAuthsQuery' parameters type */
 export interface IInsertAtlassianAuthsQueryParams {
-  auths: Array<{
+  auths: readonly {
     accessToken: string | null | void
     refreshToken: string | null | void
     createdAt: Date | null | void
@@ -19,7 +19,7 @@ export interface IInsertAtlassianAuthsQueryParams {
     accountId: string | null | void
     teamId: string | null | void
     userId: string | null | void
-  }>
+  }[]
 }
 
 /** 'InsertAtlassianAuthsQuery' return type */

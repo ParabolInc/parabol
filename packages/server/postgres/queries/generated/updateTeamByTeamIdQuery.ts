@@ -1,15 +1,15 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/updateTeamByTeamIdQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
-export type MeetingTypeEnum = 'action' | 'retrospective' | 'poker'
+export type MeetingTypeEnum = 'action' | 'poker' | 'retrospective'
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise'
+export type TierEnum = 'enterprise' | 'personal' | 'pro'
 
 export type JsonArray = (null | boolean | number | string | Json[] | {[key: string]: Json})[]
 
 /** 'UpdateTeamByTeamIdQuery' parameters type */
 export interface IUpdateTeamByTeamIdQueryParams {
-  ids: Array<string | null | void>
+  ids: readonly (string | null | void)[]
   name: string | null | void
   isArchived: boolean | null | void
   isPaid: boolean | null | void

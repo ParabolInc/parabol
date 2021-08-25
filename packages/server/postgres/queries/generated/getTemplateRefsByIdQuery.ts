@@ -5,7 +5,7 @@ export type Json = null | boolean | number | string | Json[] | {[key: string]: J
 
 /** 'GetTemplateRefsByIdQuery' parameters type */
 export interface IGetTemplateRefsByIdQueryParams {
-  refIds: Array<string | null | void>
+  refIds: readonly (string | null | void)[]
 }
 
 /** 'GetTemplateRefsByIdQuery' return type */
