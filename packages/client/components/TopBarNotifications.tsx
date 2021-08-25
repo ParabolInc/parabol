@@ -36,6 +36,7 @@ const TopBarNotifications = (props: Props) => {
         onMouseEnter={NotificationDropdown.preload}
         icon={'notifications'}
         hasBadge={hasNotifications}
+        ariaLabel={'Notifications'}
       />
       {menuPortal(
         <NotificationDropdown
