@@ -12,6 +12,7 @@ import {AppBar, Breakpoint, RightSidebar, ZIndex} from '../../../../types/constE
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
+import ManageTeamList from '../ManageTeam/ManageTeamList'
 import CloseSidebar from '../CloseSidebar/CloseSidebar'
 
 const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
@@ -127,7 +128,7 @@ const AgendaAndTasks = (props: Props) => {
               <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
               <CloseSidebar isAgenda teamId={teamId} />
             </SidebarHeader>
-            <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team!} />
+            <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
           </SidebarContent>
         )}
       </Sidebar>
@@ -138,6 +139,7 @@ const AgendaAndTasks = (props: Props) => {
               <StyledLabelHeading>{'Manage Team'}</StyledLabelHeading>
               <CloseSidebar teamId={teamId} />
             </SidebarHeader>
+            <ManageTeamList team={team} />
           </SidebarContent>
         )}
       </Sidebar>
@@ -153,6 +155,7 @@ export default createFragmentContainer(AgendaAndTasks, {
         teamName: name
         ...AgendaListAndInput_team
         ...TeamTasksHeaderContainer_team
+        ...ManageTeamList_team
       }
       teamMember(teamId: $teamId) {
         hideAgenda
