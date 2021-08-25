@@ -7,13 +7,12 @@ import getPg from '../getPg'
 
 const getTeamsByOrgIds = async (
   orgIds: string[],
-  options: Partial<Omit<IGetTeamsByOrgIdQueryParams, 'orgId'>> = {}
+  options: {isArchived?: boolean} = {}
 ): Promise<IGetTeamsByOrgIdQueryResult[]> => {
-  const {isArchived, ...otherOptions} = options
+  const {isArchived} = options
   const queryParameters: IGetTeamsByOrgIdQueryParams = {
     orgIds,
-    isArchived: !!isArchived,
-    ...otherOptions
+    isArchived: !!isArchived
   }
   const teams = await getTeamsByOrgIdQuery.run(queryParameters, getPg())
   return teams === null ? [] : teams
