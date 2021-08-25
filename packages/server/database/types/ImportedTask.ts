@@ -16,7 +16,7 @@ export default class ImportedTask extends Task {
   constructor(input: Input) {
     const {meetingId, teamId, integration, userId} = input
     super({
-      content: convertToTaskContent(`Task imported from ${integration.service}`),
+      content: convertToTaskContent(`Task imported from ${integration.service} #archived`),
       createdBy: userId,
       meetingId,
       sortOrder: dndNoise(),

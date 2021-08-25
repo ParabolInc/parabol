@@ -1,4 +1,11 @@
-import {convertFromRaw, convertToRaw, EditorState, Modifier} from 'draft-js'
+import {
+  ContentState,
+  convertFromRaw,
+  convertToRaw,
+  EditorState,
+  Modifier,
+  SelectionState
+} from 'draft-js'
 import unicodeSubstring from 'unicode-substring'
 
 const getUTF16Range = (text, range) => {
@@ -12,7 +19,7 @@ const getUTF16Range = (text, range) => {
 
 const getEntities = (entityMap, entityType, eqFn) => {
   const entityKeys = Object.keys(entityMap)
-  const entities = []
+  const entities = [] as string[]
   for (let i = 0; i < entityKeys.length; i++) {
     const key = entityKeys[i]
     const entity = entityMap[key]
@@ -24,7 +31,7 @@ const getEntities = (entityMap, entityType, eqFn) => {
 }
 
 const getRemovalRanges = (entities, entityRanges, text) => {
-  const removalRanges = []
+  const removalRanges = [] as {start: any; end: any}[]
   for (let j = 0; j < entityRanges.length; j++) {
     const utf8Range = entityRanges[j]
     const entityKey = String(utf8Range.key)
@@ -40,7 +47,7 @@ const getRemovalRanges = (entities, entityRanges, text) => {
   return removalRanges
 }
 
-const removeAllRangesForEntity = (content, entityType, eqFn) => {
+const removeRangesForEntity = (content: string, entityType: string, eqFn: any) => {
   const rawContent = JSON.parse(content)
   const {blocks, entityMap} = rawContent
   const entities = getEntities(entityMap, entityType, eqFn)
@@ -59,13 +66,13 @@ const removeAllRangesForEntity = (content, entityType, eqFn) => {
         focusKey: blockKey,
         anchorOffset: range.start,
         focusOffset: range.end
-      })
+      }) as SelectionState
       contentState = Modifier.removeRange(contentState, selectionToRemove, 'backward')
     }
     if (contentState.getBlockForKey(blockKey).getText() === '') {
       contentState = contentState.merge({
         blockMap: contentState.getBlockMap().delete(blockKey)
-      })
+      }) as ContentState
     }
   }
   return contentState === editorState.getCurrentContent()
@@ -73,4 +80,4 @@ const removeAllRangesForEntity = (content, entityType, eqFn) => {
     : JSON.stringify(convertToRaw(contentState))
 }
 
-export default removeAllRangesForEntity
+export default removeRangesForEntity
