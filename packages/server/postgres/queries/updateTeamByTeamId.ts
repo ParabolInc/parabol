@@ -11,7 +11,7 @@ const updateTeamByTeamId = async (
   teamIds: string | string[]
 ) => {
   teamIds = typeof teamIds === 'string' ? [teamIds] : teamIds
-  return await catchAndLog(() =>
+  return catchAndLog(() =>
     updateTeamByTeamIdQuery.run(
       {
         ...teamUpdates,
