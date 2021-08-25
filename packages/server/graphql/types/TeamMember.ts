@@ -39,7 +39,11 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLBoolean,
       description: 'true if the user is a part of the team, false if they no longer are'
     },
-    isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
+    isLead: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'Is user a team lead?',
+      resolve: ({isLead}) => !!isLead
+    },
     isSpectatingPoker: {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user prefers to not vote during a poker meeting',

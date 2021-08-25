@@ -58,11 +58,12 @@ const TeamLeadCopy = styled('div')<{isLead: boolean}>(({isLead}) => ({
 }))
 
 interface Props {
+  isViewerLead: boolean
   teamMember: ManageTeamMember_teamMember
 }
 
 const ManageTeamMember = (props: Props) => {
-  const {teamMember} = props
+  const {isViewerLead, teamMember} = props
   const {isLead, preferredName, picture} = teamMember
   const {
     closePortal: closePromote,
@@ -90,8 +91,8 @@ const ManageTeamMember = (props: Props) => {
       {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}
-          isLead={Boolean(isLead)}
-          isViewerLead={true} // TODO: change
+          isLead={isLead}
+          isViewerLead={isViewerLead}
           teamMember={teamMember}
           togglePromote={togglePromote}
           toggleRemove={toggleRemove}
