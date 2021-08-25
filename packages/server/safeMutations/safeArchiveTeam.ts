@@ -49,7 +49,7 @@ const safeArchiveTeam = async (teamId: string) => {
     }).run(),
     updateTeamByTeamId(updates, teamId)
   ])
-  return {...rethinkResult, team: pgResult, users}
+  return {...rethinkResult, team: pgResult[0] ?? null, users}
 }
 
 export default safeArchiveTeam

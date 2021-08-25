@@ -22,7 +22,21 @@ export interface IUpdateTeamByTeamIdQueryParams {
 }
 
 /** 'UpdateTeamByTeamIdQuery' return type */
-export type IUpdateTeamByTeamIdQueryResult = void
+export interface IUpdateTeamByTeamIdQueryResult {
+  id: string
+  name: string
+  createdAt: Date
+  createdBy: string | null
+  isArchived: boolean
+  isPaid: boolean
+  jiraDimensionFields: JsonArray
+  lastMeetingType: MeetingTypeEnum
+  tier: TierEnum
+  orgId: string
+  isOnboardTeam: boolean
+  updatedAt: Date
+  lockMessageHTML: string | null
+}
 
 /** 'UpdateTeamByTeamIdQuery' query type */
 export interface IUpdateTeamByTeamIdQueryQuery {
@@ -101,8 +115,8 @@ const updateTeamByTeamIdQueryIR: any = {
   },
   statement: {
     body:
-      'UPDATE "Team" SET\n  "name" = COALESCE(:name, "name"),\n  "isArchived" = COALESCE(:isArchived, "isArchived"),\n  "isPaid" = COALESCE(:isPaid, "isPaid"),\n  "jiraDimensionFields" = COALESCE(:jiraDimensionFields, "jiraDimensionFields"),\n  "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),\n  "tier" = COALESCE(:tier, "tier"),\n  "orgId" = COALESCE(:orgId, "orgId"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),\n  "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")\nWHERE id IN :ids',
-    loc: {a: 60, b: 569, line: 5, col: 0}
+      'UPDATE "Team" SET\n  "name" = COALESCE(:name, "name"),\n  "isArchived" = COALESCE(:isArchived, "isArchived"),\n  "isPaid" = COALESCE(:isPaid, "isPaid"),\n  "jiraDimensionFields" = COALESCE(:jiraDimensionFields, "jiraDimensionFields"),\n  "lastMeetingType" = COALESCE(:lastMeetingType, "lastMeetingType"),\n  "tier" = COALESCE(:tier, "tier"),\n  "orgId" = COALESCE(:orgId, "orgId"),\n  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),\n  "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")\nWHERE id IN :ids\nRETURNING *',
+    loc: {a: 60, b: 581, line: 5, col: 0}
   }
 }
 
@@ -120,6 +134,7 @@ const updateTeamByTeamIdQueryIR: any = {
  *   "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
  *   "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")
  * WHERE id IN :ids
+ * RETURNING *
  * ```
  */
 export const updateTeamByTeamIdQuery = new PreparedQuery<
