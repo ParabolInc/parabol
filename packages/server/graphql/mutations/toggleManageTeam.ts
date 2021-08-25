@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
 import ToggleManageTeamPayload from '../types/ToggleManageTeamPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
 import standardError from '../../utils/standardError'
 
@@ -16,16 +14,9 @@ const toggleManageTeam = {
       description: 'the team to hide the manage team sidebar for'
     }
   },
-  resolve: async (
-    _source,
-    {teamId}: {teamId: string},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
-  ) => {
+  resolve: async (_source, {teamId}: {teamId: string}, {authToken}: GQLContext) => {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
-    const now = new Date()
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId, operationId}
 
     //AUTH
     if (!isTeamMember(authToken, teamId)) {
@@ -42,14 +33,15 @@ const toggleManageTeam = {
         (teamMember) => ({
           hideManageTeam: teamMember('hideManageTeam')
             .default(false)
-            .not()
+            .not(),
+          hideAgenda: true
         }),
         {returnChanges: true}
       )('changes')(0)('new_val')
       .run()
 
     const {hideManageTeam} = res
-    return hideManageTeam
+    return {hideManageTeam}
   }
 }
 

@@ -29,9 +29,11 @@ export default {
         (teamMember) => ({
           hideAgenda: teamMember('hideAgenda')
             .default(false)
-            .not()
+            .not(),
+          hideManageTeam: true
         }),
         {returnChanges: true}
-      )('changes')(0)('new_val').run()
+      )('changes')(0)('new_val')
+      .run()
   }
 }

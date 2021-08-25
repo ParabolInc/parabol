@@ -34,11 +34,13 @@ const ToggleManageTeamMutation: StandardMutation<TToggleManageTeamMutation> = (
     updater: (store) => {
       const {viewerId} = atmosphere
       const {teamId} = variables
-      const payload = store.getRootField('hideManageTeam')
+      const payload = store.getRootField('toggleManageTeam')
       if (!payload) return
       const nextValue = payload.getValue('hideManageTeam')
       const teamMemberId = toTeamMemberId(teamId, viewerId)
-      store.get(teamMemberId)!.setValue(nextValue, 'hideManageTeam')
+      const teamMember = store.get(teamMemberId)!
+      teamMember.setValue(nextValue, 'hideManageTeam')
+      teamMember.setValue(true, 'hideAgenda')
     },
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
@@ -47,6 +49,7 @@ const ToggleManageTeamMutation: StandardMutation<TToggleManageTeamMutation> = (
       const teamMember = store.get(teamMemberId)!
       const currentValue = teamMember.getValue('hideManageTeam') || false
       teamMember.setValue(!currentValue, 'hideManageTeam')
+      teamMember.setValue(true, 'hideAgenda')
     },
     onCompleted,
     onError

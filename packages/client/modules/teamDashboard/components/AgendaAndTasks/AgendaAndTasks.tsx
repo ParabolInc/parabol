@@ -12,8 +12,7 @@ import {AppBar, Breakpoint, RightSidebar, ZIndex} from '../../../../types/constE
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
-import CloseAgenda from '../AgendaToggle/CloseAgenda'
-import CloseManageTeam from '../ManageTeam/CloseManageTeam'
+import CloseSidebar from '../CloseSidebar/CloseSidebar'
 
 const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
@@ -50,7 +49,7 @@ const TasksContent = styled('div')({
   width: '100%'
 })
 
-const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
+const Sidebar = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
   backgroundColor: '#FFFFFF',
   boxShadow: navDrawerShadow,
   display: hideAgenda ? 'none' : 'flex',
@@ -75,14 +74,14 @@ const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) =>
   }
 }))
 
-const AgendaHeader = styled('div')({
+const SidebarHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'space-between',
   padding: '16px 8px 16px 16px'
 })
 
-const AgendaContent = styled('div')({
+const SidebarContent = styled('div')({
   display: 'flex',
   overflow: 'hidden',
   // padding-bottom makes space for the Start New Meeting FAB
@@ -121,27 +120,27 @@ const AgendaAndTasks = (props: Props) => {
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
       </TasksMain>
-      <AgendaMain hideAgenda={hideAgenda}>
-        {!hideAgenda && (
-          <AgendaContent>
-            <AgendaHeader>
+      <Sidebar hideAgenda={hideAgenda}>
+        {!hideAgenda && hideManageTeam && (
+          <SidebarContent>
+            <SidebarHeader>
               <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
-              <CloseAgenda hideAgenda={hideAgenda} teamId={teamId} />
-            </AgendaHeader>
+              <CloseSidebar isAgenda teamId={teamId} />
+            </SidebarHeader>
             <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team!} />
-          </AgendaContent>
+          </SidebarContent>
         )}
-      </AgendaMain>
-      <AgendaMain hideAgenda={hideManageTeam}>
-        {!hideManageTeam && (
-          <AgendaContent>
-            <AgendaHeader>
-              <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
-              <CloseManageTeam hideManageTeam={hideManageTeam} teamId={teamId} />
-            </AgendaHeader>
-          </AgendaContent>
+      </Sidebar>
+      <Sidebar hideAgenda={hideManageTeam}>
+        {!hideManageTeam && hideAgenda && (
+          <SidebarContent>
+            <SidebarHeader>
+              <StyledLabelHeading>{'Manage Team'}</StyledLabelHeading>
+              <CloseSidebar teamId={teamId} />
+            </SidebarHeader>
+          </SidebarContent>
         )}
-      </AgendaMain>
+      </Sidebar>
     </RootBlock>
   )
 }
