@@ -33,10 +33,8 @@ export default class RedisLockQueue {
         .exec()
       this.queued = true
       const resultingListLength = res[0][1]
-      if (resultingListLength === 1) {
-        // If the resulting LIST length is 1, we're already first on the list, return no lock
-        return false
-      }
+      // If the resulting LIST length is 1, we're already first on the list, return no lock
+      return resultingListLength !== 1
     }
     // Checking if we are the first on the list
     const head = await this.redis.lindex(this.queueKey, 0)
