@@ -17,6 +17,7 @@ import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import {TierEnum} from '../../database/types/Invoice'
 import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
+import {GQLContext} from '../graphql'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -28,7 +29,7 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
-    async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+    async (_source, args, {authToken, dataLoader, socketId: mutatorId}: GQLContext) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
@@ -40,7 +41,7 @@ export default {
       }
 
       // VALIDATION
-      const orgTeams = await getTeamsByOrgIds(orgId, {isArchived: false})
+      const orgTeams = await getTeamsByOrgIds([orgId], {isArchived: false})
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
         data: {newTeam},
