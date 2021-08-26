@@ -19,6 +19,9 @@ import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMuta
 import ToggleManageTeamMutation from '../../../../mutations/ToggleManageTeamMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
+import StaticStartMeetingFAB from '../../../../components/StaticStartMeetingFAB'
+import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 
 const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
@@ -35,6 +38,7 @@ const TasksMain = styled('div')({
   flexDirection: 'column',
   height: '100%',
   overflow: 'auto',
+  position: 'relative',
   [desktopDashWidestMediaQuery]: {
     paddingRight: RightSidebar.WIDTH
   }
@@ -140,8 +144,9 @@ const AgendaAndTasks = (props: Props) => {
   const teamMember = viewer.teamMember!
   const {hideAgenda, hideManageTeam, manageTeamMemberId} = teamMember
   const {id: teamId, name: teamName} = team
-  useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   const atmosphere = useAtmosphere()
+  useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const toggleSidebar = () => {
     if (!submitting) {
@@ -163,6 +168,7 @@ const AgendaAndTasks = (props: Props) => {
         <TasksContent>
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
+        {isDesktop ? <StaticStartMeetingFAB isAbsolute /> : <StartMeetingFAB />}
       </TasksMain>
       <ResponsiveDashSidebar
         isOpen={!hideAgenda || !hideManageTeam}

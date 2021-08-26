@@ -8,8 +8,8 @@ import {Breakpoint, ElementWidth, Layout, ZIndex} from '../types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
-const Block = styled('div')({
-  position: 'fixed',
+const Block = styled('div')<{isAbsolute?: boolean}>(({isAbsolute}) => ({
+  position: isAbsolute ? 'absolute' : 'fixed',
   bottom: 16,
   right: 16,
   // hacky, but we need the FAB to show up over the team right nav
@@ -18,7 +18,7 @@ const Block = styled('div')({
     // this will work until we scope the FAB to dashboard main container
     right: `calc(((100vw - ${Layout.TASK_COLUMNS_MAX_WIDTH}px) / 2) + 16px)`
   }
-})
+}))
 
 const Button = styled(FloatingActionButton)({
   color: '#fff',
@@ -42,17 +42,19 @@ const MeetingLabel = styled('div')({
   width: ElementWidth.NEW_MEETING_FAB
 })
 
-interface Props { }
+interface Props {
+  isAbsolute?: boolean
+}
 
 const StartMeetingFAB = (props: Props) => {
-  const { } = props
+  const {isAbsolute} = props
   const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
   const onClick = () => {
     history.push(`/new-meeting/${teamId}`)
   }
   return (
-    <Block>
+    <Block isAbsolute={isAbsolute}>
       <Button onClick={onClick}>
         <MeetingIcon>{'add'}</MeetingIcon>
         <MeetingLabel>{'Add Meeting'}</MeetingLabel>

@@ -12,20 +12,20 @@ import useTransition from '../hooks/useTransition'
 import {Breakpoint, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
+import StartMeetingFAB from './StaticStartMeetingFAB'
+import StaticStartMeetingFAB from './StaticStartMeetingFAB'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
 
-const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(
-  ({maybeTabletPlus}) => ({
-    padding: maybeTabletPlus ? 0 : 16,
-    display: 'flex',
-    flexWrap: 'wrap',
-    position: 'relative'
-  })
-)
+const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+  padding: maybeTabletPlus ? 0 : 16,
+  display: 'flex',
+  flexWrap: 'wrap',
+  position: 'relative'
+}))
 
 const EmptyContainer = styled('div')({
   display: 'flex',
@@ -68,6 +68,7 @@ const MeetingsDash = (props: Props) => {
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
@@ -80,13 +81,13 @@ const MeetingsDash = (props: Props) => {
             const {child} = meeting
             const {id, displayIdx} = child
             return (
-                <MeetingCard
-                  key={id}
-                  displayIdx={displayIdx}
+              <MeetingCard
+                key={id}
+                displayIdx={displayIdx}
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={meeting.status}
-                />
+              />
             )
           })}
         </Wrapper>
@@ -101,6 +102,7 @@ const MeetingsDash = (props: Props) => {
           ) : null}
         </EmptyContainer>
       )}
+      {isDesktop ? <StaticStartMeetingFAB /> : <StartMeetingFAB />}
     </>
   )
 }
