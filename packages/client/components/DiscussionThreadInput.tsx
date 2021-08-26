@@ -249,7 +249,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
-  const isActionContainerVisible = allowTasks || allowPolls
+  const isActionsContainerVisible = allowTasks || allowPolls
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
@@ -275,7 +275,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           onSubmit={onSubmit}
         />
       </CommentContainer>
-      {isActionContainerVisible && (
+      {isActionsContainerVisible && (
         <ActionsContainer>
           {allowTasks && (
             <AddTaskButton dataCy={`${dataCy}-task`} onClick={addTask} disabled={!canCreateTask} />
