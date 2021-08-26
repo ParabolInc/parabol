@@ -29,31 +29,31 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
   // rethink client for when we need to join with rethink
   const r = await getRethink()
 
-  try {
-    // fetch needed items upfront
-    const teams = await client.query('SELECT "id" FROM "Team" WHERE "orgId" = ANY ($1);', [orgIds])
-    const teamIds = teams.rows.map((team) => team.id)
-    const [userIds, templateRefIds] = await Promise.all([
-      r
-        .table('TeamMember')
-        .getAll(r.args(teamIds), {index: 'teamId'})('userId')
-        .coerceTo('array')
-        .distinct()
-        .run(),
-      (r
-        .table('NewMeeting')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter(row => row.hasFields('templateRefId')) as any)('templateRefId')
-        .coerceTo('array')
-        .distinct()
-        .run()
-    ])
-    const templateRefs = await client.query(
-      `SELECT jsonb_array_elements("template" -> 'dimensions') -> 'scaleRefId' AS "scaleRefId" FROM "TemplateRef" WHERE "id" = ANY ($1);`,
-      [templateRefIds]
-    )
-    const templateScaleRefIds = templateRefs.rows.map(({scaleRefId}) => scaleRefId)
+  // fetch needed items upfront
+  const teams = await client.query('SELECT "id" FROM "Team" WHERE "orgId" = ANY ($1);', [orgIds])
+  const teamIds = teams.rows.map((team) => team.id)
+  const [userIds, templateRefIds] = await Promise.all([
+    r
+      .table('TeamMember')
+      .getAll(r.args(teamIds), {index: 'teamId'})('userId')
+      .coerceTo('array')
+      .distinct()
+      .run(),
+    (r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter(row => row.hasFields('templateRefId')) as any)('templateRefId')
+      .coerceTo('array')
+      .distinct()
+      .run()
+  ])
+  const templateRefs = await client.query(
+    `SELECT jsonb_array_elements("template" -> 'dimensions') -> 'scaleRefId' AS "scaleRefId" FROM "TemplateRef" WHERE "id" = ANY ($1);`,
+    [templateRefIds]
+  )
+  const templateScaleRefIds = templateRefs.rows.map(({scaleRefId}) => scaleRefId)
 
+  try {
     // do all inserts here
     await client.query('BEGIN')
     await client.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
