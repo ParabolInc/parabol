@@ -22,18 +22,18 @@ const PollOption = new GraphQLObjectType<any, GQLContext>({
       description: 'The timestamp the item was updated'
     },
     pollId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID),
       description: 'The id of the poll (indexed)'
     },
     poll: {
-      type: new GraphQLNonNull(Team),
+      type: GraphQLNonNull(Team),
       description: 'The poll this option belongs to',
       resolve: ({pollId}, _args, {dataLoader}) => {
         return dataLoader.get('polls').load(pollId)
       }
     },
     voteUserIds: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
       description: 'The ids of the users who voted for this option'
     },
     title: {
