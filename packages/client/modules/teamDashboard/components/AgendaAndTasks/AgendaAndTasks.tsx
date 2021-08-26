@@ -13,6 +13,12 @@ import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasks
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import ManageTeamList from '../ManageTeam/ManageTeamList'
 import CloseSidebar from '../CloseSidebar/CloseSidebar'
+import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
+import {PALETTE} from '../../../../styles/paletteV3'
+import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
+import ToggleManageTeamMutation from '../../../../mutations/ToggleManageTeamMutation'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
 
 const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
@@ -82,13 +88,14 @@ const SidebarHeader = styled('div')({
 })
 
 const SidebarContent = styled('div')({
+  backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
   // padding-bottom makes space for the Start New Meeting FAB
   padding: '0 0 80px',
-  height: '100%',
+  height: '100vh',
   flexDirection: 'column',
-  width: '100%'
+  width: RightSidebar.WIDTH
 })
 
 const StyledLabelHeading = styled(LabelHeading)({
@@ -134,6 +141,19 @@ const AgendaAndTasks = (props: Props) => {
   const {hideAgenda, hideManageTeam, manageTeamMemberId} = teamMember
   const {id: teamId, name: teamName} = team
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
+  const atmosphere = useAtmosphere()
+  const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
+  const toggleSidebar = () => {
+    if (!submitting) {
+      submitMutation()
+      if (!hideManageTeam) {
+        ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
+      } else if (!hideAgenda) {
+        ToggleAgendaListMutation(atmosphere, teamId, onError, onCompleted)
+      }
+    }
+  }
+
   return (
     <RootBlock>
       <TasksMain>
@@ -144,7 +164,11 @@ const AgendaAndTasks = (props: Props) => {
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
       </TasksMain>
-      <Sidebar hide={hideAgenda && hideManageTeam}>
+      <ResponsiveDashSidebar
+        isOpen={!hideAgenda || !hideManageTeam}
+        isRightDrawer
+        onToggle={toggleSidebar}
+      >
         <SidebarContent>
           <SidebarHeader>
             <StyledLabelHeading>
@@ -158,7 +182,7 @@ const AgendaAndTasks = (props: Props) => {
             <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
           )}
         </SidebarContent>
-      </Sidebar>
+      </ResponsiveDashSidebar>
     </RootBlock>
   )
 }
