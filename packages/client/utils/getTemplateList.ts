@@ -1,10 +1,10 @@
+import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
-import {getTemplateList_template} from '../__generated__/getTemplateList_template.graphql'
-import * as Sentry from '@sentry/browser'
+import {getTemplateList_template$key} from '../__generated__/getTemplateList_template.graphql'
 
 const getTemplateList = (viewerTeamId: string, viewerOrgId: string, templateRef: any) => {
-  const template = readInlineData<getTemplateList_template>(
+  const template = readInlineData<getTemplateList_template$key>(
     graphql`
       fragment getTemplateList_template on MeetingTemplate @inline {
         id

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {SimpleMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {PokerMeeting_meeting} from '../__generated__/PokerMeeting_meeting.graphql'
@@ -101,7 +101,7 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
       const stages = estimatePhase.getLinkedRecords('stages')
       stages.forEach((stage) => {
-        const {cloudId: stageCloudId} = JiraServiceTaskId.split(
+        const {cloudId: stageCloudId} = JiraIssueId.split(
           stage.getValue('serviceTaskId') as string
         )
         if (stage.getValue('dimensionName') === dimensionName && stageCloudId === cloudId) {

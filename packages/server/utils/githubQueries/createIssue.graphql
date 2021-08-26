@@ -1,0 +1,14 @@
+mutation createIssue($input: CreateIssueInput!) {
+  createIssue(input: $input) {
+    issue {
+      assignees(first: 5) {
+        nodes {
+          id
+          login
+        }
+      }
+      id
+      number
+    }
+  }
+}

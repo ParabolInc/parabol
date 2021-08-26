@@ -1,9 +1,9 @@
 import makeHref from './makeHref'
 
 const getMassInvitationUrl = (token: string) => {
-    return __PRODUCTION__
-      ? `https://${window.__ACTION__.prblIn}/${token}`
-      : makeHref(`/invitation-link/${token}`)
-  }
+  const {prblIn} = window.__ACTION__
+  const protocol = prblIn.startsWith('localhost') ? 'http:' : 'https:'
+  return __PRODUCTION__ ? `${protocol}//${prblIn}/${token}` : makeHref(`/invitation-link/${token}`)
+}
 
-  export default getMassInvitationUrl
+export default getMassInvitationUrl

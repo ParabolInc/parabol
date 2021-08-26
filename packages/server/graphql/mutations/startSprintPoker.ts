@@ -26,8 +26,9 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
     dataLoader.get('meetingTemplates').load(templateId),
     dataLoader.get('templateDimensionsByTemplateId').load(templateId)
   ])
+  const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
   const {name: templateName} = template
-  const uniqueScaleIds = Array.from(new Set(dimensions.map(({scaleId}) => scaleId)))
+  const uniqueScaleIds = Array.from(new Set(activeDimensions.map(({scaleId}) => scaleId)))
   const uniqueScales = await dataLoader.get('templateScales').loadMany(uniqueScaleIds)
   const templateScales = uniqueScales.map(({name, values}) => {
     const scale = {name, values}
@@ -37,7 +38,7 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
 
   const templateRef = {
     name: templateName,
-    dimensions: dimensions.map((dimension) => {
+    dimensions: activeDimensions.map((dimension) => {
       const {name, scaleId} = dimension
       const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
       const templateScale = templateScales[scaleIdx]
@@ -118,11 +119,14 @@ export default {
     })
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-
-    await r
-      .table('NewMeeting')
-      .insert(meeting)
-      .run()
+    const now = new Date()
+    await r({
+      template: r
+        .table('MeetingTemplate')
+        .get(selectedTemplateId)
+        .update({lastUsedAt: now}),
+      meeting: r.table('NewMeeting').insert(meeting)
+    }).run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)

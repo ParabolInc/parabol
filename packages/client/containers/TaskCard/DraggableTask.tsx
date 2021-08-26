@@ -3,9 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {Draggable, DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import NullableTask from '../../components/NullableTask/NullableTask'
 import {DraggableTask_task} from '../../__generated__/DraggableTask_task.graphql'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 
 const DraggableStyles = styled('div')({
   // sometimes the default blue fuzzies show up around the containing div
@@ -47,9 +47,6 @@ export default createFragmentContainer(DraggableTask, {
       ...NullableTask_task
       id
       content
-      integration {
-        service
-      }
       status
       sortOrder
     }

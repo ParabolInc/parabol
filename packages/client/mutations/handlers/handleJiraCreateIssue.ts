@@ -3,9 +3,11 @@ import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
-const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSelectorProxy) => {
-  const teamId = payload.getValue('teamId')
-  const meetingId = payload.getValue('meetingId')
+const handleJiraCreateIssue = (task: RecordProxy<any>, store: RecordSourceSelectorProxy) => {
+  const integration = task.getLinkedRecord('integration')
+  if (!integration) return
+  const teamId = task.getValue('teamId')
+  const meetingId = task.getValue('meetingId')
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const viewerId = viewer?.getValue('id') as string
   if (!viewerId) return
@@ -18,14 +20,20 @@ const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSel
   const queryString = jiraSearchQuery?.getValue('queryString') as string | undefined
   const isJql = jiraSearchQuery?.getValue('isJql') as boolean | undefined
   const projectKeyFilters = jiraSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
-
-  const jiraIssue = payload.getLinkedRecord('jiraIssue')
-  const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
-  if (!jiraIssuesConn) return
-  const now = new Date().toISOString()
-  const newEdge = ConnectionHandler.createEdge(store, jiraIssuesConn, jiraIssue, 'JiraIssueEdge')
-  newEdge.setValue(now, 'cursor')
-  ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
+  const typename = integration.getType()
+  if (typename === 'JiraIssue') {
+    const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
+    if (!jiraIssuesConn) return
+    const now = new Date().toISOString()
+    const newEdge = ConnectionHandler.createEdge(
+      store,
+      jiraIssuesConn,
+      integration,
+      'JiraIssueEdge'
+    )
+    newEdge.setValue(now, 'cursor')
+    ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
+  }
 }
 
 export default handleJiraCreateIssue

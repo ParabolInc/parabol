@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
-import getPhase from '../../utils/getPhase'
+import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
+import {TaskServiceEnum} from '../../database/types/Task'
 import insertDiscussions, {InputDiscussions} from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
+import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import RedisLock from '../../utils/RedisLock'
@@ -16,18 +16,13 @@ import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import getNextFacilitatorStageAfterStageRemoved from './helpers/getNextFacilitatorStageAfterStageRemoved'
+import importTasksForPoker from './helpers/importTasksForPoker'
 
-interface TUpdatePokerScopeItemInput {
-  service: 'github' | 'PARABOL' | 'jira'
+export interface TUpdatePokerScopeItemInput {
+  service: TaskServiceEnum
   serviceTaskId: string
   action: 'ADD' | 'DELETE'
 }
-
-const taskServiceToDiscussionTopicType = {
-  github: 'githubIssue',
-  jira: 'jiraIssue',
-  PARABOL: 'task'
-} as const
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -77,99 +72,98 @@ const updatePokerScope = {
     await redisLock.lock(10000)
 
     // RESOLUTION
-    const requiredJiraMappers = [] as {
-      cloudId: string
-      projectKey: string
-      issueKey: string
-      dimensionName: string
-    }[]
+
     const estimatePhase = getPhase(phases, 'ESTIMATE')
     let stages = estimatePhase.stages
-    const templateRef = await getTemplateRefById(templateRefId)
 
-    const {dimensions} = templateRef
-    const newDiscussions = [] as InputDiscussions
-    updates.forEach((update) => {
-      const {service, serviceTaskId, action} = update
+    // delete stages
+    const subtractiveUpdates = updates.filter((update) => {
+      const {action, serviceTaskId} = update
+      return action === 'DELETE' && !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+    })
 
-      if (action === 'ADD') {
-        const stageExists = !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
-        // see if it already exists. If so, do nothing.
-        if (stageExists) return
-        const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
-
-        const newStages = dimensions.map(
-          (_, idx) =>
-            new EstimateStage({
-              creatorUserId: viewerId,
-              service,
-              serviceTaskId,
-              sortOrder: lastSortOrder + 1,
-              durations: undefined,
-              dimensionRefIdx: idx
-            })
+    subtractiveUpdates.forEach((update) => {
+      const {serviceTaskId} = update
+      const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
+      const removingTatorStage = stagesToRemove.find((stage) => stage.id === facilitatorStageId)
+      if (removingTatorStage) {
+        const nextStage = getNextFacilitatorStageAfterStageRemoved(
+          facilitatorStageId,
+          removingTatorStage.id,
+          phases
         )
+        nextStage.startAt = now
+        meeting.facilitatorStageId = nextStage.id
+      }
+      if (stagesToRemove.length > 0) {
         // MUTATIVE
-        const discussions = newStages.map((stage) => ({
-          id: stage.discussionId,
-          meetingId,
-          teamId,
-          discussionTopicId: serviceTaskId,
-          discussionTopicType: taskServiceToDiscussionTopicType[service]
-        }))
-        newDiscussions.push(...discussions)
-        stages.push(...newStages)
-        const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
-        const firstDimensionName = dimensions[0].name
-        if (service === 'jira') {
-          const existingMapper = requiredJiraMappers.find((mapper) => {
-            // only attempt the first dimension. the other dimensions will default to comment
-            return (
-              mapper.cloudId === cloudId &&
-              mapper.projectKey === projectKey &&
-              mapper.dimensionName === firstDimensionName
-            )
-          })
-          if (!existingMapper) {
-            requiredJiraMappers.push({
-              cloudId,
-              issueKey,
-              projectKey,
-              dimensionName: firstDimensionName
-            })
-          }
-        }
-      } else if (action === 'DELETE') {
-        const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
-        const removingTatorStage = stagesToRemove.find((stage) => stage.id === facilitatorStageId)
-        if (removingTatorStage) {
-          const nextStage = getNextFacilitatorStageAfterStageRemoved(
-            facilitatorStageId,
-            removingTatorStage.id,
-            phases
-          )
-          for (const stage of stages) {
-            if (stage.id === nextStage.id) {
-              stage.startAt = now
-              break
-            }
-          }
-          meeting.facilitatorStageId = nextStage.id
-        }
-        if (stagesToRemove.length > 0) {
-          // MUTATIVE
-          stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
-          estimatePhase.stages = stages
-          const writes = stagesToRemove.map((stage) => {
-            return ['del', `pokerHover:${stage.id}`]
-          })
-          redis.multi(writes).exec()
-        }
+        stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
+        estimatePhase.stages = stages
+        const writes = stagesToRemove.map((stage) => {
+          return ['del', `pokerHover:${stage.id}`]
+        })
+        redis.multi(writes).exec()
       }
     })
 
+    // add stages
+    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+    const {dimensions} = templateRef
+    const firstDimensionName = dimensions[0].name
+    const newDiscussions = [] as InputDiscussions
+    const additiveUpdates = updates.filter((update) => {
+      const {action, serviceTaskId} = update
+      return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+    })
+
+    const requiredJiraMappers = additiveUpdates
+      .filter((update) => update.service === 'jira')
+      .map((update) => {
+        const {cloudId, issueKey, projectKey} = JiraIssueId.split(update.serviceTaskId)
+        return {
+          cloudId,
+          issueKey,
+          projectKey,
+          dimensionName: firstDimensionName
+        }
+      })
     await ensureJiraDimensionField(requiredJiraMappers, teamId, viewerId, dataLoader)
-    if (stages.length > Threshold.MAX_POKER_STORIES) {
+
+    const additiveUpdatesWithTaskIds = await importTasksForPoker(
+      additiveUpdates,
+      teamId,
+      viewerId,
+      meetingId
+    )
+
+    additiveUpdatesWithTaskIds.forEach((update) => {
+      const {serviceTaskId, taskId} = update
+      const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
+      const newStages = dimensions.map(
+        (_, idx) =>
+          new EstimateStage({
+            creatorUserId: viewerId,
+            // integrationHash if integrated, else taskId
+            serviceTaskId,
+            sortOrder: lastSortOrder + 1,
+            taskId,
+            durations: undefined,
+            dimensionRefIdx: idx
+          })
+      )
+      const discussions = newStages.map((stage) => ({
+        id: stage.discussionId,
+        meetingId,
+        teamId,
+        discussionTopicId: taskId,
+        discussionTopicType: 'task' as const
+      }))
+      // MUTATIVE
+      newDiscussions.push(...discussions)
+      stages.push(...newStages)
+    })
+
+    if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
       return {error: {message: 'Story limit reached'}}
     }
     await r

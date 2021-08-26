@@ -1,10 +1,9 @@
 /// <reference types="@types/segment-analytics" />
 
 import * as Sentry from '@sentry/browser'
-import LogRocket from 'logrocket'
 import graphql from 'babel-plugin-relay/macro'
+import ms from 'ms'
 import {useEffect, useRef} from 'react'
-import {fetchQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
@@ -12,12 +11,14 @@ import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import makeHref from '../utils/makeHref'
-import ms from 'ms'
+import safeInitLogRocket from '../utils/safeInitLogRocket'
 
 const query = graphql`
   query AnalyticsPageQuery {
     viewer {
+      id
       email
+      isWatched
     }
   }
 `
@@ -70,31 +71,31 @@ const AnalyticsPage = () => {
     }
   )
   const atmosphere = useAtmosphere()
-  useEffect(() => {
+
+  const initLogRocket = async () => {
     const logRocketId = window.__ACTION__.logRocket
-    const errorProneAt = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
-    const expiredErrorProne =
-      errorProneAt && new Date(parseInt(errorProneAt)) < new Date(Date.now() - ms('30d'))
-    if (expiredErrorProne) {
-      window.localStorage.deleteItem(LocalStorageKey.ERROR_PRONE_AT)
-    } else if (logRocketId && errorProneAt) {
-      const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
-      LogRocket.init(logRocketId, {
-        release: __APP_VERSION__,
-        network: {
-          requestSanitizer: (request) => {
-            const body = request?.body?.toLowerCase()
-            if (body?.includes('password')) return null
-            return request
-          }
-        }
-      })
-      if (email) {
-        LogRocket.identify(atmosphere.viewerId, {
-          email
-        })
+    if (!logRocketId) return
+    const errorProneAtStr = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
+    const errorProneAtDate = new Date(errorProneAtStr!)
+    const isErrorProne = errorProneAtDate.toJSON() === errorProneAtStr && errorProneAtDate > new Date(Date.now() - ms('14d'))
+    if (!isErrorProne) {
+      window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
+    }
+    const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
+    if (!res) {
+      if (isErrorProne) {
+        safeInitLogRocket()
+      }
+    } else {
+      const {viewer} = res
+      const {isWatched, email, id: viewerId} = viewer
+      if (isErrorProne || isWatched) {
+        safeInitLogRocket(viewerId, email)
       }
     }
+  }
+  useEffect(() => {
+    initLogRocket()
   }, [])
 
   useEffect(() => {
@@ -108,11 +109,13 @@ const AnalyticsPage = () => {
       return
     }
     const cacheEmail = async () => {
-      const res = await fetchQuery<AnalyticsPageQuery>(atmosphere, query, {})
-      const nextEmail = res?.viewer?.email
-      if (!nextEmail) return
-      window.localStorage.setItem(LocalStorageKey.EMAIL, nextEmail)
-      safeIdentify(atmosphere.viewerId, nextEmail)
+      const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
+      if (!res) return
+      const {viewer} = res
+      const {email} = viewer
+      if (!email) return
+      window.localStorage.setItem(LocalStorageKey.EMAIL, email)
+      safeIdentify(atmosphere.viewerId, email)
     }
     cacheEmail().catch()
   }, [isSegmentLoaded])

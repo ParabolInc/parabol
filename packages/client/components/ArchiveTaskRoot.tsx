@@ -1,61 +1,31 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
+import React, {Suspense} from 'react'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
-import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
-import {LoaderSize} from '~/types/constEnums'
-import renderQuery from '~/utils/relay/renderQuery'
-import ErrorComponent from './ErrorComponent/ErrorComponent'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import teamArchiveQuery, {TeamArchiveQuery} from '../__generated__/TeamArchiveQuery.graphql'
 
-
-const query = graphql`
-  query ArchiveTaskRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
-    viewer {
-      ...UserTasksHeader_viewer
-      ...TeamArchive_viewer
-    }
-  }
-`
-
-const renderUserTaskArchiveView = ({error, props}) => {
-  if (error) {
-    return <ErrorComponent error={error} eventId={''} />
-  }
-  if (!props) {
-    return <UserTasksHeader viewer={null} />
-  }
-  return (
-    <>
-      <UserTasksHeader viewer={props.viewer} />
-      <TeamArchive viewer={props.viewer} />
-    </>
-  )
-}
-
-export interface ArchiveTaskRootProps {
+interface Props {
   teamIds?: string[] | null
   userIds?: string[] | null
-  team?: any | null
-  returnToTeamId?: string
+  team: any
+  returnToTeamId: string
 }
 
-const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: ArchiveTaskRootProps) => {
-  const atmosphere = useAtmosphere()
-  returnToTeamId && useDocumentTitle(`Team Archive | ${team.name}`, 'Archive')
+const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: Props) => {
+  useDocumentTitle(`Team Archive | ${team.name}`, 'Archive')
+
+  const queryRef = useQueryLoaderNow<TeamArchiveQuery>(teamArchiveQuery, {
+    userIds,
+    teamIds,
+    first: 10
+  })
 
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{teamIds, userIds, first: 10}}
-      fetchPolicy={'store-or-network' as any}
-      render={returnToTeamId ? renderQuery(TeamArchive, {
-        props: {returnToTeamId, team},
-        size: LoaderSize.PANEL
-      }) : renderUserTaskArchiveView}
-    />
+    <Suspense fallback={''}>
+      {queryRef && (
+        <TeamArchive returnToTeamId={returnToTeamId} teamRef={team} queryRef={queryRef} />
+      )}
+    </Suspense>
   )
 }
 

@@ -44,11 +44,6 @@ const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-      description:
-        'The title of the phase of the retrospective. Often a short version of the question'
-    },
     question: {
       description:
         'The question to answer during the phase of the retrospective (eg What went well?)',

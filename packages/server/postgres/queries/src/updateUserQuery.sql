@@ -12,6 +12,7 @@ UPDATE "User" SET
   picture = COALESCE(:picture, "picture"),
   "segmentId" = COALESCE(:segmentId, "segmentId"),
   "isRemoved" = COALESCE(:isRemoved, "isRemoved"),
+  "isWatched" = COALESCE(:isWatched, "isWatched"),
   "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),
   "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),
   "identities" = COALESCE(:identities, "identities"),

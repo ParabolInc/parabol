@@ -49,7 +49,7 @@ interface Props {
 
 const JiraScopingSearchResultItem = (props: Props) => {
   const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {id: serviceTaskId, key, title, url} = issue
+  const {id: serviceTaskId, issueKey, summary, url} = issue
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -68,7 +68,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
         }
       ]
     } as UpdatePokerScopeMutationVariables
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [summary]})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
       persistQuery()
@@ -78,14 +78,14 @@ const JiraScopingSearchResultItem = (props: Props) => {
     <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
-        <Title>{title}</Title>
+        <Title>{summary}</Title>
         <StyledLink
           href={url}
           rel='noopener noreferrer'
           target='_blank'
-          title={`Jira Issue #${key}`}
+          title={`Jira Issue #${issueKey}`}
         >
-          {key}
+          {issueKey}
           {isTemp && <Ellipsis />}
         </StyledLink>
       </Issue>
@@ -97,9 +97,8 @@ export default createFragmentContainer(JiraScopingSearchResultItem, {
   issue: graphql`
     fragment JiraScopingSearchResultItem_issue on JiraIssue {
       id
-      # use title instead of summary so the optimistic updater will use it for the sidebar
-      title
-      key
+      summary
+      issueKey
       url
     }
   `

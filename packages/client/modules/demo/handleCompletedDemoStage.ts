@@ -1,38 +1,13 @@
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
-import {RetroDemo} from '../../types/constEnums'
 import {ACTIVE, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import clientTempId from '../../utils/relay/clientTempId'
 import commentLookup from './commentLookup'
-import {DemoDiscussion, RetroDemoDB} from './initDB'
+import DemoDiscussStage from './DemoDiscussStage'
+import {RetroDemoDB} from './initDB'
 import reactjiLookup from './reactjiLookup'
 import taskLookup from './taskLookup'
-
-class DemoDiscussStage {
-  __typename = 'RetroDiscussStage'
-
-  meetingId = RetroDemo.MEETING_ID
-  isComplete = false
-  isNavigable = true
-  isNavigableByFacilitator = true
-  phaseType = 'discuss'
-  startAt = new Date().toJSON()
-  viewCount = 0
-  readyCount = 0
-  reflectionGroupId: string
-  discussion: DemoDiscussion
-  constructor(
-    public id: string,
-    public sortOrder: number,
-    public reflectionGroup: any,
-    public discussionId: string,
-    db: RetroDemoDB
-  ) {
-    this.reflectionGroupId = reflectionGroup.id
-    this.discussion = db.discussions.find((discussion) => discussion.id === this.discussionId)
-  }
-}
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -206,6 +181,8 @@ const addDiscussionTopics = (db: RetroDemoDB) => {
     addStageToBotScript(id, db, reflectionGroup.id)
     const discussionId = `discussion:${reflectionGroup.id}`
     const stage = new DemoDiscussStage(id, idx, reflectionGroup, discussionId, db)
+    stage.isNavigable = true
+    stage.isNavigableByFacilitator = true
     return stage
   })
   const firstDiscussStage = nextDiscussStages[0]

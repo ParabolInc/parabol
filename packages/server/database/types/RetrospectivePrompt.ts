@@ -8,7 +8,6 @@ interface Input {
   description: string
   groupColor: string
   removedAt: Date | null
-  title?: string
   parentPromptId?: string
 }
 
@@ -22,7 +21,6 @@ export default class RetrospectivePrompt {
   templateId: string
   question: string
   removedAt: Date | null
-  title: string
   updatedAt = new Date()
   parentPromptId?: string
 
@@ -35,7 +33,6 @@ export default class RetrospectivePrompt {
       description,
       groupColor,
       removedAt,
-      title,
       parentPromptId
     } = input
     this.id = generateUID()
@@ -46,7 +43,6 @@ export default class RetrospectivePrompt {
     this.description = description || ''
     this.groupColor = groupColor
     this.removedAt = removedAt
-    this.title = title || question
     this.parentPromptId = parentPromptId
   }
 }

@@ -4,7 +4,6 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
 import {JiraFieldMenu_viewer} from '../__generated__/JiraFieldMenu_viewer.graphql'
@@ -22,24 +21,13 @@ interface Props {
 
 const JiraFieldMenu = (props: Props) => {
   const {menuProps, viewer, stage} = props
-  const {meetingId, dimensionRef, serviceField, serviceTaskId} = stage
+  const atmosphere = useAtmosphere()
+  const {portalStatus, isDropdown, closePortal} = menuProps
+  const {meetingId, dimensionRef, serviceField, task} = stage
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   const isLoading = viewer === null
   const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
-  const atmosphere = useAtmosphere()
-  const {portalStatus, isDropdown, closePortal} = menuProps
-  const {cloudId, projectKey} = JiraServiceTaskId.split(serviceTaskId)
-  const handleClick = (fieldName: string) => () => {
-    UpdateJiraDimensionFieldMutation(atmosphere, {
-      dimensionName,
-      fieldName,
-      meetingId,
-      cloudId,
-      projectKey
-    })
-    closePortal()
-  }
   const defaultActiveidx = useMemo(() => {
     if (serverFields.length === 0) return undefined
     if (serviceFieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) return serverFields.length + 1
@@ -47,6 +35,10 @@ const JiraFieldMenu = (props: Props) => {
     const idx = serverFields.indexOf(serviceFieldName)
     return idx === -1 ? undefined : idx
   }, [serviceFieldName, serverFields])
+
+  if (task?.integration?.__typename !== 'JiraIssue') return null
+  const {integration} = task
+  const {cloudId, projectKey} = integration
 
   if (serverFields.length === 0) {
     const child = isLoading ? (
@@ -61,6 +53,16 @@ const JiraFieldMenu = (props: Props) => {
     )
   }
 
+  const handleClick = (fieldName: string) => () => {
+    UpdateJiraDimensionFieldMutation(atmosphere, {
+      dimensionName,
+      fieldName,
+      meetingId,
+      cloudId,
+      projectKey
+    })
+    closePortal()
+  }
   return (
     <Menu
       ariaLabel={'Select the Jira Field to push to'}
@@ -107,7 +109,15 @@ export default createFragmentContainer(JiraFieldMenu, {
       serviceField {
         name
       }
-      serviceTaskId
+      task {
+        integration {
+          ... on JiraIssue {
+            __typename
+            projectKey
+            cloudId
+          }
+        }
+      }
     }
   `
 })

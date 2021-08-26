@@ -15,16 +15,18 @@ import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import {DiscussionThreadInput_discussion} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
 import {DiscussionThreadInput_viewer} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
+import {useBeforeUnload} from '../hooks/useBeforeUnload'
+import useInitialLocalState from '../hooks/useInitialLocalState'
+import CreateTaskMutation from '../mutations/CreateTaskMutation'
+import {PALETTE} from '../styles/paletteV3'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
+import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
 import {DiscussionThreadables} from './DiscussionThreadList'
+import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import {PALETTE} from '../styles/paletteV3'
-import CreateTaskMutation from '../mutations/CreateTaskMutation'
-import AddTaskButton from './AddTaskButton'
-import SendCommentButton from './SendCommentButton'
-import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -102,6 +104,18 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
+  useInitialLocalState(discussionId, 'isAnonymousComment', false)
+  useInitialLocalState(discussionId, 'replyingToCommentId', '')
+  useBeforeUnload(() => {
+    EditCommentingMutation(
+      atmosphere,
+      {
+        isCommenting: false,
+        discussionId
+      },
+      {onError, onCompleted}
+    )
+  })
 
   useEffect(() => {
     const inactiveCommenting = setTimeout(() => {

@@ -1,47 +1,27 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
-import MyDashboardTasks from './MyDashboardTasks'
+import React, {Suspense} from 'react'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
-import ErrorComponent from './ErrorComponent/ErrorComponent'
-
-const query = graphql`
-  query MyDashboardTasksRootQuery($after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
-    viewer {
-      ...UserTasksHeader_viewer
-      ...MyDashboardTasks_viewer
-    }
-  }
-`
-
-const renderQuery = ({error, retry, props}) => {
-  if (error) {
-    return <ErrorComponent error={error} eventId={''} />
-  }
-  if (!props) {
-    return <UserTasksHeader viewer={null} />
-  }
-  return (
-    <>
-      <UserTasksHeader viewer={props.viewer} />
-      <MyDashboardTasks retry={retry!} viewer={props?.viewer ?? null} />
-    </>
-  )
-}
+import useAtmosphere from '../hooks/useAtmosphere'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
+import myDashboardTasksAndHeaderQuery, {
+  MyDashboardTasksAndHeaderQuery
+} from '../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
+import ErrorBoundary from './ErrorBoundary'
+import MyDashboardTasksAndHeader from './MyDashboardTasksAndHeader'
 
 const MyDashboardTasksRoot = () => {
   const atmosphere = useAtmosphere()
   const {userIds, teamIds} = useUserTaskFilters(atmosphere.viewerId)
+  const queryRef = useQueryLoaderNow<MyDashboardTasksAndHeaderQuery>(
+    myDashboardTasksAndHeaderQuery,
+    {userIds, teamIds}
+  )
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{userIds, teamIds}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery}
-    />
+    <ErrorBoundary>
+      <Suspense fallback={<UserTasksHeader viewerRef={null} />}>
+        {queryRef && <MyDashboardTasksAndHeader queryRef={queryRef} />}
+      </Suspense>
+    </ErrorBoundary>
   )
 }
 

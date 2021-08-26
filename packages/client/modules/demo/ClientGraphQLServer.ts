@@ -1,3 +1,4 @@
+import {stateToHTML} from 'draft-js-export-html'
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
 import ms from 'ms'
@@ -16,12 +17,19 @@ import Reflection from '../../../server/database/types/Reflection'
 import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import ITask from '../../../server/database/types/Task'
-import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
+import JiraIssueId from '../../shared/gqlIds/JiraIssueId'
+import {
+  ExternalLinks,
+  MeetingSettingsThreshold,
+  RetroDemo,
+  SubscriptionChannel
+} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
+import splitDraftContent from '../../utils/draftjs/splitDraftContent'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
@@ -40,7 +48,6 @@ import initDB, {
   demoTeamId,
   DemoThreadableEdge,
   demoViewerId,
-  GitHubProjectKeyLookup,
   JiraProjectKeyLookup,
   RetroDemoDB
 } from './initDB'
@@ -81,10 +88,7 @@ export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | '
   voterIds: any
 }
 
-export type IDiscussPhase = Omit<
-  DiscussPhase,
-  'readyToAdvance' | 'endAt' | 'startAt' | 'promptTemplateId'
-> & {
+export type IDiscussPhase = Omit<DiscussPhase, 'readyToAdvance' | 'endAt' | 'startAt'> & {
   readyToAdvance: any
   startAt: string | Date
   endAt: string | Date
@@ -285,7 +289,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    DiscussionThreadRootQuery: ({discussionId}) => {
+    DiscussionThreadQuery: ({discussionId}) => {
       return {
         viewer: {
           ...this.db.users[0],
@@ -390,13 +394,22 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const {content} = task
+      const {title, contentState} = splitDraftContent(content)
+      const bodyHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
         integration: {
-          __typename: 'TaskIntegrationGitHub',
+          __typename: '_xGitHubIssue',
           id: `${taskId}:GitHub`,
-          ...GitHubProjectKeyLookup[nameWithOwner],
-          issueNumber: this.getTempId('')
+          title,
+          bodyHTML,
+          repository: {
+            __typename: '_xGitHubRepository',
+            id: `repo:${nameWithOwner}`,
+            nameWithOwner
+          },
+          number: this.getTempId('')
         }
       })
 
@@ -414,13 +427,32 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const project = JiraProjectKeyLookup[projectKey]
+      const {cloudId, cloudName, projectName, avatar} = project
+      const issueKey = this.getTempId(`${projectKey}-`)
+      const {content} = task
+      const {title, contentState} = splitDraftContent(content)
+      const descriptionHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
+        integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          __typename: 'TaskIntegrationJira',
-          id: `${taskId}:jira`,
-          ...JiraProjectKeyLookup[projectKey],
-          issueKey: this.getTempId(`${projectKey}-`)
+          __typename: 'JiraIssue',
+          id: `jira:${taskId}`,
+          issueKey,
+          projectKey,
+          cloudId,
+          cloudName,
+          descriptionHTML,
+          summary: title,
+          url: ExternalLinks.INTEGRATIONS_JIRA,
+          project: {
+            id: `${projectKey}:id`,
+            key: projectKey,
+            name: projectName,
+            avatar,
+            cloudId
+          }
         }
       })
 
@@ -439,7 +471,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       userId: string
     ) => {
       const now = new Date().toJSON()
-      const reflectPhase = (this.db.newMeeting.phases![1] as unknown) as IReflectPhase
+      const reflectPhase = ((this.db.newMeeting as any).phases.find(
+        (phase) => phase.phaseType === 'reflect'
+      ) as unknown) as IReflectPhase
       const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
@@ -536,11 +570,23 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       userId
     ) => {
       const commentor = this.db.users.find((user) => user.id === userId)
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      if (!discussion || !commentor) return
+      const {commentors} = discussion
+
+      if (isCommenting) {
+        commentors.push(commentor)
+      } else {
+        commentors.splice(
+          commentors.findIndex((commentor) => commentor.id === userId),
+          1
+        )
+      }
+
       const data = {
-        isCommenting,
-        commentor,
         discussionId,
-        __typename: 'EditCommentingPayload'
+        discussion,
+        __typename: 'EditCommentingSuccess'
       }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
@@ -1192,6 +1238,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const plaintextContent = extractTextFromDraftString(content)
       const task = {
         __typename: 'Task',
+        __isThreadable: 'Task',
         agendaItem: null,
         id: taskId,
         taskId,
@@ -1202,6 +1249,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         doneMeetingId: null,
         dueDate: null,
         editors: [],
+        integrationHash: null,
         integration: null,
         team: this.db.team,
         meetingId: RetroDemo.MEETING_ID,
@@ -1261,7 +1309,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       comment.isActive = false
 
       const {discussionId, threadParentId} = comment
-      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
       discussion.commentCount--
       if (comment.threadParentId) {
         const threadParent =
@@ -1363,7 +1411,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (!discussion) return
       const {thread} = discussion
       const {edges} = thread
-      edges.splice(edges.indexOf(task), 1)
+      edges.splice(
+        edges.findIndex((edge) => edge.node === task),
+        1
+      )
       const data = {
         __typename: 'DeleteTaskPayload',
         error: null,

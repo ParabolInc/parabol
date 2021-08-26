@@ -30,15 +30,11 @@ const SuggestedIntegrationJira = new GraphQLObjectType<any, GQLContext>({
     remoteProject: {
       type: JiraRemoteProject,
       description: 'The full project document fetched from Jira',
-      resolve: async ({cloudId, projectId, teamId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({cloudId, projectKey, teamId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
-        if (!auth) return null
-        const {accessToken} = auth
-        const project = await dataLoader
+        return dataLoader
           .get('jiraRemoteProject')
-          .load({accessToken, cloudId, atlassianProjectId: projectId})
-        return project
+          .load({userId: viewerId, teamId, cloudId, projectKey})
       }
     }
   })

@@ -43951,6 +43951,11 @@ export interface IUser {
   isRemoved: boolean;
 
   /**
+   * true if all user sessions are being recorded in LogRocket, else false
+   */
+  isWatched: boolean;
+
+  /**
    * the endedAt timestamp of the most recent meeting they were a member of
    */
   lastMetAt: any | null;
@@ -44327,12 +44332,12 @@ export interface IPageInfoDateCursor {
   /**
    * When paginating backwards, the cursor to continue.
    */
-  startCursor: string | null;
+  startCursor: any | null;
 
   /**
    * When paginating forwards, the cursor to continue.
    */
-  endCursor: string | null;
+  endCursor: any | null;
 }
 
 /**
@@ -44355,7 +44360,7 @@ export interface ITask {
   __typename: 'Task';
 
   /**
-   * serviceTaskId
+   * shortid
    */
   id: string;
 
@@ -44405,17 +44410,6 @@ export interface ITask {
   updatedAt: any;
 
   /**
-   * A list of users currently commenting
-   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * The first block of the content
-   */
-  title: string;
-
-  /**
    * The agenda item that the task was created in, if any
    */
   agendaItem: IAgendaItem | null;
@@ -44426,7 +44420,7 @@ export interface ITask {
   dueDate: any | null;
 
   /**
-   * A list of estimates for the story, created in a poker meeting
+   * A list of the most recent estimates for the task
    */
   estimates: Array<ITaskEstimate>;
 
@@ -44434,7 +44428,16 @@ export interface ITask {
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails>;
+
+  /**
+   * The reference to the single source of truth for this task
+   */
   integration: TaskIntegration | null;
+
+  /**
+   * A hash of the integrated task
+   */
+  integrationHash: string | null;
 
   /**
    * the foreign key for the meeting the task was created in
@@ -44475,6 +44478,11 @@ export interface ITask {
    * The team this task belongs to
    */
   team: ITeam;
+
+  /**
+   * The first block of the content
+   */
+  title: string;
 
   /**
    * * The userId, index useful for server-side methods getting all tasks under a user. This can be null if the task is not assigned to anyone.
@@ -44550,51 +44558,6 @@ export interface IThreadable {
 }
 
 /**
- * An entity that can be used in a poker meeting and receive estimates
- */
-export type Story = ITask | IJiraIssue;
-
-/**
- * An entity that can be used in a poker meeting and receive estimates
- */
-export interface IStory {
-  __typename: 'Story';
-
-  /**
-   * serviceTaskId
-   */
-  id: string;
-
-  /**
-   * A list of users currently commenting
-   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * The title, independent of the story type
-   */
-  title: string;
-}
-
-/**
- * The user that is commenting
- */
-export interface ICommentorDetails {
-  __typename: 'CommentorDetails';
-
-  /**
-   * The userId of the person commenting
-   */
-  userId: string;
-
-  /**
-   * The preferred name of the user commenting
-   */
-  preferredName: string;
-}
-
-/**
  * A request placeholder that will likely turn into 1 or more tasks
  */
 export interface IAgendaItem {
@@ -44665,6 +44628,23 @@ export interface IAgendaItem {
    * The team member that created the agenda item
    */
   teamMember: ITeamMember;
+}
+
+/**
+ * The user that is commenting
+ */
+export interface ICommentorDetails {
+  __typename: 'CommentorDetails';
+
+  /**
+   * The userId of the person commenting
+   */
+  id: string;
+
+  /**
+   * The preferred name of the user commenting
+   */
+  preferredName: string;
 }
 
 /**
@@ -44835,7 +44815,7 @@ export interface IAtlassianIntegration {
   __typename: 'AtlassianIntegration';
 
   /**
-   * shortid
+   * Composite key in atlassiani:teamId:userId format
    */
   id: string;
 
@@ -44972,20 +44952,19 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * cloudId:key. equal to the serviceTaskId on the EstimateStage
+   * GUID cloudId:issueKey
    */
   id: string;
 
   /**
-   * A list of users currently commenting
-   * @deprecated "Moved to ThreadConnection. Can remove Jun-01-2021"
+   * The parabol teamId this issue was fetched for
    */
-  commentors: Array<ICommentorDetails> | null;
+  teamId: string;
 
   /**
-   * Alias for summary used by the Story interface
+   * The parabol userId this issue was fetched for
    */
-  title: string;
+  userId: string;
 
   /**
    * The ID of the jira cloud where the issue lives
@@ -45005,7 +44984,17 @@ export interface IJiraIssue {
   /**
    * The key of the issue as found in Jira
    */
-  key: string;
+  issueKey: string;
+
+  /**
+   * The key of the project, which is the prefix to the issueKey
+   */
+  projectKey: string;
+
+  /**
+   * The project fetched from jira
+   */
+  project: IJiraRemoteProject | null;
 
   /**
    * The plaintext summary of the jira issue
@@ -45023,18 +45012,11 @@ export interface IJiraIssue {
   descriptionHTML: string;
 }
 
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
+export type TaskIntegration = IXGitHubIssue | IJiraIssue;
 
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration';
+  id: string;
 }
 
 /**
@@ -45043,6 +45025,16 @@ export interface IStandardMutationError {
 export interface IJiraRemoteProject {
   __typename: 'JiraRemoteProject';
   id: string;
+
+  /**
+   * The parabol teamId this issue was fetched for
+   */
+  teamId: string;
+
+  /**
+   * The parabol userId this issue was fetched for
+   */
+  userId: string;
   self: string;
 
   /**
@@ -45078,6 +45070,20 @@ export interface IJiraRemoteProjectCategory {
   id: string;
   name: string;
   description: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
 }
 
 /**
@@ -45167,7 +45173,7 @@ export interface IGitHubIntegration {
    * The user that the access token is attached to
    */
   userId: string;
-  api: IGitHubApi | null;
+  api: IXGitHubApi | null;
 }
 
 /**
@@ -45684,11 +45690,6 @@ export interface IReflectPrompt {
    * The template that this prompt belongs to
    */
   template: IReflectTemplate;
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string;
 
   /**
    * The question to answer during the phase of the retrospective (eg What went well?)
@@ -46387,6 +46388,21 @@ export interface ITaskEstimate {
   __typename: 'TaskEstimate';
 
   /**
+   * The ID of the estimate
+   */
+  id: string;
+
+  /**
+   * The timestamp the estimate was created
+   */
+  createdAt: any;
+
+  /**
+   * The source that a change came in through
+   */
+  changeSource: ChangeSourceEnum;
+
+  /**
    * The name of the estimate dimension
    */
   name: string;
@@ -46395,6 +46411,45 @@ export interface ITaskEstimate {
    * The human-readable label for the estimate
    */
   label: string;
+
+  /**
+   * *The taskId that the estimate refers to
+   */
+  taskId: string;
+
+  /**
+   * The userId that added the estimate
+   */
+  userId: string;
+
+  /**
+   * *The meetingId that the estimate occured in, if any
+   */
+  meetingId: string | null;
+
+  /**
+   * The meeting stageId the estimate occurred in, if any
+   */
+  stageId: string | null;
+
+  /**
+   * The discussionId where the estimated was discussed
+   */
+  discussionId: string | null;
+
+  /**
+   * If the task comes from jira, this is the jira field that the estimate refers to
+   */
+  jiraFieldId: string | null;
+}
+
+/**
+ * The source that a change to a record came in through
+ */
+export const enum ChangeSourceEnum {
+  meeting = 'meeting',
+  task = 'task',
+  external = 'external'
 }
 
 export interface ITaskEditorDetails {
@@ -46409,14 +46464,6 @@ export interface ITaskEditorDetails {
    * The name of the userId editing the task
    */
   preferredName: string;
-}
-
-export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira;
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration';
-  id: string;
-  service: TaskServiceEnum;
 }
 
 /**
@@ -46952,6 +46999,11 @@ export interface IDiscussion {
   commentCount: number;
 
   /**
+   * The users writing a comment right now
+   */
+  commentors: Array<IUser>;
+
+  /**
    * The comments & tasks thread in the discussion
    */
   thread: IThreadableConnection;
@@ -47000,11 +47052,6 @@ export interface IThreadableConnection {
    * Any errors that prevented the query from returning the full results
    */
   error: string | null;
-
-  /**
-   * A list of userIds currently commenting
-   */
-  commentorIds: Array<string>;
 }
 
 /**
@@ -47328,11 +47375,6 @@ export interface IReflectPhase {
    * the Prompt that the facilitator wants the group to focus on
    */
   focusedPrompt: IReflectPrompt | null;
-
-  /**
-   * FK. The ID of the template used during the reflect phase
-   */
-  promptTemplateId: string;
 
   /**
    * The prompts used during the reflect phase
@@ -47691,7 +47733,7 @@ export interface IRetroDiscussStage {
   discussionId: string;
 
   /**
-   * The discussion about the stage
+   * The discussion about the stage or a dummy data when there is no disscussion
    */
   discussion: IDiscussion;
 
@@ -48233,19 +48275,14 @@ export interface IEstimateStage {
   discussion: IDiscussion;
 
   /**
-   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   * The id of the user that added this stage.
    */
   creatorUserId: string;
 
   /**
-   * The service the task is connected to
+   * The ID that points to the issue that exists in parabol
    */
-  service: TaskServiceEnum;
-
-  /**
-   * The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId
-   */
-  serviceTaskId: string;
+  taskId: string;
 
   /**
    * The field name used by the service for this dimension
@@ -48288,9 +48325,9 @@ export interface IEstimateStage {
   scores: Array<IEstimateUserScore>;
 
   /**
-   * the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed
+   * The task referenced in the stage, as it exists in Parabol. null if the task was deleted
    */
-  story: Story | null;
+  task: ITask | null;
 
   /**
    * true when the participants are still voting and results are hidden. false when votes are revealed
@@ -50003,7 +50040,7 @@ export interface IPokerMeeting {
   /**
    * A single story created in a Sprint Poker meeting
    */
-  story: Story | null;
+  story: ITask | null;
 
   /**
    * The ID of the template used for the meeting. Note the underlying template could have changed!
@@ -50081,51 +50118,6 @@ export interface IActionMeetingSettings {
    * The team these settings belong to
    */
   team: ITeam;
-}
-
-/**
- * The details associated with a task integrated with GitHub
- */
-export interface ITaskIntegrationGitHub {
-  __typename: 'TaskIntegrationGitHub';
-  id: string;
-  service: TaskServiceEnum;
-  nameWithOwner: string | null;
-  issueNumber: number | null;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ITaskIntegrationJira {
-  __typename: 'TaskIntegrationJira';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project as defined by jira
-   */
-  projectName: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The issue key used by jira as a more human readable proxy for the id field
-   */
-  issueKey: string;
-
-  /**
-   * The psuedo-domain to use to generate a base url
-   */
-  cloudName: string;
 }
 
 /**
@@ -50255,7 +50247,7 @@ export interface IComment {
 
 export interface IQuery {
   __typename: 'Query';
-  viewer: IUser | null;
+  viewer: IUser;
   getDemoEntities: IGetDemoEntitiesPayload;
   massInvitation: IMassInvitationPayload;
   verifiedInvitation: IVerifiedInvitationPayload;
@@ -50546,7 +50538,7 @@ export interface IMutation {
   /**
    * Track which users are commenting
    */
-  editCommenting: IEditCommentingPayload | null;
+  editCommenting: EditCommentingPayload | null;
 
   /**
    * Finish a sprint poker meeting
@@ -50597,7 +50589,6 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
-  jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
    * Sign up or login using Google
@@ -50762,14 +50753,14 @@ export interface IMutation {
   removeTeamMember: IRemoveTeamMemberPayload | null;
 
   /**
-   * Reset meeting to a previously completed stage
-   */
-  resetMeetingToStage: IResetMeetingToStagePayload;
-
-  /**
    * Reset the password for an account
    */
   resetPassword: IResetPasswordPayload;
+
+  /**
+   * Reset a retro meeting to group stage
+   */
+  resetRetroMeetingToGroupStage: IResetRetroMeetingToGroupStagePayload;
 
   /**
    * track an event in segment, like when errors are hit
@@ -50962,6 +50953,7 @@ export interface IMutation {
 
   /**
    * Update the final score field & push to the associated integration
+   * @deprecated "Use setTaskEstimate. Can delete this mutation Aug 15-2021"
    */
   pokerSetFinalScore: PokerSetFinalScorePayload;
 
@@ -50981,15 +50973,20 @@ export interface IMutation {
   joinMeeting: JoinMeetingPayload;
 
   /**
-   * Create an issue in GitHub
+   * Adds a missing Jira field to a screen currently assigned to a Jira project
    */
-  gitHubCreateIssue: GitHubCreateIssuePayload;
+  addMissingJiraField: AddMissingJiraFieldPayload;
 
   /**
    * Set whether the user is spectating poker meeting
    */
   setPokerSpectate: SetPokerSpectatePayload;
   persistGitHubSearchQuery: PersistGitHubSearchQueryPayload;
+
+  /**
+   * Update a task estimate
+   */
+  setTaskEstimate: SetTaskEstimatePayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -51414,33 +51411,6 @@ export interface IInviteToTeamOnMutationArguments {
   invitees: Array<any>;
 }
 
-export interface IJiraCreateIssueOnMutationArguments {
-  /**
-   * The atlassian cloudId for the site
-   */
-  cloudId: string;
-
-  /**
-   * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
-   */
-  meetingId?: string | null;
-
-  /**
-   * The atlassian key of the project to put the issue in
-   */
-  projectKey: string;
-
-  /**
-   * The text content of the Jira issue
-   */
-  summary: string;
-
-  /**
-   * The id of the team that is creating the issue
-   */
-  teamId: string;
-}
-
 export interface ILoginWithGoogleOnMutationArguments {
   /**
    * The code provided from the OAuth2 flow
@@ -51684,11 +51654,6 @@ export interface IRemoveTeamMemberOnMutationArguments {
   teamMemberId: string;
 }
 
-export interface IResetMeetingToStageOnMutationArguments {
-  meetingId: string;
-  stageId: string;
-}
-
 export interface IResetPasswordOnMutationArguments {
   /**
    * the password reset token
@@ -51699,6 +51664,10 @@ export interface IResetPasswordOnMutationArguments {
    * The new password for the account
    */
   newPassword: string;
+}
+
+export interface IResetRetroMeetingToGroupStageOnMutationArguments {
+  meetingId: string;
 }
 
 export interface ISegmentEventTrackOnMutationArguments {
@@ -52121,26 +52090,9 @@ export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
 }
 
-export interface IGitHubCreateIssueOnMutationArguments {
-  /**
-   * The id of the meeting where the GitHub issue is being created
-   */
+export interface IAddMissingJiraFieldOnMutationArguments {
   meetingId: string;
-
-  /**
-   * The owner/repo string
-   */
-  nameWithOwner: string;
-
-  /**
-   * The id of the team that is creating the issue
-   */
-  teamId: string;
-
-  /**
-   * The title of the GH issue
-   */
-  title: string;
+  stageId: string;
 }
 
 export interface ISetPokerSpectateOnMutationArguments {
@@ -52167,6 +52119,10 @@ export interface IPersistGitHubSearchQueryOnMutationArguments {
    * true if this query should be deleted
    */
   isRemove?: boolean | null;
+}
+
+export interface ISetTaskEstimateOnMutationArguments {
+  taskEstimate: ITaskEstimateInput;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -52782,6 +52738,19 @@ export interface ICreateTaskInput {
    * userId, the owner of the task. This can be null if the task is not assigned to anyone.
    */
   userId?: string | null;
+  integration?: ICreateTaskIntegrationInput | null;
+}
+
+export interface ICreateTaskIntegrationInput {
+  /**
+   * The service to push this new task to
+   */
+  service: TaskServiceEnum;
+
+  /**
+   * The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
+   */
+  serviceProjectHash: string;
 }
 
 /**
@@ -52903,24 +52872,23 @@ export interface IEmailPasswordResetSuccess {
   success: boolean | null;
 }
 
-export interface IEditCommentingPayload {
-  __typename: 'EditCommentingPayload';
+/**
+ * Return object for EditCommentingPayload
+ */
+export type EditCommentingPayload = IErrorPayload | IEditCommentingSuccess;
 
-  /**
-   * true if the user is commenting, false if the user has stopped commenting
-   */
-  isCommenting: boolean;
-
-  /**
-   * The user that is commenting or has stopped commenting
-   */
-  commentor: IUser | null;
-  meetingId: string;
+export interface IEditCommentingSuccess {
+  __typename: 'EditCommentingSuccess';
 
   /**
    * The discussion the comment was created in
    */
   discussionId: string;
+
+  /**
+   * The discussion where the commenting state changed
+   */
+  discussion: IDiscussion;
 }
 
 /**
@@ -53200,26 +53168,6 @@ export interface IInviteToTeamPayload {
   removedSuggestedActionId: string | null;
 }
 
-export interface IJiraCreateIssuePayload {
-  __typename: 'JiraCreateIssuePayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * The issue straight from Jira
-   */
-  jiraIssue: IJiraIssue | null;
-
-  /**
-   * The id of the meeting where the Jira issue is being created
-   */
-  meetingId: string | null;
-
-  /**
-   * The id of the team that is creating the Jira issue
-   */
-  teamId: string;
-}
-
 export interface ILoginWithGooglePayload {
   __typename: 'LoginWithGooglePayload';
   error: IStandardMutationError | null;
@@ -53476,11 +53424,6 @@ export interface IRemoveAgendaItemPayload {
 export interface IRemoveAtlassianAuthPayload {
   __typename: 'RemoveAtlassianAuthPayload';
   error: IStandardMutationError | null;
-
-  /**
-   * The ID of the authorization removed
-   */
-  authId: string | null;
   teamId: string | null;
 
   /**
@@ -53740,12 +53683,6 @@ export interface IRemoveTeamMemberPayload {
   kickOutNotification: INotifyKickedOut | null;
 }
 
-export interface IResetMeetingToStagePayload {
-  __typename: 'ResetMeetingToStagePayload';
-  error: IStandardMutationError | null;
-  meeting: NewMeeting | null;
-}
-
 export interface IResetPasswordPayload {
   __typename: 'ResetPasswordPayload';
   error: IStandardMutationError | null;
@@ -53760,6 +53697,12 @@ export interface IResetPasswordPayload {
    * the user that changed their password
    */
   user: IUser | null;
+}
+
+export interface IResetRetroMeetingToGroupStagePayload {
+  __typename: 'ResetRetroMeetingToGroupStagePayload';
+  error: IStandardMutationError | null;
+  meeting: NewMeeting | null;
 }
 
 export interface ISegmentEventTrackOptions {
@@ -54114,12 +54057,12 @@ export interface IUpdatePokerScopeSuccess {
 
 export interface IUpdatePokerScopeItemInput {
   /**
-   * The service where the task comes from
+   * The location of the single source of truth (e.g. a jira-integrated parabol task would be "jira")
    */
   service: TaskServiceEnum;
 
   /**
-   * A JSON commposite key used to fetch the task from the service
+   * If vanilla parabol task, taskId. If integrated parabol task, integrationHash
    */
   serviceTaskId: string;
 
@@ -54454,68 +54397,19 @@ export interface IJoinMeetingSuccess {
 }
 
 /**
- * Return object for GitHubCreateIssuePayload
+ * Return object for AddMissingJiraFieldPayload
  */
-export type GitHubCreateIssuePayload =
+export type AddMissingJiraFieldPayload =
   | IErrorPayload
-  | IGitHubCreateIssueSuccess;
+  | IAddMissingJiraFieldSuccess;
 
-export interface IGitHubCreateIssueSuccess {
-  __typename: 'GitHubCreateIssueSuccess';
-
-  /**
-   * The GitHub Issue that comes directly from GitHub
-   */
-  gitHubIssue: IGitHubIssue;
+export interface IAddMissingJiraFieldSuccess {
+  __typename: 'AddMissingJiraFieldSuccess';
 
   /**
-   * The id of the meeting where the GitHub issue is being created
+   * Jira field which was just added to an issue screen
    */
-  meetingId: string;
-
-  /**
-   * The id of the team that is creating the GitHub issue
-   */
-  teamId: string;
-}
-
-/**
- * The GitHub Issue that comes direct from GitHub
- */
-export interface IGitHubIssue {
-  __typename: 'GitHubIssue';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * The url to access the issue
-   */
-  url: any;
-
-  /**
-   * The repository that the issue belongs to
-   */
-  repository: IGitHubRepository;
-
-  /**
-   * The title of the GitHub issue
-   */
-  title: string;
-}
-
-/**
- * A repository that comes directly from GitHub
- */
-export interface IGitHubRepository {
-  __typename: 'GitHubRepository';
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
+  dimensionField: IJiraDimensionField | null;
 }
 
 /**
@@ -54560,6 +54454,36 @@ export interface IPersistGitHubSearchQuerySuccess {
   githubIntegration: IGitHubIntegration;
 }
 
+/**
+ * Return object for SetTaskEstimatePayload
+ */
+export type SetTaskEstimatePayload = IErrorPayload | ISetTaskEstimateSuccess;
+
+export interface ISetTaskEstimateSuccess {
+  __typename: 'SetTaskEstimateSuccess';
+  task: ITask;
+
+  /**
+   * The stage that holds the updated finalScore, if meetingId was provided
+   */
+  stage: IEstimateStage | null;
+}
+
+export interface ITaskEstimateInput {
+  taskId: string;
+
+  /**
+   * The new estimate value
+   */
+  value: string;
+
+  /**
+   * The name of the estimate, e.g. Story Points
+   */
+  dimensionName: string;
+  meetingId?: string | null;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -54582,15 +54506,14 @@ export type MeetingSubscriptionPayload =
   | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
   | IDragEstimatingTaskSuccess
-  | IEditCommentingPayload
+  | IEditCommentingSuccess
   | IEditReflectionPayload
   | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
-  | IJiraCreateIssuePayload
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
-  | IResetMeetingToStagePayload
+  | IResetRetroMeetingToGroupStagePayload
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
@@ -54608,8 +54531,8 @@ export type MeetingSubscriptionPayload =
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
-  | IGitHubCreateIssueSuccess
-  | ISetPokerSpectateSuccess;
+  | ISetPokerSpectateSuccess
+  | ISetTaskEstimateSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
   __typename: 'AddReactjiToReflectionSuccess';
@@ -54937,8 +54860,8 @@ export interface IXGitHubError {
   path: Array<string> | null;
 }
 
-export interface IGitHubApi {
-  __typename: 'GitHubApi';
+export interface IXGitHubApi {
+  __typename: '_xGitHubApi';
   errors: Array<IXGitHubError> | null;
   query: IXGitHubQuery | null;
   mutation: IXGitHubMutation | null;
