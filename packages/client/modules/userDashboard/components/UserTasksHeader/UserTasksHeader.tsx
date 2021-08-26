@@ -1,24 +1,24 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {UserTasksHeader_viewer} from '~/__generated__/UserTasksHeader_viewer.graphql'
+import {useFragment} from 'react-relay'
+import Checkbox from '~/components/Checkbox'
+import LinkButton from '~/components/LinkButton'
+import useRouter from '~/hooks/useRouter'
+import {PALETTE} from '~/styles/paletteV3'
+import {ICON_SIZE} from '~/styles/typographyV2'
+import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
+import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {UserTasksHeader_viewer$key} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import lazyPreload from '../../../../utils/lazyPreload'
-import styled from '@emotion/styled'
-import LinkButton from '~/components/LinkButton'
-import {PALETTE} from '~/styles/paletteV3'
-import Checkbox from '~/components/Checkbox'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
-import useRouter from '~/hooks/useRouter'
-import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -71,14 +71,35 @@ const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
 })
 
 interface Props {
-  viewer: UserTasksHeader_viewer | null
+  viewerRef: UserTasksHeader_viewer$key | null
 }
 
 const UserTasksHeader = (props: Props) => {
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {viewer} = props
+  const {viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment UserTasksHeader_viewer on User {
+        id
+        ...UserDashTeamMenu_viewer
+        ...UserDashTeamMemberMenu_viewer
+        teams {
+          id
+          name
+          teamMembers(sortBy: "preferredName") {
+            user {
+              id
+              preferredName
+              tms
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {
     menuPortal: teamFilterMenuPortal,
     togglePortal: teamFilterTogglePortal,
@@ -103,9 +124,10 @@ const UserTasksHeader = (props: Props) => {
   const teams = oldTeamsRef.current
   const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
 
-  const teamFilter = useMemo(() =>
-    teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
-    , [teamIds, teams])
+  const teamFilter = useMemo(
+    () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),
+    [teamIds, teams]
+  )
 
   const teamFilterName = (teamFilter && teamFilter.name) || UserTaskViewFilterLabels.ALL_TEAMS
 
@@ -177,23 +199,4 @@ const UserTasksHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(UserTasksHeader, {
-  viewer: graphql`
-    fragment UserTasksHeader_viewer on User {
-      id
-      ...UserDashTeamMenu_viewer
-      ...UserDashTeamMemberMenu_viewer
-      teams {
-        id
-        name
-        teamMembers(sortBy: "preferredName") {
-          user {
-            id
-            preferredName
-            tms
-          }
-        }
-      }
-    }
-  `
-})
+export default UserTasksHeader

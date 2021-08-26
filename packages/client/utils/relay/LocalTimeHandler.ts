@@ -4,6 +4,7 @@
  */
 
 import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
+import initHandler from './initHandler'
 
 const LATENCY = 200 // ms to travel from server to client
 
@@ -17,6 +18,7 @@ const setClientClockOffset = (viewer, scheduledEndTime, timeRemaining) => {
 
 const LocalTimeHandler: Handler = {
   update(store, payload) {
+    initHandler(store, payload)
     const record = store.get(payload.dataID)
     const viewer = store.getRoot().getLinkedRecord('viewer')
     if (!record || !viewer) return
