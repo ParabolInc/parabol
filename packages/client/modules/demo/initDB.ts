@@ -6,11 +6,13 @@ import RetrospectiveMeetingSettings from '../../../server/database/types/Meeting
 import ITask from '../../../server/database/types/Task'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
+import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
+import DemoDiscussStage from './DemoDiscussStage'
+import DemoGenericMeetingStage from './DemoGenericMeetingStage'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
@@ -44,7 +46,7 @@ type IRetrospectiveMeetingSettings = RetrospectiveMeetingSettings & {
 const initMeetingSettings = () => {
   return {
     __typename: 'RetrospectiveMeetingSettings',
-    phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS],
+    phaseTypes: [REFLECT, GROUP, VOTE, DISCUSS],
     id: 'settingsId',
     maxVotesPerGroup: 3,
     meetingType: RETROSPECTIVE,
@@ -87,14 +89,14 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeSuggestedIntegrationJira = (key) => ({
+const makeSuggestedIntegrationJira = (key: string) => ({
   __typename: 'SuggestedIntegrationJira',
   id: key,
   remoteProject: {},
   ...JiraProjectKeyLookup[key]
 })
 
-const makeSuggestedIntegrationGitHub = (nameWithOwner) => ({
+const makeSuggestedIntegrationGitHub = (nameWithOwner: string) => ({
   __typename: 'SuggestedIntegrationGitHub',
   id: nameWithOwner,
   ...GitHubProjectKeyLookup[nameWithOwner]
@@ -125,7 +127,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
   }
 }
 
-const initSlackNotification = (userId) => ({
+const initSlackNotification = (userId: string) => ({
   __typename: 'SlackNotification',
   id: 'demoSlackNotification',
   event: 'MEETING_STAGE_TIME_LIMIT_START' as SlackNotificationEventEnum,
@@ -135,7 +137,7 @@ const initSlackNotification = (userId) => ({
   teamId: demoTeamId
 })
 
-const initSlackAuth = (userId) => ({
+const initSlackAuth = (userId: string) => ({
   __typename: 'SlackAuth',
   isActive: true,
   botUserId: 'demoSlackBotId',
@@ -232,36 +234,16 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
   }
 }
 
-const initCheckInStage = (teamMember) => ({
-  __typename: 'CheckInStage',
-  endAt: new Date().toJSON(),
-  id: 'checkinStage',
-  isComplete: true,
-  meetingId: RetroDemo.MEETING_ID,
-  phaseType: CHECKIN,
-  teamMemberId: teamMember.id,
-  meetingMember: teamMember.meetingMember,
-  teamMember
-})
-
-const initPhases = (teamMembers) => {
-  const now = new Date().toJSON()
+const initPhases = () => {
+  const reflectStage = new DemoGenericMeetingStage(RetroDemo.REFLECT_STAGE_ID, REFLECT)
+  reflectStage.isNavigable = true
+  reflectStage.isNavigableByFacilitator = true
+  const groupStage = new DemoGenericMeetingStage(RetroDemo.GROUP_STAGE_ID, GROUP)
+  groupStage.isNavigableByFacilitator = true
   return [
     {
-      __typename: 'CheckInPhase',
-      checkInGreeting: {
-        content: 'Bonjour',
-        language: 'french'
-      },
-      checkInQuestion:
-        '{"blocks":[{"key":"1bm6m","text":"What’s got your attention today, and why?","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
-      id: 'checkinPhase',
-      phaseType: CHECKIN,
-      meetingId: RetroDemo.MEETING_ID,
-      stages: teamMembers.map(initCheckInStage)
-    },
-    {
       __typename: 'ReflectPhase',
+      __isNewMeetingPhase: 'ReflectPhase',
       id: 'reflectPhase',
       phaseType: REFLECT,
       focusedPromptId: null,
@@ -293,73 +275,31 @@ const initPhases = (teamMembers) => {
           sortOrder: 2
         }
       ],
-      stages: [
-        {
-          __typename: 'GenericMeetingStage',
-          id: RetroDemo.REFLECT_STAGE_ID,
-          isComplete: false,
-          isNavigable: true,
-          isNavigableByFacilitator: true,
-          meetingId: RetroDemo.MEETING_ID,
-          phaseType: REFLECT,
-          readyCount: 0,
-          startAt: now
-        }
-      ]
+      stages: [reflectStage]
     },
     {
       __typename: 'GenericMeetingPhase',
+      __isNewMeetingPhase: 'GenericMeetingPhase',
       id: 'groupPhase',
       phaseType: GROUP,
       meetingId: RetroDemo.MEETING_ID,
-      stages: [
-        {
-          __typename: 'GenericMeetingStage',
-          id: RetroDemo.GROUP_STAGE_ID,
-          isComplete: false,
-          meetingId: RetroDemo.MEETING_ID,
-          phaseType: GROUP,
-          readyCount: 0
-        }
-      ]
+      stages: [groupStage]
     },
     {
       __typename: 'GenericMeetingPhase',
+      __isNewMeetingPhase: 'GenericMeetingPhase',
       id: 'votePhase',
       phaseType: VOTE,
       meetingId: RetroDemo.MEETING_ID,
-      stages: [
-        {
-          __typename: 'GenericMeetingStage',
-          id: RetroDemo.VOTE_STAGE_ID,
-          isComplete: false,
-          meetingId: RetroDemo.MEETING_ID,
-          phaseType: VOTE,
-          readyCount: 0
-        }
-      ]
+      stages: [new DemoGenericMeetingStage(RetroDemo.VOTE_STAGE_ID, VOTE)]
     },
     {
       __typename: 'DiscussPhase',
+      __isNewMeetingPhase: 'DiscussPhase',
       id: 'discussPhase',
       phaseType: DISCUSS,
       meetingId: RetroDemo.MEETING_ID,
-      stages: [
-        {
-          __typename: 'RetroDiscussStage',
-          id: 'discussStage0',
-          meetingId: RetroDemo.MEETING_ID,
-          isComplete: false,
-          isNavigable: false,
-          isNavigableByFacilitator: false,
-          phaseType: DISCUSS,
-          reflectionGroup: null,
-          discussionId: `discussion:dummy`,
-          discussion: null,
-          readyCount: 0,
-          sortOrder: 0
-        }
-      ]
+      stages: [new DemoDiscussStage('discussStage0', 0, null, 'discussion:dummy', null)]
     }
   ]
 }
@@ -437,6 +377,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
   const [viewerTeamMember] = teamMembers
   return {
     __typename: 'RetrospectiveMeeting',
+    __isNewMeeting: 'RetrospectiveMeeting',
     createdAt: now,
     createdBy: demoViewerId,
     endedAt: null,
@@ -457,7 +398,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     votesRemaining: teamMembers.length * 5,
-    phases: initPhases(teamMembers) as any[],
+    phases: initPhases() as any[],
     summarySentAt: null,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,

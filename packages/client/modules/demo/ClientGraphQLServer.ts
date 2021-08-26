@@ -289,7 +289,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    DiscussionThreadRootQuery: ({discussionId}) => {
+    DiscussionThreadQuery: ({discussionId}) => {
       return {
         viewer: {
           ...this.db.users[0],
@@ -469,7 +469,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       userId: string
     ) => {
       const now = new Date().toJSON()
-      const reflectPhase = (this.db.newMeeting.phases![1] as unknown) as IReflectPhase
+      const reflectPhase = ((this.db.newMeeting as any).phases.find(
+        (phase) => phase.phaseType === 'reflect'
+      ) as unknown) as IReflectPhase
       const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
