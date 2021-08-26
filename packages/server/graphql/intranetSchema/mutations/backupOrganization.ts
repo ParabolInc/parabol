@@ -2,13 +2,11 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
-
 import util from 'util'
 import childProcess from 'child_process'
 import path from 'path'
 import getProjectRoot from '../../../../../scripts/webpack/utils/getProjectRoot'
 import getPg from '../../../postgres/getPg'
-import MeetingPoker from '../../../database/types/MeetingPoker'
 
 const execFilePromise = util.promisify(childProcess.execFile)
 const PROJECT_ROOT = getProjectRoot()
@@ -32,84 +30,45 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
   const r = await getRethink()
 
   try {
-    // ensure orgBackup schema
-    await client.query('DROP SCHEMA IF EXISTS "orgBackup" CASCADE;')
-    await client.query('CREATE SCHEMA "orgBackup";')
-    // begin transaction
-    await client.query('BEGIN')
-    await client.query('CREATE TABLE "orgBackup"."PgMigrations" AS (SELECT * FROM "PgMigrations");')
-    await client.query(
-      'CREATE TABLE "orgBackup"."PgPostDeployMigrations" AS (SELECT * FROM "PgPostDeployMigrations");'
-    )
-    await client.query(
-      'CREATE TABLE "orgBackup"."OrganizationUserAudit" AS (SELECT * FROM "OrganizationUserAudit" WHERE "orgId" = ANY ($1));',
-      [orgIds]
-    )
-    await client.query(
-      `CREATE TABLE "orgBackup"."Team" AS (SELECT * FROM "Team" WHERE "orgId" = ANY ($1));`,
-      [orgIds]
-    )
-    // by team ids
-    const teams = await client.query('SELECT "id" FROM "orgBackup"."Team";')
+    // fetch needed items upfront
+    const teams = await client.query('SELECT "id" FROM "Team" WHERE "orgId" = ANY ($1);', [orgIds])
     const teamIds = teams.rows.map((team) => team.id)
-    await client.query(
-      'CREATE TABLE "orgBackup"."GitHubAuth" AS (SELECT * FROM "GitHubAuth" WHERE "teamId" = ANY ($1));',
-      [teamIds]
-    )
-    await client.query(
-      'CREATE TABLE "orgBackup"."AtlassianAuth" AS (SELECT * FROM "AtlassianAuth" WHERE "teamId" = ANY ($1));',
-      [teamIds]
-    )
-    await client.query(
-      'CREATE TABLE "orgBackup"."Discussion" AS (SELECT * FROM "Discussion" WHERE "teamId" = ANY ($1));',
-      [teamIds]
-    )
-
-    const [userIds, meetings] = await Promise.all([
+    const [userIds, templateRefIds] = await Promise.all([
       r
         .table('TeamMember')
         .getAll(r.args(teamIds), {index: 'teamId'})('userId')
         .coerceTo('array')
         .distinct()
         .run(),
-      r
+      (r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .pluck('id', 'templateRefId')
+        .filter(row => row.hasFields('templateRefId')) as any)('templateRefId')
+        .coerceTo('array')
+        .distinct()
         .run()
     ])
-    const templateRefIds: string[] = []
-    const meetingIds: string[] = []
-    for (const meeting of meetings) {
-      meetingIds.push(meeting.id!)
-      meeting.hasOwnProperty('templateRefId') &&
-        templateRefIds.push((meeting as MeetingPoker).templateRefId)
-    }
-    await client.query(
-      'CREATE TABLE "orgBackup"."TaskEstimate" AS (SELECT * FROM "TaskEstimate" WHERE "meetingId" = ANY ($1));',
-      [meetingIds]
-    )
-
-    // by user ids and other things
-    await client.query(
-      'CREATE TABLE "orgBackup"."User" AS (SELECT * FROM "User" WHERE "id" = ANY ($1));',
-      [userIds]
-    )
-    await client.query(
-      'CREATE TABLE "orgBackup"."TemplateRef" AS (SELECT * FROM "TemplateRef" WHERE "id" = ANY ($1));',
-      [templateRefIds]
-    )
     const templateRefs = await client.query(
-      `SELECT jsonb_array_elements("template" -> 'dimensions') -> 'scaleRefId' AS "scaleRefId" FROM "orgBackup"."TemplateRef";`
+      `SELECT jsonb_array_elements("template" -> 'dimensions') -> 'scaleRefId' AS "scaleRefId" FROM "TemplateRef" WHERE "id" = ANY ($1);`,
+      [templateRefIds]
     )
     const templateScaleRefIds = templateRefs.rows.map(({scaleRefId}) => scaleRefId)
 
-    await client.query(
-      'CREATE TABLE "orgBackup"."TemplateScaleRef" AS (SELECT * FROM "TemplateScaleRef" WHERE "id" = ANY ($1));',
-      [templateScaleRefIds]
-    )
-
-    // commit transaction
+    // do all inserts here
+    await client.query('BEGIN')
+    await client.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
+    await client.query(`CREATE SCHEMA "orgBackup";`)
+    await client.query(`CREATE TABLE "orgBackup"."PgMigrations" AS (SELECT * FROM "PgMigrations");`)
+    await client.query(`CREATE TABLE "orgBackup"."PgPostDeployMigrations" AS (SELECT * FROM "PgPostDeployMigrations");`)
+    await client.query(`CREATE TABLE "orgBackup"."OrganizationUserAudit" AS (SELECT * FROM "OrganizationUserAudit" WHERE "orgId" = ANY ($1));`, [orgIds])
+    await client.query(`CREATE TABLE "orgBackup"."Team" AS (SELECT * FROM "Team" WHERE "orgId" = ANY ($1));`, [orgIds])
+    await client.query(`CREATE TABLE "orgBackup"."GitHubAuth" AS (SELECT * FROM "GitHubAuth" WHERE "teamId" = ANY ($1));`, [teamIds])
+    await client.query(`CREATE TABLE "orgBackup"."AtlassianAuth" AS (SELECT * FROM "AtlassianAuth" WHERE "teamId" = ANY ($1));`, [teamIds])
+    await client.query(`CREATE TABLE "orgBackup"."Discussion" AS (SELECT * FROM "Discussion" WHERE "teamId" = ANY ($1));`, [teamIds])
+    await client.query(`CREATE TABLE "orgBackup"."TaskEstimate" AS (SELECT * FROM "TaskEstimate" WHERE "userId" = ANY ($1));`, [userIds])
+    await client.query(`CREATE TABLE "orgBackup"."User" AS (SELECT * FROM "User" WHERE "id" = ANY ($1));`, [userIds])
+    await client.query(`CREATE TABLE "orgBackup"."TemplateRef" AS (SELECT * FROM "TemplateRef" WHERE "id" = ANY ($1));`, [templateRefIds])
+    await client.query(`CREATE TABLE "orgBackup"."TemplateScaleRef" AS (SELECT * FROM "TemplateScaleRef" WHERE "id" = ANY ($1));`, [templateScaleRefIds])
     await client.query('COMMIT')
   } catch (e) {
     await client.query('ROLLBACK')
