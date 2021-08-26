@@ -6,6 +6,7 @@ import PageInfoDateCursor from './PageInfoDateCursor'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import PollOption from './PollOption'
+import PollId from '../../../client/shared/gqlIds/PollId'
 
 const Poll = new GraphQLObjectType<any, GQLContext>({
   name: 'Poll',
@@ -14,16 +15,21 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
   isTypeOf: ({title}) => !!title,
   fields: () => ({
     ...(threadableFields() as any),
+    id: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'Poll id in a format of `poll:idGeneratedByDatabase`',
+      resolve: ({id}) => PollId.create(id)
+    },
     meetingId: {
-      type: GraphQLID,
+      type: GraphQLNonNull(GraphQLID),
       description: 'the foreign key for the meeting the task was created in'
     },
     teamId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID),
       description: 'The id of the team (indexed). Needed for subscribing to archived tasks'
     },
     team: {
-      type: new GraphQLNonNull(Team),
+      type: GraphQLNonNull(Team),
       description: 'The team this task belongs to',
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)

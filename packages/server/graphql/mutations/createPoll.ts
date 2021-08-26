@@ -92,16 +92,13 @@ const createPoll = {
       return {error: {message: 'Discussion does not take place in a meeting'}}
     }
     const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-    const [, viewerMeetingMember] = await Promise.all([
-      dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('meetingMembers').load(meetingMemberId)
-    ])
+    const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
       return {error: {message: 'Not a member of the meeting'}}
     }
 
     // RESOLUTION
-    const [{id}] = await insertPoll({
+    const insertPollResult = await insertPoll({
       createdById: viewerId,
       teamId,
       meetingId,
@@ -109,9 +106,13 @@ const createPoll = {
       threadSortOrder,
       title
     })
-    await insertPollOptions({pollOptions: options.map(({title}) => ({pollId: id, title}))})
+    if (insertPollResult.length === 0) {
+      return {error: {message: `Couldn't create a poll`}}
+    }
+    const [{id: pollId}] = insertPollResult
+    await insertPollOptions({pollOptions: options.map(({title}) => ({pollId, title}))})
 
-    const data = {pollId: id}
+    const data = {pollId}
     segmentIo.track({
       userId: viewerId,
       event: 'Poll added',

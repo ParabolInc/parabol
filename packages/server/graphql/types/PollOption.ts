@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Team from './Team'
+import PollOptionId from '../../../client/shared/gqlIds/PollOptionId'
 
 const PollOption = new GraphQLObjectType<any, GQLContext>({
   name: 'PollOption',
@@ -9,7 +10,8 @@ const PollOption = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'shortid'
+      description: 'Poll option id in a format of `pollOption:idGeneratedByDatabase`',
+      resolve: ({id}) => PollOptionId.create(id)
     },
     createdAt: {
       type: GraphQLNonNull(GraphQLISO8601Type),

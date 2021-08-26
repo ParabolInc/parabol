@@ -54518,7 +54518,7 @@ export interface IPoll {
   __typename: 'Poll';
 
   /**
-   * shortid
+   * Poll id in a format of `poll:idGeneratedByDatabase`
    */
   id: string;
 
@@ -54570,7 +54570,7 @@ export interface IPoll {
   /**
    * the foreign key for the meeting the task was created in
    */
-  meetingId: string | null;
+  meetingId: string;
 
   /**
    * The id of the team (indexed). Needed for subscribing to archived tasks
@@ -54600,7 +54600,7 @@ export interface IPollOption {
   __typename: 'PollOption';
 
   /**
-   * shortid
+   * Poll option id in a format of `pollOption:idGeneratedByDatabase`
    */
   id: string;
 
