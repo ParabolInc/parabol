@@ -13,21 +13,21 @@ import PromoteTeamMemberModal from '../PromoteTeamMemberModal/PromoteTeamMemberM
 import RemoveTeamMemberModal from '../RemoveTeamMemberModal/RemoveTeamMemberModal'
 import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
 import useModal from '../../../../hooks/useModal'
-import TeamMemberAvatarMenu from '../../../../components/DashboardAvatars/TeamMemberAvatarMenu'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 const StyledRow = styled(Row)({
   borderTop: 0,
   padding: `8px 8px 8px 16px`
 })
 
-const StyledButton = styled(FlatButton)({
-  color: PALETTE.GRAPE_700,
+const StyledButton = styled(FlatButton)<{showMenuButton: boolean}>(({showMenuButton}) => ({
+  display: showMenuButton ? 'flex' : 'none',
   fontSize: ICON_SIZE.MD18,
-  userSelect: 'none',
   padding: 0
-})
+}))
 
 const Name = styled('div')({
   fontSize: 14,
@@ -57,6 +57,12 @@ const TeamLeadCopy = styled('div')<{isLead: boolean}>(({isLead}) => ({
   lineHeight: '12px'
 }))
 
+const TeamMemberAvatarMenu = lazyPreload(() =>
+  import(
+    /* webpackChunkName: 'TeamMemberAvatarMenu' */ '../../../../components/DashboardAvatars/TeamMemberAvatarMenu'
+  )
+)
+
 interface Props {
   isViewerLead: boolean
   teamMember: ManageTeamMember_teamMember
@@ -64,7 +70,11 @@ interface Props {
 
 const ManageTeamMember = (props: Props) => {
   const {isViewerLead, teamMember} = props
-  const {isLead, preferredName, picture} = teamMember
+  const {isLead, preferredName, picture, userId} = teamMember
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isSelf = userId === viewerId
+  const showMenuButton = (isViewerLead && !isSelf) || (!isViewerLead && isSelf)
   const {
     closePortal: closePromote,
     togglePortal: togglePromote,
@@ -85,7 +95,13 @@ const ManageTeamMember = (props: Props) => {
         <Name>{preferredName}</Name>
         <TeamLeadCopy isLead={isLead}>Team Lead</TeamLeadCopy>
       </Content>
-      <StyledButton onClick={togglePortal} ref={originRef}>
+      <StyledButton
+        palette='mid'
+        showMenuButton={showMenuButton}
+        onClick={togglePortal}
+        onMouseEnter={TeamMemberAvatarMenu.preload}
+        ref={originRef}
+      >
         <StyledIcon>more_vert</StyledIcon>
       </StyledButton>
       {menuPortal(
@@ -116,6 +132,7 @@ export default createFragmentContainer(ManageTeamMember, {
       isLead
       preferredName
       picture
+      userId
     }
   `
 })

@@ -22,7 +22,6 @@ interface Props {
 const ManageTeamList = (props: Props) => {
   const {team} = props
   const {isLead: isViewerLead, teamMembers} = team
-
   return (
     <List>
       {teamMembers.map((teamMember) => {
@@ -39,9 +38,9 @@ const ManageTeamList = (props: Props) => {
 export default createFragmentContainer(ManageTeamList, {
   team: graphql`
     fragment ManageTeamList_team on Team {
+      isLead
       teamMembers(sortBy: "preferredName") {
         id
-        isLead
         preferredName
         ...ManageTeamMember_teamMember
       }

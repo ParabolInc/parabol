@@ -5,8 +5,6 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../Avatar/Avatar'
 import {MenuPosition} from '../../hooks/useCoords'
-import useModal from '../../hooks/useModal'
-import lazyPreload from '../../utils/lazyPreload'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {PALETTE} from '../../styles/paletteV3'
 import {ElementWidth} from '../../types/constEnums'
@@ -16,7 +14,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
 
 interface Props {
-  isViewerLead: boolean
   teamMember: DashboardAvatar_teamMember
 }
 
@@ -38,29 +35,9 @@ const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(
   })
 )
 
-const TeamMemberAvatarMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'TeamMemberAvatarMenu' */ './TeamMemberAvatarMenu')
-)
-
-const PromoteTeamMemberModal = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'PromoteTeamMemberModal' */ '../../modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal'
-  )
-)
-const RemoveTeamMemberModal = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'RemoveTeamMemberModal' */ '../../modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
-  )
-)
-const LeaveTeamModal = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'LeaveTeamModal' */ '../../modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal'
-  )
-)
-
 const DashboardAvatar = (props: Props) => {
-  const {isViewerLead, teamMember} = props
-  const {isLead, picture, teamId} = teamMember
+  const {teamMember} = props
+  const {picture, teamId} = teamMember
   const {user} = teamMember
   if (!user) {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
@@ -68,29 +45,12 @@ const DashboardAvatar = (props: Props) => {
   const {isConnected, preferredName} = user
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
-  const {
-    closePortal: closePromote,
-    togglePortal: togglePromote,
-    modalPortal: portalPromote
-  } = useModal()
-  const {
-    closePortal: closeRemove,
-    togglePortal: toggleRemove,
-    modalPortal: portalRemove
-  } = useModal()
-  const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
 
-  const handleMouseEnter = () => {
-    TeamMemberAvatarMenu.preload()
-    openTooltip()
-  }
-
   const handleClick = () => {
     closeTooltip()
-    // togglePortal()
     if (!submitting) {
       submitMutation()
       ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
@@ -98,7 +58,7 @@ const DashboardAvatar = (props: Props) => {
   }
 
   return (
-    <AvatarWrapper onMouseEnter={handleMouseEnter} onMouseLeave={closeTooltip}>
+    <AvatarWrapper onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
       <StyledAvatar
         {...teamMember}
         isConnected={!!isConnected}
@@ -107,20 +67,6 @@ const DashboardAvatar = (props: Props) => {
         ref={originRef}
         size={ElementWidth.DASHBOARD_AVATAR}
       />
-      {/* {menuPortal(
-        <TeamMemberAvatarMenu
-          menuProps={menuProps}
-          isLead={Boolean(isLead)}
-          isViewerLead={isViewerLead}
-          teamMember={teamMember}
-          togglePromote={togglePromote}
-          toggleRemove={toggleRemove}
-          toggleLeave={toggleLeave}
-        />
-      )} */}
-      {portalPromote(<PromoteTeamMemberModal teamMember={teamMember} closePortal={closePromote} />)}
-      {portalRemove(<RemoveTeamMemberModal teamMember={teamMember} closePortal={closeRemove} />)}
-      {portalLeave(<LeaveTeamModal teamMember={teamMember} closePortal={closeLeave} />)}
       {tooltipPortal(preferredName)}
     </AvatarWrapper>
   )
@@ -133,7 +79,6 @@ export default createFragmentContainer(DashboardAvatar, {
       ...LeaveTeamModal_teamMember
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember
-      isLead
       picture
       teamId
       user {

@@ -75,7 +75,7 @@ interface Props {
 
 const DashboardAvatars = (props: Props) => {
   const {team} = props
-  const {isLead: isViewerLead, teamMembers} = team
+  const {teamMembers} = team
   const wrapperRef = useRef<HTMLDivElement>(null)
   const avatarsRef = useRef<HTMLDivElement>(null)
   // useAvatarsOverflow(wrapperRef, avatarsRef)
@@ -89,7 +89,7 @@ const DashboardAvatars = (props: Props) => {
           return (
             <ItemBlock key={`dbAvatar${teamMember.id}`}>
               <ErrorBoundary>
-                <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
+                <DashboardAvatar teamMember={teamMember} />
               </ErrorBoundary>
             </ItemBlock>
           )
@@ -108,7 +108,6 @@ const DashboardAvatars = (props: Props) => {
 export default createFragmentContainer(DashboardAvatars, {
   team: graphql`
     fragment DashboardAvatars_team on Team {
-      isLead
       teamMembers(sortBy: "preferredName") {
         ...AddTeamMemberAvatarButton_teamMembers
         ...DashboardAvatar_teamMember
