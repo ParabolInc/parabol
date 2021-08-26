@@ -1,18 +1,18 @@
+import styled from '@emotion/styled'
 import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
 import React, {PureComponent, RefObject, Suspense} from 'react'
-import './TaskEditor/Draft.css'
-import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
-import withMarkdown from './TaskEditor/withMarkdown'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
+import {Card, ElementHeight, Gutters} from '../types/constEnums'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
-import styled from '@emotion/styled'
-import withEmojis from './TaskEditor/withEmojis'
+import isAndroid from '../utils/draftjs/isAndroid'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
-import isAndroid from '../utils/draftjs/isAndroid'
-import {Card, ElementHeight, Gutters} from '../types/constEnums'
+import './TaskEditor/Draft.css'
+import withEmojis from './TaskEditor/withEmojis'
+import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
+import withMarkdown from './TaskEditor/withMarkdown'
 
 interface Props {
   ariaLabel: string
@@ -168,12 +168,12 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       if (renderModal) {
         this.removeModal()
       } else {
-        const el = this.props.editorRef.current
         // add to callback queue so we can check activeElement and
         // determine whether modal should close in expandedReflectionStack
         setTimeout(() => {
-          el && el.blur()
-        }, 0)
+          const el = this.props.editorRef.current
+          el?.blur()
+        })
       }
       return null
     }
