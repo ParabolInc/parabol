@@ -12,21 +12,24 @@ const CreatePollInput = new GraphQLInputObjectType({
   name: 'CreatePollInput',
   fields: () => ({
     teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'Foreign key for the discussion this was created in'
+      type: GraphQLNonNull(GraphQLID),
+      description: 'Foreign key for the team this poll belongs to'
     },
     discussionId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID),
       description: 'Foreign key for the discussion this was created in'
     },
     threadSortOrder: {
-      type: GraphQLFloat
+      type: GraphQLNonNull(GraphQLFloat),
+      description: 'The order of this threadable, relative to threadParentId'
     },
     title: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: GraphQLNonNull(GraphQLString),
+      description: 'Poll question'
     },
     options: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PollOptionInput)))
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(PollOptionInput))),
+      description: 'All the poll voting options'
     }
   })
 })
