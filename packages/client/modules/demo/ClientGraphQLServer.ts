@@ -568,11 +568,23 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       userId
     ) => {
       const commentor = this.db.users.find((user) => user.id === userId)
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      if (!discussion || !commentor) return
+      const {commentors} = discussion
+
+      if (isCommenting) {
+        commentors.push(commentor)
+      } else {
+        commentors.splice(
+          commentors.findIndex((commentor) => commentor.id === userId),
+          1
+        )
+      }
+
       const data = {
-        isCommenting,
-        commentor,
         discussionId,
-        __typename: 'EditCommentingPayload'
+        discussion,
+        __typename: 'EditCommentingSuccess'
       }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
@@ -1224,6 +1236,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const plaintextContent = extractTextFromDraftString(content)
       const task = {
         __typename: 'Task',
+        __isThreadable: 'Task',
         agendaItem: null,
         id: taskId,
         taskId,
@@ -1234,6 +1247,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         doneMeetingId: null,
         dueDate: null,
         editors: [],
+        integrationHash: null,
         integration: null,
         team: this.db.team,
         meetingId: RetroDemo.MEETING_ID,
@@ -1293,7 +1307,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       comment.isActive = false
 
       const {discussionId, threadParentId} = comment
-      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
       discussion.commentCount--
       if (comment.threadParentId) {
         const threadParent =
@@ -1395,7 +1409,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (!discussion) return
       const {thread} = discussion
       const {edges} = thread
-      edges.splice(edges.indexOf(task), 1)
+      edges.splice(
+        edges.findIndex((edge) => edge.node === task),
+        1
+      )
       const data = {
         __typename: 'DeleteTaskPayload',
         error: null,

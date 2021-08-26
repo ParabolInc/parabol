@@ -47001,7 +47001,7 @@ export interface IDiscussion {
   /**
    * The users writing a comment right now
    */
-  commentors: Array<ICommentorDetails>;
+  commentors: Array<IUser>;
 
   /**
    * The comments & tasks thread in the discussion

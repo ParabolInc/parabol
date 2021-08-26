@@ -13,17 +13,12 @@ import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
 import DemoDiscussStage from './DemoDiscussStage'
 import DemoGenericMeetingStage from './DemoGenericMeetingStage'
+import DemoUser from './DemoUser'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
-
-interface BaseUser {
-  preferredName: string
-  email: string
-  picture: string
-}
 
 type IRetrospectiveMeeting = Omit<
   RetrospectiveMeeting,
@@ -101,31 +96,6 @@ const makeSuggestedIntegrationGitHub = (nameWithOwner: string) => ({
   id: nameWithOwner,
   ...GitHubProjectKeyLookup[nameWithOwner]
 })
-
-const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) => {
-  const now = new Date().toJSON()
-  const id = idx === 0 ? demoViewerId : `bot${idx}`
-  return {
-    id,
-    viewerId: id,
-    createdAt: now,
-    email,
-    featureFlags: {
-      jira: false,
-      video: false
-    },
-    facilitatorUserId: id,
-    facilitatorName: preferredName,
-    inactive: false,
-    isConnected: true,
-    lastSeenAtURLs: [`/meet/${RetroDemo.MEETING_ID}`],
-    lastSeenAt: now,
-    rasterPicture: picture,
-    picture: picture,
-    preferredName,
-    tms: [demoTeamId]
-  }
-}
 
 const initSlackNotification = (userId: string) => ({
   __typename: 'SlackNotification',
@@ -306,11 +276,12 @@ const initPhases = () => {
 
 export class DemoComment {
   __typename = 'Comment'
+  __isThreadable = 'Comment'
   content: string
   createdAt: string
   updatedAt: string
   createdBy: string | null
-  createdByUser: ReturnType<typeof initDemoUser> | null
+  createdByUser: DemoUser | null
   id: string
   isActive = true
   isViewerComment: boolean
@@ -355,9 +326,11 @@ export class DemoDiscussionThread {
   }
   edges = [] as DemoThreadableEdge[]
 }
+
 export class DemoDiscussion {
   teamId = demoTeamId
   meetingId = RetroDemo.MEETING_ID
+  commentors = [] as DemoUser[]
   discussionTopicType = 'reflectionGroup'
   discussionTopicId: string
   createdAt: string
@@ -416,7 +389,9 @@ const initDB = (botScript) => {
     getDemoAvatar(1),
     getDemoAvatar(2)
   ]
-  const users = baseUsers.map(initDemoUser)
+  const users = baseUsers.map(
+    ({preferredName, email, picture}, idx) => new DemoUser(preferredName, email, picture, idx)
+  )
   const meetingMembers = users.map(initDemoMeetingMember)
   const teamMembers = users.map(initDemoTeamMember).map((teamMember, idx) => ({
     ...teamMember,
@@ -441,7 +416,7 @@ const initDB = (botScript) => {
   newMeeting.topicCount = 0
   newMeeting.settings = team.meetingSettings as any
   return {
-    discussions: [] as any[],
+    discussions: [] as DemoDiscussion[],
     meetingMembers,
     newMeeting,
     organization: org,
