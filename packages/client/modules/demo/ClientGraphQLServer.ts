@@ -405,6 +405,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           title,
           bodyHTML,
           repository: {
+            __typename: '_xGitHubRepository',
+            id: `repo:${nameWithOwner}`,
             nameWithOwner
           },
           number: this.getTempId('')

@@ -4,6 +4,7 @@ import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
+import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
@@ -76,6 +77,36 @@ export const JiraProjectKeyLookup = {
   }
 } as const
 
+class DemoJiraRemoteProject {
+  __typename = 'JiraRemoteProject'
+  id: string
+  teamId: string
+  userId: string
+  self = ''
+  cloudId: string
+  key: string
+  name: string
+  avatar: string
+  avatarUrls = {
+    x16: '',
+    x24: '',
+    x32: '',
+    x48: ''
+  }
+  simplified = true
+  style = ''
+  constructor(key: keyof typeof JiraProjectKeyLookup) {
+    const details = JiraProjectKeyLookup[key]
+    const {projectKey, projectName, cloudId, avatar} = details
+    this.id = JiraProjectId.join(cloudId, projectKey)
+    this.teamId = RetroDemo.TEAM_ID
+    this.userId = demoViewerId
+    this.cloudId = cloudId
+    this.key = projectKey
+    this.name = projectName
+    this.avatar = avatar
+  }
+}
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
@@ -84,16 +115,18 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeSuggestedIntegrationJira = (key: string) => ({
-  __typename: 'SuggestedIntegrationJira',
-  id: key,
-  remoteProject: {},
-  ...JiraProjectKeyLookup[key]
-})
+const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
+  return {
+    __typename: 'SuggestedIntegrationJira',
+    id: key,
+    remoteProject: new DemoJiraRemoteProject(key),
+    ...JiraProjectKeyLookup[key]
+  }
+}
 
-const makeSuggestedIntegrationGitHub = (nameWithOwner: string) => ({
+const makeSuggestedIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
   __typename: 'SuggestedIntegrationGitHub',
-  id: nameWithOwner,
+  id: `si:${nameWithOwner}`,
   ...GitHubProjectKeyLookup[nameWithOwner]
 })
 
