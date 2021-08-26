@@ -1,7 +1,7 @@
 import {DashboardAvatar_teamMember} from '../../__generated__/DashboardAvatar_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../Avatar/Avatar'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -23,7 +23,7 @@ const AvatarWrapper = styled('div')({
 
 const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(
   ({isConnected, picture}) => ({
-    // opacity causes transparency making overlap look bad. change img instead
+    // opacity causes transparency making overlap look bad. use img instead
     backgroundImage: `${
       isConnected ? '' : 'linear-gradient(rgba(255,255,255,.65), rgba(255,255,255,.65)),'
     } url(${picture}), url(${defaultUserAvatar})`,
@@ -37,7 +37,7 @@ const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(
 
 const DashboardAvatar = (props: Props) => {
   const {teamMember} = props
-  const {picture, teamId} = teamMember
+  const {id: teamMemberId, picture, teamId} = teamMember
   const {user} = teamMember
   if (!user) {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
@@ -54,6 +54,12 @@ const DashboardAvatar = (props: Props) => {
     if (!submitting) {
       submitMutation()
       ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
+      commitLocalUpdate(atmosphere, (store) => {
+        const viewer = store.getRoot().getLinkedRecord('viewer')
+        const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
+        if (!teamMember) return
+        teamMember.setValue(teamMemberId, 'manageTeamMemberId')
+      })
     }
   }
 
@@ -79,6 +85,7 @@ export default createFragmentContainer(DashboardAvatar, {
       ...LeaveTeamModal_teamMember
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember
+      id
       picture
       teamId
       user {

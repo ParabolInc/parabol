@@ -39,6 +39,10 @@ extend type Team {
   editingScaleId: ID
 }
 
+extend type TeamMember {
+  manageTeamMemberId: ID
+}
+
 extend type PokerMeetingSettings {
   activeTemplate: PokerTemplate!
 }

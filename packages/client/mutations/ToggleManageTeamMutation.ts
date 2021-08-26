@@ -41,6 +41,12 @@ const ToggleManageTeamMutation: StandardMutation<TToggleManageTeamMutation> = (
       const teamMember = store.get(teamMemberId)!
       teamMember.setValue(nextValue, 'hideManageTeam')
       teamMember.setValue(true, 'hideAgenda')
+      if (nextValue) {
+        const viewer = store.getRoot().getLinkedRecord('viewer')
+        const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
+        if (!teamMember) return
+        teamMember.setValue(null, 'manageTeamMemberId')
+      }
     },
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere

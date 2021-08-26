@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ManageTeamMember_teamMember} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -17,6 +17,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import lazyPreload from '../../../../utils/lazyPreload'
+import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 
 const StyledRow = styled(Row)({
   borderTop: 0,
@@ -65,15 +66,17 @@ const TeamMemberAvatarMenu = lazyPreload(() =>
 
 interface Props {
   isViewerLead: boolean
+  manageTeamMemberId?: string | null
   teamMember: ManageTeamMember_teamMember
 }
 
 const ManageTeamMember = (props: Props) => {
-  const {isViewerLead, teamMember} = props
-  const {isLead, preferredName, picture, userId} = teamMember
+  const {isViewerLead, manageTeamMemberId, teamMember} = props
+  const {id: teamMemberId, isLead, preferredName, picture, userId} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
+  const isSelectedAvatar = manageTeamMemberId === teamMemberId
   const showMenuButton = (isViewerLead && !isSelf) || (!isViewerLead && isSelf)
   const {
     closePortal: closePromote,
@@ -87,9 +90,11 @@ const ManageTeamMember = (props: Props) => {
   } = useModal()
   const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
   const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const ref = useRef<HTMLDivElement>(null)
+  useScrollIntoView(ref, isSelectedAvatar)
 
   return (
-    <StyledRow>
+    <StyledRow ref={ref}>
       <Avatar size={24} picture={picture} />
       <Content>
         <Name>{preferredName}</Name>
@@ -129,6 +134,7 @@ export default createFragmentContainer(ManageTeamMember, {
       ...LeaveTeamModal_teamMember
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember
+      id
       isLead
       preferredName
       picture

@@ -25,10 +25,10 @@ const toggleManageTeam = {
 
     // RESOLUTION
     const userId = getUserId(authToken)
-    const teamMemberId = `${userId}::${teamId}`
+    const viewerTeamMemberId = `${userId}::${teamId}`
     const res = await r
       .table('TeamMember')
-      .get(teamMemberId)
+      .get(viewerTeamMemberId)
       .update(
         (teamMember) => ({
           hideManageTeam: teamMember('hideManageTeam')

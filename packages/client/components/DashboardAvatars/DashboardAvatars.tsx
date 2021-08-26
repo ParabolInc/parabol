@@ -1,9 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Breakpoint, ElementWidth} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useMutationProps from '../../hooks/useMutationProps'
+import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
@@ -75,13 +78,31 @@ interface Props {
 
 const DashboardAvatars = (props: Props) => {
   const {team} = props
-  const {teamMembers} = team
+  const {id: teamId, teamMembers} = team
   const wrapperRef = useRef<HTMLDivElement>(null)
   const avatarsRef = useRef<HTMLDivElement>(null)
   // useAvatarsOverflow(wrapperRef, avatarsRef)
   const maxAvatars = 10 // adjust for screen widths
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
+  const atmosphere = useAtmosphere()
+  const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
+
+  const handleClickOverflow = () => {
+    if (!submitting) {
+      submitMutation()
+      ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
+      commitLocalUpdate(atmosphere, (store) => {
+        const viewer = store.getRoot().getLinkedRecord('viewer')
+        const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
+        if (!teamMember) return
+        const firstOverflowMember = teamMembers[maxAvatars - 1]
+        const {id: teamMemberId} = firstOverflowMember
+        teamMember.setValue(teamMemberId, 'manageTeamMemberId')
+      })
+    }
+  }
+
   return (
     <AvatarsList maxAvatars={maxAvatars} ref={wrapperRef}>
       <ScrollContainer ref={avatarsRef}>
@@ -95,7 +116,7 @@ const DashboardAvatars = (props: Props) => {
           )
         })}
         {overflowCount > 0 && (
-          <ItemBlock>
+          <ItemBlock onClick={handleClickOverflow}>
             <OverflowCount>{`+${overflowCount}`}</OverflowCount>
           </ItemBlock>
         )}
@@ -108,10 +129,12 @@ const DashboardAvatars = (props: Props) => {
 export default createFragmentContainer(DashboardAvatars, {
   team: graphql`
     fragment DashboardAvatars_team on Team {
+      id
       teamMembers(sortBy: "preferredName") {
         ...AddTeamMemberAvatarButton_teamMembers
         ...DashboardAvatar_teamMember
         id
+        preferredName
       }
     }
   `

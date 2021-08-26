@@ -8,6 +8,7 @@ import ManageTeamMember from './ManageTeamMember'
 const List = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  overflowY: 'scroll',
   paddingRight: 0,
   paddingTop: 0,
   position: 'relative',
@@ -16,18 +17,23 @@ const List = styled('div')({
 })
 
 interface Props {
+  manageTeamMemberId?: string | null
   team: ManageTeamList_team
 }
 
 const ManageTeamList = (props: Props) => {
-  const {team} = props
+  const {manageTeamMemberId, team} = props
   const {isLead: isViewerLead, teamMembers} = team
   return (
     <List>
       {teamMembers.map((teamMember) => {
         return (
           <Fragment key={teamMember.id}>
-            <ManageTeamMember isViewerLead={isViewerLead} teamMember={teamMember} />
+            <ManageTeamMember
+              isViewerLead={isViewerLead}
+              manageTeamMemberId={manageTeamMemberId}
+              teamMember={teamMember}
+            />
           </Fragment>
         )
       })}

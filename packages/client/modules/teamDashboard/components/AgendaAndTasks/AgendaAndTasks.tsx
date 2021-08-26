@@ -49,10 +49,10 @@ const TasksContent = styled('div')({
   width: '100%'
 })
 
-const Sidebar = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
+const Sidebar = styled('div')<{hide: boolean | null}>(({hide}) => ({
   backgroundColor: '#FFFFFF',
   boxShadow: navDrawerShadow,
-  display: hideAgenda ? 'none' : 'flex',
+  display: hide ? 'none' : 'flex',
   flex: 1,
   flexDirection: 'column',
   overflow: 'hidden',
@@ -117,6 +117,7 @@ const AgendaAndTasks = (props: Props) => {
           teamMember(teamId: $teamId) {
             hideAgenda
             hideManageTeam
+            manageTeamMemberId
           }
           ...TeamColumnsContainer_viewer
         }
@@ -130,7 +131,7 @@ const AgendaAndTasks = (props: Props) => {
   const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!
-  const {hideAgenda, hideManageTeam} = teamMember
+  const {hideAgenda, hideManageTeam, manageTeamMemberId} = teamMember
   const {id: teamId, name: teamName} = team
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (
@@ -143,27 +144,20 @@ const AgendaAndTasks = (props: Props) => {
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
       </TasksMain>
-      <Sidebar hideAgenda={hideAgenda}>
-        {!hideAgenda && hideManageTeam && (
-          <SidebarContent>
-            <SidebarHeader>
-              <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
-              <CloseSidebar isAgenda teamId={teamId} />
-            </SidebarHeader>
+      <Sidebar hide={hideAgenda && hideManageTeam}>
+        <SidebarContent>
+          <SidebarHeader>
+            <StyledLabelHeading>
+              {hideManageTeam ? 'Team Agenda' : 'Manage Team'}
+            </StyledLabelHeading>
+            <CloseSidebar isAgenda={hideManageTeam} teamId={teamId} />
+          </SidebarHeader>
+          {hideManageTeam ? (
             <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
-          </SidebarContent>
-        )}
-      </Sidebar>
-      <Sidebar hideAgenda={hideManageTeam}>
-        {!hideManageTeam && hideAgenda && (
-          <SidebarContent>
-            <SidebarHeader>
-              <StyledLabelHeading>{'Manage Team'}</StyledLabelHeading>
-              <CloseSidebar teamId={teamId} />
-            </SidebarHeader>
-            <ManageTeamList team={team} />
-          </SidebarContent>
-        )}
+          ) : (
+            <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
+          )}
+        </SidebarContent>
       </Sidebar>
     </RootBlock>
   )
