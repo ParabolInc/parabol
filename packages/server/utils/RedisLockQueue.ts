@@ -3,11 +3,12 @@ import generateUID from '../generateUID'
 import getRedis from './getRedis'
 
 export default class RedisLockQueue {
-  uid = generateUID()
+  uid = `${generateUID()}.${Date.now()}`
   queueKey: string
   waitTimeMs: number
   ttl: number
   queued = false
+  timeoutId: NodeJS.Timeout | undefined
   redis = getRedis()
 
   // Check lock every 100 ms
@@ -20,6 +21,11 @@ export default class RedisLockQueue {
   }
 
   unlock = async () => {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+    }
+    // Extend list TTL
+    await this.redis.pexpire(this.queueKey, this.ttl + RedisLockQueue.checkAfterMs)
     // Remove all occurrences of the event from the list
     return this.redis.lrem(this.queueKey, 0, this.uid)
   }
@@ -31,8 +37,7 @@ export default class RedisLockQueue {
       const res = await this.redis
         .multi()
         .rpush(this.queueKey, this.uid)
-        // TODO: Use NX option to set TTL only on LIST creation (Redis 7.0 required)
-        .pexpire(this.queueKey, this.ttl)
+        .pexpire(this.queueKey, this.ttl + RedisLockQueue.checkAfterMs)
         .exec()
       this.queued = true
       const resultingListLength = res[0][1]
@@ -49,12 +54,30 @@ export default class RedisLockQueue {
     if (head === this.uid) {
       // We are the first on the list, no lock
       // Refresh TTL on the LIST before running the event
-      const newTTL = await this.redis.pexpire(this.queueKey, this.ttl)
+      const newTTL = await this.redis.pexpire(this.queueKey, this.ttl + RedisLockQueue.checkAfterMs)
       if (newTTL === 0) {
         // TTL was not set because queue disappeared
         throw new Error(`Could not achieve lock for ${this.queueKey}. Unable to set TTL`)
       }
       return false
+    } else {
+      // Check if head expired
+      // and remove all items that are also expired (server crash prevention)
+      let checkHead = head
+      let allExpiredHeadsRemoved = false
+      while (!allExpiredHeadsRemoved) {
+        const headCreatedAtMs = parseInt(checkHead.split('.')[1], 10)
+        if (headCreatedAtMs < Date.now() - this.ttl) {
+          await this.redis.lrem(this.queueKey, 0, checkHead)
+          checkHead = await this.redis.lindex(this.queueKey, 0)
+          if (checkHead == null) {
+            // No more items left in the list
+            allExpiredHeadsRemoved = true
+          }
+        } else {
+          allExpiredHeadsRemoved = true
+        }
+      }
     }
     return true
   }
@@ -64,6 +87,7 @@ export default class RedisLockQueue {
     for (let i = 0; i < 1000; i++) {
       const hasLock = await this.checkLock()
       if (!hasLock) {
+        this.timeoutId = setTimeout(() => this.unlock(), this.ttl)
         return
       } else {
         await sleep(RedisLockQueue.checkAfterMs)
