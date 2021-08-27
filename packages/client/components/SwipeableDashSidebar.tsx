@@ -5,7 +5,7 @@ import usePortal from '../hooks/usePortal'
 import {DECELERATE} from '../styles/animation'
 import {navDrawerShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {DiscussionThreadEnum, NavSidebar, ZIndex} from '../types/constEnums'
+import {NavSidebar, ZIndex} from '../types/constEnums'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -78,8 +78,8 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightDrawer: boolean)
         ? swipingRight
         : swipingLeft
       : isRightDrawer
-        ? swipingLeft
-        : swipingRight
+      ? swipingLeft
+      : swipingRight
   }
 }
 
@@ -107,16 +107,17 @@ interface Props {
   isOpen: boolean
   isRightDrawer?: boolean
   onToggle: () => void
+  sidebarWidth?: number
 }
 
 const SwipeableDashSidebar = (props: Props) => {
-  const {children, isOpen, isRightDrawer = false, onToggle} = props
+  const {children, isOpen, isRightDrawer = false, onToggle, sidebarWidth} = props
   const {portal, openPortal} = usePortal({
     allowScroll: true,
     noClose: true
   })
   const [x, setX] = useState(0)
-  const SIDEBAR_WIDTH: number = isRightDrawer ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
+  const SIDEBAR_WIDTH: number = sidebarWidth || NavSidebar.WIDTH
   const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
   useEffect(

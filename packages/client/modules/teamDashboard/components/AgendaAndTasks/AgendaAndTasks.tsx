@@ -83,16 +83,16 @@ const SidebarHeader = styled('div')({
   padding: '16px 8px 16px 16px'
 })
 
-const SidebarContent = styled('div')({
+const SidebarContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
-  // padding-bottom makes space for the agenda input
-  padding: '0 0 58px',
+  // hacky: padding-bottom makes space for the agenda input on desktop
+  padding: `0 0 ${isDesktop ? 58 : 0}px`,
   height: '100vh',
   flexDirection: 'column',
   width: RightSidebar.WIDTH
-})
+}))
 
 const StyledLabelHeading = styled(LabelHeading)({
   fontSize: 14,
@@ -174,7 +174,7 @@ const AgendaAndTasks = (props: Props) => {
         isRightDrawer
         onToggle={toggleSidebar}
       >
-        <SidebarContent>
+        <SidebarContent isDesktop={isDesktop}>
           <SidebarHeader>
             <StyledLabelHeading>{showAgenda ? 'Team Agenda' : 'Manage Team'}</StyledLabelHeading>
             <CloseSidebar isAgenda={showAgenda} teamId={teamId} />
