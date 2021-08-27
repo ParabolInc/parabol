@@ -5,15 +5,18 @@ import getRedis from './getRedis'
 export default class RedisLockQueue {
   uid = generateUID()
   queueKey: string
-  waitTime: number
+  waitTimeMs: number
   ttl: number
   queued = false
   redis = getRedis()
 
+  // Check lock every 100 ms
+  private static readonly checkAfterMs = 100
+
   constructor(key: string, ttl: number) {
     this.queueKey = `lock:queue:${key}`
     this.ttl = ttl
-    this.waitTime = 0
+    this.waitTimeMs = 0
   }
 
   unlock = async () => {
@@ -56,21 +59,19 @@ export default class RedisLockQueue {
     return true
   }
 
-  lock = async (maxWait: number) => {
-    // Check lock every 100 ms
-    const checkAfterMs = 100
+  lock = async (maxWaitMs: number) => {
     // "Infinity" loop
     for (let i = 0; i < 1000; i++) {
       const hasLock = await this.checkLock()
       if (!hasLock) {
         return
       } else {
-        await sleep(checkAfterMs)
-        this.waitTime += checkAfterMs
-        if (this.waitTime > maxWait) {
+        await sleep(RedisLockQueue.checkAfterMs)
+        this.waitTimeMs += RedisLockQueue.checkAfterMs
+        if (this.waitTimeMs > maxWaitMs) {
           // Remove event from the queue
           await this.unlock()
-          throw new Error(`Could not achieve lock for ${this.queueKey} after ${maxWait}ms`)
+          throw new Error(`Could not achieve lock for ${this.queueKey} after ${maxWaitMs}ms`)
         }
       }
     }
