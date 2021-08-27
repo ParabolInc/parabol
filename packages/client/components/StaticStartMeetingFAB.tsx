@@ -3,8 +3,7 @@ import React from 'react'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {Breakpoint, ElementWidth, Layout, ZIndex} from '../types/constEnums'
+import {ElementWidth, Layout, ZIndex} from '../types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
@@ -13,11 +12,7 @@ const Block = styled('div')<{isAbsolute?: boolean}>(({isAbsolute}) => ({
   bottom: 16,
   right: 16,
   // hacky, but we need the FAB to show up over the team right nav
-  zIndex: ZIndex.SIDE_SHEET,
-  [makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)]: {
-    // this will work until we scope the FAB to dashboard main container
-    right: `calc(((100vw - ${Layout.TASK_COLUMNS_MAX_WIDTH}px) / 2) + 16px)`
-  }
+  zIndex: ZIndex.SIDE_SHEET
 }))
 
 const Button = styled(FloatingActionButton)({

@@ -9,8 +9,7 @@ const List = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflowY: 'scroll',
-  paddingRight: 0,
-  paddingTop: 0,
+  padding: '0px 0px 8px',
   position: 'relative',
   width: '100%',
   minHeight: 0 // required for FF68
