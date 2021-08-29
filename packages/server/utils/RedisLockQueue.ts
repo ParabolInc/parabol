@@ -3,16 +3,19 @@ import generateUID from '../generateUID'
 import getRedis from './getRedis'
 
 export default class RedisLockQueue {
-  uid = `${generateUID()}.${Date.now()}`
+  uid = generateUID()
+  uidWithTimestamp: string | undefined
   queueKey: string
   waitTimeMs: number
   ttl: number
   queued = false
   timeoutId: NodeJS.Timeout | undefined
+  uidToFlush = ''
   redis = getRedis()
 
   // Check lock every 100 ms
   private static readonly checkAfterMs = 100
+  private static readonly timestampDelimiter = '::'
 
   constructor(key: string, ttl: number) {
     this.queueKey = `lock:queue:${key}`
@@ -24,23 +27,26 @@ export default class RedisLockQueue {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId)
     }
-    // Extend list TTL
-    await this.redis.pexpire(this.queueKey, this.ttl + RedisLockQueue.checkAfterMs)
     // Remove all occurrences of the event from the list
-    return this.redis.lrem(this.queueKey, 0, this.uid)
+    return this.redis.lrem(this.queueKey, 0, this.uidWithTimestamp ?? this.uid)
   }
 
-  checkLock = async () => {
+  private markTaskAsRunning = async () => {
+    // Append timestamp to a key and replace the head
+    this.uidWithTimestamp = `${this.uid}::${Date.now()}`
+    return this.redis.lset(this.queueKey, 0, this.uidWithTimestamp)
+  }
+
+  // Removes the head
+  private flushHead = async () => {
+    return this.redis.lpop(this.queueKey)
+  }
+
+  private setLockAndValidateQueue = async () => {
     // Add an event to the queue only once
     if (!this.queued) {
-      // Use transaction to add an event to the queue and set initial LIST TTL
-      const res = await this.redis
-        .multi()
-        .rpush(this.queueKey, this.uid)
-        .pexpire(this.queueKey, this.ttl + RedisLockQueue.checkAfterMs)
-        .exec()
+      const resultingListLength = await this.redis.rpush(this.queueKey, this.uid)
       this.queued = true
-      const resultingListLength = res[0][1]
       // If the resulting LIST length is 1, we're already first on the list, return no lock
       return resultingListLength !== 1
     }
@@ -51,43 +57,41 @@ export default class RedisLockQueue {
       // Now we cannot guarantee the correct order of the event
       throw new Error(`Could not achieve lock for ${this.queueKey}. Queue does not exists`)
     }
-    if (head === this.uid) {
-      // We are the first on the list, no lock
-      // Refresh TTL on the LIST before running the event
-      const newTTL = await this.redis.pexpire(this.queueKey, this.ttl + RedisLockQueue.checkAfterMs)
-      if (newTTL === 0) {
-        // TTL was not set because queue disappeared
-        throw new Error(`Could not achieve lock for ${this.queueKey}. Unable to set TTL`)
-      }
+
+    const headUid = head.split(RedisLockQueue.timestampDelimiter)[0]
+    if (headUid === this.uid) {
       return false
     } else {
-      // Check if head expired
-      // and remove all items that are also expired (server crash prevention)
-      let checkHead = head
-      let allExpiredHeadsRemoved = false
-      while (!allExpiredHeadsRemoved) {
-        const headCreatedAtMs = parseInt(checkHead.split('.')[1], 10)
-        if (headCreatedAtMs < Date.now() - this.ttl) {
-          await this.redis.lrem(this.queueKey, 0, checkHead)
-          checkHead = await this.redis.lindex(this.queueKey, 0)
-          if (checkHead == null) {
-            // No more items left in the list
-            allExpiredHeadsRemoved = true
-          }
-        } else {
-          allExpiredHeadsRemoved = true
+      // Check if head is expired or not started
+      const uidToFlush = this.uidToFlush
+      this.uidToFlush = ''
+      if (head === uidToFlush) {
+        // we already gave the other process 100ms to pick up the task and it didn't. it's stale.
+        await this.flushHead()
+      } else {
+        const delimiterIdx = head.lastIndexOf(RedisLockQueue.timestampDelimiter)
+        if (delimiterIdx === -1) {
+          // the head hasn't started working yet, give it 100ms to start
+          this.uidToFlush = head
+        } else if (
+          parseInt(head.slice(delimiterIdx + RedisLockQueue.timestampDelimiter.length), 10) <
+          Date.now() - this.ttl
+        ) {
+          // the other process has been working for > ttl, it's stale
+          await this.flushHead()
         }
       }
+      return true
     }
-    return true
   }
 
   lock = async (maxWaitMs: number) => {
     // "Infinity" loop
     for (let i = 0; i < 1000; i++) {
-      const hasLock = await this.checkLock()
+      const hasLock = await this.setLockAndValidateQueue()
       if (!hasLock) {
         this.timeoutId = setTimeout(() => this.unlock(), this.ttl)
+        await this.markTaskAsRunning()
         return
       } else {
         await sleep(RedisLockQueue.checkAfterMs)
