@@ -23,7 +23,10 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       .run(),
     getTeamsByIds([teamId])
   ])
-  const team = teams[0] ?? null
+  if (teams.length === 0) {
+    return standardError(new Error('Did not find the team'))
+  }
+  const team = teams[0]
   const {orgId: currentOrgId} = team
   if (!su) {
     const userId = getUserId(authToken)

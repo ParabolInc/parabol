@@ -2,8 +2,8 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
+import Team from '../database/types/Team'
 import generateUID from '../generateUID'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
@@ -44,24 +44,21 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   return newTeamLeadUserId
 }
 
-const acceptTeamInvitation = async (teamId: string, userId: string) => {
+const acceptTeamInvitation = async (team: Team, userId: string) => {
   const r = await getRethink()
   const now = new Date()
-  const [user, teams] = await Promise.all([
-    r
-      .table('User')
-      .get(userId)
-      .merge({
-        organizationUsers: r
-          .table('OrganizationUser')
-          .getAll(userId, {index: 'userId'})
-          .filter({removedAt: null})
-          .coerceTo('array')
-      })
-      .run(),
-    getTeamsByIds([teamId])
-  ])
-  const team = teams[0] ?? null
+  const teamId = team.id
+  const user = await r
+    .table('User')
+    .get(userId)
+    .merge({
+      organizationUsers: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null})
+        .coerceTo('array')
+    })
+    .run()
   const {orgId} = team
   const {email, organizationUsers} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)

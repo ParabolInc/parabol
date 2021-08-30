@@ -63,7 +63,7 @@ export default {
         getTeamsByIds([teamId]),
         db.read('User', invitedBy)
       ])
-      const team = teams[0] ?? null
+      const team = teams[0]!
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)
       const meetingType = bestMeeting?.meetingType ?? null
       const meetingId = bestMeeting?.id ?? null

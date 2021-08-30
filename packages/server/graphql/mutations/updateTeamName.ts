@@ -33,7 +33,8 @@ export default {
     }
 
     // VALIDATION
-    const team = (await getTeamsByIds([teamId]))[0] ?? null
+    const teams = await getTeamsByIds([teamId])
+    const team = teams[0]!
     const orgTeams = await dataLoader.get('teamsByOrgIds').load(team.orgId)
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)
