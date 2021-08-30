@@ -14,8 +14,6 @@ import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
@@ -63,17 +61,6 @@ const reactableLoaders = [
 export const users = () => {
   return new ProxiedCache('User')
 }
-
-export const teams = (parent: RethinkDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
-    async (teamIds) => {
-      const teams = await getTeamsByIds(teamIds)
-      return normalizeRethinkDbResults(teamIds, teams)
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
