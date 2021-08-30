@@ -1,3 +1,4 @@
+import {Poll} from '../../postgres/queries/getPollsById'
 import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'
@@ -31,8 +32,8 @@ const resolveThreadableConnection = async (discussionId, {dataLoader}) => {
     const replies = threadablesByParentId[threadableId]
     const isActive =
       (threadable as TaskDB).status ||
-      (threadable as Comment).isActive /*||
-      (threadable as Poll).deletedAt === null*/
+      (threadable as Comment).isActive ||
+      (threadable as Poll).deletedAt === null
     if (!isActive && !replies) return
     filteredThreadables.push(threadable)
     if (replies) {

@@ -54637,7 +54637,7 @@ export interface IPollOption {
 
 export interface ICreatePollInput {
   /**
-   * Foreign key for the discussion this was created in
+   * Foreign key for the team this poll belongs to
    */
   teamId: string;
 
@@ -54645,8 +54645,20 @@ export interface ICreatePollInput {
    * Foreign key for the discussion this was created in
    */
   discussionId: string;
-  threadSortOrder?: number | null;
+
+  /**
+   * The order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number;
+
+  /**
+   * Poll question
+   */
   title: string;
+
+  /**
+   * All the poll voting options
+   */
   options: Array<IPollOptionInput>;
 }
 
