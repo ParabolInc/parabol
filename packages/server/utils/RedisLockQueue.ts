@@ -32,7 +32,7 @@ export default class RedisLockQueue {
   }
 
   private markTaskAsRunning = async () => {
-    // Append timestamp to a key and replace the head
+    // Append a timestamp to uid and replace the head
     this.uidWithTimestamp = `${this.uid}::${Date.now()}`
     return this.redis.lset(this.queueKey, 0, this.uidWithTimestamp)
   }
