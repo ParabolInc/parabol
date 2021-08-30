@@ -9,7 +9,7 @@ import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiv
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import getTeamsById from '../../postgres/queries/getTeamsById'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 
 const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const r = await getRethink()
@@ -21,7 +21,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       .table('Organization')
       .get(orgId)
       .run(),
-    getTeamsById([teamId])
+    getTeamsByIds([teamId])
   ])
   const team = teams[0] ?? null
   const {orgId: currentOrgId} = team

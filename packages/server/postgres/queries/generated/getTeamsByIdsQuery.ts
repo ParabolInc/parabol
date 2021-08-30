@@ -1,4 +1,4 @@
-/** Types generated for queries found in "packages/server/postgres/queries/src/getTeamsByIdQuery.sql" */
+/** Types generated for queries found in "packages/server/postgres/queries/src/getTeamsByIdsQuery.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
 export type MeetingTypeEnum = 'action' | 'retrospective' | 'poker'
@@ -7,13 +7,13 @@ export type TierEnum = 'personal' | 'pro' | 'enterprise'
 
 export type JsonArray = (null | boolean | number | string | Json[] | {[key: string]: Json})[]
 
-/** 'GetTeamsByIdQuery' parameters type */
-export interface IGetTeamsByIdQueryParams {
+/** 'GetTeamsByIdsQuery' parameters type */
+export interface IGetTeamsByIdsQueryParams {
   ids: Array<string | null | void>
 }
 
-/** 'GetTeamsByIdQuery' return type */
-export interface IGetTeamsByIdQueryResult {
+/** 'GetTeamsByIdsQuery' return type */
+export interface IGetTeamsByIdsQueryResult {
   id: string
   name: string
   createdAt: Date
@@ -29,26 +29,26 @@ export interface IGetTeamsByIdQueryResult {
   lockMessageHTML: string | null
 }
 
-/** 'GetTeamsByIdQuery' query type */
-export interface IGetTeamsByIdQueryQuery {
-  params: IGetTeamsByIdQueryParams
-  result: IGetTeamsByIdQueryResult
+/** 'GetTeamsByIdsQuery' query type */
+export interface IGetTeamsByIdsQueryQuery {
+  params: IGetTeamsByIdsQueryParams
+  result: IGetTeamsByIdsQueryResult
 }
 
-const getTeamsByIdQueryIR: any = {
-  name: 'getTeamsByIdQuery',
+const getTeamsByIdsQueryIR: any = {
+  name: 'getTeamsByIdsQuery',
   params: [
     {
       name: 'ids',
       codeRefs: {
-        defined: {a: 38, b: 40, line: 3, col: 9},
-        used: [{a: 88, b: 90, line: 6, col: 13}]
+        defined: {a: 39, b: 41, line: 3, col: 9},
+        used: [{a: 89, b: 91, line: 6, col: 13}]
       },
       transform: {type: 'array_spread'}
     }
   ],
   usedParamSet: {ids: true},
-  statement: {body: 'SELECT * FROM "Team"\nWHERE id IN :ids', loc: {a: 54, b: 90, line: 5, col: 0}}
+  statement: {body: 'SELECT * FROM "Team"\nWHERE id IN :ids', loc: {a: 55, b: 91, line: 5, col: 0}}
 }
 
 /**
@@ -58,7 +58,7 @@ const getTeamsByIdQueryIR: any = {
  * WHERE id IN :ids
  * ```
  */
-export const getTeamsByIdQuery = new PreparedQuery<
-  IGetTeamsByIdQueryParams,
-  IGetTeamsByIdQueryResult
->(getTeamsByIdQueryIR)
+export const getTeamsByIdsQuery = new PreparedQuery<
+  IGetTeamsByIdsQueryParams,
+  IGetTeamsByIdsQueryResult
+>(getTeamsByIdsQueryIR)

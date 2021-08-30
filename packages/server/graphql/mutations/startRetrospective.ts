@@ -6,7 +6,7 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import generateUID from '../../generateUID'
-import getTeamsById from '../../postgres/queries/getTeamsById'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -61,7 +61,7 @@ export default {
       meetingType,
       dataLoader
     )
-    const team = (await getTeamsById([teamId]))[0] ?? null
+    const team = (await getTeamsByIds([teamId]))[0] ?? null
     const organization = await r
       .table('Organization')
       .get(team.orgId)

@@ -1,21 +1,20 @@
 import {
-  getTeamsByOrgIdQuery,
-  IGetTeamsByOrgIdQueryParams,
-  IGetTeamsByOrgIdQueryResult
-} from './generated/getTeamsByOrgIdQuery'
+  getTeamsByOrgIdsQuery,
+  IGetTeamsByOrgIdsQueryParams,
+  IGetTeamsByOrgIdsQueryResult
+} from './generated/getTeamsByOrgIdsQuery'
 import getPg from '../getPg'
 
-const getTeamsByOrgIds = async (
+const getTeamsByOrgIds = (
   orgIds: string[],
   options: {isArchived?: boolean} = {}
-): Promise<IGetTeamsByOrgIdQueryResult[]> => {
+): Promise<IGetTeamsByOrgIdsQueryResult[]> => {
   const {isArchived} = options
-  const queryParameters: IGetTeamsByOrgIdQueryParams = {
+  const queryParameters: IGetTeamsByOrgIdsQueryParams = {
     orgIds,
     isArchived: !!isArchived
   }
-  const teams = await getTeamsByOrgIdQuery.run(queryParameters, getPg())
-  return teams === null ? [] : teams
+  return getTeamsByOrgIdsQuery.run(queryParameters, getPg())
 }
 
 export default getTeamsByOrgIds

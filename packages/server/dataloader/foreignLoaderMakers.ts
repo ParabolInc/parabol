@@ -317,7 +317,7 @@ export const suggestedActionsByUserId = new LoaderMakerForeign(
   }
 )
 
-export const teamsByOrgId = new LoaderMakerForeign('teams', 'orgId', async (orgIds) => {
+export const teamsByOrgIds = new LoaderMakerForeign('teams', 'orgId', async (orgIds) => {
   return getTeamsByOrgIds(orgIds, {isArchived: false})
 })
 

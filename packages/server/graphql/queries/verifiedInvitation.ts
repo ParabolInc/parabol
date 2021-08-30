@@ -6,7 +6,7 @@ import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import User from '../../database/types/User'
 import db from '../../db'
-import getTeamsById from '../../postgres/queries/getTeamsById'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
 import {GQLContext} from '../graphql'
@@ -60,7 +60,7 @@ export default {
         teamId
       } = teamInvitation
       const [teams, inviter] = await Promise.all([
-        getTeamsById([teamId]),
+        getTeamsByIds([teamId]),
         db.read('User', invitedBy)
       ])
       const team = teams[0] ?? null

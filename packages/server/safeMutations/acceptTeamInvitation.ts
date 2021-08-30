@@ -3,7 +3,7 @@ import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import generateUID from '../generateUID'
-import getTeamsById from '../postgres/queries/getTeamsById'
+import getTeamsByIds from '../postgres/queries/getTeamsByIds'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
@@ -59,7 +59,7 @@ const acceptTeamInvitation = async (teamId: string, userId: string) => {
           .coerceTo('array')
       })
       .run(),
-    getTeamsById([teamId])
+    getTeamsByIds([teamId])
   ])
   const team = teams[0] ?? null
   const {orgId} = team
