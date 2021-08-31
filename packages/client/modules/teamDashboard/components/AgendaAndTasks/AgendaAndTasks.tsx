@@ -18,7 +18,6 @@ import ToggleManageTeamMutation from '../../../../mutations/ToggleManageTeamMuta
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
-import StaticStartMeetingFAB from '../../../../components/StaticStartMeetingFAB'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 
 const RootBlock = styled('div')({
@@ -50,31 +49,6 @@ const TasksContent = styled('div')({
   minHeight: 0,
   width: '100%'
 })
-
-// const Sidebar = styled('div')<{hide: boolean | null}>(({hide}) => ({
-//   backgroundColor: '#FFFFFF',
-//   boxShadow: navDrawerShadow,
-//   display: hide ? 'none' : 'flex',
-//   flex: 1,
-//   flexDirection: 'column',
-//   overflow: 'hidden',
-//   position: 'fixed',
-//   right: 0,
-//   bottom: 0,
-//   top: AppBar.HEIGHT,
-//   minWidth: RightSidebar.WIDTH,
-//   maxWidth: RightSidebar.WIDTH,
-//   zIndex: ZIndex.SIDE_SHEET, // make sure shadow is above cards
-//   [desktopBreakpointMediaQuery]: {
-//     boxShadow: desktopSidebarShadow,
-//     position: 'relative',
-//     top: 0
-//   },
-//   [desktopDashWidestMediaQuery]: {
-//     position: 'fixed',
-//     top: AppBar.HEIGHT
-//   }
-// }))
 
 const SidebarHeader = styled('div')({
   alignItems: 'center',
@@ -167,7 +141,7 @@ const AgendaAndTasks = (props: Props) => {
         <TasksContent>
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
-        {isDesktop ? <StaticStartMeetingFAB isAbsolute /> : <StartMeetingFAB />}
+        <StartMeetingFAB isAbsolute />
       </TasksMain>
       <ResponsiveDashSidebar
         isOpen={!hideAgenda || !hideManageTeam}

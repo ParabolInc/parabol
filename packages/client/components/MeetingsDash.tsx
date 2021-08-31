@@ -12,8 +12,7 @@ import useTransition from '../hooks/useTransition'
 import {Breakpoint, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
-import StartMeetingFAB from './StaticStartMeetingFAB'
-import StaticStartMeetingFAB from './StaticStartMeetingFAB'
+import StartMeetingFAB from './StartMeetingFAB'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
@@ -68,7 +67,6 @@ const MeetingsDash = (props: Props) => {
   const transitioningMeetings = useTransition(activeMeetings)
   const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
   const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
@@ -102,7 +100,7 @@ const MeetingsDash = (props: Props) => {
           ) : null}
         </EmptyContainer>
       )}
-      {isDesktop ? <StaticStartMeetingFAB /> : <StartMeetingFAB />}
+      <StartMeetingFAB />
     </>
   )
 }

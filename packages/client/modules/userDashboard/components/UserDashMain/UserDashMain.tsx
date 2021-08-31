@@ -3,9 +3,7 @@ import {Route, RouteComponentProps, Switch} from 'react-router'
 import DashContent from '~/components/Dashboard/DashContent'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {Breakpoint, LoaderSize} from '../../../../types/constEnums'
-import StaticStartMeetingFAB from '../../../../components/StaticStartMeetingFAB'
+import {LoaderSize} from '../../../../types/constEnums'
 
 interface Props extends RouteComponentProps {}
 
@@ -20,7 +18,6 @@ const MyDashboardTimelineRoot = lazy(() =>
 
 const UserDashMain = (props: Props) => {
   const {match} = props
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <>
       <DashContent>
@@ -31,7 +28,7 @@ const UserDashMain = (props: Props) => {
           </Switch>
         </Suspense>
       </DashContent>
-      {isDesktop ? <StaticStartMeetingFAB /> : <StartMeetingFAB />}
+      <StartMeetingFAB />
     </>
   )
 }
