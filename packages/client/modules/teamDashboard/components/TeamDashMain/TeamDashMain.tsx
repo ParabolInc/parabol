@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {AgendaAndTasksQuery} from '~/__generated__/AgendaAndTasksQuery.graphql'
+import {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
@@ -40,14 +40,14 @@ const TasksContent = styled('div')({
 })
 
 interface Props {
-  queryRef: PreloadedQuery<AgendaAndTasksQuery>
+  queryRef: PreloadedQuery<TeamDashMainQuery>
 }
 
-const AgendaAndTasks = (props: Props) => {
+const TeamDashMain = (props: Props) => {
   const {queryRef} = props
-  const data = usePreloadedQuery<AgendaAndTasksQuery>(
+  const data = usePreloadedQuery<TeamDashMainQuery>(
     graphql`
-      query AgendaAndTasksQuery($teamId: ID!) {
+      query TeamDashMainQuery($teamId: ID!) {
         viewer {
           team(teamId: $teamId) {
             name
@@ -82,4 +82,4 @@ const AgendaAndTasks = (props: Props) => {
     </RootBlock>
   )
 }
-export default AgendaAndTasks
+export default TeamDashMain

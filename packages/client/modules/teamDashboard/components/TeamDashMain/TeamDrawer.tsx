@@ -42,7 +42,7 @@ interface Props {
   viewer: TeamDrawer_viewer$key
 }
 
-const AgendaAndTasks = (props: Props) => {
+const TeamDrawer = (props: Props) => {
   const data = useFragment(
     graphql`
       fragment TeamDrawer_viewer on User {
@@ -61,12 +61,10 @@ const AgendaAndTasks = (props: Props) => {
     `,
     props.viewer
   )
-  console.log('🚀 ~ AgendaAndTasks ~ data', data)
   const {dashSearch, team, teamMember} = data
   const hideAgenda = teamMember?.hideAgenda
   const hideManageTeam = teamMember?.hideManageTeam
   const manageTeamMemberId = teamMember?.manageTeamMemberId
-  // const {hideAgenda, hideManageTeam, manageTeamMemberId} = teamMember!
   const teamId = team?.id
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -110,4 +108,4 @@ const AgendaAndTasks = (props: Props) => {
     </ResponsiveDashSidebar>
   )
 }
-export default AgendaAndTasks
+export default TeamDrawer
