@@ -1,45 +1,50 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Breakpoint, ElementWidth} from '~/types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
 import {PALETTE} from '../../styles/paletteV3'
+import makeMinWidthMediaQuery from '../../utils/makeMinWidthMediaQuery'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
 import DashboardAvatar from './DashboardAvatar'
 
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASHBOARD_TOP_BAR)
 
-const AvatarsList = styled('div')<{maxAvatars: number}>(({maxAvatars}) => ({
+const AvatarsList = styled('div')({
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
-  marginTop: 16,
   flexDirection: 'column',
+  alignItems: 'center',
   [desktopBreakpoint]: {
-    marginTop: 0,
-    maxWidth: `${ElementWidth.DASHBOARD_AVATAR * maxAvatars}px`
+    marginRight: 6
   }
-}))
-
-const ScrollContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  overflow: 'hidden'
 })
 
-const ItemBlock = styled('div')({
-  marginRight: 8,
+const Wrapper = styled('div')<{totalAvatarCount: number}>(({totalAvatarCount}) => ({
+  display: 'flex',
+  justifyContent: 'center',
   position: 'relative',
-  [desktopBreakpoint]: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    marginRight: 0
-  }
+  left: `${totalAvatarCount > 1 ? -4 : 0}px`,
+  minWidth: `${ElementWidth.DASHBOARD_AVATAR_OVERLAPPED * (totalAvatarCount - 1) +
+    ElementWidth.DASHBOARD_AVATAR +
+    4}px` // 4px = border
+}))
+
+const ItemBlock = styled('div')({
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'flex-start',
+  marginRight: 0
+})
+
+const OverflowWrapper = styled('div')({
+  width: ElementWidth.DASHBOARD_AVATAR_OVERLAPPED
 })
 
 const OverflowCount = styled('div')({
@@ -67,6 +72,7 @@ const Label = styled('div')({
   fontWeight: 600,
   color: PALETTE.SLATE_700,
   textAlign: 'center',
+  width: 'max-content',
   '&:hover': {
     cursor: 'pointer'
   }
@@ -79,12 +85,11 @@ interface Props {
 const DashboardAvatars = (props: Props) => {
   const {team} = props
   const {id: teamId, teamMembers} = team
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const avatarsRef = useRef<HTMLDivElement>(null)
-  // useAvatarsOverflow(wrapperRef, avatarsRef)
-  const maxAvatars = 10 // adjust for screen widths
+  const isDesktop = useBreakpoint(Breakpoint.DASHBOARD_TOP_BAR)
+  const maxAvatars = isDesktop ? 10 : 6
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
+  const totalAvatarCount = overflowCount ? visibleAvatars.length + 1 : visibleAvatars.length
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
@@ -104,8 +109,8 @@ const DashboardAvatars = (props: Props) => {
   }
 
   return (
-    <AvatarsList maxAvatars={maxAvatars} ref={wrapperRef}>
-      <ScrollContainer ref={avatarsRef}>
+    <AvatarsList>
+      <Wrapper totalAvatarCount={totalAvatarCount}>
         {visibleAvatars.map((teamMember) => {
           return (
             <ItemBlock key={`dbAvatar${teamMember.id}`}>
@@ -117,10 +122,12 @@ const DashboardAvatars = (props: Props) => {
         })}
         {overflowCount > 0 && (
           <ItemBlock onClick={handleClickOverflow}>
-            <OverflowCount>{`+${overflowCount}`}</OverflowCount>
+            <OverflowWrapper>
+              <OverflowCount>{`+${overflowCount}`}</OverflowCount>
+            </OverflowWrapper>
           </ItemBlock>
         )}
-      </ScrollContainer>
+      </Wrapper>
       <Label>Manage Team</Label>
     </AvatarsList>
   )

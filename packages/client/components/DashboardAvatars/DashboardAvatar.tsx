@@ -18,7 +18,7 @@ interface Props {
 }
 
 const AvatarWrapper = styled('div')({
-  width: 20
+  width: ElementWidth.DASHBOARD_AVATAR_OVERLAPPED
 })
 
 const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(

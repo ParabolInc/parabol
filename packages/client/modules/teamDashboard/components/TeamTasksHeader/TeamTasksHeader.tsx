@@ -20,7 +20,7 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASHBOARD_TOP_BAR)
 
 const TeamMeta = styled('div')({
   // define
@@ -89,14 +89,11 @@ const TeamHeaderAndAvatars = styled('div')({
 })
 
 const Avatars = styled('div')({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   display: 'flex',
-  justifyContent: 'space-between',
-  flexDirection: 'row',
+  paddingTop: 12,
   [desktopBreakpoint]: {
-    // flexDirection: 'column',
-    display: 'flex',
-    alignItems: 'flex-start'
+    paddingTop: 0
   }
 })
 
