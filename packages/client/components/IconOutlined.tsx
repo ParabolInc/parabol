@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
-import {iconStyles} from '../styles/helpers/iconStyles'
+import Icon from './Icon'
 
-const IconOutlined = styled.i`
-  ${iconStyles};
-  font-family: 'Material Icons Outlined';
-`
+const IconOutlined = styled(Icon)({
+  fontFamily: 'Material Icons Outlined'
+})
 
 export default IconOutlined
