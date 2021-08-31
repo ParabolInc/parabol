@@ -7934,7 +7934,6 @@ export interface IXGitHubDeploymentProtectionRule {
    * Identifies the primary key from the database.
    */
   databaseId: number | null;
-  id: string;
 
   /**
    * The teams or users that can review the deployment
@@ -19555,7 +19554,6 @@ export type _xGitHubNode =
   | IXGitHubDeployedEvent
   | IXGitHubDeployment
   | IXGitHubDeploymentEnvironmentChangedEvent
-  | IXGitHubDeploymentProtectionRule
   | IXGitHubDeploymentReview
   | IXGitHubDeploymentStatus
   | IXGitHubDisconnectedEvent
@@ -45799,6 +45797,11 @@ export interface IXGitHubUser {
   isEmployee: boolean;
 
   /**
+   * Whether or not this user is following the viewer. Inverse of viewer_is_following
+   */
+  isFollowingViewer: boolean;
+
+  /**
    * Whether or not this user is a member of the GitHub Stars Program.
    */
   isGitHubStar: boolean;
@@ -46055,7 +46058,7 @@ export interface IXGitHubUser {
   viewerCanSponsor: boolean;
 
   /**
-   * Whether or not this user is followed by the viewer.
+   * Whether or not this user is followed by the viewer. Inverse of is_following_viewer.
    */
   viewerIsFollowing: boolean;
 
@@ -51265,7 +51268,7 @@ export interface IDiscussion {
   /**
    * The users writing a comment right now
    */
-  commentors: Array<ICommentorDetails>;
+  commentors: Array<IUser>;
 
   /**
    * The comments & tasks thread in the discussion

@@ -15,6 +15,7 @@ import {GROUP} from '../../utils/constants'
 import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
 import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import {SwipeColumn} from '../GroupingKanban'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
@@ -61,13 +62,14 @@ const ReflectionWrapper = styled('div')<{
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
+  openSpotlight?: OpenSpotlight
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
+  const {meeting, openSpotlight, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -158,6 +160,7 @@ const ReflectionGroup = (props: Props) => {
           closePortal={collapse}
           meeting={meeting}
           reflectionGroupId={reflectionGroupId}
+          openSpotlight={openSpotlight}
         />
       )}
       <Group
@@ -195,6 +198,7 @@ const ReflectionGroup = (props: Props) => {
                   isClipped={staticIdx !== 0}
                   isDraggable={staticIdx === 0}
                   meeting={meeting}
+                  openSpotlight={openSpotlight}
                   reflection={reflection}
                   staticReflections={staticReflections}
                   swipeColumn={swipeColumn}

@@ -1,9 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {
-  NewMeetingPhaseTypeEnum,
-  RetroMeeting_meeting
+  NewMeetingPhaseTypeEnum, RetroMeeting_meeting$key
 } from '~/__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMeeting from '../hooks/useMeeting'
@@ -17,7 +16,7 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroMeetingSidebar from './RetroMeetingSidebar'
 
 interface Props {
-  meeting: RetroMeeting_meeting
+  meeting: RetroMeeting_meeting$key
 }
 
 const phaseLookup = {
@@ -41,7 +40,41 @@ export interface RetroMeetingPhaseProps {
 }
 
 const RetroMeeting = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment RetroMeeting_meeting on RetrospectiveMeeting {
+        ...MeetingControlBar_meeting
+        ...useMeeting_meeting
+        ...RetroMeetingSidebar_meeting
+        ...NewMeetingCheckIn_meeting
+        ...RetroReflectPhase_meeting
+        ...RetroGroupPhase_meeting
+        ...RetroVotePhase_meeting
+        ...RetroDiscussPhase_meeting
+        ...NewMeetingAvatarGroup_meeting
+        id
+        showSidebar
+        localPhase {
+          phaseType
+        }
+        phases {
+          phaseType
+          stages {
+            id
+          }
+        }
+        viewerMeetingMember {
+          user {
+            featureFlags {
+              video
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {
     toggleSidebar,
     room,
@@ -104,36 +137,4 @@ const RetroMeeting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(RetroMeeting, {
-  meeting: graphql`
-    fragment RetroMeeting_meeting on RetrospectiveMeeting {
-      ...useMeeting_meeting
-      ...RetroMeetingSidebar_meeting
-      ...NewMeetingCheckIn_meeting
-      ...RetroReflectPhase_meeting
-      ...RetroGroupPhase_meeting
-      ...RetroVotePhase_meeting
-      ...RetroDiscussPhase_meeting
-      ...NewMeetingAvatarGroup_meeting
-      ...MeetingControlBar_meeting
-      id
-      showSidebar
-      localPhase {
-        phaseType
-      }
-      phases {
-        phaseType
-        stages {
-          id
-        }
-      }
-      viewerMeetingMember {
-        user {
-          featureFlags {
-            video
-          }
-        }
-      }
-    }
-  `
-})
+export default RetroMeeting

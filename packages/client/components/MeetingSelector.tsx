@@ -72,7 +72,7 @@ const MeetingSelector = (props: Props) => {
   if (!meeting) return null
   const {meetingType} = meeting
   const Meeting = meetingLookup[meetingType]
-  return <Meeting meeting={meeting} />
+  return <Meeting meeting={meeting as any} />
 }
 
 graphql`

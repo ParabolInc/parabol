@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.25.0 2021-Aug-25
+
+### Fixed
+
+- TeamMemberStageItems rendering unnecessarily (#5322)
+- New/Added Jira Stories are auto-archived by default (#5321)
+- Viewer object is non-null (#5310)
+
+### Changed
+
+- Upgrade to latest graphql-tools packages (#5321)
+- Upgrade to Relay v11, React v17 (#5294)
+- Server checks 'x-application-authorization' for app auth first (#5318)
+- Client always sends auth via `x-application-authorization' (#5291)
+
+### Added
+
+- Polls table in PG (#5231)
+
 ## 6.24.1 2021-Aug-23
 
 ### Fixed
