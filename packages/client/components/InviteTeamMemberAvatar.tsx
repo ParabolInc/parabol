@@ -19,7 +19,8 @@ interface Props extends WithAtmosphereProps {
 const InviteButton = styled(FlatButton)({
   color: PALETTE.SKY_500,
   fontWeight: 600,
-  lineHeight: 1.1,
+  border: 0,
+  lineHeight: 1,
   padding: '0 8px',
   ':hover, :focus, :active': {
     color: PALETTE.SKY_600
