@@ -8,39 +8,21 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
 import {PALETTE} from '../../styles/paletteV3'
-import makeMinWidthMediaQuery from '../../utils/makeMinWidthMediaQuery'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
 import DashboardAvatar from './DashboardAvatar'
 
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASHBOARD_TOP_BAR)
-
 const AvatarsList = styled('div')({
   display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'center',
   flexDirection: 'column',
-  alignItems: 'center',
-  [desktopBreakpoint]: {
-    marginRight: 6
-  }
+  marginRight: 6
 })
 
-const Wrapper = styled('div')<{totalAvatarCount: number}>(({totalAvatarCount}) => ({
+const Wrapper = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
-  left: `${totalAvatarCount > 1 ? -4 : 0}px`,
-  minWidth: `${ElementWidth.DASHBOARD_AVATAR_OVERLAPPED * (totalAvatarCount - 1) +
-    ElementWidth.DASHBOARD_AVATAR +
-    4}px` // 4px = border
-}))
-
-const ItemBlock = styled('div')({
-  position: 'relative',
-  display: 'flex',
-  alignItems: 'flex-start',
-  marginRight: 0
+  left: -4
 })
 
 const OverflowWrapper = styled('div')({
@@ -60,8 +42,7 @@ const OverflowCount = styled('div')({
   fontWeight: 600,
   overflow: 'hidden',
   userSelect: 'none',
-  width: 28,
-  zIndex: 10,
+  width: ElementWidth.DASHBOARD_AVATAR,
   '&:hover': {
     cursor: 'pointer'
   }
@@ -72,7 +53,7 @@ const Label = styled('div')({
   fontWeight: 600,
   color: PALETTE.SLATE_700,
   textAlign: 'center',
-  width: 'max-content',
+  width: '100%',
   '&:hover': {
     cursor: 'pointer'
   }
@@ -89,7 +70,6 @@ const DashboardAvatars = (props: Props) => {
   const maxAvatars = isDesktop ? 10 : 6
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
-  const totalAvatarCount = overflowCount ? visibleAvatars.length + 1 : visibleAvatars.length
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
@@ -110,22 +90,18 @@ const DashboardAvatars = (props: Props) => {
 
   return (
     <AvatarsList>
-      <Wrapper totalAvatarCount={totalAvatarCount}>
+      <Wrapper>
         {visibleAvatars.map((teamMember) => {
           return (
-            <ItemBlock key={`dbAvatar${teamMember.id}`}>
-              <ErrorBoundary>
-                <DashboardAvatar teamMember={teamMember} />
-              </ErrorBoundary>
-            </ItemBlock>
+            <ErrorBoundary key={`dbAvatar${teamMember.id}`}>
+              <DashboardAvatar teamMember={teamMember} />
+            </ErrorBoundary>
           )
         })}
         {overflowCount > 0 && (
-          <ItemBlock onClick={handleClickOverflow}>
-            <OverflowWrapper>
-              <OverflowCount>{`+${overflowCount}`}</OverflowCount>
-            </OverflowWrapper>
-          </ItemBlock>
+          <OverflowWrapper onClick={handleClickOverflow}>
+            <OverflowCount>{`+${overflowCount}`}</OverflowCount>
+          </OverflowWrapper>
         )}
       </Wrapper>
       <Label>Manage Team</Label>
