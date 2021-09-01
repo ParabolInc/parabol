@@ -48,8 +48,7 @@
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
-    "immutable": "3.8.2",
-    "extract-files": "https://github.com/mattkrick/extract-files/tarball/c697de1a4c27d08f53838316be0e5959a91c01f4"
+    "immutable": "3.8.2"
   },
   "devDependencies": {
     "@babel/preset-env": "7.14.8",
