@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from './Icon'
+import IconOutlined from './IconOutlined'
 import PlainButton from './PlainButton/PlainButton'
 
 const StyledPlainButton = styled(PlainButton)({
@@ -18,14 +18,14 @@ const StyledPlainButton = styled(PlainButton)({
   transition: 'color 0.1s ease'
 })
 
-const AddTaskIcon = styled(Icon)({
+const AddPollIcon = styled(IconOutlined)({
   fontSize: 20,
   width: 20,
   height: 20,
   margin: '0 4px'
 })
 
-const AddTaskLabel = styled('div')({
+const AddPollLabel = styled('div')({
   color: 'inherit'
 })
 
@@ -35,15 +35,15 @@ interface Props {
   disabled?: boolean
 }
 
-const AddTaskButton = (props: Props) => {
+const AddPollButton = (props: Props) => {
   const {onClick, dataCy, disabled} = props
 
   return (
     <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
-      <AddTaskIcon>task_alt</AddTaskIcon>
-      <AddTaskLabel>Add a task</AddTaskLabel>
+      <AddPollIcon>poll_outline</AddPollIcon>
+      <AddPollLabel>Add a poll</AddPollLabel>
     </StyledPlainButton>
   )
 }
 
-export default AddTaskButton
+export default AddPollButton
