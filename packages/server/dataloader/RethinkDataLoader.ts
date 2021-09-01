@@ -1,14 +1,11 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import fkLoader from './fkLoader'
 import * as foreignLoaderMakers from './foreignLoaderMakers'
 import LoaderMakerForeign from './LoaderMakerForeign'
 import LoaderMakerPrimary from './LoaderMakerPrimary'
-import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import pkLoader from './pkLoader'
 import * as primaryLoaderMakers from './primaryLoaderMakers'
 
@@ -65,14 +62,7 @@ export default class RethinkDataLoader {
     const loaderMaker = loaderMakers[loaderName]
     if (loaderMaker instanceof LoaderMakerPrimary) {
       const {table} = loaderMaker
-      if (table === 'Team') {
-        loader = new DataLoader<string, IGetTeamsByIdsQueryResult, string>(async (teamIds) => {
-          const teams = await getTeamsByIds(teamIds)
-          return normalizeRethinkDbResults(teamIds, teams)
-        }, this.dataLoaderOptions)
-      } else {
-        loader = pkLoader(this.dataLoaderOptions, table)
-      }
+      loader = pkLoader(this.dataLoaderOptions, table)
       this.loaders[loaderName]
     } else if (loaderMaker instanceof LoaderMakerForeign) {
       const {fetch, field, pk} = loaderMaker
