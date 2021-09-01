@@ -1,53 +1,35 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getLatestTaskEstimatesQuery.sql" */
-import {PreparedQuery} from '@pgtyped/query'
+import { PreparedQuery } from '@pgtyped/query';
 
-export type ChangeSourceEnum = 'meeting' | 'task' | 'external'
+export type ChangeSourceEnum = 'meeting' | 'task' | 'external';
 
 /** 'GetLatestTaskEstimatesQuery' parameters type */
 export interface IGetLatestTaskEstimatesQueryParams {
-  taskIds: Array<string | null | void>
+  taskIds: Array<string | null | void>;
 }
 
 /** 'GetLatestTaskEstimatesQuery' return type */
 export interface IGetLatestTaskEstimatesQueryResult {
-  id: number
-  createdAt: Date
-  changeSource: ChangeSourceEnum
-  name: string
-  label: string
-  taskId: string
-  userId: string
-  meetingId: string | null
-  stageId: string | null
-  discussionId: string | null
-  jiraFieldId: string | null
+  id: number;
+  createdAt: Date;
+  changeSource: ChangeSourceEnum;
+  name: string;
+  label: string;
+  taskId: string;
+  userId: string;
+  meetingId: string | null;
+  stageId: string | null;
+  discussionId: string | null;
+  jiraFieldId: string | null;
 }
 
 /** 'GetLatestTaskEstimatesQuery' query type */
 export interface IGetLatestTaskEstimatesQueryQuery {
-  params: IGetLatestTaskEstimatesQueryParams
-  result: IGetLatestTaskEstimatesQueryResult
+  params: IGetLatestTaskEstimatesQueryParams;
+  result: IGetLatestTaskEstimatesQueryResult;
 }
 
-const getLatestTaskEstimatesQueryIR: any = {
-  name: 'getLatestTaskEstimatesQuery',
-  params: [
-    {
-      name: 'taskIds',
-      codeRefs: {
-        defined: {a: 48, b: 54, line: 3, col: 9},
-        used: [{a: 146, b: 152, line: 6, col: 19}]
-      },
-      transform: {type: 'array_spread'}
-    }
-  ],
-  usedParamSet: {taskIds: true},
-  statement: {
-    body:
-      'SELECT DISTINCT ON("taskId", "name") * From "TaskEstimate"\nWHERE "taskId" in :taskIds\nORDER BY "taskId", "name", "createdAt" desc',
-    loc: {a: 68, b: 196, line: 5, col: 0}
-  }
-}
+const getLatestTaskEstimatesQueryIR: any = {"name":"getLatestTaskEstimatesQuery","params":[{"name":"taskIds","codeRefs":{"defined":{"a":48,"b":54,"line":3,"col":9},"used":[{"a":146,"b":152,"line":6,"col":19}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"taskIds":true},"statement":{"body":"SELECT DISTINCT ON(\"taskId\", \"name\") * From \"TaskEstimate\"\nWHERE \"taskId\" in :taskIds\nORDER BY \"taskId\", \"name\", \"createdAt\" desc","loc":{"a":68,"b":196,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -57,7 +39,6 @@ const getLatestTaskEstimatesQueryIR: any = {
  * ORDER BY "taskId", "name", "createdAt" desc
  * ```
  */
-export const getLatestTaskEstimatesQuery = new PreparedQuery<
-  IGetLatestTaskEstimatesQueryParams,
-  IGetLatestTaskEstimatesQueryResult
->(getLatestTaskEstimatesQueryIR)
+export const getLatestTaskEstimatesQuery = new PreparedQuery<IGetLatestTaskEstimatesQueryParams,IGetLatestTaskEstimatesQueryResult>(getLatestTaskEstimatesQueryIR);
+
+
