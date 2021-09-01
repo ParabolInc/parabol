@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import StripeManager from '../../../utils/StripeManager'
 import {isSuperUser} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 export default {
   name: 'StripeSucceedPayment',
@@ -47,14 +48,32 @@ export default {
     const {creditCard} = org
 
     // RESOLUTION
-    await r
-      .table('Invoice')
-      .get(invoiceId)
-      .update({
-        creditCard,
-        paidAt: now,
-        status: 'PAID'
-      })
-      .run()
+    const teamUpdates = {
+      isPaid: true,
+      updatedAt: now
+    }
+    await Promise.all([
+      r({
+        invoice: r
+          .table('Invoice')
+          .get(invoiceId)
+          .update({
+            creditCard,
+            paidAt: now,
+            status: 'PAID'
+          }),
+        teams: r
+          .table('Team')
+          .getAll(orgId, {index: 'orgId'})
+          .update(teamUpdates),
+        org: r
+          .table('Organization')
+          .get(orgId)
+          .update({
+            stripeSubscriptionId: invoice.subscription as string
+          })
+      }).run(),
+      updateTeamByOrgId(teamUpdates, orgId)
+    ])
   }
 }

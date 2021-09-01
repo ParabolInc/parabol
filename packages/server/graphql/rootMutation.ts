@@ -49,7 +49,6 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
-import jiraCreateIssue from './mutations/jiraCreateIssue'
 import joinMeeting from './mutations/joinMeeting'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
@@ -90,7 +89,7 @@ import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
-import resetMeetingToStage from './mutations/resetMeetingToStage'
+import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import resetPassword from './mutations/resetPassword'
 import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
@@ -132,6 +131,7 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
+import setTaskEstimate from './mutations/setTaskEstimate'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -189,7 +189,6 @@ export default new GraphQLObjectType<any, Context>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
-      jiraCreateIssue,
       loginWithGoogle,
       loginWithPassword,
       movePokerTemplateDimension,
@@ -223,8 +222,8 @@ export default new GraphQLObjectType<any, Context>({
       removeReflection,
       removeSlackAuth,
       removeTeamMember,
-      resetMeetingToStage,
       resetPassword,
+      resetRetroMeetingToGroupStage,
       segmentEventTrack,
       selectTemplate,
       setAppLocation,
@@ -272,6 +271,7 @@ export default new GraphQLObjectType<any, Context>({
       joinMeeting,
       addMissingJiraField,
       setPokerSpectate,
-      persistGitHubSearchQuery
+      persistGitHubSearchQuery,
+      setTaskEstimate
     } as any)
 })

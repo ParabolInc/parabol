@@ -349,6 +349,7 @@ export const enum Threshold {
   MAX_POKER_SCALE_VALUES = 30,
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
+  MAX_POKER_DIMENSION_NAME = 50,
   MAX_REACTJIS = 12,
   MAX_POKER_STORIES = 50,
   MAX_INTEGRATION_FETCH_TIME = 10000,
@@ -390,6 +391,7 @@ export const enum ZIndex {
   SIDEBAR = 16,
   SIDE_SHEET = 8,
   SNACKBAR = 24 /* snackbar is kind of dialog */,
+  SPOTLIGHT_MODAL = 25, // above the tooltip
   REFLECTION_IN_FLIGHT = 8,
   REFLECTION_IN_FLIGHT_LOCAL = 26, // keep it above the dialog
   TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */

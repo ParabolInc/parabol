@@ -48,7 +48,7 @@ const CommentingStatusBlock = styled('div')({
   width: '100%'
 })
 
-export type DiscussionThreadables = 'task' | 'comment'
+export type DiscussionThreadables = 'task' | 'comment' | 'poll'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]

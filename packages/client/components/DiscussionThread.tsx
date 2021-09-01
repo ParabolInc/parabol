@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
-import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import {DiscussionThreadQuery} from '../__generated__/DiscussionThreadQuery.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList, {DiscussionThreadables} from './DiscussionThreadList'
 
@@ -30,15 +31,49 @@ interface Props {
   meetingContentRef?: RefObject<HTMLDivElement>
   allowedThreadables: DiscussionThreadables[]
   width?: string
-  viewer: DiscussionThread_viewer
+  queryRef: PreloadedQuery<DiscussionThreadQuery>
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, allowedThreadables, width, viewer} = props
+  const {meetingContentRef, allowedThreadables, width, queryRef} = props
+  const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
+  const data = usePreloadedQuery<DiscussionThreadQuery>(
+    graphql`
+      query DiscussionThreadQuery($discussionId: ID!) {
+        viewer {
+          ...DiscussionThreadInput_viewer
+          ...DiscussionThreadList_viewer
+          discussion(id: $discussionId) {
+            ...DiscussionThreadInput_discussion
+            ...DiscussionThreadList_discussion
+            id
+            replyingToCommentId
+            commentors {
+              id
+              preferredName
+              __typename
+            }
+            thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+              edges {
+                node {
+                  threadSortOrder
+                  discussionId
+                  ...DiscussionThreadList_threadables
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  const {viewer} = data
   const isExpanded =
     useCoverable(
       'threads',
@@ -49,10 +84,11 @@ const DiscussionThread = (props: Props) => {
       isDrawer
     ) || allowedThreadables.length === 0
   const {discussion} = viewer
-  const commentors = discussion?.thread?.commentors ?? []
-  const preferredNames = useMemo(() => commentors.map(({preferredName}) => preferredName), [
-    commentors
-  ])
+  const commentors = discussion?.commentors ?? []
+  const preferredNames = useMemo(
+    () => commentors.filter(({id}) => id !== viewerId).map(({preferredName}) => preferredName),
+    [viewerId, discussion]
+  )
   if (!discussion) {
     return <div>No discussion found!</div>
   }
@@ -89,30 +125,4 @@ const DiscussionThread = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(DiscussionThread, {
-  viewer: graphql`
-    fragment DiscussionThread_viewer on User {
-      ...DiscussionThreadInput_viewer
-      ...DiscussionThreadList_viewer
-      discussion(id: $discussionId) {
-        ...DiscussionThreadInput_discussion
-        ...DiscussionThreadList_discussion
-        id
-        replyingToCommentId
-        thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-          commentors {
-            id
-            preferredName
-          }
-          edges {
-            node {
-              threadSortOrder
-              discussionId
-              ...DiscussionThreadList_threadables
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default DiscussionThread

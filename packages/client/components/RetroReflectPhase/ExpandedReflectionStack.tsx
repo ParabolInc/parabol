@@ -6,6 +6,7 @@ import {RefCallbackInstance} from '../../types/generics'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
 import ExpandedReflection from './ExpandedReflection'
 import getBBox from './getBBox'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -72,6 +73,7 @@ interface Props {
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   reflectionGroupId?: string
+  openSpotlight?: OpenSpotlight
 }
 
 const ExpandedReflectionStack = (props: Props) => {
@@ -85,14 +87,16 @@ const ExpandedReflectionStack = (props: Props) => {
     closePortal,
     reflections,
     reflectionGroupId,
-    meeting
+    meeting,
+    openSpotlight
   } = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      const {activeElement, body} = document
+      if (e.key === 'Escape' && activeElement === body) {
         closePortal()
       }
     }
@@ -118,6 +122,7 @@ const ExpandedReflectionStack = (props: Props) => {
                   key={reflection.id}
                   reflection={reflection}
                   meeting={meeting}
+                  openSpotlight={openSpotlight}
                   idx={idx}
                   setItemsRef={setItemsRef}
                   staticReflections={staticReflections}

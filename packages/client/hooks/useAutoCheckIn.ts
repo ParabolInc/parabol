@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useAutoCheckIn_meeting} from '~/__generated__/useAutoCheckIn_meeting.graphql'
+import {useAutoCheckIn_meeting$key} from '~/__generated__/useAutoCheckIn_meeting.graphql'
 import JoinMeetingMutation from '../mutations/JoinMeetingMutation'
 import MeetingSubscription from '../subscriptions/MeetingSubscription'
 import useAtmosphere from './useAtmosphere'
@@ -13,7 +13,7 @@ const useAutoCheckIn = (meetingRef: any) => {
   const router = {history, location}
   const queryKey = 'useAutoCheckIn'
   useEffect(() => {
-    const meeting = readInlineData<useAutoCheckIn_meeting>(
+    const meeting = readInlineData<useAutoCheckIn_meeting$key>(
       graphql`
         fragment useAutoCheckIn_meeting on NewMeeting @inline {
           id

@@ -32,6 +32,7 @@ extend type RetrospectiveMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  spotlightReflection: RetroReflection
 }
 
 extend type Team {
@@ -56,7 +57,6 @@ extend type User {
 
 extend type Task {
   error: String
-  contentText: String
 }
 
 extend type RetroReflectionGroup {
@@ -101,10 +101,6 @@ extend type AgendaItemsStage {
 }
 
 extend type Discussion {
-  isAnonymousComment: Boolean
-  replyingToCommentId: String
-}
-
-extend type ThreadableConnection {
-  commentors: [User!]!
+  isAnonymousComment: Boolean!
+  replyingToCommentId: String!
 }

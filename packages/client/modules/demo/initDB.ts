@@ -4,24 +4,22 @@ import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
+import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
+import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
+import DemoDiscussStage from './DemoDiscussStage'
+import DemoGenericMeetingStage from './DemoGenericMeetingStage'
+import DemoUser from './DemoUser'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
-
-interface BaseUser {
-  preferredName: string
-  email: string
-  picture: string
-}
 
 type IRetrospectiveMeeting = Omit<
   RetrospectiveMeeting,
@@ -44,7 +42,7 @@ type IRetrospectiveMeetingSettings = RetrospectiveMeetingSettings & {
 const initMeetingSettings = () => {
   return {
     __typename: 'RetrospectiveMeetingSettings',
-    phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS],
+    phaseTypes: [REFLECT, GROUP, VOTE, DISCUSS],
     id: 'settingsId',
     maxVotesPerGroup: 3,
     meetingType: RETROSPECTIVE,
@@ -79,6 +77,36 @@ export const JiraProjectKeyLookup = {
   }
 } as const
 
+class DemoJiraRemoteProject {
+  __typename = 'JiraRemoteProject'
+  id: string
+  teamId: string
+  userId: string
+  self = ''
+  cloudId: string
+  key: string
+  name: string
+  avatar: string
+  avatarUrls = {
+    x16: '',
+    x24: '',
+    x32: '',
+    x48: ''
+  }
+  simplified = true
+  style = ''
+  constructor(key: keyof typeof JiraProjectKeyLookup) {
+    const details = JiraProjectKeyLookup[key]
+    const {projectKey, projectName, cloudId, avatar} = details
+    this.id = JiraProjectId.join(cloudId, projectKey)
+    this.teamId = RetroDemo.TEAM_ID
+    this.userId = demoViewerId
+    this.cloudId = cloudId
+    this.key = projectKey
+    this.name = projectName
+    this.avatar = avatar
+  }
+}
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
@@ -87,45 +115,22 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeSuggestedIntegrationJira = (key) => ({
-  __typename: 'SuggestedIntegrationJira',
-  id: key,
-  remoteProject: {},
-  ...JiraProjectKeyLookup[key]
-})
-
-const makeSuggestedIntegrationGitHub = (nameWithOwner) => ({
-  __typename: 'SuggestedIntegrationGitHub',
-  id: nameWithOwner,
-  ...GitHubProjectKeyLookup[nameWithOwner]
-})
-
-const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) => {
-  const now = new Date().toJSON()
-  const id = idx === 0 ? demoViewerId : `bot${idx}`
+const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
   return {
-    id,
-    viewerId: id,
-    createdAt: now,
-    email,
-    featureFlags: {
-      jira: false,
-      video: false
-    },
-    facilitatorUserId: id,
-    facilitatorName: preferredName,
-    inactive: false,
-    isConnected: true,
-    lastSeenAtURLs: [`/meet/${RetroDemo.MEETING_ID}`],
-    lastSeenAt: now,
-    rasterPicture: picture,
-    picture: picture,
-    preferredName,
-    tms: [demoTeamId]
+    __typename: 'SuggestedIntegrationJira',
+    id: key,
+    remoteProject: new DemoJiraRemoteProject(key),
+    ...JiraProjectKeyLookup[key]
   }
 }
 
-const initSlackNotification = (userId) => ({
+const makeSuggestedIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
+  __typename: 'SuggestedIntegrationGitHub',
+  id: `si:${nameWithOwner}`,
+  ...GitHubProjectKeyLookup[nameWithOwner]
+})
+
+const initSlackNotification = (userId: string) => ({
   __typename: 'SlackNotification',
   id: 'demoSlackNotification',
   event: 'MEETING_STAGE_TIME_LIMIT_START' as SlackNotificationEventEnum,
@@ -135,7 +140,7 @@ const initSlackNotification = (userId) => ({
   teamId: demoTeamId
 })
 
-const initSlackAuth = (userId) => ({
+const initSlackAuth = (userId: string) => ({
   __typename: 'SlackAuth',
   isActive: true,
   botUserId: 'demoSlackBotId',
@@ -232,36 +237,16 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
   }
 }
 
-const initCheckInStage = (teamMember) => ({
-  __typename: 'CheckInStage',
-  endAt: new Date().toJSON(),
-  id: 'checkinStage',
-  isComplete: true,
-  meetingId: RetroDemo.MEETING_ID,
-  phaseType: CHECKIN,
-  teamMemberId: teamMember.id,
-  meetingMember: teamMember.meetingMember,
-  teamMember
-})
-
-const initPhases = (teamMembers) => {
-  const now = new Date().toJSON()
+const initPhases = () => {
+  const reflectStage = new DemoGenericMeetingStage(RetroDemo.REFLECT_STAGE_ID, REFLECT)
+  reflectStage.isNavigable = true
+  reflectStage.isNavigableByFacilitator = true
+  const groupStage = new DemoGenericMeetingStage(RetroDemo.GROUP_STAGE_ID, GROUP)
+  groupStage.isNavigableByFacilitator = true
   return [
     {
-      __typename: 'CheckInPhase',
-      checkInGreeting: {
-        content: 'Bonjour',
-        language: 'french'
-      },
-      checkInQuestion:
-        '{"blocks":[{"key":"1bm6m","text":"What’s got your attention today, and why?","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
-      id: 'checkinPhase',
-      phaseType: CHECKIN,
-      meetingId: RetroDemo.MEETING_ID,
-      stages: teamMembers.map(initCheckInStage)
-    },
-    {
       __typename: 'ReflectPhase',
+      __isNewMeetingPhase: 'ReflectPhase',
       id: 'reflectPhase',
       phaseType: REFLECT,
       focusedPromptId: null,
@@ -293,84 +278,43 @@ const initPhases = (teamMembers) => {
           sortOrder: 2
         }
       ],
-      stages: [
-        {
-          __typename: 'GenericMeetingStage',
-          id: RetroDemo.REFLECT_STAGE_ID,
-          isComplete: false,
-          isNavigable: true,
-          isNavigableByFacilitator: true,
-          meetingId: RetroDemo.MEETING_ID,
-          phaseType: REFLECT,
-          readyCount: 0,
-          startAt: now
-        }
-      ]
+      stages: [reflectStage]
     },
     {
       __typename: 'GenericMeetingPhase',
+      __isNewMeetingPhase: 'GenericMeetingPhase',
       id: 'groupPhase',
       phaseType: GROUP,
       meetingId: RetroDemo.MEETING_ID,
-      stages: [
-        {
-          __typename: 'GenericMeetingStage',
-          id: RetroDemo.GROUP_STAGE_ID,
-          isComplete: false,
-          meetingId: RetroDemo.MEETING_ID,
-          phaseType: GROUP,
-          readyCount: 0
-        }
-      ]
+      stages: [groupStage]
     },
     {
       __typename: 'GenericMeetingPhase',
+      __isNewMeetingPhase: 'GenericMeetingPhase',
       id: 'votePhase',
       phaseType: VOTE,
       meetingId: RetroDemo.MEETING_ID,
-      stages: [
-        {
-          __typename: 'GenericMeetingStage',
-          id: RetroDemo.VOTE_STAGE_ID,
-          isComplete: false,
-          meetingId: RetroDemo.MEETING_ID,
-          phaseType: VOTE,
-          readyCount: 0
-        }
-      ]
+      stages: [new DemoGenericMeetingStage(RetroDemo.VOTE_STAGE_ID, VOTE)]
     },
     {
       __typename: 'DiscussPhase',
+      __isNewMeetingPhase: 'DiscussPhase',
       id: 'discussPhase',
       phaseType: DISCUSS,
       meetingId: RetroDemo.MEETING_ID,
-      stages: [
-        {
-          __typename: 'RetroDiscussStage',
-          id: 'discussStage0',
-          meetingId: RetroDemo.MEETING_ID,
-          isComplete: false,
-          isNavigable: false,
-          isNavigableByFacilitator: false,
-          phaseType: DISCUSS,
-          reflectionGroup: null,
-          discussionId: `discussion:dummy`,
-          discussion: null,
-          readyCount: 0,
-          sortOrder: 0
-        }
-      ]
+      stages: [new DemoDiscussStage('discussStage0', 0, null, 'discussion:dummy', null)]
     }
   ]
 }
 
 export class DemoComment {
   __typename = 'Comment'
+  __isThreadable = 'Comment'
   content: string
   createdAt: string
   updatedAt: string
   createdBy: string | null
-  createdByUser: ReturnType<typeof initDemoUser> | null
+  createdByUser: DemoUser | null
   id: string
   isActive = true
   isViewerComment: boolean
@@ -415,9 +359,11 @@ export class DemoDiscussionThread {
   }
   edges = [] as DemoThreadableEdge[]
 }
+
 export class DemoDiscussion {
   teamId = demoTeamId
   meetingId = RetroDemo.MEETING_ID
+  commentors = [] as DemoUser[]
   discussionTopicType = 'reflectionGroup'
   discussionTopicId: string
   createdAt: string
@@ -437,6 +383,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
   const [viewerTeamMember] = teamMembers
   return {
     __typename: 'RetrospectiveMeeting',
+    __isNewMeeting: 'RetrospectiveMeeting',
     createdAt: now,
     createdBy: demoViewerId,
     endedAt: null,
@@ -457,7 +404,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     votesRemaining: teamMembers.length * 5,
-    phases: initPhases(teamMembers) as any[],
+    phases: initPhases() as any[],
     summarySentAt: null,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
@@ -475,7 +422,9 @@ const initDB = (botScript) => {
     getDemoAvatar(1),
     getDemoAvatar(2)
   ]
-  const users = baseUsers.map(initDemoUser)
+  const users = baseUsers.map(
+    ({preferredName, email, picture}, idx) => new DemoUser(preferredName, email, picture, idx)
+  )
   const meetingMembers = users.map(initDemoMeetingMember)
   const teamMembers = users.map(initDemoTeamMember).map((teamMember, idx) => ({
     ...teamMember,
@@ -500,7 +449,7 @@ const initDB = (botScript) => {
   newMeeting.topicCount = 0
   newMeeting.settings = team.meetingSettings as any
   return {
-    discussions: [] as any[],
+    discussions: [] as DemoDiscussion[],
     meetingMembers,
     newMeeting,
     organization: org,

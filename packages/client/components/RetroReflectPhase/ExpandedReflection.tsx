@@ -5,6 +5,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {commitLocalUpdate} from 'relay-runtime'
 import {RefCallbackInstance} from '../../types/generics'
 import {ElementWidth} from '../../types/constEnums'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 
 const ModalReflectionWrapper = styled('div')({
   padding: ElementWidth.REFLECTION_CARD_PADDING
@@ -14,13 +15,14 @@ interface Props {
   idx: number
   reflection: any
   meeting: any
+  openSpotlight?: OpenSpotlight
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   staticReflections: readonly any[]
 }
 
 // this isEditing logic is a little verbose, could use a rewrite
 const ExpandedReflection = (props: Props) => {
-  const {reflection, meeting, setItemsRef, idx, staticReflections} = props
+  const {reflection, meeting, openSpotlight, setItemsRef, idx, staticReflections} = props
   const {id: reflectionId} = reflection
   const staticIdx = staticReflections.indexOf(reflection)
   const atmosphere = useAtmosphere()
@@ -68,6 +70,7 @@ const ExpandedReflection = (props: Props) => {
       <DraggableReflectionCard
         isDraggable
         meeting={meeting}
+        openSpotlight={openSpotlight}
         reflection={reflection}
         staticIdx={staticIdx}
         staticReflections={staticReflections}

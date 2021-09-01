@@ -1,9 +1,8 @@
-import {useContext} from 'react'
-import {AtmosphereContext} from '../components/AtmosphereProvider/AtmosphereProvider'
+import {useRelayEnvironment} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 
 const useAtmosphere = () => {
-  return useContext(AtmosphereContext) as Atmosphere
+  return useRelayEnvironment() as Atmosphere
 }
 
 export default useAtmosphere

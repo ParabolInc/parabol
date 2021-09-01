@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
-import {requestSubscription, Variables} from 'relay-runtime'
+import {requestSubscription} from 'relay-runtime'
 import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
@@ -27,7 +27,11 @@ import {
 } from '../mutations/RemoveOrgUserMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, UpdaterHandler} from '../types/relayMutations'
-import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
+import {
+  NotificationSubscription as TNotificationSubscription,
+  NotificationSubscriptionResponse,
+  NotificationSubscriptionVariables
+} from '../__generated__/NotificationSubscription.graphql'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -221,10 +225,10 @@ const onNextHandlers = {
 
 const NotificationSubscription = (
   atmosphere: Atmosphere,
-  variables: Variables,
+  variables: NotificationSubscriptionVariables,
   router: {history: RouterProps['history']}
 ) => {
-  return requestSubscription<NotificationSubscriptionResponse>(atmosphere, {
+  return requestSubscription<TNotificationSubscription>(atmosphere, {
     subscription,
     variables,
     updater: (store) => {

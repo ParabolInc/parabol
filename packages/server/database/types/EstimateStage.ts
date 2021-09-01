@@ -1,12 +1,10 @@
 import generateUID from '../../generateUID'
 import EstimateUserScore from './EstimateUserScore'
 import GenericMeetingStage, {GenericMeetingStageInput} from './GenericMeetingStage'
-import {TaskServiceEnum} from './Task'
 
 interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   creatorUserId: string
   taskId: string
-  service: TaskServiceEnum
   serviceTaskId: string
   sortOrder: number
   durations: number[] | undefined
@@ -18,7 +16,6 @@ interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
 
 export default class EstimateStage extends GenericMeetingStage {
   creatorUserId: string
-  service: TaskServiceEnum
   serviceTaskId: string
   taskId: string
   sortOrder: number
@@ -32,7 +29,6 @@ export default class EstimateStage extends GenericMeetingStage {
     super({phaseType: 'ESTIMATE', durations: input.durations})
     const {
       creatorUserId,
-      service,
       serviceTaskId,
       sortOrder,
       scores,
@@ -41,7 +37,6 @@ export default class EstimateStage extends GenericMeetingStage {
       taskId
     } = input
     this.creatorUserId = creatorUserId
-    this.service = service
     this.serviceTaskId = serviceTaskId
     this.sortOrder = sortOrder
     this.scores = scores || []

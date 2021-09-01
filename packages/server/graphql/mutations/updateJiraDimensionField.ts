@@ -4,7 +4,6 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -74,7 +73,7 @@ const updateJiraDimensionField = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }
-    const templateRef = await getTemplateRefById(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
     const {dimensions} = templateRef
     const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
     if (!matchingDimension) {

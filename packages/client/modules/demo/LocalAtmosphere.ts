@@ -6,8 +6,10 @@ import {
   Network,
   Observable,
   RecordSource,
+  RequestParameters,
   Store,
-  SubscribeFunction
+  SubscribeFunction,
+  Variables
 } from 'relay-runtime'
 import Atmosphere from '../../Atmosphere'
 import {SubscriptionChannel} from '../../types/constEnums'
@@ -16,20 +18,23 @@ import handlerProvider from '../../utils/relay/handlerProvider'
 import ClientGraphQLServer from './ClientGraphQLServer'
 // import sleep from 'universal/utils/sleep'
 
-const store = new Store(new RecordSource())
+const noop = (): any => {
+  /* noop */
+}
+const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
 export default class LocalAtmosphere extends Environment {
   eventEmitter = new EventEmitter()
   clientGraphQLServer = new ClientGraphQLServer(this)
   viewerId = 'demoUser'
-
+  _network: typeof Network
+  retries = new Set<() => void>()
   constructor() {
-    // @ts-ignore
     super({
       store,
-      handlerProvider
-    } as any)
-    // @ts-ignore
-    this._network = Network.create(this.fetchLocal, this.subscribeLocal)
+      handlerProvider,
+      network: Network.create(noop)
+    })
+    this._network = Network.create(this.fetchLocal, this.subscribeLocal) as any
   }
 
   registerQuery: Atmosphere['registerQuery'] = async (
@@ -48,7 +53,7 @@ export default class LocalAtmosphere extends Environment {
     return Observable.from(this.fetchLocalPromise(operation, variables))
   }
 
-  fetchLocalPromise = async (operation, variables) => {
+  fetchLocalPromise = async (operation: RequestParameters, variables: Variables) => {
     const res = (await this.clientGraphQLServer.fetch(operation.name, variables)) as any
     if (res.endRetrospective && res.endRetrospective.isKill) {
       window.localStorage.removeItem('retroDemo')

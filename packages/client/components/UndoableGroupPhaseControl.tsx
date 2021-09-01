@@ -1,5 +1,5 @@
 import React from 'react'
-import ResetMeetingToStageMutation from '~/mutations/ResetMeetingToStageMutation'
+import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'
 import useModal from '~/hooks/useModal'
@@ -10,7 +10,6 @@ import Icon from '~/components/Icon'
 
 interface Props {
   meetingId: string
-  resetToStageId: string
 }
 
 const StyledButton = styled(FlatButton)({
@@ -29,17 +28,17 @@ const UndoableGroupPhaseDialog = lazyPreload(() =>
 )
 
 const UndoableGroupPhaseControl = (props: Props) => {
-  const {meetingId, resetToStageId} = props
+  const {meetingId} = props
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
   useHotkey('i d i d n t m e a n t o', () => {
     console.log('didntmean')
-    ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId})
+    ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId})
   })
   return (
     <>
       <StyledButton onClick={toggleModal} palette={'blue'}><StyledIcon>edit</StyledIcon>{' Edit Groups'}</StyledButton>
-      {modalPortal(<UndoableGroupPhaseDialog closePortal={closeModal} meetingId={meetingId} resetToStageId={resetToStageId} />)}
+      {modalPortal(<UndoableGroupPhaseDialog closePortal={closeModal} meetingId={meetingId} />)}
     </>
   )
 }

@@ -7,6 +7,7 @@ import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableRefl
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
 import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
 import {SwipeColumn} from '../GroupingKanban'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 
 export interface DropZoneBBox {
@@ -48,9 +49,10 @@ interface Props {
   isClipped?: boolean
   isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting
+  openSpotlight?: OpenSpotlight
   reflection: DraggableReflectionCard_reflection
-  staticIdx: number
-  staticReflections: DraggableReflectionCard_staticReflections
+  staticIdx?: number
+  staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
 }
@@ -67,9 +69,10 @@ const DraggableReflectionCard = (props: Props) => {
   const {
     isClipped,
     reflection,
-    staticIdx,
+    staticIdx = 0,
     staticReflections,
     meeting,
+    openSpotlight,
     isDraggable,
     swipeColumn,
     dataCy
@@ -78,7 +81,7 @@ const DraggableReflectionCard = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
   const [drag] = useState(makeDragState)
-  const staticReflectionCount = staticReflections.length
+  const staticReflectionCount = staticReflections?.length || 0
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -104,6 +107,7 @@ const DraggableReflectionCard = (props: Props) => {
         reflection={reflection}
         isClipped={isClipped}
         meeting={meeting}
+        openSpotlight={openSpotlight}
       />
     </DragWrapper>
   )

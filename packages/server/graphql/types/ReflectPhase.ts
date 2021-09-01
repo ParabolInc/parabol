@@ -22,16 +22,12 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('reflectPrompts').load(focusedPromptId)
       }
     },
-    promptTemplateId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'FK. The ID of the template used during the reflect phase'
-    },
     reflectPrompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts used during the reflect phase',
-      resolve: async ({meetingId, promptTemplateId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(promptTemplateId)
+        const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
         // only show prompts that were created before the meeting and
         // either have not been removed or they were removed after the meeting was created
         return prompts.filter(

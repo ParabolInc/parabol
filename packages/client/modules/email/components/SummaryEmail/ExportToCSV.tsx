@@ -8,8 +8,6 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
-import {fetchQuery} from 'react-relay'
-import JiraIssueId from '../../../../shared/gqlIds/JiraIssueId'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -35,11 +33,13 @@ const query = graphql`
           phaseType
           stages {
             ... on AgendaItemsStage {
+              __typename
               agendaItem {
                 content
               }
             }
             ... on RetroDiscussStage {
+              __typename
               reflectionGroup {
                 title
                 voteCount
@@ -53,13 +53,24 @@ const query = graphql`
               }
             }
             ... on EstimateStage {
-              service
-              serviceTaskId
+              __typename
               finalScore
               dimensionRef {
                 name
               }
-              story {
+              task {
+                integration {
+                  ... on JiraIssue {
+                    __typename
+                    summary
+                    issueKey
+                  }
+                  ... on _xGitHubIssue {
+                    __typename
+                    number
+                    title
+                  }
+                }
                 title
               }
               scores {
@@ -67,6 +78,7 @@ const query = graphql`
               }
             }
             ... on DiscussionThreadStage {
+              __typename
               discussion {
                 id
                 thread(first: 1000) {
@@ -162,14 +174,20 @@ class ExportToCSV extends Component<Props> {
     const estimatePhase = phases!.find((phase) => phase.phaseType === 'ESTIMATE')!
     const stages = estimatePhase.stages!
     stages.forEach((stage) => {
-      const {finalScore, dimensionRef, story, scores, serviceTaskId} = stage
-      const {name} = dimensionRef!
-
-      const {issueKey} = JiraIssueId.split(serviceTaskId!)
-      const title = story?.title ?? issueKey
+      if (stage.__typename !== 'EstimateStage') return
+      const {finalScore, dimensionRef, task, scores} = stage
+      if (!dimensionRef || !task) return
+      const {name} = dimensionRef
+      const {integration, title} = task
+      let story = title
+      if (integration?.__typename === 'JiraIssue') {
+        story = `${integration.issueKey}: ${integration.summary}`
+      } else if (integration?.__typename === '_xGitHubIssue') {
+        story = `${integration.number}: ${integration.title}`
+      }
       const voteCount = scores!.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
-        story: title,
+        story,
         dimension: name,
         finalScore: finalScore || '',
         voteCount
@@ -297,10 +315,10 @@ class ExportToCSV extends Component<Props> {
     const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = this.props
     if (submitting) return
     submitMutation()
-    const data = await fetchQuery<ExportToCSVQuery>(atmosphere, query, {meetingId})
+    const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {meetingId})
     onCompleted()
+    if (!data) return
     const {viewer} = data
-    if (!viewer) return
     const {newMeeting} = viewer
     if (!newMeeting) return
     const rows = this.getRows(newMeeting)
