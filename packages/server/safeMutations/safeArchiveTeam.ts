@@ -2,7 +2,7 @@ import getRethink from '../database/rethinkDriver'
 import Team from '../database/types/Team'
 import db from '../db'
 import removeUserTms from '../postgres/queries/removeUserTms'
-import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
+import archiveTeamsByTeamIds from '../postgres/queries/archiveTeamsByTeamIds'
 
 const safeArchiveTeam = async (teamId: string) => {
   const r = await getRethink()
@@ -47,7 +47,7 @@ const safeArchiveTeam = async (teamId: string) => {
         )('changes')('new_val')('id')
         .default([]) as unknown) as string[]
     }).run(),
-    updateTeamByTeamId(updates, teamId)
+    archiveTeamsByTeamIds(teamId)
   ])
   return {...rethinkResult, team: pgResult[0] ?? null, users}
 }
