@@ -12,10 +12,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fix bad lowercase call (#5332)
 - Fix stripeSucceedPayment (#5335)
 
-### Changed
-
---
-
 ### Added
 
 - Animate reflection into Spotlight (#5271)
