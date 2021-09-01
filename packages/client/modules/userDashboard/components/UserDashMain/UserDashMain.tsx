@@ -19,17 +19,15 @@ const MyDashboardTimelineRoot = lazy(() =>
 const UserDashMain = (props: Props) => {
   const {match} = props
   return (
-    <>
-      <DashContent>
-        <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
-          <Switch>
-            <Route path={`${match.url}/tasks`} component={UserTaskViewRoot} />
-            <Route path={match.url} component={MyDashboardTimelineRoot} />
-          </Switch>
-        </Suspense>
-      </DashContent>
+    <DashContent>
+      <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
+        <Switch>
+          <Route path={`${match.url}/tasks`} component={UserTaskViewRoot} />
+          <Route path={match.url} component={MyDashboardTimelineRoot} />
+        </Switch>
+      </Suspense>
       <StartMeetingFAB />
-    </>
+    </DashContent>
   )
 }
 

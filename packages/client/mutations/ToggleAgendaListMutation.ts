@@ -21,19 +21,18 @@ const ToggleAgendaListMutation = (atmosphere, teamId, onError, onCompleted) => {
       if (!payload) return
       const nextValue = payload.getValue('hideAgenda')
       const teamMemberId = toTeamMemberId(teamId, viewerId)
-      const teamMember = store.get(teamMemberId)!
+      const teamMember = store.get(teamMemberId)
+      if (!teamMember) return
       teamMember.setValue(nextValue, 'hideAgenda')
       teamMember.setValue(true, 'hideManageTeam')
       if (!nextValue) {
-        const viewer = store.getRoot().getLinkedRecord('viewer')
-        const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
-        if (!teamMember) return
         teamMember.setValue(null, 'manageTeamMemberId')
       }
     },
     optimisticUpdater: (store) => {
       const teamMemberId = toTeamMemberId(teamId, viewerId)
-      const teamMember = store.get(teamMemberId)!
+      const teamMember = store.get(teamMemberId)
+      if (!teamMember) return
       const currentValue = teamMember.getValue('hideAgenda') || false
       teamMember.setValue(!currentValue, 'hideAgenda')
       teamMember.setValue(true, 'hideManageTeam')

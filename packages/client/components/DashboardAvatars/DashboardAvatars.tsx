@@ -50,6 +50,8 @@ const OverflowCount = styled('div')({
 
 const Label = styled('div')({
   fontSize: 12,
+  height: 12,
+  lineHeight: 1,
   fontWeight: 600,
   color: PALETTE.SLATE_700,
   textAlign: 'center',

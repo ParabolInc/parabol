@@ -38,13 +38,11 @@ const ToggleManageTeamMutation: StandardMutation<TToggleManageTeamMutation> = (
       if (!payload) return
       const nextValue = payload.getValue('hideManageTeam')
       const teamMemberId = toTeamMemberId(teamId, viewerId)
-      const teamMember = store.get(teamMemberId)!
+      const teamMember = store.get(teamMemberId)
+      if (!teamMember) return
       teamMember.setValue(nextValue, 'hideManageTeam')
       teamMember.setValue(true, 'hideAgenda')
       if (nextValue) {
-        const viewer = store.getRoot().getLinkedRecord('viewer')
-        const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
-        if (!teamMember) return
         teamMember.setValue(null, 'manageTeamMemberId')
       }
     },
@@ -52,7 +50,8 @@ const ToggleManageTeamMutation: StandardMutation<TToggleManageTeamMutation> = (
       const {viewerId} = atmosphere
       const {teamId} = variables
       const teamMemberId = toTeamMemberId(teamId, viewerId)
-      const teamMember = store.get(teamMemberId)!
+      const teamMember = store.get(teamMemberId)
+      if (!teamMember) return
       const currentValue = teamMember.getValue('hideManageTeam') || false
       teamMember.setValue(!currentValue, 'hideManageTeam')
       teamMember.setValue(true, 'hideAgenda')
