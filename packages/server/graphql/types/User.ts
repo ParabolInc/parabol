@@ -406,9 +406,8 @@ const User = new GraphQLObjectType<any, GQLContext>({
         'The reflection groups that are similar to the selected reflection in the Spotlight',
       args: {
         reflectionId: {
-          type: GraphQLID,
-          description:
-            'The id of the selected reflection in the Spotlight. Null if there is no Spotlight reflection'
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The id of the selected reflection in the Spotlight'
         },
         searchQuery: {
           type: new GraphQLNonNull(GraphQLString),
@@ -416,21 +415,19 @@ const User = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
-        if (!reflectionId) return []
-        const [meetingMembers, retroReflection] = await Promise.all([
-          dataLoader.get('meetingMembersByUserId').load(userId),
-          dataLoader.get('retroReflections').load(reflectionId)
-        ])
-        if (!retroReflection || !meetingMembers) return []
-        const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
+        const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
+        if (!retroReflection) return []
         const {meetingId} = retroReflection
-        if (!meetingIds.includes(meetingId)) {
+        const meetingMemberId = toTeamMemberId(meetingId, userId)
+        const [viewerMeetingMember, reflectionGroups] = await Promise.all([
+          dataLoader.get('meetingMembers').load(meetingMemberId),
+          dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+        ])
+        const {meetingId: viewerMeetingId} = viewerMeetingMember
+        if (viewerMeetingId !== meetingId) {
           standardError(new Error('Not on team'), {userId})
           return []
         }
-        const reflectionGroups = await dataLoader
-          .get('retroReflectionGroupsByMeetingId')
-          .load(meetingId)
         return reflectionGroups
       }
     },

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
@@ -23,12 +23,16 @@ interface Props {
 const SpotlightRoot = (props: Props) => {
   const {closeSpotlight, meeting, flipRef} = props
   const {spotlightReflection} = meeting
-  const reflectionId = spotlightReflection?.id
   const searchQuery = '' // TODO: implement searchQuery
   const atmosphere = useAtmosphere()
+  const reflectionIdRef = useRef('')
+  const nextReflectionId = spotlightReflection?.id ?? ''
+  if (nextReflectionId) {
+    reflectionIdRef.current = nextReflectionId
+  }
   return (
     <QueryRenderer
-      variables={{reflectionId, searchQuery}}
+      variables={{reflectionId: reflectionIdRef.current, searchQuery}}
       environment={atmosphere}
       query={query}
       fetchPolicy={'store-or-network' as any}
