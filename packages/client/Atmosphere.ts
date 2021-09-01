@@ -286,7 +286,17 @@ export default class Atmosphere extends Environment {
 
   handleFetch: FetchFunction = (request, variables, _, uploadables) => {
     return Observable.create((sink) => {
-      this.handleFetchPromise(request, variables, uploadables, sink)
+      const verboseSink = Object.assign({}, sink, {
+        error: (e, isUncaughThrownError) => {
+          if (e.message === 'No payload received') {
+            console.info('request:', request)
+            console.info('variables:', variables)
+            console.info('auth token:', this.authToken)
+          }
+          sink.error(e, isUncaughThrownError)
+        },
+      })
+      this.handleFetchPromise(request, variables, uploadables, verboseSink)
     })
   }
 
