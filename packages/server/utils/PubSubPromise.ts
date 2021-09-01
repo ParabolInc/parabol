@@ -42,7 +42,7 @@ export default class PubSubPromise<Request, Response> {
       const jobId = `${SERVER_ID}:${nextJob}`
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
-        reject(new Error('Redis took too long to respond'))
+        reject(new Error('TIMEOUT'))
       }, MAX_TIMEOUT)
       const previousJob = this.jobs[jobId]
       if (previousJob) {

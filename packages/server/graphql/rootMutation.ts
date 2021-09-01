@@ -6,6 +6,7 @@ import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
+import addMissingJiraField from './mutations/addMissingJiraField'
 import addOrg from './mutations/addOrg'
 import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
@@ -45,11 +46,9 @@ import endDraggingReflection from './mutations/endDraggingReflection'
 import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
-import gitHubCreateIssue from './mutations/gitHubCreateIssue'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
-import jiraCreateIssue from './mutations/jiraCreateIssue'
 import joinMeeting from './mutations/joinMeeting'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
@@ -60,6 +59,7 @@ import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
 import payLater from './mutations/payLater'
+import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerResetDimension from './mutations/pokerResetDimension'
@@ -89,7 +89,7 @@ import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
-import resetMeetingToStage from './mutations/resetMeetingToStage'
+import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import resetPassword from './mutations/resetPassword'
 import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
@@ -131,7 +131,7 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
-import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
+import setTaskEstimate from './mutations/setTaskEstimate'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -189,7 +189,6 @@ export default new GraphQLObjectType<any, Context>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
-      jiraCreateIssue,
       loginWithGoogle,
       loginWithPassword,
       movePokerTemplateDimension,
@@ -223,8 +222,8 @@ export default new GraphQLObjectType<any, Context>({
       removeReflection,
       removeSlackAuth,
       removeTeamMember,
-      resetMeetingToStage,
       resetPassword,
+      resetRetroMeetingToGroupStage,
       segmentEventTrack,
       selectTemplate,
       setAppLocation,
@@ -270,8 +269,9 @@ export default new GraphQLObjectType<any, Context>({
       movePokerTemplateScaleValue,
       updateJiraDimensionField,
       joinMeeting,
-      gitHubCreateIssue,
+      addMissingJiraField,
       setPokerSpectate,
-      persistGitHubSearchQuery
+      persistGitHubSearchQuery,
+      setTaskEstimate
     } as any)
 })

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import plural from 'parabol-client/utils/plural'
-import {makePokerStats_meeting} from 'parabol-client/__generated__/makePokerStats_meeting.graphql'
+import {makePokerStats_meeting$key} from 'parabol-client/__generated__/makePokerStats_meeting.graphql'
 import {readInlineData} from 'react-relay'
 
 const makePokerStats = (meetingRef: any) => {
-  const meeting = readInlineData<makePokerStats_meeting>(
+  const meeting = readInlineData<makePokerStats_meeting$key>(
     graphql`
       fragment makePokerStats_meeting on PokerMeeting @inline {
         meetingMembers {

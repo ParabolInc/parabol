@@ -176,7 +176,14 @@ export type RethinkSchema = {
   }
   Task: {
     type: Task
-    index: 'integrationId' | 'tags' | 'teamId' | 'teamIdUpdatedAt' | 'discussionId' | 'userId'
+    index:
+      | 'integrationId'
+      | 'tags'
+      | 'teamId'
+      | 'teamIdUpdatedAt'
+      | 'discussionId'
+      | 'userId'
+      | 'integrationHash'
   }
   TaskHistory: {
     type: any

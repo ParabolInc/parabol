@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import Atmosphere from '../Atmosphere'
+import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {
   OnNextHandler,
   OnNextHistoryContext,
@@ -18,6 +19,7 @@ import {CreateTaskMutation_notification} from '../__generated__/CreateTaskMutati
 import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleEditTask from './handlers/handleEditTask'
+import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import popInvolvementToast from './toasts/popInvolvementToast'
 
@@ -32,6 +34,23 @@ graphql`
       threadParentId
       replies {
         ...ThreadedRepliesList_replies
+      }
+      integrationHash
+      integration {
+        ... on JiraIssue {
+          ...JiraScopingSearchResultItem_issue
+          cloudId
+          cloudName
+          url
+          issueKey
+          projectKey
+          summary
+          descriptionHTML
+        }
+        ... on _xGitHubIssue {
+          number
+          title
+        }
       }
     }
   }
@@ -70,6 +89,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
   handleEditTask(editorPayload, store)
   handleUpsertTasks(task, store)
+  handleJiraCreateIssue(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -107,7 +127,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       createTaskTaskUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {teamId, userId} = newTask
+      const {teamId, userId, integration, ...rest} = newTask
       const now = new Date().toJSON()
       const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
@@ -115,7 +135,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         newTask.plaintextContent ||
         (newTask.content ? extractTextFromDraftString(newTask.content) : '')
       const optimisticTask = {
-        ...newTask,
+        ...rest,
         id: taskId,
         teamId,
         userId,
@@ -132,9 +152,25 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecord(userId ? store.get(userId)! : null, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
         .setLinkedRecords([], 'replies')
+      if (integration) {
+        const {service, serviceProjectHash} = integration
+        if (service === 'jira') {
+          const {cloudId, projectKey} = JiraProjectId.split(serviceProjectHash)
+          const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
+            cloudId,
+            url: '',
+            issueKey: `${projectKey}-?`,
+            summary: plaintextContent,
+            title: plaintextContent,
+            descriptionHTML: ''
+          })
+          task.setLinkedRecord(optimisticJiraIssue, 'integration')
+        }
+      }
       const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
       handleEditTask(editorPayload, store)
       handleUpsertTasks(task as any, store)
+      handleJiraCreateIssue(task, store)
     },
     onError,
     onCompleted

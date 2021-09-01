@@ -15,6 +15,7 @@ import {GROUP} from '../../utils/constants'
 import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
 import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import {SwipeColumn} from '../GroupingKanban'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
@@ -61,7 +62,7 @@ const ReflectionWrapper = styled('div')<{
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
-  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
+  openSpotlight?: OpenSpotlight
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string

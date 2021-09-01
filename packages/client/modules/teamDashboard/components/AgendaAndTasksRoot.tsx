@@ -1,38 +1,17 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {QueryRenderer} from 'react-relay'
+import React, {Suspense} from 'react'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import useRouter from '../../../hooks/useRouter'
+import agendaAndTasksQuery, {
+  AgendaAndTasksQuery
+} from '../../../__generated__/AgendaAndTasksQuery.graphql'
 import AgendaAndTasks from './AgendaAndTasks/AgendaAndTasks'
-import {LoaderSize} from '../../../types/constEnums'
-import renderQuery from '../../../utils/relay/renderQuery'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 
-const query = graphql`
-  query AgendaAndTasksRootQuery($teamId: ID!) {
-    viewer {
-      ...AgendaAndTasks_viewer
-    }
-  }
-`
-
-interface Props extends RouteComponentProps<{teamId: string}> {}
-
-const AgendaAndTasksRoot = (props: Props) => {
-  const {
-    match: {
-      params: {teamId}
-    }
-  } = props
-  const atmosphere = useAtmosphere()
-  return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{teamId}}
-      render={renderQuery(AgendaAndTasks, {size: LoaderSize.PANEL})}
-      fetchPolicy={'store-or-network' as any}
-    />
-  )
+const AgendaAndTasksRoot = () => {
+  const {match} = useRouter<{teamId: string}>()
+  const {params} = match
+  const {teamId} = params
+  const queryRef = useQueryLoaderNow<AgendaAndTasksQuery>(agendaAndTasksQuery, {teamId})
+  return <Suspense fallback={''}>{queryRef && <AgendaAndTasks queryRef={queryRef} />}</Suspense>
 }
 
-export default withRouter(AgendaAndTasksRoot)
+export default AgendaAndTasksRoot

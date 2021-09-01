@@ -25,10 +25,8 @@ const getDemoEntities = async (text: string) => {
     const lookupEntities = demoLookup(text)
     return lookupEntities || []
   }
-  const res = await fetchQuery<getDemoEntitiesQuery>(remoteAtmosphere, query, {text})
-  const {getDemoEntities} = res
-  const {entities} = getDemoEntities
-  return entities || []
+  const res = await fetchQuery<getDemoEntitiesQuery>(remoteAtmosphere, query, {text}).toPromise()
+  return res?.getDemoEntities?.entities ?? []
 }
 
 export default getDemoEntities

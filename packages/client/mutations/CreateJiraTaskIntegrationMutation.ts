@@ -1,19 +1,29 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {stateToHTML} from 'draft-js-export-html'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
+import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {StandardMutation} from '../types/relayMutations'
 import {CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
 
 graphql`
   fragment CreateJiraTaskIntegrationMutation_task on CreateJiraTaskIntegrationPayload {
     task {
+      ...IntegratedTaskContent_task
       integration {
-        service
-        ... on TaskIntegrationJira {
+        __typename
+        ... on JiraIssue {
           cloudId
+          cloudName
+          url
+          issueKey
+          summary
+          descriptionHTML
           projectKey
-          projectName
+          project {
+            name
+          }
         }
         ...TaskIntegrationLinkIntegrationJira
       }
@@ -65,7 +75,9 @@ const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegra
       )
       const hasMore = suggestedIntegrations.getValue('hasMore')
       if (!existingIntegration || !hasMore) {
-        const projectName = integration.getValue('projectName')
+        const project = integration.getLinkedRecord('project')
+        if (!project) return
+        const projectName = project.getValue('projectName')
         const cloudId = integration.getValue('cloudId')
         if (!projectName || !cloudId) return
         const nextItem = {
@@ -92,15 +104,20 @@ const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegra
       const now = new Date()
       const task = store.get(taskId)
       if (!task) return
+      const contentStr = task.getValue('content') as string
+      if (!contentStr) return
+      const {title: summary, contentState} = splitDraftContent(contentStr)
+      const descriptionHTML = stateToHTML(contentState)
       const optimisticIntegration = {
-        service: 'jira',
+        summary,
+        descriptionHTML,
         projectKey,
         cloudId,
         issueKey: '?',
         cloudName: '',
         updatedAt: now.toJSON()
       } as const
-      const integration = createProxyRecord(store, 'TaskIntegrationJira', optimisticIntegration)
+      const integration = createProxyRecord(store, 'JiraIssue', optimisticIntegration)
       task.setLinkedRecord(integration, 'integration')
     },
     onCompleted,

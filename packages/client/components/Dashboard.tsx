@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {matchPath, Route, RouteProps, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useRouter from '~/hooks/useRouter'
@@ -9,7 +9,7 @@ import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
 import useSidebar from '../hooks/useSidebar'
-import {Dashboard_viewer} from '../__generated__/Dashboard_viewer.graphql'
+import {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
@@ -58,7 +58,7 @@ const getShowFAB = (location: NonNullable<RouteProps['location']>) => {
 }
 
 interface Props {
-  viewer: Dashboard_viewer | null
+  queryRef: PreloadedQuery<DashboardQuery>
 }
 
 const DashLayout = styled('div')({
@@ -86,8 +86,30 @@ const DashMain = styled('div')({
 })
 
 const Dashboard = (props: Props) => {
-  const {viewer} = props
-  const teams = viewer?.teams ?? []
+  const {queryRef} = props
+  const data = usePreloadedQuery<DashboardQuery>(
+    graphql`
+      query DashboardQuery($first: Int!, $after: DateTime) {
+        viewer {
+          ...MeetingsDash_viewer
+          ...MobileDashSidebar_viewer
+          ...MobileDashTopBar_viewer
+          ...DashTopBar_viewer
+          ...DashSidebar_viewer
+          overLimitCopy
+          teams {
+            activeMeetings {
+              ...useSnacksForNewMeetings_meetings
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  const {viewer} = data
+  const {teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -130,20 +152,4 @@ const Dashboard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(Dashboard, {
-  viewer: graphql`
-    fragment Dashboard_viewer on User {
-      ...MeetingsDash_viewer
-      ...MobileDashSidebar_viewer
-      ...MobileDashTopBar_viewer
-      ...DashTopBar_viewer
-      ...DashSidebar_viewer
-      overLimitCopy
-      teams {
-        activeMeetings {
-          ...useSnacksForNewMeetings_meetings
-        }
-      }
-    }
-  `
-})
+export default Dashboard

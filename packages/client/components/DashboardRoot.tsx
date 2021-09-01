@@ -1,41 +1,21 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import React, {Suspense} from 'react'
+import {withRouter} from 'react-router-dom'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
+import dashboardQuery, {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import Dashboard from './Dashboard'
 
-const query = graphql`
-  query DashboardRootQuery($first: Int!, $after: DateTime) {
-    viewer {
-      ...Dashboard_viewer
-    }
-  }
-`
-
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
-
-const DashboardRoot = ({atmosphere}: Props) => {
+const DashboardRoot = () => {
   useSubscription('DashboardRoot', NotificationSubscription)
   useSubscription('DashboardRoot', OrganizationSubscription)
   useSubscription('DashboardRoot', TaskSubscription)
   useSubscription('DashboardRoot', TeamSubscription)
-  return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{first: 5}}
-      fetchPolicy={'store-or-network' as any}
-      render={({props}) => {
-        return <Dashboard viewer={props ? (props as any).viewer : null} />
-      }}
-    />
-  )
+  const queryRef = useQueryLoaderNow<DashboardQuery>(dashboardQuery, {first: 5})
+  return <Suspense fallback={''}>{queryRef && <Dashboard queryRef={queryRef} />}</Suspense>
 }
 
-export default withRouter(withAtmosphere(DashboardRoot))
+export default withRouter(DashboardRoot)

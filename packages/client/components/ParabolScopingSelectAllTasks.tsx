@@ -1,15 +1,15 @@
 /* Copy and pasted from `./JiraScopingSelectAllIssues.tsx` */
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
-import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
-import Checkbox from './Checkbox'
-import useAtmosphere from '../hooks/useAtmosphere'
-import graphql from 'babel-plugin-relay/macro'
-import {ParabolScopingSelectAllTasks_tasks} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
+import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
+import {ParabolScopingSelectAllTasks_tasks} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
+import Checkbox from './Checkbox'
 
 const Item = styled('div')({
   display: 'flex',
@@ -50,7 +50,11 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
       meetingId,
       updates
     }
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    const contents = updates.map((update) => {
+      const task = tasks.find((taskEdge) => taskEdge.node.id === update.serviceTaskId)
+      return task?.node.plaintextContent ?? 'Unknown Story'
+    })
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
   if (tasks.length < 2) return null
   const title = getSelectAllTitle(tasks.length, usedServiceTaskIds.size, 'task')
@@ -67,6 +71,8 @@ export default createFragmentContainer(ParabolScopingSelectAllTasks, {
     fragment ParabolScopingSelectAllTasks_tasks on TaskEdge @relay(plural: true) {
       node {
         id
+        plaintextContent
+        integrationHash
       }
     }
   `

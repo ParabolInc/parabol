@@ -11,9 +11,12 @@ import {
   CacheConfig,
   Environment,
   FetchFunction,
+  fetchQuery,
   GraphQLResponse,
+  GraphQLTaggedNode,
   Network,
   Observable,
+  OperationType,
   RecordSource,
   RelayFeatureFlags,
   RequestParameters,
@@ -30,7 +33,8 @@ import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+  ; (RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
   subKey: string
@@ -43,11 +47,7 @@ interface Subscriptions {
 }
 
 export type SubscriptionRequestor = {
-  (
-    atmosphere: Atmosphere,
-    variables: Variables,
-    router: {history: RouterProps['history']}
-  ): Disposable
+  (atmosphere: Atmosphere, variables: any, router: {history: RouterProps['history']}): Disposable
   key: string
 }
 
@@ -81,7 +81,7 @@ export interface AtmosphereEvents {
   removeGitHubRepo: () => void
 }
 
-const store = new Store(new RecordSource())
+const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
 
 export default class Atmosphere extends Environment {
   static getKey = (name: string, variables: Variables | undefined) => {
@@ -105,8 +105,6 @@ export default class Atmosphere extends Environment {
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
   userId: string | null = null // DEPRECATED
-  authorizationHeader: string = __PRODUCTION__ ? 'X-Application-Authorization' : 'Authorization'
-  
   constructor() {
     super({
       store,
@@ -120,7 +118,7 @@ export default class Atmosphere extends Environment {
   fetchPing = async (connectionId?: string) => {
     return fetch('/sse-ping', {
       headers: {
-        [this.authorizationHeader]: `Bearer ${this.authToken}`,
+        'x-application-authorization': `Bearer ${this.authToken}`,
         'x-correlation-id': connectionId || ''
       }
     })
@@ -130,7 +128,7 @@ export default class Atmosphere extends Environment {
     return fetch('/sse-ping', {
       method: 'POST',
       headers: {
-        [this.authorizationHeader]: `Bearer ${this.authToken}`,
+        'x-application-authorization': `Bearer ${this.authToken}`,
         'x-correlation-id': connectionId || ''
       },
       body: data
@@ -141,10 +139,10 @@ export default class Atmosphere extends Environment {
     const uploadables = body.payload.uploadables
     const headers = {
       accept: 'application/json',
-      [this.authorizationHeader]: this.authToken ? `Bearer ${this.authToken}` : '',
+      'x-application-authorization': this.authToken ? `Bearer ${this.authToken}` : '',
       'x-correlation-id': connectionId || ''
     }
-    /* if uploadables, don't set content type bc we want the browser to set it */
+    /* if uploadables, don't set content type bc we want the browser to set it o*/
     if (!uploadables) headers['content-type'] = 'application/json'
     const res = await fetch('/graphql', {
       method: 'POST',
@@ -292,6 +290,20 @@ export default class Atmosphere extends Environment {
     })
   }
 
+  fetchQuery = async <T extends OperationType>(
+    taggedNode: GraphQLTaggedNode,
+    variables: Variables = {}
+  ) => {
+    let res: T['response']
+    try {
+      res = await fetchQuery<T>(this, taggedNode, variables, {
+        fetchPolicy: 'store-or-network'
+      }).toPromise()
+    } catch (e) {
+      return null
+    }
+    return res
+  }
   getAuthToken = (global: Window) => {
     if (!global) return
     const authToken = global.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
@@ -408,8 +420,8 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
-    // remove all records
-    ;(this.getStore().getSource() as any).clear()
+      // remove all records
+      ; (this.getStore().getSource() as any).clear()
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null

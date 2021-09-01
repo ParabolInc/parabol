@@ -6,6 +6,7 @@ import {RefCallbackInstance} from '../../types/generics'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
 import ExpandedReflection from './ExpandedReflection'
 import getBBox from './getBBox'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -72,7 +73,7 @@ interface Props {
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   reflectionGroupId?: string
-  openSpotlight?: (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
+  openSpotlight?: OpenSpotlight
 }
 
 const ExpandedReflectionStack = (props: Props) => {
@@ -94,7 +95,8 @@ const ExpandedReflectionStack = (props: Props) => {
   }, [phaseRef.current])
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      const {activeElement, body} = document
+      if (e.key === 'Escape' && activeElement === body) {
         closePortal()
       }
     }

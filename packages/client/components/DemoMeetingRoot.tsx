@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {QueryRenderer} from 'react-relay'
+import {useLazyLoadQuery} from 'react-relay'
 import MeetingSubscription from '~/subscriptions/MeetingSubscription'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import {RetroDemo} from '../types/constEnums'
+import {DemoMeetingRootQuery} from '../__generated__/DemoMeetingRootQuery.graphql'
 import RetroMeeting from './RetroMeeting'
 
 const query = graphql`
@@ -22,25 +22,21 @@ const query = graphql`
 `
 
 const DemoMeetingRoot = () => {
-  const atmosphere = useAtmosphere()
   useSubscription('DemoMeetingRoot', NotificationSubscription)
   useSubscription('DemoMeetingRoot', OrganizationSubscription)
   useSubscription('DemoMeetingRoot', TaskSubscription)
   useSubscription('DemoMeetingRoot', TeamSubscription)
   useSubscription('DemoMeetingRoot', MeetingSubscription, {meetingId: RetroDemo.MEETING_ID})
-  return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{meetingId: RetroDemo.MEETING_ID}}
-      render={({props}) => {
-        if (props) {
-          return <RetroMeeting meeting={(props as any).viewer.meeting} />
-        }
-        return null
-      }}
-    />
+  const data = useLazyLoadQuery<DemoMeetingRootQuery>(
+    query,
+    {
+      meetingId: RetroDemo.MEETING_ID
+    },
+    {
+      UNSTABLE_renderPolicy: 'full'
+    }
   )
+  if (!data?.viewer?.meeting) return null
+  return <RetroMeeting meeting={data.viewer.meeting} />
 }
-
 export default DemoMeetingRoot

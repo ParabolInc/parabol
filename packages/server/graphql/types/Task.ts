@@ -6,12 +6,14 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
+import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import {GitHubRequest} from '../rootSchema'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
-import Story, {storyFields} from './Story'
 import TaskEditorDetails from './TaskEditorDetails'
 import TaskEstimate from './TaskEstimate'
 import TaskIntegration from './TaskIntegration'
@@ -22,11 +24,10 @@ import Threadable, {threadableFields} from './Threadable'
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
-  interfaces: () => [Threadable, Story],
+  interfaces: () => [Threadable],
   isTypeOf: ({status}) => !!status,
   fields: () => ({
     ...(threadableFields() as any),
-    ...storyFields(),
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',
@@ -56,8 +57,15 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     },
     estimates: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
-      description: 'A list of estimates for the story, created in a poker meeting',
-      resolve: (source: any) => source.estimates ?? []
+      description: 'A list of the most recent estimates for the task',
+      resolve: async ({id: taskId, integration, teamId}: DBTask, _args, {dataLoader}) => {
+        if (integration?.service === 'jira') {
+          const {accessUserId, cloudId, issueKey} = integration
+          // this dataloader has the side effect of guaranteeing fresh estimates
+          await dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+        }
+        return dataLoader.get('latestTaskEstimates').load(taskId)
+      }
     },
     editors: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEditorDetails))),
@@ -66,7 +74,48 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       resolve: (source: any) => source.editors ?? []
     },
     integration: {
-      type: TaskIntegration
+      type: TaskIntegration,
+      description: 'The reference to the single source of truth for this task',
+      resolve: async ({integration, teamId}: DBTask, _args, context, info) => {
+        const {dataLoader} = context
+        if (!integration) return null
+        const {accessUserId} = integration
+        if (integration.service === 'jira') {
+          const {cloudId, issueKey} = integration
+          return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+        } else if (integration.service === 'github') {
+          const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
+          if (!githubAuth) return null
+          const {accessToken} = githubAuth
+          const endpointContext = {accessToken}
+          const {nameWithOwner, issueNumber} = integration
+          const {repoOwner, repoName} = GitHubRepoId.split(nameWithOwner)
+          const query = `
+                {
+                  repository(owner: "${repoOwner}", name: "${repoName}") {
+                    issue(number: ${issueNumber}) {
+                      ...info
+                    }
+                  }
+                }`
+          const githubRequest = (info.schema as any).githubRequest as GitHubRequest
+          const {data, errors} = await githubRequest({
+            query,
+            endpointContext,
+            batchRef: context,
+            info
+          })
+          if (errors) {
+            console.log(errors)
+          }
+          return data
+        }
+        return null
+      }
+    },
+    integrationHash: {
+      type: GraphQLID,
+      description: 'A hash of the integrated task'
     },
     meetingId: {
       type: GraphQLID,

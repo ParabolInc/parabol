@@ -1,17 +1,24 @@
-import {CreateGitHubTaskIntegrationMutation as TCreateGitHubTaskIntegrationMutation} from '../__generated__/CreateGitHubTaskIntegrationMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {stateToHTML} from 'draft-js-export-html'
+import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
+import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {
+  CreateGitHubTaskIntegrationMutation as TCreateGitHubTaskIntegrationMutation
+} from '../__generated__/CreateGitHubTaskIntegrationMutation.graphql'
 
 graphql`
   fragment CreateGitHubTaskIntegrationMutation_task on CreateGitHubTaskIntegrationPayload {
     task {
       integration {
-        ... on TaskIntegrationGitHub {
-          issueNumber
-          service
-          nameWithOwner
+        ... on _xGitHubIssue {
+          bodyHTML
+          title
+          number
+          repository {
+            nameWithOwner
+          }
         }
         ...TaskIntegrationLinkIntegrationGitHub
       }
@@ -44,13 +51,21 @@ const CreateGitHubTaskIntegrationMutation: StandardMutation<TCreateGitHubTaskInt
       const now = new Date()
       const task = store.get(taskId)
       if (!task) return
+      const integrationRepository = createProxyRecord(store, '_xGitHubRepository', {
+        nameWithOwner
+      })
+      const contentStr = task.getValue('content') as string
+      if (!contentStr) return
+      const {title, contentState} = splitDraftContent(contentStr)
+      const bodyHTML = stateToHTML(contentState)
       const optimisticIntegration = {
-        service: 'github',
-        nameWithOwner,
-        issueNumber: '?',
+        title,
+        bodyHTML,
+        number: 0,
         updatedAt: now.toJSON()
       } as const
-      const integration = createProxyRecord(store, 'TaskIntegrationGitHub', optimisticIntegration)
+      const integration = createProxyRecord(store, '_xGitHubIssue', optimisticIntegration)
+      integration.setLinkedRecord(integrationRepository, 'repository')
       task.setLinkedRecord(integration, 'integration')
     },
     onCompleted,

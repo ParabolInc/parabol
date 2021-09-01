@@ -10,6 +10,7 @@ export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTagEnum = 'private' | 'archived'
 export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira'
 
+export type TaskIntegration = TaskIntegrationJira | TaskIntegrationGitHub
 export interface TaskInput {
   id?: string
   content: string
@@ -17,6 +18,9 @@ export interface TaskInput {
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
+  integration?: TaskIntegration
+
+  integrationHash?: string
   meetingId?: string | null
   plaintextContent?: string
   sortOrder?: number | null
@@ -36,7 +40,8 @@ export default class Task {
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
-  integration?: TaskIntegrationJira | TaskIntegrationGitHub
+  integration?: TaskIntegration
+  integrationHash?: string
   meetingId?: string
   plaintextContent: string
   sortOrder: number
@@ -60,6 +65,8 @@ export default class Task {
       createdBy,
       doneMeetingId,
       dueDate,
+      integration,
+      integrationHash,
       plaintextContent,
       sortOrder,
       status,
@@ -77,6 +84,8 @@ export default class Task {
     this.createdBy = createdBy
     this.doneMeetingId = doneMeetingId
     this.dueDate = dueDate || undefined
+    this.integration = integration || undefined
+    this.integrationHash = integrationHash
     this.meetingId = meetingId || undefined
     this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.sortOrder = sortOrder || dndNoise()

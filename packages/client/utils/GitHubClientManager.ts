@@ -1,10 +1,12 @@
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddGitHubAuthMutation from '../mutations/AddGitHubAuthMutation'
+import {Providers} from '../types/constEnums'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import GitHubManager from './GitHubManager'
 
-class GitHubClientManager extends GitHubManager {
+class GitHubClientManager {
+  static SCOPE = Providers.GITHUB_SCOPE
+
   fetch = window.fetch.bind(window)
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps

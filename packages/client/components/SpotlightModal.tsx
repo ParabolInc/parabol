@@ -1,21 +1,21 @@
-import React, {KeyboardEvent} from 'react'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
 import {SpotlightModal_viewer} from '~/__generated__/SpotlightModal_viewer.graphql'
+import useBreakpoint from '../hooks/useBreakpoint'
+import {DECELERATE, fadeUp} from '../styles/animation'
+import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import MenuItemLabel from './MenuItemLabel'
-import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import Icon from './Icon'
+import MenuItemComponentAvatar from './MenuItemComponentAvatar'
+import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
-import useBreakpoint from '../hooks/useBreakpoint'
 import SpotlightEmptyState from './SpotlightEmptyState'
-import {Elevation} from '../styles/elevation'
-import {DECELERATE, fadeUp} from '../styles/animation'
 
 const SELECTED_HEIGHT_PERC = 33.3
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -138,13 +138,15 @@ const SpotlightModal = (props: Props) => {
   const {closeSpotlight, meeting, flipRef} = props
   const {spotlightReflection} = meeting
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Escape') closeSpotlight()
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape' && !e.currentTarget.value) {
+      closeSpotlight()
+    }
   }
   const reflectionGroupsCount = 0
   return (
     <>
-      <ModalContainer onKeyDown={handleKeyDown} isDesktop={isDesktop}>
+      <ModalContainer isDesktop={isDesktop}>
         <SelectedReflectionSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>
@@ -157,6 +159,7 @@ const SpotlightModal = (props: Props) => {
               <SearchIcon>search</SearchIcon>
             </StyledMenuItemIcon>
             <SearchInput
+              onKeyDown={onKeyDown}
               autoFocus
               autoComplete='off'
               name='search'

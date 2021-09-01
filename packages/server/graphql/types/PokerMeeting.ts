@@ -1,13 +1,11 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
-import getPhase from '../../utils/getPhase'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
 import PokerMeetingSettings from './PokerMeetingSettings'
-import Story from './Story'
+import Task from './Task'
 
 const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeeting',
@@ -40,28 +38,20 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     story: {
-      type: Story,
+      type: Task,
       description: 'A single story created in a Sprint Poker meeting',
       args: {
         storyId: {
           type: GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async ({phases, teamId}, {storyId: serviceTaskId}, {dataLoader}) => {
-        const estimatePhase = getPhase(phases, 'ESTIMATE')
-        const {stages} = estimatePhase
-        const stage = stages.find((stage) => stage.serviceTaskId === serviceTaskId)
-        if (!stage) return null
-        const {creatorUserId, service} = stage
-        if (service === 'jira') {
-          const {cloudId, issueKey} = JiraServiceTaskId.split(serviceTaskId)
-          const res = await dataLoader
-            .get('jiraIssue')
-            .load({teamId, userId: creatorUserId, cloudId, issueKey})
-          return res
-        } else {
-          return dataLoader.get('tasks').load(serviceTaskId)
+      resolve: async ({id: meetingId}, {storyId: taskId}, {dataLoader}) => {
+        const task = await dataLoader.get('tasks').load(taskId)
+        if (task.meetingId !== meetingId) {
+          console.log('naughty storyId supplied to PokerMeeting')
+          return null
         }
+        return task
       }
     },
     teamId: {

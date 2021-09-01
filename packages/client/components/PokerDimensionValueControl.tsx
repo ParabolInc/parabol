@@ -1,16 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, SprintPokerDefaults} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useForceUpdate from '../hooks/useForceUpdate'
+import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import useSetFinalScoreError, {setFinalScoreError} from '../hooks/useSetFinalScoreError'
-import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
+import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
+import {SetTaskEstimateMutationResponse} from '../__generated__/SetTaskEstimateMutation.graphql'
+import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
 import PokerDimensionFinalScoreJiraPicker from './PokerDimensionFinalScoreJiraPicker'
@@ -78,43 +81,58 @@ interface Props {
 
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
-  const {id: stageId, dimensionRef, finalScoreError, meetingId, service, serviceField} = stage
+  const {id: stageId, dimensionRef, meetingId, serviceField, task, taskId} = stage
   const finalScore = stage.finalScore || ''
   const {name: serviceFieldName, type: serviceFieldType} = serviceField
-  const {scale} = dimensionRef
+  const {name: dimensionName, scale} = dimensionRef
   const {values: scaleValues} = scale
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
-  const [pendingScore, setPendingScore] = useState(finalScore)
-  const lastServiceFieldNameRef = useRef(serviceFieldName)
-  const canUpdate =
-    pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
-  useSetFinalScoreError(stageId, error)
+  const errorStr = error?.message ?? ''
+  const lastSubmittedFieldRef = useRef(serviceFieldName)
+  const isLocallyValidatedRef = useRef(true)
+  const [cardScore, setCardScore] = useState(finalScore)
+  const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
+  const {closePortal, openPortal, modalPortal} = useModal()
+  const forceUpdate = useForceUpdate()
 
-  useLayoutEffect(() => {
-    setPendingScore(finalScore)
-    lastServiceFieldNameRef.current = serviceFieldName
-  }, [finalScore])
   useEffect(() => {
-    if (error) {
-      // we want this for remote errors but not local errors, so we keep the 2 in different vars
-      setPendingScore(finalScore)
-    }
-  }, [error])
-
+    // if the final score changes, change what the card says & recalculate is stale
+    setCardScore(finalScore)
+    lastSubmittedFieldRef.current = serviceFieldName
+    isLocallyValidatedRef.current = true
+  }, [finalScore])
   const submitScore = () => {
-    if (submitting || !canUpdate) return
+    if (submitting || !isStale || !isLocallyValidatedRef.current) {
+      return
+    }
     submitMutation()
-    lastServiceFieldNameRef.current = serviceFieldName
-    PokerSetFinalScoreMutation(
+    const handleCompleted = (res: SetTaskEstimateMutationResponse, errors) => {
+      onCompleted(res as any, errors)
+      const {setTaskEstimate} = res
+      const {error} = setTaskEstimate
+      if (error?.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
+        openPortal()
+        // in case of error this will set the old value after the useEffect related to final score
+        setImmediate(() => {
+          setCardScore(cardScore)
+        })
+      }
+      if (!error) {
+        // set field A to 1, change fields to B, then submit again. it should not say update
+        lastSubmittedFieldRef.current = serviceFieldName
+        forceUpdate()
+      }
+    }
+    SetTaskEstimateMutation(
       atmosphere,
-      {finalScore: pendingScore, meetingId, stageId},
-      {onError, onCompleted}
+      {taskEstimate: {taskId, dimensionName, meetingId, value: cardScore}},
+      {onError, onCompleted: handleCompleted, stageId}
     )
   }
 
-  useResizeFontForElement(inputRef, pendingScore, 12, 18)
+  useResizeFontForElement(inputRef, cardScore, 12, 18)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
@@ -122,44 +140,40 @@ const PokerDimensionValueControl = (props: Props) => {
       // isNaN says "3." is a number, so we stringify the parsed number & see if it matches
       if (String(parseFloat(value)) !== value) {
         // the service wants a number but we didn't get one
-        setFinalScoreError(atmosphere, stageId, 'The field selected only accepts numbers')
+        onError(new Error('The field selected only accepts numbers'))
+        isLocallyValidatedRef.current = false
       } else {
-        setFinalScoreError(atmosphere, stageId, '')
+        isLocallyValidatedRef.current = true
+        onCompleted()
       }
+    } else {
+      isLocallyValidatedRef.current = true
     }
-    setPendingScore(value)
+    setCardScore(value)
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // keydown required bceause escape doesn't fire onKeyPress
+    // keydown required because escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
       submitScore()
       inputRef.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
-      setPendingScore(finalScore)
+      setCardScore(finalScore)
       inputRef.current?.blur()
+      isLocallyValidatedRef.current = true
     }
   }
 
-  const clearError = () => {
-    setFinalScoreError(atmosphere, stageId, '')
-    onCompleted()
-  }
-
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-
-  const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === pendingScore)
+  const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === cardScore)
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
-  const isFinal = !!finalScore && pendingScore === finalScore
+  const isFinal = !!finalScore && cardScore === finalScore
+  const isJira = task?.integration?.__typename === 'JiraIssue'
   const handleLabelClick = () => inputRef.current!.focus()
-  const label = isDesktop
-    ? finalScore
-      ? 'Final Score'
-      : 'Final Score (set by facilitator)'
-    : 'Final Score'
+  const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (
     <ControlWrap>
       <Control>
@@ -172,28 +186,28 @@ const PokerDimensionValueControl = (props: Props) => {
             ref={inputRef}
             onChange={onChange}
             placeholder={placeholder}
-            value={pendingScore}
+            value={cardScore}
             maxLength={3}
-          ></Input>
+          />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
-        {service === 'jira' && (
+        {isJira && (
           <PokerDimensionFinalScoreJiraPicker
-            canUpdate={canUpdate}
+            canUpdate={isStale}
             stage={stage}
-            error={finalScoreError}
+            error={errorStr}
             submitScore={submitScore}
-            clearError={clearError}
+            clearError={onCompleted}
             inputRef={inputRef}
             isFacilitator={isFacilitator}
           />
         )}
-        {service !== 'jira' && isFacilitator && (
+        {!isJira && isFacilitator && (
           <>
-            {canUpdate ? (
+            {isStale ? (
               <>
                 <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
-                {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
+                {errorStr && <ErrorMessage>{errorStr}</ErrorMessage>}
               </>
             ) : (
               <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
@@ -201,6 +215,13 @@ const PokerDimensionValueControl = (props: Props) => {
           </>
         )}
       </Control>
+      {modalPortal(
+        <AddMissingJiraFieldModal
+          stage={stage}
+          submitScore={submitScore}
+          closePortal={closePortal}
+        />
+      )}
     </ControlWrap>
   )
 }
@@ -209,16 +230,23 @@ export default createFragmentContainer(PokerDimensionValueControl, {
   stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
       ...PokerDimensionFinalScoreJiraPicker_stage
+      ...AddMissingJiraFieldModal_stage
       id
       meetingId
+      teamId
       finalScore
-      finalScoreError
       serviceField {
         name
         type
       }
-      service
+      taskId
+      task {
+        integration {
+          __typename
+        }
+      }
       dimensionRef {
+        name
         scale {
           values {
             label

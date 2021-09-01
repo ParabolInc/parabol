@@ -292,7 +292,12 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       async resolve({id: teamId}, {sortBy = 'preferredName'}, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) return []
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-        teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
+        teamMembers.sort((a, b) => {
+          let [aProp, bProp] = [a[sortBy], b[sortBy]]
+          aProp = aProp?.toLowerCase ? aProp.toLowerCase() : aProp
+          bProp = bProp?.toLowerCase ? bProp.toLowerCase() : bProp
+          return aProp > bProp ? 1 : -1
+        })
         return teamMembers
       }
     },
