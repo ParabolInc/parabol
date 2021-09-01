@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.26.0 2021-Sep-01
+
+### Fixed
+
+- Fix bad lowercase call (#5332)
+- Fix stripeSucceedPayment (#5335)
+
+### Changed
+
+--
+
+### Added
+
+- Animate reflection into Spotlight (#5271)
+
 ## 6.25.0 2021-Aug-25
 
 ### Fixed
