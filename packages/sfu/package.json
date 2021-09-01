@@ -14,8 +14,8 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@babel/cli": "7.12.10",
-    "@babel/core": "7.12.10",
+    "@babel/cli": "7.14.8",
+    "@babel/core": "7.14.8",
     "@types/node": "^13.11.1",
     "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-module-resolver": "4.1.0",
