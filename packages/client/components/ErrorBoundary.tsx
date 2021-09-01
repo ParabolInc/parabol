@@ -1,9 +1,10 @@
 import * as Sentry from '@sentry/browser'
-import React, {Component, ErrorInfo, ReactNode} from 'react'
-import ErrorComponent from './ErrorComponent/ErrorComponent'
-import withAtmosphere, {WithAtmosphereProps} from '~/decorators/withAtmosphere/withAtmosphere'
 import LogRocket from 'logrocket'
+import React, {Component, ErrorInfo, ReactNode} from 'react'
+import withAtmosphere, {WithAtmosphereProps} from '~/decorators/withAtmosphere/withAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
+import safeInitLogRocket from '../utils/safeInitLogRocket'
+import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 interface Props extends WithAtmosphereProps {
   fallback?: (error: Error, eventId: string) => ReactNode
@@ -35,28 +36,14 @@ class ErrorBoundary extends Component<Props, State> {
     }
     const logRocketId = window.__ACTION__.logRocket
     if (logRocketId) {
-      LogRocket.init(logRocketId, {
-        release: __APP_VERSION__,
-        network: {
-          requestSanitizer: (request) => {
-            const body = request?.body?.toLowerCase()
-            if (body?.includes('password')) return null
-            return request
-          }
-        }
-      })
-      if (email) {
-        LogRocket.identify(viewerId, {
-          email
-        })
-      }
-      window.localStorage.setItem(LocalStorageKey.ERROR_PRONE_AT, `${new Date().getTime()}`)
+      safeInitLogRocket(viewerId, email)
+      window.localStorage.setItem(LocalStorageKey.ERROR_PRONE_AT, new Date().toJSON())
       LogRocket.captureException(error)
       LogRocket.track('Fatal error')
     }
     // Catch errors in any components below and re-render with error message
     Sentry.withScope((scope) => {
-      scope.setExtras(errorInfo)
+      scope.setExtras(errorInfo as any)
       scope.setLevel(Sentry.Severity.Fatal)
       const eventId = Sentry.captureException(error)
       this.setState({

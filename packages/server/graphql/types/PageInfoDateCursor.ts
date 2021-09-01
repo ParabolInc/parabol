@@ -1,5 +1,6 @@
-import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const PageInfoDateCursor = new GraphQLObjectType<any, GQLContext>({
   name: 'PageInfoDateCursor',
@@ -14,11 +15,11 @@ const PageInfoDateCursor = new GraphQLObjectType<any, GQLContext>({
       description: 'When paginating backwards, are there more items?'
     },
     startCursor: {
-      type: GraphQLString,
+      type: GraphQLISO8601Type,
       description: 'When paginating backwards, the cursor to continue.'
     },
     endCursor: {
-      type: GraphQLString,
+      type: GraphQLISO8601Type,
       description: 'When paginating forwards, the cursor to continue.'
     }
   })

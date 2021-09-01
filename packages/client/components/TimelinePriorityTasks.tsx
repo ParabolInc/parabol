@@ -112,8 +112,8 @@ export default createFragmentContainer(withAtmosphere(TimelinePriorityTasks), {
         edges {
           node {
             id
-            content @__clientField(handle: "contentText")
-            contentText
+            content
+            plaintextContent
             status
             sortOrder
             team {

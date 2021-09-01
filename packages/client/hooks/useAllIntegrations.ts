@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {fetchQuery} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {
   useAllIntegrationsQuery,
@@ -64,17 +63,17 @@ const useAllIntegrations = (
   useEffect(() => {
     isMountedRef.current = true
     const fetchIntegrations = async () => {
-      const {viewer} = await fetchQuery<useAllIntegrationsQuery>(atmosphere, gqlQuery, {
+      const res = await atmosphere.fetchQuery<useAllIntegrationsQuery>(gqlQuery, {
         teamId,
         userId
       })
-      if (!viewer || !viewer.teamMember) {
+      if (!res?.viewer.teamMember) {
         if (isMountedRef.current) {
           setStatus('error')
         }
         return
       }
-      const {teamMember} = viewer
+      const {teamMember} = res.viewer
       const {allAvailableIntegrations} = teamMember
       if (isMountedRef.current) {
         setFetchedItems(allAvailableIntegrations)

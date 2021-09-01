@@ -7,9 +7,7 @@ import {LoaderSize} from '../../../../types/constEnums'
 interface Props extends RouteComponentProps<{}> {}
 
 const UserTaskViewRoot = lazy(() =>
-  import(
-    /* webpackChunkName: 'MyDashboardTasksRoot' */ '../../../../components/UserTaskViewRoot'
-  )
+  import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../../../../components/UserTaskViewRoot')
 )
 const MyDashboardTimelineRoot = lazy(() =>
   import(

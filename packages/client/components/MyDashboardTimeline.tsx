@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
-import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import {DashTimeline} from '../types/constEnums'
-import {MyDashboardTimeline_viewer} from '../__generated__/MyDashboardTimeline_viewer.graphql'
+import {MyDashboardTimelineQuery} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import ErrorBoundary from './ErrorBoundary'
 import TimelineFeedList from './TimelineFeedList'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
@@ -13,8 +12,7 @@ import TimelineRightDrawer from './TimelineRightDrawer'
 import TimelineSuggestedAction from './TimelineSuggestedAction'
 
 interface Props {
-  retry(): void
-  viewer: MyDashboardTimeline_viewer
+  queryRef: PreloadedQuery<MyDashboardTimelineQuery>
 }
 
 const TimelineFeed = styled('div')({
@@ -39,8 +37,23 @@ const FeedAndDrawer = styled('div')({
 })
 
 const MyDashboardTimeline = (props: Props) => {
-  const {retry, viewer} = props
-  useStoreQueryRetry(retry)
+  const {queryRef} = props
+  const data = usePreloadedQuery<MyDashboardTimelineQuery>(
+    graphql`
+      query MyDashboardTimelineQuery($first: Int!, $after: DateTime, $userIds: [ID!]) {
+        viewer {
+          ...TimelineSuggestedAction_viewer
+          ...TimelineFeedList_viewer
+          ...TimelineRightDrawer_viewer
+        }
+      }
+    `,
+    queryRef,
+    {
+      UNSTABLE_renderPolicy: 'full'
+    }
+  )
+  const {viewer} = data
   useDocumentTitle('My Timeline | Parabol', 'Timeline')
   return (
     <FeedAndDrawer>
@@ -59,13 +72,4 @@ const MyDashboardTimeline = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(MyDashboardTimeline, {
-  viewer: graphql`
-    fragment MyDashboardTimeline_viewer on User {
-      id
-      ...TimelineSuggestedAction_viewer
-      ...TimelineFeedList_viewer
-      ...TimelineRightDrawer_viewer
-    }
-  `
-})
+export default MyDashboardTimeline

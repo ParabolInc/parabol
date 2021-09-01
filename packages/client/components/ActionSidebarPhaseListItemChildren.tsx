@@ -14,8 +14,20 @@ interface Props {
   meeting: ActionSidebarPhaseListItemChildren_meeting
 }
 
+const teamMemberPhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates']
+
 const ActionSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, meeting} = props
+  if (teamMemberPhases.includes(phaseType)) {
+    return (
+      <MeetingSidebarTeamMemberStageItems
+        phaseType={phaseType}
+        gotoStageId={gotoStageId}
+        handleMenuClick={handleMenuClick}
+        meeting={meeting}
+      />
+    )
+  }
   if (phaseType === 'agendaitems') {
     return (
       <ActionSidebarAgendaItemsSection
@@ -25,14 +37,7 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
       />
     )
   }
-  return (
-    <MeetingSidebarTeamMemberStageItems
-      phaseType={phaseType}
-      gotoStageId={gotoStageId}
-      handleMenuClick={handleMenuClick}
-      meeting={meeting}
-    />
-  )
+  return null
 }
 
 export default createFragmentContainer(ActionSidebarPhaseListItemChildren, {

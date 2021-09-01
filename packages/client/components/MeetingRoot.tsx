@@ -1,21 +1,12 @@
-import React, {useEffect} from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense, useEffect} from 'react'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useRouter from '../hooks/useRouter'
-import renderQuery from '../utils/relay/renderQuery'
+import meetingSelectorQuery, {
+  MeetingSelectorQuery
+} from '../__generated__/MeetingSelectorQuery.graphql'
 import MeetingSelector from './MeetingSelector'
 
-const query = graphql`
-  query MeetingRootQuery($meetingId: ID!) {
-    viewer {
-      ...MeetingSelector_viewer
-    }
-  }
-`
-
 const MeetingRoot = () => {
-  const atmosphere = useAtmosphere()
   const {history, match} = useRouter<{meetingId: string}>()
   const {params} = match
   const {meetingId} = params
@@ -24,15 +15,12 @@ const MeetingRoot = () => {
       history.replace('/meetings')
     }
   }, [])
+  const queryRef = useQueryLoaderNow<MeetingSelectorQuery>(meetingSelectorQuery, {meetingId})
   if (!meetingId) return null
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{meetingId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(MeetingSelector, {props: {meetingId}})}
-    />
+    <Suspense fallback={''}>
+      {queryRef && <MeetingSelector meetingId={meetingId} queryRef={queryRef} />}
+    </Suspense>
   )
 }
 
