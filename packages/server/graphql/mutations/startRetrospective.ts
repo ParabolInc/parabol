@@ -4,9 +4,9 @@ import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
-import Organization from '../../database/types/Organization'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import generateUID from '../../generateUID'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -38,7 +38,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return standardError(new Error('User not on team'), {userId: viewerId})
     }
 
     const meetingType: MeetingTypeEnum = 'retrospective'
@@ -61,11 +61,12 @@ export default {
       meetingType,
       dataLoader
     )
-    const organization = (await r
-      .table('Team')
-      .get(teamId)('orgId')
-      .do((orgId) => r.table('Organization').get(orgId))
-      .run()) as Organization
+    const teams = await getTeamsByIds([teamId])
+    const team = teams[0]!
+    const organization = await r
+      .table('Organization')
+      .get(team.orgId)
+      .run()
     const {showConversionModal} = organization
 
     const meetingSettings = (await dataLoader
