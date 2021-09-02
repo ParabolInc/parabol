@@ -120,7 +120,10 @@ export default {
     try {
       user = await getBillingLeaderUser(email, orgId, dataLoader)
     } catch (e) {
-      return {error: {message: e.message}}
+      if (e instanceof Error) {
+        return {error: {message: e.message}}
+      }
+      return {error: {message: 'Unable to get billing leader user'}}
     }
     if (!user) {
       return {error: {message: 'User not found'}}

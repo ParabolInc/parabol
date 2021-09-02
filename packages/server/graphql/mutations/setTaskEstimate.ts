@@ -124,7 +124,9 @@ const setTaskEstimate = {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
-          return {error: {message: e.message}}
+          return e instanceof Error
+            ? e
+            : new Error(`Unable to updateStoryPoints in setTaskEstimate: ${JSON.stringify(e)}`)
         }
       }
     }

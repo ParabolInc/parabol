@@ -45,7 +45,10 @@ const VideoControls = (props: Props) => {
   })
 
   const addMedia = async () => {
-    const descriptors = ['camera', 'microphone'] as PermissionName[]
+    const descriptors = ['camera', 'microphone'] as Extract<
+      'camera' | 'microphone',
+      PermissionName
+    >[]
     // https://caniuse.com/#feat=permissions-api
     const permissions =
       navigator.permissions && navigator.permissions.query

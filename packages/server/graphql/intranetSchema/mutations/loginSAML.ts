@@ -58,7 +58,10 @@ const loginSAML = {
     try {
       loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
     } catch (e) {
-      return {error: {message: e.message}}
+      if (e instanceof Error) {
+        return {error: {message: e.message}}
+      }
+      return {error: {message: `parseLoginResponse failed: ${JSON.stringify(e)}`}}
     }
     if (!loginResponse) {
       return {error: {message: 'Error with query from identity provider'}}

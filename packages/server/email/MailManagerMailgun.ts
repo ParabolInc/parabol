@@ -19,7 +19,7 @@ export default class MailManagerMailgun extends MailManager {
         'o:tag': tags
       })
     } catch (e) {
-      sendToSentry(new Error(`Mailgun error: ${e.message}`), {tags: {to: toStr}})
+      sendToSentry(e, {tags: {to: toStr, type: 'Mailgun error'}})
       return false
     }
     return true
