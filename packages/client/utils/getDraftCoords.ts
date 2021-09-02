@@ -1,14 +1,5 @@
 import {getVisibleSelectionRect} from 'draft-js'
 
-// typescript composite mode yells that FakeClientRect is external but cannot be named
-export interface FakeClientRect {
-  left: number
-  width: number
-  right: number
-  top: number
-  bottom: number
-  height: number
-}
 const getDraftCoords = () => {
   const selection = window.getSelection()
   if (!selection || !selection.rangeCount) {
