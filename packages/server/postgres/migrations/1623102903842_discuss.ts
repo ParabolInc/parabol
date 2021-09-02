@@ -135,7 +135,7 @@ export async function up(): Promise<void> {
             meetingId,
             teamId,
             discussionTopicId: serviceTaskId,
-            discussionTopicType: taskServiceToDiscussionTopicType[service]
+            discussionTopicType: taskServiceToDiscussionTopicType[service] || 'task'
           })
         })
         return updateStagesWithDiscussionIds(meetingId, 'ESTIMATE', discussionIds)

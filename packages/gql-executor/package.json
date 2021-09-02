@@ -1,6 +1,6 @@
 {
   "name": "gql-executor",
-  "version": "6.24.1",
+  "version": "6.26.0",
   "description": "A Stateless GraphQL Executor",
   "author": "Matt Krick <matt.krick@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
@@ -16,8 +16,8 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@babel/cli": "7.12.10",
-    "@babel/core": "7.12.10",
+    "@babel/cli": "7.14.8",
+    "@babel/core": "7.14.8",
     "@types/node": "^13.11.1",
     "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-module-resolver": "4.1.0",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "dd-trace": "^0.31.4",
-    "parabol-client": "^6.24.1",
-    "parabol-server": "^6.24.1"
+    "parabol-client": "^6.26.0",
+    "parabol-server": "^6.26.0"
   }
 }

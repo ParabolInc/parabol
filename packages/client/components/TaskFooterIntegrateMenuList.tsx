@@ -59,7 +59,14 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
-const getValue = (item: any) => (item.remoteProject?.name || item.nameWithOwner).toLowerCase()
+const getValue = (
+  item: NonNullable<TaskFooterIntegrateMenuList_suggestedIntegrations['items']>[0]
+) => {
+  const jiraItemName = item?.remoteProject?.name ?? ''
+  const githubName = item?.nameWithOwner ?? ''
+  const name = jiraItemName ?? githubName
+  return name.toLowerCase()
+}
 
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {mutationProps, menuProps, placeholder, suggestedIntegrations, task} = props
