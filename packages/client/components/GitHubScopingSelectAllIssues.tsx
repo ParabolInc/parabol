@@ -28,7 +28,7 @@ const TitleAndError = styled('div')({
 })
 
 const ErrorMessage = styled('div')({
-  color: PALETTE.ROSE_500,
+  color: PALETTE.TOMATO_500,
   fontWeight: 600
 })
 interface Props {
@@ -39,14 +39,15 @@ interface Props {
 
 const GitHubScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issues} = props
-  const serviceTaskIds = issues.map((issue) => issue.id)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
+  const issueEdges = issues.map((issue) => ({node: issue}))
+  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(issueEdges, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
     submitMutation()
+    const serviceTaskIds = issues.map((issue) => issue.id)
     const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
     const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6

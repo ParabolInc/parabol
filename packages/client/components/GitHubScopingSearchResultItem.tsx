@@ -94,7 +94,6 @@ export default createFragmentContainer(GitHubScopingSearchResultItem, {
   issue: graphql`
     fragment GitHubScopingSearchResultItem_issue on _xGitHubIssue {
       id
-      # use title instead of summary so the optimistic updater will use it for the sidebar
       title
       repository {
         nameWithOwner
