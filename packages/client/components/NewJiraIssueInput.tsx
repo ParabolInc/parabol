@@ -1,22 +1,27 @@
-import React, {FormEvent, useEffect, useRef, useState} from 'react'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import Checkbox from './Checkbox'
-import {PALETTE} from '~/styles/paletteV3'
+import graphql from 'babel-plugin-relay/macro'
+import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useMutationProps from '~/hooks/useMutationProps'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import useMutationProps from '~/hooks/useMutationProps'
+import {PALETTE} from '~/styles/paletteV3'
 import {NewJiraIssueInput_meeting} from '~/__generated__/NewJiraIssueInput_meeting.graphql'
 import {NewJiraIssueInput_viewer} from '~/__generated__/NewJiraIssueInput_viewer.graphql'
-import JiraCreateIssueMutation from '~/mutations/JiraCreateIssueMutation'
-import useMenu from '~/hooks/useMenu'
-import {MenuPosition} from '~/hooks/useCoords'
+import useForm from '../hooks/useForm'
+import {PortalStatus} from '../hooks/usePortal'
+import CreateTaskMutation from '../mutations/CreateTaskMutation'
+import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+import JiraProjectId from '../shared/gqlIds/JiraProjectId'
+import {CompletedHandler} from '../types/relayMutations'
+import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
+import Legitity from '../validation/Legitity'
+import Checkbox from './Checkbox'
+import Icon from './Icon'
 import NewJiraIssueMenu from './NewJiraIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
-import Icon from './Icon'
-import {PortalStatus} from '../hooks/usePortal'
-import useForm from '../hooks/useForm'
-import Legitity from '../validation/Legitity'
 import StyledError from './StyledError'
 
 const StyledButton = styled(PlainButton)({
@@ -27,6 +32,7 @@ const StyledButton = styled(PlainButton)({
   justifyContent: 'flex-start',
   margin: 0,
   opacity: 1,
+  width: 'fit-content',
   ':hover, :focus': {
     backgroundColor: 'transparent'
   }
@@ -115,7 +121,7 @@ const NewJiraIssueInput = (props: Props) => {
   const projectKey = suggestedIntegration?.projectKey
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
-    MenuPosition.UPPER_RIGHT
+    MenuPosition.UPPER_LEFT
   )
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
@@ -135,25 +141,51 @@ const NewJiraIssueInput = (props: Props) => {
     e.preventDefault()
     if (portalStatus !== PortalStatus.Exited || !selectedProjectKey || !cloudId) return
     const {newIssue: newIssueRes} = validateField()
-    const newIssue = newIssueRes.value as string
+    const newIssueTitle = newIssueRes.value as string
     if (newIssueRes.error) {
       setDirtyField()
       return
     }
     setIsEditing(false)
     fields.newIssue.resetValue()
-    if (!newIssue.length) {
+    if (!newIssueTitle.length) {
       fields.newIssue.dirty = false
       return
     }
-    const variables = {
-      cloudId,
-      projectKey: selectedProjectKey,
-      summary: newIssue,
+
+    const newTask = {
       teamId,
-      meetingId
+      userId,
+      meetingId,
+      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      plaintextContent: newIssueTitle,
+      status: 'active' as const,
+      integration: {
+        service: 'jira' as const,
+        serviceProjectHash: JiraProjectId.join(cloudId, selectedProjectKey)
+      }
     }
-    JiraCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
+    const handleCompleted: CompletedHandler = (res) => {
+      const integration = res.createTask?.task?.integration ?? null
+      if (!integration) return
+      const {issueKey} = integration
+      const pokerScopeVariables = {
+        meetingId,
+        updates: [
+          {
+            service: 'jira',
+            serviceTaskId: JiraIssueId.join(cloudId, issueKey),
+            action: 'ADD'
+          } as const
+        ]
+      }
+      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
+        onError,
+        onCompleted,
+        contents: [newIssueTitle]
+      })
+    }
+    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
   const handleSelectProjectKey = (projectKey: string) => {

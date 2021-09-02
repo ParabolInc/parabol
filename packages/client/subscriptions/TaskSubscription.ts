@@ -1,14 +1,17 @@
+import graphql from 'babel-plugin-relay/macro'
+import {RouterProps} from 'react-router'
+import {RecordSourceSelectorProxy, requestSubscription} from 'relay-runtime'
+import {
+  TaskSubscription as TTaskSubscription,
+  TaskSubscriptionVariables
+} from '~/__generated__/TaskSubscription.graphql'
+import Atmosphere from '../Atmosphere'
+import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
 import {createTaskTaskUpdater} from '../mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from '../mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from '../mutations/EditTaskMutation'
-import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
 import {removeOrgUserTaskUpdater} from '../mutations/RemoveOrgUserMutation'
-import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
-import graphql from 'babel-plugin-relay/macro'
-import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {TaskSubscriptionResponse} from '~/__generated__/TaskSubscription.graphql'
-import {RouterProps} from 'react-router'
+import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -34,11 +37,11 @@ const onNextHandlers = {
 
 const TaskSubscription = (
   atmosphere: Atmosphere,
-  variables: Variables,
+  variables: TaskSubscriptionVariables,
   router: {history: RouterProps['history']}
 ) => {
   const {viewerId} = atmosphere
-  return requestSubscription<TaskSubscriptionResponse>(atmosphere, {
+  return requestSubscription<TTaskSubscription>(atmosphere, {
     subscription,
     variables,
     updater: (store) => {

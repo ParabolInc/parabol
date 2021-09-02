@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
@@ -131,7 +132,9 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .run()
   ])
 
-  const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
+  const agendaItemPhase = getPhase(phases, 'agendaitems')
+  const {stages} = agendaItemPhase
+  const discussionIds = stages.map((stage) => stage.discussionId)
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
@@ -149,7 +152,7 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
           agendaItemCount: activeAgendaItems.length,
           commentCount: (r
             .table('Comment')
-            .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
             .count()
             .default(0) as unknown) as number,
           taskCount: tasks.length
@@ -224,13 +227,14 @@ export default {
     }
 
     // remove any empty tasks
-    const [meetingMembers, team, teamMembers, removedTaskIds, result] = await Promise.all([
+    const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
-      finishCheckInMeeting(completedCheckIn, dataLoader)
+      removeEmptyTasks(meetingId)
     ])
+    // need to wait for removeEmptyTasks before finishing the meeting
+    const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])

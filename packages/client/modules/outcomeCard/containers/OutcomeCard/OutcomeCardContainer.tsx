@@ -26,6 +26,7 @@ interface Props {
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task
+  clearIsCreatingNewTask?: () => void
   dataCy: string
 }
 

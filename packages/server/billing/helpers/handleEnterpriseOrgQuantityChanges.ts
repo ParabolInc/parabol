@@ -17,6 +17,7 @@ const sendEnterpriseOverageToSegment = async (organization: Organization) => {
       .run(),
     manager.retrieveSubscription(stripeSubscriptionId)
   ])
+  if (!subscription) return
   const {quantity} = subscription
   if (!quantity) return
   if (orgUserCount > quantity) {
@@ -38,7 +39,9 @@ const sendEnterpriseOverageToSegment = async (organization: Organization) => {
 const handleEnterpriseOrgQuantityChanges = async (paidOrgs: Organization[]) => {
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')
   if (enterpriseOrgs.length === 0) return
-  enterpriseOrgs.forEach(sendEnterpriseOverageToSegment)
+  for (const org of enterpriseOrgs) {
+    sendEnterpriseOverageToSegment(org).catch()
+  }
 }
 
 export default handleEnterpriseOrgQuantityChanges

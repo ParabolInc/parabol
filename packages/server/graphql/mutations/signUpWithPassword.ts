@@ -12,6 +12,7 @@ import rateLimit from '../rateLimit'
 import SignUpWithPasswordPayload from '../types/SignUpWithPasswordPayload'
 import attemptLogin from './helpers/attemptLogin'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
+
 type SignUpWithPasswordMutationVariables = {
   email: string
   password: string

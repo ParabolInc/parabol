@@ -2,7 +2,7 @@ import getRethink from '../database/rethinkDriver'
 import Team from '../database/types/Team'
 import db from '../db'
 import removeUserTms from '../postgres/queries/removeUserTms'
-import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
+import archiveTeamsByTeamIds from '../postgres/queries/archiveTeamsByTeamIds'
 
 const safeArchiveTeam = async (teamId: string) => {
   const r = await getRethink()
@@ -18,15 +18,16 @@ const safeArchiveTeam = async (teamId: string) => {
     })),
     removeUserTms(teamId, userIds)
   ])
-  const [rethinkResult] = await Promise.all([
+  const updates = {
+    isArchived: true,
+    updatedAt: new Date()
+  }
+  const [rethinkResult, pgResult] = await Promise.all([
     r({
       team: (r
         .table('Team')
         .get(teamId)
-        .update(
-          {isArchived: true},
-          {returnChanges: true}
-        )('changes')(0)('new_val')
+        .update(updates, {returnChanges: true})('changes')(0)('new_val')
         .default(null) as unknown) as Team | null,
       invitations: (r
         .table('TeamInvitation')
@@ -46,9 +47,9 @@ const safeArchiveTeam = async (teamId: string) => {
         )('changes')('new_val')('id')
         .default([]) as unknown) as string[]
     }).run(),
-    updateTeamByTeamId({isArchived: true}, teamId)
+    archiveTeamsByTeamIds(teamId)
   ])
-  return {...rethinkResult, users}
+  return {...rethinkResult, team: pgResult[0] ?? null, users}
 }
 
 export default safeArchiveTeam

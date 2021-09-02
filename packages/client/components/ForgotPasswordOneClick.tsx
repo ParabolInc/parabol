@@ -32,14 +32,7 @@ const ForgotPasswordOneClick = (props: Props) => {
   const onClick = async () => {
     if (submitting) return
     submitMutation()
-    EmailPasswordResetMutation(
-      atmosphere,
-      {email},
-      {
-        onCompleted: () => { },
-        onError: () => { }
-      }
-    )
+    EmailPasswordResetMutation(atmosphere, {email}, {})
     onCompleted()
     setIsSent(true)
   }

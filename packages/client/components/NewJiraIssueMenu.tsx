@@ -1,20 +1,20 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useCallback, useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useAllIntegrations from '~/hooks/useAllIntegrations'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useFilteredItems from '~/hooks/useFilteredItems'
+import useForm from '~/hooks/useForm'
+import {MenuProps} from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
+import {NewJiraIssueMenu_suggestedIntegrations} from '~/__generated__/NewJiraIssueMenu_suggestedIntegrations.graphql'
 import Icon from './Icon'
+import Menu from './Menu'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import Menu from './Menu'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
-import {MenuProps} from '~/hooks/useMenu'
-import useForm from '~/hooks/useForm'
-import useAllIntegrations from '~/hooks/useAllIntegrations'
-import useFilteredItems from '~/hooks/useFilteredItems'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {NewJiraIssueMenu_suggestedIntegrations} from '~/__generated__/NewJiraIssueMenu_suggestedIntegrations.graphql'
 
 const NoResults = styled(MenuItemLabel)({
   color: PALETTE.SLATE_600,
@@ -69,8 +69,8 @@ interface Props {
   userId: string
 }
 
-const getValue = (item: {projectName?: string, nameWithOwner?: string}) => {
-  const repoName = item.projectName || item.nameWithOwner || 'Unknown Project'
+const getValue = (item: {remoteProject?: any; nameWithOwner?: string}) => {
+  const repoName = item.remoteProject?.name ?? item.nameWithOwner ?? 'Unknown Project'
   return repoName.toLowerCase()
 }
 
@@ -157,9 +157,11 @@ export default createFragmentContainer(NewJiraIssueMenu, {
       items {
         ... on SuggestedIntegrationJira {
           id
-          projectName
           projectKey
           service
+          remoteProject {
+            name
+          }
         }
         ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
       }

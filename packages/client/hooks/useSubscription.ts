@@ -1,14 +1,13 @@
 import {useEffect} from 'react'
-import useAtmosphere from './useAtmosphere'
-import {Variables} from 'relay-runtime'
 import {SubscriptionRequestor} from '../Atmosphere'
-import useRouter from './useRouter'
+import useAtmosphere from './useAtmosphere'
 import useDeepEqual from './useDeepEqual'
+import useRouter from './useRouter'
 
 const useSubscription = (
   queryKey: string,
   subscription: SubscriptionRequestor,
-  inVariables: Variables = {}
+  inVariables: any = {}
 ) => {
   const atmosphere = useAtmosphere()
   const {history, location} = useRouter()

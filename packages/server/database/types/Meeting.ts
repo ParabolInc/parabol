@@ -4,6 +4,7 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 export type MeetingTypeEnum = 'poker' | 'retrospective' | 'action'
 
 interface Input {
+  id?: string
   teamId: string
   meetingType: MeetingTypeEnum
   meetingCount: number
@@ -17,8 +18,8 @@ const namePrefix = {
   action: 'Check-in',
   retrospective: 'Retro'
 } as Record<MeetingTypeEnum, string>
-export default class Meeting {
-  id = generateUID()
+export default abstract class Meeting {
+  id: string
   isLegacy?: boolean // true if old version of action meeting
   createdAt = new Date()
   updatedAt = new Date()
@@ -37,6 +38,7 @@ export default class Meeting {
 
   constructor(input: Input) {
     const {
+      id,
       teamId,
       facilitatorUserId,
       meetingCount,
@@ -45,6 +47,7 @@ export default class Meeting {
       phases,
       showConversionModal
     } = input
+    this.id = id ?? generateUID()
     this.createdBy = facilitatorUserId
     this.facilitatorStageId = phases[0].stages[0].id
     this.facilitatorUserId = facilitatorUserId

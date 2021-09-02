@@ -63,7 +63,11 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
       meetingId,
       updates
     }
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    const contents = updates.map((update) => {
+      const issue = issues.find((issue) => issue.id === update.serviceTaskId)
+      return issue?.title ?? 'Unknown Story'
+    })
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
@@ -85,6 +89,7 @@ export default createFragmentContainer(GitHubScopingSelectAllIssues, {
   issues: graphql`
     fragment GitHubScopingSelectAllIssues_issues on _xGitHubIssue @relay(plural: true) {
       id
+      title
     }
   `
 })

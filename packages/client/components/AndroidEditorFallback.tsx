@@ -7,6 +7,7 @@ import {PALETTE} from '../styles/paletteV3'
 
 interface Props {
   className?: string
+  ariaLabel?: string
   editorState: EditorState
   onBlur?: (e: React.FocusEvent) => void
   onFocus?: (e: React.FocusEvent) => void
@@ -32,7 +33,17 @@ const TextAreaStyles = styled(TextArea)({
 })
 
 const AndroidEditorFallback = (props: Props) => {
-  const {className, editorState, onBlur, onFocus, onKeyDown, onPastedText, placeholder, editorRef} = props
+  const {
+    className,
+    ariaLabel,
+    editorState,
+    onBlur,
+    onFocus,
+    onKeyDown,
+    onPastedText,
+    placeholder,
+    editorRef
+  } = props
   const [value, setValue] = useState('')
   const [height, setHeight] = useState<number | undefined>(44)
 
@@ -57,6 +68,7 @@ const AndroidEditorFallback = (props: Props) => {
   return (
     <TextAreaStyles
       className={className}
+      aria-label={ariaLabel}
       onHeightChange={(height) => setHeight(height)}
       style={{height}}
       inputRef={editorRef}

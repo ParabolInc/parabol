@@ -1,8 +1,9 @@
-import {AGENDA_ITEMS} from 'parabol-client/utils/constants'
+import getPhase from '../../../utils/getPhase'
 import getRethink from '../../../database/rethinkDriver'
-import {DataLoaderWorker} from '../../graphql'
-import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
+import MeetingAction from '../../../database/types/MeetingAction'
+import insertDiscussions from '../../../postgres/queries/insertDiscussions'
+import {DataLoaderWorker} from '../../graphql'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new agenda item manually
@@ -17,18 +18,19 @@ const addAgendaItemToActiveActionMeeting = async (
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const actionMeeting = activeMeetings.find(
     (activeMeeting) => activeMeeting.meetingType === 'action'
-  )
+  ) as MeetingAction | undefined
   if (!actionMeeting) return undefined
   const {id: meetingId, phases} = actionMeeting
-  const agendaItemPhase = phases.find((phase) => phase.phaseType === AGENDA_ITEMS) as
-    | AgendaItemsPhase
-    | undefined
+  const agendaItemPhase = getPhase(phases, 'agendaitems')
   if (!agendaItemPhase) return undefined
 
   const {stages} = agendaItemPhase
-  const newStage = new AgendaItemsStage(agendaItemId)
-  newStage.isNavigable = true
-  newStage.isNavigableByFacilitator = true
+  const newStage = new AgendaItemsStage({
+    agendaItemId,
+    isNavigableByFacilitator: true,
+    isNavigable: true
+  })
+  const {discussionId} = newStage
   stages.push(newStage)
 
   await Promise.all([
@@ -44,7 +46,16 @@ const addAgendaItemToActiveActionMeeting = async (
       .table('AgendaItem')
       .get(agendaItemId)
       .update({meetingId: meetingId})
-      .run()
+      .run(),
+    insertDiscussions([
+      {
+        id: discussionId,
+        teamId,
+        meetingId,
+        discussionTopicType: 'agendaItem' as const,
+        discussionTopicId: agendaItemId
+      }
+    ])
   ])
 
   return meetingId

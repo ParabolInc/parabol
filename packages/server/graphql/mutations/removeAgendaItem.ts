@@ -44,10 +44,8 @@ export default {
       return standardError(new Error('Agenda item not found'), {userId: viewerId})
     }
     const filterFn = (stage: AgendaItemsStage) => stage.agendaItemId === agendaItemId
-    const meetingIds = await removeStagesFromMeetings(filterFn, teamId, dataLoader)
-    // safe to do so because we guarantee only 1 action meeting at the same time
-    const [meetingId] = meetingIds
-    const data = {agendaItem, meetingId}
+    await removeStagesFromMeetings(filterFn, teamId, dataLoader)
+    const data = {agendaItem, meetingId: agendaItem.meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveAgendaItemPayload', data, subOptions)
     return data
   }

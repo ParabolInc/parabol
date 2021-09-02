@@ -1,11 +1,13 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
-import Task, {TaskStatusEnum} from '../../database/types/Task'
+import Task, {TaskServiceEnum, TaskStatusEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -16,42 +18,22 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
+import createTaskInService from './helpers/createTaskInService'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
-import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
-import {ThreadSourceEnum} from '../../database/types/ThreadSource'
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
-
-const validateTaskAgendaItemId = async (
-  threadSource: ThreadSourceEnum | null,
-  threadId: string | null | undefined,
-  teamId: string,
-  dataLoader: DataLoaderWorker
-) => {
-  const agendaItemId = threadSource === 'AGENDA_ITEM' ? threadId : undefined
-  if (agendaItemId) {
-    const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
-    if (!agendaItem || agendaItem.teamId !== teamId) {
-      return 'Invalid agenda item ID'
-    }
-  }
-  return undefined
-}
 
 const validateTaskMeetingId = async (
   meetingId: string | null | undefined,
-  teamId: string,
+  viewerId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  if (meetingId) {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting || meeting.teamId !== teamId) {
-      return 'Invalid meeting ID'
-    }
-  }
+  if (!meetingId) return undefined
+  const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+  const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+  if (!meetingMember) return 'Viewer is not in meeting'
   return undefined
 }
 
-export const validateTaskUserId = async (
+export const validateTaskUserIsTeamMember = async (
   userId: string | null | undefined,
   teamId: string,
   dataLoader: DataLoaderWorker
@@ -94,6 +76,20 @@ const sendToSentryTaskCreated = async (
       isReply
     }
   })
+}
+
+const validateTaskDiscussionId = async (
+  task: CreateTaskInput['newTask'],
+  dataLoader: DataLoaderWorker
+) => {
+  const {discussionId, teamId, meetingId} = task
+  if (!discussionId) return undefined
+  const discussion = await dataLoader.get('discussions').load(discussionId)
+  if (!discussion) return 'Invalid discussion'
+  if (discussion.meetingId !== meetingId)
+    return 'Discussion meetingId does not match task meetingId'
+  if (discussion.teamId !== teamId) return 'Discussion teamId does not match task teamId'
+  return undefined
 }
 
 const handleAddTaskNotifications = async (
@@ -165,19 +161,23 @@ const handleAddTaskNotifications = async (
   })
 }
 
+export interface CreateTaskIntegrationInput {
+  service: TaskServiceEnum
+  serviceProjectHash: string
+}
 export type CreateTaskInput = {
   newTask: {
     content?: string | null
     plaintextContent?: string | null
     meetingId?: string | null
-    threadId?: string | null
-    threadSource?: ThreadSourceEnum | null
+    discussionId?: string | null
     threadSortOrder?: number | null
     threadParentId?: string | null
     sortOrder?: number | null
     status: TaskStatusEnum
     teamId: string
     userId?: string | null
+    integration?: CreateTaskIntegrationInput
   }
 }
 
@@ -197,15 +197,17 @@ export default {
   async resolve(
     _source,
     {newTask}: CreateTaskInput,
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+    context: GQLContext,
+    info: GraphQLResolveInfo
   ) {
+    const {authToken, dataLoader, socketId: mutatorId} = context
     const r = await getRethink()
     const operationId = dataLoader.share()
     const viewerId = getUserId(authToken)
 
     const {
       meetingId,
-      threadId,
+      discussionId,
       threadParentId,
       threadSortOrder,
       sortOrder,
@@ -213,24 +215,39 @@ export default {
       teamId,
       userId
     } = newTask
-    const threadSource = newTask.threadSource as ThreadSourceEnum | null
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return {error: {message: 'Not on team'}}
     }
+
     const errors = await Promise.all([
       // threadParentId not validated because if it's invalid it simply won't appear
-      validateTaskAgendaItemId(threadSource, threadId, teamId, dataLoader),
-      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader),
-      validateTaskMeetingId(meetingId, teamId, dataLoader),
-      validateTaskUserId(userId, teamId, dataLoader)
+      validateTaskDiscussionId(newTask, dataLoader),
+      validateTaskMeetingId(meetingId, viewerId, dataLoader),
+      validateTaskUserIsTeamMember(userId, teamId, dataLoader)
     ])
     const firstError = errors.find(Boolean)
     if (firstError) {
       return standardError(new Error(firstError), {userId: viewerId})
     }
 
-    // RESOLUTION
     const content = normalizeRawDraftJS(newTask.content)
+
+    // see if the task already exists
+    const integrationRes = await createTaskInService(
+      newTask.integration,
+      content,
+      viewerId,
+      teamId,
+      context,
+      info
+    )
+    if (integrationRes.error) {
+      return integrationRes
+    }
+    // RESOLUTION
+
+    // push to integration
+    const {integrationHash, integration} = integrationRes
     const task = new Task({
       content,
       createdBy: viewerId,
@@ -238,8 +255,9 @@ export default {
       sortOrder,
       status,
       teamId,
-      threadId,
-      threadSource,
+      discussionId,
+      integrationHash,
+      integration,
       threadSortOrder,
       threadParentId,
       userId

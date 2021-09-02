@@ -2,8 +2,6 @@ extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
-  isAnonymousComment: Boolean
-  replyingToCommentId: String
 }
 
 extend type ActionMeeting {
@@ -30,11 +28,11 @@ extend type PokerMeeting {
 }
 
 extend type RetrospectiveMeeting {
-  isAnonymousComment: Boolean
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  spotlightReflection: RetroReflection
 }
 
 extend type Team {
@@ -59,7 +57,6 @@ extend type User {
 
 extend type Task {
   error: String
-  contentText: String
 }
 
 extend type RetroReflectionGroup {
@@ -103,6 +100,7 @@ extend type AgendaItemsStage {
   localScheduledEndTime: String
 }
 
-extend type EstimateStage {
-  finalScoreError: String
+extend type Discussion {
+  isAnonymousComment: Boolean!
+  replyingToCommentId: String!
 }

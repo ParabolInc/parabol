@@ -14,7 +14,7 @@ import {GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import UpdateTaskInput from '../types/UpdateTaskInput'
 import UpdateTaskPayload from '../types/UpdateTaskPayload'
-import {validateTaskUserId} from './createTask'
+import {validateTaskUserIsTeamMember} from './createTask'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
 import publishChangeNotifications from './helpers/publishChangeNotifications'
 
@@ -80,7 +80,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (inputTeamId || inputUserId) {
-      const error = await validateTaskUserId(nextUserId, nextTeamId, dataLoader)
+      const error = await validateTaskUserIsTeamMember(nextUserId, nextTeamId, dataLoader)
       if (error) {
         return standardError(new Error('Invalid user ID'), {userId: viewerId})
       }

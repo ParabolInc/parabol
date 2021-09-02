@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {Providers} from '../types/constEnums'
 import {ScopePhaseAreaGitHub_meeting} from '../__generated__/ScopePhaseAreaGitHub_meeting.graphql'
 import ScopePhaseAreaAddGitHub from './ScopePhaseAreaAddGitHub'
 import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
@@ -20,7 +21,7 @@ interface Props {
 }
 
 // poor man's feature flag. change this so we don't have to comment out stuff
-const IS_DEV = true
+const IS_DEV = false
 
 const ScopePhaseAreaGitHub = (props: Props) => {
   const {isActive, gotoParabol, meeting} = props
@@ -28,13 +29,13 @@ const ScopePhaseAreaGitHub = (props: Props) => {
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
-  const hasAuth = integrations?.github?.isActive ?? false
-  if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
-  return IS_DEV ? (
-    <ScopePhaseAreaGitHubScoping meeting={meeting} />
-  ) : (
-    <ComingSoon>Coming Soon!</ComingSoon>
-  )
+  const hasAuth = integrations?.github?.scope === Providers.GITHUB_SCOPE
+  if (IS_DEV) {
+    if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
+    return <ScopePhaseAreaGitHubScoping meeting={meeting} />
+  } else {
+    return <ComingSoon>Coming Soon!</ComingSoon>
+  }
 }
 
 export default createFragmentContainer(ScopePhaseAreaGitHub, {
@@ -47,6 +48,7 @@ export default createFragmentContainer(ScopePhaseAreaGitHub, {
           integrations {
             github {
               isActive
+              scope
             }
           }
         }

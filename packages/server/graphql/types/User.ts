@@ -22,6 +22,7 @@ import invoices from '../queries/invoices'
 import organization from '../queries/organization'
 import AuthIdentity from './AuthIdentity'
 import Company from './Company'
+import Discussion from './Discussion'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -29,6 +30,7 @@ import MeetingMember from './MeetingMember'
 import NewFeatureBroadcast from './NewFeatureBroadcast'
 import Organization from './Organization'
 import OrganizationUser from './OrganizationUser'
+import RetroReflectionGroup from './RetroReflectionGroup'
 import SuggestedAction from './SuggestedAction'
 import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
@@ -131,6 +133,11 @@ const User = new GraphQLObjectType<any, GQLContext>({
       description: 'true if the user was removed from parabol, else false',
       resolve: ({isRemoved}) => !!isRemoved
     },
+    isWatched: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'true if all user sessions are being recorded in LogRocket, else false',
+      resolve: ({isWatched}) => isWatched
+    },
     lastMetAt: {
       type: GraphQLISO8601Type,
       description: 'the endedAt timestamp of the most recent meeting they were a member of',
@@ -225,10 +232,31 @@ const User = new GraphQLObjectType<any, GQLContext>({
           edges,
           pageInfo: {
             startCursor: firstEdge ? firstEdge.cursor : null,
-            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
+            // FIXME: the PageInfo type should be a GraphQLISO8601 type, but fixing that requires more work
+            // because the type is shared all over so we'll have to verify that the change doesn't break anything
+            endCursor: firstEdge ? new Date(edges[edges.length - 1].cursor).toJSON() : null,
             hasNextPage: events.length > edges.length
           }
         }
+      }
+    },
+    discussion: {
+      type: Discussion,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLID),
+          description: 'The ID of the discussion'
+        }
+      },
+      description: 'the comments and tasks created from the discussion',
+      resolve: async (_source, {id}, {authToken, dataLoader}) => {
+        const discussion = await dataLoader.get('discussions').load(id)
+        if (!discussion) return null
+        const {teamId} = discussion
+        if (!isTeamMember(authToken, teamId)) {
+          return null
+        }
+        return discussion
       }
     },
     newFeatureId: {
@@ -375,6 +403,37 @@ const User = new GraphQLObjectType<any, GQLContext>({
         )
         if (isAnyMemberOfPaidOrg) return null
         return source.overLimitCopy
+      }
+    },
+    similarReflectionGroups: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
+      description:
+        'The reflection groups that are similar to the selected reflection in the Spotlight',
+      args: {
+        reflectionId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The id of the selected reflection in the Spotlight'
+        },
+        searchQuery: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Only return reflection groups that match the search query'
+        }
+      },
+      resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
+        const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
+        if (!retroReflection) return []
+        const {meetingId} = retroReflection
+        const meetingMemberId = toTeamMemberId(meetingId, userId)
+        const [viewerMeetingMember, reflectionGroups] = await Promise.all([
+          dataLoader.get('meetingMembers').load(meetingMemberId),
+          dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+        ])
+        const {meetingId: viewerMeetingId} = viewerMeetingMember
+        if (viewerMeetingId !== meetingId) {
+          standardError(new Error('Not on team'), {userId})
+          return []
+        }
+        return reflectionGroups
       }
     },
     tasks: require('../queries/tasks').default,

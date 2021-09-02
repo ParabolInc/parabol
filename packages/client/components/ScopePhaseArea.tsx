@@ -9,6 +9,7 @@ import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.gra
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import GitHubSVG from './GitHubSVG'
+import ParabolLogoSVG from './ParabolLogoSVG'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
@@ -63,12 +64,12 @@ const innerStyle = {width: '100%', height: '100%'}
 const tabs = [
   {icon: <GitHubSVG />, label: 'GitHub'},
   {icon: <JiraSVG />, label: 'Jira'},
-  {icon: 'public', label: 'Parabol'}
+  {icon: <ParabolLogoSVG />, label: 'Parabol'}
 ]
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const updateActiveIdx = (idx: number) => {

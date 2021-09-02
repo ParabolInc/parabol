@@ -50,7 +50,7 @@ const StageTimerDisplay = (props: Props) => {
       {isPhaseComplete
         ? <PhaseCompleteWrapper>
           <PhaseCompleteTag isComplete={isPhaseComplete} />
-          {canUndoGroupPhase ? <UndoableGroupPhaseControl meetingId={meeting.id} resetToStageId={localStage.id} /> : null}
+          {canUndoGroupPhase ? <UndoableGroupPhaseControl meetingId={meeting.id} /> : null}
         </PhaseCompleteWrapper>
         : null}
     </DisplayRow>

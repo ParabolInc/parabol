@@ -1,25 +1,25 @@
-import {TaskFooter_task} from '../../../../__generated__/TaskFooter_task.graphql'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React from 'react'
-import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import {Card} from '../../../../types/constEnums'
+import {USER_DASH} from '../../../../utils/constants'
+import removeContentTag from '../../../../utils/draftjs/removeContentTag'
+import isTaskArchived from '../../../../utils/isTaskArchived'
+import setLocalTaskError from '../../../../utils/relay/setLocalTaskError'
+import {TaskFooter_task} from '../../../../__generated__/TaskFooter_task.graphql'
+import OutcomeCardMessage from '../OutcomeCardMessage/OutcomeCardMessage'
 import TaskFooterIntegrateToggle from './TaskFooterIntegrateToggle'
 import TaskFooterTagMenuToggle from './TaskFooterTagMenuToggle'
 import TaskFooterTeamAssignee from './TaskFooterTeamAssignee'
 import TaskFooterUserAssignee from './TaskFooterUserAssignee'
-import OutcomeCardMessage from '../OutcomeCardMessage/OutcomeCardMessage'
-import {USER_DASH} from '../../../../utils/constants'
-import removeContentTag from '../../../../utils/draftjs/removeContentTag'
-import isTaskArchived from '../../../../utils/isTaskArchived'
-import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import {Card} from '../../../../types/constEnums'
-import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import setLocalTaskError from '../../../../utils/relay/setLocalTaskError'
 
 const Footer = styled('div')({
   display: 'flex',
@@ -143,7 +143,7 @@ export default createFragmentContainer(TaskFooter, {
       content
       error
       integration {
-        service
+        __typename
       }
       tags
       team {

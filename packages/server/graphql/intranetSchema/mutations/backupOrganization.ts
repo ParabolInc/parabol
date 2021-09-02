@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 
@@ -52,11 +53,8 @@ const backupOrganization = {
       .run()
 
     // get all the teams for the orgIds
-    const team = await r
-      .table('Team')
-      .getAll(r.args(orgIds), {index: 'orgId'})
-      .run()
-    const teamIds = team.map((team) => team.id)
+    const teams = await getTeamsByOrgIds(orgIds)
+    const teamIds = teams.map((team) => team.id)
     await r({
       // easy things to clone
       migrations: r
@@ -213,7 +211,7 @@ const backupOrganization = {
       team: r
         .db(DESTINATION)
         .table('Team')
-        .insert(team),
+        .insert(teams),
       teamInvitation: (r.table('TeamInvitation').getAll(r.args(teamIds), {index: 'teamId'}) as any)
         .coerceTo('array')
         .do((items) =>
@@ -246,11 +244,11 @@ const backupOrganization = {
                   notification('teamId')
                     .default(null)
                     .ne(null),
-                  r.args(teamIds).contains(notification('teamId')),
+                  r(teamIds).contains(notification('teamId')),
                   notification('orgId')
                     .default(null)
                     .ne(null),
-                  r.args(orgIds).contains(notification('orgId')),
+                  r(orgIds).contains(notification('orgId')),
                   true
                 )
               )
@@ -355,8 +353,10 @@ const backupOrganization = {
               .table('RetroReflectionGroup')
               .getAll(r.args(meetingIds), {index: 'meetingId'})('id')
               .coerceTo('array')
-              .do((threadIds) => {
-                return (r.table('Comment').getAll(r.args(threadIds), {index: 'threadId'}) as any)
+              .do((discussionIds) => {
+                return (r
+                  .table('Comment')
+                  .getAll(r.args(discussionIds), {index: 'discussionId'}) as any)
                   .coerceTo('array')
                   .do((items) =>
                     r
@@ -369,8 +369,10 @@ const backupOrganization = {
               .table('AgendaItem')
               .getAll(r.args(meetingIds), {index: 'meetingId'})('id')
               .coerceTo('array')
-              .do((threadIds) => {
-                return (r.table('Comment').getAll(r.args(threadIds), {index: 'threadId'}) as any)
+              .do((discussionIds) => {
+                return (r
+                  .table('Comment')
+                  .getAll(r.args(discussionIds), {index: 'discussionId'}) as any)
                   .coerceTo('array')
                   .do((items) =>
                     r

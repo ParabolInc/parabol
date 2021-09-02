@@ -30,9 +30,7 @@ export default {
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
-    const {content, sortOrder, meetingId} = input
-    // can remove retroPhaseItemId after it's fully deprecated
-    const promptId = input.promptId || input.retroPhaseItemId
+    const {content, sortOrder, meetingId, promptId} = input
     // AUTH
     const viewerId = getUserId(authToken)
     const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)

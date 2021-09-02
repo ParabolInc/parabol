@@ -1,41 +1,31 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {RefObject, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg'
 import yellowFlashLine from '../../../static/images/illustrations/yellow-flash-line.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
+import useCardsPerRow from '../hooks/useCardsPerRow'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import {Breakpoint, Layout, NavSidebar, RightSidebar} from '../types/constEnums'
-import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import useTransition from '../hooks/useTransition'
+import {Breakpoint, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
+
 interface Props {
+  meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
 
-const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
-
-const Wrapper = styled('div')({
-  display: 'flex',
-  height: '100%',
-  margin: '0 auto',
-  width: '100%',
-  [desktopDashWidestMediaQuery]: {
-    paddingLeft: NavSidebar.WIDTH,
-    paddingRight: RightSidebar.WIDTH
-  }
-})
-
-const InnerContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  margin: '0 auto auto',
-  maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
-  padding: maybeTabletPlus ? '16px 0 0 16px' : '16px 16px 0',
-  width: '100%'
-}))
+const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(
+  ({maybeTabletPlus}) => ({
+    padding: maybeTabletPlus ? 0 : 16,
+    display: 'flex',
+    flexWrap: 'wrap',
+    position: 'relative'
+  })
+)
 
 const EmptyContainer = styled('div')({
   display: 'flex',
@@ -62,25 +52,44 @@ const Flash = styled('img')({
 })
 
 const MeetingsDash = (props: Props) => {
-  const {viewer} = props
+  const {meetingsDashRef, viewer} = props
   const teams = viewer?.teams ?? []
-  const activeMeetings = teams
-    .flatMap((team) => team.activeMeetings)
-    .filter(Boolean)
-    .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
-  const hasMeetings = activeMeetings.length > 0
+  const activeMeetings = useMemo(() => {
+    const meetings = teams
+      .flatMap((team) => team.activeMeetings)
+      .filter(Boolean)
+      .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+    return meetings.map((meeting, displayIdx) => ({
+      ...meeting,
+      key: meeting.id,
+      displayIdx
+    }))
+  }, [teams])
+  const transitioningMeetings = useTransition(activeMeetings)
+  const maybeBigDisplay = useBreakpoint(Breakpoint.BIG_DISPLAY)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const maybeBigDisplay = useBreakpoint(1900)
+  const cardsPerRow = useCardsPerRow(meetingsDashRef)
+  const hasMeetings = activeMeetings.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
-  if (!viewer) return null
+  if (!viewer || !cardsPerRow) return null
   return (
-    <Wrapper>
+    <>
       {hasMeetings ? (
-        <InnerContainer maybeTabletPlus={maybeTabletPlus}>
-          {activeMeetings.map((meeting, idx) => (
-            <MeetingCard key={idx} meeting={meeting} />
-          ))}
-        </InnerContainer>
+        <Wrapper maybeTabletPlus={maybeTabletPlus}>
+          {transitioningMeetings.map((meeting) => {
+            const {child} = meeting
+            const {id, displayIdx} = child
+            return (
+                <MeetingCard
+                  key={id}
+                  displayIdx={displayIdx}
+                meeting={meeting.child}
+                onTransitionEnd={meeting.onTransitionEnd}
+                status={meeting.status}
+                />
+            )
+          })}
+        </Wrapper>
       ) : (
         <EmptyContainer>
           <MeetingsDashEmpty />
@@ -92,7 +101,7 @@ const MeetingsDash = (props: Props) => {
           ) : null}
         </EmptyContainer>
       )}
-    </Wrapper>
+    </>
   )
 }
 
@@ -101,7 +110,14 @@ graphql`
     activeMeetings {
       ...MeetingCard_meeting
       ...useSnacksForNewMeetings_meetings
+      id
       createdAt
+      meetingMembers {
+        user {
+          isConnected
+          lastSeenAtURLs
+        }
+      }
     }
   }
 `
@@ -109,6 +125,7 @@ graphql`
 export default createFragmentContainer(MeetingsDash, {
   viewer: graphql`
     fragment MeetingsDash_viewer on User {
+      id
       teams {
         ...MeetingsDashActiveMeetings @relay(mask: false)
       }

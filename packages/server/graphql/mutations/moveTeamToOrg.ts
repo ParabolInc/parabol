@@ -3,23 +3,30 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import Notification from '../../database/types/Notification'
-import Organization from '../../database/types/Organization'
 import Team from '../../database/types/Team'
 import db from '../../db'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 
 const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const r = await getRethink()
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const {team, org} = await r({
-    team: (r.table('Team').get(teamId) as unknown) as Team,
-    org: (r.table('Organization').get(orgId) as unknown) as Organization
-  }).run()
+  const [org, teams] = await Promise.all([
+    r
+      .table('Organization')
+      .get(orgId)
+      .run(),
+    getTeamsByIds([teamId])
+  ])
+  if (teams.length === 0) {
+    return standardError(new Error('Did not find the team'))
+  }
+  const team = teams[0]
   const {orgId: currentOrgId} = team
   if (!su) {
     const userId = getUserId(authToken)
@@ -57,6 +64,12 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   }
 
   // RESOLUTION
+  const updates = {
+    orgId,
+    isPaid: Boolean(org.stripeSubscriptionId),
+    tier: org.tier,
+    updatedAt: new Date()
+  }
   const [rethinkResult] = await Promise.all([
     r({
       notifications: (r
@@ -77,11 +90,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       team: (r
         .table('Team')
         .get(teamId)
-        .update({
-          orgId,
-          isPaid: Boolean(org.stripeSubscriptionId),
-          tier: org.tier
-        }) as unknown) as Team,
+        .update(updates) as unknown) as Team,
       newToOrgUserIds: (r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
@@ -96,14 +105,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
         })('userId')
         .coerceTo('array') as unknown) as string[]
     }).run(),
-    updateTeamByTeamId(
-      {
-        orgId,
-        isPaid: Boolean(org.stripeSubscriptionId),
-        tier: org.tier
-      },
-      teamId
-    )
+    updateTeamByTeamId(updates, teamId)
   ])
   const {newToOrgUserIds} = rethinkResult
 

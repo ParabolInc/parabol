@@ -8,8 +8,6 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
-import {fetchQuery} from 'react-relay'
-import JiraServiceTaskId from '../../../../shared/gqlIds/JiraServiceTaskId'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -22,32 +20,6 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   referrer: MeetingSummaryReferrer
 }
 
-graphql`
-  fragment ExportToCSV_threadSource on ThreadSource {
-    id
-    thread(first: 1000) {
-      edges {
-        node {
-          __typename
-          content
-          createdAt
-          createdByUser {
-            preferredName
-          }
-          replies {
-            __typename
-            content
-            createdAt
-            createdByUser {
-              preferredName
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
 const query = graphql`
   query ExportToCSVQuery($meetingId: ID!) {
     viewer {
@@ -57,63 +29,80 @@ const query = graphql`
           name
         }
         endedAt
-        ... on PokerMeeting {
-          phases {
-            phaseType
-            ... on EstimatePhase {
-              stages {
-                serviceTaskId
-                finalScore
-                dimensionRef {
-                  name
-                }
-                story {
-                  title
-                }
-                scores {
-                  label
-                }
-              }
-            }
-          }
-        }
-        ... on ActionMeeting {
-          agendaItems {
-            content
-            ...ExportToCSV_threadSource @relay(mask: false)
-          }
-          meetingMembers {
-            tasks {
-              content
-              createdAt
+        phases {
+          phaseType
+          stages {
+            ... on AgendaItemsStage {
+              __typename
               agendaItem {
                 content
               }
             }
-            user {
-              preferredName
-            }
-          }
-        }
-        ... on RetrospectiveMeeting {
-          reflectionGroups(sortBy: stageOrder) {
-            ...ExportToCSV_threadSource @relay(mask: false)
-            reflections {
-              content
-              createdAt
-              prompt {
-                question
+            ... on RetroDiscussStage {
+              __typename
+              reflectionGroup {
+                title
+                voteCount
+                reflections {
+                  content
+                  createdAt
+                  prompt {
+                    question
+                  }
+                }
               }
             }
-            tasks {
-              content
-              createdAt
-              createdByUser {
-                preferredName
+            ... on EstimateStage {
+              __typename
+              finalScore
+              dimensionRef {
+                name
+              }
+              task {
+                integration {
+                  ... on JiraIssue {
+                    __typename
+                    summary
+                    issueKey
+                  }
+                  ... on _xGitHubIssue {
+                    __typename
+                    number
+                    title
+                  }
+                }
+                title
+              }
+              scores {
+                label
               }
             }
-            title
-            voteCount
+            ... on DiscussionThreadStage {
+              __typename
+              discussion {
+                id
+                thread(first: 1000) {
+                  edges {
+                    node {
+                      __typename
+                      content
+                      createdAt
+                      createdByUser {
+                        preferredName
+                      }
+                      replies {
+                        __typename
+                        content
+                        createdAt
+                        createdByUser {
+                          preferredName
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -185,13 +174,20 @@ class ExportToCSV extends Component<Props> {
     const estimatePhase = phases!.find((phase) => phase.phaseType === 'ESTIMATE')!
     const stages = estimatePhase.stages!
     stages.forEach((stage) => {
-      const {finalScore, dimensionRef, story, scores, serviceTaskId} = stage
+      if (stage.__typename !== 'EstimateStage') return
+      const {finalScore, dimensionRef, task, scores} = stage
+      if (!dimensionRef || !task) return
       const {name} = dimensionRef
-      const {issueKey} = JiraServiceTaskId.split(serviceTaskId)
-      const title = story?.title ?? issueKey
-      const voteCount = scores.filter((score) => score.label !== PokerCards.PASS_CARD).length
+      const {integration, title} = task
+      let story = title
+      if (integration?.__typename === 'JiraIssue') {
+        story = `${integration.issueKey}: ${integration.summary}`
+      } else if (integration?.__typename === '_xGitHubIssue') {
+        story = `${integration.number}: ${integration.title}`
+      }
+      const voteCount = scores!.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
-        story: title,
+        story,
         dimension: name,
         finalScore: finalScore || '',
         voteCount
@@ -200,43 +196,56 @@ class ExportToCSV extends Component<Props> {
     return rows
   }
   handleRetroMeeting(newMeeting: Meeting) {
-    const {reflectionGroups} = newMeeting
-
+    const {phases} = newMeeting
+    const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')!
+    const {stages} = discussPhase
     const rows = [] as CSVRetroRow[]
-    reflectionGroups!.forEach((group) => {
-      const {reflections, title, voteCount: votes, thread} = group
+    stages.forEach((stage) => {
+      const {reflectionGroup, discussion} = stage
+      const {reflections, title, voteCount: votes} = reflectionGroup!
       reflections.forEach((reflection) => {
+        const {prompt, content} = reflection
+        const createdAt = reflection.createdAt!
+        const {question} = prompt
         rows.push({
           reflectionGroup: title!,
           author: 'Anonymous',
           votes,
           type: 'Reflection',
-          createdAt: reflection.createdAt!,
+          createdAt,
           discussionThread: '',
-          prompt: reflection.prompt.question,
-          content: extractTextFromDraftString(reflection.content)
+          prompt: question,
+          content: extractTextFromDraftString(content)
         })
       })
-      thread?.edges.forEach((edge) => {
-        const threadableContent = extractTextFromDraftString(edge.node.content)
+      if (!discussion) return
+      const {thread} = discussion
+      const {edges} = thread
+      edges.forEach((edge) => {
+        const {node} = edge
+        const {createdAt, createdByUser, __typename: type, replies, content} = node
+        const author = createdByUser?.preferredName ?? 'Anonymous'
+        const discussionThread = extractTextFromDraftString(content)
         rows.push({
           reflectionGroup: title!,
-          author: edge!.node!.createdByUser?.preferredName ?? 'Anonymous',
+          author,
           votes,
-          type: edge.node.__typename as ExportableTypeName,
-          createdAt: edge.node.createdAt,
-          discussionThread: threadableContent,
+          type: type as ExportableTypeName,
+          createdAt,
+          discussionThread,
           prompt: '',
-          content: threadableContent
+          content: discussionThread
         })
-        edge.node.replies.forEach((reply) => {
+        replies.forEach((reply) => {
+          const {createdAt, createdByUser} = reply
+          const author = createdByUser?.preferredName ?? 'Anonymous'
           rows.push({
             reflectionGroup: title!,
-            author: reply!.createdByUser?.preferredName ?? 'Anonymous',
+            author,
             votes,
             type: reply.__typename === 'Task' ? 'Task' : 'Reply',
-            createdAt: reply.createdAt,
-            discussionThread: threadableContent,
+            createdAt,
+            discussionThread,
             prompt: '',
             content: extractTextFromDraftString(reply.content)
           })
@@ -247,48 +256,40 @@ class ExportToCSV extends Component<Props> {
   }
 
   handleActionMeeting(newMeeting: Meeting) {
-    const {meetingMembers, agendaItems} = newMeeting
-
+    const {phases} = newMeeting
+    const agendaItemPhase = phases!.find((phase) => phase.phaseType === 'agendaitems')!
+    const {stages} = agendaItemPhase
     const rows = [] as CSVActionRow[]
-    meetingMembers!.forEach((meetingMember) => {
-      const {tasks, user} = meetingMember
-      const {preferredName} = user
-      if (tasks.length === 0) {
+    stages.forEach((stage) => {
+      const {agendaItem, discussion} = stage
+      if (!discussion) return
+      const {content: agendaItemContent} = agendaItem!
+      const {thread} = discussion
+      const {edges} = thread
+      edges.forEach((edge) => {
+        const {node} = edge
+        const {createdAt, createdByUser, __typename: type, replies, content} = node
+        const author = createdByUser?.preferredName ?? 'Anonymous'
+        const discussionThread = extractTextFromDraftString(content)
         rows.push({
-          author: preferredName,
+          author,
           status: 'present',
-          agendaItem: '',
-          type: 'Task',
-          createdAt: '',
-          discussionThread: '',
-          content: ''
+          agendaItem: agendaItemContent,
+          type: type as ExportableTypeName,
+          createdAt,
+          discussionThread,
+          content: discussionThread
         })
-        return
-      }
-    })
-    agendaItems!.forEach((agendaItem) => {
-      const {thread} = agendaItem
-      thread?.edges.forEach((edge) => {
-        const commentContent = extractTextFromDraftString(edge.node.content)
-        const authorName = edge!.node!.createdByUser?.preferredName ?? 'Anonymous'
-        rows.push({
-          author: authorName,
-          status: 'present',
-          agendaItem: agendaItem ? agendaItem.content : '',
-          type: edge.node.__typename as ExportableTypeName,
-          createdAt: edge.node.createdAt,
-          discussionThread: commentContent,
-          content: commentContent
-        })
-        edge.node.replies.forEach((reply) => {
-          const authorName = reply.createdByUser?.preferredName ?? 'Anonymous'
+        replies.forEach((reply) => {
+          const {createdAt, createdByUser} = reply
+          const author = createdByUser?.preferredName ?? 'Anonymous'
           rows.push({
-            author: authorName,
+            author,
             status: 'present',
-            agendaItem: agendaItem ? agendaItem.content : '',
+            agendaItem: agendaItemContent,
             type: reply.__typename === 'Task' ? 'Task' : 'Reply',
-            createdAt: reply.createdAt,
-            discussionThread: commentContent,
+            createdAt,
+            discussionThread,
             content: extractTextFromDraftString(reply.content)
           })
         })
@@ -314,13 +315,14 @@ class ExportToCSV extends Component<Props> {
     const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = this.props
     if (submitting) return
     submitMutation()
-    const data = await fetchQuery<ExportToCSVQuery>(atmosphere, query, {meetingId})
+    const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {meetingId})
     onCompleted()
+    if (!data) return
     const {viewer} = data
-    if (!viewer) return
     const {newMeeting} = viewer
     if (!newMeeting) return
     const rows = this.getRows(newMeeting)
+    if (rows.length === 0) return
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)

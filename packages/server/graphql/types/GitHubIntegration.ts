@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import updateGitHubSearchQueries from '../../postgres/queries/updateGitHubSearchQueries'
@@ -40,7 +47,9 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({githubSearchQueries, teamId, userId}) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
-        const unexpiredQueries = githubSearchQueries.filter((query) => query.lastUsedAt > thresh)
+        const unexpiredQueries = githubSearchQueries.filter(
+          (query) => new Date(query.lastUsedAt) > thresh
+        )
         if (unexpiredQueries.length < githubSearchQueries.length) {
           await updateGitHubSearchQueries({teamId, userId, githubSearchQueries: unexpiredQueries})
         }
@@ -50,6 +59,10 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
     login: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The GitHub login used for queries'
+    },
+    scope: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The comma-separated list of scopes requested from GitHub'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

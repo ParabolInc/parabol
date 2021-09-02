@@ -44,9 +44,8 @@ const handleUpdateAgendaPhase = (
       phase ? phase.getValue('phaseType') === 'agendaitems' : false
     )
     if (!agendaPhase) return
-    const getSortOrder = (stage) => {
-      const agendaItemId = stage.getValue('agendaItemId')
-      const agendaItem = store.get<AgendaItem_agendaItem>(agendaItemId)
+    const getSortOrder = (stage: RecordProxy) => {
+      const agendaItem = stage.getLinkedRecord<AgendaItem_agendaItem>('agendaItem')
       if (!agendaItem) return 0
       return agendaItem.getValue('sortOrder')
     }

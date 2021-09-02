@@ -1,3 +1,4 @@
+import {stateToHTML} from 'draft-js-export-html'
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
 import ms from 'ms'
@@ -5,23 +6,30 @@ import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
 import {PALETTE} from '~/styles/paletteV3'
-import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
-import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
-import DiscussPhase from '../../../server/database/types/DiscussPhase'
-import DiscussStage from '../../../server/database/types/DiscussStage'
-import ReflectPhase from '../../../server/database/types/ReflectPhase'
-import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
-import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
-import ITask from '../../../server/database/types/Task'
-import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
-import Reflection from '../../../server/database/types/Reflection'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import DiscussPhase from '../../../server/database/types/DiscussPhase'
+import DiscussStage from '../../../server/database/types/DiscussStage'
+import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
+import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
+import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
+import Reflection from '../../../server/database/types/Reflection'
+import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
+import ReflectPhase from '../../../server/database/types/ReflectPhase'
+import ITask from '../../../server/database/types/Task'
+import JiraIssueId from '../../shared/gqlIds/JiraIssueId'
+import {
+  ExternalLinks,
+  MeetingSettingsThreshold,
+  RetroDemo,
+  SubscriptionChannel
+} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
+import splitDraftContent from '../../utils/draftjs/splitDraftContent'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
@@ -35,10 +43,13 @@ import getDemoEntities from './getDemoEntities'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
 import initDB, {
+  DemoComment,
+  DemoDiscussion,
   demoTeamId,
+  DemoThreadableEdge,
   demoViewerId,
-  GitHubProjectKeyLookup,
-  JiraProjectKeyLookup
+  JiraProjectKeyLookup,
+  RetroDemoDB
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
@@ -62,7 +73,6 @@ export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'update
 
 export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | 'updatedAt'> & {
   __typename: string
-  commentCount: number
   commentors: any
   createdAt: string | Date
   meeting: any
@@ -78,10 +88,7 @@ export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | '
   voterIds: any
 }
 
-export type IDiscussPhase = Omit<
-  DiscussPhase,
-  'readyToAdvance' | 'endAt' | 'startAt' | 'promptTemplateId'
-> & {
+export type IDiscussPhase = Omit<DiscussPhase, 'readyToAdvance' | 'endAt' | 'startAt'> & {
   readyToAdvance: any
   startAt: string | Date
   endAt: string | Date
@@ -107,7 +114,11 @@ export type INewMeetingPhase = Omit<NewMeetingPhase, 'endAt' | 'startAt'> & {
   endAt: string | Date
 }
 
-export type DemoTask = Omit<ITask, 'agendaItem'>
+export type DemoTask = Omit<ITask, 'agendaItem' | 'createdAt' | 'updatedAt' | 'doneMeetingId'> & {
+  createdAt: string
+  updatedAt: string
+  doneMeetingId: string | null
+}
 
 interface Payload {
   __typename: string
@@ -141,7 +152,7 @@ const makeReflectionGroupThread = () => ({
 
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
-  db: ReturnType<typeof initDB>
+  db: RetroDemoDB
   getTempId = (prefix) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
@@ -278,15 +289,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    DiscussionThreadRootQuery: ({threadSourceId}) => {
+    DiscussionThreadQuery: ({discussionId}) => {
       return {
         viewer: {
           ...this.db.users[0],
+          discussion: this.db.discussions.find((discussion) => discussion.id === discussionId),
           meeting: {
-            ...this.db.newMeeting,
-            threadSource: this.db.reflectionGroups.find(
-              (reflectionGroup) => reflectionGroup.id === threadSourceId
-            )
+            ...this.db.newMeeting
           }
         }
       }
@@ -314,41 +323,31 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     AddCommentMutation: ({comment}, userId) => {
       const commentId = comment.id || this.getTempId('comment')
-      const {isAnonymous} = comment
-      const newComment = {
-        ...comment,
-        __typename: 'Comment',
-        content: normalizeRawDraftJS(comment.content),
-        createdAt: new Date().toJSON(),
-        updatedAt: new Date().toJSON(),
-        createdBy: isAnonymous ? null : userId,
-        createdByUser: isAnonymous ? null : this.db.users.find(({id}) => id === userId),
-        id: commentId,
-        isActive: true,
-        isViewerComment: userId === demoViewerId,
-        reactjis: [],
-        replies: [],
-        threadParentId: comment.threadParentId || null
-      }
+      const newComment = new DemoComment(
+        {
+          ...comment,
+          id: commentId,
+          userId
+        },
+        this.db
+      )
       this.db.comments.push(newComment)
-      const {threadParentId, threadId} = newComment
+      const {threadParentId, discussionId} = newComment
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
+      discussion.commentCount++
       if (threadParentId) {
         const threadParent =
           this.db.tasks.find(({id}) => id === threadParentId) ||
           this.db.comments.find(({id}) => id === threadParentId)
         threadParent?.replies.push(newComment)
       } else {
-        const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
-        reflectionGroup.thread.edges.push({
-          __typename: 'ThreadableEdge',
-          cursor: newComment.createdAt,
-          node: newComment
-        })
+        const {thread} = discussion
+        thread.edges.push(new DemoThreadableEdge(newComment))
       }
-
       const data = {
         __typename: 'AddCommentSuccess',
         error: null,
+        meetingId: RetroDemo.MEETING_ID,
         comment: newComment
       }
       if (userId !== demoViewerId) {
@@ -395,13 +394,22 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const {content} = task
+      const {title, contentState} = splitDraftContent(content)
+      const bodyHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
         integration: {
-          __typename: 'TaskIntegrationGitHub',
+          __typename: '_xGitHubIssue',
           id: `${taskId}:GitHub`,
-          ...GitHubProjectKeyLookup[nameWithOwner],
-          issueNumber: this.getTempId('')
+          title,
+          bodyHTML,
+          repository: {
+            __typename: '_xGitHubRepository',
+            id: `repo:${nameWithOwner}`,
+            nameWithOwner
+          },
+          number: this.getTempId('')
         }
       })
 
@@ -419,13 +427,32 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
+      const project = JiraProjectKeyLookup[projectKey]
+      const {cloudId, cloudName, projectName, avatar} = project
+      const issueKey = this.getTempId(`${projectKey}-`)
+      const {content} = task
+      const {title, contentState} = splitDraftContent(content)
+      const descriptionHTML = stateToHTML(contentState)
       Object.assign(task, {
         updatedAt: new Date().toJSON(),
+        integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          __typename: 'TaskIntegrationJira',
-          id: `${taskId}:jira`,
-          ...JiraProjectKeyLookup[projectKey],
-          issueKey: this.getTempId(`${projectKey}-`)
+          __typename: 'JiraIssue',
+          id: `jira:${taskId}`,
+          issueKey,
+          projectKey,
+          cloudId,
+          cloudName,
+          descriptionHTML,
+          summary: title,
+          url: ExternalLinks.INTEGRATIONS_JIRA,
+          project: {
+            id: `${projectKey}:id`,
+            key: projectKey,
+            name: projectName,
+            avatar,
+            cloudId
+          }
         }
       })
 
@@ -444,7 +471,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       userId: string
     ) => {
       const now = new Date().toJSON()
-      const reflectPhase = (this.db.newMeeting.phases![1] as unknown) as IReflectPhase
+      const reflectPhase = ((this.db.newMeeting as any).phases.find(
+        (phase) => phase.phaseType === 'reflect'
+      ) as unknown) as IReflectPhase
       const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
@@ -488,7 +517,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
-        commentCount: 0,
         commentors: null,
         id: reflectionGroupId,
         reflectionGroupId,
@@ -514,6 +542,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflection.retroReflectionGroup = reflectionGroup as any
       this.db.reflectionGroups.push(reflectionGroup)
       this.db.reflections.push(reflection)
+      this.db.discussions.push(new DemoDiscussion(reflectionGroupId))
       const unlockedStageIds = unlockAllStagesForPhase(
         this.db.newMeeting.phases as any,
         'group',
@@ -537,20 +566,27 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {createReflection: data}
     },
     EditCommentingMutation: (
-      {
-        isCommenting,
-        meetingId,
-        threadId
-      }: {isCommenting: boolean; meetingId: string; threadId: string},
+      {isCommenting, discussionId}: {isCommenting: boolean; discussionId: string},
       userId
     ) => {
       const commentor = this.db.users.find((user) => user.id === userId)
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      if (!discussion || !commentor) return
+      const {commentors} = discussion
+
+      if (isCommenting) {
+        commentors.push(commentor)
+      } else {
+        commentors.splice(
+          commentors.findIndex((commentor) => commentor.id === userId),
+          1
+        )
+      }
+
       const data = {
-        isCommenting,
-        commentor,
-        meetingId,
-        threadId,
-        __typename: 'EditCommentingPayload'
+        discussionId,
+        discussion,
+        __typename: 'EditCommentingSuccess'
       }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
@@ -902,6 +938,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         } as any
 
         this.db.reflectionGroups.push(newReflectionGroup)
+        this.db.discussions.push(new DemoDiscussion(newReflectionGroupId))
         oldReflections.splice(oldReflections.indexOf(reflection as any), 1)
 
         Object.assign(reflection, {
@@ -1193,13 +1230,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     CreateTaskMutation: async ({newTask}, userId) => {
       const now = new Date().toJSON()
       const taskId = newTask.id || this.getTempId('task')
-      const {threadId, threadSource, threadParentId, threadSortOrder, sortOrder, status} = newTask
+      const {discussionId, threadParentId, threadSortOrder, sortOrder, status} = newTask
       const content = newTask.content || makeEmptyStr()
       const {entityMap} = JSON.parse(content)
       const tags = getTagsFromEntityMap(entityMap)
       const user = this.db.users.find((user) => user.id === userId)
+      const plaintextContent = extractTextFromDraftString(content)
       const task = {
         __typename: 'Task',
+        __isThreadable: 'Task',
         agendaItem: null,
         id: taskId,
         taskId,
@@ -1210,12 +1249,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         doneMeetingId: null,
         dueDate: null,
         editors: [],
+        integrationHash: null,
         integration: null,
         team: this.db.team,
         meetingId: RetroDemo.MEETING_ID,
         replies: [],
-        threadId,
-        threadSource,
+        discussionId,
+        plaintextContent,
+        title: plaintextContent,
         threadParentId: threadParentId || null,
         threadSortOrder,
         sortOrder: sortOrder || 0,
@@ -1228,23 +1269,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         user
       }
       this.db.tasks.push(task as any)
-      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
+      const {thread} = discussion
+      const {edges} = thread
       if (threadParentId) {
         const threadParent =
           this.db.comments.find(({id}) => id === threadParentId) ||
           this.db.tasks.find(({id}) => id === threadParentId)
         threadParent.replies.push(task)
       } else {
-        reflectionGroup.thread.edges.push({
-          __typename: 'ThreadableEdge',
-          cursor: task.createdAt,
-          node: task as any
-        })
+        edges.push(new DemoThreadableEdge(task as any))
       }
 
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
       meetingMember.tasks.push(task as any)
-      reflectionGroup.tasks!.push(task as any)
       const data = {
         __typename: 'CreateTaskPayload',
         error: null,
@@ -1259,6 +1297,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // the result is tasks == [undefined]
       // if a sleep is added, RetroDiscussPhase component is notified, but without, only MeetingAgendaCards is notified
       // (I removed MeetingAgendaCards, mentioned in the comment line above, as it’s unused, TA)
+      // Safe to test removing this now that MeetingAgendaCards is gone MK
       // honestly, no good idea what is going on here. don't even know if it's relay or react (or me)
       await sleep(100)
       return {createTask: data}
@@ -1269,7 +1308,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       comment.updatedAt = new Date().toJSON()
       comment.isActive = false
 
-      const {threadParentId} = comment
+      const {discussionId, threadParentId} = comment
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)!
+      discussion.commentCount--
       if (comment.threadParentId) {
         const threadParent =
           this.db.tasks.find(({id}) => id === threadParentId) ||
@@ -1283,9 +1324,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           }
         }
       } else if (comment.replies.length === 0) {
-        const reflectionGroup = this.db.reflectionGroups.find(({id}) => id === threadParentId)
-        if (reflectionGroup) {
-          const {thread} = reflectionGroup
+        // const reflectionGroup = this.db.reflectionGroups.find(({id}) => id === threadParentId)
+        if (discussion) {
+          const {thread} = discussion
           const {edges} = thread
           const idx = edges.findIndex((edge) => edge.node.id === commentId)
           edges.splice(idx, 1)
@@ -1365,10 +1406,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     DeleteTaskMutation: ({taskId}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
-      const {threadId} = task
-      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)
-      if (!reflectionGroup) return
-      reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
+      const {discussionId} = task
+      const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
+      if (!discussion) return
+      const {thread} = discussion
+      const {edges} = thread
+      edges.splice(
+        edges.findIndex((edge) => edge.node === task),
+        1
+      )
       const data = {
         __typename: 'DeleteTaskPayload',
         error: null,

@@ -13,7 +13,7 @@ export default {
   resolve: async (_source, _args, {authToken}) => {
     // AUTH
     const viewerId = getUserId(authToken)
-    const update = {newFeatureId: null}
+    const update = {newFeatureId: null, updatedAt: new Date()}
     await Promise.all([
       catchAndLog(() => dismissNewFeatureQuery.run({ids: [viewerId]}, getPg())),
       db.write('User', viewerId, update)

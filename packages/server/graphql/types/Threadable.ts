@@ -12,7 +12,6 @@ import Comment from './Comment'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfo from './PageInfo'
 import Task from './Task'
-import ThreadSourceEnum from './ThreadSourceEnum'
 
 export const threadableFields = () => ({
   id: {
@@ -38,22 +37,17 @@ export const threadableFields = () => ({
       return dataLoader.get('users').load(createdBy)
     }
   },
-  // isThreadTombstone: {
-  //   type: GraphQLBoolean,
-  //   description: 'true if the item has been deleted but still has replies, else falsy'
-  // },
   replies: {
     type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Threadable))),
     description: 'the replies to this threadable item',
     resolve: ({replies}) => replies || []
   },
-  threadId: {
+  discussionId: {
     type: GraphQLID,
-    description: 'The ID of the thread'
-  },
-  threadSource: {
-    type: ThreadSourceEnum,
-    description: 'The item that spurred the threaded discussion'
+    description:
+      'The FK of the discussion this task was created in. Null if task was not created in a discussion',
+    // can remove the threadId after 2021-07-01
+    resolve: ({discussionId, threadId}) => discussionId || threadId
   },
   threadParentId: {
     type: GraphQLID,
@@ -87,6 +81,10 @@ const {connectionType, edgeType} = connectionDefinitions({
     }
   }),
   connectionFields: () => ({
+    error: {
+      type: GraphQLString,
+      description: 'Any errors that prevented the query from returning the full results'
+    },
     pageInfo: {
       type: PageInfo,
       description: 'Page info with strings (sortOrder) as cursors'

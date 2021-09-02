@@ -6,10 +6,8 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {DeepNonNullable} from '../types/generics'
-import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
+import {PokerEstimateHeaderCardJira_issue} from '../__generated__/PokerEstimateHeaderCardJira_issue.graphql'
 import CardButton from './CardButton'
 import Icon from './Icon'
 import IconLabel from './IconLabel'
@@ -76,33 +74,16 @@ const StyledLabel = styled('span')({
 })
 
 interface Props {
-  stage: PokerEstimateHeaderCardJira_stage
+  issue: PokerEstimateHeaderCardJira_issue
 }
 const PokerEstimateHeaderCardJira = (props: Props) => {
-  const {stage} = props
-  const {serviceTaskId, story} = stage
+  const {issue} = props
   const [isExpanded, setIsExpanded] = useState(false)
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  if (!story) {
-    // Jira is down, show something
-    const {issueKey} = JiraServiceTaskId.split(serviceTaskId)
-    return (
-      <HeaderCardWrapper isDesktop={isDesktop}>
-        <HeaderCard>
-          <CardTitleWrapper>
-            <CardTitle>{`Jira is Down!`}</CardTitle>
-          </CardTitleWrapper>
-          <CardDescription isExpanded>
-            {`Cannot connect to Jira. Voting will be disabled for ${issueKey}. If the problem persists, please reintegrate or remove the issue and add it again.`}
-          </CardDescription>
-        </HeaderCard>
-      </HeaderCardWrapper>
-    )
-  }
-  const {key, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
+  const {issueKey, summary, descriptionHTML, url} = issue
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -122,9 +103,9 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
           href={url}
           rel='noopener noreferrer'
           target='_blank'
-          title={`Jira Issue #${key}`}
+          title={`Jira Issue #${issueKey}`}
         >
-          <StyledLabel>{key}</StyledLabel>
+          <StyledLabel>{issueKey}</StyledLabel>
           <StyledIcon>launch</StyledIcon>
         </StyledLink>
       </HeaderCard>
@@ -133,17 +114,12 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
 }
 
 export default createFragmentContainer(PokerEstimateHeaderCardJira, {
-  stage: graphql`
-    fragment PokerEstimateHeaderCardJira_stage on EstimateStage {
-      serviceTaskId
-      story {
-        ... on JiraIssue {
-          key
-          summary
-          descriptionHTML
-          url
-        }
-      }
+  issue: graphql`
+    fragment PokerEstimateHeaderCardJira_issue on JiraIssue {
+      issueKey
+      summary
+      descriptionHTML
+      url
     }
   `
 })

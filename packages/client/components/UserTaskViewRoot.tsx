@@ -7,8 +7,8 @@ const MyDashboardTasksRoot = lazy(() =>
   import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../components/MyDashboardTasksRoot')
 )
 
-const ArchiveTasksRoot = lazy(() =>
-  import(/* webpackChunkName: 'ArchiveTaskRoot' */ '../components/ArchiveTaskRoot')
+const ArchiveTaskUserRoot = lazy(() =>
+  import(/* webpackChunkName: 'ArchiveTaskUserRoot' */ '../components/ArchiveTaskUserRoot')
 )
 
 const UserTaskViewRoot = () => {
@@ -18,11 +18,10 @@ const UserTaskViewRoot = () => {
   useDocumentTitle('Tasks | Parabol', 'Tasks')
 
   if (showArchived) {
-    return <ArchiveTasksRoot userIds={userIds} teamIds={teamIds} team={null} />
+    return <ArchiveTaskUserRoot userIds={userIds} teamIds={teamIds} />
   } else {
     return <MyDashboardTasksRoot />
   }
-
 }
 
 export default UserTaskViewRoot

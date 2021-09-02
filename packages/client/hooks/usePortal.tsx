@@ -2,8 +2,8 @@ import React, {ReactElement, useCallback, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from '../utils/hideBodyScroll'
-import useRefState from './useRefState'
 import useEventCallback from './useEventCallback'
+import useRefState from './useRefState'
 
 export const enum PortalStatus {
   Mounted, // node appended to DOM
@@ -58,7 +58,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
 
   const terminateAfterTransition = useEventCallback(() => {
     // setTimeout because the portal should terminate only after all other transitionend events had time to fire
-    timeoutRef.current = setTimeout(terminatePortal)
+    timeoutRef.current = window.setTimeout(terminatePortal)
   })
 
   const closePortal = useEventCallback(() => {
@@ -80,8 +80,8 @@ const usePortal = (options: UsePortalOptions = {}) => {
       const hasChildModal = children.some((child) => child.id)
       if (hasChildModal) return
       const {activeElement, body} = document
-      if (activeElement && activeElement !== body) {
-        const {contentEditable, tagName} = activeElement as HTMLElement
+      if (activeElement !== body && activeElement instanceof HTMLElement) {
+        const {contentEditable, tagName} = activeElement
         // if viewer is typing something, don't close the portal on escape
         if (tagName === 'INPUT' || tagName === 'TEXTAREA' || contentEditable === 'true') {
           return

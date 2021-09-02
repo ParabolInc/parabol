@@ -31,7 +31,7 @@ const useOverflowAvatars = <T extends {id: string}>(
   useLayoutEffect(checkOverflow, [])
   useResizeObserver(checkOverflow, rowRef)
   const totalItems = items.length
-  const overflowCount = totalItems > maxAvatars ? totalItems - maxAvatars + 1 : 0
+  const overflowCount = maxAvatars > 0 && totalItems > maxAvatars ? totalItems - maxAvatars + 1 : 0
   const visibleUsers = overflowCount === 0 ? items : items.slice(0, maxAvatars - 1)
   const visibleAvatars = visibleUsers.map((user, displayIdx) => ({
     ...user,

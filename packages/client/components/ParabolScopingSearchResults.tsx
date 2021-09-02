@@ -2,18 +2,18 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
-import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
-import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
-import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
-import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
-import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
-import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import NewIntegrationRecordButton from './NewIntegrationRecordButton'
-import dndNoise from '~/utils/dndNoise'
-import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import useMutationProps from '~/hooks/useMutationProps'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import dndNoise from '~/utils/dndNoise'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
+import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
+import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -32,7 +32,11 @@ const ParabolScopingSearchResults = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
   useEffect(() => {
-    if (incomingEdges) setEdges(incomingEdges)
+    if (!incomingEdges) return
+    const unintegratedTaskEdges = incomingEdges.filter(
+      (edge) => edge.node && !edge.node.integrationHash
+    )
+    setEdges(unintegratedTaskEdges)
   }, [incomingEdges])
   const {id: meetingId, phases, teamId} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
@@ -124,6 +128,7 @@ export default createPaginationContainer(
             node {
               ...ParabolScopingSearchResultItem_task
               id
+              integrationHash
             }
           }
           pageInfo {

@@ -1,11 +1,9 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
-
-import styled from '@emotion/styled'
-
+import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
@@ -13,6 +11,7 @@ import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -54,14 +53,15 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {showSidebar, id: meetingId, endedAt, localStage} = meeting
-  const {agendaItem, agendaItemId} = localStage
+  const {showSidebar, endedAt, localStage} = meeting
+  const {agendaItem, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
   return (
     <MeetingContent ref={meetingContentRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -81,8 +81,8 @@ const ActionMeetingAgendaItems = (props: Props) => {
           <ThreadColumn isDesktop={isDesktop}>
             <DiscussionThreadRoot
               meetingContentRef={meetingContentRef}
-              meetingId={meetingId}
-              threadSourceId={agendaItemId!}
+              discussionId={discussionId!}
+              allowedThreadables={allowedThreadables}
             />
           </ThreadColumn>
           <EditorHelpModalContainer />
@@ -94,7 +94,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
 
 graphql`
   fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
-    agendaItemId
+    discussionId
     agendaItem {
       content
       teamMember {
@@ -108,7 +108,6 @@ graphql`
 export default createFragmentContainer(ActionMeetingAgendaItems, {
   meeting: graphql`
     fragment ActionMeetingAgendaItems_meeting on ActionMeeting {
-      id
       showSidebar
       endedAt
       facilitatorUserId

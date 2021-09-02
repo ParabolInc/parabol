@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {useCovering} from '~/hooks/useControlBarCovers'
@@ -13,12 +13,12 @@ import useLeft from '~/hooks/useLeft'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meeting.graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
-import {MeetingControlBar_meeting} from '~/__generated__/MeetingControlBar_meeting.graphql'
+import {MeetingControlBar_meeting$key} from '~/__generated__/MeetingControlBar_meeting.graphql'
 import useClickConfirmation from '../hooks/useClickConfirmation'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meeting.graphql'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
@@ -62,10 +62,47 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
   isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
-  meeting: MeetingControlBar_meeting
+  meeting: MeetingControlBar_meeting$key
 }
 const MeetingControlBar = (props: Props) => {
-  const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId} = props
+  const {handleGotoNext, isDemoStageComplete, meeting: meetingRef, gotoStageId} = props
+  const meeting = useFragment(
+    graphql`
+      fragment MeetingControlBar_meeting on NewMeeting {
+        ...BottomControlBarReady_meeting
+        ...BottomControlBarReady_meeting @relay(mask: false)
+        ...BottomControlBarTips_meeting
+        ...StageTimerControl_meeting
+        id
+        endedAt
+        facilitatorStageId
+        facilitatorUserId
+        meetingType
+        showSidebar
+        ... on PokerMeeting {
+          isRightDrawerOpen
+        }
+        localStage {
+          id
+          isComplete
+        }
+        localPhase {
+          phaseType
+          stages {
+            id
+            isComplete
+          }
+        }
+        phases {
+          phaseType
+          stages {
+            id
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {
@@ -188,38 +225,4 @@ const MeetingControlBar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(MeetingControlBar, {
-  meeting: graphql`
-    fragment MeetingControlBar_meeting on NewMeeting {
-      ...BottomControlBarTips_meeting
-      ...BottomControlBarReady_meeting
-      ...StageTimerControl_meeting
-      id
-      endedAt
-      facilitatorStageId
-      facilitatorUserId
-      meetingType
-      showSidebar
-      ... on PokerMeeting {
-        isRightDrawerOpen
-      }
-      localStage {
-        id
-        isComplete
-      }
-      localPhase {
-        phaseType
-        stages {
-          id
-          isComplete
-        }
-      }
-      phases {
-        phaseType
-        stages {
-          id
-        }
-      }
-    }
-  `
-})
+export default MeetingControlBar

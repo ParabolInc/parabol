@@ -5,15 +5,6 @@ import {SummaryAvatarHeader_meetingMember} from 'parabol-client/__generated__/Su
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 
-const presentLabelStyle = {
-  color: PALETTE.JADE_400,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: '14px',
-  fontStyle: 'italic',
-  fontWeight: 600,
-  paddingTop: 4
-}
-
 const avatarCell = {
   paddingTop: 24
 }
@@ -48,11 +39,6 @@ const SummaryAvatarHeader = (props: Props) => {
       <tr>
         <td align='center' style={nameStyle}>
           {preferredName}
-        </td>
-      </tr>
-      <tr>
-        <td align='center' style={presentLabelStyle}>
-          {'Present'}
         </td>
       </tr>
     </>

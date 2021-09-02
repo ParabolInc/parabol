@@ -32,7 +32,8 @@ export const enum Breakpoint {
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
   WIDER_SCREEN = 1600,
   VOTE_PHASE = 800,
-  FUZZY_TABLET = 700
+  FUZZY_TABLET = 700,
+  BIG_DISPLAY = 1900
 }
 
 export const enum Card {
@@ -91,12 +92,19 @@ export const enum ElementWidth {
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6,
   REFLECTION_COLUMN = 320,
-  NEW_MEETING_FAB = 128
+  NEW_MEETING_FAB = 128,
+  MEETING_CARD = 320,
+  MEETING_CARD_MARGIN = 16,
+  MEETING_CARD_LARGE_MARGIN = 40,
+  MEETING_CARD_WITH_MARGIN = 336
 }
 
 export const enum ElementHeight {
+  MEETING_CARD_AVATARS = 32,
   REFLECTION_CARD = 44,
-  REFLECTION_CARD_MAX = 104 // 4 lines (20px each) + (2 * 12px) vertical gutter
+  REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
+  MEETING_CARD_IMG = 180,
+  MEETING_CARD_MARGIN = 16
 }
 
 export const enum ExternalLinks {
@@ -105,6 +113,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
+  INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/'
@@ -155,15 +164,19 @@ export const enum LocalStorageKey {
   APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
-  EMAIL = 'email'
+  EMAIL = 'email',
+  ERROR_PRONE_AT = 'errorProneAt'
 }
 
 export const enum AuthenticationError {
+  FAILED_TO_SEND = 'failedToSend',
   MISSING_HASH = 'missingHash',
   INVALID_PASSWORD = 'invalidPassword',
   IDENTITY_NOT_FOUND = 'identityNotFound',
+  EXCEEDED_RESET_THRESHOLD = 'exceededResetThreshold',
   USER_NOT_FOUND = 'userNotFound',
-  USER_EXISTS_GOOGLE = 'userExistsGoogle'
+  USER_EXISTS_GOOGLE = 'userExistsGoogle',
+  USER_EXISTS_SAML = 'userExistsSaml'
 }
 
 export const enum MathEnum {
@@ -234,6 +247,7 @@ export const enum Providers {
   ATLASSIAN_DESC = 'Create Jira issues from Parabol',
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
+  GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }
@@ -335,6 +349,7 @@ export const enum Threshold {
   MAX_POKER_SCALE_VALUES = 30,
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
+  MAX_POKER_DIMENSION_NAME = 50,
   MAX_REACTJIS = 12,
   MAX_POKER_STORIES = 50,
   MAX_INTEGRATION_FETCH_TIME = 10000,
@@ -376,6 +391,7 @@ export const enum ZIndex {
   SIDEBAR = 16,
   SIDE_SHEET = 8,
   SNACKBAR = 24 /* snackbar is kind of dialog */,
+  SPOTLIGHT_MODAL = 25, // above the tooltip
   REFLECTION_IN_FLIGHT = 8,
   REFLECTION_IN_FLIGHT_LOCAL = 26, // keep it above the dialog
   TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
@@ -394,6 +410,11 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
   JIRA_FIELD_NULL_LABEL = 'Do Not Update',
-  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me'
+  GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
+  JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error'
+}
 
+export const enum AriaLabels {
+  COMMENT_EDITOR = 'Comment Editor',
+  TASK_EDITOR = 'Task Editor'
 }

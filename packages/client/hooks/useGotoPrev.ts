@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useCallback} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useGotoPrev_meeting} from '~/__generated__/useGotoPrev_meeting.graphql'
+import {useGotoPrev_meeting$key} from '~/__generated__/useGotoPrev_meeting.graphql'
 import findStageBeforeId from '../utils/meetings/findStageBeforeId'
 import useGotoStageId from './useGotoStageId'
 
 export const useGotoPrev = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {
-  const meeting = readInlineData<useGotoPrev_meeting>(
+  const meeting = readInlineData<useGotoPrev_meeting$key>(
     graphql`
       fragment useGotoPrev_meeting on NewMeeting @inline {
         localStage {

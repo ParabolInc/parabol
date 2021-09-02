@@ -5,9 +5,11 @@ import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
+import generateUID from '../../generateUID'
 import getPg from '../../postgres/getPg'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
@@ -17,7 +19,6 @@ import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -25,8 +26,9 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
     dataLoader.get('meetingTemplates').load(templateId),
     dataLoader.get('templateDimensionsByTemplateId').load(templateId)
   ])
+  const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
   const {name: templateName} = template
-  const uniqueScaleIds = Array.from(new Set(dimensions.map(({scaleId}) => scaleId)))
+  const uniqueScaleIds = Array.from(new Set(activeDimensions.map(({scaleId}) => scaleId)))
   const uniqueScales = await dataLoader.get('templateScales').loadMany(uniqueScaleIds)
   const templateScales = uniqueScales.map(({name, values}) => {
     const scale = {name, values}
@@ -36,7 +38,7 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
 
   const templateRef = {
     name: templateName,
-    dimensions: dimensions.map((dimension) => {
+    dimensions: activeDimensions.map((dimension) => {
       const {name, scaleId} = dimension
       const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
       const templateScale = templateScales[scaleIdx]
@@ -80,9 +82,10 @@ export default {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
 
-    const meetingType = 'poker' as MeetingTypeEnum
+    const meetingType: MeetingTypeEnum = 'poker'
 
     // RESOLUTION
+    const meetingId = generateUID()
     const meetingCount = await r
       .table('NewMeeting')
       .getAll(teamId, {index: 'teamId'})
@@ -94,6 +97,7 @@ export default {
     const phases = await createNewMeetingPhases(
       viewerId,
       teamId,
+      meetingId,
       meetingCount,
       meetingType,
       dataLoader
@@ -105,6 +109,7 @@ export default {
     const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
 
     const meeting = new MeetingPoker({
+      id: meetingId,
       teamId,
       meetingCount,
       phases,
@@ -113,13 +118,15 @@ export default {
       templateRefId
     })
 
-    const meetingId = meeting.id
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-
-    await r
-      .table('NewMeeting')
-      .insert(meeting)
-      .run()
+    const now = new Date()
+    await r({
+      template: r
+        .table('MeetingTemplate')
+        .get(selectedTemplateId)
+        .update({lastUsedAt: now}),
+      meeting: r.table('NewMeeting').insert(meeting)
+    }).run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -140,6 +147,10 @@ export default {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     const {isSpectatingPoker} = teamMember
+    const updates = {
+      lastMeetingType: meetingType,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('MeetingMember')
@@ -155,9 +166,9 @@ export default {
       r
         .table('Team')
         .get(teamId)
-        .update({lastMeetingType: meetingType})
+        .update(updates)
         .run(),
-      updateTeamByTeamId({lastMeetingType: meetingType}, teamId)
+      updateTeamByTeamId(updates, teamId)
     ])
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)

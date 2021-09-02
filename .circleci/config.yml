@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: circleci/node:14.10
+      - image: circleci/node:16.5
       - image: rethinkdb:2.4.0
       - image: circleci/postgres:12.3
         environment:
@@ -25,6 +25,8 @@ jobs:
       PRODUCTION_BACKUP_VOLUME: '/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01'
       SENTRY_ORG: 'parabol'
       SENTRY_PROJECT: 'action-production'
+      S3_DB_BACKUPS_BUCKET: 'db-backups.parabol.co'
+      SERVER_ID: '0'
     working_directory: ~/action
     steps:
       - add_ssh_keys:
@@ -121,7 +123,8 @@ jobs:
             if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
               ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
               $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
-                -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+                -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}" \
+                -b "${S3_DB_BACKUPS_BUCKET}" -p "${CIRCLE_BRANCH}"
             fi &&
             if [ -n "${GITHUB_REMOTE}" ]; then
               git push -f dokku $CIRCLE_BRANCH:master

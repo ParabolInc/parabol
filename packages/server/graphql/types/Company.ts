@@ -21,7 +21,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: domain}, _args, {dataLoader}) => {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}) => id)
-        const teamsByOrgId = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
+        const teamsByOrgId = await dataLoader.get('teamsByOrgIds').loadMany(orgIds)
         const teams = teamsByOrgId.flat()
         return teams.length
       }
@@ -52,7 +52,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
         const r = await getRethink()
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}) => id)
-        const teamsByOrgId = (await dataLoader.get('teamsByOrgId').loadMany(orgIds)).filter(
+        const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
           errorFilter
         )
         const teams = teamsByOrgId.flat()
@@ -74,7 +74,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
         const r = await getRethink()
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}) => id)
-        const teamsByOrgId = (await dataLoader.get('teamsByOrgId').loadMany(orgIds)).filter(
+        const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
           errorFilter
         )
         const teams = teamsByOrgId.flat()
@@ -96,7 +96,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
         const r = await getRethink()
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}) => id)
-        const teamsByOrgId = (await dataLoader.get('teamsByOrgId').loadMany(orgIds)).filter(
+        const teamsByOrgId = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(
           errorFilter
         )
         const teams = teamsByOrgId.flat()

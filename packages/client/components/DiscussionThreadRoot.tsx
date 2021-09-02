@@ -1,35 +1,32 @@
-import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject} from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import renderQuery from '../utils/relay/renderQuery'
+import React, {RefObject, Suspense} from 'react'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import discussionThreadQuery, {
+  DiscussionThreadQuery
+} from '../__generated__/DiscussionThreadQuery.graphql'
 import DiscussionThread from './DiscussionThread'
-
-const query = graphql`
-  query DiscussionThreadRootQuery($meetingId: ID!, $threadSourceId: ID!) {
-    viewer {
-      ...DiscussionThread_viewer
-    }
-  }
-`
+import {DiscussionThreadables} from './DiscussionThreadList'
 
 interface Props {
-  meetingId: string
   meetingContentRef?: RefObject<HTMLDivElement>
-  threadSourceId: string
+  discussionId: string
+  allowedThreadables: DiscussionThreadables[]
+  width?: string
 }
 
 const DiscussionThreadRoot = (props: Props) => {
-  const atmosphere = useAtmosphere()
-  const {meetingContentRef, meetingId, threadSourceId} = props
+  const {allowedThreadables, meetingContentRef, discussionId, width} = props
+  const queryRef = useQueryLoaderNow<DiscussionThreadQuery>(discussionThreadQuery, {discussionId})
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{meetingId, threadSourceId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(DiscussionThread, {props: {meetingContentRef, threadSourceId}})}
-    />
+    <Suspense fallback={''}>
+      {queryRef && (
+        <DiscussionThread
+          allowedThreadables={allowedThreadables}
+          meetingContentRef={meetingContentRef}
+          queryRef={queryRef}
+          width={width}
+        />
+      )}
+    </Suspense>
   )
 }
 

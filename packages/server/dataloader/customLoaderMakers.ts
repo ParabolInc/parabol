@@ -1,36 +1,30 @@
 import DataLoader from 'dataloader'
-import {decode} from 'jsonwebtoken'
-import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
-import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
-import AtlassianAuth from '../database/types/AtlassianAuth'
 import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
-import {ThreadSource, ThreadSourceEnum} from '../database/types/ThreadSource'
+import getPg from '../postgres/getPg'
+import {
+  getDiscussionsByIdQuery,
+  IGetDiscussionsByIdQueryResult
+} from '../postgres/queries/generated/getDiscussionsByIdQuery'
+import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
-import AtlassianServerManager from '../utils/AtlassianServerManager'
-import sendToSentry from '../utils/sendToSentry'
+import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
+import getMeetingTaskEstimates, {
+  MeetingTaskEstimatesResult
+} from '../postgres/queries/getMeetingTaskEstimates'
+import {TemplateRef} from '../postgres/queries/getTemplateRefsById'
+import getTemplateRefsById from '../postgres/queries/getTemplateRefsById'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
-
-type TeamUserKey = {teamId: string; userId: string}
-export interface JiraRemoteProjectKey {
-  accessToken: string
-  cloudId: string
-  atlassianProjectId: string
-}
-
-export interface JiraIssueKey {
-  teamId: string
-  userId: string
-  cloudId: string
-  issueKey: string
-}
+import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
+import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 
 export interface UserTasksKey {
   first: number
@@ -48,11 +42,6 @@ export interface ReactablesKey {
   type: ReactableEnum
 }
 
-export interface ThreadSourceKey {
-  sourceId: string
-  type: ThreadSourceEnum
-}
-
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -68,11 +57,6 @@ const reactableLoaders = [
   {type: 'REFLECTION', loader: 'retroReflections'}
 ] as const
 
-const threadableLoaders = [
-  {type: 'AGENDA_ITEM', loader: 'agendaItems'},
-  {type: 'REFLECTION_GROUP', loader: 'retroReflectionGroups'}
-] as const
-
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
 
 // TODO: refactor if the interface pattern is used a total of 3 times
@@ -80,6 +64,39 @@ const threadableLoaders = [
 export const users = () => {
   return new ProxiedCache('User')
 }
+
+export const teams = (parent: RethinkDataLoader) =>
+  new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
+    async (teamIds) => {
+      const teams = await getTeamsByIds(teamIds)
+      return normalizeRethinkDbResults(teamIds, teams)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+
+export const teamsByOrgIds = (parent: RethinkDataLoader) =>
+  new DataLoader<string, IGetTeamsByIdsQueryResult[], string>(
+    async (orgIds) => {
+      const teamLoader = parent.get('teams')
+      const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
+      teams.forEach((team) => {
+        teamLoader.clear(team.id).prime(team.id, team)
+      })
+
+      const teamsByOrgIds = teams.reduce((map, team) => {
+        const teamsByOrgId = map[team.orgId] ?? []
+        teamsByOrgId.push(team)
+        map[team.orgId] = teamsByOrgId
+        return map
+      }, {} as {[key: string]: IGetTeamsByIdsQueryResult[]})
+      return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
@@ -95,14 +112,14 @@ export const serializeUserTasksKey = (key: UserTasksKey) => {
   return parts.join(':')
 }
 
-export const commentCountByThreadId = (parent: RethinkDataLoader) => {
+export const commentCountByDiscussionId = (parent: RethinkDataLoader) => {
   return new DataLoader<string, number, string>(
-    async (threadIds) => {
+    async (discussionIds) => {
       const r = await getRethink()
       const groups = (await (r
         .table('Comment')
-        .getAll(r.args(threadIds as string[]), {index: 'threadId'})
-        .group('threadId') as any)
+        .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+        .group('discussionId') as any)
         .count()
         .ungroup()
         .run()) as {group: string; reduction: number}[]
@@ -110,10 +127,40 @@ export const commentCountByThreadId = (parent: RethinkDataLoader) => {
       groups.forEach(({group, reduction}) => {
         lookup[group] = reduction
       })
-      return threadIds.map((threadId) => lookup[threadId] || 0)
+      return discussionIds.map((discussionId) => lookup[discussionId] || 0)
     },
     {
       ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const latestTaskEstimates = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
+    async (taskIds) => {
+      const rows = await getLatestTaskEstimates(taskIds)
+      return taskIds.map((taskId) => rows.filter((row) => row.taskId === taskId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const meetingTaskEstimates = (parent: RethinkDataLoader) => {
+  return new DataLoader<{meetingId: string; taskId: string}, MeetingTaskEstimatesResult[], string>(
+    async (keys) => {
+      const meetingIds = keys.map(({meetingId}) => meetingId)
+      const taskIds = keys.map(({taskId}) => taskId)
+
+      const rows = await getMeetingTaskEstimates(taskIds, meetingIds)
+      return keys.map(({meetingId, taskId}) =>
+        rows.filter((row) => row.taskId === taskId && row.meetingId === meetingId)
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.meetingId}:${key.taskId}`
     }
   )
 }
@@ -135,26 +182,6 @@ export const reactables = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.id}:${key.type}`
-    }
-  )
-}
-
-export const threadSources = (parent: RethinkDataLoader) => {
-  return new DataLoader<ThreadSourceKey, ThreadSource, string>(
-    async (keys) => {
-      const threadableResults = (await Promise.all(
-        threadableLoaders.map(async (val) => {
-          const ids = keys.filter((key) => key.type === val.type).map(({sourceId}) => sourceId)
-          return parent.get(val.loader).loadMany(ids)
-        })
-      )) as ThreadSource[][]
-      const threadables = threadableResults.flat()
-      const keyIds = keys.map(({sourceId}) => sourceId)
-      return normalizeRethinkDbResults(keyIds, threadables)
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.sourceId}:${key.type}`
     }
   )
 }
@@ -243,47 +270,15 @@ export const userTasks = (parent: RethinkDataLoader) => {
   )
 }
 
-interface FreshAtlassianAuth extends AtlassianAuth {
-  accessToken: string
-}
-export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<TeamUserKey, FreshAtlassianAuth | null, string>(
+// TODO abstract this out so we can use this easier with PG
+export const discussions = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, IGetDiscussionsByIdQueryResult | null, string>(
     async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({userId, teamId}) => {
-          const r = await getRethink()
-          const atlassianAuth = await r
-            .table('AtlassianAuth')
-            .getAll(userId, {index: 'userId'})
-            .filter({teamId})
-            .nth(0)
-            .default(null)
-            .run()
-
-          if (!atlassianAuth?.refreshToken) return null
-          const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
-          const now = new Date()
-          const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
-          if (!decodedToken || decodedToken.exp < inAMinute) {
-            const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken} = manager
-            atlassianAuth.accessToken = accessToken
-            atlassianAuth.updatedAt = now
-            await r
-              .table('AtlassianAuth')
-              .getAll(userId, {index: 'userId'})
-              .filter({teamId})
-              .update({accessToken, updatedAt: now})
-              .run()
-          }
-          return atlassianAuth
-        })
-      )
+      const rows = await getDiscussionsByIdQuery.run({ids: keys as string[]}, getPg())
+      return keys.map((key) => rows.find((row) => row.id === key) || null)
     },
     {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+      ...parent.dataLoaderOptions
     }
   )
 }
@@ -304,59 +299,6 @@ export const githubAuth = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
-    }
-  )
-}
-
-export const jiraRemoteProject = (parent: RethinkDataLoader) => {
-  return new DataLoader<JiraRemoteProjectKey, string, string>(
-    async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({accessToken, cloudId, atlassianProjectId}) => {
-          const manager = new AtlassianServerManager(accessToken)
-          return manager.getProject(cloudId, atlassianProjectId)
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.atlassianProjectId}:${key.cloudId}`
-    }
-  )
-}
-
-export const jiraIssue = (parent: RethinkDataLoader) => {
-  return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
-    async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({teamId, userId, cloudId, issueKey}) => {
-          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-          if (!auth) {
-            sendToSentry(new Error('No atlassian access token exists for team member'), {
-              userId,
-              tags: {teamId}
-            })
-            return null
-          }
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
-          const issueRes = await manager.getIssue(cloudId, issueKey)
-          if ('message' in issueRes) {
-            sendToSentry(new Error(issueRes.message), {userId, tags: {cloudId, issueKey, teamId}})
-            return null
-          }
-          if ('errors' in issueRes) {
-            const error = issueRes.errors[0]
-            sendToSentry(new Error(error), {userId, tags: {cloudId, issueKey, teamId}})
-            return null
-          }
-          return issueRes.fields
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({cloudId, issueKey}) => `${cloudId}:${issueKey}`
     }
   )
 }
@@ -425,6 +367,18 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const templateRefs = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, TemplateRef, string>(
+    async (refIds) => {
+      const templateRefs = await getTemplateRefsById(refIds)
+      return refIds.map((refId) => templateRefs.find((ref) => ref.id === refId)!)
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

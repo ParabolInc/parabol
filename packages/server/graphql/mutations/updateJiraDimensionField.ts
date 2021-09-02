@@ -1,14 +1,33 @@
+import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
+
+const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
+  // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
+  // differently and can't be found on Jira fields list
+  const customFields = [SprintPokerDefaults.JIRA_FIELD_COMMENT, SprintPokerDefaults.JIRA_FIELD_NULL]
+  if (customFields.includes(fieldName as any)) {
+    return {fieldId: fieldName, type: 'string' as const}
+  }
+  // a regular Jira field
+  const {accessToken} = auth
+  const manager = new AtlassianServerManager(accessToken)
+  const fields = await manager.getFields(cloudId)
+  if (fields instanceof Error) return null
+  const selectedField = fields.find((field) => field.name === fieldName)
+  if (!selectedField) return null
+  const {id: fieldId, schema} = selectedField
+  return {fieldId, type: schema.type as 'string' | 'number'}
+}
 
 const updateJiraDimensionField = {
   type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
@@ -54,7 +73,7 @@ const updateJiraDimensionField = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }
-    const templateRef = await getTemplateRefById(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
     const {dimensions} = templateRef
     const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
     if (!matchingDimension) {
@@ -77,13 +96,11 @@ const updateJiraDimensionField = {
     if (!auth) {
       return {error: {message: 'Not authenticated with Jira'}}
     }
-    const {accessToken} = auth
-    const manager = new AtlassianServerManager(accessToken)
-    const fields = await manager.getFields(cloudId)
-    const field = fields.find((field) => field.name === fieldName)
-    if (!field) return {error: {message: 'Invalid field name'}}
-    const {id: fieldId, schema} = field
-    const type = schema.type as 'string' | 'number'
+
+    const selectedField = await getJiraField(fieldName, cloudId, auth)
+    if (!selectedField) return {error: {message: 'Invalid field name'}}
+    const {fieldId, type} = selectedField
+
     const newField = new JiraDimensionField({
       dimensionName,
       fieldName,
@@ -100,24 +117,20 @@ const updateJiraDimensionField = {
     }
 
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
+    const sortedJiraDimensionFields = jiraDimensionFields
+      .slice(jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS)
+      .sort((a, b) => (stringify(a) < stringify(b) ? -1 : 1))
+    const updates = {
+      jiraDimensionFields: sortedJiraDimensionFields,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('Team')
         .get(teamId)
-        .update({
-          jiraDimensionFields: jiraDimensionFields.slice(
-            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-          )
-        })
+        .update(updates)
         .run(),
-      updateTeamByTeamId(
-        {
-          jiraDimensionFields: jiraDimensionFields.slice(
-            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-          )
-        },
-        teamId
-      )
+      updateTeamByTeamId(updates, teamId)
     ])
 
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateJiraDimensionFieldSuccess', data, subOptions)

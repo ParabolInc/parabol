@@ -12,9 +12,11 @@ import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import isTempId from '~/utils/relay/isTempId'
 import {ThreadedCommentBase_comment} from '~/__generated__/ThreadedCommentBase_comment.graphql'
-import {ThreadedCommentBase_meeting} from '~/__generated__/ThreadedCommentBase_meeting.graphql'
+import {ThreadedCommentBase_discussion} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
+import {ThreadedCommentBase_viewer} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
+import {DiscussionThreadables} from './DiscussionThreadList'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
@@ -36,20 +38,30 @@ const EditorWrapper = styled('div')({
 })
 
 interface Props {
+  allowedThreadables: DiscussionThreadables[]
   comment: ThreadedCommentBase_comment
   children?: ReactNode // the replies, listed here to avoid a circular reference
-  meeting: ThreadedCommentBase_meeting
+  discussion: ThreadedCommentBase_discussion
   isReply?: boolean // this comment is a reply & should be indented
-  threadSourceId: string
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
+  viewer: ThreadedCommentBase_viewer
 }
 
 const ThreadedCommentBase = (props: Props) => {
-  const {children, comment, threadSourceId, replyMention, setReplyMention, meeting, dataCy} = props
+  const {
+    allowedThreadables,
+    children,
+    comment,
+    replyMention,
+    setReplyMention,
+    discussion,
+    dataCy,
+    viewer
+  } = props
   const isReply = !!props.isReply
-  const {id: meetingId, replyingToCommentId, teamId} = meeting
+  const {id: discussionId, meetingId, replyingToCommentId, teamId} = discussion
   const {id: commentId, content, createdByUser, isActive, reactjis, threadParentId} = comment
   const ownerId = threadParentId || commentId
   const picture = isActive ? createdByUser?.picture ?? anonymousAvatar : deletedAvatar
@@ -97,7 +109,11 @@ const ThreadedCommentBase = (props: Props) => {
     }
 
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId)?.setValue(ownerId, 'replyingToCommentId')
+      store
+        .getRoot()
+        .getLinkedRecord('viewer')
+        ?.getLinkedRecord('discussion', {id: discussionId})
+        ?.setValue(ownerId, 'replyingToCommentId')
     })
   }
 
@@ -169,13 +185,14 @@ const ThreadedCommentBase = (props: Props) => {
         )}
         {children}
         <ThreadedItemReply
+          allowedThreadables={allowedThreadables}
           dataCy={`${dataCy}-reply`}
-          threadSourceId={threadSourceId}
-          meeting={meeting}
+          discussion={discussion}
           editorRef={replyEditorRef}
           replyMention={replyMention}
           setReplyMention={setReplyMention}
           threadable={comment}
+          viewer={viewer}
         />
       </BodyCol>
     </ThreadedItemWrapper>
@@ -183,11 +200,17 @@ const ThreadedCommentBase = (props: Props) => {
 }
 
 export default createFragmentContainer(ThreadedCommentBase, {
-  meeting: graphql`
-    fragment ThreadedCommentBase_meeting on NewMeeting {
-      ...DiscussionThreadInput_meeting
-      ...ThreadedItemReply_meeting
+  viewer: graphql`
+    fragment ThreadedCommentBase_viewer on User {
+      ...ThreadedItemReply_viewer
+    }
+  `,
+  discussion: graphql`
+    fragment ThreadedCommentBase_discussion on Discussion {
+      ...DiscussionThreadInput_discussion
+      ...ThreadedItemReply_discussion
       id
+      meetingId
       replyingToCommentId
       teamId
     }

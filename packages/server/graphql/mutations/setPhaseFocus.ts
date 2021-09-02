@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GROUP, REFLECT} from 'parabol-client/utils/constants'
+import {GROUP} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
-import ReflectPhase from '../../database/types/ReflectPhase'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -46,14 +46,14 @@ const setPhaseFocus = {
     if (facilitatorUserId !== viewerId) {
       return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
     }
-    const phase = meeting.phases.find((phase) => phase.phaseType === REFLECT) as ReflectPhase
-    if (!phase) {
+    const reflectPhase = getPhase(meeting.phases, 'reflect')
+    if (!reflectPhase) {
       return standardError(new Error('Meeting not found'), {userId: viewerId})
     }
 
     // RESOLUTION
     // mutative
-    phase.focusedPromptId = focusedPromptId || null
+    reflectPhase.focusedPromptId = focusedPromptId || null
     await r
       .table('NewMeeting')
       .get(meetingId)

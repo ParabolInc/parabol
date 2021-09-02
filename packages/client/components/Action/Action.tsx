@@ -69,6 +69,10 @@ const Action = memo(() => {
               render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
             />
             <Route
+              path={`/forgot-password/submitted`}
+              render={(p) => <AuthenticationPage {...p} page={`forgot-password/submitted`} />}
+            />
+            <Route
               path='/verify-email/:verificationToken/:invitationToken?'
               component={VerifyEmail}
             />

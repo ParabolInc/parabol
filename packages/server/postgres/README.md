@@ -1,0 +1,27 @@
+# PostGreSQL
+
+## Migrations
+
+This folder contains all the postgres migrations that have been run on the database.
+If your migration also requires a connection to RethinkDB, you can do that here, too.
+The recommended way to write a migration is to call `yarn pg:migrate create NAME`
+We no longer use pgm because we want every migration to run independently.
+In other words, migration 3 should have a guarantee that migration 2 has already run. PGM doesn't do this.
+
+### Gotchas
+
+#### pgm vs. node-pg inside a migration
+
+`pgm.db.query` isn't a true async function. It runs all migrations in parallel, queues up every query, and then executes those in serial.
+This is generally fine if you only use `pgm`.
+However, if you create 1 migration using `pgm` and a second migration using `pg.Client` then the 2nd migration will run before `pgm` finishes, causing it to fail.
+What's more, if you call `pgm` to create a table and `pg.Client` to access that table, the table won't exist.
+We learned this after about 10 migrations. As a band-aid, we use `pgm.noTransaction()` on migrations that caused errors.
+Moving forward, we will only use `pg.Client`
+
+#### Bulk inserts
+
+Parameters are capped at 16-bit, so if you're doing a bulk insert, you'll need to break it up.
+In other words, if `# rows * columns per row > 65,535` you need to do it in batches.
+`pg-protocol` shows this here: https://github.com/brianc/node-postgres/blob/master/packages/pg-protocol/src/serializer.ts#L155
+Issue here: https://github.com/brianc/node-postgres/issues/581

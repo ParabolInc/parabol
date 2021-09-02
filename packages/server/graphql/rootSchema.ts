@@ -1,5 +1,6 @@
+import {mergeSchemas} from '@graphql-tools/merge'
 import {GraphQLSchema} from 'graphql'
-import addGitHubToSchema from './githubSchema/addGitHubToSchema'
+import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
@@ -12,8 +13,22 @@ const parabolSchema = new GraphQLSchema({
   types: rootTypes
 })
 
-const resolveAccessToken = (source) => source.accessToken
-const mergedSchema = addGitHubToSchema(parabolSchema, 'GitHubIntegration', resolveAccessToken, {
+const {schema: withGitHubSchema, githubRequest} = nestGitHubEndpoint({
+  parentSchema: parabolSchema,
+  parentType: 'GitHubIntegration',
+  fieldName: 'api',
+  resolveEndpointContext: ({accessToken}) => ({accessToken}),
   prefix: '_xGitHub'
 })
-export default mergedSchema
+
+const withLinkedGitHubSchema = mergeSchemas({
+  schemas: [withGitHubSchema],
+  typeDefs: `
+    type _xGitHubIssue implements TaskIntegration
+  `
+})
+
+export {githubRequest}
+export type GitHubRequest = typeof githubRequest
+;(withLinkedGitHubSchema as any).githubRequest = githubRequest
+export default withLinkedGitHubSchema as GraphQLSchema & {githubSchema: GitHubRequest}

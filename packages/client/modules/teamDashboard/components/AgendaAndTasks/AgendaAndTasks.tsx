@@ -1,16 +1,13 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {AgendaAndTasks_viewer} from '~/__generated__/AgendaAndTasks_viewer.graphql'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import LabelHeading from '~/components/LabelHeading/LabelHeading'
-import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-
-import styled from '@emotion/styled'
-
+import {AgendaAndTasksQuery} from '~/__generated__/AgendaAndTasksQuery.graphql'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
-import {AppBar, Breakpoint, NavSidebar, RightSidebar, ZIndex} from '../../../../types/constEnums'
+import {AppBar, Breakpoint, RightSidebar, ZIndex} from '../../../../types/constEnums'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
@@ -32,7 +29,6 @@ const TasksMain = styled('div')({
   height: '100%',
   overflow: 'auto',
   [desktopDashWidestMediaQuery]: {
-    paddingLeft: NavSidebar.WIDTH,
     paddingRight: RightSidebar.WIDTH
   }
 })
@@ -100,18 +96,40 @@ const StyledLabelHeading = styled(LabelHeading)({
 })
 
 interface Props {
-  viewer: AgendaAndTasks_viewer
-  retry(): void
+  queryRef: PreloadedQuery<AgendaAndTasksQuery>
 }
 
 const AgendaAndTasks = (props: Props) => {
-  const {viewer, retry} = props
+  const {queryRef} = props
+  const data = usePreloadedQuery<AgendaAndTasksQuery>(
+    graphql`
+      query AgendaAndTasksQuery($teamId: ID!) {
+        viewer {
+          dashSearch
+          team(teamId: $teamId) {
+            id
+            name
+            ...AgendaListAndInput_team
+            ...TeamTasksHeaderContainer_team
+          }
+          teamMember(teamId: $teamId) {
+            hideAgenda
+          }
+          ...TeamTasksHeaderContainer_viewer
+          ...TeamColumnsContainer_viewer
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+
+  const {viewer} = data
   const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
-  const {teamId, teamName} = team
-  useStoreQueryRetry(retry)
+  const {id: teamId, name: teamName} = team
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (
     <RootBlock>
@@ -139,21 +157,4 @@ const AgendaAndTasks = (props: Props) => {
     </RootBlock>
   )
 }
-export default createFragmentContainer(AgendaAndTasks, {
-  viewer: graphql`
-    fragment AgendaAndTasks_viewer on User {
-      dashSearch
-      team(teamId: $teamId) {
-        teamId: id
-        teamName: name
-        ...AgendaListAndInput_team
-        ...TeamTasksHeaderContainer_team
-      }
-      teamMember(teamId: $teamId) {
-        hideAgenda
-      }
-      ...TeamTasksHeaderContainer_viewer
-      ...TeamColumnsContainer_viewer
-    }
-  `
-})
+export default AgendaAndTasks

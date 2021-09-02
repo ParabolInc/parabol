@@ -2,7 +2,6 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import AuthToken from '../../database/types/AuthToken'
 import generateUID from '../../generateUID'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
@@ -17,6 +16,8 @@ import NewTeamInput from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import {TierEnum} from '../../database/types/Invoice'
+import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
+import {GQLContext} from '../graphql'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -28,10 +29,9 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
-    async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+    async (_source, args, {authToken, dataLoader, socketId: mutatorId}: GQLContext) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
-      const r = await getRethink()
 
       // AUTH
       const {orgId} = args.newTeam
@@ -41,15 +41,8 @@ export default {
       }
 
       // VALIDATION
-      const orgTeams = await r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .run()
-
-      const orgTeamNames = [] as string[]
-      orgTeams.forEach((team) => {
-        if (!team.isArchived) orgTeamNames.push(team.name)
-      })
+      const orgTeams = await getTeamsByOrgIds([orgId], {isArchived: false})
+      const orgTeamNames = orgTeams.map((team) => team.name)
       const {
         data: {newTeam},
         errors

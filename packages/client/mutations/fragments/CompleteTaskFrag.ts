@@ -12,18 +12,23 @@ graphql`
     }
     dueDate
     integration {
-      ... on TaskIntegrationGitHub {
-        service
-        nameWithOwner
-        issueNumber
+      __typename
+      ... on _xGitHubIssue {
+        url
+      }
+      ... on JiraIssue {
+        cloudId
+        url
+        issueKey
+        summary
+        descriptionHTML
       }
     }
     meetingId
     sortOrder
     status
     tags
-    threadId
-    threadSource
+    discussionId
     threadSortOrder
     threadParentId
     updatedAt

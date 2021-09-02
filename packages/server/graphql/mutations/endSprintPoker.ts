@@ -17,6 +17,7 @@ import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegmen
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
+import getPhase from '../../utils/getPhase'
 
 export default {
   type: GraphQLNonNull(EndSprintPokerPayload),
@@ -52,7 +53,7 @@ export default {
 
     // RESOLUTION
     // remove hovering data from redis
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages: estimateStages} = estimatePhase
     if (estimateStages.length > 0) {
       const redisKeys = estimateStages.map((stage) => `pokerHover:${stage.id}`)
@@ -64,6 +65,10 @@ export default {
     if (!currentStageRes) {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
+    const storyCount = new Set(
+      estimateStages.filter(({isComplete}) => isComplete).map(({serviceTaskId}) => serviceTaskId)
+    ).size
+    const discussionIds = estimateStages.map((stage) => stage.discussionId)
     const {stage} = currentStageRes
     const phase = getMeetingPhase(phases)
     stage.isComplete = true
@@ -75,9 +80,15 @@ export default {
       .update(
         {
           endedAt: now,
-          phases
+          phases,
+          commentCount: (r
+            .table('Comment')
+            .getAll(r.args(discussionIds), {index: 'discussionId'})
+            .count()
+            .default(0) as unknown) as number,
+          storyCount
         },
-        {returnChanges: true}
+        {returnChanges: true, nonAtomic: true}
       )('changes')(0)('new_val')
       .default(null)
       .run()) as unknown) as MeetingPoker

@@ -1,9 +1,8 @@
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import generateUID from '../../generateUID'
 import Reactji from './Reactji'
-import {ThreadSourceEnum} from './ThreadSource'
 
-export interface CommentInput {
+interface CommentInput {
   id?: string
   createdAt?: Date | null
   isActive?: boolean | null
@@ -14,9 +13,8 @@ export interface CommentInput {
   content: string
   createdBy: string
   plaintextContent?: string // the plaintext version of content
-  threadId: string // reflectionGroupId or agendaItemId or storyId
+  discussionId: string
   threadSortOrder: number
-  threadSource: ThreadSourceEnum
 }
 
 export default class Comment {
@@ -30,9 +28,8 @@ export default class Comment {
   content: string
   createdBy: string
   plaintextContent: string
-  threadId: string // reflectionGroupId or agendaItemId or storyId
+  discussionId: string
   threadSortOrder: number
-  threadSource: ThreadSourceEnum
 
   constructor(input: CommentInput) {
     const {
@@ -44,8 +41,7 @@ export default class Comment {
       threadParentId,
       threadSortOrder,
       updatedAt,
-      threadId,
-      threadSource,
+      discussionId,
       isActive,
       isAnonymous,
       reactjis
@@ -58,8 +54,7 @@ export default class Comment {
     this.threadSortOrder = threadSortOrder
     this.threadParentId = threadParentId || undefined
     this.updatedAt = updatedAt || new Date()
-    this.threadId = threadId
-    this.threadSource = threadSource
+    this.discussionId = discussionId
     this.isActive = isActive ?? true
     this.isAnonymous = isAnonymous ?? false
     this.reactjis = reactjis ?? []

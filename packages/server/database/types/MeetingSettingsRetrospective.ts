@@ -1,4 +1,4 @@
-import {MeetingSettingsThreshold} from '~/types/constEnums'
+import {MeetingSettingsThreshold} from '../../../client/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
 import MeetingSettings from './MeetingSettings'
 

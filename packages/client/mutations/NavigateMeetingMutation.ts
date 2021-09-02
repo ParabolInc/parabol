@@ -6,7 +6,7 @@ import {ClientRetrospectiveMeeting} from '../types/clientSchema'
 import {SharedUpdater} from '../types/relayMutations'
 import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
-import isViewerTyping from '../utils/isViewerTyping'
+import {isViewerTypingInComment, isViewerTypingInTask} from '../utils/viewerTypingUtils'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import getInProxy from '../utils/relay/getInProxy'
 import safeProxy from '../utils/relay/safeProxy'
@@ -51,12 +51,10 @@ graphql`
                 isNavigableByFacilitator
                 meetingId
                 phaseType
+                discussionId
                 reflectionGroup {
                   id
                   voteCount
-                  tasks {
-                    id
-                  }
                 }
                 sortOrder
               }
@@ -112,7 +110,8 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   }
   if (viewerStageId === oldMeeting.facilitatorStageId) {
     const viewerPhaseType = getInProxy(meeting, 'localPhase', 'phaseType')
-    if (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping()) {
+    const isViewerTyping = isViewerTypingInTask() || isViewerTypingInComment()
+    if (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping) {
       setLocalStageAndPhase(store, meetingId, facilitatorStageId)
     }
   }

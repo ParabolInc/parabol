@@ -13,21 +13,26 @@ import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {
-  MeetingTypeEnum,
-  DiscussionThreadInput_meeting
-} from '~/__generated__/DiscussionThreadInput_meeting.graphql'
-import {ThreadSourceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {DiscussionThreadInput_discussion} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
+import {DiscussionThreadInput_viewer} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
+import {useBeforeUnload} from '../hooks/useBeforeUnload'
+import useInitialLocalState from '../hooks/useInitialLocalState'
+import CreateTaskMutation from '../mutations/CreateTaskMutation'
+import {PALETTE} from '../styles/paletteV3'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
+import AddPollButton from './AddPollButton'
+import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
-import CommentSendOrAdd from './CommentSendOrAdd'
+import {DiscussionThreadables} from './DiscussionThreadList'
+import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
-  alignItems: 'flex-end',
-  borderRadius: isReply ? '4px 0 0 4px' : undefined,
   display: 'flex',
+  flexDirection: 'column',
+  borderRadius: isReply ? '4px 0 0 4px' : undefined,
   boxShadow: isReply ? Elevation.Z2 : Elevation.DISCUSSION_INPUT,
   opacity: isDisabled ? 0.5 : undefined,
   marginLeft: isReply ? -12 : undefined,
@@ -36,6 +41,12 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   // required for the shadow to overlay draft-js in the task cards
   zIndex: 0
 }))
+
+const CommentContainer = styled('div')({
+  display: 'flex',
+  flex: 1,
+  padding: 4
+})
 
 const CommentAvatar = styled(Avatar)({
   margin: 8,
@@ -47,12 +58,21 @@ const EditorWrap = styled('div')({
   margin: '14px 0'
 })
 
+const ActionsContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderTop: `1px solid ${PALETTE.SLATE_200}`,
+  padding: 6
+})
+
 interface Props {
+  allowedThreadables: DiscussionThreadables[]
   editorRef: RefObject<HTMLTextAreaElement>
   getMaxSortOrder: () => number
-  meeting: DiscussionThreadInput_meeting
+  discussion: DiscussionThreadInput_discussion
+  viewer: DiscussionThreadInput_viewer
   onSubmitCommentSuccess?: () => void
-  threadSourceId: string
   threadParentId?: string
   isReply?: boolean
   isDisabled?: boolean
@@ -63,33 +83,45 @@ interface Props {
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {
+    allowedThreadables,
     editorRef,
     getMaxSortOrder,
-    meeting,
+    discussion,
     onSubmitCommentSuccess,
-    threadSourceId,
     threadParentId,
     replyMention,
     setReplyMention,
-    dataCy
+    dataCy,
+    viewer
   } = props
+  const {picture} = viewer
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
-  const picture = viewerMeetingMember?.user.picture ?? anonymousAvatar
+  const {id: discussionId, meetingId, isAnonymousComment, teamId} = discussion
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
+  const [canCreateTask, setCanCreateTask] = useState(true)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
-
-  const threadSourceByMeetingType = {
-    retrospective: 'REFLECTION_GROUP',
-    action: 'AGENDA_ITEM',
-    poker: 'STORY'
-  } as Record<MeetingTypeEnum, ThreadSourceEnum>
-  const threadSource = threadSourceByMeetingType[meetingType]
+  const allowTasks = allowedThreadables.includes('task')
+  const allowComments = allowedThreadables.includes('comment')
+  // Quick & Dirty Feature Flag
+  const allowPolls = false
+  // const allowPolls = allowedThreadables.includes('poll')
+  useInitialLocalState(discussionId, 'isAnonymousComment', false)
+  useInitialLocalState(discussionId, 'replyingToCommentId', '')
+  useBeforeUnload(() => {
+    EditCommentingMutation(
+      atmosphere,
+      {
+        isCommenting: false,
+        discussionId
+      },
+      {onError, onCompleted}
+    )
+  })
 
   useEffect(() => {
     const inactiveCommenting = setTimeout(() => {
@@ -98,8 +130,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           atmosphere,
           {
             isCommenting: false,
-            meetingId,
-            threadId: threadSourceId
+            discussionId
           },
           {onError, onCompleted}
         )
@@ -113,32 +144,29 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const toggleAnonymous = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      if (!meeting) return
-      meeting.setValue(!meeting.getValue('isAnonymousComment'), 'isAnonymousComment')
+      const discussion = store
+        .getRoot()
+        .getLinkedRecord('viewer')
+        ?.getLinkedRecord('discussion', {id: discussionId})
+      if (!discussion) return
+      discussion.setValue(!discussion.getValue('isAnonymousComment'), 'isAnonymousComment')
     })
     editorRef.current?.focus()
   }
-  const [canCollapse, setCanCollapse] = useState(isReply)
+
   const hasText = editorState.getCurrentContent().hasText()
-  const commentSubmitState = hasText ? 'send' : canCollapse ? 'add' : 'addExpanded'
-  const collapseAddTask = () => {
-    if (!canCollapse) {
-      setCanCollapse(true)
-    }
-  }
+  const commentSubmitState = hasText ? 'typing' : 'idle'
 
   const addComment = (rawContent: string) => {
     submitMutation()
     const comment = {
       content: rawContent,
       isAnonymous: isAnonymousComment,
-      threadId: threadSourceId,
+      discussionId,
       threadParentId,
-      threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
     }
-    AddCommentMutation(atmosphere, {comment, meetingId}, {onError, onCompleted})
+    AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(
       EditorState.moveFocusToEnd(
@@ -151,15 +179,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const ensureCommenting = () => {
     const timestamp = new Date()
     setLastTypedTimestamp(timestamp)
-
-    collapseAddTask()
     if (isAnonymousComment || isCommenting) return
     EditCommentingMutation(
       atmosphere,
       {
         isCommenting: true,
-        meetingId,
-        threadId: threadSourceId
+        discussionId
       },
       {onError, onCompleted}
     )
@@ -172,8 +197,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       atmosphere,
       {
         isCommenting: false,
-        meetingId,
-        threadId: threadSourceId
+        discussionId
       },
       {onError, onCompleted}
     )
@@ -196,53 +220,89 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     addComment(JSON.stringify(convertToRaw(content)))
   }
 
+  const addTask = () => {
+    const {viewerId} = atmosphere
+    const newTask = {
+      status: 'active',
+      sortOrder: dndNoise(),
+      discussionId,
+      meetingId,
+      threadParentId,
+      threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
+      userId: viewerId,
+      teamId
+    } as const
+    CreateTaskMutation(atmosphere, {newTask}, {})
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const addPoll = () => {}
+
+  useEffect(() => {
+    const focusListener = () => {
+      setCanCreateTask(!isViewerTypingInTask())
+    }
+
+    document.addEventListener('blur', focusListener, true)
+    document.addEventListener('focus', focusListener, true)
+    return () => {
+      document.removeEventListener('blur', focusListener, true)
+      document.removeEventListener('focus', focusListener, true)
+    }
+  }, [])
+
+  const isActionsContainerVisible = allowTasks || allowPolls
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
-      <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
-      <EditorWrap>
-        <CommentEditor
+      <CommentContainer>
+        <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
+        <EditorWrap>
+          <CommentEditor
+            dataCy={`${dataCy}`}
+            editorRef={editorRef}
+            editorState={editorState}
+            ensureCommenting={ensureCommenting}
+            onBlur={ensureNotCommenting}
+            onSubmit={onSubmit}
+            placeholder={placeholder}
+            setEditorState={setEditorState}
+            teamId={teamId}
+            readOnly={!allowComments}
+          />
+        </EditorWrap>
+        <SendCommentButton
           dataCy={`${dataCy}`}
-          editorRef={editorRef}
-          editorState={editorState}
-          ensureCommenting={ensureCommenting}
-          onBlur={ensureNotCommenting}
-          onSubmit={onSubmit}
-          placeholder={placeholder}
-          setEditorState={setEditorState}
-          teamId={teamId}
-        />
-      </EditorWrap>
-      {meetingType !== 'poker' && (
-        <CommentSendOrAdd
-          dataCy={`${dataCy}`}
-          getMaxSortOrder={getMaxSortOrder}
           commentSubmitState={commentSubmitState}
-          meeting={meeting}
-          threadSourceId={threadSourceId}
-          threadParentId={threadParentId}
-          threadSource={threadSource}
-          collapseAddTask={collapseAddTask}
           onSubmit={onSubmit}
         />
+      </CommentContainer>
+      {isActionsContainerVisible && (
+        <ActionsContainer>
+          {allowTasks && (
+            <AddTaskButton dataCy={`${dataCy}-task`} onClick={addTask} disabled={!canCreateTask} />
+          )}
+          {allowPolls && (
+            <AddPollButton dataCy={`${dataCy}-poll`} onClick={addPoll} disabled={!canCreateTask} />
+          )}
+        </ActionsContainer>
       )}
     </Wrapper>
   )
 })
 
 export default createFragmentContainer(DiscussionThreadInput, {
-  meeting: graphql`
-    fragment DiscussionThreadInput_meeting on NewMeeting {
-      ...CommentSendOrAdd_meeting
+  viewer: graphql`
+    fragment DiscussionThreadInput_viewer on User {
+      picture
+    }
+  `,
+  discussion: graphql`
+    fragment DiscussionThreadInput_discussion on Discussion {
       id
+      meetingId
       teamId
-      meetingType
       isAnonymousComment
-      viewerMeetingMember {
-        user {
-          picture
-        }
-      }
     }
   `
 })

@@ -61,6 +61,7 @@ interface ConversationListResponse {
   ok: true
   channels: SlackConversation[]
 }
+
 interface ConversationJoinResponse {
   ok: true
   channel: {
@@ -132,8 +133,13 @@ interface ConversationInfoResponse {
 
 type ConversationType = 'public_channel' | 'private_channel'
 
+interface IsValidAuthRes {
+  ok: boolean
+  error: string
+}
+
 abstract class SlackManager {
-  static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read'
+  static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read,groups:read'
   token: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland
@@ -196,26 +202,39 @@ abstract class SlackManager {
     )
   }
 
+  isValidAuthToken(token: string) {
+    return this.get<IsValidAuthRes>(`https://slack.com/api/auth.test?token=${token}`)
+  }
+
   joinConversation(channelId: string) {
     return this.get<ConversationJoinResponse>(
       `https://slack.com/api/conversations.join?token=${this.token}&channel=${channelId}`
     )
   }
 
-  postMessage(channelId: string, text: string | Array<{type: string}>) {
+  postMessage(channelId: string, text: string | Array<{type: string}>, notificationText?: string) {
     const prop = typeof text === 'string' ? 'text' : Array.isArray(text) ? 'blocks' : null
     if (!prop) throw new Error('Invalid Slack postMessage')
-    const payload = {
+    const defaultPayload = {
       channel: channelId,
-      unfurl_links: true,
+      unfurl_links: false,
+      unfurl_media: false,
       [prop]: text
     }
+    const payload =
+      prop === 'text'
+        ? defaultPayload
+        : {
+            ...defaultPayload,
+            text: notificationText
+          }
     return this.post<PostMessageResponse>('https://slack.com/api/chat.postMessage', payload)
   }
 
-  updateMessage(channelId: string, text: string, ts: string) {
+  updateMessage(channelId: string, blocks: string | Array<{type: string}>, ts: string) {
+    const newBlocks = typeof blocks === 'string' ? blocks : JSON.stringify(blocks)
     return this.get<UpdateMessageResponse>(
-      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&text=${text}&ts=${ts}`
+      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&blocks=${newBlocks}&ts=${ts}`
     )
   }
 }

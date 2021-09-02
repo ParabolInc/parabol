@@ -4,6 +4,8 @@ import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
+import generateUID from '../../generateUID'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -12,7 +14,6 @@ import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 export default {
   type: new GraphQLNonNull(StartCheckInPayload),
@@ -37,7 +38,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const meetingType = 'action' as MeetingTypeEnum
+    const meetingType: MeetingTypeEnum = 'action'
 
     // RESOLUTION
     const meetingCount = await r
@@ -47,21 +48,24 @@ export default {
       .count()
       .default(0)
       .run()
+    const meetingId = generateUID()
 
     const phases = await createNewMeetingPhases(
       viewerId,
       teamId,
+      meetingId,
       meetingCount,
       meetingType,
       dataLoader
     )
+
     const meeting = new MeetingAction({
+      id: meetingId,
       teamId,
       meetingCount,
       phases,
       facilitatorUserId: viewerId
     })
-    const {id: meetingId} = meeting
     await r
       .table('NewMeeting')
       .insert(meeting)
@@ -85,6 +89,10 @@ export default {
     const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
     const agendaItemIds = agendaItems.map(({id}) => id)
 
+    const updates = {
+      lastMeetingType: meetingType,
+      updatedAt: new Date()
+    }
     await Promise.all([
       r
         .table('MeetingMember')
@@ -93,9 +101,9 @@ export default {
       r
         .table('Team')
         .get(teamId)
-        .update({lastMeetingType: meetingType})
+        .update(updates)
         .run(),
-      updateTeamByTeamId({lastMeetingType: meetingType}, teamId),
+      updateTeamByTeamId(updates, teamId),
       r
         .table('AgendaItem')
         .getAll(r.args(agendaItemIds))

@@ -5,6 +5,256 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.26.0 2021-Sep-01
+
+### Fixed
+
+- Fix bad lowercase call (#5332)
+- Fix stripeSucceedPayment (#5335)
+
+### Added
+
+- Animate reflection into Spotlight (#5271)
+
+## 6.25.0 2021-Aug-25
+
+### Fixed
+
+- TeamMemberStageItems rendering unnecessarily (#5322)
+- New/Added Jira Stories are auto-archived by default (#5321)
+- Viewer object is non-null (#5310)
+
+### Changed
+
+- Upgrade to latest graphql-tools packages (#5321)
+- Upgrade to Relay v11, React v17 (#5294)
+- Server checks 'x-application-authorization' for app auth first (#5318)
+- Client always sends auth via `x-application-authorization' (#5291)
+
+### Added
+
+- Polls table in PG (#5231)
+
+## 6.24.1 2021-Aug-23
+
+### Fixed
+
+- Remove logrocket from client, it was still running even without a key
+
+## 6.24.0 2021-Aug-19
+
+### Added
+
+- Add accordion animation to sidebar #5086
+- Remove promptTemplateId from ReflectPhase #3949
+
+### Changed
+
+- Refactor pokerSetFinalScore to setTaskEstimate #5171
+- DB migration: migrate jira poker stages to jira-integrated stages #5161
+- Redis: Persist discussion commentors #5022
+- Updated tar, mediasoup-client dependencies
+
+### Fixed
+
+- Final score not updating #5283
+- Invites are broken - Cannot destructure property 'isConnected' of 'n' as it is null. #5282
+- Server error when voting, unable to advance meeting #5249
+- Jira integration - 'Fix it for me' doesn't work #5251
+- Grouping kanban columns are not centered on Safari #5263
+- Unable to archive poker meetings #5228
+
+## 6.23.2 2021-Aug-19
+
+### Fixed
+
+- Support debugging production mode locally (#5284)
+- Remove logRocket from SSR client keys (#5284)
+
+## 6.23.1 2021-Jul-30
+
+### Fixed
+
+- Run autopauseUsers in batches to avoid crashing RethinkDB
+
+## 6.23.0 2021-Jul-28
+
+### Added
+
+- Improved discussion thread empty state (#5192)
+- Added poker support for parabol tasks with integrated issues (#5205)
+- Added archive button to poker meeting timeline events (#5229)
+- Proxy Jira images through Parabol (#5190)
+- Added empty alt property to meeting card images (#5232)
+
+### Changed
+
+- Updated meeting cards styles for improved contrast and HTML semantics (#5209)
+- Make team members query order-by case insensitive (#5224)
+- Improved handling of slow responding gql executor (#5210)
+
+### Fixed
+
+- Keep Parabol poker estimates synced with Jira(#5220)
+- Fix nonexistent localStorage method invocation (#5223)
+- Fix buggy comment status text not going away (#5197)
+
+## 6.22.0 2021-Jul-22
+
+### Added
+
+- Added FLIP animations to meeting cards (#5138)
+- Added emails and domain to updateWatchlist (#5144)
+- Added TaskEstimate table (#5198)
+
+### Fixed
+
+- Fixed long meeting names throwing off meetings view (#5118)
+- Fixed dashboard padding (#5129)
+- Fixed summary review not working properly (#5137)
+
+### Changed
+
+- Jira Task sync (#5095)
+- Task sync GitHub (#5114)
+- Backfill email field for deleted users in RethinkDB to match with PG (#5170)
+- createTask accepts optional integration (#5199)
+
+## 6.21.0 2021-Jul-15
+
+### Added
+
+- Add Story Points to required screen from within Parabol (#4880)
+
+### Fixed
+
+- Fix template dimension "ghosts" (#5128)
+
+### Changed
+
+- Deprecate retro template prompt title field (#5120)
+- Migrating AtlassianAuth table to Postgres (#5085, #5135)
+- Impose unique email constraint for User table in Postgres (#5093)
+
+## 6.20.0 2021-Jul-08
+
+### Added
+
+- Add clarity between comments and task creation (#5049)
+- Add Parabol logo to scope phase area (#5092)
+
+### Changed
+
+- Sort jiraDimensionFields for both RethinkDB & PG (#5108)
+
+## 6.19.0 2021-Jul-01
+
+### Added
+
+- Meeting view animations (#4975)
+
+### Changed
+
+- No more refresh needed on version updates (#5015)
+- Require updatedAt on every doc change for User & Team table (#5079)
+
+### Fixed
+
+- Leaving team removes slack auth (#5055)
+- Poker comment & story count (#5062)
+- Deterministic sort order of jiraDimensionFields (#5070)
+
+## 6.18.0 2021-Jun-23
+
+### Added
+
+- Added update email mutation to intranet schema, #5005
+- Add retro templates, #4069
+
+### Fixed
+
+- Remove null jwt sentry error message
+- Always update the latest timestamp for lastSeenAt in PG
+
+## 6.17.1 2021-Jun-18
+
+### Fixed
+
+- Fix saml exists check in emailPasswordReset
+
+## 6.17.0 2021-Jun-17
+
+### Changed
+
+- Forgot password flow gives user feedback if request was valid, #5033
+
+### Fixed
+
+- Fix inequality btwn User overLimitCopy in rethink and pg, #5020
+- Fix missing teams in rethink but not in pg, #5050
+
+## 6.16.1 2021-Jun-10
+
+### Fixed
+
+- Use default empty string for discussionId for dummy discuss stage
+
+## 6.16.0 2021-Jun-10
+
+## Added
+
+- Discussion as first-class entity (#5016)
+
+## 6.15.0 2021-Jun-10
+
+### Changed
+
+- Make Slack notification prettier (#4911)
+- Deprecate createXPicturePutUrl mutations (#4342)
+- Ecnrypt database backup (#4603)
+
+## 6.14.0 2021-Jun-2
+
+### Changed
+
+- Bump dns-packet from 1.3.1 to 1.3.4 (#5000)
+
+### Added
+
+- Add 120 additional icebreakers (#5004)
+
+### Fixed
+
+- Add clock tolerance to getVerifiedAuthToken (#5011)
+- Sentry server stack (#4987)
+- UI fix-ups (#5001)
+
+## 6.13.0 2021-May-26
+
+### Added
+
+- LogRocket free tier (#4996)
+
+### Changed
+
+- Tier update pg (#4980)
+- Bump browserslist from 4.11.1 to 4.16.6 (#4995)
+
+## 6.12.0 2021-May-19
+
+### Added
+
+- Support varying GitHub scopes (#4971)
+- Send exceptions to LogRocket as well as Sentry (#4978)
+
+### Changed
+
+- Refactor commentor to thread conn (#4974)
+
+### Fixed
+
+- Init sentry in gqlExecutor (#4959)
+
 ## 6.11.0
 
 ### Added

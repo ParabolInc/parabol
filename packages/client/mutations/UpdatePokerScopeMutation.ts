@@ -1,7 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
+import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
-import {StandardMutation} from '../types/relayMutations'
+import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
+import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
+import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {
@@ -17,18 +21,17 @@ graphql`
         ...useMakeStageSummaries_phase
         ... on EstimatePhase {
           stages {
-            ...PokerEstimatePhaseStage
+            ...PokerEstimateHeaderCard_stage
             ...PokerCardDeckStage
             ...EstimatePhaseAreaStage
             ...JiraFieldDimensionDropdown_stage
             ...EstimateDimensionColumn_stage
+            ...EstimatePhaseDiscussionDrawerEstimateStage
             id
             isNavigableByFacilitator
-            service
-            serviceTaskId
             sortOrder
             isVoting
-            creatorUserId
+            taskId
             dimensionRef {
               name
               scale {
@@ -73,20 +76,27 @@ const mutation = graphql`
 
 type Meeting = NonNullable<UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']>
 
-const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
+interface Handlers extends BaseLocalHandlers {
+  contents: string[]
+}
+
+const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Handlers> = (
   atmosphere,
   variables,
-  {onError, onCompleted}
+  {onError, onCompleted, contents}
 ) => {
   return commitMutation<TUpdatePokerScopeMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {viewerId} = atmosphere
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      const viewerId = viewer?.getValue('id')
       const {meetingId, updates} = variables
       const meeting = store.get<Meeting>(meetingId)
       if (!meeting) return
-      const teamId = meeting.getValue('teamId') || ''
+      const teamId = (meeting.getValue('teamId') || '') as string
+      const team = store.get(teamId)
       const phases = meeting.getLinkedRecords('phases')
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')
       if (!estimatePhase) return
@@ -94,11 +104,11 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
       const [firstStage] = stages
       const dimensionRefIds = [] as string[]
       if (firstStage) {
-        const firstStageServiceTaskId = firstStage.getValue('serviceTaskId')
-        const stagesForServiceTaskId = stages.filter(
-          (stage) => stage.getValue('serviceTaskId') === firstStageServiceTaskId
+        const firstStageTaskId = firstStage.getValue('taskId')
+        const stagesForTaskId = stages.filter(
+          (stage) => stage.getValue('taskId') === firstStageTaskId
         )
-        const prevDimensionRefIds = stagesForServiceTaskId.map((stage) => {
+        const prevDimensionRefIds = stagesForTaskId.map((stage) => {
           const dimensionRef = stage.getLinkedRecord('dimensionRef')
           return dimensionRef?.getValue('id') ?? ''
         }) as string[]
@@ -118,51 +128,89 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
         dimensionRef.setLinkedRecord(scale, 'scale')
         dimensionRefIds.push(dimensionRefId)
       }
-      updates.forEach((update) => {
-        const {service, serviceTaskId, action} = update
-
+      updates.forEach((update, idx) => {
+        const {serviceTaskId, action, service} = update
         if (action === 'ADD') {
-          const stageExists = !!stages.find(
-            (stage) => stage.getValue('serviceTaskId') === serviceTaskId
+          const stageTasks = stages.map((stage) =>
+            stage.getLinkedRecord<{integrationHash: string}>('task')
           )
+          const stageIntegrationHashes = stageTasks.map(
+            (task) => task?.getValue('integrationHash') ?? ''
+          )
+          const stageExists = stageIntegrationHashes.includes(serviceTaskId)
           if (stageExists) return
           const lastSortOrder = stages[stages.length - 1]?.getValue('sortOrder') ?? -1
 
-          const serviceField = createProxyRecord(store, 'ServiceField', {
-            name: 'Unknown',
-            type: 'number'
-          })
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
-            const nextEstimateStage = createProxyRecord(store, 'EstimateStage', {
-              creatorUserId: viewerId,
-              service,
-              serviceTaskId,
+            const plaintextContent = contents[idx]
+            const content = convertToTaskContent(plaintextContent)
+            const {title, contentState} = splitDraftContent(content)
+            const optimisticTask = createProxyRecord(store, 'Task', {
+              createdBy: viewerId,
+              plaintextContent,
+              content,
+              sortOrder: 0,
+              status: 'future',
+              tags: ['#archived'],
+              teamId,
+              title,
+              integrationHash: service === 'PARABOL' ? '' : serviceTaskId
+            })
+            optimisticTask
+              .setLinkedRecord(viewer, 'createdByUser')
+              .setLinkedRecords([], 'estimates')
+              .setLinkedRecords([], 'editors')
+              .setLinkedRecord(team!, 'team')
+
+            if (service === 'jira') {
+              const descriptionHTML = stateToHTML(contentState)
+              const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
+              const optimisticTaskIntegration = createProxyRecord(store, 'JiraIssue', {
+                teamId,
+                meetingId,
+                userId: viewerId,
+                cloudId,
+                cloudName: '',
+                url: '',
+                issueKey,
+                projectKey,
+                summary: plaintextContent,
+                description: '',
+                descriptionHTML
+              })
+              optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+            }
+            const nextStage = createProxyRecord(store, 'EstimateStage', {
               sortOrder: lastSortOrder + 1,
               durations: undefined,
               dimensionRefIdx,
               teamId,
-              meetingId
+              meetingId,
+              taskId: optimisticTask.getValue('id')
             })
-            const dimensionRef = store.get(dimensionRefId)
-            nextEstimateStage.setLinkedRecords([], 'scores')
-            nextEstimateStage.setLinkedRecords([], 'hoveringUsers')
-            nextEstimateStage.setLinkedRecord(serviceField, 'serviceField')
-            if (dimensionRef) {
-              nextEstimateStage.setLinkedRecord(dimensionRef, 'dimensionRef')
-            }
-            const story = store.get(serviceTaskId)
-            if (story) {
-              nextEstimateStage.setLinkedRecord(story, 'story')
-            }
-            return nextEstimateStage
+            nextStage
+              .setLinkedRecord(
+                createProxyRecord(store, 'ServiceField', {
+                  name: 'Unknown',
+                  type: 'number'
+                }),
+                'serviceField'
+              )
+              .setLinkedRecord(optimisticTask, 'task')
+              .setLinkedRecords([], 'scores')
+              .setLinkedRecords([], 'hoveringUsers')
+              .setLinkedRecord(store.get(dimensionRefId)!, 'dimensionRef')
+            return nextStage
           })
 
           const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
-          const nextStages = stages.filter(
-            (stage) => stage.getValue('serviceTaskId') !== serviceTaskId
-          )
+          const nextStages = stages.filter((stage) => {
+            const task = stage.getLinkedRecord('task')
+            const integrationHash = task?.getValue('integrationHash')
+            return integrationHash !== serviceTaskId
+          })
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         }
       })

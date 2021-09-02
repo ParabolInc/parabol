@@ -70,7 +70,7 @@ const GitHubScopingSearchResultItem = (props: Props) => {
         }
       ]
     } as UpdatePokerScopeMutationVariables
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [title]})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
       persistQuery()

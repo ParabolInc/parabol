@@ -1,28 +1,25 @@
-import {GraphQLBoolean, GraphQLObjectType, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLObjectType, GraphQLID, GraphQLNonNull} from 'graphql'
 import {GQLContext} from '../graphql'
-import User from './User'
+import Discussion from './Discussion'
+import makeMutationPayload from './makeMutationPayload'
 
-const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'EditCommentingPayload',
+export const EditCommentingSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'EditCommentingSuccess',
   fields: () => ({
-    isCommenting: {
-      type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the user is commenting, false if the user has stopped commenting'
+    discussionId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The discussion the comment was created in'
     },
-    commentor: {
-      type: User,
-      description: 'The user that is commenting or has stopped commenting',
-      resolve: ({commentorId}, _args, {dataLoader}) => {
-        return dataLoader.get('users').load(commentorId)
+    discussion: {
+      type: GraphQLNonNull(Discussion),
+      description: 'The discussion where the commenting state changed',
+      resolve: async ({discussionId}, _args, {dataLoader}) => {
+        return dataLoader.get('discussions').load(discussionId)
       }
-    },
-    meetingId: {
-      type: GraphQLNonNull(GraphQLID)
-    },
-    threadId: {
-      type: GraphQLNonNull(GraphQLID)
     }
   })
 })
+
+const EditCommentingPayload = makeMutationPayload('EditCommentingPayload', EditCommentingSuccess)
 
 export default EditCommentingPayload

@@ -1,11 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import getRedis from '../../utils/getRedis'
+import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import EditCommentingPayload from '../types/EditCommentingPayload'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
 export default {
   type: EditCommentingPayload,
@@ -15,48 +16,58 @@ export default {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'True if the user is commenting, false if the user has stopped commenting'
     },
-    meetingId: {
-      type: GraphQLNonNull(GraphQLID)
-    },
-    threadId: {
+    discussionId: {
       type: GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
     _source,
-    {isCommenting, meetingId, threadId},
+    {isCommenting, discussionId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const [meeting, viewerMeetingMember] = await Promise.all([
-      r
-        .table('NewMeeting')
-        .get(meetingId)
-        .run(),
-      dataLoader.get('meetingMembers').load(meetingMemberId)
-    ])
-
-    if (!meeting) {
-      return {error: {message: 'Meeting not found'}}
+    const discussion = await dataLoader.get('discussions').load(discussionId)
+    if (!discussion) {
+      return {error: {message: 'Discussion not found'}}
     }
+    const {meetingId} = discussion
+
+    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+    const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
       return {error: {message: `Not a part of the meeting`}}
     }
 
     // RESOLUTION
-    const data = {
-      commentorId: viewerId,
-      isCommenting,
-      meetingId,
-      threadId
+    const redis = getRedis()
+    const key = `commenting:${discussionId}`
+    if (isCommenting) {
+      const [numAddedRes] = await redis
+        .multi()
+        .sadd(key, viewerId)
+        .pexpire(key, ms('5m'))
+        .exec()
+      const numAdded = numAddedRes[1]
+      if (numAdded !== 1) {
+        // this is primarily to avoid publishing a useless message to the pubsub
+        return {error: {message: 'Already commenting'}}
+      }
+    } else {
+      const numRemoved = await redis.srem(key, viewerId)
+      if (numRemoved !== 1) {
+        return {error: {message: 'Not commenting'}}
+      }
     }
-    publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
+
+    // RESOLUTION
+    const data = {
+      discussionId
+    }
+    publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingSuccess', data, subOptions)
 
     return data
   }

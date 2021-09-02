@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "esModuleInterop": true,
     "baseUrl": "../",
     "paths": {
       "server/*": [
@@ -23,7 +24,8 @@
   },
   "exclude": [
     "**/node_modules",
-    "types/typed-document-nodes.ts"
+    "types/githubTypes.ts",
+    "postgres/migrationTemplate.ts"
   ],
   "files": [
     "types/modules.d.ts",

@@ -65,15 +65,15 @@ export const atlassianAuthByTeamId = new LoaderMakerForeign(
       .run()
   }
 )
-export const commentsByThreadId = new LoaderMakerForeign(
+export const commentsByDiscussionId = new LoaderMakerForeign(
   'comments',
-  'threadId',
-  async (threadIds) => {
+  'discussionId',
+  async (discussionIds) => {
     const r = await getRethink()
     return (
       r
         .table('Comment')
-        .getAll(r.args(threadIds), {index: 'threadId'})
+        .getAll(r.args(discussionIds), {index: 'discussionId'})
         // include deleted comments so we can replace them with tombstones
         // .filter({isActive: true})
         .run()
@@ -316,29 +316,20 @@ export const suggestedActionsByUserId = new LoaderMakerForeign(
   }
 )
 
-export const teamsByOrgId = new LoaderMakerForeign('teams', 'orgId', async (orgIds) => {
-  const r = await getRethink()
-  return r
-    .table('Team')
-    .getAll(r.args(orgIds), {index: 'orgId'})
-    .filter((team) =>
-      team('isArchived')
-        .default(false)
-        .ne(true)
+export const tasksByDiscussionId = new LoaderMakerForeign(
+  'tasks',
+  'discussionId',
+  async (discusisonIds) => {
+    const r = await getRethink()
+    return (
+      r
+        .table('Task')
+        .getAll(r.args(discusisonIds), {index: 'discussionId'})
+        // include archived cards in the conversation, since it's persistent
+        .run()
     )
-    .run()
-})
-
-export const tasksByThreadId = new LoaderMakerForeign('tasks', 'threadId', async (threadIds) => {
-  const r = await getRethink()
-  return (
-    r
-      .table('Task')
-      .getAll(r.args(threadIds), {index: 'threadId'})
-      // include archived cards in the conversation, since it's persistent
-      .run()
-  )
-})
+  }
+)
 
 export const tasksByTeamId = new LoaderMakerForeign('tasks', 'teamId', async (teamIds) => {
   const r = await getRethink()

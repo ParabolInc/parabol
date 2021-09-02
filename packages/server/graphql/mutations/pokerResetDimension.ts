@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import EstimatePhase from '../../database/types/EstimatePhase'
+import MeetingMember from '../../database/types/MeetingMember'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
-import MeetingMember from '../../database/types/MeetingMember'
+import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTaskEstimates'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerResetDimensionPayload from '../types/PokerResetDimensionPayload'
@@ -61,7 +62,7 @@ const pokerResetDimension = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {
@@ -71,13 +72,15 @@ const pokerResetDimension = {
     // RESOLUTION
     const updates = {
       isVoting: true,
-      scores: [],
-      finalScore: null
+      scores: []
     }
     // mutate the cached meeting
     Object.assign(stage, updates)
     const updater = (estimateStage) => estimateStage.merge(updates)
-    await updateStage(meetingId, stageId, 'ESTIMATE', updater)
+    await Promise.all([
+      updateStage(meetingId, stageId, 'ESTIMATE', updater),
+      removeMeetingTaskEstimates(meetingId)
+    ])
     const data = {meetingId, stageId}
 
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)

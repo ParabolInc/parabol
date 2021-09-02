@@ -2,7 +2,6 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import generateUID from '../../generateUID'
-import {ThreadSourceEnum} from './ThreadSource'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 import TaskIntegrationJira from './TaskIntegrationJira'
 
@@ -11,6 +10,7 @@ export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTagEnum = 'private' | 'archived'
 export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira'
 
+export type TaskIntegration = TaskIntegrationJira | TaskIntegrationGitHub
 export interface TaskInput {
   id?: string
   content: string
@@ -18,15 +18,17 @@ export interface TaskInput {
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
+  integration?: TaskIntegration
+
+  integrationHash?: string
   meetingId?: string | null
   plaintextContent?: string
   sortOrder?: number | null
   status: TaskStatusEnum
   teamId: string
-  threadId?: string | null
+  discussionId?: string | null
   threadParentId?: string | null
   threadSortOrder?: number | null
-  threadSource?: ThreadSourceEnum | null
   updatedAt?: Date
   userId?: string | null
 }
@@ -38,17 +40,17 @@ export default class Task {
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
-  integration?: TaskIntegrationJira | TaskIntegrationGitHub
+  integration?: TaskIntegration
+  integrationHash?: string
   meetingId?: string
   plaintextContent: string
   sortOrder: number
   status: TaskStatusEnum
   tags: TaskTagEnum[]
   teamId: string
-  threadId?: string
+  discussionId?: string
   threadParentId?: string
   threadSortOrder?: number | null
-  threadSource?: ThreadSourceEnum
   updatedAt: Date
   userId: string | null
 
@@ -63,25 +65,27 @@ export default class Task {
       createdBy,
       doneMeetingId,
       dueDate,
+      integration,
+      integrationHash,
       plaintextContent,
       sortOrder,
       status,
       threadParentId,
       threadSortOrder,
-      threadSource,
-      threadId,
+      discussionId,
       updatedAt
     } = input
     const {entityMap} = JSON.parse(content)
     const tags = getTagsFromEntityMap<TaskTagEnum>(entityMap)
     this.id = id || generateUID()
-    this.threadId = threadId || undefined
-    this.threadSource = threadSource || undefined
+    this.discussionId = discussionId || undefined
     this.content = content
     this.createdAt = createdAt || new Date()
     this.createdBy = createdBy
     this.doneMeetingId = doneMeetingId
     this.dueDate = dueDate || undefined
+    this.integration = integration || undefined
+    this.integrationHash = integrationHash
     this.meetingId = meetingId || undefined
     this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.sortOrder = sortOrder || dndNoise()

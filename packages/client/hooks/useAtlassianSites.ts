@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react'
+import {Unpromise} from '../types/generics'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
-import {AccessibleResource, AtlassianError} from '../utils/AtlassianManager'
+import {AccessibleResource} from '../utils/AtlassianManager'
 
 const useAtlassianSites = (accessToken?: string) => {
   const isMountedRef = useRef(true)
@@ -9,7 +10,7 @@ const useAtlassianSites = (accessToken?: string) => {
   useEffect(() => {
     const manager = new AtlassianClientManager(accessToken || '')
     const fetchSites = async () => {
-      let res: AtlassianError | AccessibleResource[]
+      let res: Unpromise<ReturnType<typeof manager.getAccessibleResources>>
       try {
         res = await manager.getAccessibleResources()
       } catch (e) {
