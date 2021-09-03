@@ -33,7 +33,7 @@ const getParent = (parentId: string | undefined) => {
 const usePortal = (options: UsePortalOptions = {}) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
-  const timeoutRef = useRef<number | NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<number | null>(null)
   const showBodyScroll = useRef<() => void>()
   const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
 
@@ -120,7 +120,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
       if (portalRef.current) {
         portalRef.current.removeEventListener('transitionend', terminateAfterTransition)
       }
-      if (timeoutRef.current && typeof timeoutRef.current === 'number') {
+      if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
       setPortalStatus(PortalStatus.Entered)

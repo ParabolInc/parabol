@@ -45,14 +45,14 @@ const VideoControls = (props: Props) => {
   })
 
   const addMedia = async () => {
-    const descriptors = ['camera', 'microphone'] as Extract<
-      'camera' | 'microphone',
-      PermissionName
-    >[]
+    // TS v4.4.2: PermissionName type doesn't include camera & microphone: https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1129
+    const descriptors = ['camera', 'microphone']
     // https://caniuse.com/#feat=permissions-api
     const permissions =
       navigator.permissions && navigator.permissions.query
-        ? await Promise.all(descriptors.map((name) => navigator.permissions.query({name})))
+        ? await Promise.all(
+            descriptors.map((name) => navigator.permissions.query({name} as {name: PermissionName}))
+          )
         : []
     const isPrompting = permissions.some(({state}) => state === 'prompt')
     if (isPrompting) {
