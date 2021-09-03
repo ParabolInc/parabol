@@ -10,7 +10,7 @@ import {IGetPollsByDiscussionIdsQueryResult} from '../postgres/queries/generated
 export const pollOptions = (parent: RethinkDataLoader) => {
   return new DataLoader<number, IGetPollOptionsByPollIdsQueryResult[], string>(
     async (pollIds) => {
-      const rows = (await getPollOptionsByPollIds(pollIds)) || []
+      const rows = await getPollOptionsByPollIds(pollIds)
       return pollIds.map((pollId) => rows.filter((row) => row.pollId === pollId))
     },
     {
@@ -22,7 +22,7 @@ export const pollOptions = (parent: RethinkDataLoader) => {
 export const polls = (parent: RethinkDataLoader) => {
   return new DataLoader<number, IGetPollsByIdsQueryResult | null, string>(
     async (pollIds) => {
-      const rows = (await getPollsByIds(pollIds)) || []
+      const rows = await getPollsByIds(pollIds)
       return pollIds.map((pollId) => rows.find((row) => row.id === pollId) || null)
     },
     {
@@ -34,7 +34,7 @@ export const polls = (parent: RethinkDataLoader) => {
 export const pollsByDiscussionId = (parent: RethinkDataLoader) => {
   return new DataLoader<string, IGetPollsByDiscussionIdsQueryResult[], string>(
     async (discussionIds) => {
-      const rows = (await getPollsByDiscussionIds(discussionIds)) || []
+      const rows = await getPollsByDiscussionIds(discussionIds)
       return discussionIds.map((discussionId) =>
         rows.filter((row) => row.discussionId === discussionId)
       )
