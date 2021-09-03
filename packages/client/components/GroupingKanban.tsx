@@ -39,7 +39,7 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases} = meeting
+  const {id: meetingId, reflectionGroups, phases, spotlightReflection} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -131,7 +131,12 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightRoot closeSpotlight={closeSpotlight} meeting={meeting} flipRef={flipRef} />
+        <SpotlightRoot
+          closeSpotlight={closeSpotlight}
+          meetingId={meetingId}
+          flipRef={flipRef}
+          spotlightReflectionId={spotlightReflection?.id}
+        />
       )}
     </PortalProvider>
   )
@@ -141,7 +146,6 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
-      ...SpotlightRoot_meeting
       id
       phases {
         ... on ReflectPhase {
@@ -160,6 +164,9 @@ export default createFragmentContainer(GroupingKanban, {
           isViewerDragging
           isEditing
         }
+      }
+      spotlightReflection {
+        id
       }
     }
   `

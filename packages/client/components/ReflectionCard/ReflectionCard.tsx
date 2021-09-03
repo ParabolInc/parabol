@@ -230,7 +230,7 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const showSpotlight = false
+  const showSpotlight = !__PRODUCTION__
   const showSearch =
     phaseType === 'group' &&
     !inSpotlight &&

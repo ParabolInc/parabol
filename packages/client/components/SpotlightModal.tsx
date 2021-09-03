@@ -1,21 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
-import {SpotlightModal_viewer} from '~/__generated__/SpotlightModal_viewer.graphql'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
+import LoadingComponent from './LoadingComponent/LoadingComponent'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
-import SpotlightEmptyState from './SpotlightEmptyState'
+import SpotlightGroups from './SpotlightGroups'
 
 const SELECTED_HEIGHT_PERC = 33.3
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -48,6 +48,7 @@ const SelectedReflectionSection = styled('div')({
 
 const SimilarReflectionGroups = styled('div')({
   display: 'flex',
+  alignItems: 'center',
   justifyContent: 'center',
   height: `${SELECTED_HEIGHT_PERC * 2}%`,
   padding: 16
@@ -129,21 +130,66 @@ const CloseIcon = styled(Icon)({
 
 interface Props {
   closeSpotlight: () => void
-  meeting: SpotlightModal_meeting
   flipRef: (instance: HTMLDivElement) => void
-  viewer: SpotlightModal_viewer
+  queryRef: PreloadedQuery<SpotlightModalQuery>
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, flipRef} = props
+  const {closeSpotlight, flipRef, queryRef} = props
+  const data = usePreloadedQuery<SpotlightModalQuery>(
+    graphql`
+      query SpotlightModalQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
+        viewer {
+          ...SpotlightGroups_viewer
+          similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
+            id
+            title
+          }
+          meeting(meetingId: $meetingId) {
+            id
+            teamId
+            localPhase {
+              phaseType
+            }
+            localStage {
+              isComplete
+              phaseType
+            }
+            phases {
+              phaseType
+              stages {
+                isComplete
+                phaseType
+              }
+            }
+            ... on RetrospectiveMeeting {
+              ...DraggableReflectionCard_meeting
+              ...SpotlightGroups_meeting
+              spotlightReflection {
+                ...DraggableReflectionCard_reflection
+              }
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  console.log('🚀 ~ SpotlightModal ~ data', data)
+  const {viewer} = data
+  const {meeting, similarReflectionGroups} = viewer
   const {spotlightReflection} = meeting
+  console.log('🚀  ~ spotlightReflection', spotlightReflection)
+  // const similarReflectionGroups = viewer?.similarReflectionGroups
+  const isLoading = similarReflectionGroups === undefined
+  console.log('🚀 ~ SpotlightModal ~ isLoading', isLoading)
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
     }
   }
-  const reflectionGroupsCount = 0
   return (
     <>
       <ModalContainer isDesktop={isDesktop}>
@@ -169,7 +215,11 @@ const SpotlightModal = (props: Props) => {
           </SearchItem>
         </SelectedReflectionSection>
         <SimilarReflectionGroups>
-          {reflectionGroupsCount === 0 ? <SpotlightEmptyState /> : null}
+          {isLoading ? (
+            <LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />
+          ) : (
+            <SpotlightGroups meeting={meeting} viewer={viewer!} />
+          )}
         </SimilarReflectionGroups>
       </ModalContainer>
       <ReflectionWrapper ref={flipRef}>
@@ -186,37 +236,40 @@ const SpotlightModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(SpotlightModal, {
-  meeting: graphql`
-    fragment SpotlightModal_meeting on RetrospectiveMeeting {
-      ...DraggableReflectionCard_meeting
-      id
-      teamId
-      localPhase {
-        phaseType
-      }
-      localStage {
-        isComplete
-        phaseType
-      }
-      phases {
-        phaseType
-        stages {
-          isComplete
-          phaseType
-        }
-      }
-      spotlightReflection {
-        ...DraggableReflectionCard_reflection
-      }
-    }
-  `,
-  viewer: graphql`
-    fragment SpotlightModal_viewer on User {
-      similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
-        id
-        title
-      }
-    }
-  `
-})
+export default SpotlightModal
+// export default createFragmentContainer(SpotlightModal, {
+//   meeting: graphql`
+//     fragment SpotlightModal_meeting on RetrospectiveMeeting {
+//       ...DraggableReflectionCard_meeting
+//       ...SpotlightGroups_meeting
+//       id
+//       teamId
+//       localPhase {
+//         phaseType
+//       }
+//       localStage {
+//         isComplete
+//         phaseType
+//       }
+//       phases {
+//         phaseType
+//         stages {
+//           isComplete
+//           phaseType
+//         }
+//       }
+//       spotlightReflection {
+//         ...DraggableReflectionCard_reflection
+//       }
+//     }
+//   `,
+//   viewer: graphql`
+//     fragment SpotlightModal_viewer on User {
+//       ...SpotlightGroups_viewer
+//       similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
+//         id
+//         title
+//       }
+//     }
+//   `
+// })
