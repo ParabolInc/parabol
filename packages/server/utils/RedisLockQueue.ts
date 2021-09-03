@@ -23,23 +23,21 @@ export default class RedisLockQueue {
     this.waitTimeMs = 0
   }
 
+  private removeItem = async (item) => {
+    return this.redis.lrem(this.queueKey, 0, item)
+  }
+
   unlock = async () => {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId)
     }
-    // Remove all occurrences of the event from the list
-    return this.redis.lrem(this.queueKey, 0, this.uidWithTimestamp ?? this.uid)
+    return this.removeItem(this.uidWithTimestamp ?? this.uid)
   }
 
   private markTaskAsRunning = async () => {
     // Append a timestamp to uid and replace the head
     this.uidWithTimestamp = `${this.uid}::${Date.now()}`
     return this.redis.lset(this.queueKey, 0, this.uidWithTimestamp)
-  }
-
-  // Removes the head
-  private flushHead = async () => {
-    return this.redis.lpop(this.queueKey)
   }
 
   private setLockAndValidateQueue = async () => {
@@ -52,14 +50,14 @@ export default class RedisLockQueue {
     }
     // Checking if we are the first on the list
     const head = await this.redis.lindex(this.queueKey, 0)
-    if (head == null) {
+    if (head === null) {
       // If no head element exists, the queue was removed for some reason
       // Now we cannot guarantee the correct order of the event
       throw new Error(`Could not achieve lock for ${this.queueKey}. Queue does not exists`)
     }
 
-    const headUid = head.split(RedisLockQueue.timestampDelimiter)[0]
-    if (headUid === this.uid) {
+    const [, headTimestamp] = head.split(RedisLockQueue.timestampDelimiter)
+    if (head === this.uid) {
       return false
     } else {
       // Check if head is expired or not started
@@ -67,18 +65,14 @@ export default class RedisLockQueue {
       this.uidToFlush = ''
       if (head === uidToFlush) {
         // we already gave the other process 100ms to pick up the task and it didn't. it's stale.
-        await this.flushHead()
+        await this.removeItem(head)
       } else {
-        const delimiterIdx = head.lastIndexOf(RedisLockQueue.timestampDelimiter)
-        if (delimiterIdx === -1) {
+        if (!headTimestamp) {
           // the head hasn't started working yet, give it 100ms to start
           this.uidToFlush = head
-        } else if (
-          parseInt(head.slice(delimiterIdx + RedisLockQueue.timestampDelimiter.length), 10) <
-          Date.now() - this.ttl
-        ) {
+        } else if (parseInt(headTimestamp, 10) < Date.now() - this.ttl) {
           // the other process has been working for > ttl, it's stale
-          await this.flushHead()
+          await this.removeItem(head)
         }
       }
       return true
