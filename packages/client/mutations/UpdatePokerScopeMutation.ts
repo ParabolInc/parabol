@@ -194,6 +194,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
                 number: issueNumber,
                 title,
                 description: '',
+                url: '',
                 bodyHTML
               })
               optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
