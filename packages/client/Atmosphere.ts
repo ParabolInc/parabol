@@ -35,6 +35,7 @@ import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 (RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
   ; (RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
+import * as Sentry from '@sentry/browser'
 
 interface QuerySubscription {
   subKey: string
@@ -289,9 +290,12 @@ export default class Atmosphere extends Environment {
       const verboseSink = Object.assign({}, sink, {
         error: (e, isUncaughThrownError) => {
           if (e.message === 'No payload received') {
-            console.info('request:', request)
-            console.info('variables:', variables)
-            console.info('auth token:', this.authToken)
+            Sentry.addBreadcrumb({
+              category: 'query',
+              message: `request: ${JSON.stringify(request)}\n
+                variables: ${JSON.stringify(variables)}`,
+              level: Sentry.Severity.Info
+            })
           }
           sink.error(e, isUncaughThrownError)
         },
