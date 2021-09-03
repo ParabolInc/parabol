@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, useState} from 'react'
+import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -116,7 +116,6 @@ const GitHubScopingSearchResults = (props: Props) => {
     `,
     query
   )
-  const scrollerRef = useRef(null)
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext} = paginationRes
   const meeting = useFragment(
@@ -199,7 +198,7 @@ const GitHubScopingSearchResults = (props: Props) => {
           meetingId={meetingId}
         />
       }
-      <ResultScroller ref={scrollerRef}>
+      <ResultScroller>
         {query && (
           <NewGitHubIssueInput
             isEditing={isEditing}

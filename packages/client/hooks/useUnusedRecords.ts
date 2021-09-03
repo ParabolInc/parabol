@@ -8,9 +8,6 @@ const useUnusedRecords = (
   return useMemo(() => {
     const unusedServiceTaskIds = [] as string[]
     serviceTaskIds.forEach((servieTaskId) => {
-      // it isn't always ID in the case of GitHub
-      // we could make it that way with a resolver
-      // or we could handle it differently here
       if (!usedServiceTaskIds.has(servieTaskId)) unusedServiceTaskIds.push(servieTaskId)
     })
     const allSelected =
