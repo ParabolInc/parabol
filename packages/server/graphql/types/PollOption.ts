@@ -23,7 +23,7 @@ const PollOption = new GraphQLObjectType<any, GQLContext>({
     },
     pollId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The id of the poll (indexed)'
+      description: 'The foreign key of the poll this option belongs to'
     },
     poll: {
       type: GraphQLNonNull(Team),

@@ -22,15 +22,15 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
     },
     meetingId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'the foreign key for the meeting the task was created in'
+      description: 'The foreign key for the meeting the poll was created in'
     },
     teamId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The id of the team (indexed). Needed for subscribing to archived tasks'
+      description: 'The id of the team (indexed)'
     },
     team: {
       type: GraphQLNonNull(Team),
-      description: 'The team this task belongs to',
+      description: 'The team this poll belongs to',
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
@@ -41,7 +41,7 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
     },
     options: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(PollOption))),
-      description: 'A list of the most recent estimates for the task',
+      description: 'A list of all the poll options related to this poll',
       resolve: async ({id: pollId}, _args, {dataLoader}) => {
         return dataLoader.get('pollOptions').load(pollId)
       }
