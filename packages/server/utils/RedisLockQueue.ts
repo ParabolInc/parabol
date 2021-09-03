@@ -51,9 +51,9 @@ export default class RedisLockQueue {
     // Checking if we are the first on the list
     const head = await this.redis.lindex(this.queueKey, 0)
     if (head === null) {
-      // If no head element exists, the queue was removed for some reason
-      // Now we cannot guarantee the correct order of the event
-      throw new Error(`Could not achieve lock for ${this.queueKey}. Queue does not exists`)
+      // Queue disappeared for some reason, try again
+      this.queued = false
+      return true
     }
 
     const [, headTimestamp] = head.split(RedisLockQueue.timestampDelimiter)
