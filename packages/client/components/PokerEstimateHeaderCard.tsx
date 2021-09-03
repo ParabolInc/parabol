@@ -3,6 +3,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
+import PokerEstimateHeaderCardGitHub from './PokerEstimateHeaderCardGitHub'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 
@@ -28,6 +29,9 @@ const PokerEstimateHeaderCard = (props: Props) => {
   if (integration.__typename === 'JiraIssue') {
     return <PokerEstimateHeaderCardJira issue={integration} />
   }
+  if (integration.__typename === '_xGitHubIssue') {
+    return <PokerEstimateHeaderCardGitHub issueRef={integration} />
+  }
   return null
 }
 
@@ -44,6 +48,7 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
           }
           ... on _xGitHubIssue {
             __typename
+            ...PokerEstimateHeaderCardGitHub_issue
           }
         }
       }
