@@ -42,7 +42,7 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
     (r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter(row => row.hasFields('templateRefId')) as any)('templateRefId')
+      .filter((row) => row.hasFields('templateRefId')) as any)('templateRefId')
       .coerceTo('array')
       .distinct()
       .run()
@@ -59,16 +59,45 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
     await client.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
     await client.query(`CREATE SCHEMA "orgBackup";`)
     await client.query(`CREATE TABLE "orgBackup"."PgMigrations" AS (SELECT * FROM "PgMigrations");`)
-    await client.query(`CREATE TABLE "orgBackup"."PgPostDeployMigrations" AS (SELECT * FROM "PgPostDeployMigrations");`)
-    await client.query(`CREATE TABLE "orgBackup"."OrganizationUserAudit" AS (SELECT * FROM "OrganizationUserAudit" WHERE "orgId" = ANY ($1));`, [orgIds])
-    await client.query(`CREATE TABLE "orgBackup"."Team" AS (SELECT * FROM "Team" WHERE "orgId" = ANY ($1));`, [orgIds])
-    await client.query(`CREATE TABLE "orgBackup"."GitHubAuth" AS (SELECT * FROM "GitHubAuth" WHERE "teamId" = ANY ($1));`, [teamIds])
-    await client.query(`CREATE TABLE "orgBackup"."AtlassianAuth" AS (SELECT * FROM "AtlassianAuth" WHERE "teamId" = ANY ($1));`, [teamIds])
-    await client.query(`CREATE TABLE "orgBackup"."Discussion" AS (SELECT * FROM "Discussion" WHERE "teamId" = ANY ($1));`, [teamIds])
-    await client.query(`CREATE TABLE "orgBackup"."TaskEstimate" AS (SELECT * FROM "TaskEstimate" WHERE "userId" = ANY ($1));`, [userIds])
-    await client.query(`CREATE TABLE "orgBackup"."User" AS (SELECT * FROM "User" WHERE "id" = ANY ($1));`, [userIds])
-    await client.query(`CREATE TABLE "orgBackup"."TemplateRef" AS (SELECT * FROM "TemplateRef" WHERE "id" = ANY ($1));`, [templateRefIds])
-    await client.query(`CREATE TABLE "orgBackup"."TemplateScaleRef" AS (SELECT * FROM "TemplateScaleRef" WHERE "id" = ANY ($1));`, [templateScaleRefIds])
+    await client.query(
+      `CREATE TABLE "orgBackup"."PgPostDeployMigrations" AS (SELECT * FROM "PgPostDeployMigrations");`
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."OrganizationUserAudit" AS (SELECT * FROM "OrganizationUserAudit" WHERE "orgId" = ANY ($1));`,
+      [orgIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."Team" AS (SELECT * FROM "Team" WHERE "orgId" = ANY ($1));`,
+      [orgIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."GitHubAuth" AS (SELECT * FROM "GitHubAuth" WHERE "teamId" = ANY ($1));`,
+      [teamIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."AtlassianAuth" AS (SELECT * FROM "AtlassianAuth" WHERE "teamId" = ANY ($1));`,
+      [teamIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."Discussion" AS (SELECT * FROM "Discussion" WHERE "teamId" = ANY ($1));`,
+      [teamIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."TaskEstimate" AS (SELECT * FROM "TaskEstimate" WHERE "userId" = ANY ($1));`,
+      [userIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."User" AS (SELECT * FROM "User" WHERE "id" = ANY ($1));`,
+      [userIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."TemplateRef" AS (SELECT * FROM "TemplateRef" WHERE "id" = ANY ($1));`,
+      [templateRefIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."TemplateScaleRef" AS (SELECT * FROM "TemplateScaleRef" WHERE "id" = ANY ($1));`,
+      [templateScaleRefIds]
+    )
     await client.query('COMMIT')
   } catch (e) {
     await client.query('ROLLBACK')
@@ -80,7 +109,7 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
 
 const backupPgOrganization = async (orgIds: string[]) => {
   const schemaTargetLocation = path.resolve(PROJECT_ROOT, 'artifacts/schemaDump.tar.gz')
-  const schemaOpts = `-Fc --schema-only --file ${schemaTargetLocation} --schema=public`
+  const schemaOpts = `-Fc --schema-only --file ${schemaTargetLocation}`
   const dataTargetLocation = path.resolve(PROJECT_ROOT, 'artifacts/orgBackupData.tar.gz')
   const dataOpts = `-Fc --data-only --file ${dataTargetLocation} --schema="orgBackup"`
 
