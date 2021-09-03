@@ -1,4 +1,4 @@
-import {Poll} from '../../postgres/queries/getPollsById'
+import {Poll} from '../../postgres/queries/getPollsByIds'
 import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'

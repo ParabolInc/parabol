@@ -1,16 +1,16 @@
 import DataLoader from 'dataloader'
 import RethinkDataLoader from './RethinkDataLoader'
-import getPollOptionsByPollId from '../postgres/queries/getPollOptionsByPollId'
-import getPollByDiscussionId from '../postgres/queries/getPollsByDiscussionId'
-import getPollsById from '../postgres/queries/getPollsById'
-import {IGetPollOptionsByPollIdQueryResult} from '../postgres/queries/generated/getPollsOptionsByPollIdQuery'
-import {IGetPollsByIdQueryResult} from '../postgres/queries/generated/getPollsByIdQuery'
-import {IGetPollsByDiscussionIdQueryResult} from '../postgres/queries/generated/getPollsByDiscussionIdQuery'
+import getPollOptionsByPollIds from '../postgres/queries/getPollOptionsByPollIds'
+import getPollsByDiscussionIds from '../postgres/queries/getPollsByDiscussionIds'
+import getPollsByIds from '../postgres/queries/getPollsByIds'
+import {IGetPollOptionsByPollIdsQueryResult} from '../postgres/queries/generated/getPollOptionsByPollIdsQuery'
+import {IGetPollsByIdsQueryResult} from '../postgres/queries/generated/getPollsByIdsQuery'
+import {IGetPollsByDiscussionIdsQueryResult} from '../postgres/queries/generated/getPollsByDiscussionIdsQuery'
 
 export const pollOptions = (parent: RethinkDataLoader) => {
-  return new DataLoader<number, IGetPollOptionsByPollIdQueryResult[], string>(
+  return new DataLoader<number, IGetPollOptionsByPollIdsQueryResult[], string>(
     async (pollIds) => {
-      const rows = (await getPollOptionsByPollId(pollIds)) || []
+      const rows = (await getPollOptionsByPollIds(pollIds)) || []
       return pollIds.map((pollId) => rows.filter((row) => row.pollId === pollId))
     },
     {
@@ -20,9 +20,9 @@ export const pollOptions = (parent: RethinkDataLoader) => {
 }
 
 export const polls = (parent: RethinkDataLoader) => {
-  return new DataLoader<number, IGetPollsByIdQueryResult | null, string>(
+  return new DataLoader<number, IGetPollsByIdsQueryResult | null, string>(
     async (pollIds) => {
-      const rows = (await getPollsById(pollIds)) || []
+      const rows = (await getPollsByIds(pollIds)) || []
       return pollIds.map((pollId) => rows.find((row) => row.id === pollId) || null)
     },
     {
@@ -32,9 +32,9 @@ export const polls = (parent: RethinkDataLoader) => {
 }
 
 export const pollsByDiscussionId = (parent: RethinkDataLoader) => {
-  return new DataLoader<string, IGetPollsByDiscussionIdQueryResult[], string>(
+  return new DataLoader<string, IGetPollsByDiscussionIdsQueryResult[], string>(
     async (discussionIds) => {
-      const rows = (await getPollByDiscussionId(discussionIds)) || []
+      const rows = (await getPollsByDiscussionIds(discussionIds)) || []
       return discussionIds.map((discussionId) =>
         rows.filter((row) => row.discussionId === discussionId)
       )

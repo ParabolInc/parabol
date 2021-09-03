@@ -1,4 +1,4 @@
-import {Poll} from '../../postgres/queries/getPollsById'
+import {Poll} from '../../postgres/queries/getPollsByIds'
 import Comment from './Comment'
 import Task from './Task'
 

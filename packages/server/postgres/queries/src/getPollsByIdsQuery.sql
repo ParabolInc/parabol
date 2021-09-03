@@ -1,5 +1,5 @@
 /*
-  @name getPollsByIdQuery
+  @name getPollsByIdsQuery
   @param ids -> (...)
 */
 SELECT * FROM "Poll"
