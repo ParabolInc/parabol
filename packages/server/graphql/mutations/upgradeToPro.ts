@@ -65,7 +65,7 @@ export default {
       .update({role: 'BILLING_LEADER'})
       .run()
 
-    const teams = await dataLoader.get('teamsByOrgId').load(orgId)
+    const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     segmentIo.track({
       userId: viewerId,

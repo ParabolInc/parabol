@@ -58780,11 +58780,6 @@ export interface ICreatePollSuccess {
   __typename: 'CreatePollSuccess';
 
   /**
-   * The id of the meeting where the poll was added
-   */
-  meetingId: string;
-
-  /**
    * the poll just created
    */
   poll: IPoll;
@@ -58847,17 +58842,17 @@ export interface IPoll {
   updatedAt: any;
 
   /**
-   * the foreign key for the meeting the task was created in
+   * The foreign key for the meeting the poll was created in
    */
   meetingId: string;
 
   /**
-   * The id of the team (indexed). Needed for subscribing to archived tasks
+   * The id of the team (indexed)
    */
   teamId: string;
 
   /**
-   * The team this task belongs to
+   * The team this poll belongs to
    */
   team: ITeam;
 
@@ -58867,7 +58862,7 @@ export interface IPoll {
   title: string;
 
   /**
-   * A list of the most recent estimates for the task
+   * A list of all the poll options related to this poll
    */
   options: Array<IPollOption>;
 }
@@ -58894,7 +58889,7 @@ export interface IPollOption {
   updatedAt: any;
 
   /**
-   * The id of the poll (indexed)
+   * The foreign key of the poll this option belongs to
    */
   pollId: string;
 

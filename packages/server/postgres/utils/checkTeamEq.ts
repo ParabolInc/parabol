@@ -1,7 +1,7 @@
 import Team from '../../database/types/Team'
 import getRethink from '../../database/rethinkDriver'
 import {checkTableEq} from './checkEqBase'
-import getTeamsById from '../queries/getTeamsById'
+import getTeamsByIds from '../queries/getTeamsByIds'
 
 const alwaysDefinedFields: (keyof Partial<Team>)[] = [
   'name',
@@ -24,7 +24,7 @@ const checkTeamEq = async (maxErrors = 10) => {
   const errors = await checkTableEq(
     'Team',
     rethinkQuery,
-    getTeamsById,
+    getTeamsByIds,
     alwaysDefinedFields,
     maybeUndefinedFieldsDefaultValues,
     {},

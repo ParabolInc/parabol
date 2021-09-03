@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 
@@ -52,11 +53,8 @@ const backupOrganization = {
       .run()
 
     // get all the teams for the orgIds
-    const team = await r
-      .table('Team')
-      .getAll(r.args(orgIds), {index: 'orgId'})
-      .run()
-    const teamIds = team.map((team) => team.id)
+    const teams = await getTeamsByOrgIds(orgIds)
+    const teamIds = teams.map((team) => team.id)
     await r({
       // easy things to clone
       migrations: r
@@ -213,7 +211,7 @@ const backupOrganization = {
       team: r
         .db(DESTINATION)
         .table('Team')
-        .insert(team),
+        .insert(teams),
       teamInvitation: (r.table('TeamInvitation').getAll(r.args(teamIds), {index: 'teamId'}) as any)
         .coerceTo('array')
         .do((items) =>

@@ -22,6 +22,9 @@ import getTemplateRefsById from '../postgres/queries/getTemplateRefsById'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
+import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
+import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 
 export interface UserTasksKey {
   first: number
@@ -61,6 +64,39 @@ const reactableLoaders = [
 export const users = () => {
   return new ProxiedCache('User')
 }
+
+export const teams = (parent: RethinkDataLoader) =>
+  new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
+    async (teamIds) => {
+      const teams = await getTeamsByIds(teamIds)
+      return normalizeRethinkDbResults(teamIds, teams)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+
+export const teamsByOrgIds = (parent: RethinkDataLoader) =>
+  new DataLoader<string, IGetTeamsByIdsQueryResult[], string>(
+    async (orgIds) => {
+      const teamLoader = parent.get('teams')
+      const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
+      teams.forEach((team) => {
+        teamLoader.clear(team.id).prime(team.id, team)
+      })
+
+      const teamsByOrgIds = teams.reduce((map, team) => {
+        const teamsByOrgId = map[team.orgId] ?? []
+        teamsByOrgId.push(team)
+        map[team.orgId] = teamsByOrgId
+        return map
+      }, {} as {[key: string]: IGetTeamsByIdsQueryResult[]})
+      return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
