@@ -1,26 +1,38 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import React, {useRef, useState} from 'react'
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
+import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
+import {GitHubScopingSearchResultsPaginationQuery} from '../__generated__/GitHubScopingSearchResultsPaginationQuery.graphql'
 import {GitHubScopingSearchResultsQuery} from '../__generated__/GitHubScopingSearchResultsQuery.graphql'
 import {GitHubScopingSearchResults_meeting$key} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
+import {GitHubScopingSearchResults_query$key} from '../__generated__/GitHubScopingSearchResults_query.graphql'
+import Ellipsis from './Ellipsis/Ellipsis'
 import GitHubScopingSearchResultItem from './GitHubScopingSearchResultItem'
 import GitHubScopingSelectAllIssues from './GitHubScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewGitHubIssueInput from './NewGitHubIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+
 const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 
+const LoadingNext = styled('div')({
+  display: 'flex',
+  height: 32,
+  fontSize: 24,
+  justifyContent: 'center',
+  width: '100%'
+})
 interface Props {
   queryRef: PreloadedQuery<GitHubScopingSearchResultsQuery>
   meetingRef: GitHubScopingSearchResults_meeting$key
@@ -28,9 +40,10 @@ interface Props {
 
 const GitHubScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
-  const data = usePreloadedQuery(
+  const query = usePreloadedQuery(
     graphql`
       query GitHubScopingSearchResultsQuery($teamId: ID!, $queryString: String!) {
+        ...GitHubScopingSearchResults_query
         viewer {
           ...NewGitHubIssueInput_viewer
           teamMember(teamId: $teamId) {
@@ -47,6 +60,28 @@ const GitHubScopingSearchResults = (props: Props) => {
                 githubSearchQueries {
                   queryString
                 }
+              }
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+
+  const paginationRes = usePaginationFragment<
+    GitHubScopingSearchResultsPaginationQuery,
+    GitHubScopingSearchResults_query$key
+  >(
+    graphql`
+      fragment GitHubScopingSearchResults_query on Query
+        @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
+        @refetchable(queryName: "GitHubScopingSearchResultsPaginationQuery") {
+        viewer {
+          teamMember(teamId: $teamId) {
+            integrations {
+              github {
                 api {
                   errors {
                     message
@@ -57,7 +92,7 @@ const GitHubScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    search(first: 10, type: ISSUE, query: $queryString)
+                    search(first: $count, after: $cursor, type: ISSUE, query: $queryString)
                       @connection(key: "GitHubScopingSearchResults_search") {
                       edges {
                         node {
@@ -79,8 +114,11 @@ const GitHubScopingSearchResults = (props: Props) => {
         }
       }
     `,
-    queryRef
+    query
   )
+  const scrollerRef = useRef(null)
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
+  const {data, hasNext} = paginationRes
   const meeting = useFragment(
     graphql`
       fragment GitHubScopingSearchResults_meeting on PokerMeeting {
@@ -99,7 +137,9 @@ const GitHubScopingSearchResults = (props: Props) => {
     meetingRef
   )
   const {viewer} = data
-  const github = viewer.teamMember!.integrations.github ?? null
+  const teamMember = viewer.teamMember!
+  const {integrations} = teamMember
+  const {github} = integrations
   const {id: meetingId, githubSearchQuery, teamId, phases} = meeting
   const {queryString} = githubSearchQuery
   const errors = github?.api?.errors ?? null
@@ -139,8 +179,8 @@ const GitHubScopingSearchResults = (props: Props) => {
     const normalizedQueryString = queryString.toLowerCase().trim()
     // don't persist default
     if (normalizedQueryString === SprintPokerDefaults.GITHUB_DEFAULT_QUERY) return
-
-    const {githubSearchQueries} = github!
+    const githubSearchQueries =
+      query.viewer.teamMember?.integrations.github?.githubSearchQueries ?? []
     const searchHashes = githubSearchQueries.map(({queryString}) => queryString)
     const isQueryNew = !searchHashes.includes(queryString)
     if (isQueryNew) {
@@ -159,13 +199,13 @@ const GitHubScopingSearchResults = (props: Props) => {
           meetingId={meetingId}
         />
       }
-      <ResultScroller>
-        {viewer && (
+      <ResultScroller ref={scrollerRef}>
+        {query && (
           <NewGitHubIssueInput
             isEditing={isEditing}
-            meeting={meeting}
+            meetingRef={meeting}
             setIsEditing={setIsEditing}
-            viewer={viewer}
+            viewerRef={query.viewer}
           />
         )}
         {issues.map((node) => {
@@ -179,6 +219,12 @@ const GitHubScopingSearchResults = (props: Props) => {
             />
           )
         })}
+        {lastItem}
+        {hasNext && (
+          <LoadingNext key={'loadingNext'}>
+            <Ellipsis />
+          </LoadingNext>
+        )}
       </ResultScroller>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
@@ -188,30 +234,3 @@ const GitHubScopingSearchResults = (props: Props) => {
 }
 
 export default GitHubScopingSearchResults
-// , {
-//   direction: 'forward',
-//   getConnectionFromProps(props) {
-//     const {viewer} = props
-//     return viewer?.teamMember?.integrations.github?.api?.query?.search
-//   },
-//   getFragmentVariables(prevVars) {
-//     return {
-//       ...prevVars,
-//       first: 50
-//     }
-//   },
-//   getVariables(_props, {cursor}, fragmentVariables) {
-//     return {
-//       ...fragmentVariables,
-//       first: 50,
-//       after: cursor
-//     }
-//   },
-//   query: graphql`
-//     query GitHubScopingSearchResultsPaginationQuery($teamId: String!, $queryString: String!) {
-//       viewer {
-//         ...GitHubScopingSearchResults_viewer
-//       }
-//     }
-//   `
-// })
