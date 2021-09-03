@@ -7,7 +7,8 @@ const MeetingNavList = styled('ul')({
   listStyle: 'none',
   margin: 0,
   minHeight: 0, // very important! allows children to collapse for overflow
-  padding: 0
+  padding: 0,
+  overflow: 'auto'
 })
 
 export default MeetingNavList

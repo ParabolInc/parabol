@@ -4,8 +4,8 @@ import {resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 
-const ResetMeetingToStagePayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'ResetMeetingToStagePayload',
+const ResetRetroMeetingToGroupStagePayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'ResetRetroMeetingToGroupStagePayload',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -17,4 +17,4 @@ const ResetMeetingToStagePayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default ResetMeetingToStagePayload
+export default ResetRetroMeetingToGroupStagePayload

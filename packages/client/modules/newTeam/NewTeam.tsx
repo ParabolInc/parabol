@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import IconLabel from '../../components/IconLabel'
 import LinkButton from '../../components/LinkButton'
@@ -9,9 +9,8 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import {cardShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {ExternalLinks} from '../../types/constEnums'
-import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
+import {NewTeamQuery} from '../../__generated__/NewTeamQuery.graphql'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
-
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
   backgroundColor: PALETTE.SLATE_200,
@@ -63,14 +62,30 @@ const LearnMoreLink = styled(LinkButton)({
 
 interface Props {
   defaultOrgId: string
-  viewer: NewTeam_viewer
+  queryRef: PreloadedQuery<NewTeamQuery>
 }
 
 const NewTeam = (props: Props) => {
-  const {defaultOrgId, viewer} = props
-  const {organizations} = viewer
+  const {defaultOrgId, queryRef} = props
   const isDesktop = useBreakpoint(1280)
   useDocumentTitle('New Team | Parabol', 'New Team')
+  const data = usePreloadedQuery<NewTeamQuery>(
+    graphql`
+      query NewTeamQuery {
+        viewer {
+          organizations {
+            id
+            ...NewTeamForm_organizations
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  const {viewer} = data
+  const {organizations} = viewer
+
   return (
     <NewTeamLayout>
       <NewTeamInner>
@@ -101,13 +116,4 @@ const NewTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewTeam, {
-  viewer: graphql`
-    fragment NewTeam_viewer on User {
-      organizations {
-        id
-        ...NewTeamForm_organizations
-      }
-    }
-  `
-})
+export default NewTeam

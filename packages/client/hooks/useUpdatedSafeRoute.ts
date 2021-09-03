@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useUpdatedSafeRoute_meeting} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
+import {useUpdatedSafeRoute_meeting$key} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import updateLocalStage from '../utils/relay/updateLocalStage'
@@ -10,7 +10,7 @@ import useRouter from './useRouter'
 
 const useUpdatedSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, meetingRef: any) => {
   const {history} = useRouter()
-  const meeting = readInlineData<useUpdatedSafeRoute_meeting>(
+  const meeting = readInlineData<useUpdatedSafeRoute_meeting$key>(
     graphql`
       fragment useUpdatedSafeRoute_meeting on NewMeeting @inline {
         ...fromStageIdToUrl_meeting

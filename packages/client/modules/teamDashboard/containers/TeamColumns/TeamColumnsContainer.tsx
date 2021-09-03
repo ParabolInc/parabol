@@ -33,7 +33,7 @@ const TeamColumnsContainer = (props: Props) => {
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks
     const dashSearchRegex = getSafeRegex(dashSearch, 'i')
-    return teamMemberFilteredTasks.filter((task) => task.contentText?.match(dashSearchRegex))
+    return teamMemberFilteredTasks.filter((task) => task.plaintextContent?.match(dashSearchRegex))
   }, [dashSearch, teamMemberFilteredTasks])
   return (
     <TaskColumns
@@ -66,8 +66,8 @@ export default createFragmentContainer(TeamColumnsContainer, {
               ...TaskColumns_tasks
               # grab these so we can sort correctly
               id
-              content @__clientField(handle: "contentText")
-              contentText
+              content
+              plaintextContent
               status
               sortOrder
               teamId

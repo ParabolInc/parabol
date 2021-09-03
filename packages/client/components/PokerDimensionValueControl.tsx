@@ -10,9 +10,9 @@ import useForceUpdate from '../hooks/useForceUpdate'
 import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
+import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
-import {PokerSetFinalScoreMutationResponse} from '../__generated__/PokerSetFinalScoreMutation.graphql'
+import {SetTaskEstimateMutationResponse} from '../__generated__/SetTaskEstimateMutation.graphql'
 import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
@@ -81,10 +81,10 @@ interface Props {
 
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
-  const {id: stageId, dimensionRef, meetingId, service, serviceField, story} = stage
+  const {id: stageId, dimensionRef, meetingId, serviceField, task, taskId} = stage
   const finalScore = stage.finalScore || ''
   const {name: serviceFieldName, type: serviceFieldType} = serviceField
-  const {scale} = dimensionRef
+  const {name: dimensionName, scale} = dimensionRef
   const {values: scaleValues} = scale
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
@@ -96,6 +96,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
   const forceUpdate = useForceUpdate()
+
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
@@ -103,14 +104,20 @@ const PokerDimensionValueControl = (props: Props) => {
     isLocallyValidatedRef.current = true
   }, [finalScore])
   const submitScore = () => {
-    if (submitting || !isStale || !isLocallyValidatedRef.current) return
+    if (submitting || !isStale || !isLocallyValidatedRef.current) {
+      return
+    }
     submitMutation()
-    const handleCompleted = (res: PokerSetFinalScoreMutationResponse, errors) => {
+    const handleCompleted = (res: SetTaskEstimateMutationResponse, errors) => {
       onCompleted(res as any, errors)
-      const {pokerSetFinalScore} = res
-      const {error} = pokerSetFinalScore
+      const {setTaskEstimate} = res
+      const {error} = setTaskEstimate
       if (error?.message.includes(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)) {
         openPortal()
+        // in case of error this will set the old value after the useEffect related to final score
+        setImmediate(() => {
+          setCardScore(cardScore)
+        })
       }
       if (!error) {
         // set field A to 1, change fields to B, then submit again. it should not say update
@@ -118,10 +125,10 @@ const PokerDimensionValueControl = (props: Props) => {
         forceUpdate()
       }
     }
-    PokerSetFinalScoreMutation(
+    SetTaskEstimateMutation(
       atmosphere,
-      {finalScore: cardScore, meetingId, stageId},
-      {onError, onCompleted: handleCompleted}
+      {taskEstimate: {taskId, dimensionName, meetingId, value: cardScore}},
+      {onError, onCompleted: handleCompleted, stageId}
     )
   }
 
@@ -158,14 +165,13 @@ const PokerDimensionValueControl = (props: Props) => {
       isLocallyValidatedRef.current = true
     }
   }
+
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === cardScore)
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && cardScore === finalScore
-  const isJiraLegacy = service === 'jira'
-  const isJiraNew = story?.integration?.__typename === 'JiraIssue'
-  const isJira = isJiraLegacy || isJiraNew
+  const isJira = task?.integration?.__typename === 'JiraIssue'
   const handleLabelClick = () => inputRef.current!.focus()
   const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (
@@ -233,15 +239,14 @@ export default createFragmentContainer(PokerDimensionValueControl, {
         name
         type
       }
-      service
-      story {
-        ... on Task {
-          integration {
-            __typename
-          }
+      taskId
+      task {
+        integration {
+          __typename
         }
       }
       dimensionRef {
+        name
         scale {
           values {
             label

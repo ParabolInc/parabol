@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useCallback} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useGotoStageId_meeting} from '~/__generated__/useGotoStageId_meeting.graphql'
+import {NavigateMeetingMutationVariables} from '~/__generated__/NavigateMeetingMutation.graphql'
+import {useGotoStageId_meeting$key} from '~/__generated__/useGotoStageId_meeting.graphql'
 import {demoTeamId} from '../modules/demo/initDB'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NavigateMeetingMutation from '../mutations/NavigateMeetingMutation'
-import {NavigateMeetingMutationVariables} from '~/__generated__/NavigateMeetingMutation.graphql'
 import findStageById from '../utils/meetings/findStageById'
 import isForwardProgress from '../utils/meetings/isForwardProgress'
 import updateLocalStage from '../utils/relay/updateLocalStage'
@@ -13,7 +13,7 @@ import useAtmosphere from './useAtmosphere'
 
 const useGotoStageId = (meetingRef: any) => {
   const atmosphere = useAtmosphere()
-  const meeting = readInlineData<useGotoStageId_meeting>(
+  const meeting = readInlineData<useGotoStageId_meeting$key>(
     graphql`
       fragment useGotoStageId_meeting on NewMeeting @inline {
         endedAt

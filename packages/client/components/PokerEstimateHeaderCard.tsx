@@ -11,27 +11,19 @@ interface Props {
 }
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage} = props
-  const {story, service} = stage
-  if (!story) {
-    return <PokerEstimateHeaderCardError service={service} />
+  const {task} = stage
+  if (!task) {
+    return <PokerEstimateHeaderCardError />
   }
 
-  // Old way
-  if (service === 'jira') {
-    return <PokerEstimateHeaderCardJira issue={story} />
-  }
-
-  // New way. A parabol task that might be integrated
-  const {integrationHash, integration} = story
-
+  const {integrationHash, integration} = task
   // it's a vanilla parabol task.
   if (!integrationHash) {
-    return <PokerEstimateHeaderCardParabol task={story} />
+    return <PokerEstimateHeaderCardParabol task={task} />
   }
-
   // it's an intergrated task, but the service might be down
   if (!integration) {
-    return <PokerEstimateHeaderCardError service={service} />
+    return <PokerEstimateHeaderCardError service={'Integration'} />
   }
   if (integration.__typename === 'JiraIssue') {
     return <PokerEstimateHeaderCardJira issue={integration} />
@@ -42,20 +34,16 @@ const PokerEstimateHeaderCard = (props: Props) => {
 export default createFragmentContainer(PokerEstimateHeaderCard, {
   stage: graphql`
     fragment PokerEstimateHeaderCard_stage on EstimateStage {
-      service
-      story {
-        ...PokerEstimateHeaderCardJira_issue
+      task {
         ...PokerEstimateHeaderCardParabol_task
-        ... on Task {
-          integrationHash
-          integration {
-            ... on JiraIssue {
-              __typename
-              ...PokerEstimateHeaderCardJira_issue
-            }
-            ... on _xGitHubIssue {
-              __typename
-            }
+        integrationHash
+        integration {
+          ... on JiraIssue {
+            __typename
+            ...PokerEstimateHeaderCardJira_issue
+          }
+          ... on _xGitHubIssue {
+            __typename
           }
         }
       }
