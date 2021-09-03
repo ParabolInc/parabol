@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createPaginationContainer} from 'react-relay'
+import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
@@ -10,26 +10,96 @@ import {SprintPokerDefaults} from '../types/constEnums'
 import {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
-import {GitHubScopingSearchResults_meeting} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
-import {GitHubScopingSearchResults_viewer} from '../__generated__/GitHubScopingSearchResults_viewer.graphql'
+import {GitHubScopingSearchResultsQuery} from '../__generated__/GitHubScopingSearchResultsQuery.graphql'
+import {GitHubScopingSearchResults_meeting$key} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
 import GitHubScopingSearchResultItem from './GitHubScopingSearchResultItem'
 import GitHubScopingSelectAllIssues from './GitHubScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewGitHubIssueInput from './NewGitHubIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
-
 const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 
 interface Props {
-  viewer: GitHubScopingSearchResults_viewer | null
-  meeting: GitHubScopingSearchResults_meeting
+  queryRef: PreloadedQuery<GitHubScopingSearchResultsQuery>
+  meetingRef: GitHubScopingSearchResults_meeting$key
 }
 
 const GitHubScopingSearchResults = (props: Props) => {
-  const {viewer, meeting} = props
-  const github = viewer?.teamMember!.integrations.github ?? null
+  const {queryRef, meetingRef} = props
+  const data = usePreloadedQuery(
+    graphql`
+      query GitHubScopingSearchResultsQuery($teamId: ID!, $queryString: String!) {
+        viewer {
+          ...NewGitHubIssueInput_viewer
+          teamMember(teamId: $teamId) {
+            suggestedIntegrations {
+              items {
+                ... on SuggestedIntegrationGitHub {
+                  id
+                  nameWithOwner
+                }
+              }
+            }
+            integrations {
+              github {
+                githubSearchQueries {
+                  queryString
+                }
+                api {
+                  errors {
+                    message
+                    locations {
+                      line
+                      column
+                    }
+                    path
+                  }
+                  query {
+                    search(first: 10, type: ISSUE, query: $queryString)
+                      @connection(key: "GitHubScopingSearchResults_search") {
+                      edges {
+                        node {
+                          __typename
+                          ... on _xGitHubIssue {
+                            ...GitHubScopingSelectAllIssues_issues
+                            ...GitHubScopingSearchResultItem_issue
+                            id
+                            title
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment GitHubScopingSearchResults_meeting on PokerMeeting {
+        ...NewGitHubIssueInput_meeting
+        id
+        teamId
+        githubSearchQuery {
+          queryString
+        }
+        phases {
+          ...useGetUsedServiceTaskIds_phase
+          phaseType
+        }
+      }
+    `,
+    meetingRef
+  )
+  const {viewer} = data
+  const github = viewer.teamMember!.integrations.github ?? null
   const {id: meetingId, githubSearchQuery, teamId, phases} = meeting
   const {queryString} = githubSearchQuery
   const errors = github?.api?.errors ?? null
@@ -85,7 +155,7 @@ const GitHubScopingSearchResults = (props: Props) => {
       {
         <GitHubScopingSelectAllIssues
           usedServiceTaskIds={usedServiceTaskIds}
-          issues={issues}
+          issuesRef={issues}
           meetingId={meetingId}
         />
       }
@@ -117,97 +187,31 @@ const GitHubScopingSearchResults = (props: Props) => {
   )
 }
 
-export default createPaginationContainer(
-  GitHubScopingSearchResults,
-  {
-    viewer: graphql`
-      fragment GitHubScopingSearchResults_viewer on User {
-        ...NewGitHubIssueInput_viewer
-        teamMember(teamId: $teamId) {
-          suggestedIntegrations {
-            items {
-              ... on SuggestedIntegrationGitHub {
-                id
-                nameWithOwner
-              }
-            }
-          }
-          integrations {
-            github {
-              githubSearchQueries {
-                queryString
-              }
-              api {
-                errors {
-                  message
-                  locations {
-                    line
-                    column
-                  }
-                  path
-                }
-                query {
-                  search(first: 10, type: ISSUE, query: $queryString)
-                    @connection(key: "GitHubScopingSearchResults_search") {
-                    edges {
-                      node {
-                        __typename
-                        ... on _xGitHubIssue {
-                          ...GitHubScopingSelectAllIssues_issues
-                          ...GitHubScopingSearchResultItem_issue
-                          id
-                          title
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    meeting: graphql`
-      fragment GitHubScopingSearchResults_meeting on PokerMeeting {
-        ...NewGitHubIssueInput_meeting
-        id
-        teamId
-        githubSearchQuery {
-          queryString
-        }
-        phases {
-          ...useGetUsedServiceTaskIds_phase
-          phaseType
-        }
-      }
-    `
-  },
-  {
-    direction: 'forward',
-    getConnectionFromProps(props) {
-      const {viewer} = props
-      return viewer?.teamMember?.integrations.github?.api?.query?.search
-    },
-    getFragmentVariables(prevVars) {
-      return {
-        ...prevVars,
-        first: 50
-      }
-    },
-    getVariables(_props, {cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: 50,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query GitHubScopingSearchResultsPaginationQuery($teamId: String!, $queryString: String!) {
-        viewer {
-          ...GitHubScopingSearchResults_viewer
-        }
-      }
-    `
-  }
-)
+export default GitHubScopingSearchResults
+// , {
+//   direction: 'forward',
+//   getConnectionFromProps(props) {
+//     const {viewer} = props
+//     return viewer?.teamMember?.integrations.github?.api?.query?.search
+//   },
+//   getFragmentVariables(prevVars) {
+//     return {
+//       ...prevVars,
+//       first: 50
+//     }
+//   },
+//   getVariables(_props, {cursor}, fragmentVariables) {
+//     return {
+//       ...fragmentVariables,
+//       first: 50,
+//       after: cursor
+//     }
+//   },
+//   query: graphql`
+//     query GitHubScopingSearchResultsPaginationQuery($teamId: String!, $queryString: String!) {
+//       viewer {
+//         ...GitHubScopingSearchResults_viewer
+//       }
+//     }
+//   `
+// })

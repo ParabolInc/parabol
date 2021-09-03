@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
@@ -49,9 +50,10 @@ interface Props {
 
 const GitHubScopingSearchResultItem = (props: Props) => {
   const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {id: serviceTaskId, repository, title} = issue
+  const {number: issueNumber, repository, title} = issue
   const url = issue.url as string
   const {nameWithOwner} = repository
+  const serviceTaskId = GitHubIssueId.join(nameWithOwner, issueNumber)
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -82,7 +84,7 @@ const GitHubScopingSearchResultItem = (props: Props) => {
       <Issue>
         <Title>{title}</Title>
         <StyledLink href={url} rel='noopener noreferrer' target='_blank'>
-          {nameWithOwner}
+          {`#${issueNumber} ${nameWithOwner}`}
           {isTemp && <Ellipsis />}
         </StyledLink>
       </Issue>
@@ -94,6 +96,7 @@ export default createFragmentContainer(GitHubScopingSearchResultItem, {
   issue: graphql`
     fragment GitHubScopingSearchResultItem_issue on _xGitHubIssue {
       id
+      number
       title
       repository {
         nameWithOwner
