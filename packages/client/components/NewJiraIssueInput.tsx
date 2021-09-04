@@ -157,7 +157,7 @@ const NewJiraIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertToTaskContent(newIssueTitle),
+      content: convertToTaskContent(`${newIssueTitle} #archived`),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {

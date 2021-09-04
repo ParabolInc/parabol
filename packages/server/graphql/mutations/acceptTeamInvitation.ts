@@ -89,7 +89,7 @@ export default {
 
       // RESOLUTION
       const {teamLeadUserIdWithNewActions, invitationNotificationIds} = await acceptTeamInvitation(
-        teamId,
+        team,
         viewerId
       )
       activatePrevSlackAuth(viewerId, teamId)

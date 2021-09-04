@@ -3,6 +3,7 @@ import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
+  pgm.noTransaction()
   await pgm.sql(`
     CREATE TABLE IF NOT EXISTS "TemplateScaleRef" (
       "id" CHAR(24) PRIMARY KEY,

@@ -24,7 +24,8 @@
   },
   "exclude": [
     "**/node_modules",
-    "types/githubTypes.ts"
+    "types/githubTypes.ts",
+    "postgres/migrationTemplate.ts"
   ],
   "files": [
     "types/modules.d.ts",

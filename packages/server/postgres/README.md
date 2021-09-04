@@ -4,8 +4,9 @@
 
 This folder contains all the postgres migrations that have been run on the database.
 If your migration also requires a connection to RethinkDB, you can do that here, too.
-If you choose to use a generated SQL statement in your migration, you'll get a `Client` from `pg` instead of using the provided `pgm`
-
+The recommended way to write a migration is to call `yarn pg:migrate create NAME`
+We no longer use pgm because we want every migration to run independently.
+In other words, migration 3 should have a guarantee that migration 2 has already run. PGM doesn't do this.
 
 ### Gotchas
 
@@ -14,7 +15,9 @@ If you choose to use a generated SQL statement in your migration, you'll get a `
 `pgm.db.query` isn't a true async function. It runs all migrations in parallel, queues up every query, and then executes those in serial.
 This is generally fine if you only use `pgm`.
 However, if you create 1 migration using `pgm` and a second migration using `pg.Client` then the 2nd migration will run before `pgm` finishes, causing it to fail.
-For this reason, I generally prefer `pg.Client`, but that requires a little extra boilerplate (you must manually call `client.connect` and `client.end`)
+What's more, if you call `pgm` to create a table and `pg.Client` to access that table, the table won't exist.
+We learned this after about 10 migrations. As a band-aid, we use `pgm.noTransaction()` on migrations that caused errors.
+Moving forward, we will only use `pg.Client`
 
 #### Bulk inserts
 

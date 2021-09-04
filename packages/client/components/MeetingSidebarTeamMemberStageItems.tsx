@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -36,14 +35,7 @@ interface Props {
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting, phaseType} = props
-  const {
-    id: meetingId,
-    facilitatorStageId,
-    facilitatorUserId,
-    localPhase,
-    localStage,
-    phases
-  } = meeting
+  const {facilitatorStageId, facilitatorUserId, localPhase, localStage, phases} = meeting
   const sidebarPhase = phases.find((phase) => phase.phaseType === phaseType)!
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
@@ -70,16 +62,9 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigable
           } = stage
           if (!teamMember) {
-            Sentry.captureException(
-              new Error(
-                `Team member is undefined. teamMemberId is ${teamMemberId}. phaseType is ${phaseType}. stageId is ${stageId}. meetingId is ${meetingId}. localStageId is ${localStageId}. stage is ${JSON.stringify(
-                  stage
-                )}.`
-              )
-            )
             return null
           }
-          const {picture, preferredName} = teamMember!
+          const {picture, preferredName} = teamMember
           const isLocalStage = localStageId === stageId
           const isFacilitatorStage = facilitatorStageId === stageId
           const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage

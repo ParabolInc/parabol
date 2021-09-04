@@ -9,6 +9,7 @@ import {
   GraphQLString
 } from 'graphql'
 import {SprintPokerDefaults} from '../../../client/types/constEnums'
+import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import db from '../../db'
@@ -22,7 +23,13 @@ import Task from './Task'
 import TemplateDimensionRef from './TemplateDimensionRef'
 import User from './User'
 
-const EstimateStage = new GraphQLObjectType<any, GQLContext>({
+interface Source extends EstimateStageDB {
+  teamId: string
+  meetingId: string
+  phaseType: 'ESTIMATE'
+}
+
+const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
   name: 'EstimateStage',
   description: 'The stage where the team estimates & discusses a single task',
   interfaces: () => [NewMeetingStage, DiscussionThreadStage],
