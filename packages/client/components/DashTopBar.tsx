@@ -84,10 +84,10 @@ const DashTopBar = (props: Props) => {
   return (
     <Wrapper>
       <LeftNavHeader>
-        <LeftNavToggle onClick={toggle}>
+        <LeftNavToggle onClick={toggle} aria-label='Toggle dashboard menu'>
           <Icon>{'menu'}</Icon>
         </LeftNavToggle>
-        <Img onClick={gotoHome} crossOrigin='' src={parabolLogo} alt='' />
+        <Img onClick={gotoHome} crossOrigin='' src={parabolLogo} alt='Parabol logo' />
       </LeftNavHeader>
       <TopBarMain>
         <TopBarSearch viewer={viewer} />
