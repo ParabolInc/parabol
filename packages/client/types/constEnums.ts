@@ -22,7 +22,6 @@ export const enum BezierCurve {
 }
 
 export const enum Breakpoint {
-  DASHBOARD_TOP_BAR = 1200,
   INVOICE = 512,
   SIDEBAR_LEFT = 1024,
   NEW_MEETING_GRID = 1112,
