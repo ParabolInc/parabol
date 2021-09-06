@@ -23,7 +23,8 @@ export default class MailManagerGoogle extends MailManager {
         attachments
       })
     } catch (e) {
-      sendToSentry(e, {
+      const error = e instanceof Error ? e : new Error('Failed to sendMail')
+      sendToSentry(error, {
         tags: {to: JSON.stringify(to), type: 'Google nodemailer error'}
       })
       return false

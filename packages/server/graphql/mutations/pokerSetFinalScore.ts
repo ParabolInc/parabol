@@ -12,7 +12,6 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
-import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import PokerSetFinalScorePayload from '../types/PokerSetFinalScorePayload'
 
@@ -138,7 +137,8 @@ const pokerSetFinalScore = {
             dimensionField?.fieldType === 'string' ? finalScore : Number(finalScore)
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
-          standardError(e)
+          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
+          return {error: {message}}
         }
       }
     }
