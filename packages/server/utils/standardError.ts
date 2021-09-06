@@ -1,7 +1,6 @@
 import sendToSentry, {SentryOptions} from './sendToSentry'
 
-const standardError = (err: Error, options: SentryOptions = {}) => {
-  const error = err instanceof Error ? err : new Error(JSON.stringify(err))
+const standardError = (error: Error, options: SentryOptions = {}) => {
   const {message} = error
   sendToSentry(error, options)
   return {error: {message}}

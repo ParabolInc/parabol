@@ -136,7 +136,7 @@ export default class GoogleLanguageManager {
         {
           error: {
             code: 500,
-            message: e instanceof Error ? e.message : JSON.stringify(e),
+            message: error.message,
             status: 'Google is down'
           }
         }

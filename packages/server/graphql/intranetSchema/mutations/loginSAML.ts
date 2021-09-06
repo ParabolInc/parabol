@@ -58,8 +58,7 @@ const loginSAML = {
     try {
       loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
     } catch (e) {
-      const message =
-        e instanceof Error ? e.message : `parseLoginResponse failed: ${JSON.stringify(e)}`
+      const message = e instanceof Error ? e.message : 'parseLoginResponse failed'
       return {error: {message}}
     }
     if (!loginResponse) {
