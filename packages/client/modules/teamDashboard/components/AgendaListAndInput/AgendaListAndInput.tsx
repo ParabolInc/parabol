@@ -7,8 +7,14 @@ import {AgendaListAndInput_team} from '../../../../__generated__/AgendaListAndIn
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
+import MeetingSidebarPhaseItemChild from '../../../../components/MeetingSidebarPhaseItemChild'
+import {NavSidebar} from '../../../../types/constEnums'
 
-const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
+const StyledRoot = styled(MeetingSidebarPhaseItemChild)<{minItems: number}>(({minItems}) => ({
+  minHeight: NavSidebar.AGENDA_INPUT_HEIGHT + minItems * NavSidebar.ITEM_HEIGHT
+}))
+
+const Wrapper = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -47,19 +53,24 @@ const AgendaListAndInput = (props: Props) => {
   const {dashSearch, gotoStageId, isDisabled, team, meeting} = props
   const endedAt = meeting?.endedAt
   const agendaItems = getAgendaItems(meeting) || team.agendaItems
+  const minItems = agendaItems.length < 5 ? agendaItems.length : 5
 
   return (
-    <RootStyles disabled={!!isDisabled} isMeeting={!!meeting}>
-      {agendaItems && (
-        <AgendaList
-          agendaItems={agendaItems}
-          dashSearch={dashSearch}
-          gotoStageId={gotoStageId}
-          meeting={meeting}
-        />
-      )}
-      {!endedAt && <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meeting} team={team} />}
-    </RootStyles>
+    <StyledRoot minItems={minItems}>
+      <Wrapper disabled={!!isDisabled} isMeeting={!!meeting}>
+        {agendaItems && (
+          <AgendaList
+            agendaItems={agendaItems}
+            dashSearch={dashSearch}
+            gotoStageId={gotoStageId}
+            meeting={meeting}
+          />
+        )}
+        {!endedAt && (
+          <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meeting} team={team} />
+        )}
+      </Wrapper>
+    </StyledRoot>
   )
 }
 
