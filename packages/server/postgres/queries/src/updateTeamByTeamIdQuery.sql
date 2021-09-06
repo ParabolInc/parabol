@@ -12,4 +12,5 @@ UPDATE "Team" SET
   "orgId" = COALESCE(:orgId, "orgId"),
   "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
   "lockMessageHTML" = COALESCE(:lockMessageHTML, "lockMessageHTML")
-WHERE id IN :ids;
+WHERE id IN :ids
+RETURNING *;

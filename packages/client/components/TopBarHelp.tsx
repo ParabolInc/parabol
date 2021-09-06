@@ -28,6 +28,7 @@ const TopBarHelp = () => {
         onClick={togglePortal}
         onMouseEnter={TopBarHelpMenu.preload}
         icon={'help_outline'}
+        ariaLabel={'Help menu'}
       />
       {menuPortal(
         <TopBarHelpMenu dataCy='top-bar' menuProps={menuProps} toggleShortcuts={toggleShortcuts} />

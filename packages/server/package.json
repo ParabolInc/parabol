@@ -58,7 +58,7 @@
     "jsdom": "^15.1.1",
     "json-loader": "^0.5.7",
     "lint-staged": "^10.1.7",
-    "mocha": "^5.2.0",
+    "mocha": "^9.0.3",
     "mockdate": "^2.0.1",
     "prettier": "^1.19.1",
     "rethinkdb-ts-migrate": "^0.3.1",
@@ -92,7 +92,7 @@
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.8.0",
     "abort-controller": "^3.0.0",
-    "analytics-node": "^3.0.0",
+    "analytics-node": "^5.0.0",
     "aws-sdk": "^2.99.0",
     "base64url": "^3.0.1",
     "bcrypt": "^5.0.0",
@@ -114,7 +114,7 @@
     "ioredis": "^4.11.2",
     "jsonwebtoken": "^8.5.0",
     "mailcomposer": "^4.0.1",
-    "mailgun-js": "^0.13.1",
+    "mailgun.js": "^3.5.2",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "nest-graphql-endpoint": "^0.2.2",
@@ -124,7 +124,7 @@
     "nodemailer": "^6.4.6",
     "parabol-client": "^6.26.0",
     "pg": "^8.5.1",
-    "pm2": "^4.4.1",
+    "pm2": "^5.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-relay": "^11.0.2",
@@ -137,7 +137,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
-    "uWebSockets.js": "https://github.com/tiffanyhan/uWebSockets.js/tarball/2e733751ce4765c23ca96e3e57265069536ac173"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v19.3.0"
   },
   "jest": {
     "modulePaths": [

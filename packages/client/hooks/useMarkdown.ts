@@ -139,7 +139,7 @@ const useMarkdown = (
       }
       cb = contentState.getBlockBefore(cb.getKey())
     }
-    if (!cb) return undefined
+    if (!cb || !lastCodeBlock) return undefined
     const blockMap = contentState.getBlockMap()
     const updatedLastline = blockMap.get(currentBlockKey).merge({
       text: '',
@@ -149,7 +149,7 @@ const useMarkdown = (
     const contentStateWithoutFences = contentState.merge({
       blockMap: blockMap.set(currentBlockKey, updatedLastline).delete(cb.getKey()) as ContentState
     }) as ContentState
-    const firstCodeBlock = contentState.getBlockAfter(cb.getKey())
+    const firstCodeBlock = contentState.getBlockAfter(cb.getKey())!
     const selectedCode = selectionState.merge({
       anchorOffset: 0,
       focusOffset: lastCodeBlock.getLength(),
