@@ -26,7 +26,6 @@ const SpotlightGroups = (props: Props) => {
       fragment SpotlightGroups_viewer on User {
         similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
           id
-          title
           ...ReflectionGroup_reflectionGroup
         }
         meeting(meetingId: $meetingId) {

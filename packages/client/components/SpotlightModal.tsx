@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {Suspense} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE, fadeUp} from '../styles/animation'
@@ -46,7 +46,7 @@ const SelectedReflectionSection = styled('div')({
   width: '100%'
 })
 
-const SimilarReflectionGroups = styled('div')({
+const SimilarGroups = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -141,10 +141,6 @@ const SpotlightModal = (props: Props) => {
       query SpotlightModalQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
         viewer {
           ...SpotlightGroups_viewer
-          similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
-            id
-            title
-          }
           meeting(meetingId: $meetingId) {
             ... on RetrospectiveMeeting {
               ...DraggableReflectionCard_meeting
@@ -178,9 +174,8 @@ const SpotlightModal = (props: Props) => {
   )
 
   const {viewer} = data
-  const {meeting, similarReflectionGroups} = viewer
+  const {meeting} = viewer
   const spotlightReflection = meeting?.spotlightReflection
-  const isLoading = similarReflectionGroups === undefined
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
@@ -212,13 +207,13 @@ const SpotlightModal = (props: Props) => {
             />
           </SearchItem>
         </SelectedReflectionSection>
-        <SimilarReflectionGroups>
-          {isLoading ? (
-            <LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />
-          ) : (
+        <SimilarGroups>
+          <Suspense
+            fallback={<LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />}
+          >
             <SpotlightGroups meeting={meeting} viewer={viewer} />
-          )}
-        </SimilarReflectionGroups>
+          </Suspense>
+        </SimilarGroups>
       </ModalContainer>
       <ReflectionWrapper ref={flipRef}>
         {spotlightReflection && (
