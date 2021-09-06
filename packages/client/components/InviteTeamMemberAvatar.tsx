@@ -6,9 +6,9 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import useModal from '../hooks/useModal'
 import {InviteTeamMemberAvatar_teamMembers} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import IconLabel from './IconLabel'
-import FlatButton from './FlatButton'
 import AddTeamMemberModal from './AddTeamMemberModal'
+import Icon from './Icon'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 interface Props extends WithAtmosphereProps {
   meetingId?: string
@@ -16,21 +16,31 @@ interface Props extends WithAtmosphereProps {
   teamMembers: InviteTeamMemberAvatar_teamMembers
 }
 
-const InviteButton = styled(FlatButton)({
-  color: PALETTE.SKY_500,
-  fontWeight: 600,
-  border: 0,
-  lineHeight: 1,
-  padding: '0 8px',
-  ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
-  }
-})
-
 const Label = styled('div')({
   fontSize: 12,
   fontWeight: 600,
-  color: PALETTE.SLATE_700
+  lineHeight: '12px',
+  color: PALETTE.SLATE_700,
+  textAlign: 'center'
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.SKY_500,
+  fontSize: ICON_SIZE.MD24,
+  alignSelf: 'center'
+})
+
+const IconWrapper = styled('div')({
+  height: 28,
+  display: 'flex',
+  justifyContent: 'center'
+})
+
+const Wrapper = styled('div')({
+  margin: '0 6px',
+  ':hover': {
+    cursor: 'pointer'
+  }
 })
 
 const InviteTeamMemberAvatar = (props: Props) => {
@@ -38,9 +48,12 @@ const InviteTeamMemberAvatar = (props: Props) => {
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   return (
     <>
-      <InviteButton onClick={toggleModal}>
-        <IconLabel icon='person_add' iconLarge label={<Label>Invite</Label>} labelBelow />
-      </InviteButton>
+      <Wrapper onClick={toggleModal}>
+        <IconWrapper>
+          <StyledIcon>person_add</StyledIcon>
+        </IconWrapper>
+        <Label>Invite</Label>
+      </Wrapper>
       {modalPortal(
         <AddTeamMemberModal
           closePortal={closeModal}

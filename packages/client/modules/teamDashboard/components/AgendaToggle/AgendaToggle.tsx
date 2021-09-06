@@ -1,30 +1,40 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import FlatButton from '../../../../components/FlatButton'
-import IconLabel from '../../../../components/IconLabel'
+import Icon from '../../../../components/Icon'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-
-const StyledButton = styled(FlatButton)({
-  color: PALETTE.SKY_500,
-  fontWeight: 600,
-  lineHeight: 1,
-  border: 0,
-  padding: '0 8px',
-  ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
-  }
-})
 
 const Label = styled('div')({
   fontSize: 12,
   fontWeight: 600,
-  color: PALETTE.SLATE_700
+  lineHeight: '12px',
+  color: PALETTE.SLATE_700,
+  textAlign: 'center'
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.SKY_500,
+  fontSize: ICON_SIZE.MD24,
+  alignSelf: 'center'
+})
+
+const IconWrapper = styled('div')({
+  height: 28,
+  display: 'flex',
+  justifyContent: 'center'
+})
+
+const Wrapper = styled('div')({
+  margin: '0 6px',
+  ':hover': {
+    cursor: 'pointer'
+  }
 })
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
@@ -42,9 +52,12 @@ const AgendaToggle = (props: Props) => {
     }
   }
   return (
-    <StyledButton onClick={toggleHide}>
-      <IconLabel icon='chat' iconLarge label={<Label>Agenda</Label>} labelBelow />
-    </StyledButton>
+    <Wrapper onClick={toggleHide}>
+      <IconWrapper>
+        <StyledIcon>chat</StyledIcon>
+      </IconWrapper>
+      <Label>Agenda</Label>
+    </Wrapper>
   )
 }
 

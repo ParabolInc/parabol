@@ -13,17 +13,20 @@ import ErrorBoundary from '../ErrorBoundary'
 import PlainButton from '../PlainButton/PlainButton'
 import DashboardAvatar from './DashboardAvatar'
 
-const AvatarsList = styled('div')({
+const AvatarsList = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flexDirection: 'column',
-  marginRight: 6
-})
+  marginRight: 6,
+  position: 'relative',
+  // AvatarsWrapper left causes avatars to move into left padding on mobile by 4px (-2px for the transparent border)
+  left: isDesktop ? 0 : 2
+}))
 
-const Wrapper = styled('div')({
+const AvatarsWrapper = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   position: 'relative',
-  left: -4
+  left: -4 // each avatar is given 20px of width but the final avatar uses 28px
 })
 
 const OverflowWrapper = styled('div')({
@@ -69,7 +72,7 @@ interface Props {
 const DashboardAvatars = (props: Props) => {
   const {team} = props
   const {id: teamId, teamMembers} = team
-  const isDesktop = useBreakpoint(Breakpoint.DASHBOARD_TOP_BAR)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const maxAvatars = isDesktop ? 10 : 6
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
@@ -92,8 +95,8 @@ const DashboardAvatars = (props: Props) => {
   }
 
   return (
-    <AvatarsList>
-      <Wrapper>
+    <AvatarsList isDesktop={isDesktop}>
+      <AvatarsWrapper>
         {visibleAvatars.map((teamMember) => {
           return (
             <ErrorBoundary key={`dbAvatar${teamMember.id}`}>
@@ -106,7 +109,7 @@ const DashboardAvatars = (props: Props) => {
             <OverflowCount>{`+${overflowCount}`}</OverflowCount>
           </OverflowWrapper>
         )}
-      </Wrapper>
+      </AvatarsWrapper>
       <StyledButton onClick={() => handleClick(false)}>Manage Team</StyledButton>
     </AvatarsList>
   )

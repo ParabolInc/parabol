@@ -20,7 +20,7 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASHBOARD_TOP_BAR)
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const TeamMeta = styled('div')({
   // define
@@ -32,9 +32,8 @@ const TeamLinks = styled('div')({
   flexWrap: 'wrap',
   fontSize: 12,
   justifyContent: 'flex-start',
-  lineHeight: '16px',
+  lineHeight: '12px',
   maxWidth: '100%',
-  overflow: 'auto',
   width: '100%',
   [desktopBreakpoint]: {
     justifyContent: 'flex-start',
@@ -47,15 +46,16 @@ const DashHeading = styled('div')({
   color: PALETTE.SLATE_700,
   display: 'flex',
   fontSize: 20,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  height: 28
 })
 
 const linkStyles = {
   color: PALETTE.SKY_500,
   cursor: 'pointer',
   fontWeight: 600,
-  height: 16,
-  lineHeight: '16px',
+  fontSize: 12,
+  lineHeight: '12px',
   marginRight: 8,
   outline: 0,
   ':hover, :focus, :active': {
