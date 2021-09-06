@@ -146,25 +146,25 @@ const SpotlightModal = (props: Props) => {
             title
           }
           meeting(meetingId: $meetingId) {
-            id
-            teamId
-            localPhase {
-              phaseType
-            }
-            localStage {
-              isComplete
-              phaseType
-            }
-            phases {
-              phaseType
-              stages {
-                isComplete
-                phaseType
-              }
-            }
             ... on RetrospectiveMeeting {
               ...DraggableReflectionCard_meeting
               ...SpotlightGroups_meeting
+              id
+              teamId
+              localPhase {
+                phaseType
+              }
+              localStage {
+                isComplete
+                phaseType
+              }
+              phases {
+                phaseType
+                stages {
+                  isComplete
+                  phaseType
+                }
+              }
               spotlightReflection {
                 ...DraggableReflectionCard_reflection
               }
@@ -176,20 +176,18 @@ const SpotlightModal = (props: Props) => {
     queryRef,
     {UNSTABLE_renderPolicy: 'full'}
   )
-  console.log('🚀 ~ SpotlightModal ~ data', data)
+
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
-  const {spotlightReflection} = meeting
-  console.log('🚀  ~ spotlightReflection', spotlightReflection)
-  // const similarReflectionGroups = viewer?.similarReflectionGroups
+  const spotlightReflection = meeting?.spotlightReflection
   const isLoading = similarReflectionGroups === undefined
-  console.log('🚀 ~ SpotlightModal ~ isLoading', isLoading)
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
     }
   }
+  if (!meeting) return null
   return (
     <>
       <ModalContainer isDesktop={isDesktop}>
@@ -218,7 +216,7 @@ const SpotlightModal = (props: Props) => {
           {isLoading ? (
             <LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />
           ) : (
-            <SpotlightGroups meeting={meeting} viewer={viewer!} />
+            <SpotlightGroups meeting={meeting} viewer={viewer} />
           )}
         </SimilarReflectionGroups>
       </ModalContainer>
@@ -237,39 +235,3 @@ const SpotlightModal = (props: Props) => {
 }
 
 export default SpotlightModal
-// export default createFragmentContainer(SpotlightModal, {
-//   meeting: graphql`
-//     fragment SpotlightModal_meeting on RetrospectiveMeeting {
-//       ...DraggableReflectionCard_meeting
-//       ...SpotlightGroups_meeting
-//       id
-//       teamId
-//       localPhase {
-//         phaseType
-//       }
-//       localStage {
-//         isComplete
-//         phaseType
-//       }
-//       phases {
-//         phaseType
-//         stages {
-//           isComplete
-//           phaseType
-//         }
-//       }
-//       spotlightReflection {
-//         ...DraggableReflectionCard_reflection
-//       }
-//     }
-//   `,
-//   viewer: graphql`
-//     fragment SpotlightModal_viewer on User {
-//       ...SpotlightGroups_viewer
-//       similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
-//         id
-//         title
-//       }
-//     }
-//   `
-// })

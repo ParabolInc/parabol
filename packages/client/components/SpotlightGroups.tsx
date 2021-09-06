@@ -1,10 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {
-  SpotlightGroups_meeting,
-  SpotlightGroups_meeting$key
-} from '~/__generated__/SpotlightGroups_meeting.graphql'
+import {SpotlightGroups_meeting$key} from '~/__generated__/SpotlightGroups_meeting.graphql'
 import {SpotlightGroups_viewer$key} from '~/__generated__/SpotlightGroups_viewer.graphql'
 import SpotlightEmptyState from './SpotlightEmptyState'
 import {useFragment} from 'react-relay'
@@ -24,7 +21,6 @@ interface Props {
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {meeting} = props
   const userData = useFragment(
     graphql`
       fragment SpotlightGroups_viewer on User {
@@ -33,14 +29,16 @@ const SpotlightGroups = (props: Props) => {
           title
           ...ReflectionGroup_reflectionGroup
         }
+        meeting(meetingId: $meetingId) {
+          ...SpotlightGroups_meeting
+        }
       }
     `,
     props.viewer
   )
-  useFragment(
+  const meetingData = useFragment(
     graphql`
       fragment SpotlightGroups_meeting on RetrospectiveMeeting {
-        id
         ...ReflectionGroup_meeting
       }
     `,
@@ -58,7 +56,7 @@ const SpotlightGroups = (props: Props) => {
         return (
           <ReflectionGroup
             key={reflectionGroup.id}
-            meeting={meeting}
+            meeting={meetingData}
             phaseRef={dummyRef}
             reflectionGroup={reflectionGroup}
           />
