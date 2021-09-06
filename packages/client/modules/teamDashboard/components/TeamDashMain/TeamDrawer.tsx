@@ -7,7 +7,7 @@ import {TeamDrawer_viewer$key} from '~/__generated__/TeamDrawer_viewer.graphql'
 import {Breakpoint, DrawerTypes, RightSidebar} from '../../../../types/constEnums'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import ManageTeamList from '../ManageTeam/ManageTeamList'
-import CloseSidebar from '../CloseSidebar/CloseSidebar'
+import CloseDrawer from '../CloseDrawer/CloseDrawer'
 import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import {PALETTE} from '../../../../styles/paletteV3'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
@@ -34,7 +34,8 @@ const SidebarContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const StyledLabelHeading = styled(LabelHeading)({
-  fontSize: 14,
+  fontSize: 12,
+  lineHeight: '18px',
   textTransform: 'none'
 })
 
@@ -87,7 +88,7 @@ const TeamDrawer = (props: Props) => {
     }
   }
 
-  if (!team) return null
+  if (!team || !teamId) return null
   return (
     <ResponsiveDashSidebar
       isOpen={!hideAgenda || !hideManageTeam}
@@ -97,7 +98,7 @@ const TeamDrawer = (props: Props) => {
       <SidebarContent isDesktop={isDesktop}>
         <SidebarHeader>
           <StyledLabelHeading>{showAgenda ? 'Team Agenda' : 'Manage Team'}</StyledLabelHeading>
-          <CloseSidebar isAgenda={showAgenda} teamId={teamId!} />
+          <CloseDrawer isAgenda={showAgenda} teamId={teamId} />
         </SidebarHeader>
         {showAgenda ? (
           <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />

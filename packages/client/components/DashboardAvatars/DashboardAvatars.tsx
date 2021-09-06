@@ -10,6 +10,7 @@ import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
+import PlainButton from '../PlainButton/PlainButton'
 import DashboardAvatar from './DashboardAvatar'
 
 const AvatarsList = styled('div')({
@@ -48,7 +49,7 @@ const OverflowCount = styled('div')({
   }
 })
 
-const Label = styled('div')({
+const StyledButton = styled(PlainButton)({
   fontSize: 12,
   height: 12,
   lineHeight: 1,
@@ -75,7 +76,7 @@ const DashboardAvatars = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
-  const handleClickOverflow = () => {
+  const handleClick = (clickedOverflow: boolean) => {
     if (!submitting) {
       submitMutation()
       ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
@@ -83,8 +84,8 @@ const DashboardAvatars = (props: Props) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
         if (!teamMember) return
-        const firstOverflowMember = teamMembers[maxAvatars - 1]
-        const {id: teamMemberId} = firstOverflowMember
+        const memberInFocus = teamMembers[clickedOverflow ? maxAvatars - 1 : 0]
+        const {id: teamMemberId} = memberInFocus
         teamMember.setValue(teamMemberId, 'manageTeamMemberId')
       })
     }
@@ -101,12 +102,12 @@ const DashboardAvatars = (props: Props) => {
           )
         })}
         {overflowCount > 0 && (
-          <OverflowWrapper onClick={handleClickOverflow}>
+          <OverflowWrapper onClick={() => handleClick(true)}>
             <OverflowCount>{`+${overflowCount}`}</OverflowCount>
           </OverflowWrapper>
         )}
       </Wrapper>
-      <Label>Manage Team</Label>
+      <StyledButton onClick={() => handleClick(false)}>Manage Team</StyledButton>
     </AvatarsList>
   )
 }

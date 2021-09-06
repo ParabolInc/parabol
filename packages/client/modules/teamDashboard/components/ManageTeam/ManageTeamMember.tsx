@@ -27,7 +27,8 @@ const StyledRow = styled(Row)({
 const StyledButton = styled(FlatButton)<{showMenuButton: boolean}>(({showMenuButton}) => ({
   display: showMenuButton ? 'flex' : 'none',
   fontSize: ICON_SIZE.MD18,
-  padding: 0
+  padding: 0,
+  color: PALETTE.SLATE_600
 }))
 
 const Name = styled('div')({
@@ -50,10 +51,10 @@ const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18
 })
 
-const TeamLeadCopy = styled('div')<{isLead: boolean}>(({isLead}) => ({
+const TeamLeadLabel = styled('div')<{isLead: boolean}>(({isLead}) => ({
   display: isLead ? 'flex' : 'none',
   padding: '0px 16px',
-  color: PALETTE.SLATE_600,
+  color: PALETTE.SLATE_800,
   fontSize: 12,
   lineHeight: '12px'
 }))
@@ -98,10 +99,9 @@ const ManageTeamMember = (props: Props) => {
       <Avatar size={24} picture={picture} />
       <Content>
         <Name>{preferredName}</Name>
-        <TeamLeadCopy isLead={isLead}>Team Lead</TeamLeadCopy>
+        <TeamLeadLabel isLead={isLead}>Team Lead</TeamLeadLabel>
       </Content>
       <StyledButton
-        palette='mid'
         showMenuButton={showMenuButton}
         onClick={togglePortal}
         onMouseEnter={TeamMemberAvatarMenu.preload}

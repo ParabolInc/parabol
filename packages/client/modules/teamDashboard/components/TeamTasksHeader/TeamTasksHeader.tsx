@@ -30,7 +30,7 @@ const TeamLinks = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexWrap: 'wrap',
-  fontSize: 14,
+  fontSize: 12,
   justifyContent: 'flex-start',
   lineHeight: '16px',
   maxWidth: '100%',
@@ -46,7 +46,7 @@ const DashHeading = styled('div')({
   alignItems: 'center',
   color: PALETTE.SLATE_700,
   display: 'flex',
-  fontSize: 24,
+  fontSize: 20,
   lineHeight: '24px'
 })
 

@@ -10,7 +10,7 @@ interface Props {
   teamId: string
 }
 
-const CloseSidebar = (props: Props) => {
+const CloseDrawer = (props: Props) => {
   const {isAgenda, teamId} = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -24,7 +24,7 @@ const CloseSidebar = (props: Props) => {
       }
     }
   }
-  return <IconButton icon={'close'} iconLarge onClick={toggleHide} palette='midGray' />
+  return <IconButton icon={'close'} onClick={toggleHide} palette='midGray' />
 }
 
-export default CloseSidebar
+export default CloseDrawer
