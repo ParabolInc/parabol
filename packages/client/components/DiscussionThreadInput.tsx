@@ -21,6 +21,7 @@ import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import {PALETTE} from '../styles/paletteV3'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
+import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
 import {DiscussionThreadables} from './DiscussionThreadList'
@@ -57,8 +58,10 @@ const EditorWrap = styled('div')({
   margin: '14px 0'
 })
 
-const TaskContainer = styled('div')({
+const ActionsContainer = styled('div')({
   display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   borderTop: `1px solid ${PALETTE.SLATE_200}`,
   padding: 6
 })
@@ -104,6 +107,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
+  // Quick & Dirty Feature Flag
+  const allowPolls = false
+  // const allowPolls = allowedThreadables.includes('poll')
   useInitialLocalState(discussionId, 'isAnonymousComment', false)
   useInitialLocalState(discussionId, 'replyingToCommentId', '')
   useBeforeUnload(() => {
@@ -229,6 +235,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     CreateTaskMutation(atmosphere, {newTask}, {})
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const addPoll = () => {}
+
   useEffect(() => {
     const focusListener = () => {
       setCanCreateTask(!isViewerTypingInTask())
@@ -242,6 +251,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }, [])
 
+  const isActionsContainerVisible = allowTasks || allowPolls
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
@@ -267,10 +277,15 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
           onSubmit={onSubmit}
         />
       </CommentContainer>
-      {allowTasks && (
-        <TaskContainer>
-          <AddTaskButton dataCy={`${dataCy}-add`} onClick={addTask} disabled={!canCreateTask} />
-        </TaskContainer>
+      {isActionsContainerVisible && (
+        <ActionsContainer>
+          {allowTasks && (
+            <AddTaskButton dataCy={`${dataCy}-task`} onClick={addTask} disabled={!canCreateTask} />
+          )}
+          {allowPolls && (
+            <AddPollButton dataCy={`${dataCy}-poll`} onClick={addPoll} disabled={!canCreateTask} />
+          )}
+        </ActionsContainer>
       )}
     </Wrapper>
   )

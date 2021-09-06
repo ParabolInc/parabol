@@ -140,7 +140,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {reflectionGroup, discussionId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const title = reflectionGroup?.title ?? ''
-  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task']
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
 
   // Uncomment below code to enable Easter Egg:
   // bugs shown on screen when the discussion group title contains "bug"

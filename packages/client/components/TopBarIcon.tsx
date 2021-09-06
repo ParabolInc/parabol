@@ -29,12 +29,13 @@ interface Props {
   onClick?: () => void
   onMouseEnter?: () => void
   hasBadge?: boolean
+  ariaLabel: string
 }
 
 const TopBarIcon = forwardRef((props: Props, ref: any) => {
-  const {icon, hasBadge, onClick, onMouseEnter} = props
+  const {icon, hasBadge, onClick, onMouseEnter, ariaLabel} = props
   return (
-    <Button onClick={onClick} ref={ref} onMouseEnter={onMouseEnter}>
+    <Button onClick={onClick} ref={ref} onMouseEnter={onMouseEnter} aria-label={ariaLabel}>
       <ButtonIcon>{icon}</ButtonIcon>
       {hasBadge && <Badge />}
     </Button>
