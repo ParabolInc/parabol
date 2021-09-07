@@ -3,37 +3,63 @@ import {GQLContext} from '../../graphql'
 import {requireSU} from '../../../utils/authorization'
 import getRethink from '../../../database/rethinkDriver'
 import getPg from '../../../postgres/getPg'
+import softDeleteUser from '../../mutations/helpers/softDeleteUser'
+import DeleteUserPayload from '../../types/DeleteUserPayload'
+import User from '../../../database/types/User'
 
 const hardDeleteUser = {
-  type: GraphQLNonNull(GraphQLString),
+  type: GraphQLNonNull(DeleteUserPayload),
   description: 'hard deletes a user and all its associated objects',
   args: {
     userId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: GraphQLID,
+      description: 'a userId'
+    },
+    email: {
+      type: GraphQLID,
+      description: 'the user email'
     },
     reasonText: {
-      type: GraphQLString
+      type: GraphQLString,
+      description: 'the reason why the user wants to delete their account'
     }
   },
-  resolve: async (_source, {userId}, {authToken}: GQLContext) => {
+  resolve: async (
+    _source,
+    {userId, email, reason}: {userId?: string; email?: string; reason?: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     // AUTH
     requireSU(authToken)
 
     // VALIDATION
+    if (userId && email) {
+      return {error: {message: 'Provide userId XOR email'}}
+    }
+    if (!userId && !email) {
+      return {error: {message: 'Provide a userId or email'}}
+    }
     const r = await getRethink()
     const pg = getPg()
 
-    const user = await r
+    const index = userId ? 'id' : 'email'
+    const user = (await r
       .table('User')
-      .get(userId)
-      .run()
+      .getAll((userId || email)!, {index})
+      .nth(0)
+      .default(null)
+      .run()) as User
     if (!user) {
-      throw new Error(`User for userId not found`)
+      return {error: {message: 'User not found'}}
     }
+    const userIdToDelete = user.id
+
     // rethink first
+    await softDeleteUser(user, dataLoader, reason)
+
     const teamMemberIds = await r
       .table('TeamMember')
-      .getAll(userId, {index: 'userId'})
+      .getAll(userIdToDelete, {index: 'userId'})
       .getField('id')
       .coerceTo('array')
       .distinct()
@@ -83,35 +109,35 @@ const hardDeleteUser = {
         .delete(),
       teamMember: r
         .table('TeamMember')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       meetingMember: r
         .table('MeetingMember')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       atlassianAuth: r
         .table('AtlassianAuth')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       notification: r
         .table('Notification')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       organizationUser: r
         .table('OrganizationUser')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       suggestedAction: r
         .table('SuggestedAction')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       task: r
         .table('Task')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       timelineEvent: r
         .table('TimelineEvent')
-        .between([userId, r.minval], [userId, r.maxval], {
+        .between([userIdToDelete, r.minval], [userIdToDelete, r.maxval], {
           index: 'userIdCreatedAt'
         })
         .delete(),
@@ -122,7 +148,7 @@ const hardDeleteUser = {
         .delete(),
       pushInvitation: r
         .table('PushInvitation')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       retroReflection: r
         .table('RetroReflection')
@@ -130,7 +156,7 @@ const hardDeleteUser = {
         .delete(),
       slackNotification: r
         .table('SlackNotification')
-        .getAll(userId, {index: 'userId'})
+        .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       teamInvitation: r
         .table('TeamInvitation')
@@ -155,7 +181,7 @@ const hardDeleteUser = {
     // now postgres, after FKs are added then triggers should take care of children
     await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userId])
 
-    return `Success! User has been hard deleted`
+    return {}
   }
 }
 
