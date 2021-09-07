@@ -1,12 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {RefObject} from 'react'
 import {SpotlightGroups_meeting$key} from '~/__generated__/SpotlightGroups_meeting.graphql'
 import {SpotlightGroups_viewer$key} from '~/__generated__/SpotlightGroups_viewer.graphql'
 import SpotlightEmptyState from './SpotlightEmptyState'
 import {useFragment} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import {useRef} from 'react'
 
 const Container = styled('div')({
   display: 'flex',
@@ -17,10 +16,12 @@ const Container = styled('div')({
 
 interface Props {
   meeting: SpotlightGroups_meeting$key
+  phaseRef: RefObject<HTMLDivElement>
   viewer: SpotlightGroups_viewer$key
 }
 
 const SpotlightGroups = (props: Props) => {
+  const {phaseRef} = props
   const userData = useFragment(
     graphql`
       fragment SpotlightGroups_viewer on User {
@@ -44,7 +45,6 @@ const SpotlightGroups = (props: Props) => {
     props.meeting
   )
   const {similarReflectionGroups} = userData
-  const dummyRef = useRef(null) // TODO: either use it or make it optional in refGroups props
 
   if (!similarReflectionGroups.length) {
     return <SpotlightEmptyState />
@@ -56,7 +56,7 @@ const SpotlightGroups = (props: Props) => {
           <ReflectionGroup
             key={reflectionGroup.id}
             meeting={meetingData}
-            phaseRef={dummyRef}
+            phaseRef={phaseRef}
             reflectionGroup={reflectionGroup}
           />
         )

@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
+import React, {Suspense, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, DragAttribute, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
@@ -177,6 +177,7 @@ const SpotlightModal = (props: Props) => {
   const {meeting} = viewer
   const spotlightReflection = meeting?.spotlightReflection
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
+  const phaseRef = useRef(null)
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
@@ -185,7 +186,7 @@ const SpotlightModal = (props: Props) => {
   if (!meeting) return null
   return (
     <>
-      <ModalContainer isDesktop={isDesktop}>
+      <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
         <SelectedReflectionSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>
@@ -207,11 +208,11 @@ const SpotlightModal = (props: Props) => {
             />
           </SearchItem>
         </SelectedReflectionSection>
-        <SimilarGroups>
+        <SimilarGroups {...{[DragAttribute.DROPZONE]: 'spotlightGroups'}}>
           <Suspense
             fallback={<LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />}
           >
-            <SpotlightGroups meeting={meeting} viewer={viewer} />
+            <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
           </Suspense>
         </SimilarGroups>
       </ModalContainer>

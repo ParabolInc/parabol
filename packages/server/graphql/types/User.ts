@@ -8,6 +8,8 @@ import {
   GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {AUTO_GROUPING_THRESHOLD} from '../../../client/utils/constants'
+import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
@@ -421,19 +423,41 @@ const User = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
         const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
-        if (!retroReflection) return []
+        if (!retroReflection) {
+          return standardError(new Error('Invalid reflection id'), {userId})
+        }
         const {meetingId} = retroReflection
         const meetingMemberId = toTeamMemberId(meetingId, userId)
-        const [viewerMeetingMember, reflectionGroups] = await Promise.all([
+        const r = await getRethink()
+        const [viewerMeetingMember, reflectionGroups, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
-          dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+          dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
+          r
+            .table('RetroReflection')
+            .getAll(meetingId, {index: 'meetingId'})
+            .filter({isActive: true})
+            .orderBy('createdAt')
+            .run()
         ])
         const {meetingId: viewerMeetingId} = viewerMeetingMember
         if (viewerMeetingId !== meetingId) {
-          standardError(new Error('Not on team'), {userId})
-          return []
+          return standardError(new Error('Not on team'), {userId})
         }
-        return reflectionGroups
+        const testa = groupReflections(reflections, AUTO_GROUPING_THRESHOLD)
+        const {groups} = testa
+        const groupIds = new Set<string>()
+        groups.forEach((group) => {
+          const {id} = group
+          if (id !== retroReflection.reflectionGroupId) {
+            groupIds.add(group.id)
+          }
+        })
+        const similarGroups = await r
+          .table('RetroReflectionGroup')
+          .getAll(r.args(Array.from(groupIds)), {index: 'id'})
+          .run()
+        console.log('🚀 ~  ', {groupIds, similarGroups})
+        return similarGroups
       }
     },
     tasks: require('../queries/tasks').default,

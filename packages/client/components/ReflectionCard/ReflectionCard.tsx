@@ -236,6 +236,7 @@ const ReflectionCard = (props: Props) => {
     !inSpotlight &&
     !isComplete &&
     showSpotlight &&
+    !!openSpotlight &&
     (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
