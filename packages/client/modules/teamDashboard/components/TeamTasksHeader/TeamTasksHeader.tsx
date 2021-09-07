@@ -32,7 +32,7 @@ const TeamLinks = styled('div')({
   flexWrap: 'wrap',
   fontSize: 12,
   justifyContent: 'flex-start',
-  lineHeight: '12px',
+  lineHeight: '16px',
   maxWidth: '100%',
   width: '100%',
   [desktopBreakpoint]: {
@@ -46,6 +46,7 @@ const DashHeading = styled('div')({
   color: PALETTE.SLATE_700,
   display: 'flex',
   fontSize: 20,
+  fontWeight: 600,
   lineHeight: '24px',
   height: 28
 })
