@@ -54,8 +54,8 @@ const OverflowCount = styled('div')({
 
 const StyledButton = styled(PlainButton)({
   fontSize: 12,
-  height: 12,
-  lineHeight: 1,
+  height: 16,
+  lineHeight: '16px',
   fontWeight: 600,
   color: PALETTE.SLATE_700,
   textAlign: 'center',

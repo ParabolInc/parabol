@@ -13,7 +13,7 @@ import withMutationProps, {WithMutationProps} from '../../../../utils/relay/with
 const Label = styled('div')({
   fontSize: 12,
   fontWeight: 600,
-  lineHeight: '12px',
+  lineHeight: '16px',
   color: PALETTE.SLATE_700,
   textAlign: 'center'
 })
@@ -34,6 +34,9 @@ const Wrapper = styled('div')({
   margin: '0 6px',
   ':hover': {
     cursor: 'pointer'
+  },
+  ':hover i': {
+    color: PALETTE.SKY_600
   }
 })
 
