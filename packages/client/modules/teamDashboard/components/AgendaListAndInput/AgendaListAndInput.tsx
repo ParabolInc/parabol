@@ -8,7 +8,7 @@ import useGotoStageId from '../../../../hooks/useGotoStageId'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
 
-const Wrapper = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
+const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -49,7 +49,7 @@ const AgendaListAndInput = (props: Props) => {
   const agendaItems = getAgendaItems(meeting) || team.agendaItems
 
   return (
-    <Wrapper disabled={!!isDisabled} isMeeting={!!meeting}>
+    <RootStyles disabled={!!isDisabled} isMeeting={!!meeting}>
       {agendaItems && (
         <AgendaList
           agendaItems={agendaItems}
@@ -59,7 +59,7 @@ const AgendaListAndInput = (props: Props) => {
         />
       )}
       {!endedAt && <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meeting} team={team} />}
-    </Wrapper>
+    </RootStyles>
   )
 }
 
