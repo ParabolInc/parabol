@@ -77,7 +77,7 @@ const hardDeleteUser = {
         .getAll(r.args(teamIds), {index: 'teamId'})
         .eqJoin('id', r.table('RetroReflection'), {index: 'meetingId'})
         .zip() as any)
-        .filter((row) => row('creatorId').eq(r(userId)))
+        .filter((row) => row('creatorId').eq(r(userIdToDelete)))
         .getField('id')
         .coerceTo('array')
         .distinct()
@@ -85,12 +85,12 @@ const hardDeleteUser = {
       r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('facilitatorUserId').eq(r(userId)))
+        .filter((row) => row('facilitatorUserId').eq(r(userIdToDelete)))
         .merge((meeting) => ({
           otherTeamMember: r
             .table('TeamMember')
             .getAll(meeting('teamId'), {index: 'teamId'})
-            .filter((row) => row('userId').ne(r(userId)))
+            .filter((row) => row('userId').ne(r(userIdToDelete)))
             .nth(0)
             .getField('userId')
             .default(null)
@@ -105,7 +105,7 @@ const hardDeleteUser = {
     await r({
       user: r
         .table('User')
-        .get(userId)
+        .get(userIdToDelete)
         .delete(),
       teamMember: r
         .table('TeamMember')
@@ -131,10 +131,16 @@ const hardDeleteUser = {
         .table('SuggestedAction')
         .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
-      task: r
+      // note: no effect since soft delete user resolves beforehand
+      assignedTasks: r
         .table('Task')
         .getAll(userIdToDelete, {index: 'userId'})
-        .delete(),
+        .update({userId: null}),
+      createdTasks: r
+        .table('Task')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter((row) => row('createdBy').eq(r(userIdToDelete)))
+        .update({createdBy: ''}),
       timelineEvent: r
         .table('TimelineEvent')
         .between([userIdToDelete, r.minval], [userIdToDelete, r.maxval], {
@@ -144,8 +150,10 @@ const hardDeleteUser = {
       agendaItem: r
         .table('AgendaItem')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => r(teamMemberIds).contains(row('id')))
-        .delete(),
+        .filter((row) =>
+          r(teamMemberIds).contains(r(userIdToDelete).add(r.expr('::'), row('teamId')))
+        )
+        .update({teamMemberId: ''}),
       pushInvitation: r
         .table('PushInvitation')
         .getAll(userIdToDelete, {index: 'userId'})
@@ -153,21 +161,26 @@ const hardDeleteUser = {
       retroReflection: r
         .table('RetroReflection')
         .getAll(r.args(retroReflectionIds), {index: 'id'})
-        .delete(),
+        .update({creatorId: ''}),
       slackNotification: r
         .table('SlackNotification')
         .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
-      teamInvitation: r
+      invitedByTeamInvitation: r
         .table('TeamInvitation')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('invitedBy').eq(r(userId)))
-        .delete(),
+        .filter((row) => row('invitedBy').eq(r(userIdToDelete)))
+        .update({invitedBy: ''}),
+      createdByTeamInvitations: r
+        .table('TeamInvitation')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter((row) => row('acceptedBy').eq(r(userIdToDelete)))
+        .update({acceptedBy: ''}),
       comment: r
         .table('Comment')
         .getAll(r.args(discussionIds), {index: 'discussionId'})
-        .filter((row) => row('createdBy').eq(r(userId)))
-        .delete(),
+        .filter((row) => row('createdBy').eq(r(userIdToDelete)))
+        .update({createdBy: ''}),
       swapFacilitator: r(swapFacilitatorUpdates).forEach((update) =>
         r
           .table('NewMeeting')
@@ -179,7 +192,7 @@ const hardDeleteUser = {
     }).run()
 
     // now postgres, after FKs are added then triggers should take care of children
-    await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userId])
+    await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])
 
     return {}
   }
