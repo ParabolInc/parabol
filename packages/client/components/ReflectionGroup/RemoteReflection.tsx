@@ -13,30 +13,34 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import useEditorState from '../../hooks/useEditorState'
-const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isDropping}) => ({
-  position: 'absolute',
-  left: 0,
-  top: 0,
-  boxShadow: isDropping ? Elevation.CARD_SHADOW : Elevation.CARD_DRAGGING,
-  pointerEvents: 'none',
-  transition: `all ${
-    isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
-  }ms ${BezierCurve.DECELERATE}`,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
-}))
 
-const HeaderModal = styled('div')({
+const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null; isInSpotlight: boolean}>(
+  ({isDropping, isInSpotlight}) => ({
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    boxShadow: isDropping ? Elevation.CARD_SHADOW : Elevation.CARD_DRAGGING,
+    pointerEvents: 'none',
+    transition: `all ${
+      isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
+    }ms ${BezierCurve.DECELERATE}`,
+    zIndex: isInSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
+  })
+)
+
+const HeaderModal = styled('div')<{isInSpotlight: boolean}>(({isInSpotlight}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
   pointerEvents: 'none',
   width: ElementWidth.REFLECTION_CARD,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
-})
+  zIndex: isInSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
+}))
 
 interface Props {
   style: React.CSSProperties
   reflection: RemoteReflection_reflection
+  isInSpotlight: boolean
 }
 
 const windowDims = {
@@ -111,7 +115,7 @@ const getInlineStyle = (
 }
 
 const RemoteReflection = (props: Props) => {
-  const {reflection, style} = props
+  const {isInSpotlight, reflection, style} = props
   const {id: reflectionId, content, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
@@ -138,14 +142,19 @@ const RemoteReflection = (props: Props) => {
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
-      <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>
+      <RemoteReflectionModal
+        ref={ref}
+        style={nextStyle}
+        isDropping={isDropping}
+        isInSpotlight={isInSpotlight}
+      >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform && (
-        <HeaderModal>
+        <HeaderModal isInSpotlight={isInSpotlight}>
           <UserDraggingHeader
             userId={dragUserId}
             name={dragUserName}

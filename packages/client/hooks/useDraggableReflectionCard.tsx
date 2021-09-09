@@ -30,7 +30,8 @@ const windowDims = {
 const useRemoteDrag = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
-  staticIdx: number
+  staticIdx: number,
+  isInSpotlight: boolean
 ) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
@@ -46,6 +47,7 @@ const useRemoteDrag = (
         <RemoteReflection
           style={isClose ? style : {transform: style.transform}}
           reflection={reflection}
+          isInSpotlight={isInSpotlight}
         />
       )
     }
@@ -77,15 +79,14 @@ const useLocalDrag = (
   drag: ReflectionDragState,
   staticIdx: number,
   onMouseMove: any,
-  onMouseUp: any,
-  isSpotlightOpen: boolean
+  onMouseUp: any
 ) => {
   const {remoteDrag, isDropping, id: reflectionId, isViewerDragging} = reflection
   const atmosphere = useAtmosphere()
 
   // handle drag end
   useEffect(() => {
-    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag && !isSpotlightOpen) {
+    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag && drag.id.length) {
       updateClonePosition(drag.ref, reflectionId, windowDims.clientHeight)
     }
   }, [isDropping, staticIdx, drag, remoteDrag, reflectionId])
@@ -359,10 +360,10 @@ const useDraggableReflectionCard = (
   meetingId: string,
   teamId: string,
   staticReflectionCount: number,
-  isSpotlightOpen: boolean,
+  isInSpotlight: boolean,
   swipeColumn?: SwipeColumn
 ) => {
-  useRemoteDrag(reflection, drag, staticIdx)
+  useRemoteDrag(reflection, drag, staticIdx, isInSpotlight)
   useDroppingDrag(drag, reflection)
   usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
   const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(
@@ -374,7 +375,7 @@ const useDraggableReflectionCard = (
     staticReflectionCount,
     swipeColumn
   )
-  useLocalDrag(reflection, drag, staticIdx, onMouseMove, onMouseUp, isSpotlightOpen)
+  useLocalDrag(reflection, drag, staticIdx, onMouseMove, onMouseUp)
   return {onMouseDown}
 }
 

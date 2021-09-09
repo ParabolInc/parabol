@@ -30,7 +30,7 @@ const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   opacity: 0,
   overflow: 'hidden',
   width: isDesktop ? '80vw' : '90vw',
-  zIndex: ZIndex.SPOTLIGHT_MODAL
+  zIndex: ZIndex.DIALOG
 }))
 
 const SelectedReflectionSection = styled('div')({
