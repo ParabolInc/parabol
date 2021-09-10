@@ -96,9 +96,6 @@ const DraggableReflectionCard = (props: Props) => {
     swipeColumn
   )
 
-  if (isSpotlightOpen && !isInSpotlight) {
-    drag.ref?.removeEventListener
-  }
   const isDragPhase = phaseType === 'group' && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
