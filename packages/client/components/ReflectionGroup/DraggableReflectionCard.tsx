@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useLayoutEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
@@ -36,6 +36,7 @@ const makeDragState = () => ({
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
+  isBehindSpotlight: false,
   timeout: null as null | number
 })
 
@@ -82,8 +83,8 @@ const DraggableReflectionCard = (props: Props) => {
   const {isDropping, isEditing} = reflection
   const isSpotlightOpen = !!spotlightReflection?.id
   const isInSpotlight = isSpotlightOpen && !openSpotlight
-
-  const [drag] = useState(makeDragState)
+  const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
+  const [drag, setDrag] = useState(makeDragState)
   const staticReflectionCount = staticReflections?.length || 0
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
@@ -95,6 +96,16 @@ const DraggableReflectionCard = (props: Props) => {
     isInSpotlight,
     swipeColumn
   )
+
+  useLayoutEffect(() => {
+    if (drag.isBehindSpotlight !== isBehindSpotlight) {
+      setDrag({...drag, isBehindSpotlight})
+    }
+  }, [isBehindSpotlight])
+
+  if (isSpotlightOpen && !isInSpotlight) {
+    drag.ref?.removeEventListener
+  }
   const isDragPhase = phaseType === 'group' && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag

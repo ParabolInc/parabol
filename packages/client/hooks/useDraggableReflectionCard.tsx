@@ -36,7 +36,7 @@ const useRemoteDrag = (
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
   const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
-    if (!drag.ref || timeRemaining <= 0) return
+    if (!drag.ref || timeRemaining <= 0 || drag.isBehindSpotlight) return
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
@@ -86,7 +86,7 @@ const useLocalDrag = (
 
   // handle drag end
   useEffect(() => {
-    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag && drag.id.length) {
+    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag && !drag.isBehindSpotlight) {
       updateClonePosition(drag.ref, reflectionId, windowDims.clientHeight)
     }
   }, [isDropping, staticIdx, drag, remoteDrag, reflectionId])
