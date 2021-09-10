@@ -429,10 +429,8 @@ const User = new GraphQLObjectType<any, GQLContext>({
         const {meetingId} = retroReflection
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         const r = await getRethink()
-        // const [viewerMeetingMember, reflectionGroups, reflections] = await Promise.all([
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
-          // dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
           r
             .table('RetroReflection')
             .getAll(meetingId, {index: 'meetingId'})
@@ -444,9 +442,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
         if (viewerMeetingId !== meetingId) {
           return standardError(new Error('Not on team'), {userId})
         }
-        const testa = groupReflections(reflections, AUTO_GROUPING_THRESHOLD)
-        console.log('🚀 ~ resolve: ~ testa', testa)
-        const {groups} = testa
+        const {groups} = groupReflections(reflections, AUTO_GROUPING_THRESHOLD)
         const groupIds = new Set<string>()
         groups.forEach((group) => {
           const {id} = group

@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject} from 'react'
 import {SpotlightGroups_meeting$key} from '~/__generated__/SpotlightGroups_meeting.graphql'
 import {SpotlightGroups_viewer$key} from '~/__generated__/SpotlightGroups_viewer.graphql'
-import SpotlightEmptyState from './SpotlightEmptyState'
+import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
 import {useFragment} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 
@@ -47,7 +47,7 @@ const SpotlightGroups = (props: Props) => {
   const {similarReflectionGroups} = userData
 
   if (!similarReflectionGroups.length) {
-    return <SpotlightEmptyState />
+    return <SpotlightGroupsEmptyState />
   }
   return (
     <Container>
