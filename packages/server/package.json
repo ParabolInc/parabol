@@ -17,6 +17,7 @@
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
     "lint": "eslint --fix ./**/*.ts",
+    "test": "jest --verbose",
     "postversion": "git push --follow-tags",
     "tsgen:gh": "gql2ts utils/githubSchema.ts -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
     "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' ",
@@ -30,6 +31,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/graphql": "^14.5.0",
     "@types/ioredis": "^4.0.10",
+    "@types/jest": "^27.0.1",
     "@types/jsonwebtoken": "^8.3.0",
     "@types/mime-types": "^2.1.0",
     "@types/ms": "^0.7.30",
@@ -50,11 +52,14 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
+    "faker": "^5.5.3",
     "file-loader": "6.2.0",
     "gql2ts": "^1.10.1",
     "graphql-typed": "^0.4.1",
     "graphql-typescript-definitions": "^0.21.0",
     "ignore-loader": "^0.1.2",
+    "jest": "^27.0.6",
+    "jest-extended": "^0.11.5",
     "jsdom": "^15.1.1",
     "json-loader": "^0.5.7",
     "lint-staged": "^10.1.7",
@@ -66,6 +71,7 @@
     "style-loader": "2.0.0",
     "sucrase": "^3.16.0",
     "terser-webpack-plugin": "5.0.3",
+    "ts-jest": "^27.0.5",
     "ts-node": "^8.6.2",
     "typescript": "4.4.2",
     "url-loader": "4.1.1",
@@ -143,7 +149,6 @@
     "modulePaths": [
       "<rootDir>/packages/"
     ],
-    "testRegex": "/__tests__/.*.test\\.jsx?$",
-    "testResultsProcessor": "./__tests__/teardown"
+    "testRegex": "/__tests__/.*.test\\.ts?$"
   }
 }
