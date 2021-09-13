@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "esModuleInterop": true,
+    // "noImplicitAny": true,
     "baseUrl": "../",
     "paths": {
       "server/*": [

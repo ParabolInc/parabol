@@ -6,7 +6,12 @@ import {
   GraphQLInterfaceType,
   GraphQLNonNull
 } from 'graphql'
+import AuthToken from '../../database/types/AuthToken'
+import GenericMeetingPhase,{
+  NewMeetingPhaseTypeEnum as NewMeetingPhaseTypeEnumType
+} from '../../database/types/GenericMeetingPhase'
 import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NewMeeting from './NewMeeting'
 import NewMeetingPhase from './NewMeetingPhase'
@@ -40,9 +45,11 @@ export const newMeetingStageFields = () => ({
   meeting: {
     type: NewMeeting,
     description: 'The meeting this stage belongs to',
-    resolve: ({meetingId}, _args, {dataLoader}) => {
-      return dataLoader.get('newMeetings').load(meetingId)
-    }
+    resolve: (
+      {meetingId}: {meetingId: string},
+      _args: any,
+      {dataLoader}: GQLContext
+    ) => dataLoader.get('newMeetings').load(meetingId)
   },
   isComplete: {
     type: new GraphQLNonNull(GraphQLBoolean),
@@ -60,10 +67,15 @@ export const newMeetingStageFields = () => ({
   phase: {
     type: NewMeetingPhase,
     description: 'The phase this stage belongs to',
-    resolve: async ({meetingId, phaseType}, _args, {dataLoader}) => {
+    resolve: async (
+      {meetingId, phaseType}: {meetingId: string, phaseType: NewMeetingPhaseTypeEnumType},
+      _args: any,
+      {dataLoader}: GQLContext
+    ) => {
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       const {phases} = meeting
-      return phases.find((phase) => phase.phaseType === phaseType)
+      return phases.find((phase: GenericMeetingPhase) =>
+        phase.phaseType === phaseType)
     }
   },
   phaseType: {
@@ -85,7 +97,11 @@ export const newMeetingStageFields = () => ({
   isViewerReady: {
     type: GraphQLNonNull(GraphQLBoolean),
     description: 'true if the viewer is ready to advance, else false',
-    resolve: ({readyToAdvance}, _args, {authToken}) => {
+    resolve: (
+      {readyToAdvance}: {readyToAdvance: string[]},
+      _args: any,
+      {authToken}: {authToken: AuthToken}
+    ) => {
       const viewerId = getUserId(authToken)
       return readyToAdvance?.includes(viewerId) ?? false
     }
@@ -93,12 +109,17 @@ export const newMeetingStageFields = () => ({
   readyCount: {
     type: GraphQLNonNull(GraphQLInt),
     description: 'the number of meeting members ready to advance, excluding the facilitator',
-    resolve: async ({meetingId, readyToAdvance}, _args, {dataLoader}, ref) => {
+    resolve: async (
+      {meetingId, readyToAdvance}: {meetingId: string, readyToAdvance: string[]},
+      _args: any,
+      {dataLoader}: GQLContext,
+      ref: any) => {
       if (!readyToAdvance) return 0
       if (!meetingId) console.log('no meetingid', ref)
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       const {facilitatorUserId} = meeting
-      return readyToAdvance.filter((userId) => userId !== facilitatorUserId).length
+      return readyToAdvance.filter((userId: string) => 
+        userId !== facilitatorUserId).length
     }
   },
   scheduledEndTime: {
@@ -123,8 +144,8 @@ export const newMeetingStageFields = () => ({
     type: GraphQLFloat,
     description:
       'The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null',
-    resolve: ({scheduledEndTime}) => {
-      return scheduledEndTime ? scheduledEndTime - Date.now() : null
+    resolve: ({scheduledEndTime}: {scheduledEndTime?: Date | null}) => {
+      return scheduledEndTime ? (scheduledEndTime as any) - Date.now() : null
     }
   }
 })

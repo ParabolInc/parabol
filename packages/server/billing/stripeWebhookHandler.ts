@@ -4,10 +4,12 @@ import parseBody from '../parseBody'
 import publishWebhookGQL from '../utils/publishWebhookGQL'
 import StripeManager from '../utils/StripeManager'
 
+interface InvoiceEventCallBackArg {id: string}
+
 const eventLookup = {
   invoice: {
     created: {
-      getVars: ({id: invoiceId}) => ({invoiceId}),
+      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `
         mutation StripeCreateInvoice($invoiceId: ID!) {
           stripeCreateInvoice(invoiceId: $invoiceId)
@@ -15,7 +17,7 @@ const eventLookup = {
       `
     },
     payment_failed: {
-      getVars: ({id: invoiceId}) => ({invoiceId}),
+      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `
         mutation StripeFailPayment($invoiceId: ID!) {
           stripeFailPayment(invoiceId: $invoiceId) {
@@ -27,7 +29,7 @@ const eventLookup = {
       `
     },
     payment_succeeded: {
-      getVars: ({id: invoiceId}) => ({invoiceId}),
+      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `
         mutation StripeSucceedPayment($invoiceId: ID!) {
           stripeSucceedPayment(invoiceId: $invoiceId)
@@ -35,7 +37,7 @@ const eventLookup = {
       `
     },
     finalized: {
-      getVars: ({id: invoiceId}) => ({invoiceId}),
+      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
       query: `
       mutation StripeInvoiceFinalized($invoiceId: ID!) {
         stripeInvoiceFinalized(invoiceId: $invoiceId)
@@ -44,7 +46,7 @@ const eventLookup = {
   },
   invoiceitem: {
     created: {
-      getVars: ({id: invoiceItemId}) => ({invoiceItemId}),
+      getVars: ({id: invoiceItemId}: {id: string}) => ({invoiceItemId}),
       query: `
         mutation StripeUpdateInvoiceItem($invoiceItemId: ID!) {
           stripeUpdateInvoiceItem(invoiceItemId: $invoiceItemId)
@@ -55,7 +57,7 @@ const eventLookup = {
   customer: {
     source: {
       updated: {
-        getVars: ({customer: customerId}) => ({customerId}),
+        getVars: ({customer: customerId}: {customer: string}) => ({customerId}),
         query: `
         mutation StripeUpdateCreditCard($customerId: ID!) {
           stripeUpdateCreditCard(customerId: $customerId)
@@ -70,7 +72,7 @@ const splitType = (type = '') => {
   const names = type.split('.')
   return {
     event: names[0],
-    subEvent: names.length === 3 ? names[1] : undefined,
+    subEvent: (names.length === 3 ? names[1] : undefined),
     action: names[names.length - 1]
   }
 }
