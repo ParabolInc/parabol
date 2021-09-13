@@ -103,17 +103,23 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     .run()
 
   if (isFlushed) {
-    const orgUserCount = await r
+    const orgUsers = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({
         inactive: false,
         removedAt: null
       })
-      .count()
       .run()
+    const orgUserCount = orgUsers.length
     if (orgUserCount !== nextQuantity) {
-      sendToSentry(new Error('Stripe Quantity Mismatch'), {
+      const errorStr = `Stripe Quantity Mismatch:
+        OrganizationUsers in our DB are:
+        ${JSON.stringify(orgUsers)}
+        Event type is ${type}.
+        Stripe subscription has been updated from ${stripeQty} to ${nextQuantity}.
+      `
+      sendToSentry(new Error(errorStr), {
         userId,
         tags: {quantity: nextQuantity, expectedQuantity: orgUserCount, stripeSubscriptionId}
       })
