@@ -14,7 +14,8 @@ const getVerifiedAuthToken = (jwt: string | undefined | null, ignoreExp?: boolea
       clockTolerance: 10
     }) as AuthToken
   } catch (e) {
-    sendToSentry(e, {tags: {jwt}})
+    const error = e instanceof Error ? e : new Error('Verify auth token failed')
+    sendToSentry(error, {tags: {jwt}})
     return {} as AuthToken
   }
 }

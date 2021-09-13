@@ -76,14 +76,22 @@ export default {
       try {
         newReflectionGroupId = await removeReflectionFromGroup(reflectionId, context)
       } catch (e) {
-        return standardError(e, {userId: viewerId})
+        const error =
+          e instanceof Error
+            ? e
+            : new Error(`Failed to removeReflectionFromGroup. reflectionId: ${reflectionId}`)
+        return standardError(error, {userId: viewerId})
       }
     } else if (dropTargetType === 'REFLECTION_GROUP' && dropTargetId) {
       // group
       try {
         newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
       } catch (e) {
-        return standardError(e, {userId: viewerId})
+        const error =
+          e instanceof Error
+            ? e
+            : new Error(`Failed to addReflectionToGroup. reflectionId: ${reflectionId}`)
+        return standardError(error, {userId: viewerId})
       }
     }
     const data = {

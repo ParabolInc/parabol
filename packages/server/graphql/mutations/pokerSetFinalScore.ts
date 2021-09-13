@@ -137,7 +137,8 @@ const pokerSetFinalScore = {
             dimensionField?.fieldType === 'string' ? finalScore : Number(finalScore)
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
-          return {error: {message: e.message}}
+          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
+          return {error: {message}}
         }
       }
     }
