@@ -26,7 +26,6 @@
     "build": "node scripts/prod.js",
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
-    "pg:postmigrate": "node-pg-migrate -f ./packages/server/postgres/pgmPostDeployConfig.js",
     "db:start": "docker-compose -f docker/dev.yml up -d",
     "db:stop": "docker-compose -f docker/dev.yml down",
     "db:create": "node scripts/toolbox/createMigration.js",
