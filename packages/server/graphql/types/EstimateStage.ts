@@ -81,6 +81,8 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
 
           return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
         }
+        if (integration.service === 'github') {
+        }
         return NULL_FIELD
       }
     },

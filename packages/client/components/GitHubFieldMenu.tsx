@@ -1,0 +1,74 @@
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {MenuProps} from '../hooks/useMenu'
+import {SprintPokerDefaults} from '../types/constEnums'
+import {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_stage.graphql'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+interface Props {
+  menuProps: MenuProps
+  stageRef: GitHubFieldMenu_stage$key
+}
+
+const GitHubFieldMenu = (props: Props) => {
+  const {menuProps, stageRef} = props
+  const stage = useFragment(
+    graphql`
+      fragment GitHubFieldMenu_stage on EstimateStage {
+        serviceField {
+          name
+        }
+        task {
+          integration {
+            ... on _xGitHubIssue {
+              __typename
+            }
+          }
+        }
+      }
+    `,
+    stageRef
+  )
+  const {portalStatus, isDropdown, closePortal} = menuProps
+  const {serviceField, task} = stage
+  const {name: serviceFieldName} = serviceField
+  const defaults = [
+    SprintPokerDefaults.GITHUB_FIELD_COMMENT,
+    SprintPokerDefaults.GITHUB_FIELD_NULL
+  ] as string[]
+  const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
+
+  if (task?.integration?.__typename !== '_xGitHubIssue') return null
+
+  const handleClick = (_fieldName: string) => () => {
+    // UpdateGitHubDimensionFieldMutation(atmosphere, {
+    //   dimensionName,
+    //   fieldName,
+    //   meetingId,
+    //   cloudId,
+    //   projectKey
+    // })
+    closePortal()
+  }
+  return (
+    <Menu
+      ariaLabel={'Select where to publish the estimate'}
+      portalStatus={portalStatus}
+      isDropdown={isDropdown}
+      defaultActiveIdx={defaultActiveIdx}
+    >
+      <MenuItem label={'Labels TBD'} onClick={handleClick('cha la la')} />
+      <MenuItem
+        label={SprintPokerDefaults.GITHUB_FIELD_COMMENT_LABEL}
+        onClick={handleClick(SprintPokerDefaults.GITHUB_FIELD_COMMENT)}
+      />
+      <MenuItem
+        label={SprintPokerDefaults.GITHUB_FIELD_NULL_LABEL}
+        onClick={handleClick(SprintPokerDefaults.GITHUB_FIELD_NULL)}
+      />
+    </Menu>
+  )
+}
+
+export default GitHubFieldMenu
