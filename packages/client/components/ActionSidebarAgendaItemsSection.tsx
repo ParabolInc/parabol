@@ -1,4 +1,4 @@
-import styled from '@emotion/styled-base'
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
