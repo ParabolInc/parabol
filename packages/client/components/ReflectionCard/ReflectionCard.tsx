@@ -33,6 +33,7 @@ import {Breakpoint, ZIndex} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
+import isDemoRoute from '~/utils/isDemoRoute'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -229,6 +230,7 @@ const ReflectionCard = (props: Props) => {
     !isSpotlightOpen &&
     !isComplete &&
     showSpotlight &&
+    !isDemoRoute() &&
     (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
