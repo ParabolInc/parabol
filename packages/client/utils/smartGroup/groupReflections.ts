@@ -1,17 +1,27 @@
 import computeDistanceMatrix from './computeDistanceMatrix'
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
-import {ReflectionCard_reflection} from '~/__generated__/ReflectionCard_reflection.graphql'
 import getGroupMatrix from './getGroupMatrix'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
+import Reflection from '~/../server/database/types/Reflection'
 
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes
  */
 
-interface Reflection {
-  entities: any[]
+type Entity = {
+  lemma: string
+  name: string
+  salience: number
+}
+
+type GroupedReflection = {
+  id: string
+  entities: Entity[]
+  oldReflectionGroupId: string
+  sortOrder: number
   reflectionGroupId: string
 }
+
 const groupReflections = <T extends Reflection>(reflections: T[], groupingThreshold: number) => {
   const allReflectionEntities = reflections.map(({entities}) => entities!)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
@@ -25,7 +35,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
     groupingThreshold
   )
   // replace the arrays with reflections
-  const updatedReflections = [] as Partial<ReflectionCard_reflection>[]
+  const updatedReflections = [] as GroupedReflection[]
   const reflectionGroupMapping = {} as Record<string, string>
   const updatedGroups = (groupedArrays as any[]).map((group) => {
     // look up the reflection by its vector, put them all in the same group
@@ -35,6 +45,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
       const reflection = reflections[idx]
       reflectionGroupId = (reflectionGroupId || reflection.reflectionGroupId) as string
       return {
+        id: reflection.id,
         entities: reflection.entities,
         oldReflectionGroupId: reflection.reflectionGroupId,
         sortOrder,

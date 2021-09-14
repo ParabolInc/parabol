@@ -426,7 +426,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
         if (!retroReflection) {
           return standardError(new Error('Invalid reflection id'), {userId})
         }
-        const {meetingId} = retroReflection
+        const {meetingId, reflectionGroupId: spotlightGroupId} = retroReflection
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
@@ -442,17 +442,31 @@ const User = new GraphQLObjectType<any, GQLContext>({
         if (viewerMeetingId !== meetingId) {
           return standardError(new Error('Not on team'), {userId})
         }
-        const {groups} = groupReflections(reflections, AUTO_GROUPING_THRESHOLD)
-        const groupIds = new Set<string>()
-        groups.forEach((group) => {
-          const {id} = group
-          if (id !== retroReflection.reflectionGroupId) {
-            groupIds.add(group.id)
-          }
-        })
+        let currentThreshold = AUTO_GROUPING_THRESHOLD
+        const similarGroupIds = new Set<string>()
+        while (currentThreshold && similarGroupIds.size < 10) {
+          const {groupedReflections, nextThresh} = groupReflections(reflections, currentThreshold)
+          const spotlightGroup = groupedReflections.find(
+            (group) => group.oldReflectionGroupId === spotlightGroupId
+          )
+          if (!spotlightGroup) break
+          const {
+            reflectionGroupId: newSpotlightGroupId,
+            oldReflectionGroupId: oldSpotlightGroupId
+          } = spotlightGroup
+          groupedReflections.forEach((group) => {
+            if (
+              group.reflectionGroupId === newSpotlightGroupId &&
+              group.oldReflectionGroupId !== oldSpotlightGroupId
+            ) {
+              similarGroupIds.add(group.oldReflectionGroupId)
+            }
+          })
+          currentThreshold = nextThresh
+        }
         const similarGroups = await r
           .table('RetroReflectionGroup')
-          .getAll(r.args(Array.from(groupIds)), {index: 'id'})
+          .getAll(r.args(Array.from(similarGroupIds)), {index: 'id'})
           .run()
         return similarGroups
       }
