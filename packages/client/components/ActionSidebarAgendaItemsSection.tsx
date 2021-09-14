@@ -8,7 +8,8 @@ import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSi
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 const StyledRoot = styled(MeetingSidebarPhaseItemChild)({
-  minHeight: 58
+  overflow: 'visible',
+  minHeight: 'fit-content'
 })
 
 interface Props {
