@@ -426,7 +426,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
         if (!retroReflection) {
           return standardError(new Error('Invalid reflection id'), {userId})
         }
-        const {meetingId, reflectionGroupId: spotlightGroupId} = retroReflection
+        const {meetingId} = retroReflection
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
@@ -442,33 +442,40 @@ const User = new GraphQLObjectType<any, GQLContext>({
         if (viewerMeetingId !== meetingId) {
           return standardError(new Error('Not on team'), {userId})
         }
-        let currentThreshold = AUTO_GROUPING_THRESHOLD
+        let currentThreshold: number | null = AUTO_GROUPING_THRESHOLD
         const similarGroupIds = new Set<string>()
-        while (currentThreshold && similarGroupIds.size < 10) {
-          const {groupedReflections, nextThresh} = groupReflections(reflections, currentThreshold)
+        const reflectionsCount = reflections.length
+        const maxGroupSize = Math.min(reflectionsCount, 10)
+        while (currentThreshold) {
+          const {groupedReflections, nextThresh} = groupReflections(reflections, {
+            groupingThreshold: currentThreshold,
+            maxGroupSize: reflectionsCount,
+            maxReductionPercent: 1
+          })
           const spotlightGroup = groupedReflections.find(
-            (group) => group.oldReflectionGroupId === spotlightGroupId
+            (group) => group.reflectionId === reflectionId
           )
-          if (!spotlightGroup) break
-          const {
-            reflectionGroupId: newSpotlightGroupId,
-            oldReflectionGroupId: oldSpotlightGroupId
-          } = spotlightGroup
-          groupedReflections.forEach((group) => {
+          if (!spotlightGroup) {
+            break
+          }
+          for (const group of groupedReflections) {
+            if (similarGroupIds.size === maxGroupSize) {
+              currentThreshold = null
+              break
+            }
             if (
-              group.reflectionGroupId === newSpotlightGroupId &&
-              group.oldReflectionGroupId !== oldSpotlightGroupId
+              group.reflectionGroupId === spotlightGroup.reflectionGroupId &&
+              group.oldReflectionGroupId !== spotlightGroup.oldReflectionGroupId
             ) {
               similarGroupIds.add(group.oldReflectionGroupId)
             }
-          })
-          currentThreshold = nextThresh
+            currentThreshold = nextThresh
+          }
         }
-        const similarGroups = await r
+        return r
           .table('RetroReflectionGroup')
           .getAll(r.args(Array.from(similarGroupIds)), {index: 'id'})
           .run()
-        return similarGroups
       }
     },
     tasks: require('../queries/tasks').default,

@@ -135,7 +135,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+  new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -179,7 +179,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ; (phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -1077,7 +1077,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         groups,
         removedReflectionGroupIds,
         nextThresh
-      } = groupReflections(reflections as any, groupingThreshold)
+      } = groupReflections(reflections as any, {groupingThreshold})
       removedReflectionGroupIds.forEach((groupId) => {
         const group = this.db.reflectionGroups.find((group) => group.id === groupId)!
         group.isActive = false
@@ -1095,7 +1095,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         })
       })
       groupedReflections.forEach((updatedReflection) => {
-        const reflection = this.db.reflections.find((r) => r.id === updatedReflection.id)
+        const reflection = this.db.reflections.find((r) => r.id === updatedReflection.reflectionId)
         const newGroup = this.db.reflectionGroups.find(
           (group) => group.id === updatedReflection.reflectionGroupId
         )!
@@ -1115,7 +1115,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
 
       const reflectionGroupIds = groups.map(({id}) => id)
-      const reflectionIds = groupedReflections.map(({id}) => id)
+      const reflectionIds = groupedReflections.map(({reflectionId}) => reflectionId)
       const data = {
         error: null,
         meeting: this.db.newMeeting,

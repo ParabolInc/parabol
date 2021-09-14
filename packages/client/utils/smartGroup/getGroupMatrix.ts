@@ -1,4 +1,5 @@
 import * as clusterfck from 'tayden-clusterfck'
+import {GroupingOptions} from './groupReflections'
 
 /*
  * Use hierarchical agglomerative clustering to group the reflections by theme
@@ -19,10 +20,11 @@ const MAX_GROUP_SIZE = 5
 const MIN_REDUCTION_PERCENT = 0.01
 const MAX_REDUCTION_PERCENT = 0.8
 
-const traverseTree = (initialTree, groupingThreshold) => {
-  const groups = []
+const traverseTree = (initialTree, groupingOptions: GroupingOptions) => {
+  const groups = [] as any
   const distanceSet = new Set()
-  const visit = (tree, group) => {
+  const {groupingThreshold, maxGroupSize = MAX_GROUP_SIZE} = groupingOptions
+  const visit = (tree, group?) => {
     if (tree.dist) {
       distanceSet.add(tree.dist)
     }
@@ -32,7 +34,7 @@ const traverseTree = (initialTree, groupingThreshold) => {
       } else {
         groups.push([tree.value])
       }
-    } else if (!group && tree.size <= MAX_GROUP_SIZE && tree.dist <= groupingThreshold) {
+    } else if (!group && tree.size <= maxGroupSize && tree.dist <= groupingThreshold) {
       const newGroup = []
       visit(tree.left, newGroup)
       visit(tree.right, newGroup)
@@ -45,16 +47,17 @@ const traverseTree = (initialTree, groupingThreshold) => {
   visit(initialTree)
   return {groups, distanceSet}
 }
-const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
+const getGroupMatrix = (distanceMatrix, groupingOptions: GroupingOptions) => {
   const clusters = clusterfck.hcluster(distanceMatrix, clusterfck.euclidean, 'average')
   const {tree} = clusters
+  const {groupingThreshold, maxReductionPercent = MAX_REDUCTION_PERCENT} = groupingOptions
   if (!tree) return {groups: []}
   let groups
   let thresh = groupingThreshold
   let distancesArr
   // naive logic to make sure the grouping is AOK
   for (let i = 0; i < 5; i++) {
-    const res = traverseTree(tree, thresh)
+    const res = traverseTree(tree, groupingOptions)
     groups = res.groups
     distancesArr = Array.from(res.distanceSet).sort()
     const reduction = (distanceMatrix.length - groups.length) / distanceMatrix.length
@@ -63,7 +66,7 @@ const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
       const nextDistance = distancesArr.find((d) => d > thresh)
       if (!nextDistance || nextDistance >= 1) break
       thresh = Math.ceil(nextDistance * 100) / 100
-    } else if (reduction > MAX_REDUCTION_PERCENT) {
+    } else if (reduction > maxReductionPercent) {
       // eslint-disable-next-line no-loop-func
       const nextDistance = distancesArr.find((d) => d < thresh)
       if (!nextDistance || nextDistance >= 1) break

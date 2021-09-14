@@ -15,14 +15,23 @@ type Entity = {
 }
 
 type GroupedReflection = {
-  id: string
+  reflectionId: string
   entities: Entity[]
   oldReflectionGroupId: string
   sortOrder: number
   reflectionGroupId: string
 }
 
-const groupReflections = <T extends Reflection>(reflections: T[], groupingThreshold: number) => {
+export type GroupingOptions = {
+  groupingThreshold: number
+  maxGroupSize?: number
+  maxReductionPercent?: number
+}
+
+const groupReflections = <T extends Reflection>(
+  reflections: T[],
+  groupingOptions: GroupingOptions
+) => {
   const allReflectionEntities = reflections.map(({entities}) => entities!)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
 
@@ -32,7 +41,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
   const distanceMatrix = computeDistanceMatrix(allReflectionEntities, uniqueLemmaArr)
   const {groups: groupedArrays, thresh, nextThresh} = getGroupMatrix(
     distanceMatrix,
-    groupingThreshold
+    groupingOptions
   )
   // replace the arrays with reflections
   const updatedReflections = [] as GroupedReflection[]
@@ -45,7 +54,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
       const reflection = reflections[idx]
       reflectionGroupId = (reflectionGroupId || reflection.reflectionGroupId) as string
       return {
-        id: reflection.id,
+        reflectionId: reflection.id,
         entities: reflection.entities,
         oldReflectionGroupId: reflection.reflectionGroupId,
         sortOrder,
