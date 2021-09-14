@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import CreatePollPayload from '../types/CreatePollPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 import {GQLContext} from '../graphql'
 import CreatePollInput from '../types/CreatePollInput'
@@ -10,10 +10,6 @@ import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import insertPoll from '../../postgres/queries/insertPoll'
 import insertPollOptions from '../../postgres/queries/insertPollOptions'
 import segmentIo from '../../utils/segmentIo'
-
-const MAX_POLL_OPTIONS = 4
-const MIN_POLL_OPTIONS = 2
-const MAX_TITLE_LENGTH = 100
 
 type PollOptionsInputVariables = {
   title: string
@@ -45,51 +41,50 @@ const createPoll = {
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const {teamId, discussionId, threadSortOrder, title, options} = newPoll
-
-    //AUTH
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: 'Not on team'}}
-    }
+    const {discussionId, threadSortOrder, title, options} = newPoll
 
     // VALIDATION
-    if (!title) {
-      return {error: {message: 'No poll title provided'}}
-    }
-    if (title.length > MAX_TITLE_LENGTH) {
+    if (title.length < Polls.MIN_TITLE_LENGTH) {
       return {
         error: {
-          message: `Poll title too long, provided title is ${title.length}, max ${MAX_TITLE_LENGTH}`
+          message: `Poll title too short, provided title is ${title.length}, min ${Polls.MIN_TITLE_LENGTH}`
+        }
+      }
+    }
+    if (title.length > Polls.MAX_TITLE_LENGTH) {
+      return {
+        error: {
+          message: `Poll title too long, provided title is ${title.length}, max ${Polls.MAX_TITLE_LENGTH}`
         }
       }
     }
     if (options.length === 0) {
       return {error: {message: 'No poll options provided'}}
     }
-    if (options.length < MIN_POLL_OPTIONS) {
+    if (options.length < Polls.MIN_OPTIONS) {
       return {
         error: {
-          message: `Poll has to have at least ${MIN_POLL_OPTIONS} options, provided ${options.length}`
+          message: `Poll has to have at least ${Polls.MIN_OPTIONS} options, provided ${options.length}`
         }
       }
     }
-    if (options.length > MAX_POLL_OPTIONS) {
+    if (options.length > Polls.MAX_OPTIONS) {
       return {
         error: {
-          message: `Poll can have at most ${MAX_POLL_OPTIONS} options, provided ${options.length}`
+          message: `Poll can have at most ${Polls.MAX_OPTIONS} options, provided ${options.length}`
         }
       }
     }
-    if (options.some((option) => !option.title)) {
+    if (options.some((option) => option.title.length === 0)) {
       return {error: {message: 'All options need a title'}}
     }
     const discussion = await dataLoader.get('discussions').load(discussionId)
     if (!discussion) {
       return {error: {message: 'Invalid discussion thread'}}
     }
-    const {meetingId} = discussion
-    if (!meetingId) {
-      return {error: {message: 'Discussion does not take place in a meeting'}}
+    const {meetingId, teamId} = discussion
+    if (!isTeamMember(authToken, teamId)) {
+      return {error: {message: 'Not on team'}}
     }
     const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
     const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)

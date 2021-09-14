@@ -11,10 +11,6 @@ import PollOptionInput from './CreatePollOptionInput'
 const CreatePollInput = new GraphQLInputObjectType({
   name: 'CreatePollInput',
   fields: () => ({
-    teamId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'Foreign key for the team this poll belongs to'
-    },
     discussionId: {
       type: GraphQLNonNull(GraphQLID),
       description: 'Foreign key for the discussion this was created in'

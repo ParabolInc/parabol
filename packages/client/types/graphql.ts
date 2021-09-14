@@ -58911,11 +58911,6 @@ export interface IPollOption {
 
 export interface ICreatePollInput {
   /**
-   * Foreign key for the team this poll belongs to
-   */
-  teamId: string;
-
-  /**
    * Foreign key for the discussion this was created in
    */
   discussionId: string;

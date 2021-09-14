@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import Team from './Team'
 import PollOptionId from '../../../client/shared/gqlIds/PollOptionId'
+import Poll from './Poll'
 
 const PollOption = new GraphQLObjectType<any, GQLContext>({
   name: 'PollOption',
@@ -26,7 +26,7 @@ const PollOption = new GraphQLObjectType<any, GQLContext>({
       description: 'The foreign key of the poll this option belongs to'
     },
     poll: {
-      type: GraphQLNonNull(Team),
+      type: GraphQLNonNull(Poll),
       description: 'The poll this option belongs to',
       resolve: ({pollId}, _args, {dataLoader}) => {
         return dataLoader.get('polls').load(pollId)
