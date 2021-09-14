@@ -58844,7 +58844,7 @@ export interface IPoll {
   /**
    * The foreign key for the meeting the poll was created in
    */
-  meetingId: string;
+  meetingId: string | null;
 
   /**
    * The id of the team (indexed)
@@ -58896,7 +58896,7 @@ export interface IPollOption {
   /**
    * The poll this option belongs to
    */
-  poll: ITeam;
+  poll: IPoll;
 
   /**
    * The ids of the users who voted for this option

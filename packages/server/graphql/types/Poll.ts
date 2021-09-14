@@ -21,7 +21,7 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
       resolve: ({id}) => PollId.join(id)
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The foreign key for the meeting the poll was created in'
     },
     teamId: {
