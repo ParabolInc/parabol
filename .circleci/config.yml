@@ -81,6 +81,7 @@ jobs:
               curl https://bootstrap.pypa.io/pip/3.4/get-pip.py -o get-pip.py
               sudo python get-pip.py pip==20.3.3
               sudo pip install rethinkdb==2.4.0
+              sudo pip install six
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
               node scripts/toolbox/softenDurability.js
               yarn db:migrate && yarn pg:migrate up

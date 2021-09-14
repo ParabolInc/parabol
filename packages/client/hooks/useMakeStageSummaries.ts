@@ -82,7 +82,7 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         } else if (integration.__typename === '_xGitHubIssue') {
           return {
             title: integration.title,
-            subtitle: String(integration.number)
+            subtitle: `#${integration.number}`
           }
         }
         return {
