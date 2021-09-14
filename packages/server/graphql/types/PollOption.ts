@@ -11,7 +11,7 @@ const PollOption = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'Poll option id in a format of `pollOption:idGeneratedByDatabase`',
-      resolve: ({id}) => PollOptionId.create(id)
+      resolve: ({id}) => PollOptionId.join(id)
     },
     createdAt: {
       type: GraphQLNonNull(GraphQLISO8601Type),

@@ -18,7 +18,7 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'Poll id in a format of `poll:idGeneratedByDatabase`',
-      resolve: ({id}) => PollId.create(id)
+      resolve: ({id}) => PollId.join(id)
     },
     meetingId: {
       type: GraphQLNonNull(GraphQLID),
