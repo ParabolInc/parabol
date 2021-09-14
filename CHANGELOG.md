@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.27.0 2021-Sep-08
+
+### Added
+
+- Spotlight similarReflectionGroups query (#5277)
+- Add poll button (#5303)
+
+### Fixed
+
+- Ironbank mitigation fixes for @ Parabol version 6.22.0 (#5227)
+
+### Changed
+
+- Adds aria-labels to topBar nav icons (#5319)
+- Read autopauseUsers user from PG (#5329)
+- Team reads migration (#5201)
+- Do not format generated files (#5292)
+
+## 6.26.0 2021-Sep-01
+
+### Fixed
+
+- Fix bad lowercase call (#5332)
+- Fix stripeSucceedPayment (#5335)
+
+### Added
+
+- Animate reflection into Spotlight (#5271)
+
 ## 6.25.0 2021-Aug-25
 
 ### Fixed

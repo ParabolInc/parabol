@@ -316,19 +316,6 @@ export const suggestedActionsByUserId = new LoaderMakerForeign(
   }
 )
 
-export const teamsByOrgId = new LoaderMakerForeign('teams', 'orgId', async (orgIds) => {
-  const r = await getRethink()
-  return r
-    .table('Team')
-    .getAll(r.args(orgIds), {index: 'orgId'})
-    .filter((team) =>
-      team('isArchived')
-        .default(false)
-        .ne(true)
-    )
-    .run()
-})
-
 export const tasksByDiscussionId = new LoaderMakerForeign(
   'tasks',
   'discussionId',

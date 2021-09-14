@@ -73,7 +73,7 @@ const Organization = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the viewer is on in the organization',
       resolve: async ({id: orgId}, _args, {authToken, dataLoader}) => {
-        const allTeamsOnOrg = await dataLoader.get('teamsByOrgId').load(orgId)
+        const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
         return isSuperUser(authToken)
           ? allTeamsOnOrg
           : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))

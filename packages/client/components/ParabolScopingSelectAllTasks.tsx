@@ -31,7 +31,7 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
   const {meetingId, usedServiceTaskIds, tasks} = props
   const taskIds = tasks.map((taskEdge) => taskEdge.node.id)
   const atmosphere = useAtmosphere()
-  const [unusedTasks, allSelected] = useUnusedRecords(tasks, usedServiceTaskIds)
+  const [unusedTasks, allSelected] = useUnusedRecords(taskIds, usedServiceTaskIds)
   const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
   const onClick = () => {
     if (submitting) return

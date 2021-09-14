@@ -6,7 +6,7 @@ import useDeepEqual from '~/hooks/useDeepEqual'
 type Binding = string | string[]
 const useHotkey = (
   inKeys: Binding,
-  callback: (e: ExtendedKeyboardEvent, combo: string) => any,
+  callback: (e: KeyboardEvent, combo: string) => any,
   action?: string
 ) => {
   const cb = useEventCallback(callback)

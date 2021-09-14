@@ -61,7 +61,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
-  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task']
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
   return (
     <MeetingContent ref={meetingContentRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>

@@ -1,59 +1,42 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {createFragmentContainer, QueryRenderer} from 'react-relay'
-import {GitHubScopingSearchResultsRootQuery} from '~/__generated__/GitHubScopingSearchResultsRootQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {GitHubScopingSearchResultsRoot_meeting} from '../__generated__/GitHubScopingSearchResultsRoot_meeting.graphql'
-import ErrorComponent from './ErrorComponent/ErrorComponent'
+import React, {Suspense} from 'react'
+import {useFragment} from 'react-relay'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import githubScopingSearchResultsQuery, {
+  GitHubScopingSearchResultsQuery
+} from '../__generated__/GitHubScopingSearchResultsQuery.graphql'
+import {GitHubScopingSearchResultsRoot_meeting$key} from '../__generated__/GitHubScopingSearchResultsRoot_meeting.graphql'
 import GitHubScopingSearchResults from './GitHubScopingSearchResults'
-
-const query = graphql`
-  query GitHubScopingSearchResultsRootQuery($teamId: ID!, $queryString: String!) {
-    viewer {
-      ...GitHubScopingSearchResults_viewer
-    }
-  }
-`
-//$queryString: String
-
 interface Props {
-  meeting: GitHubScopingSearchResultsRoot_meeting
+  meetingRef: GitHubScopingSearchResultsRoot_meeting$key
 }
 
 const GitHubScopingSearchResultsRoot = (props: Props) => {
-  const atmosphere = useAtmosphere()
-  const {meeting} = props
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment GitHubScopingSearchResultsRoot_meeting on PokerMeeting {
+        ...GitHubScopingSearchResults_meeting
+        teamId
+        githubSearchQuery {
+          queryString
+        }
+      }
+    `,
+    meetingRef
+  )
   const {teamId, githubSearchQuery} = meeting
-  // const {teamId} = meeting
   const {queryString} = githubSearchQuery
   const normalizedQueryString = queryString.trim()
-
+  const queryRef = useQueryLoaderNow<GitHubScopingSearchResultsQuery>(
+    githubScopingSearchResultsQuery,
+    {teamId, queryString: normalizedQueryString}
+  )
   return (
-    <QueryRenderer<GitHubScopingSearchResultsRootQuery>
-      environment={atmosphere}
-      query={query}
-      variables={{
-        teamId,
-        queryString: normalizedQueryString
-      }}
-      fetchPolicy={'store-or-network' as any}
-      render={({props, error}) => {
-        const viewer = props?.viewer ?? null
-        if (error) return <ErrorComponent error={error} eventId={''} />
-        return <GitHubScopingSearchResults viewer={viewer} meeting={meeting} />
-      }}
-    />
+    <Suspense fallback={''}>
+      {queryRef && <GitHubScopingSearchResults queryRef={queryRef} meetingRef={meeting} />}
+    </Suspense>
   )
 }
 
-export default createFragmentContainer(GitHubScopingSearchResultsRoot, {
-  meeting: graphql`
-    fragment GitHubScopingSearchResultsRoot_meeting on PokerMeeting {
-      ...GitHubScopingSearchResults_meeting
-      teamId
-      githubSearchQuery {
-        queryString
-      }
-    }
-  `
-})
+export default GitHubScopingSearchResultsRoot

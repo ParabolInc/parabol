@@ -3,6 +3,7 @@ import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
+import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
 
 const autopauseUsers = {
   type: GraphQLInt,
@@ -16,13 +17,7 @@ const autopauseUsers = {
 
     // RESOLUTION
     const activeThresh = new Date(Date.now() - Threshold.AUTO_PAUSE)
-    const userIdsToPause = await r
-      .table('User')
-      .filter((user) => user('lastSeenAt').le(activeThresh))
-      .filter({
-        inactive: false
-      })('id')
-      .run()
+    const userIdsToPause = await getUserIdsToPause(activeThresh)
 
     const BATCH_SIZE = 100
     for (let i = 0; i < 1e5; i++) {

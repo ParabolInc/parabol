@@ -47,7 +47,7 @@ export default {
         orgId
       }
     })
-    const teams = await dataLoader.get('teamsByOrgId').load(orgId)
+    const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const teamArchiveResults = (await Promise.all(
       teamIds.map((teamId) => safeArchiveTeam(teamId))
