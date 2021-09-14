@@ -150,9 +150,10 @@ export const latestTaskEstimates = (parent: RethinkDataLoader) => {
 export const meetingTaskEstimates = (parent: RethinkDataLoader) => {
   return new DataLoader<{meetingId: string; taskId: string}, MeetingTaskEstimatesResult[], string>(
     async (keys) => {
+      const meetingIds = keys.map(({meetingId}) => meetingId)
       const taskIds = keys.map(({taskId}) => taskId)
 
-      const rows = await getMeetingTaskEstimates(taskIds)
+      const rows = await getMeetingTaskEstimates(taskIds, meetingIds)
       return keys.map(({meetingId, taskId}) =>
         rows.filter((row) => row.taskId === taskId && row.meetingId === meetingId)
       )

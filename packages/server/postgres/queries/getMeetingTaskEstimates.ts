@@ -1,7 +1,9 @@
 import {MaybeReadonly} from 'parabol-client/types/generics'
 import getPg from '../getPg'
-import {getLatestTaskEstimatesQuery} from './generated/getLatestTaskEstimatesQuery'
-import {IGetMeetingTaskEstimatesQueryResult} from './generated/getMeetingTaskEstimatesQuery'
+import {
+  getMeetingTaskEstimatesQuery,
+  IGetMeetingTaskEstimatesQueryResult
+} from './generated/getMeetingTaskEstimatesQuery'
 
 export interface MeetingTaskEstimatesResult extends IGetMeetingTaskEstimatesQueryResult {
   meetingId: string
@@ -9,8 +11,11 @@ export interface MeetingTaskEstimatesResult extends IGetMeetingTaskEstimatesQuer
   stageId: string
 }
 
-const getMeetingTaskEstimates = async (taskIds: MaybeReadonly<string[]>) => {
-  return getLatestTaskEstimatesQuery.run({taskIds}, getPg()) as Promise<
+const getMeetingTaskEstimates = async (
+  taskIds: MaybeReadonly<string[]>,
+  meetingIds: MaybeReadonly<string[]>
+) => {
+  return getMeetingTaskEstimatesQuery.run({taskIds, meetingIds}, getPg()) as Promise<
     MeetingTaskEstimatesResult[]
   >
 }
