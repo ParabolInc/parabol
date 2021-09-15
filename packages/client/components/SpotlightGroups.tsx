@@ -8,7 +8,10 @@ import {useFragment} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import useSpotlightColumns from '../hooks/useSpotlightColumns'
 import useGroupsByColumn from '../hooks/useGroupsByColumn'
-import {ElementWidth} from '~/types/constEnums'
+import {Breakpoint, ElementWidth} from '~/types/constEnums'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+
+const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 
 const Container = styled('div')({
   display: 'flex',
@@ -17,7 +20,10 @@ const Container = styled('div')({
   flexWrap: 'wrap',
   width: '100%',
   height: '100%',
-  padding: '64px 24px'
+  padding: '56px 24px',
+  [dashWidestBreakpoint]: {
+    padding: '72px 24px'
+  }
 })
 
 const Scrollbar = styled('div')({
@@ -69,7 +75,7 @@ const SpotlightGroups = (props: Props) => {
   )
   const {similarReflectionGroups} = userData
   const groupsRef = useRef(null)
-  const columns = useSpotlightColumns(groupsRef)
+  const columns = useSpotlightColumns(groupsRef, similarReflectionGroups.length)
   useGroupsByColumn(similarReflectionGroups, columns)
 
   if (!similarReflectionGroups.length) {
