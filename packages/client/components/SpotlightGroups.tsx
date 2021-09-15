@@ -79,7 +79,7 @@ const SpotlightGroups = (props: Props) => {
         {columns?.map((columnIdx) => (
           <Column key={columnIdx}>
             {similarReflectionGroups.map((reflectionGroup, idx) => {
-              if (idx % columnCount !== columnIdx) return
+              if (idx % columnCount !== columnIdx) return null
               return (
                 <ReflectionGroup
                   key={reflectionGroup.id}
