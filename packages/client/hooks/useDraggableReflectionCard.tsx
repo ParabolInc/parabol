@@ -48,6 +48,7 @@ const useRemoteDrag = (
           style={isClose ? style : {transform: style.transform}}
           reflection={reflection}
           isInSpotlight={isInSpotlight}
+          localRef={drag.ref}
         />
       )
     }

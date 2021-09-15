@@ -1,5 +1,5 @@
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {RefObject, useEffect, useRef} from 'react'
+import React, {MutableRefObject, RefObject, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
@@ -41,6 +41,7 @@ interface Props {
   style: React.CSSProperties
   reflection: RemoteReflection_reflection
   isInSpotlight: boolean
+  localRef: HTMLDivElement
 }
 
 const windowDims = {
@@ -107,15 +108,22 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
 const getInlineStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
-  style: React.CSSProperties
+  style: React.CSSProperties,
+  localRef: HTMLDivElement,
+  isInSpotlightRef: MutableRefObject<boolean>
 ) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
+  if (isInSpotlightRef.current && localRef) {
+    const bbox = localRef.getBoundingClientRect()
+    isInSpotlightRef.current = false
+    return {nextStyle: {transform: `translate(${bbox.left}px,${bbox.top}px`}}
+  }
   const {left, top, minTop} = getCoords(remoteDrag as any)
   return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
 }
 
 const RemoteReflection = (props: Props) => {
-  const {isInSpotlight, reflection, style} = props
+  const {isInSpotlight, reflection, style, localRef} = props
   const {id: reflectionId, content, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
@@ -136,9 +144,16 @@ const RemoteReflection = (props: Props) => {
     }
   }, [remoteDrag])
 
+  const isInSpotlightRef = useRef<boolean>(isInSpotlight)
   if (!remoteDrag) return null
   const {dragUserId, dragUserName} = remoteDrag
-  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
+  const {nextStyle, minTop} = getInlineStyle(
+    remoteDrag!,
+    isDropping,
+    style,
+    localRef,
+    isInSpotlightRef
+  )
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>

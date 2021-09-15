@@ -7,7 +7,7 @@ import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, DragAttribute, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
@@ -208,7 +208,7 @@ const SpotlightModal = (props: Props) => {
             />
           </SearchItem>
         </SelectedReflectionSection>
-        <SimilarGroups {...{[DragAttribute.DROPZONE]: 'spotlightGroups'}}>
+        <SimilarGroups>
           <Suspense
             fallback={<LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />}
           >
