@@ -3,6 +3,7 @@ import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PollOptionId from '../../../client/shared/gqlIds/PollOptionId'
 import Poll from './Poll'
+import PollId from 'parabol-client/shared/gqlIds/PollId'
 
 const PollOption = new GraphQLObjectType<any, GQLContext>({
   name: 'PollOption',
@@ -23,7 +24,9 @@ const PollOption = new GraphQLObjectType<any, GQLContext>({
     },
     pollId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The foreign key of the poll this option belongs to'
+      description:
+        'The foreign key of the poll this option belongs to in a format of `poll:idGeneratedByDatabase`',
+      resolve: ({pollId}) => PollId.join(pollId)
     },
     poll: {
       type: GraphQLNonNull(Poll),
