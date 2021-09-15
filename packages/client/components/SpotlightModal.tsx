@@ -47,11 +47,8 @@ const SelectedReflectionSection = styled('div')({
 })
 
 const SimilarGroups = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   height: `${SELECTED_HEIGHT_PERC * 2}%`,
-  padding: 16
+  width: '100%'
 })
 
 const Title = styled('div')({
