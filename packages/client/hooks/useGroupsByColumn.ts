@@ -17,8 +17,7 @@ const useGroupsByColumn = (similarReflectionGroups, columns: null | number[]) =>
   }
 
   useLayoutEffect(() => {
-    const spotlightIdxsExist = similarReflectionGroups.find((group) => group.spotlightColumnIdx)
-    if (!columns || spotlightIdxsExist) return
+    if (!columns?.length) return
     initGroups()
   }, [columns])
 }

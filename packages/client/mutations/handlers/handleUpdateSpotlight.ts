@@ -50,7 +50,7 @@ const handleUpdateSpotlight = (
   const isInSpotlightGroups = similarReflectionGroups.find(
     (group) => group.getValue('id') === reflectionGroupId
   )
-  // was added to a new group and needs to be removed
+  // added to an existing group. old reflection group needs to be removed
   if (isInSpotlightGroups && wasInSpotlightGroups) {
     const removedReflectionGroup = store.get(oldReflectionGroupId)
     // make sure the old group is empty
@@ -65,7 +65,7 @@ const handleUpdateSpotlight = (
       })
     }
   }
-  // was ungrouped, created a new group id and needs to be added to Spotlight
+  // ungrouping created a new group id which needs to be added to Spotlight
   else if (!isInSpotlightGroups && wasInSpotlightGroups) {
     const sortOrders = similarReflectionGroups.map((group) => ({
       sortOrder: group.getValue('sortOrder') as number

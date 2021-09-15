@@ -17,14 +17,14 @@ const Container = styled('div')({
   flexWrap: 'wrap',
   width: '100%',
   height: '100%',
-  padding: '40px 24px'
+  padding: '64px 24px'
 })
 
 const Scrollbar = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   overflow: 'auto',
-  maxHeight: '100%',
+  height: '100%',
   width: '100%'
 })
 
