@@ -51,16 +51,15 @@ const DashboardAvatar = (props: Props) => {
 
   const handleClick = () => {
     closeTooltip()
-    if (!submitting) {
-      submitMutation()
-      ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
-      commitLocalUpdate(atmosphere, (store) => {
-        const viewer = store.getRoot().getLinkedRecord('viewer')
-        const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
-        if (!teamMember) return
-        teamMember.setValue(teamMemberId, 'manageTeamMemberId')
-      })
-    }
+    if (submitting) return
+    submitMutation()
+    ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
+      if (!teamMember) return
+      teamMember.setValue(teamMemberId, 'manageTeamMemberId')
+    })
   }
 
   return (

@@ -63,20 +63,20 @@ const TeamDrawer = (props: Props) => {
     props.viewer
   )
   const {dashSearch, team, teamMember} = data
-  const hideAgenda = teamMember?.hideAgenda
-  const hideManageTeam = teamMember?.hideManageTeam
-  const manageTeamMemberId = teamMember?.manageTeamMemberId
-  const teamId = team?.id
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const sidebarTypeRef = useRef<string | null>(null)
+  const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
+  if (!team || !teamMember) return null
+  const {hideAgenda, hideManageTeam, manageTeamMemberId} = teamMember
+  const {id: teamId} = team
   if (!hideAgenda && hideManageTeam) {
     sidebarTypeRef.current = DrawerTypes.AGENDA
   } else if (hideAgenda && !hideManageTeam) {
     sidebarTypeRef.current = DrawerTypes.MANAGE_TEAM
   }
   const showAgenda = sidebarTypeRef.current === DrawerTypes.AGENDA
-  const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
+
   const toggleSidebar = () => {
     if (!submitting) {
       submitMutation()
@@ -88,7 +88,6 @@ const TeamDrawer = (props: Props) => {
     }
   }
 
-  if (!team || !teamId) return null
   return (
     <ResponsiveDashSidebar
       isOpen={!hideAgenda || !hideManageTeam}

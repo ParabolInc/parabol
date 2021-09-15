@@ -45,7 +45,7 @@ export default class TeamMember {
     this.teamId = teamId
     this.email = email
     this.hideAgenda = hideAgenda || false
-    this.hideManageTeam = hideManageTeam || true
+    this.hideManageTeam = hideManageTeam ?? true
     this.isLead = isLead || false
     this.isSpectatingPoker = isSpectatingPoker || false
     this.isNotRemoved = isNotRemoved === undefined ? true : isNotRemoved
