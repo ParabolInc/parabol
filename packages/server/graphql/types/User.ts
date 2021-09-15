@@ -455,9 +455,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
           const spotlightGroup = groupedReflections.find(
             (group) => group.reflectionId === reflectionId
           )
-          if (!spotlightGroup) {
-            break
-          }
+          if (!spotlightGroup) break
           for (const group of groupedReflections) {
             if (similarGroupIds.size === maxGroupSize) {
               currentThreshold = null
@@ -472,10 +470,12 @@ const User = new GraphQLObjectType<any, GQLContext>({
             currentThreshold = nextThresh
           }
         }
-        return r
+        const reflecionGroups = await r
           .table('RetroReflectionGroup')
           .getAll(r.args(Array.from(similarGroupIds)), {index: 'id'})
           .run()
+        reflecionGroups.sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
+        return reflecionGroups
       }
     },
     tasks: require('../queries/tasks').default,

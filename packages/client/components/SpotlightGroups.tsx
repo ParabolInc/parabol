@@ -32,7 +32,7 @@ const Column = styled('div')({
   maxWidth: ElementWidth.MEETING_CARD,
   margin: '0 8px',
   flexDirection: 'column',
-  height: 'fit-content'
+  height: '100%'
 })
 
 interface Props {

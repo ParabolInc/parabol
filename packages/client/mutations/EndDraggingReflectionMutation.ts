@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import getNextSortOrder from '~/utils/getNextSortOrder'
 import {EndDraggingReflectionMutation as TEndDraggingReflectionMutation} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
@@ -114,6 +115,11 @@ const handleAddReflectionToSpotlight = (
   )
   // check if ungrouping is happening in the spotlight
   if (!isInSpotlightGroups && wasInSpotlightGroups) {
+    const sortOrders = similarReflectionGroups!.map((group) => ({
+      sortOrder: group.getValue('sortOrder') as number
+    }))
+    const nextSortOrder = getNextSortOrder(sortOrders)
+    reflectionGroup.setValue(nextSortOrder, 'sortOrder')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
