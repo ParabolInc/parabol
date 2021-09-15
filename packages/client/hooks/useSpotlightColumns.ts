@@ -5,7 +5,7 @@ import useResizeObserver from './useResizeObserver'
 const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>) => {
   const [columns, setColumns] = useState<null | number[]>(null)
 
-  const getcolumns = () => {
+  const getColumns = () => {
     const {current: el} = groupsRef
     const width = el?.clientWidth
     if (!width) return
@@ -14,8 +14,8 @@ const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>) => {
     setColumns(newColumns)
   }
 
-  useLayoutEffect(getcolumns, [groupsRef])
-  useResizeObserver(getcolumns, groupsRef)
+  useLayoutEffect(getColumns, [groupsRef])
+  useResizeObserver(getColumns, groupsRef)
   return columns
 }
 

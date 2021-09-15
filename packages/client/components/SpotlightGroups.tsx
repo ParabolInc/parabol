@@ -7,6 +7,7 @@ import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
 import {useFragment} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import useSpotlightColumns from '../hooks/useSpotlightColumns'
+import useGroupsByColumn from '../hooks/useGroupsByColumn'
 import {ElementWidth} from '~/types/constEnums'
 
 const Container = styled('div')({
@@ -48,6 +49,7 @@ const SpotlightGroups = (props: Props) => {
       fragment SpotlightGroups_viewer on User {
         similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
           id
+          spotlightColumnIdx
           ...ReflectionGroup_reflectionGroup
         }
         meeting(meetingId: $meetingId) {
@@ -68,7 +70,7 @@ const SpotlightGroups = (props: Props) => {
   const {similarReflectionGroups} = userData
   const groupsRef = useRef(null)
   const columns = useSpotlightColumns(groupsRef)
-  const columnCount = columns?.length || 0
+  useGroupsByColumn(similarReflectionGroups, columns)
 
   if (!similarReflectionGroups.length) {
     return <SpotlightGroupsEmptyState />
@@ -78,8 +80,8 @@ const SpotlightGroups = (props: Props) => {
       <Scrollbar>
         {columns?.map((columnIdx) => (
           <Column key={columnIdx}>
-            {similarReflectionGroups.map((reflectionGroup, idx) => {
-              if (idx % columnCount !== columnIdx) return null
+            {similarReflectionGroups.map((reflectionGroup) => {
+              if (reflectionGroup.spotlightColumnIdx !== columnIdx) return null
               return (
                 <ReflectionGroup
                   key={reflectionGroup.id}

@@ -3,6 +3,26 @@ import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getNextSortOrder from '~/utils/getNextSortOrder'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
+const getEmptiestColumnIdx = (similarReflectionGroups: RecordProxy[]) => {
+  type ColumnCounts = {
+    [index: number]: number
+  }
+  const columnCounts = {} as ColumnCounts
+  for (const group of similarReflectionGroups) {
+    const spotlightColumnIdx = group.getValue('spotlightColumnIdx') as number
+    if (spotlightColumnIdx === undefined) continue
+    if (columnCounts[spotlightColumnIdx]) {
+      columnCounts[spotlightColumnIdx] += 1
+    } else {
+      columnCounts[spotlightColumnIdx] = 1
+    }
+  }
+  const columnLengths = Object.values(columnCounts)
+  const emptiestColumn = Math.min(...columnLengths)
+  const emptiestColumnIdx = columnLengths.indexOf(emptiestColumn)
+  return emptiestColumnIdx
+}
+
 const handleUpdateSpotlight = (
   reflection: RecordProxy,
   reflectionGroup: RecordProxy,
@@ -23,10 +43,11 @@ const handleUpdateSpotlight = (
     reflectionId: spotlightReflectionId,
     searchQuery: ''
   })
-  const wasInSpotlightGroups = similarReflectionGroups?.find(
+  if (!similarReflectionGroups) return
+  const wasInSpotlightGroups = similarReflectionGroups.find(
     (group) => group.getValue('id') === oldReflectionGroupId
   )
-  const isInSpotlightGroups = similarReflectionGroups?.find(
+  const isInSpotlightGroups = similarReflectionGroups.find(
     (group) => group.getValue('id') === reflectionGroupId
   )
   // was added to a new group and needs to be removed
@@ -46,11 +67,13 @@ const handleUpdateSpotlight = (
   }
   // was ungrouped, created a new group id and needs to be added to Spotlight
   else if (!isInSpotlightGroups && wasInSpotlightGroups) {
-    const sortOrders = similarReflectionGroups!.map((group) => ({
+    const sortOrders = similarReflectionGroups.map((group) => ({
       sortOrder: group.getValue('sortOrder') as number
     }))
     const nextSortOrder = getNextSortOrder(sortOrders)
     reflectionGroup.setValue(nextSortOrder, 'sortOrder')
+    const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups)
+    reflectionGroup.setValue(emptiestColumnIdx, 'spotlightColumnIdx')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
