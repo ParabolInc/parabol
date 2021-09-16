@@ -10,21 +10,23 @@ import {
   IGetDiscussionsByIdQueryResult
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
+import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import getGitHubDimensionFieldMaps, {
+  GitHubDimensionFieldMap
+} from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {TemplateRef} from '../postgres/queries/getTemplateRefsById'
-import getTemplateRefsById from '../postgres/queries/getTemplateRefsById'
+import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
+import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
-import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 
 export interface UserTasksKey {
   first: number
@@ -299,6 +301,33 @@ export const githubAuth = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
+    }
+  )
+}
+
+export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
+  return new DataLoader<
+    {teamId: string; dimensionName: string; nameWithOwner: string},
+    GitHubDimensionFieldMap | null,
+    string
+  >(
+    async (keys) => {
+      const results = await getGitHubDimensionFieldMaps(keys)
+      return keys.map(({teamId, dimensionName, nameWithOwner}) => {
+        return (
+          results.find(
+            (result) =>
+              result.teamId === teamId &&
+              result.dimensionName === dimensionName &&
+              result.nameWithOwner === nameWithOwner
+          ) || null
+        )
+      })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
+        `${teamId}:${dimensionName}:${nameWithOwner}`
     }
   )
 }
