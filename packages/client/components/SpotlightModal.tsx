@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import useBreakpoint from '../hooks/useBreakpoint'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
@@ -17,8 +17,11 @@ import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import SpotlightGroups from './SpotlightGroups'
 
+const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.NEW_MEETING_SELECTOR)
+
 const SELECTED_HEIGHT_PERC = 33.3
-const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const ModalContainer = styled('div')({
   animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
   background: '#FFFF',
   borderRadius: 8,
@@ -29,9 +32,15 @@ const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   justifyContent: 'center',
   opacity: 0,
   overflow: 'hidden',
-  width: isDesktop ? '80vw' : '90vw',
-  zIndex: ZIndex.DIALOG
-}))
+  width: '90vw',
+  zIndex: ZIndex.DIALOG,
+  [desktopBreakpoint]: {
+    width: '80vw'
+  },
+  [dashWidestBreakpoint]: {
+    width: '70vw'
+  }
+})
 
 const SelectedReflectionSection = styled('div')({
   alignItems: 'flex-start',
@@ -173,7 +182,6 @@ const SpotlightModal = (props: Props) => {
   const {viewer} = data
   const {meeting} = viewer
   const spotlightReflection = meeting?.spotlightReflection
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const phaseRef = useRef(null)
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
@@ -183,7 +191,7 @@ const SpotlightModal = (props: Props) => {
   if (!meeting) return null
   return (
     <>
-      <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
+      <ModalContainer ref={phaseRef}>
         <SelectedReflectionSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>
