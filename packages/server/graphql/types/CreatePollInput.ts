@@ -17,7 +17,7 @@ const CreatePollInput = new GraphQLInputObjectType({
     },
     threadSortOrder: {
       type: GraphQLNonNull(GraphQLFloat),
-      description: 'The order of this threadable, relative to threadParentId'
+      description: 'The order of this threadable'
     },
     title: {
       type: GraphQLNonNull(GraphQLString),
