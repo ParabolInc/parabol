@@ -1,28 +1,17 @@
+import childProcess from 'child_process'
+import fs from 'fs'
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
+import path from 'path'
+import util from 'util'
+import getProjectRoot from '../../../../../scripts/webpack/utils/getProjectRoot'
 import getRethink from '../../../database/rethinkDriver'
+import getPg from '../../../postgres/getPg'
+import getPgConfig from '../../../postgres/getPgConfig'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
-import util from 'util'
-import childProcess from 'child_process'
-import path from 'path'
-import getProjectRoot from '../../../../../scripts/webpack/utils/getProjectRoot'
-import getPg from '../../../postgres/getPg'
 
-const execFilePromise = util.promisify(childProcess.execFile)
-const PROJECT_ROOT = getProjectRoot()
-
-const dumpPg = async (options: string) => {
-  const pathToDumpScriptFromPackage = `postgres/scripts/dump.sh`
-  const absPathToDumpScript = path.resolve(
-    PROJECT_ROOT,
-    'packages/server',
-    pathToDumpScriptFromPackage
-  )
-  const {stdout, stderr} = await execFilePromise(absPathToDumpScript, [options])
-  console.info(`${pathToDumpScriptFromPackage}:`, stdout)
-  console.error(`${pathToDumpScriptFromPackage}:`, stderr)
-}
+const exec = util.promisify(childProcess.exec)
 
 const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
   const pg = getPg()
@@ -109,14 +98,23 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
 }
 
 const backupPgOrganization = async (orgIds: string[]) => {
-  const schemaTargetLocation = path.resolve(PROJECT_ROOT, 'artifacts/schemaDump.tar.gz')
-  const schemaOpts = `-Fc --schema-only --file ${schemaTargetLocation}`
-  const dataTargetLocation = path.resolve(PROJECT_ROOT, 'artifacts/orgBackupData.tar.gz')
-  const dataOpts = `-Fc --data-only --file ${dataTargetLocation} --schema="orgBackup"`
-
-  await dumpPg(schemaOpts)
+  const PROJECT_ROOT = getProjectRoot()
+  const PG_BACKUP_ROOT = path.join(PROJECT_ROOT, 'pgBackup')
+  if (!fs.existsSync(PG_BACKUP_ROOT)) {
+    fs.mkdirSync(PG_BACKUP_ROOT, {recursive: true})
+  }
+  const schemaTargetLocation = path.resolve(PG_BACKUP_ROOT, 'schemaDump.tar.gz')
+  const dataTargetLocation = path.resolve(PG_BACKUP_ROOT, 'orgBackupData.tar.gz')
+  const config = getPgConfig()
+  const {user, password, database, host, port} = config
+  const dbName = `postgresql://${user}:${password}@${host}:${port}/${database}`
+  await exec(`pg_dump ${dbName} --format=c --schema-only --file ${schemaTargetLocation}`)
   await dumpPgDataToOrgBackupSchema(orgIds)
-  await dumpPg(dataOpts)
+  await exec(
+    `pg_dump ${dbName} --format=c --data-only --schema='"orgBackup"' --file ${dataTargetLocation}`
+  )
+  const pg = getPg()
+  await pg.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
 }
 
 const backupOrganization = {
