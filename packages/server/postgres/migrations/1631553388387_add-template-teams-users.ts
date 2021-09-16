@@ -23,7 +23,13 @@ export async function up() {
       .table('Team')
       .get('aGhostTeam')
       .run()
-    await backupTeamQuery.run({teams: [ghostTeam]}, client)
+    const fixedGhostTeam = {
+      ...ghostTeam,
+      lastMeetingType: 'retrospective',
+      updatedAt: new Date(),
+      jiraDimensionFields: []
+    }
+    await backupTeamQuery.run({teams: [fixedGhostTeam]}, client)
   }
 
   const pgGhostUser = await client.query(`SELECT 1 FROM "User" WHERE id = 'aGhostUser';`)
