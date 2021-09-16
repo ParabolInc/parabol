@@ -10,6 +10,8 @@ graphql`
         github {
           ...TaskFooterIntegrateMenuViewerGitHubIntegration
           ...GitHubProviderRowGitHubIntegration
+          isActive
+          scope
         }
       }
       # after adding, check for new integrations (populates the menu)
