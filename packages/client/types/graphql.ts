@@ -58780,6 +58780,11 @@ export interface ICreatePollSuccess {
   __typename: 'CreatePollSuccess';
 
   /**
+   * Poll id in a format of `poll:idGeneratedByDatabase`
+   */
+  pollId: string;
+
+  /**
    * the poll just created
    */
   poll: IPoll;
@@ -58889,7 +58894,7 @@ export interface IPollOption {
   updatedAt: any;
 
   /**
-   * The foreign key of the poll this option belongs to
+   * The foreign key of the poll this option belongs to in a format of `poll:idGeneratedByDatabase`
    */
   pollId: string;
 

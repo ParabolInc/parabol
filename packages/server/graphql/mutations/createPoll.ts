@@ -7,8 +7,7 @@ import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
 import CreatePollInput from '../types/CreatePollInput'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
-import insertPoll from '../../postgres/queries/insertPoll'
-import insertPollOptions from '../../postgres/queries/insertPollOptions'
+import insertPollWithOptions from '../../postgres/queries/insertPollWithOptions'
 import segmentIo from '../../utils/segmentIo'
 
 type PollOptionsInputVariables = {
@@ -93,19 +92,21 @@ const createPoll = {
     }
 
     // RESOLUTION
-    const insertPollResult = await insertPoll({
-      createdById: viewerId,
-      teamId,
-      meetingId,
-      discussionId,
-      threadSortOrder,
-      title
+    const insertPollResult = await insertPollWithOptions({
+      poll: {
+        createdById: viewerId,
+        teamId,
+        meetingId,
+        discussionId,
+        threadSortOrder,
+        title
+      },
+      pollOptions: options
     })
     if (insertPollResult.length === 0) {
       return {error: {message: `Couldn't create a poll`}}
     }
-    const [{id: pollId}] = insertPollResult
-    await insertPollOptions({pollOptions: options.map(({title}) => ({pollId, title}))})
+    const [{pollId}] = insertPollResult
 
     const data = {pollId}
     segmentIo.track({
