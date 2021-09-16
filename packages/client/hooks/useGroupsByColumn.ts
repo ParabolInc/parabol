@@ -1,13 +1,13 @@
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {commitLocalUpdate} from 'react-relay'
-import {useLayoutEffect} from 'react'
+import {useLayoutEffect, useMemo} from 'react'
 
 const useGroupsByColumn = (similarReflectionGroups, columns: null | number[]) => {
   const atmosphere = useAtmosphere()
-
-  // const unassignedGroups = similarReflectionGroups.filter(
-  //   (group) => group.spotlightColumnIdx === undefined
-  // )
+  const unassignedGroups = useMemo(
+    () => similarReflectionGroups.filter((group) => group.spotlightColumnIdx === undefined),
+    [similarReflectionGroups]
+  )
 
   const initGroups = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -23,7 +23,7 @@ const useGroupsByColumn = (similarReflectionGroups, columns: null | number[]) =>
   useLayoutEffect(() => {
     if (!columns?.length) return
     initGroups()
-  }, [columns?.length])
+  }, [columns?.length, unassignedGroups.length])
 }
 
 export default useGroupsByColumn

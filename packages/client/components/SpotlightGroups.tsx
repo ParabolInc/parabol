@@ -79,10 +79,11 @@ const SpotlightGroups = (props: Props) => {
   )
   const {similarReflectionGroups} = userData
   const groupsRef = useRef(null)
-  const columns = useSpotlightColumns(groupsRef, similarReflectionGroups.length)
+  const groupsCount = similarReflectionGroups.length
+  const columns = useSpotlightColumns(groupsRef, groupsCount)
   useGroupsByColumn(similarReflectionGroups, columns)
 
-  if (!similarReflectionGroups.length) {
+  if (!groupsCount) {
     return <SpotlightGroupsEmptyState />
   }
   return (

@@ -28,7 +28,7 @@ const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: 
     }
   }
 
-  useLayoutEffect(getColumns, [groupsRef])
+  useLayoutEffect(getColumns, [groupsRef, groupsCount])
   useResizeObserver(getColumns, groupsRef)
   return columns
 }
