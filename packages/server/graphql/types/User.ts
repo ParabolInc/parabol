@@ -455,9 +455,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
           const spotlightGroup = groupedReflections.find(
             (group) => group.reflectionId === reflectionId
           )
-          if (!spotlightGroup) {
-            break
-          }
+          if (!spotlightGroup) break
           for (const group of groupedReflections) {
             if (similarGroupIds.size === maxGroupSize) {
               currentThreshold = null

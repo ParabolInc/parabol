@@ -175,15 +175,16 @@ const SpotlightModal = (props: Props) => {
 
   const {viewer} = data
   const {meeting} = viewer
-  const spotlightReflection = meeting?.spotlightReflection
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const phaseRef = useRef(null)
+  if (!meeting) return null
+  const {spotlightReflection} = meeting
+
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
     }
   }
-  if (!meeting) return null
   return (
     <>
       <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
