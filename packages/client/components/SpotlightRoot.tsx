@@ -20,11 +20,15 @@ const SpotlightRoot = (props: Props) => {
   if (nextReflectionId) {
     reflectionIdRef.current = nextReflectionId
   }
-  const queryRef = useQueryLoaderNow<SpotlightModalQuery>(spotlightModalQuery, {
-    reflectionId: reflectionIdRef.current,
-    searchQuery,
-    meetingId
-  })
+  const queryRef = useQueryLoaderNow<SpotlightModalQuery>(
+    spotlightModalQuery,
+    {
+      reflectionId: reflectionIdRef.current,
+      searchQuery,
+      meetingId
+    },
+    'network-only'
+  )
   return (
     <Suspense fallback={''}>
       {queryRef && (

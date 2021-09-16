@@ -5,6 +5,10 @@ import {useLayoutEffect} from 'react'
 const useGroupsByColumn = (similarReflectionGroups, columns: null | number[]) => {
   const atmosphere = useAtmosphere()
 
+  // const unassignedGroups = similarReflectionGroups.filter(
+  //   (group) => group.spotlightColumnIdx === undefined
+  // )
+
   const initGroups = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const columnCount = columns?.length || 0
@@ -19,7 +23,7 @@ const useGroupsByColumn = (similarReflectionGroups, columns: null | number[]) =>
   useLayoutEffect(() => {
     if (!columns?.length) return
     initGroups()
-  }, [columns])
+  }, [columns?.length])
 }
 
 export default useGroupsByColumn

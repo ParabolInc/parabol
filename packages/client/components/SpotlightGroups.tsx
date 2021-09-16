@@ -91,9 +91,6 @@ const SpotlightGroups = (props: Props) => {
         {columns?.map((columnIdx) => (
           <Column key={columnIdx}>
             {similarReflectionGroups.map((reflectionGroup) => {
-              if (reflectionGroup.spotlightColumnIdx === undefined) {
-                console.log('UNDEFINED', {reflectionGroup})
-              }
               if (reflectionGroup.spotlightColumnIdx !== columnIdx) return null
               return (
                 <ReflectionGroup
