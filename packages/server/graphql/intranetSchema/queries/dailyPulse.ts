@@ -7,6 +7,7 @@ import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
 import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 interface TypeField {
   type: 'mrkdwn'
@@ -90,12 +91,7 @@ const dailyPulse = {
   async resolve(_source, {after, email, channelId}, {authToken}) {
     requireSU(authToken)
     const r = await getRethink()
-    const user = await r
-      .table('User')
-      .getAll(email, {index: 'email'})
-      .nth(0)
-      .default(null)
-      .run()
+    const user = await getUserByEmail(email)
     if (!user) throw new Error('Bad user')
     const {id: userId} = user
     const slackAuth = await r

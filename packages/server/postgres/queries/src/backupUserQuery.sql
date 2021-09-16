@@ -23,10 +23,10 @@
     payLaterClickCount
   )...)
 */
-  INSERT INTO "User" ( 
+  INSERT INTO "User" (
     "id",
     "email",
-    "createdAt", 
+    "createdAt",
     "updatedAt",
     "inactive",
     "lastSeenAt",
@@ -46,23 +46,23 @@
     "payLaterClickCount"
   ) VALUES :users
   ON CONFLICT (id) DO UPDATE SET
-    email = EXCLUDED."email",
+    "email" = EXCLUDED."email",
     "createdAt" = EXCLUDED."createdAt",
     "updatedAt" = EXCLUDED."updatedAt",
-    inactive = EXCLUDED."inactive",
+    "inactive" = EXCLUDED."inactive",
     "lastSeenAt" = EXCLUDED."lastSeenAt",
     "preferredName" = EXCLUDED."preferredName",
-    tier = EXCLUDED."tier",
-    picture = EXCLUDED."picture",
-    tms = EXCLUDED."tms",
+    "tier" = EXCLUDED."tier",
+    "picture" = EXCLUDED."picture",
+    "tms" = EXCLUDED."tms",
     "featureFlags" = EXCLUDED."featureFlags",
     "lastSeenAtURLs" = EXCLUDED."lastSeenAtURLs",
-    identities = EXCLUDED."identities",
+    "identities" = EXCLUDED."identities",
     "segmentId" = EXCLUDED."segmentId",
     "newFeatureId" = EXCLUDED."newFeatureId",
     "overLimitCopy" = EXCLUDED."overLimitCopy",
     "isRemoved" = EXCLUDED."isRemoved",
     "reasonRemoved" = EXCLUDED."reasonRemoved",
-    rol = EXCLUDED."rol",
+    "rol" = EXCLUDED."rol",
     "payLaterClickCount" = EXCLUDED."payLaterClickCount"
   ;

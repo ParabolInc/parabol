@@ -44,7 +44,9 @@ const GraphQLISO8601Type = new GraphQLScalarType({
     try {
       return parseDate(ast.value)
     } catch (e) {
-      throw new Error(`Query error: ${e.message}, ${[ast]}`)
+      throw new Error(
+        `Query error: ${e instanceof Error ? e.message : 'Unable to parseDate'}, ${[ast]}`
+      )
     }
   }
 })

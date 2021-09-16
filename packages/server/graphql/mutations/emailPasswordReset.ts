@@ -8,7 +8,6 @@ import util from 'util'
 import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import PasswordResetRequest from '../../database/types/PasswordResetRequest'
-import User from '../../database/types/User'
 import db from '../../db'
 import getMailManager from '../../email/getMailManager'
 import resetPasswordEmailCreator from '../../email/resetPasswordEmailCreator'
@@ -17,6 +16,7 @@ import rateLimit from '../rateLimit'
 import updateUser from '../../postgres/queries/updateUser'
 import EmailPassWordResetPayload from '../types/EmailPasswordResetPayload'
 import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -30,18 +30,14 @@ const emailPasswordReset = {
     }
   },
   resolve: rateLimit({perMinute: 5, perHour: 50})(
-    async (_source, {email: denormEmail}, {ip}: GQLContext) => {
+    async (_source, {email: denormEmail}: {email: string}, {ip}: GQLContext) => {
       const email = denormEmail.toLowerCase().trim()
       const r = await getRethink()
 
       // we only wanna send like 2 emails/min or 5 per day to the same person
       const yesterday = new Date(Date.now() - ms('1d'))
-      const {user, failOnAccount, failOnTime} = await r({
-        user: (r
-          .table('User')
-          .getAll(email, {index: 'email'})
-          .nth(0)
-          .default(null) as unknown) as User | null,
+      const user = await getUserByEmail(email)
+      const {failOnAccount, failOnTime} = await r({
         failOnAccount: (r
           .table('PasswordResetRequest')
           .getAll(ip, {index: 'ip'})
