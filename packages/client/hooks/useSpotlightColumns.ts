@@ -1,9 +1,12 @@
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {RefObject, useLayoutEffect, useState} from 'react'
 import {ElementWidth} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
+import {commitLocalUpdate} from 'relay-runtime'
 
 const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: number) => {
   const [columns, setColumns] = useState<null | number[]>(null)
+  const atmosphere = useAtmosphere()
 
   const getColumns = () => {
     const {current: el} = groupsRef
@@ -23,6 +26,10 @@ const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: 
           ? maxColumns - 1
           : maxColumns
       const newColumns = [...Array(columnsCount).keys()]
+      commitLocalUpdate(atmosphere, (store) => {
+        const viewer = store.getRoot().getLinkedRecord('viewer')
+        viewer?.setValue(columnsCount, 'maxSpotlightColumns')
+      })
       setColumns(newColumns)
     }
   }

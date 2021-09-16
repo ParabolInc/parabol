@@ -13,7 +13,7 @@ const useGroupsByColumn = (
     [similarReflectionGroups]
   )
 
-  const initGroups = () => {
+  const sortGroups = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const columnCount = columns?.length || 0
       similarReflectionGroups.forEach((group, idx) => {
@@ -26,7 +26,7 @@ const useGroupsByColumn = (
 
   useLayoutEffect(() => {
     if (!columns?.length) return
-    initGroups()
+    sortGroups()
   }, [columns?.length, unassignedGroups.length])
 }
 

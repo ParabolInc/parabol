@@ -28,7 +28,7 @@ const ModalContainer = styled('div')({
   boxShadow: Elevation.Z8,
   display: 'flex',
   flexWrap: 'wrap',
-  height: '80vh',
+  height: '75vh',
   justifyContent: 'center',
   opacity: 0,
   overflow: 'hidden',
@@ -38,7 +38,7 @@ const ModalContainer = styled('div')({
     width: '80vw'
   },
   [dashWidestBreakpoint]: {
-    width: '70vw'
+    width: '65vw'
   }
 })
 

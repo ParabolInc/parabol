@@ -53,6 +53,7 @@ extend type User {
   clientClockOffset: Int
   dashSearch: String
   pageName: String
+  maxSpotlightColumns: Int
 }
 
 extend type Task {

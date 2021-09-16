@@ -8,11 +8,7 @@ import {useFragment} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import useSpotlightColumns from '../hooks/useSpotlightColumns'
 import useGroupsByColumn from '../hooks/useGroupsByColumn'
-import {Breakpoint, ElementWidth} from '~/types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-
-const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.NEW_MEETING_SELECTOR)
+import {ElementWidth} from '~/types/constEnums'
 
 const Container = styled('div')({
   display: 'flex',
@@ -21,13 +17,7 @@ const Container = styled('div')({
   flexWrap: 'wrap',
   width: '100%',
   height: '100%',
-  padding: '48px 0px',
-  [desktopBreakpoint]: {
-    padding: '56px 0px'
-  },
-  [dashWidestBreakpoint]: {
-    padding: '72px 0px'
-  }
+  padding: '48px 0px'
 })
 
 const Scrollbar = styled('div')({

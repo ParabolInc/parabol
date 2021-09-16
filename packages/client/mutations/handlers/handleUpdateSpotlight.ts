@@ -3,15 +3,22 @@ import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getNextSortOrder from '~/utils/getNextSortOrder'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
-const getEmptiestColumnIdx = (similarReflectionGroups: RecordProxy[]) => {
+const getEmptiestColumnIdx = (
+  similarReflectionGroups: RecordProxy[],
+  maxSpotlightColumns?: number
+) => {
   type ColumnCounts = {
     [index: number]: number
   }
   const columnCounts = {} as ColumnCounts
+  if (maxSpotlightColumns) {
+    const columnsArr = [...Array(maxSpotlightColumns).keys()]
+    columnsArr.forEach((column) => (columnCounts[column] = 0))
+  }
   for (const group of similarReflectionGroups) {
     const spotlightColumnIdx = group.getValue('spotlightColumnIdx') as number
     if (spotlightColumnIdx === undefined) continue
-    if (columnCounts[spotlightColumnIdx]) {
+    if (columnCounts[spotlightColumnIdx] !== undefined) {
       columnCounts[spotlightColumnIdx] += 1
     } else {
       columnCounts[spotlightColumnIdx] = 1
@@ -19,8 +26,7 @@ const getEmptiestColumnIdx = (similarReflectionGroups: RecordProxy[]) => {
   }
   const columnLengths = Object.values(columnCounts)
   const emptiestColumn = Math.min(...columnLengths)
-  const emptiestColumnIdx = columnLengths.indexOf(emptiestColumn)
-  return emptiestColumnIdx
+  return columnLengths.indexOf(emptiestColumn)
 }
 
 const handleUpdateSpotlight = (
@@ -72,7 +78,8 @@ const handleUpdateSpotlight = (
     }))
     const nextSortOrder = getNextSortOrder(sortOrders)
     reflectionGroup.setValue(nextSortOrder, 'sortOrder')
-    const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups)
+    const maxSpotlightColumns = viewer.getValue('maxSpotlightColumns') as number
+    const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups, maxSpotlightColumns)
     reflectionGroup.setValue(emptiestColumnIdx, 'spotlightColumnIdx')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
