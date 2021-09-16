@@ -16,7 +16,6 @@ type PollOptionsInputVariables = {
 
 type CreatePollInputVariables = {
   newPoll: {
-    teamId: string
     discussionId: string
     title: string
     threadSortOrder: number
