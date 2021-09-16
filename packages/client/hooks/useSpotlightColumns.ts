@@ -17,12 +17,11 @@ const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: 
       const minGroupsPerColumn = 2
       const maxColumnsInRef = Math.floor(width / ElementWidth.MEETING_CARD_WITH_MARGIN)
       const maxColumns = Math.max(Math.min(maxColumnsInRef, maxColumnsLargeScreen), minColumns)
-      let columnsCount = maxColumns
-      let groupsPerColumn = Math.ceil(groupsCount / columnsCount)
-      while (groupsPerColumn <= minGroupsPerColumn && columnsCount !== minColumns) {
-        columnsCount = columnsCount - 1
-        groupsPerColumn = Math.ceil(groupsCount / columnsCount)
-      }
+      const groupsPerColumn = Math.ceil(groupsCount / maxColumns)
+      const columnsCount =
+        groupsPerColumn < minGroupsPerColumn && maxColumns !== minColumns
+          ? maxColumns - 1
+          : maxColumns
       const newColumns = [...Array(columnsCount).keys()]
       setColumns(newColumns)
     }

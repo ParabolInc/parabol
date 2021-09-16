@@ -470,12 +470,10 @@ const User = new GraphQLObjectType<any, GQLContext>({
             currentThreshold = nextThresh
           }
         }
-        const reflecionGroups = await r
+        return r
           .table('RetroReflectionGroup')
           .getAll(r.args(Array.from(similarGroupIds)), {index: 'id'})
           .run()
-        reflecionGroups.sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
-        return reflecionGroups
       }
     },
     tasks: require('../queries/tasks').default,

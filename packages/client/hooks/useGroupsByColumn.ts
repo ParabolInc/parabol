@@ -1,8 +1,12 @@
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import {useLayoutEffect, useMemo} from 'react'
+import {SpotlightGroups_viewer} from '~/__generated__/SpotlightGroups_viewer.graphql'
 
-const useGroupsByColumn = (similarReflectionGroups, columns: null | number[]) => {
+const useGroupsByColumn = (
+  similarReflectionGroups: SpotlightGroups_viewer['similarReflectionGroups'],
+  columns: null | number[]
+) => {
   const atmosphere = useAtmosphere()
   const unassignedGroups = useMemo(
     () => similarReflectionGroups.filter((group) => group.spotlightColumnIdx === undefined),

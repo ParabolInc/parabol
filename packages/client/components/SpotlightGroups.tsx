@@ -21,12 +21,12 @@ const Container = styled('div')({
   flexWrap: 'wrap',
   width: '100%',
   height: '100%',
-  padding: '48px 24px',
+  padding: '48px 0px',
   [desktopBreakpoint]: {
-    padding: '56px 24px'
+    padding: '56px 0px'
   },
   [dashWidestBreakpoint]: {
-    padding: '72px 24px'
+    padding: '72px 0px'
   }
 })
 
