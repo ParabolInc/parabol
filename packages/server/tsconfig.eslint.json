@@ -7,6 +7,7 @@
     "postgres/queries/generated/*",
     "postgres/migrations/postDeploy/*",
     "postgres/pgmPostDeployConfig.js",
+    "postgres/types/*",
     "graphql/queries",
     "email/**/*",
     "segmentFns/*",

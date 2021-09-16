@@ -1,4 +1,5 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import {getUserById} from '../postgres/queries/getUsersById'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
@@ -48,19 +49,17 @@ const acceptTeamInvitation = async (team: Team, userId: string) => {
   const r = await getRethink()
   const now = new Date()
   const teamId = team.id
-  const user = await r
-    .table('User')
-    .get(userId)
-    .merge({
-      organizationUsers: r
-        .table('OrganizationUser')
-        .getAll(userId, {index: 'userId'})
-        .filter({removedAt: null})
-        .coerceTo('array')
-    })
-    .run()
+  const [user, organizationUsers] = await Promise.all([
+    getUserById(userId),
+    r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null})
+      .coerceTo('array')
+      .run()
+  ])
   const {orgId} = team
-  const {email, organizationUsers} = user
+  const email = user?.email
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
   const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   const [, invitationNotificationIds] = await Promise.all([

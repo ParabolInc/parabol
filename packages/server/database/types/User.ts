@@ -45,7 +45,7 @@ export default class User {
   tier: TierEnum
   tms: string[]
   reasonRemoved?: string
-  rol?: AuthTokenRole.SUPER_USER
+  rol: AuthTokenRole.SUPER_USER | null = null
   payLaterClickCount?: number
   constructor(input: Input) {
     const {

@@ -6,6 +6,7 @@ import {requireSU} from '../../../utils/authorization'
 import db from '../../../db'
 import UpdateWatchlistPayload from '../../types/UpdateWatchlistPayload'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
+import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {InternalContext} from '../../graphql'
 
 const updateWatchlist = {
@@ -49,10 +50,7 @@ const updateWatchlist = {
       users.push(...usersByEmail)
     }
     if (domain) {
-      const usersByDomain = await r
-        .table('User')
-        .filter((doc) => (doc as any)('email').match(domain))
-        .run()
+      const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
     }
     await db.prime('User', users)

@@ -9,7 +9,7 @@ import updateUser from '../../postgres/queries/updateUser'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import removeSlackAuths from './helpers/removeSlackAuths'
 import getDeletedEmail from '../../utils/getDeletedEmail'
-import getUsersById from '../../postgres/queries/getUsersById'
+import {getUserById} from '../../postgres/queries/getUsersById'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {
@@ -44,11 +44,7 @@ export default {
     const su = isSuperUser(authToken)
     const viewerId = getUserId(authToken)
 
-    const user = userId
-      ? (await getUsersById([userId]))?.[0]
-      : email
-      ? await getUserByEmail(email)
-      : null
+    const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
     if (!su) {
       if (!user || userId !== viewerId) {
         return {error: {message: 'Cannot delete someone else'}}

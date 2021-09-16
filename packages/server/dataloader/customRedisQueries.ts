@@ -2,7 +2,7 @@
 // this allows redis to cache the results of arbitrarily complex rethinkdb queries
 
 import ms from 'ms'
-import getUsersById from '../postgres/queries/getUsersById'
+import {getUsersById} from '../postgres/queries/getUsersById'
 import getRethink from '../database/rethinkDriver'
 
 const customRedisQueries = {
