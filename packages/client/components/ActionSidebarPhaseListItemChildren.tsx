@@ -44,9 +44,6 @@ export default createFragmentContainer(ActionSidebarPhaseListItemChildren, {
   meeting: graphql`
     fragment ActionSidebarPhaseListItemChildren_meeting on ActionMeeting {
       ...MeetingSidebarTeamMemberStageItems_meeting
-      localPhase {
-        phaseType
-      }
       ...ActionSidebarAgendaItemsSection_meeting
     }
   `

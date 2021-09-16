@@ -57,7 +57,7 @@ const handleGraphQLTrebuchetRequest = async (
       const messageType = result.data ? 'complete' : 'error'
       return {type: messageType, id: opId, payload: safeResult} as const
     } catch (e) {
-      if (e?.message === 'TIMEOUT') {
+      if (e instanceof Error && e.message === 'TIMEOUT') {
         sendToSentry(new Error('GQL executor took too long to respond'), {
           tags: {
             authToken: JSON.stringify(authToken),
@@ -66,10 +66,16 @@ const handleGraphQLTrebuchetRequest = async (
             variables: JSON.stringify(variables)
           }
         })
-        return {data: null, errors: [{message: 'The request took too long'}]}
+        return {
+          type: 'error' as const,
+          id: opId || '',
+          payload: {errors: [{message: 'The request took too long'}]}
+        }
       }
       const viewerId = getUserId(authToken)
-      sendToSentry(e, {userId: viewerId})
+      const error =
+        e instanceof Error ? e : new Error(`GQL executor failed to publish. docId: ${docId}`)
+      sendToSentry(error, {userId: viewerId})
     }
   } else if (data.type === 'stop' && opId) {
     relayUnsubscribe(subs, opId)
