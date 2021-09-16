@@ -52,7 +52,9 @@ export default {
     try {
       await upgradeToPro(orgId, stripeToken, email)
     } catch (e) {
-      return standardError(e.param ? new Error(e.param) : e, {userId: viewerId, tags: e})
+      const param = (e as any)?.param
+      const error: any = param ? new Error(param) : e
+      return standardError(error, {userId: viewerId, tags: error})
     }
 
     const activeMeetings = await hideConversionModal(orgId, dataLoader)
@@ -65,7 +67,7 @@ export default {
       .update({role: 'BILLING_LEADER'})
       .run()
 
-    const teams = await dataLoader.get('teamsByOrgId').load(orgId)
+    const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     segmentIo.track({
       userId: viewerId,

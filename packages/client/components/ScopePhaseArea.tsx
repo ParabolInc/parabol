@@ -9,9 +9,9 @@ import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.gra
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import GitHubSVG from './GitHubSVG'
-import ParabolLogoSVG from './ParabolLogoSVG'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
+import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
@@ -69,7 +69,7 @@ const tabs = [
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(1)
+  const [activeIdx, setActiveIdx] = useState(__PRODUCTION__ ? 1 : 0)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const updateActiveIdx = (idx: number) => {
@@ -110,7 +110,7 @@ const ScopePhaseArea = (props: Props) => {
           <ScopePhaseAreaGitHub
             isActive={activeIdx === 0}
             gotoParabol={() => setActiveIdx(2)}
-            meeting={meeting}
+            meetingRef={meeting}
           />
         </TabContents>
         <TabContents>

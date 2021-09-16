@@ -1,7 +1,121 @@
+import childProcess from 'child_process'
+import fs from 'fs'
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
+import path from 'path'
+import util from 'util'
+import getProjectRoot from '../../../../../scripts/webpack/utils/getProjectRoot'
 import getRethink from '../../../database/rethinkDriver'
+import getPg from '../../../postgres/getPg'
+import getPgConfig from '../../../postgres/getPgConfig'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
+
+const exec = util.promisify(childProcess.exec)
+
+const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
+  const pg = getPg()
+  const client = await pg.connect()
+  // rethink client for when we need to join with rethink
+  const r = await getRethink()
+
+  // fetch needed items upfront
+  const teams = await client.query('SELECT "id" FROM "Team" WHERE "orgId" = ANY ($1);', [orgIds])
+  const teamIds = teams.rows.map((team) => team.id)
+  const [userIds, templateRefIds] = await Promise.all([
+    r
+      .table('TeamMember')
+      .getAll(r.args(teamIds), {index: 'teamId'})('userId')
+      .coerceTo('array')
+      .distinct()
+      .run(),
+    (r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter((row) => row.hasFields('templateRefId')) as any)('templateRefId')
+      .coerceTo('array')
+      .distinct()
+      .run()
+  ])
+  const templateRefs = await client.query(
+    `SELECT jsonb_array_elements("template" -> 'dimensions') -> 'scaleRefId' AS "scaleRefId" FROM "TemplateRef" WHERE "id" = ANY ($1);`,
+    [templateRefIds]
+  )
+  const templateScaleRefIds = templateRefs.rows.map(({scaleRefId}) => scaleRefId)
+
+  try {
+    // do all inserts here
+    await client.query('BEGIN')
+    await client.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
+    await client.query(`CREATE SCHEMA "orgBackup";`)
+    await client.query(`CREATE TABLE "orgBackup"."PgMigrations" AS (SELECT * FROM "PgMigrations");`)
+    await client.query(
+      `CREATE TABLE "orgBackup"."PgPostDeployMigrations" AS (SELECT * FROM "PgPostDeployMigrations");`
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."OrganizationUserAudit" AS (SELECT * FROM "OrganizationUserAudit" WHERE "orgId" = ANY ($1));`,
+      [orgIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."Team" AS (SELECT * FROM "Team" WHERE "orgId" = ANY ($1));`,
+      [orgIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."GitHubAuth" AS (SELECT * FROM "GitHubAuth" WHERE "teamId" = ANY ($1));`,
+      [teamIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."AtlassianAuth" AS (SELECT * FROM "AtlassianAuth" WHERE "teamId" = ANY ($1));`,
+      [teamIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."Discussion" AS (SELECT * FROM "Discussion" WHERE "teamId" = ANY ($1));`,
+      [teamIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."TaskEstimate" AS (SELECT * FROM "TaskEstimate" WHERE "userId" = ANY ($1));`,
+      [userIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."User" AS (SELECT * FROM "User" WHERE "id" = ANY ($1));`,
+      [userIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."TemplateRef" AS (SELECT * FROM "TemplateRef" WHERE "id" = ANY ($1));`,
+      [templateRefIds]
+    )
+    await client.query(
+      `CREATE TABLE "orgBackup"."TemplateScaleRef" AS (SELECT * FROM "TemplateScaleRef" WHERE "id" = ANY ($1));`,
+      [templateScaleRefIds]
+    )
+    await client.query('COMMIT')
+  } catch (e) {
+    await client.query('ROLLBACK')
+    throw e
+  } finally {
+    client.release()
+  }
+}
+
+const backupPgOrganization = async (orgIds: string[]) => {
+  const PROJECT_ROOT = getProjectRoot()
+  const PG_BACKUP_ROOT = path.join(PROJECT_ROOT, 'pgBackup')
+  if (!fs.existsSync(PG_BACKUP_ROOT)) {
+    fs.mkdirSync(PG_BACKUP_ROOT, {recursive: true})
+  }
+  const schemaTargetLocation = path.resolve(PG_BACKUP_ROOT, 'schemaDump.tar.gz')
+  const dataTargetLocation = path.resolve(PG_BACKUP_ROOT, 'orgBackupData.tar.gz')
+  const config = getPgConfig()
+  const {user, password, database, host, port} = config
+  const dbName = `postgresql://${user}:${password}@${host}:${port}/${database}`
+  await exec(`pg_dump ${dbName} --format=c --schema-only --file ${schemaTargetLocation}`)
+  await dumpPgDataToOrgBackupSchema(orgIds)
+  await exec(
+    `pg_dump ${dbName} --format=c --data-only --schema='"orgBackup"' --file ${dataTargetLocation}`
+  )
+  const pg = getPg()
+  await pg.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
+}
 
 const backupOrganization = {
   type: GraphQLNonNull(GraphQLString),
@@ -16,6 +130,8 @@ const backupOrganization = {
     requireSU(authToken)
 
     // RESOLUTION
+    await backupPgOrganization(orgIds)
+
     const r = await getRethink()
     const DESTINATION = 'orgBackup'
 
@@ -52,11 +168,8 @@ const backupOrganization = {
       .run()
 
     // get all the teams for the orgIds
-    const team = await r
-      .table('Team')
-      .getAll(r.args(orgIds), {index: 'orgId'})
-      .run()
-    const teamIds = team.map((team) => team.id)
+    const teams = await getTeamsByOrgIds(orgIds)
+    const teamIds = teams.map((team) => team.id)
     await r({
       // easy things to clone
       migrations: r
@@ -213,7 +326,7 @@ const backupOrganization = {
       team: r
         .db(DESTINATION)
         .table('Team')
-        .insert(team),
+        .insert(teams),
       teamInvitation: (r.table('TeamInvitation').getAll(r.args(teamIds), {index: 'teamId'}) as any)
         .coerceTo('array')
         .do((items) =>

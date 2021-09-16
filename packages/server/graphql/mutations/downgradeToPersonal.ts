@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
 import resolveDowngradeToPersonal from './helpers/resolveDowngradeToPersonal'
 
@@ -16,7 +17,7 @@ export default {
       description: 'the org requesting the upgrade'
     }
   },
-  async resolve(_source, {orgId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {orgId}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -41,7 +42,9 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    const {teamIds} = await resolveDowngradeToPersonal(orgId, stripeSubscriptionId!, viewerId)
+    await resolveDowngradeToPersonal(orgId, stripeSubscriptionId!, viewerId)
+    const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
+    const teamIds = teams.map(({id}) => id)
     const data = {orgId, teamIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToPersonalPayload', data, subOptions)
 

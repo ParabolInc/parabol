@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {SpotlightModal_meeting} from '~/__generated__/SpotlightModal_meeting.graphql'
+import {SpotlightModal_viewer} from '~/__generated__/SpotlightModal_viewer.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
@@ -130,6 +131,7 @@ interface Props {
   closeSpotlight: () => void
   meeting: SpotlightModal_meeting
   flipRef: (instance: HTMLDivElement) => void
+  viewer: SpotlightModal_viewer
 }
 
 const SpotlightModal = (props: Props) => {
@@ -206,6 +208,14 @@ export default createFragmentContainer(SpotlightModal, {
       }
       spotlightReflection {
         ...DraggableReflectionCard_reflection
+      }
+    }
+  `,
+  viewer: graphql`
+    fragment SpotlightModal_viewer on User {
+      similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
+        id
+        title
       }
     }
   `

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.25.0",
+  "version": "6.27.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,8 +13,8 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "engines": {
-    "node": "^14.10.0",
-    "yarn": "^1.15.2"
+    "node": "^16.5.0",
+    "yarn": "^1.22.5"
   },
   "private": true,
   "workspaces": [
@@ -27,10 +27,12 @@
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
     "pg:postmigrate": "node-pg-migrate -f ./packages/server/postgres/pgmPostDeployConfig.js",
+    "pg:restore": "node ./scripts/toolbox/pgRestore.js",
     "db:start": "docker-compose -f docker/dev.yml up -d",
     "db:stop": "docker-compose -f docker/dev.yml down",
     "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/migrate.js",
+    "deduplicate": "yarn yarn-deduplicate yarn.lock",
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "postmigrate": "node scripts/postDeployMigrate.js",
     "dev": "node scripts/dev.js && pm2-runtime start pm2.dev.config.js",
@@ -43,15 +45,14 @@
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000"
   },
   "resolutions": {
-    "typescript": "4.1.3",
+    "typescript": "4.4.2",
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
-    "immutable": "3.8.2",
-    "extract-files": "https://github.com/mattkrick/extract-files/tarball/c697de1a4c27d08f53838316be0e5959a91c01f4"
+    "immutable": "3.8.2"
   },
   "devDependencies": {
-    "@babel/preset-env": "7.12.11",
+    "@babel/preset-env": "7.14.8",
     "@graphql-codegen/add": "^3.1.0",
     "@graphql-codegen/cli": "^2.1.1",
     "@graphql-codegen/typescript": "^2.1.1",
@@ -64,7 +65,7 @@
     "graphql": "15.4.0",
     "husky": "^3.0.1",
     "jscodeshift": "^0.7.0",
-    "lerna": "^3.19.0",
+    "lerna": "^4.0.0",
     "minimist": "^1.2.5",
     "prettier": "^1.19.1",
     "relay-compiler": "^11.0.2",
@@ -73,7 +74,8 @@
     "ts-loader": "8.0.12",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "5.10.3",
-    "webpack-cli": "4.2.0"
+    "webpack-cli": "4.2.0",
+    "yarn-deduplicate": "^3.1.0"
   },
   "husky": {
     "hooks": {

@@ -58,7 +58,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
 
   const terminateAfterTransition = useEventCallback(() => {
     // setTimeout because the portal should terminate only after all other transitionend events had time to fire
-    timeoutRef.current = setTimeout(terminatePortal)
+    timeoutRef.current = window.setTimeout(terminatePortal)
   })
 
   const closePortal = useEventCallback(() => {

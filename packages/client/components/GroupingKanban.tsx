@@ -14,9 +14,9 @@ import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import useModal from '../hooks/useModal'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SpotlightModal from './SpotlightModal'
 import {useRef} from 'react'
 import useFlip from '../hooks/useFlip'
+import SpotlightRoot from './SpotlightRoot'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -35,7 +35,6 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   padding: isDesktop ? '0 0 16px' : undefined,
   width: '100%'
 }))
-
 export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
@@ -132,7 +131,7 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightModal closeSpotlight={closeSpotlight} meeting={meeting} flipRef={flipRef} />
+        <SpotlightRoot closeSpotlight={closeSpotlight} meeting={meeting} flipRef={flipRef} />
       )}
     </PortalProvider>
   )
@@ -142,7 +141,7 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
-      ...SpotlightModal_meeting
+      ...SpotlightRoot_meeting
       id
       phases {
         ... on ReflectPhase {

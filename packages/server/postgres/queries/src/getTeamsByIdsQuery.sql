@@ -1,5 +1,5 @@
 /*
-  @name getTeamsByIdQuery
+  @name getTeamsByIdsQuery
   @param ids -> (...)
 */
 SELECT * FROM "Team"

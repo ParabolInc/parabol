@@ -129,13 +129,14 @@ export default class GoogleLanguageManager {
       clearTimeout(timeout)
       return res.json()
     } catch (e) {
-      sendToSentry(e)
+      const error = e instanceof Error ? e : new Error('Failed to fetch google language apis')
+      sendToSentry(error)
       clearTimeout(timeout)
       return [
         {
           error: {
             code: 500,
-            message: e.message,
+            message: error.message,
             status: 'Google is down'
           }
         }

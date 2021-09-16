@@ -26,6 +26,10 @@
 		}
 	],
 	"npm.packageManager": "yarn",
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+	},
 	"javascript.format.semicolons": "remove",
 	"javascript.preferences.quoteStyle": "single",
 	"javascript.preferences.useAliasesForRenames": false,

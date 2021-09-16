@@ -8,6 +8,8 @@ import teamNameValidation from 'parabol-client/validation/teamNameValidation'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import {GQLContext} from '../graphql'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -17,7 +19,7 @@ export default {
       description: 'The input object containing the teamId and any modified fields'
     }
   },
-  async resolve(_source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -27,15 +29,13 @@ export default {
     // AUTH
     const teamId = updatedTeam.id
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return standardError(new Error('User not on team'), {userId: viewerId})
     }
 
     // VALIDATION
-    const team = await r
-      .table('Team')
-      .get(teamId)
-      .run()
-    const orgTeams = await dataLoader.get('teamsByOrgId').load(team.orgId)
+    const teams = await getTeamsByIds([teamId])
+    const team = teams[0]!
+    const orgTeams = await dataLoader.get('teamsByOrgIds').load(team.orgId)
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)
     if (error) {

@@ -1,4 +1,3 @@
-import catchAndLog from '../../postgres/utils/catchAndLog'
 import {
   IUpdateTeamByTeamIdQueryParams,
   updateTeamByTeamIdQuery
@@ -11,14 +10,12 @@ const updateTeamByTeamId = async (
   teamIds: string | string[]
 ) => {
   teamIds = typeof teamIds === 'string' ? [teamIds] : teamIds
-  return await catchAndLog(() =>
-    updateTeamByTeamIdQuery.run(
-      {
-        ...teamUpdates,
-        ids: teamIds
-      } as IUpdateTeamByTeamIdQueryParams,
-      getPg()
-    )
+  return updateTeamByTeamIdQuery.run(
+    {
+      ...teamUpdates,
+      ids: teamIds
+    } as IUpdateTeamByTeamIdQueryParams,
+    getPg()
   )
 }
 

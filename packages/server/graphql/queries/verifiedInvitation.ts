@@ -2,10 +2,12 @@ import dns, {MxRecord} from 'dns'
 import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import User from '../../database/types/User'
 import db from '../../db'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
 import {GQLContext} from '../graphql'
@@ -58,13 +60,11 @@ export default {
         meetingId: maybeMeetingId,
         teamId
       } = teamInvitation
-      const [team, inviter] = await Promise.all([
-        r
-          .table('Team')
-          .get(teamId)
-          .run(),
+      const [teams, inviter] = await Promise.all([
+        getTeamsByIds([teamId]),
         db.read('User', invitedBy)
       ])
+      const team = teams[0]!
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)
       const meetingType = bestMeeting?.meetingType ?? null
       const meetingId = bestMeeting?.id ?? null
@@ -91,12 +91,7 @@ export default {
         }
       }
 
-      const viewer = (await r
-        .table('User')
-        .getAll(email, {index: 'email'})
-        .nth(0)
-        .default(null)
-        .run()) as User | null
+      const viewer = await getUserByEmail(email)
       const userId = viewer?.id ?? null
       const ssoURL = await getSAMLURLFromEmail(email, true)
       const isGoogle = await getIsGoogleProvider(viewer, email)
