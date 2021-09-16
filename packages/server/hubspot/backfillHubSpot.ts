@@ -1,7 +1,7 @@
 // call with yarn sucrase-node hubspot/backfillHubSpot.ts
 import fetch from 'node-fetch'
+import {getUsersByEmails} from '../postgres/queries/getUsersByEmails'
 import '../../../scripts/webpack/utils/dotenv'
-import getRethink from '../database/rethinkDriver'
 
 const contactKeys = {
   lastMetAt: 'last_met_at',
@@ -56,11 +56,7 @@ const upsertHubspotContact = async (
 
 const backfillHubSpot = async () => {
   const emails = process.argv.slice(2)
-  const r = await getRethink()
-  const users = await r
-    .table('User')
-    .getAll(r.args(emails), {index: 'email'})
-    .run()
+  const users = await getUsersByEmails(emails)
 
   await Promise.all(
     users.map(async ({email, id, tier}) => {

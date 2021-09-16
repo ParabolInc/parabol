@@ -4,7 +4,6 @@ import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'
 import EmailVerification from '../../database/types/EmailVerification'
-import User from '../../database/types/User'
 import db from '../../db'
 import createNewLocalUser from '../../utils/createNewLocalUser'
 import encodeAuthToken from '../../utils/encodeAuthToken'
@@ -12,6 +11,7 @@ import rateLimit from '../rateLimit'
 import VerifyEmailPayload from '../types/VerifyEmailPayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
 import updateUser from '../../postgres/queries/updateUser'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {
   type: GraphQLNonNull(VerifyEmailPayload),
@@ -44,12 +44,7 @@ export default {
       return {error: {message: 'Verification token expired'}}
     }
 
-    const user = (await r
-      .table('User')
-      .getAll(email, {index: 'email'})
-      .nth(0)
-      .default(null)
-      .run()) as User
+    const user = await getUserByEmail(email)
 
     if (user) {
       const {id: userId, identities, rol, tms} = user

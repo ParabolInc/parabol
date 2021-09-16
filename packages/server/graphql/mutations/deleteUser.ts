@@ -1,6 +1,4 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import User from '../../database/types/User'
 import db from '../../db'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import segmentIo from '../../utils/segmentIo'
@@ -11,6 +9,8 @@ import updateUser from '../../postgres/queries/updateUser'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import removeSlackAuths from './helpers/removeSlackAuths'
 import getDeletedEmail from '../../utils/getDeletedEmail'
+import getUsersById from '../../postgres/queries/getUsersById'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -34,7 +34,6 @@ export default {
     {userId, email, reason}: {userId?: string; email?: string; reason?: string},
     {authToken, dataLoader}: GQLContext
   ) => {
-    const r = await getRethink()
     // AUTH
     if (userId && email) {
       return {error: {message: 'Provide userId XOR email'}}
@@ -45,13 +44,11 @@ export default {
     const su = isSuperUser(authToken)
     const viewerId = getUserId(authToken)
 
-    const index = userId ? 'id' : 'email'
-    const user = (await r
-      .table('User')
-      .getAll((userId || email)!, {index})
-      .nth(0)
-      .default(null)
-      .run()) as User
+    const user = userId
+      ? (await getUsersById([userId]))?.[0]
+      : email
+      ? await getUserByEmail(email)
+      : null
     if (!su) {
       if (!user || userId !== viewerId) {
         return {error: {message: 'Cannot delete someone else'}}
