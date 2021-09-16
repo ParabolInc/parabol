@@ -28,17 +28,18 @@ const ModalContainer = styled('div')({
   boxShadow: Elevation.Z8,
   display: 'flex',
   flexWrap: 'wrap',
-  height: '75vh',
   justifyContent: 'center',
   opacity: 0,
   overflow: 'hidden',
+  height: '85vh',
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
     width: '80vw'
   },
   [dashWidestBreakpoint]: {
-    width: '65vw'
+    width: '70vw',
+    height: '80vh'
   }
 })
 
