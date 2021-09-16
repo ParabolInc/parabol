@@ -66,7 +66,11 @@ const handleGraphQLTrebuchetRequest = async (
             variables: JSON.stringify(variables)
           }
         })
-        return {data: null, errors: [{message: 'The request took too long'}]}
+        return {
+          type: 'error' as const,
+          id: opId || '',
+          payload: {errors: [{message: 'The request took too long'}]}
+        }
       }
       const viewerId = getUserId(authToken)
       const error =
