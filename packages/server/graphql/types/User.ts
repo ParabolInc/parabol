@@ -439,7 +439,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description: 'Only return reflection groups that match the search query'
         }
       },
-      resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
+      resolve: async ({id: userId}, {reflectionId, searchQuery}, {dataLoader}) => {
         const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
         if (!retroReflection) {
           return standardError(new Error('Invalid reflection id'), {userId})
@@ -459,6 +459,18 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         if (!viewerMeetingMember) {
           return standardError(new Error('Not on team'), {userId})
         }
+
+        if (searchQuery && searchQuery.trim() !== '') {
+          const relatedReflections = reflections.filter(({plaintextContent}) =>
+            plaintextContent.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          const relatedGroupIds = relatedReflections.map(({reflectionGroupId}) => reflectionGroupId)
+          return r
+            .table('RetroReflectionGroup')
+            .getAll(r.args(Array.from(relatedGroupIds)), {index: 'id'})
+            .run()
+        }
+
         const reflectionsCount = reflections.length
         const spotlightResultGroupSize = Math.min(reflectionsCount - 1, MAX_RESULT_GROUP_SIZE)
         let currentResultGroupIds = new Set<string>()
