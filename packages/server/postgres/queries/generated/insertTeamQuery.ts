@@ -1,9 +1,9 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/insertTeamQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type MeetingTypeEnum = 'action' | 'retrospective' | 'poker';
+export type MeetingTypeEnum = 'action' | 'poker' | 'retrospective';
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
+export type TierEnum = 'enterprise' | 'personal' | 'pro';
 
 /** 'InsertTeamQuery' parameters type */
 export interface IInsertTeamQueryParams {

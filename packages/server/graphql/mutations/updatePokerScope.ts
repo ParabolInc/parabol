@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {Writeable} from '../../../client/types/generics'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
@@ -110,7 +111,7 @@ const updatePokerScope = {
     const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
     const {dimensions} = templateRef
     const firstDimensionName = dimensions[0].name
-    const newDiscussions = [] as InputDiscussions
+    const newDiscussions = [] as Writeable<InputDiscussions>
     const additiveUpdates = updates.filter((update) => {
       const {action, serviceTaskId} = update
       return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
