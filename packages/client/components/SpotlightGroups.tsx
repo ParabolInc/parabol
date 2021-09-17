@@ -47,7 +47,7 @@ const SpotlightGroups = (props: Props) => {
   const userData = useFragment(
     graphql`
       fragment SpotlightGroups_viewer on User {
-        similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
+        similarReflectionGroups(reflectionGroupId: $reflectionGroupId, searchQuery: $searchQuery) {
           id
           spotlightColumnIdx
           ...ReflectionGroup_reflectionGroup

@@ -14,13 +14,13 @@ import LoadingComponent from './LoadingComponent/LoadingComponent'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
-import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import SpotlightGroups from './SpotlightGroups'
 
 const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.NEW_MEETING_SELECTOR)
-
 const SELECTED_HEIGHT_PERC = 33.3
+
 const ModalContainer = styled('div')({
   animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
   background: '#FFFF',
@@ -145,13 +145,13 @@ const SpotlightModal = (props: Props) => {
   const {closeSpotlight, flipRef, queryRef} = props
   const data = usePreloadedQuery<SpotlightModalQuery>(
     graphql`
-      query SpotlightModalQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
+      query SpotlightModalQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
         viewer {
           ...SpotlightGroups_viewer
           meeting(meetingId: $meetingId) {
             ... on RetrospectiveMeeting {
-              ...DraggableReflectionCard_meeting
               ...SpotlightGroups_meeting
+              ...ReflectionGroup_meeting
               id
               teamId
               localPhase {
@@ -168,8 +168,11 @@ const SpotlightModal = (props: Props) => {
                   phaseType
                 }
               }
-              spotlightReflection {
-                ...DraggableReflectionCard_reflection
+              spotlightGroup {
+                ...ReflectionGroup_reflectionGroup
+                reflections {
+                  id
+                }
               }
             }
           }
@@ -182,14 +185,19 @@ const SpotlightModal = (props: Props) => {
 
   const {viewer} = data
   const {meeting} = viewer
-  const spotlightReflection = meeting?.spotlightReflection
   const phaseRef = useRef(null)
+  const visibleReflectionIds = useRef<any>(null)
+  if (!meeting) return null
+  const {spotlightGroup} = meeting
+  if (!spotlightGroup) return null
+  if (!visibleReflectionIds.current) {
+    visibleReflectionIds.current = [spotlightGroup.reflections[0].id]
+  }
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
     }
   }
-  if (!meeting) return null
   return (
     <>
       <ModalContainer ref={phaseRef}>
@@ -223,12 +231,12 @@ const SpotlightModal = (props: Props) => {
         </SimilarGroups>
       </ModalContainer>
       <ReflectionWrapper ref={flipRef}>
-        {spotlightReflection && (
-          <DraggableReflectionCard
-            isDraggable
-            reflection={spotlightReflection}
+        {spotlightGroup && spotlightGroup.reflections.length && (
+          <ReflectionGroup
+            phaseRef={phaseRef}
+            reflectionGroup={spotlightGroup}
             meeting={meeting}
-            staticReflections={null}
+            visibleReflectionIds={visibleReflectionIds.current}
           />
         )}
       </ReflectionWrapper>

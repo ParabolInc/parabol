@@ -48889,9 +48889,9 @@ export interface IOrganizationUserOnUserArguments {
 
 export interface ISimilarReflectionGroupsOnUserArguments {
   /**
-   * The id of the selected reflection in the Spotlight
+   * The id of the selected reflection group in the Spotlight
    */
-  reflectionId: string;
+  reflectionGroupId: string;
 
   /**
    * Only return reflection groups that match the search query

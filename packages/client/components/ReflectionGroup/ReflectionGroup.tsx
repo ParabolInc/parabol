@@ -66,24 +66,36 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
+  visibleReflectionIds?: string[]
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, openSpotlight, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
+  const {
+    meeting,
+    openSpotlight,
+    phaseRef,
+    reflectionGroup,
+    swipeColumn,
+    dataCy,
+    visibleReflectionIds
+  } = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
+  const visibleReflections = visibleReflectionIds?.length
+    ? reflections.filter(({id}) => visibleReflectionIds.includes(id))
+    : reflections
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
-    return reflections.filter(
+    return visibleReflections.filter(
       (reflection) =>
         !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping)
     )
-  }, [reflections])
+  }, [visibleReflections])
   const stackRef = useRef<HTMLDivElement>(null)
   const {
     setItemsRef,
@@ -94,7 +106,7 @@ const ReflectionGroup = (props: Props) => {
     portalStatus,
     collapse,
     expand
-  } = useExpandedReflections(groupRef, stackRef, reflections.length, headerRef)
+  } = useExpandedReflections(groupRef, stackRef, visibleReflections.length, headerRef)
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === 'group' && !isComplete
@@ -120,7 +132,7 @@ const ReflectionGroup = (props: Props) => {
     if (isEditing) return
     const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
     if (wasDrag) return
-    if (reflections.length === 1) {
+    if (visibleReflections.length === 1) {
       if (!isDragPhase) return
       setIsEditing(true)
       document.addEventListener('click', watchForClick)
@@ -136,7 +148,7 @@ const ReflectionGroup = (props: Props) => {
   }, [])
 
   const showHeader =
-    phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
+    phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing
   return (
     <>
       {portal(
@@ -153,7 +165,7 @@ const ReflectionGroup = (props: Props) => {
           }
           phaseRef={phaseRef}
           staticReflections={staticReflections}
-          reflections={reflections}
+          reflections={visibleReflections}
           scrollRef={scrollRef}
           bgRef={bgRef}
           setItemsRef={setItemsRef}
@@ -180,14 +192,14 @@ const ReflectionGroup = (props: Props) => {
           />
         )}
         <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
-          {reflections.map((reflection) => {
+          {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
                 key={reflectionId}
-                groupCount={reflections.length}
+                groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
               >
@@ -225,6 +237,9 @@ export default createFragmentContainer(ReflectionGroup, {
         isComplete
       }
       isViewerDragInProgress
+      spotlightGroup {
+        id
+      }
     }
   `,
   reflectionGroup: graphql`

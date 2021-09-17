@@ -39,13 +39,13 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases, spotlightReflection} = meeting
+  const {id: meetingId, reflectionGroups, phases, spotlightGroup} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
-  const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
+  const spotlightGroupRef = useRef<HTMLDivElement | null>(null)
   const [flipRef, flipReverse] = useFlip({
-    firstRef: spotlightReflectionRef
+    firstRef: spotlightGroupRef
   })
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
@@ -53,11 +53,11 @@ const GroupingKanban = (props: Props) => {
   const closeSpotlight = () => {
     closePortal()
     flipReverse()
-    spotlightReflectionRef.current = null
+    spotlightGroupRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
-      meeting.setValue(null, 'spotlightReflection')
+      meeting.setValue(null, 'spotlightGroup')
     })
   }
   const {closePortal, openPortal, modalPortal} = useModal({
@@ -92,14 +92,14 @@ const GroupingKanban = (props: Props) => {
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
-  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
-    spotlightReflectionRef.current = reflectionRef.current
+  const openSpotlight = (reflectionGroupId: string, reflectionRef: RefObject<HTMLDivElement>) => {
+    spotlightGroupRef.current = reflectionRef.current
     openPortal()
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
-      const reflection = store.get(reflectionId)
-      if (!reflection || !meeting) return
-      meeting.setLinkedRecord(reflection, 'spotlightReflection')
+      const reflectionGroup = store.get(reflectionGroupId)
+      if (!meeting || !reflectionGroup) return
+      meeting.setLinkedRecord(reflectionGroup, 'spotlightGroup')
     })
   }
 
@@ -135,7 +135,7 @@ const GroupingKanban = (props: Props) => {
           closeSpotlight={closeSpotlight}
           meetingId={meetingId}
           flipRef={flipRef}
-          spotlightReflectionId={spotlightReflection?.id}
+          spotlightGroupId={spotlightGroup?.id}
         />
       )}
     </PortalProvider>
@@ -165,7 +165,7 @@ export default createFragmentContainer(GroupingKanban, {
           isEditing
         }
       }
-      spotlightReflection {
+      spotlightGroup {
         id
       }
     }

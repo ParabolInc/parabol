@@ -41,12 +41,12 @@ const handleUpdateSpotlight = (
   const meetingId = reflection.getValue('meetingId') as string
   const meeting = store.get(meetingId)
   if (!meeting) return
-  const spotlightReflection = meeting?.getLinkedRecord('spotlightReflection')
-  const spotlightReflectionId = spotlightReflection?.getValue('id')
+  const spotlightGroup = meeting?.getLinkedRecord('spotlightGroup')
+  const spotlightGroupId = spotlightGroup?.getValue('id')
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  if (!viewer || !spotlightReflectionId) return
+  if (!viewer || !spotlightGroupId) return
   const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
-    reflectionId: spotlightReflectionId,
+    reflectionGroupId: spotlightGroupId,
     searchQuery: ''
   })
   if (!similarReflectionGroups) return
@@ -65,7 +65,7 @@ const handleUpdateSpotlight = (
     if (oldReflectionIds?.length === 1 && oldReflectionIds[0] === reflectionId) {
       safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
         storageKeyArgs: {
-          reflectionId: spotlightReflectionId,
+          reflectionGroupId: spotlightGroupId,
           searchQuery: ''
         }
       })
@@ -83,7 +83,7 @@ const handleUpdateSpotlight = (
     reflectionGroup.setValue(emptiestColumnIdx, 'spotlightColumnIdx')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
+        reflectionGroupId: spotlightGroupId,
         searchQuery: ''
       }
     })

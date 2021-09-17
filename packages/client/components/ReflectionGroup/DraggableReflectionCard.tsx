@@ -77,10 +77,10 @@ const DraggableReflectionCard = (props: Props) => {
     swipeColumn,
     dataCy
   } = props
-  const {id: meetingId, teamId, localStage, spotlightReflection} = meeting
+  const {id: meetingId, teamId, localStage, spotlightGroup} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
-  const isSpotlightOpen = !!spotlightReflection?.id
+  const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = isSpotlightOpen && !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const [drag] = useState(makeDragState)
@@ -157,7 +157,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
           phaseType
         }
       }
-      spotlightReflection {
+      spotlightGroup {
         id
       }
     }

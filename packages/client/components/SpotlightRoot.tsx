@@ -9,21 +9,21 @@ interface Props {
   closeSpotlight: () => void
   meetingId: string
   flipRef: (instance: HTMLDivElement) => void
-  spotlightReflectionId?: string
+  spotlightGroupId?: string
 }
 
 const SpotlightRoot = (props: Props) => {
-  const {closeSpotlight, meetingId, flipRef, spotlightReflectionId} = props
+  const {closeSpotlight, meetingId, flipRef, spotlightGroupId} = props
   const searchQuery = '' // TODO: implement searchQuery
-  const reflectionIdRef = useRef('')
-  const nextReflectionId = spotlightReflectionId ?? ''
-  if (nextReflectionId) {
-    reflectionIdRef.current = nextReflectionId
+  const groupIdRef = useRef('')
+  const nextGroupId = spotlightGroupId ?? ''
+  if (nextGroupId) {
+    groupIdRef.current = nextGroupId
   }
   const queryRef = useQueryLoaderNow<SpotlightModalQuery>(
     spotlightModalQuery,
     {
-      reflectionId: reflectionIdRef.current,
+      reflectionGroupId: groupIdRef.current,
       searchQuery,
       meetingId
     },

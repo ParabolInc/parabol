@@ -412,21 +412,23 @@ const User = new GraphQLObjectType<any, GQLContext>({
       description:
         'The reflection groups that are similar to the selected reflection in the Spotlight',
       args: {
-        reflectionId: {
+        reflectionGroupId: {
           type: new GraphQLNonNull(GraphQLID),
-          description: 'The id of the selected reflection in the Spotlight'
+          description: 'The id of the selected reflection group in the Spotlight'
         },
         searchQuery: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Only return reflection groups that match the search query'
         }
       },
-      resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
-        const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
-        if (!retroReflection) {
+      resolve: async ({id: userId}, {reflectionGroupId}, {dataLoader}) => {
+        const retroReflectionGroup = await dataLoader
+          .get('retroReflectionGroups')
+          .load(reflectionGroupId)
+        if (!retroReflectionGroup) {
           return standardError(new Error('Invalid reflection id'), {userId})
         }
-        const {meetingId} = retroReflection
+        const {meetingId} = retroReflectionGroup
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
@@ -453,7 +455,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
             maxReductionPercent: 1
           })
           const spotlightGroup = groupedReflections.find(
-            (group) => group.reflectionId === reflectionId
+            (group) => group.oldReflectionGroupId === reflectionGroupId
           )
           if (!spotlightGroup) break
           for (const group of groupedReflections) {

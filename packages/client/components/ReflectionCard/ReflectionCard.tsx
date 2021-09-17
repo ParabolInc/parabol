@@ -84,13 +84,21 @@ const getReadOnly = (
 
 const ReflectionCard = (props: Props) => {
   const {meeting, reflection, isClipped, openSpotlight, stackCount, showReactji, dataCy} = props
-  const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
+  const {
+    id: reflectionId,
+    content,
+    promptId,
+    isViewerCreator,
+    meetingId,
+    reactjis,
+    reflectionGroupId
+  } = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
-  const spotlightReflectionId = meeting?.spotlightReflection?.id
-  const inSpotlight = reflectionId === spotlightReflectionId
-  const isSpotlightOpen = !!spotlightReflectionId
+  const spotlightGroupId = meeting?.spotlightGroup?.id
+  const inSpotlight = reflectionGroupId === spotlightGroupId
+  const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
   const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
@@ -220,7 +228,7 @@ const ReflectionCard = (props: Props) => {
     e.stopPropagation()
     const el = reflectionRef.current
     if (openSpotlight && el) {
-      openSpotlight(reflectionId, reflectionRef)
+      openSpotlight(reflectionGroupId, reflectionRef)
     }
   }
 
@@ -314,7 +322,7 @@ export default createFragmentContainer(ReflectionCard, {
           isComplete
         }
       }
-      spotlightReflection {
+      spotlightGroup {
         id
       }
     }
