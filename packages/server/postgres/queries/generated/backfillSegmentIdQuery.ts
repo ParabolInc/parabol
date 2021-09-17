@@ -3,10 +3,10 @@ import { PreparedQuery } from '@pgtyped/query';
 
 /** 'BackfillSegmentIdQuery' parameters type */
 export interface IBackfillSegmentIdQueryParams {
-  users: Array<{
+  users: readonly ({
     segmentId: string | null | void,
     id: string | null | void
-  }>;
+  })[];
 }
 
 /** 'BackfillSegmentIdQuery' return type */

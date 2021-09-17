@@ -16,16 +16,14 @@ import AgendaItem from '../AgendaItem/AgendaItem'
 import AgendaListEmptyState from './AgendaListEmptyState'
 import {AgendaList_agendaItems} from '~/__generated__/AgendaList_agendaItems.graphql'
 
-const AgendaListRoot = styled('div')({
+const AgendaListRoot = styled('div')<{isMeeting: boolean}>(({isMeeting}) => ({
   display: 'flex',
   flexDirection: 'column',
-  // react-beautiful-dnd supports scrolling on 1 parent
-  // this is where we need it, in order to scroll a long list
-  overflow: 'auto',
+  overflow: isMeeting ? undefined : 'auto',
   paddingRight: 8,
   height: '100%', // trickle down height for overflow
   width: '100%'
-})
+}))
 
 const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
   borderRadius: '0 4px 4px 0',
@@ -82,7 +80,7 @@ const AgendaList = (props: Props) => {
   })
 
   if (!filteredAgendaItems || filteredAgendaItems.length === 0) {
-    return <AgendaListEmptyState isComplete={!!endedAt} isDashboard={!meetingId} />
+    return <AgendaListEmptyState isComplete={!!endedAt} isMeeting={!!meeting} />
   }
 
   return (
@@ -90,7 +88,7 @@ const AgendaList = (props: Props) => {
       <Droppable droppableId={AGENDA_ITEM}>
         {(provided) => {
           return (
-            <AgendaListRoot ref={provided.innerRef}>
+            <AgendaListRoot ref={provided.innerRef} isMeeting={!!meeting}>
               {filteredAgendaItems.map((item, idx) => {
                 return (
                   <Draggable

@@ -5,7 +5,7 @@ export type stringArray = (string)[];
 
 /** 'RemoveUserTmsQuery' parameters type */
 export interface IRemoveUserTmsQueryParams {
-  ids: Array<string | null | void>;
+  ids: readonly (string | null | void)[];
   teamIds: stringArray | null | void;
 }
 

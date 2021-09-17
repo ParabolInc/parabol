@@ -3,7 +3,7 @@ import { PreparedQuery } from '@pgtyped/query';
 
 /** 'DismissNewFeatureQuery' parameters type */
 export interface IDismissNewFeatureQueryParams {
-  ids: Array<string | null | void>;
+  ids: readonly (string | null | void)[];
 }
 
 /** 'DismissNewFeatureQuery' return type */

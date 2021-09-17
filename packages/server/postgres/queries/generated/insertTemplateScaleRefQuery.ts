@@ -5,10 +5,10 @@ export type Json = null | boolean | number | string | Json[] | { [key: string]: 
 
 /** 'InsertTemplateScaleRefQuery' parameters type */
 export interface IInsertTemplateScaleRefQueryParams {
-  templateScales: Array<{
+  templateScales: readonly ({
     id: string | null | void,
     scale: Json | null | void
-  }>;
+  })[];
 }
 
 /** 'InsertTemplateScaleRefQuery' return type */

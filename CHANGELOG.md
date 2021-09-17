@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.28.0 2021-Sep-16
+
+### Added
+
+- Org backup (#5278)
+- Add get user by mail query (#5287)
+- Log verbose info when client receives no payload (#5353)
+
+### Fixed
+
+- Make sure that users can always see agenda items in check-in (#5365)
+
+### Changed
+
+- Upgrade to TypeScript v4.4.2 (#5356)
+
 ## 6.27.0 2021-Sep-08
 
 ### Added
