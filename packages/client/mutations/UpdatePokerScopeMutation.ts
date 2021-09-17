@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
@@ -178,6 +179,25 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
                 description: '',
                 descriptionHTML
               })
+              optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+            } else if (service === 'github') {
+              const bodyHTML = stateToHTML(contentState)
+              const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
+                serviceTaskId
+              )
+              const repository = createProxyRecord(store, '_xGitHubRepository', {
+                nameWithOwner,
+                name: repoName,
+                owner: repoOwner
+              })
+              const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
+                number: issueNumber,
+                title,
+                description: '',
+                url: '',
+                bodyHTML
+              })
+              optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
               optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
             }
             const nextStage = createProxyRecord(store, 'EstimateStage', {

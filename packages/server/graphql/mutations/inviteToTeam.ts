@@ -20,6 +20,7 @@ import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import appOrigin from '../../appOrigin'
+import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -42,7 +43,7 @@ export default {
   resolve: rateLimit({perMinute: 10, perHour: 100})(
     async (
       _source,
-      {invitees, meetingId, teamId},
+      {invitees, meetingId, teamId}: {invitees: string[]; meetingId?: string; teamId: string},
       {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
       const operationId = dataLoader.share()
@@ -57,10 +58,7 @@ export default {
       // RESOLUTION
       const subOptions = {mutatorId, operationId}
       const [users, team, inviter] = await Promise.all([
-        r
-          .table('User')
-          .getAll(r.args(invitees), {index: 'email'})
-          .run(),
+        getUsersByEmails(invitees),
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])

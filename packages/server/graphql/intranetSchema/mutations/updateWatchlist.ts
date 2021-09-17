@@ -6,6 +6,7 @@ import {requireSU} from '../../../utils/authorization'
 import db from '../../../db'
 import UpdateWatchlistPayload from '../../types/UpdateWatchlistPayload'
 import {InternalContext} from '../../graphql'
+import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 
 const updateWatchlist = {
   type: GraphQLNonNull(UpdateWatchlistPayload),
@@ -44,10 +45,7 @@ const updateWatchlist = {
     // RESOLUTION
     const users = [] as User[]
     if (emails) {
-      const usersByEmail = await r
-        .table('User')
-        .getAll(r.args(emails), {index: 'email'})
-        .run()
+      const usersByEmail = await getUsersByEmails(emails)
       users.push(...usersByEmail)
     }
     if (domain) {

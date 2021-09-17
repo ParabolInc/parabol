@@ -11,7 +11,8 @@ module.exports = {
     Email: 'string',
     DateTime: 'string',
     URL: 'string',
-    _xGitHubHTML: 'string'
+    _xGitHubHTML: 'string',
+    _xGitHubURI: 'string'
   },
   extensions: ['js', 'ts', 'tsx'],
   noFutureProofEnums: true,

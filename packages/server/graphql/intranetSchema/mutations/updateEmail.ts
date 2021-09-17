@@ -4,6 +4,7 @@ import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 import updateUser from '../../../postgres/queries/updateUser'
 import GraphQLEmailType from '../../types/GraphQLEmailType'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const updateEmail = {
   type: GraphQLNonNull(GraphQLBoolean),
@@ -33,12 +34,7 @@ const updateEmail = {
       throw new Error('New email is the same as the old one')
     }
 
-    const user = await r
-      .table('User')
-      .getAll(oldEmail, {index: 'email'})
-      .nth(0)
-      .default(null)
-      .run()
+    const user = await getUserByEmail(oldEmail)
     if (!user) {
       throw new Error(`User with ${oldEmail} not found`)
     }

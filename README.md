@@ -69,7 +69,7 @@ $ yarn && yarn build && yarn start
 ### PostgreSQL
 
 - pgadmin is at [http://localhost:5050](http://localhost:5050)
-- Connect using `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`
+- Connect using the values of `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` from your `.env`
 - Click "Add New Server" and fill out the forms with your `.env` values
 
   - General.name = POSTGRES_DB

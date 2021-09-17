@@ -14,6 +14,7 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import ResetPasswordPayload from '../types/ResetPasswordPayload'
 import updateUser from '../../postgres/queries/updateUser'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 const resetPassword = {
   type: new GraphQLNonNull(ResetPasswordPayload),
@@ -49,12 +50,7 @@ const resetPassword = {
       }
 
       // token is legit, let's invalidate it & set the new password
-      const user = await r
-        .table('User')
-        .getAll(email, {index: 'email'})
-        .nth(0)
-        .default(null)
-        .run()
+      const user = await getUserByEmail(email)
       if (!user) {
         return standardError(new Error(`User ${email} does not exist for password reset`))
       }
