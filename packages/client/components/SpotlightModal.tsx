@@ -186,28 +186,40 @@ const SpotlightModal = (props: Props) => {
   const {viewer} = data
   const {meeting} = viewer
   const phaseRef = useRef(null)
-  const visibleReflectionIds = useRef<any>(null)
+  const visibleReflectionIds = useRef<null | string[]>(null)
   const spotlightGroup = meeting?.spotlightGroup
-  const topReflection = spotlightGroup?.reflections[0]
-  if (spotlightGroup && visibleReflectionIds.current !== topReflection) {
-    visibleReflectionIds.current = topReflection ? [topReflection.id] : null
-  }
+  const topReflectionId = spotlightGroup?.reflections[0]?.id
 
+  // console.log('🚀  ~ visibleReflectionIds', {
+  //   el: visibleReflectionIds.current,
+  //   topReflectionId: spotlightGroup?.reflections[0]?.id
+  // })
   useEffect(() => {
-    if (!visibleReflectionIds.current && spotlightGroup) {
+    if (!spotlightGroup) return
+    // const topReflectionId = spotlightGroup.reflections[0]?.id
+    const {current: ids} = visibleReflectionIds
+    if (!ids && topReflectionId) {
+      visibleReflectionIds.current = [topReflectionId]
+      // console.log('first', visibleReflectionIds.current)
+    }
+    // else if (ids.includes(topReflectionId)) {
+    //   visibleReflectionIds.current = [...ids, topReflectionId]
+    //   console.log('second', {ids, topReflectionId})
+    // }
+    else if (!topReflectionId || !ids?.includes(topReflectionId)) {
+      // console.log('third', {ids, topReflectionId})
       setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
     }
-  }, [visibleReflectionIds.current])
+  }, [topReflectionId])
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
     }
   }
-
-  if (!spotlightGroup || !meeting) return null
+  if (!meeting) return null
   return (
     <>
       <ModalContainer ref={phaseRef}>

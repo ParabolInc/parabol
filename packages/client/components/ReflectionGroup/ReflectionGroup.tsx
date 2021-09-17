@@ -66,7 +66,7 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
-  visibleReflectionIds?: string[]
+  visibleReflectionIds?: string[] | null
 }
 
 const ReflectionGroup = (props: Props) => {
