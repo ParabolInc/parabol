@@ -1,8 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
-import PageInfoDateCursor from './PageInfoDateCursor'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import PollOption from './PollOption'
@@ -49,22 +46,4 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-const {connectionType, edgeType} = connectionDefinitions({
-  name: Poll.name,
-  nodeType: Poll,
-  edgeFields: () => ({
-    cursor: {
-      type: GraphQLISO8601Type
-    }
-  }),
-  connectionFields: () => ({
-    pageInfo: {
-      type: PageInfoDateCursor,
-      description: 'Page info with cursors coerced to ISO8601 dates'
-    }
-  })
-})
-
-export const PollConnection = connectionType
-export const PollEdge = edgeType
 export default Poll

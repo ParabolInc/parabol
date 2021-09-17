@@ -58921,7 +58921,7 @@ export interface ICreatePollInput {
   discussionId: string;
 
   /**
-   * The order of this threadable, relative to threadParentId
+   * The order of this threadable
    */
   threadSortOrder: number;
 
