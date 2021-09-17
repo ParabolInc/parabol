@@ -12,6 +12,13 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
   isTypeOf: ({title}) => !!title,
   fields: () => ({
     ...(threadableFields() as any),
+    createdByUser: {
+      type: require('./User').default,
+      description: 'The user that created the item',
+      resolve: ({createdById}, _args, {dataLoader}: GQLContext) => {
+        return dataLoader.get('users').load(createdById)
+      }
+    },
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'Poll id in a format of `poll:idGeneratedByDatabase`',
