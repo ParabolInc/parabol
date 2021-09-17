@@ -12,7 +12,8 @@ const publishWebhookGQL = async (query: string, variables: Variables) => {
       isPrivate: true
     })
   } catch (e) {
-    sendToSentry(e, {tags: {query: query.slice(0, 50)}})
+    const error = e instanceof Error ? e : new Error('GQL executor failed to publish')
+    sendToSentry(error, {tags: {query: query.slice(0, 50)}})
     return undefined
   }
 }

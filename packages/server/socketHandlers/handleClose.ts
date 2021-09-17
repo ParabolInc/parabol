@@ -8,7 +8,8 @@ const handleClose = (ws: WebSocket) => {
   try {
     handleDisconnect(ws.connectionContext)
   } catch (e) {
-    sendToSentry(e)
+    const error = e instanceof Error ? e : new Error('handleDisconnect failed')
+    sendToSentry(error)
   }
 }
 export default handleClose

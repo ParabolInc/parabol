@@ -1,15 +1,15 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/backupTeamQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type MeetingTypeEnum = 'action' | 'retrospective' | 'poker';
+export type MeetingTypeEnum = 'action' | 'poker' | 'retrospective';
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
+export type TierEnum = 'enterprise' | 'personal' | 'pro';
 
 export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
 
 /** 'BackupTeamQuery' parameters type */
 export interface IBackupTeamQueryParams {
-  teams: Array<{
+  teams: readonly ({
     id: string | null | void,
     name: string | null | void,
     createdAt: Date | null | void,
@@ -22,7 +22,7 @@ export interface IBackupTeamQueryParams {
     orgId: string | null | void,
     isOnboardTeam: boolean | null | void,
     updatedAt: Date | null | void
-  }>;
+  })[];
 }
 
 /** 'BackupTeamQuery' return type */

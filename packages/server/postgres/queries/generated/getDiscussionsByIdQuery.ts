@@ -1,11 +1,11 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getDiscussionsByIdQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type DiscussionTopicTypeEnum = 'agendaItem' | 'reflectionGroup' | 'task' | 'githubIssue' | 'jiraIssue';
+export type DiscussionTopicTypeEnum = 'agendaItem' | 'githubIssue' | 'jiraIssue' | 'reflectionGroup' | 'task';
 
 /** 'GetDiscussionsByIdQuery' parameters type */
 export interface IGetDiscussionsByIdQueryParams {
-  ids: Array<string | null | void>;
+  ids: readonly (string | null | void)[];
 }
 
 /** 'GetDiscussionsByIdQuery' return type */

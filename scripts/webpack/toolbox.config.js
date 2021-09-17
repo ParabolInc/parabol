@@ -25,6 +25,7 @@ module.exports = {
     postDeploy: [DOTENV, path.join(TOOLBOX_SRC, 'postDeploy.ts')],
     softenDurability: [DOTENV, path.join(TOOLBOX_SRC, 'softenDurability.ts')],
     renameDB: [DOTENV, path.join(TOOLBOX_SRC, 'renameDB.ts')],
+    pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')]
   },
   output: {
     filename: '[name].js',
@@ -54,7 +55,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       __PRODUCTION__: true
-    }),
+    })
   ],
   module: {
     rules: [

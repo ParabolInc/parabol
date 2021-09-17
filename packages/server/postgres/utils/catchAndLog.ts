@@ -4,7 +4,8 @@ const catchAndLog = async <T extends (...args: any[]) => any>(riskyFn: T) => {
   try {
     return (await riskyFn()) as ReturnType<T>
   } catch (e) {
-    sendToSentry(e, {tags: {migration: 'postgres'}})
+    const error = e instanceof Error ? e : new Error('catchAndLog failed')
+    sendToSentry(error, {tags: {migration: 'postgres'}})
   }
   return null
 }

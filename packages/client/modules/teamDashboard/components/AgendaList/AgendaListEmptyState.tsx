@@ -4,7 +4,7 @@ import {PALETTE} from '../../../../styles/paletteV3'
 
 interface Props {
   isComplete: boolean
-  isDashboard: boolean
+  isMeeting: boolean
 }
 
 const EmptyBlock = styled('div')({
@@ -23,8 +23,8 @@ const EmptyMessage = styled('div')({
 })
 
 const AgendaListEmptyState = (props: Props) => {
-  const {isComplete, isDashboard} = props
-  const meetingContext = isDashboard ? 'next meeting' : 'meeting'
+  const {isComplete, isMeeting} = props
+  const meetingContext = isMeeting ? 'meeting' : 'next meeting'
 
   if (isComplete) return null
   return (
