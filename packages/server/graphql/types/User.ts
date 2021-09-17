@@ -470,12 +470,13 @@ const User = new GraphQLObjectType<any, GQLContext>({
               spotlightResultGroupIds.add(oldReflectionGroupId)
             }
             currentThresh = nextThresh
-            if (spotlightResultGroupIds.size === spotlightResultGroupSize) break
+            if (spotlightResultGroupIds.size >= spotlightResultGroupSize) break
           }
         }
+        const slicedIds = Array.from(spotlightResultGroupIds).slice(0, spotlightResultGroupSize)
         return r
           .table('RetroReflectionGroup')
-          .getAll(r.args(Array.from(spotlightResultGroupIds)), {index: 'id'})
+          .getAll(r.args(slicedIds), {index: 'id'})
           .run()
       }
     },
