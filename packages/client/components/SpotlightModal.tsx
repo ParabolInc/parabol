@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useRef} from 'react'
+import React, {Suspense, useEffect, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
@@ -187,17 +187,27 @@ const SpotlightModal = (props: Props) => {
   const {meeting} = viewer
   const phaseRef = useRef(null)
   const visibleReflectionIds = useRef<any>(null)
-  if (!meeting) return null
-  const {spotlightGroup} = meeting
-  if (!spotlightGroup) return null
-  if (!visibleReflectionIds.current) {
-    visibleReflectionIds.current = [spotlightGroup.reflections[0].id]
+  const spotlightGroup = meeting?.spotlightGroup
+  const topReflection = spotlightGroup?.reflections[0]
+  if (spotlightGroup && visibleReflectionIds.current !== topReflection) {
+    visibleReflectionIds.current = topReflection ? [topReflection.id] : null
   }
+
+  useEffect(() => {
+    if (!visibleReflectionIds.current && spotlightGroup) {
+      setTimeout(() => {
+        closeSpotlight()
+      }, Times.REFLECTION_DROP_DURATION)
+    }
+  }, [visibleReflectionIds.current])
+
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
     }
   }
+
+  if (!spotlightGroup || !meeting) return null
   return (
     <>
       <ModalContainer ref={phaseRef}>
@@ -231,7 +241,7 @@ const SpotlightModal = (props: Props) => {
         </SimilarGroups>
       </ModalContainer>
       <ReflectionWrapper ref={flipRef}>
-        {spotlightGroup && spotlightGroup.reflections.length && (
+        {spotlightGroup && (
           <ReflectionGroup
             phaseRef={phaseRef}
             reflectionGroup={spotlightGroup}
