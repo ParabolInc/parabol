@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import toMeetingMemberId from 'parabol-client/utils/relay/toMeetingMemberId'
 import {AUTO_GROUPING_THRESHOLD} from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../database/rethinkDriver'
@@ -429,7 +430,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
           return standardError(new Error('Invalid reflection id'), {userId})
         }
         const {meetingId} = retroReflectionGroup
-        const meetingMemberId = toTeamMemberId(meetingId, userId)
+        const meetingMemberId = toMeetingMemberId({userId, meetingId})
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
@@ -444,37 +445,37 @@ const User = new GraphQLObjectType<any, GQLContext>({
         if (viewerMeetingId !== meetingId) {
           return standardError(new Error('Not on team'), {userId})
         }
-        let currentThreshold: number | null = AUTO_GROUPING_THRESHOLD
-        const similarGroupIds = new Set<string>()
         const reflectionsCount = reflections.length
-        const maxGroupSize = Math.min(reflectionsCount, 10)
-        while (currentThreshold) {
+        const maxReductionPercent = 1
+        const maxResultGroupSize = 10
+        const spotlightResultGroupIds = new Set<string>()
+        const spotlightResultGroupSize = Math.min(reflectionsCount, maxResultGroupSize)
+        let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
+        while (currentThresh) {
           const {groupedReflections, nextThresh} = groupReflections(reflections, {
-            groupingThreshold: currentThreshold,
+            groupingThreshold: currentThresh,
             maxGroupSize: reflectionsCount,
-            maxReductionPercent: 1
+            maxReductionPercent
           })
-          const spotlightGroup = groupedReflections.find(
+          const spotlightGroupedReflection = groupedReflections.find(
             (group) => group.oldReflectionGroupId === reflectionGroupId
           )
-          if (!spotlightGroup) break
-          for (const group of groupedReflections) {
-            if (similarGroupIds.size === maxGroupSize) {
-              currentThreshold = null
-              break
-            }
+          if (!spotlightGroupedReflection) break
+          for (const groupedReflection of groupedReflections) {
+            const {reflectionGroupId, oldReflectionGroupId} = groupedReflection
             if (
-              group.reflectionGroupId === spotlightGroup.reflectionGroupId &&
-              group.oldReflectionGroupId !== spotlightGroup.oldReflectionGroupId
+              reflectionGroupId === spotlightGroupedReflection.reflectionGroupId &&
+              oldReflectionGroupId !== spotlightGroupedReflection.oldReflectionGroupId
             ) {
-              similarGroupIds.add(group.oldReflectionGroupId)
+              spotlightResultGroupIds.add(oldReflectionGroupId)
             }
-            currentThreshold = nextThresh
+            currentThresh = nextThresh
+            if (spotlightResultGroupIds.size === spotlightResultGroupSize) break
           }
         }
         return r
           .table('RetroReflectionGroup')
-          .getAll(r.args(Array.from(similarGroupIds)), {index: 'id'})
+          .getAll(r.args(Array.from(spotlightResultGroupIds)), {index: 'id'})
           .run()
       }
     },
