@@ -190,6 +190,7 @@ const SpotlightModal = (props: Props) => {
   const spotlightGroup = meeting?.spotlightGroup
   const firstReflectionId = spotlightGroup?.reflections[0]?.id
   // const secondReflectionId = spotlightGroup?.reflections[1]?.id
+  const showSpotlight = meeting && spotlightGroup
 
   useEffect(() => {
     if (!spotlightGroup) return
@@ -246,7 +247,7 @@ const SpotlightModal = (props: Props) => {
         </SimilarGroups>
       </ModalContainer>
       <SpotlightGroupWrapper ref={flipRef}>
-        {meeting && spotlightGroup && (
+        {showSpotlight && (
           <ReflectionGroup
             phaseRef={phaseRef}
             reflectionGroup={spotlightGroup}

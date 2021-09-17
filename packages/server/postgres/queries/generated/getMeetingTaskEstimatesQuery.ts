@@ -1,12 +1,12 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getMeetingTaskEstimatesQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type ChangeSourceEnum = 'meeting' | 'task' | 'external';
+export type ChangeSourceEnum = 'external' | 'meeting' | 'task';
 
 /** 'GetMeetingTaskEstimatesQuery' parameters type */
 export interface IGetMeetingTaskEstimatesQueryParams {
-  taskIds: Array<string | null | void>;
-  meetingIds: Array<string | null | void>;
+  taskIds: readonly (string | null | void)[];
+  meetingIds: readonly (string | null | void)[];
 }
 
 /** 'GetMeetingTaskEstimatesQuery' return type */

@@ -12,6 +12,7 @@ import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const getBillingLeaderUser = async (
   email: string | null,
@@ -20,12 +21,7 @@ const getBillingLeaderUser = async (
 ) => {
   const r = await getRethink()
   if (email) {
-    const user = await r
-      .table('User')
-      .getAll(email, {index: 'email'})
-      .nth(0)
-      .default(null)
-      .run()
+    const user = await getUserByEmail(email)
     if (!user) {
       throw new Error('User for email not found')
     }
@@ -120,7 +116,8 @@ export default {
     try {
       user = await getBillingLeaderUser(email, orgId, dataLoader)
     } catch (e) {
-      return {error: {message: e.message}}
+      const message = e instanceof Error ? e.message : 'Unable to get billing leader user'
+      return {error: {message}}
     }
     if (!user) {
       return {error: {message: 'User not found'}}

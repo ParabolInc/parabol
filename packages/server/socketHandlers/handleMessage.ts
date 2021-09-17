@@ -74,7 +74,8 @@ const safeHandleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
   try {
     handleMessage(websocket, message)
   } catch (e) {
-    sendToSentry(e)
+    const error = e instanceof Error ? e : new Error('handleMessage failed')
+    sendToSentry(error)
   }
 }
 export default safeHandleMessage

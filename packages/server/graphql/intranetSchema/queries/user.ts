@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLString} from 'graphql'
-import getRethink from '../../../database/rethinkDriver'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import User from '../../types/User'
@@ -17,16 +17,10 @@ const user = {
     }
   },
   description: 'Dig into a user by providing the email or userId',
-  async resolve(_source, {email, userId}, {authToken}) {
+  async resolve(_source, {email, userId}: {email: string; userId: string}, {authToken}) {
     requireSU(authToken)
-    const r = await getRethink()
     if (email) {
-      return r
-        .table('User')
-        .getAll(email, {index: 'email'})
-        .nth(0)
-        .default(null)
-        .run()
+      return getUserByEmail(email)
     }
     return db.read('User', userId)
   }
