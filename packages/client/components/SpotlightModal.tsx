@@ -75,7 +75,7 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const ReflectionWrapper = styled('div')({
+const SpotlightGroupWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
@@ -186,34 +186,33 @@ const SpotlightModal = (props: Props) => {
   const {viewer} = data
   const {meeting} = viewer
   const phaseRef = useRef(null)
-  const visibleReflectionIds = useRef<null | string[]>(null)
+  const spotlightReflectionIds = useRef<null | string[]>(null)
   const spotlightGroup = meeting?.spotlightGroup
-  const topReflectionId = spotlightGroup?.reflections[0]?.id
-  const secondReflectionId = spotlightGroup?.reflections[1]?.id
+  const firstReflectionId = spotlightGroup?.reflections[0]?.id
+  // const secondReflectionId = spotlightGroup?.reflections[1]?.id
 
   useEffect(() => {
     if (!spotlightGroup) return
-    const {current: ids} = visibleReflectionIds
-    if (!ids && topReflectionId) {
-      visibleReflectionIds.current = [topReflectionId]
-      // console.log('first', visibleReflectionIds.current)
-    } else if (topReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
-      visibleReflectionIds.current = [...ids, topReflectionId]
-      // console.log('second', {ids, topReflectionId})
-    } else if (!topReflectionId || !ids?.includes(topReflectionId)) {
-      // console.log('third', {ids, topReflectionId})
+    const {current: ids} = spotlightReflectionIds
+    if (!ids && firstReflectionId) {
+      spotlightReflectionIds.current = [firstReflectionId]
+    }
+    // TODO: uncomment for groups -> source issue
+    // else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
+    //   spotlightReflectionIds.current = [...ids, firstReflectionId]
+    // }
+    else if (!firstReflectionId || !ids?.includes(firstReflectionId)) {
       setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
     }
-  }, [topReflectionId])
+  }, [firstReflectionId])
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
       closeSpotlight()
     }
   }
-  if (!meeting) return null
   return (
     <>
       <ModalContainer ref={phaseRef}>
@@ -246,16 +245,16 @@ const SpotlightModal = (props: Props) => {
           </Suspense>
         </SimilarGroups>
       </ModalContainer>
-      <ReflectionWrapper ref={flipRef}>
-        {spotlightGroup && (
+      <SpotlightGroupWrapper ref={flipRef}>
+        {meeting && spotlightGroup && (
           <ReflectionGroup
             phaseRef={phaseRef}
             reflectionGroup={spotlightGroup}
             meeting={meeting}
-            visibleReflectionIds={visibleReflectionIds.current}
+            spotlightReflectionIds={spotlightReflectionIds.current}
           />
         )}
-      </ReflectionWrapper>
+      </SpotlightGroupWrapper>
     </>
   )
 }

@@ -37,7 +37,7 @@ const Column = styled('div')({
 })
 
 interface Props {
-  meeting: SpotlightGroups_meeting$key
+  meeting: SpotlightGroups_meeting$key | null
   phaseRef: RefObject<HTMLDivElement>
   viewer: SpotlightGroups_viewer$key
 }
@@ -73,7 +73,7 @@ const SpotlightGroups = (props: Props) => {
   const columns = useSpotlightColumns(groupsRef, groupsCount)
   useGroupsByColumn(similarReflectionGroups, columns)
 
-  if (!groupsCount) {
+  if (!groupsCount || !meetingData) {
     return <SpotlightGroupsEmptyState />
   }
   return (

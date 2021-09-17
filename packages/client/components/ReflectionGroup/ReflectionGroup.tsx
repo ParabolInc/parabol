@@ -66,7 +66,7 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
-  visibleReflectionIds?: string[] | null
+  spotlightReflectionIds?: string[] | null
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -77,15 +77,16 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroup,
     swipeColumn,
     dataCy,
-    visibleReflectionIds
+    spotlightReflectionIds
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
-  const visibleReflections = visibleReflectionIds?.length
-    ? reflections.filter(({id}) => visibleReflectionIds.includes(id))
+  const isSpotlightSource = spotlightReflectionIds?.length
+  const visibleReflections = isSpotlightSource
+    ? reflections.filter(({id}) => spotlightReflectionIds?.includes(id))
     : reflections
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
@@ -148,7 +149,8 @@ const ReflectionGroup = (props: Props) => {
   }, [])
 
   const showHeader =
-    phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing
+    (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
+    !isSpotlightSource
   return (
     <>
       {portal(
