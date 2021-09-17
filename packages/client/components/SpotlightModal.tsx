@@ -189,24 +189,18 @@ const SpotlightModal = (props: Props) => {
   const visibleReflectionIds = useRef<null | string[]>(null)
   const spotlightGroup = meeting?.spotlightGroup
   const topReflectionId = spotlightGroup?.reflections[0]?.id
+  const secondReflectionId = spotlightGroup?.reflections[1]?.id
 
-  // console.log('🚀  ~ visibleReflectionIds', {
-  //   el: visibleReflectionIds.current,
-  //   topReflectionId: spotlightGroup?.reflections[0]?.id
-  // })
   useEffect(() => {
     if (!spotlightGroup) return
-    // const topReflectionId = spotlightGroup.reflections[0]?.id
     const {current: ids} = visibleReflectionIds
     if (!ids && topReflectionId) {
       visibleReflectionIds.current = [topReflectionId]
       // console.log('first', visibleReflectionIds.current)
-    }
-    // else if (ids.includes(topReflectionId)) {
-    //   visibleReflectionIds.current = [...ids, topReflectionId]
-    //   console.log('second', {ids, topReflectionId})
-    // }
-    else if (!topReflectionId || !ids?.includes(topReflectionId)) {
+    } else if (topReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
+      visibleReflectionIds.current = [...ids, topReflectionId]
+      // console.log('second', {ids, topReflectionId})
+    } else if (!topReflectionId || !ids?.includes(topReflectionId)) {
       // console.log('third', {ids, topReflectionId})
       setTimeout(() => {
         closeSpotlight()
