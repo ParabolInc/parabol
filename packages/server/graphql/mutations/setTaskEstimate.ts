@@ -112,8 +112,8 @@ const setTaskEstimate = {
           dimensionField.cloudId === cloudId &&
           dimensionField.projectKey === projectKey
       )
-      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_NULL
-      if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
+      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         if (!stage || !meeting) {
           return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
         }
@@ -130,7 +130,7 @@ const setTaskEstimate = {
         if ('message' in res) {
           return {error: {message: res.message}}
         }
-      } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
+      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
         const {fieldId, fieldType} = dimensionField!
         jiraFieldId = fieldId
         try {
@@ -150,8 +150,8 @@ const setTaskEstimate = {
       if (!auth) {
         return {error: {message: 'User no longer has access to GitHub'}}
       }
-      const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.GITHUB_FIELD_COMMENT
-      if (labelTemplate === SprintPokerDefaults.GITHUB_FIELD_COMMENT) {
+      const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+      if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         if (!stage || !meeting) {
           return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
         }
@@ -222,7 +222,7 @@ const setTaskEstimate = {
           }
         }
         // Comment added!
-      } else if (labelTemplate !== SprintPokerDefaults.GITHUB_FIELD_NULL) {
+      } else if (labelTemplate !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
         // TODO support pushing to label
       }
     }

@@ -45,8 +45,8 @@ const GitHubFieldMenu = (props: Props) => {
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   const defaults = [
-    SprintPokerDefaults.GITHUB_FIELD_COMMENT,
-    SprintPokerDefaults.GITHUB_FIELD_NULL
+    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+    SprintPokerDefaults.SERVICE_FIELD_NULL
   ] as string[]
   const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
 
@@ -72,12 +72,12 @@ const GitHubFieldMenu = (props: Props) => {
     >
       <MenuItem label={'Labels TBD'} onClick={handleClick('cha la la')} />
       <MenuItem
-        label={SprintPokerDefaults.GITHUB_FIELD_COMMENT_LABEL}
-        onClick={handleClick(SprintPokerDefaults.GITHUB_FIELD_COMMENT)}
+        label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
       />
       <MenuItem
-        label={SprintPokerDefaults.GITHUB_FIELD_NULL_LABEL}
-        onClick={handleClick(SprintPokerDefaults.GITHUB_FIELD_NULL)}
+        label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
       />
     </Menu>
   )

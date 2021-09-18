@@ -85,7 +85,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
               type: existingDimensionField.fieldType
             }
 
-          return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
         }
         if (service === 'github') {
           const {nameWithOwner} = integration
@@ -100,7 +100,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
             }
           }
           return {
-            name: SprintPokerDefaults.GITHUB_FIELD_COMMENT,
+            name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
             type: 'string'
           }
         }
