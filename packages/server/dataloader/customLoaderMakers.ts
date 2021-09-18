@@ -312,17 +312,13 @@ export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
     string
   >(
     async (keys) => {
-      const results = await getGitHubDimensionFieldMaps(keys)
-      return keys.map(({teamId, dimensionName, nameWithOwner}) => {
-        return (
-          results.find(
-            (result) =>
-              result.teamId === teamId &&
-              result.dimensionName === dimensionName &&
-              result.nameWithOwner === nameWithOwner
-          ) || null
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, dimensionName, nameWithOwner}) =>
+          getGitHubDimensionFieldMaps(teamId, dimensionName, nameWithOwner)
         )
-      })
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
     },
     {
       ...parent.dataLoaderOptions,

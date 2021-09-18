@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
+import UpdateGitHubDimensionFieldMutation from '../mutations/UpdateGitHubDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_stage.graphql'
 import Menu from './Menu'
@@ -13,25 +15,34 @@ interface Props {
 
 const GitHubFieldMenu = (props: Props) => {
   const {menuProps, stageRef} = props
+  const atmosphere = useAtmosphere()
   const stage = useFragment(
     graphql`
       fragment GitHubFieldMenu_stage on EstimateStage {
         serviceField {
           name
         }
+        dimensionRef {
+          name
+        }
         task {
           integration {
             ... on _xGitHubIssue {
               __typename
+              repository {
+                nameWithOwner
+              }
             }
           }
         }
+        meetingId
       }
     `,
     stageRef
   )
   const {portalStatus, isDropdown, closePortal} = menuProps
-  const {serviceField, task} = stage
+  const {serviceField, task, dimensionRef, meetingId} = stage
+  const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   const defaults = [
     SprintPokerDefaults.GITHUB_FIELD_COMMENT,
@@ -40,15 +51,16 @@ const GitHubFieldMenu = (props: Props) => {
   const defaultActiveIdx = defaults.indexOf(serviceFieldName) + 1
 
   if (task?.integration?.__typename !== '_xGitHubIssue') return null
-
-  const handleClick = (_fieldName: string) => () => {
-    // UpdateGitHubDimensionFieldMutation(atmosphere, {
-    //   dimensionName,
-    //   fieldName,
-    //   meetingId,
-    //   cloudId,
-    //   projectKey
-    // })
+  const {integration} = task
+  const {repository} = integration
+  const {nameWithOwner} = repository
+  const handleClick = (labelTemplate: string) => () => {
+    UpdateGitHubDimensionFieldMutation(atmosphere, {
+      dimensionName,
+      labelTemplate,
+      nameWithOwner,
+      meetingId
+    })
     closePortal()
   }
   return (

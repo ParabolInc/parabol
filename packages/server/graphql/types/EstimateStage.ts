@@ -52,8 +52,9 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
-        const {integration, service} = task
+        const {integration} = task
         if (!integration) return NULL_FIELD
+        const {service} = integration
         const getDimensionName = async (meetingId: string) => {
           const meeting = await dataLoader.get('newMeetings').load(meetingId)
           const {templateRefId} = meeting
