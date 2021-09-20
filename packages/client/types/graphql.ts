@@ -58855,7 +58855,7 @@ export interface IPoll {
   createdAt: any;
 
   /**
-   * The userId that created the item, null if anonymous
+   * The userId that created the item
    */
   createdBy: string | null;
 

@@ -1,10 +1,16 @@
 import React from 'react'
+import {Poll_poll} from '~/__generated__/Poll_poll.graphql'
+
+export type PollState = 'creating' | 'created'
 
 interface PollContextType {
+  pollState: PollState
+  poll: Poll_poll
+  updatePollOption: (optionId: string, title: string) => void
   onOptionSelected: (optionId: string) => void
   selectedOptionId: string | null
 }
-export const PollContext = React.createContext<PollContextType>(null)
+export const PollContext = React.createContext<PollContextType | null>(null)
 
 export const usePollContext = () => {
   const context = React.useContext(PollContext)

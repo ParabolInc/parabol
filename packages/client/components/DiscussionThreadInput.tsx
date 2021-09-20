@@ -28,6 +28,7 @@ import {DiscussionThreadables} from './DiscussionThreadList'
 import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import {createLocalPoll} from './Poll/local/newPoll'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -108,7 +109,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
   // Quick & Dirty Feature Flag
-  const allowPolls = false
+  const allowPolls = true
   // const allowPolls = allowedThreadables.includes('poll')
   useInitialLocalState(discussionId, 'isAnonymousComment', false)
   useInitialLocalState(discussionId, 'replyingToCommentId', '')
@@ -235,8 +236,10 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     CreateTaskMutation(atmosphere, {newTask}, {})
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const addPoll = () => {}
+  const addPoll = () => {
+    const threadSortOrder = getMaxSortOrder() + SORT_STEP + dndNoise()
+    createLocalPoll(atmosphere, discussionId, threadSortOrder)
+  }
 
   useEffect(() => {
     const focusListener = () => {
