@@ -13117,7 +13117,7 @@ pm2-sysmonit@^1.2.8:
     systeminformation "^5.7"
     tx2 "~1.0.4"
 
-pm2@^5.1.0:
+pm2@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/pm2/-/pm2-5.1.1.tgz#cca589a471712bdcac18b8467cef048f7267997a"
   integrity sha512-2Agpn2IVXOKu8kP+qaxKOvMLNtbZ6lY4bzKcEW2d2tw7O0lpNO7QvDayY4af+8U1+WCn90UjPK4q2wPFVHt/sA==
