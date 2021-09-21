@@ -5,10 +5,12 @@ module.exports = {
   testEnvironment: 'node',
   globals: {
     'ts-jest': {
-      diagnostics: false,
-    },
+      diagnostics: false
+    }
   },
   transform: {
-    ...tsjPreset.transform,
+    ...tsjPreset.transform
   },
+  modulePaths: ['<rootDir>/packages/'],
+  testRegex: '/__tests__/.*.test\\.ts?$'
 }

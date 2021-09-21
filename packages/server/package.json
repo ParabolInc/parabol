@@ -144,11 +144,5 @@
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v19.3.0"
-  },
-  "jest": {
-    "modulePaths": [
-      "<rootDir>/packages/"
-    ],
-    "testRegex": "/__tests__/.*.test\\.ts?$"
   }
 }
