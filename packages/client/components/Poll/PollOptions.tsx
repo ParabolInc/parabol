@@ -17,7 +17,12 @@ const PollOptions = () => {
   return (
     <PollOptionsRoot>
       {poll.options.map((option) => (
-        <PollOption key={option.id} id={option.id} title={option.title} />
+        <PollOption
+          key={option.id}
+          id={option.id}
+          title={option.title}
+          placeholder={option.placeholder}
+        />
       ))}
     </PollOptionsRoot>
   )

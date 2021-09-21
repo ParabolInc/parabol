@@ -8,6 +8,7 @@ interface PollContextType {
   poll: Poll_poll
   updatePollOption: (optionId: string, title: string) => void
   onOptionSelected: (optionId: string) => void
+  addPollOption: () => void
   selectedOptionId: string | null
 }
 export const PollContext = React.createContext<PollContextType | null>(null)

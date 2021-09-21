@@ -4,10 +4,13 @@ import Atmosphere from '../../../Atmosphere'
 import getDiscussionThreadConn from '../../../mutations/connections/getDiscussionThreadConn'
 import safePutNodeInConn from '../../../mutations/handlers/safePutNodeInConn'
 
-const createEmptyPollOption = (store: RecordSourceProxy) => {
+const LocalPollOptionsNumber = 2
+
+const createEmptyPollOption = (store: RecordSourceProxy, index: number) => {
   const dataID = clientTempId('poll')
   const newPollOption = store.create(dataID, 'PollOption')
   newPollOption.setValue(dataID, 'id')
+  newPollOption.setValue(`Add a choice ${index}...`, 'placeholder')
 
   return newPollOption
 }
@@ -43,7 +46,9 @@ export const createLocalPoll = (
     newPollRecord.setValue(threadSortOrder, 'threadSortOrder')
     newPollRecord.setLinkedRecord(user, 'createdByUser')
     newPollRecord.setLinkedRecords(
-      [createEmptyPollOption(store), createEmptyPollOption(store)],
+      Array.from({length: LocalPollOptionsNumber}).map((_, index) =>
+        createEmptyPollOption(store, index + 1)
+      ),
       'options'
     )
 
@@ -61,7 +66,7 @@ export const updateLocalPollOption = (atmosphere: Atmosphere, id: string, title:
     pollOption.setValue(title, 'title')
   })
 
-export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string) =>
+export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string, index: number) =>
   commitLocalUpdate(atmosphere, (store) => {
     const poll = store.get(pollId)
     if (!poll) {
@@ -70,6 +75,6 @@ export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string) =>
     }
 
     const pollOptions = poll.getLinkedRecords('options') || []
-    const pollOption = createEmptyPollOption(store)
+    const pollOption = createEmptyPollOption(store, index)
     poll.setLinkedRecords([...pollOptions, pollOption], 'options')
   })

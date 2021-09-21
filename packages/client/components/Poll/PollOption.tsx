@@ -6,6 +6,7 @@ import {PALETTE} from '~/styles/paletteV3'
 interface Props {
   id: string
   title?: string
+  placeholder: string | null
 }
 
 const PollOptionRoot = styled('div')({
@@ -32,20 +33,20 @@ const PollOptionInput = styled('input')({
 })
 
 const PollOption = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {id, title} = props
+  const {id, title, placeholder} = props
   const {onOptionSelected, pollState, updatePollOption} = usePollContext()
 
   if (pollState === 'creating') {
-    const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePollOptionUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
       updatePollOption(id, event.target.value)
     }
 
     return (
       <PollOptionInput
         key={id}
-        placeholder='Add choice...'
+        placeholder={placeholder ?? ''}
         value={title}
-        onChange={handleTitleChange}
+        onChange={handlePollOptionUpdate}
       />
     )
   }

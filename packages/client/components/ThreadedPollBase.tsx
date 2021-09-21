@@ -6,6 +6,7 @@ import {DiscussionThreadables} from './DiscussionThreadList'
 import Poll from './Poll/Poll'
 import PollOptions from './Poll/PollOptions'
 import PollTitle from './Poll/PollTitle'
+import PollActions from './Poll/PollActions'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
@@ -20,6 +21,7 @@ const ThreadedPollBase = (props: Props) => {
     <Poll dataCy={`${dataCy}-poll`} poll={poll}>
       <PollTitle />
       <PollOptions />
+      <PollActions />
     </Poll>
   )
 }

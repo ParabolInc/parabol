@@ -11,14 +11,8 @@ import ThreadedAvatarColumn from '../ThreadedAvatarColumn'
 import ThreadedItemHeaderDescription from '../ThreadedItemHeaderDescription'
 import cardRootStyles from '~/styles/helpers/cardRootStyles'
 import {PALETTE} from '~/styles/paletteV3'
-import {updateLocalPollOption} from './local/newPoll'
+import {updateLocalPollOption, addLocalPollOption} from './local/newPoll'
 import useAtmosphere from '~/hooks/useAtmosphere'
-
-interface PollProps {
-  children: React.ReactNode
-  poll: Poll_poll
-  dataCy: string
-}
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -44,7 +38,13 @@ const PollRoot = styled('div')<{
   boxShadow: pollState === 'creating' ? cardShadow : Elevation.Z0
 }))
 
-const Poll = React.forwardRef((props: PollProps, ref: Ref<HTMLDivElement>) => {
+interface Props {
+  children: React.ReactNode
+  poll: Poll_poll
+  dataCy: string
+}
+
+const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {dataCy, poll, children} = props
   const atmosphere = useAtmosphere()
 
@@ -54,26 +54,42 @@ const Poll = React.forwardRef((props: PollProps, ref: Ref<HTMLDivElement>) => {
   const onOptionSelected = React.useCallback((optionId: string) => {
     setSelectedOptionId(optionId)
   }, [])
-  const pollState: PollState = poll.id.includes('tmp') ? 'creating' : 'created'
-
-  const updatePollOption = useCallback((id: string, updatedValue: string) => {
-    updateLocalPollOption(atmosphere, id, updatedValue)
-  }, [])
-  const value = React.useMemo(
-    () => ({pollState, poll, onOptionSelected, selectedOptionId, updatePollOption} as const),
-    [onOptionSelected, selectedOptionId, pollState, poll, updatePollOption]
+  const updatePollOption = useCallback(
+    (id: string, updatedValue: string) => {
+      updateLocalPollOption(atmosphere, id, updatedValue)
+    },
+    [atmosphere]
+  )
+  const addPollOption = useCallback(() => {
+    addLocalPollOption(atmosphere, poll.id, poll.options.length + 1)
+  }, [atmosphere, poll])
+  const createPoll = useCallback(() => {}, [atmosphere])
+  const pollContextValue = React.useMemo(
+    () =>
+      ({
+        pollState: poll.id.includes('tmp') ? 'creating' : 'created',
+        poll,
+        onOptionSelected,
+        selectedOptionId,
+        updatePollOption,
+        createPoll,
+        addPollOption
+      } as const),
+    [onOptionSelected, selectedOptionId, poll, updatePollOption]
   )
 
   return (
-    <PollContext.Provider value={value}>
+    <PollContext.Provider value={pollContextValue}>
       <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={false} ref={ref}>
         <ThreadedAvatarColumn isReply={false} picture={picture} />
         <BodyCol>
           <ThreadedItemHeaderDescription
             title={preferredName}
-            subTitle={pollState === 'creating' ? 'is creating a poll...' : 'added a poll'}
+            subTitle={
+              pollContextValue.pollState === 'creating' ? 'is creating a Poll...' : 'added a Poll'
+            }
           />
-          <PollRoot ref={ref} pollState={pollState}>
+          <PollRoot ref={ref} pollState={pollContextValue.pollState}>
             {children}
           </PollRoot>
         </BodyCol>
@@ -97,6 +113,7 @@ export default createFragmentContainer(Poll, {
       options {
         id
         title
+        placeholder
       }
     }
   `

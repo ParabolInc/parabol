@@ -104,3 +104,7 @@ extend type Discussion {
   isAnonymousComment: Boolean!
   replyingToCommentId: String!
 }
+
+extend type PollOption {
+  placeholder: String
+}
