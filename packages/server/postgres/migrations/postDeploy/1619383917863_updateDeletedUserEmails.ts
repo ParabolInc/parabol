@@ -3,7 +3,6 @@ import getRethink from '../../../database/rethinkDriver'
 import getPg from '../../getPg'
 import {backupUserQuery} from '../../queries/generated/backupUserQuery'
 import updateUser from '../../queries/updateUser'
-import catchAndLog from '../../utils/catchAndLog'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
@@ -38,7 +37,12 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     ...undefinedUserFieldsAndTheirDefaultPgValues,
     ...user
   }))
-  await catchAndLog(() => backupUserQuery.run({users: skippedPgUsers}, getPg()))
+  if (skippedPgUsers.length === 0) return
+  try {
+    await backupUserQuery.run({users: skippedPgUsers}, getPg())
+  } catch (e) {
+    console.log('ERR backupUserQuery from updateDeletedUserEmails failed', e, skippedPgUsers.length)
+  }
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {

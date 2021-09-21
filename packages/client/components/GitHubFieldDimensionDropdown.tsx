@@ -1,26 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
-import lazyPreload from '../utils/lazyPreload'
-import {JiraFieldDimensionDropdown_stage} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
+import {GitHubFieldDimensionDropdown_stage$key} from '../__generated__/GitHubFieldDimensionDropdown_stage.graphql'
+import GitHubFieldMenu from './GitHubFieldMenu'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
-
-const JiraFieldMenuRoot = lazyPreload(async () =>
-  import(/* webpackChunkName: 'JiraFieldMenuRoot' */ './JiraFieldMenuRoot')
-)
 
 interface Props {
   clearError: () => void
   isFacilitator: boolean
-  stage: JiraFieldDimensionDropdown_stage
-
+  stageRef: GitHubFieldDimensionDropdown_stage$key
 }
 
 const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
@@ -45,11 +40,22 @@ const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => (
 
 const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
-  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
+  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
 }
 
-const JiraFieldDimensionDropdown = (props: Props) => {
-  const {clearError, stage, isFacilitator} = props
+const GitHubFieldDimensionDropdown = (props: Props) => {
+  const {clearError, stageRef, isFacilitator} = props
+  const stage = useFragment(
+    graphql`
+      fragment GitHubFieldDimensionDropdown_stage on EstimateStage {
+        ...GitHubFieldMenu_stage
+        serviceField {
+          name
+        }
+      }
+    `,
+    stageRef
+  )
   const {serviceField} = stage
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
@@ -67,27 +73,12 @@ const JiraFieldDimensionDropdown = (props: Props) => {
 
   const label = labelLookup[serviceFieldName] || serviceFieldName
   return (
-    <Wrapper onMouseEnter={JiraFieldMenuRoot.preload} isFacilitator={isFacilitator}
-      onClick={onClick}
-      ref={originRef}>
+    <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
       <CurrentValue>{label}</CurrentValue>
       <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
-      {menuPortal(
-        <JiraFieldMenuRoot menuProps={menuProps} stage={stage} />
-      )}
+      {menuPortal(<GitHubFieldMenu menuProps={menuProps} stageRef={stage} />)}
     </Wrapper>
   )
 }
 
-export default createFragmentContainer(JiraFieldDimensionDropdown,
-  {
-    stage: graphql`
-    fragment JiraFieldDimensionDropdown_stage on EstimateStage {
-      ...JiraFieldMenuRoot_stage
-      serviceField {
-        name
-      }
-    }
-    `
-  }
-)
+export default GitHubFieldDimensionDropdown
