@@ -4,6 +4,7 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateGitHubDimensionFieldMutation from '../mutations/UpdateGitHubDimensionFieldMutation'
+import interpolateGitHubLabelTemplate from '../shared/interpolateGitHubLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_stage.graphql'
 import Menu from './Menu'
@@ -19,6 +20,7 @@ const GitHubFieldMenu = (props: Props) => {
   const stage = useFragment(
     graphql`
       fragment GitHubFieldMenu_stage on EstimateStage {
+        finalScore
         serviceField {
           name
         }
@@ -41,7 +43,7 @@ const GitHubFieldMenu = (props: Props) => {
     stageRef
   )
   const {portalStatus, isDropdown, closePortal} = menuProps
-  const {serviceField, task, dimensionRef, meetingId} = stage
+  const {finalScore, serviceField, task, dimensionRef, meetingId} = stage
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   const defaults = [
@@ -63,6 +65,11 @@ const GitHubFieldMenu = (props: Props) => {
     })
     closePortal()
   }
+  const serviceFieldTemplate = defaults.includes(serviceFieldName)
+    ? `${dimensionName}: {{#}}`
+    : serviceFieldName
+  const serviceFieldLabel = interpolateGitHubLabelTemplate(serviceFieldTemplate, finalScore)
+
   return (
     <Menu
       ariaLabel={'Select where to publish the estimate'}
@@ -70,7 +77,7 @@ const GitHubFieldMenu = (props: Props) => {
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <MenuItem label={'Labels TBD'} onClick={handleClick('cha la la')} />
+      <MenuItem label={serviceFieldLabel} onClick={handleClick(serviceFieldTemplate)} />
       <MenuItem
         label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
         onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}

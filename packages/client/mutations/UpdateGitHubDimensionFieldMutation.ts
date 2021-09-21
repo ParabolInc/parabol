@@ -67,6 +67,7 @@ const UpdateGitHubDimensionFieldMutation: SimpleMutation<TUpdateGitHubDimensionF
         if (dimensionRefName !== dimensionName) return
         const task = stage.getLinkedRecord('task')
         const _integration = task.getLinkedRecord('integration')
+        if (_integration.getType() !== '_xGitHubIssue') return
         const integration = _integration as DiscriminateProxy<typeof _integration, '_xGitHubIssue'>
         const repository = integration.getLinkedRecord('repository')
         if (repository.getValue('nameWithOwner') !== nameWithOwner) return

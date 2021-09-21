@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
+import interpolateGitHubLabelTemplate from '../shared/interpolateGitHubLabelTemplate'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {GitHubFieldDimensionDropdown_stage$key} from '../__generated__/GitHubFieldDimensionDropdown_stage.graphql'
@@ -49,6 +50,7 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
     graphql`
       fragment GitHubFieldDimensionDropdown_stage on EstimateStage {
         ...GitHubFieldMenu_stage
+        finalScore
         serviceField {
           name
         }
@@ -56,7 +58,7 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
     `,
     stageRef
   )
-  const {serviceField} = stage
+  const {finalScore, serviceField} = stage
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
@@ -71,7 +73,9 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const label = labelLookup[serviceFieldName] || serviceFieldName
+  const label =
+    labelLookup[serviceFieldName] || interpolateGitHubLabelTemplate(serviceFieldName, finalScore)
+
   return (
     <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
       <CurrentValue>{label}</CurrentValue>
