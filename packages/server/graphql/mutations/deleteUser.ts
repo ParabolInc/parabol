@@ -80,14 +80,10 @@ export default {
       reasonRemoved: validReason,
       updatedAt: new Date()
     }
-    setTimeout(
-      () =>
-        Promise.all([
-          db.write('User', userIdToDelete, update),
-          updateUser(update, userIdToDelete)
-        ]).then(() => dataLoader.get('users').clear(userIdToDelete)),
-      30000
-    )
+    setTimeout(() => {
+      db.write('User', userIdToDelete, update)
+      updateUser(update, userIdToDelete)
+    }, 30000)
     return {}
   }
 }

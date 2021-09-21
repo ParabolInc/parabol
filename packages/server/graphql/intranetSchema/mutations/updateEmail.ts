@@ -5,6 +5,7 @@ import {InternalContext} from '../../graphql'
 import updateUser from '../../../postgres/queries/updateUser'
 import GraphQLEmailType from '../../types/GraphQLEmailType'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import db from '../../../db'
 
 const updateEmail = {
   type: GraphQLNonNull(GraphQLBoolean),
@@ -22,7 +23,7 @@ const updateEmail = {
   resolve: async (
     _source,
     {oldEmail, newEmail}: {oldEmail: string; newEmail: string},
-    {authToken, dataLoader}: InternalContext
+    {authToken}: InternalContext
   ) => {
     const r = await getRethink()
 
@@ -58,9 +59,9 @@ const updateEmail = {
           email: newEmail
         })
         .run(),
-      updateUser(updates, userId)
+      updateUser(updates, userId),
+      db.write('User', userId, updates)
     ])
-    await dataLoader.get('users').clear(userId)
 
     return true
   }

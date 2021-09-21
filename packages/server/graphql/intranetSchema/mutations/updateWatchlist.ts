@@ -34,7 +34,7 @@ const updateWatchlist = {
       emails,
       domain
     }: {includeInWatchlist: boolean; emails: string[]; domain: string},
-    {authToken, dataLoader}: InternalContext
+    {authToken}: InternalContext
   ) => {
     const r = await getRethink()
     const now = new Date()
@@ -67,10 +67,9 @@ const updateWatchlist = {
         .getAll(r.args(userIds))
         .update(update)
         .run(),
-      updateUser(update, userIds)
+      updateUser(update, userIds),
+      db.writeMany('User', userIds, update)
     ])
-    const dl = dataLoader.get('users')
-    await Promise.all(userIds.map((userId) => dl.clear(userId)))
 
     return {success: true}
   }
