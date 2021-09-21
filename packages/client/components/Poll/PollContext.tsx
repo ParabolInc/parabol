@@ -6,8 +6,10 @@ export type PollState = 'creating' | 'created'
 interface PollContextType {
   pollState: PollState
   poll: Poll_poll
+  updatePoll: (optionId: string, title: string) => void
   updatePollOption: (optionId: string, title: string) => void
   onOptionSelected: (optionId: string) => void
+  createPoll: () => void
   addPollOption: () => void
   selectedOptionId: string | null
 }

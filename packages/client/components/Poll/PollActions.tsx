@@ -46,7 +46,7 @@ const SubmitVoteButton = styled(PlainButton)({
 })
 
 const PollActions = () => {
-  const {pollState, addPollOption, poll} = usePollContext()
+  const {pollState, addPollOption, poll, createPoll} = usePollContext()
 
   if (pollState === 'creating') {
     return (
@@ -54,7 +54,7 @@ const PollActions = () => {
         {poll.options.length < Polls.MAX_OPTIONS && (
           <AddPollOptionButton dataCy='poll-option' onClick={addPollOption} />
         )}
-        <StartPollButton>Start</StartPollButton>
+        <StartPollButton onClick={createPoll}>Start</StartPollButton>
       </PollActionsRoot>
     )
   }

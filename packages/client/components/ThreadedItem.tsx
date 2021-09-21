@@ -55,7 +55,12 @@ export const ThreadedItem = (props: Props) => {
   }
   if (__typename === 'Poll') {
     return (
-      <ThreadedPollBase allowedThreadables={allowedThreadables} dataCy={`poll`} poll={threadable} />
+      <ThreadedPollBase
+        allowedThreadables={allowedThreadables}
+        dataCy={`poll`}
+        poll={threadable}
+        discussion={discussion}
+      />
     )
   }
   return (
@@ -85,6 +90,7 @@ export default createFragmentContainer(ThreadedItem, {
     fragment ThreadedItem_discussion on Discussion {
       ...ThreadedCommentBase_discussion
       ...ThreadedTaskBase_discussion
+      ...ThreadedPollBase_discussion
       ...ThreadedRepliesList_discussion
     }
   `,

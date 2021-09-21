@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {Poll_poll} from '~/__generated__/Poll_poll.graphql'
+import {Poll_discussion} from '~/__generated__/Poll_discussion.graphql'
 
 import {PollContext, PollState} from './PollContext'
 import {cardShadow, Elevation} from '~/styles/elevation'
@@ -11,8 +12,9 @@ import ThreadedAvatarColumn from '../ThreadedAvatarColumn'
 import ThreadedItemHeaderDescription from '../ThreadedItemHeaderDescription'
 import cardRootStyles from '~/styles/helpers/cardRootStyles'
 import {PALETTE} from '~/styles/paletteV3'
-import {updateLocalPollOption, addLocalPollOption} from './local/newPoll'
+import {updateLocalPollOption, addLocalPollOption, updateLocalPoll} from './local/newPoll'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import CreatePollMutation from '~/mutations/CreatePollMutation'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -41,11 +43,12 @@ const PollRoot = styled('div')<{
 interface Props {
   children: React.ReactNode
   poll: Poll_poll
+  discussion: Poll_discussion
   dataCy: string
 }
 
 const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {dataCy, poll, children} = props
+  const {dataCy, poll, discussion, children} = props
   const atmosphere = useAtmosphere()
 
   // TODO fixme, should not be nullable
@@ -60,10 +63,31 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
     },
     [atmosphere]
   )
+  const updatePoll = useCallback(
+    (id: string, updatedTitle: string) => {
+      updateLocalPoll(atmosphere, id, updatedTitle)
+    },
+    [atmosphere]
+  )
   const addPollOption = useCallback(() => {
     addLocalPollOption(atmosphere, poll.id, poll.options.length + 1)
   }, [atmosphere, poll])
-  const createPoll = useCallback(() => {}, [atmosphere])
+  const createPoll = useCallback(() => {
+    CreatePollMutation(
+      atmosphere,
+      {
+        newPoll: {
+          discussionId: discussion.id,
+          title: poll.title,
+          threadSortOrder: poll.threadSortOrder!,
+          options: poll.options.map((option) => {
+            return {title: option.title}
+          })
+        }
+      },
+      {localPoll: poll}
+    )
+  }, [atmosphere, poll, discussion])
   const pollContextValue = React.useMemo(
     () =>
       ({
@@ -71,11 +95,12 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
         poll,
         onOptionSelected,
         selectedOptionId,
+        updatePoll,
         updatePollOption,
         createPoll,
         addPollOption
       } as const),
-    [onOptionSelected, selectedOptionId, poll, updatePollOption]
+    [onOptionSelected, selectedOptionId, poll, updatePollOption, createPoll, addPollOption]
   )
 
   return (
@@ -99,6 +124,11 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
 })
 
 export default createFragmentContainer(Poll, {
+  discussion: graphql`
+    fragment Poll_discussion on Discussion {
+      id
+    }
+  `,
   poll: graphql`
     fragment Poll_poll on Poll {
       id

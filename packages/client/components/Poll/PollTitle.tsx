@@ -20,20 +20,23 @@ const PollTitleInput = styled('input')({
 })
 
 const PollTitle = () => {
-  const {pollState, poll} = usePollContext()
-  const [title, setTitle] = React.useState(poll.title)
+  const {pollState, poll, updatePoll} = usePollContext()
 
   if (pollState === 'creating') {
     const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setTitle(event.target.value)
+      updatePoll(poll.id, event.target.value)
     }
 
     return (
-      <PollTitleInput value={title} placeholder='Ask a question...' onChange={handleTitleChange} />
+      <PollTitleInput
+        value={poll.title}
+        placeholder='Ask a question...'
+        onChange={handleTitleChange}
+      />
     )
   }
 
-  return <PollTitleHeader>{title}</PollTitleHeader>
+  return <PollTitleHeader>{poll.title}</PollTitleHeader>
 }
 
 export default PollTitle

@@ -56,6 +56,16 @@ export const createLocalPoll = (
     safePutNodeInConn(threadConn, newPollRecord, store, 'threadSortOrder', true)
   })
 
+export const updateLocalPoll = (atmosphere: Atmosphere, id: string, title: string) =>
+  commitLocalUpdate(atmosphere, (store) => {
+    const poll = store.get(id)
+    if (!poll) {
+      console.warn(`Could not find poll with id: ${id}, skipping update!`)
+      return
+    }
+    poll.setValue(title, 'title')
+  })
+
 export const updateLocalPollOption = (atmosphere: Atmosphere, id: string, title: string) =>
   commitLocalUpdate(atmosphere, (store) => {
     const pollOption = store.get(id)
