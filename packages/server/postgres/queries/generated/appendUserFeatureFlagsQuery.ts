@@ -3,7 +3,7 @@ import { PreparedQuery } from '@pgtyped/query';
 
 /** 'AppendUserFeatureFlagsQuery' parameters type */
 export interface IAppendUserFeatureFlagsQueryParams {
-  ids: Array<string | null | void>;
+  ids: readonly (string | null | void)[];
   flag: string | null | void;
 }
 

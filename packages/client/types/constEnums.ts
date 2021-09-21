@@ -418,3 +418,10 @@ export const enum AriaLabels {
   COMMENT_EDITOR = 'Comment Editor',
   TASK_EDITOR = 'Task Editor'
 }
+
+export const enum Polls {
+  MAX_OPTIONS = 4,
+  MIN_OPTIONS = 2,
+  MAX_TITLE_LENGTH = 100,
+  MIN_TITLE_LENGTH = 2
+}

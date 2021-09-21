@@ -1,17 +1,17 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/backupUserQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
-
 export type AuthTokenRole = 'su';
 
-export type stringArray = (string)[];
+export type TierEnum = 'enterprise' | 'personal' | 'pro';
 
 export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
 
+export type stringArray = (string)[];
+
 /** 'BackupUserQuery' parameters type */
 export interface IBackupUserQueryParams {
-  users: Array<{
+  users: readonly ({
     id: string | null | void,
     email: string | null | void,
     createdAt: Date | null | void,
@@ -32,7 +32,7 @@ export interface IBackupUserQueryParams {
     reasonRemoved: string | null | void,
     rol: AuthTokenRole | null | void,
     payLaterClickCount: number | null | void
-  }>;
+  })[];
 }
 
 /** 'BackupUserQuery' return type */
