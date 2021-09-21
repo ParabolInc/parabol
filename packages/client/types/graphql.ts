@@ -55266,6 +55266,11 @@ export interface IMutation {
    * Update a task estimate
    */
   setTaskEstimate: SetTaskEstimatePayload;
+
+  /**
+   * Update how a parabol dimension maps to a GitHub label
+   */
+  updateGitHubDimensionField: UpdateGitHubDimensionFieldPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -56402,6 +56407,25 @@ export interface IPersistGitHubSearchQueryOnMutationArguments {
 
 export interface ISetTaskEstimateOnMutationArguments {
   taskEstimate: ITaskEstimateInput;
+}
+
+export interface IUpdateGitHubDimensionFieldOnMutationArguments {
+  dimensionName: string;
+
+  /**
+   * The template string to map to a label
+   */
+  labelTemplate: string;
+
+  /**
+   * The repo the issue lives on
+   */
+  nameWithOwner: string;
+
+  /**
+   * The meeting the update happend in. Returns a meeting object with updated serviceField
+   */
+  meetingId: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -58763,6 +58787,25 @@ export interface ITaskEstimateInput {
   meetingId?: string | null;
 }
 
+/**
+ * Return object for UpdateGitHubDimensionFieldPayload
+ */
+export type UpdateGitHubDimensionFieldPayload =
+  | IErrorPayload
+  | IUpdateGitHubDimensionFieldSuccess;
+
+export interface IUpdateGitHubDimensionFieldSuccess {
+  __typename: 'UpdateGitHubDimensionFieldSuccess';
+  teamId: string;
+  meetingId: string;
+  team: ITeam;
+
+  /**
+   * The poker meeting the field was updated from
+   */
+  meeting: IPokerMeeting;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -59110,7 +59153,8 @@ export type TeamSubscriptionPayload =
   | IMovePokerTemplateScaleValueSuccess
   | IUpdateJiraDimensionFieldSuccess
   | ISetDefaultSlackChannelSuccess
-  | ISetAppLocationSuccess;
+  | ISetAppLocationSuccess
+  | IUpdateGitHubDimensionFieldSuccess;
 
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';
