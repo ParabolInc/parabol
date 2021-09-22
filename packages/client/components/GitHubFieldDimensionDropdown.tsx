@@ -63,7 +63,8 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
     {
-      isDropdown: true
+      isDropdown: true,
+      id: 'githubFieldMenu'
     }
   )
 
@@ -77,11 +78,13 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
     labelLookup[serviceFieldName] || interpolateGitHubLabelTemplate(serviceFieldName, finalScore)
 
   return (
-    <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
-      <CurrentValue>{label}</CurrentValue>
-      <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
+    <>
+      <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
+        <CurrentValue>{label}</CurrentValue>
+        <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
+      </Wrapper>
       {menuPortal(<GitHubFieldMenu menuProps={menuProps} stageRef={stage} />)}
-    </Wrapper>
+    </>
   )
 }
 
