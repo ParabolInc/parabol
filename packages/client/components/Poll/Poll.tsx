@@ -1,9 +1,9 @@
 import React, {Ref, useCallback} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Poll_poll} from '~/__generated__/Poll_poll.graphql'
-import {Poll_discussion} from '~/__generated__/Poll_discussion.graphql'
+import {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
+import {Poll_discussion$key} from '~/__generated__/Poll_discussion.graphql'
 
 import {PollContext, PollState} from './PollContext'
 import {cardShadow, Elevation} from '~/styles/elevation'
@@ -42,13 +42,42 @@ const PollRoot = styled('div')<{
 
 interface Props {
   children: React.ReactNode
-  poll: Poll_poll
-  discussion: Poll_discussion
+  poll: Poll_poll$key
+  discussion: Poll_discussion$key
   dataCy: string
 }
 
 const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {dataCy, poll, discussion, children} = props
+  const {dataCy, poll: pollRef, discussion: discussionRef, children} = props
+  const poll = useFragment(
+    graphql`
+      fragment Poll_poll on Poll {
+        id
+        title
+        createdBy
+        createdByUser {
+          id
+          preferredName
+          picture
+        }
+        threadSortOrder
+        options {
+          id
+          title
+          placeholder
+        }
+      }
+    `,
+    pollRef
+  )
+  const discussion = useFragment(
+    graphql`
+      fragment Poll_discussion on Discussion {
+        id
+      }
+    `,
+    discussionRef
+  )
   const atmosphere = useAtmosphere()
 
   // TODO fixme, should not be nullable
@@ -123,28 +152,4 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   )
 })
 
-export default createFragmentContainer(Poll, {
-  discussion: graphql`
-    fragment Poll_discussion on Discussion {
-      id
-    }
-  `,
-  poll: graphql`
-    fragment Poll_poll on Poll {
-      id
-      title
-      createdBy
-      createdByUser {
-        id
-        preferredName
-        picture
-      }
-      threadSortOrder
-      options {
-        id
-        title
-        placeholder
-      }
-    }
-  `
-})
+export default Poll

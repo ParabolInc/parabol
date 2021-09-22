@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ThreadedPollBase_poll} from '~/__generated__/ThreadedPollBase_poll.graphql'
-import {ThreadedPollBase_discussion} from '~/__generated__/ThreadedPollBase_discussion.graphql'
+import {useFragment} from 'react-relay'
+import {ThreadedPollBase_poll$key} from '~/__generated__/ThreadedPollBase_poll.graphql'
+import {ThreadedPollBase_discussion$key} from '~/__generated__/ThreadedPollBase_discussion.graphql'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import Poll from './Poll/Poll'
 import PollOptions from './Poll/PollOptions'
@@ -11,13 +11,29 @@ import PollActions from './Poll/PollActions'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
-  poll: ThreadedPollBase_poll
-  discussion: ThreadedPollBase_discussion
+  poll: ThreadedPollBase_poll$key
+  discussion: ThreadedPollBase_discussion$key
   dataCy: string
 }
 
 const ThreadedPollBase = (props: Props) => {
-  const {dataCy, poll, discussion} = props
+  const {dataCy, poll: pollRef, discussion: discussionRef} = props
+  const poll = useFragment(
+    graphql`
+      fragment ThreadedPollBase_poll on Poll {
+        ...Poll_poll
+      }
+    `,
+    pollRef
+  )
+  const discussion = useFragment(
+    graphql`
+      fragment ThreadedPollBase_discussion on Discussion {
+        ...Poll_discussion
+      }
+    `,
+    discussionRef
+  )
 
   return (
     <Poll dataCy={`${dataCy}-poll`} poll={poll} discussion={discussion}>
@@ -28,15 +44,4 @@ const ThreadedPollBase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ThreadedPollBase, {
-  discussion: graphql`
-    fragment ThreadedPollBase_discussion on Discussion {
-      ...Poll_discussion
-    }
-  `,
-  poll: graphql`
-    fragment ThreadedPollBase_poll on Poll {
-      ...Poll_poll
-    }
-  `
-})
+export default ThreadedPollBase
