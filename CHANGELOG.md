@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.29.0 2021-Sep-22
+
+### Added
+
+- Backend for creating a poll object (#5304)
+- RedisLockQueue implementation (#5311)
+
+### Removed
+
+- Removed postdeploy migrations (#5396)
+
+### Changed
+
+- Bumped node and pm2 (#5418)
+
 ## 6.28.0 2021-Sep-16
 
 ### Added
