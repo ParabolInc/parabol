@@ -2,6 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {commitLocalUpdate} from 'relay-runtime'
+import Atmosphere from '../Atmosphere'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
@@ -133,6 +136,14 @@ interface Props {
   queryRef: PreloadedQuery<SpotlightModalQuery>
 }
 
+const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
+  commitLocalUpdate(atmosphere, (store) => {
+    const meeting = store.get(meetingId)
+    if (!meeting) return
+    meeting.setValue(value, 'spotlightSearch')
+  })
+}
+
 const SpotlightModal = (props: Props) => {
   const {closeSpotlight, flipRef, queryRef} = props
   const data = usePreloadedQuery<SpotlightModalQuery>(
@@ -146,6 +157,7 @@ const SpotlightModal = (props: Props) => {
               ...SpotlightGroups_meeting
               id
               teamId
+              spotlightSearch
               localPhase {
                 phaseType
               }
@@ -174,6 +186,7 @@ const SpotlightModal = (props: Props) => {
   )
 
   const {viewer} = data
+  const atmosphere = useAtmosphere()
   const {meeting} = viewer
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const phaseRef = useRef(null)
@@ -185,6 +198,10 @@ const SpotlightModal = (props: Props) => {
       closeSpotlight()
     }
   }
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSpotlightSearch(atmosphere, meeting!.id!, e.currentTarget.value)
+  }
+  if (!meeting) return null
   return (
     <>
       <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
@@ -206,6 +223,8 @@ const SpotlightModal = (props: Props) => {
               name='search'
               placeholder='Or search for keywords...'
               type='text'
+              onChange={onChange}
+              value={meeting.spotlightSearch ?? ""}
             />
           </SearchItem>
         </SelectedReflectionSection>
