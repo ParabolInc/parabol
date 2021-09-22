@@ -24,6 +24,9 @@ import getMeetingTaskEstimates, {
 import getTeamsByIds from '../postgres/queries/getTeamsByIds'
 import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
+import getTemplateScaleRefsByIds, {
+  TemplateScaleRef
+} from '../postgres/queries/getTemplateScaleRefsByIds'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
@@ -401,6 +404,18 @@ export const templateRefs = (parent: RethinkDataLoader) => {
     async (refIds) => {
       const templateRefs = await getTemplateRefsById(refIds)
       return refIds.map((refId) => templateRefs.find((ref) => ref.id === refId)!)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const templateScaleRefs = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, TemplateScaleRef, string>(
+    async (refIds) => {
+      const templateScaleRefs = await getTemplateScaleRefsByIds(refIds)
+      return refIds.map((refId) => templateScaleRefs.find((ref) => ref.id === refId)!)
     },
     {
       ...parent.dataLoaderOptions

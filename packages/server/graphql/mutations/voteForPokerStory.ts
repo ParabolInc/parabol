@@ -5,7 +5,6 @@ import getRethink from '../../database/rethinkDriver'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
-import getTemplateScaleRefById from '../../postgres/queries/getTemplateScaleRefById'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -104,7 +103,7 @@ const voteForPokerStory = {
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {scaleRefId} = dimensionRef
-    const scaleRef = await getTemplateScaleRefById(scaleRefId)
+    const scaleRef = await dataLoader.get('templateScaleRefs').load(scaleRefId)
     const {values} = scaleRef
     if (score) {
       // validate the score is a value on the scale

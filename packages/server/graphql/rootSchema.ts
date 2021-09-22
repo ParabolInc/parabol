@@ -1,6 +1,7 @@
 import {mergeSchemas} from '@graphql-tools/merge'
 import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
+import githubSchema from '../utils/githubSchema.graphql'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
@@ -17,8 +18,12 @@ const {schema: withGitHubSchema, githubRequest} = nestGitHubEndpoint({
   parentSchema: parabolSchema,
   parentType: 'GitHubIntegration',
   fieldName: 'api',
-  resolveEndpointContext: ({accessToken}) => ({accessToken}),
-  prefix: '_xGitHub'
+  resolveEndpointContext: ({accessToken}) => ({
+    accessToken,
+    headers: {Accept: 'application/vnd.github.bane-preview+json'}
+  }),
+  prefix: '_xGitHub',
+  schemaIDL: githubSchema
 })
 
 const withLinkedGitHubSchema = mergeSchemas({
