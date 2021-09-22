@@ -27,7 +27,7 @@ const createPoll = {
   type: GraphQLNonNull(CreatePollPayload),
   args: {
     newPoll: {
-      type: new GraphQLNonNull(CreatePollInput),
+      type: GraphQLNonNull(CreatePollInput),
       description: 'The new poll including title and poll options'
     }
   },
@@ -107,7 +107,7 @@ const createPoll = {
     }
     const [{pollId}] = insertPollResult
 
-    const data = {pollId}
+    const data = {pollId, meetingId}
     segmentIo.track({
       userId: viewerId,
       event: 'Poll added',
@@ -116,7 +116,7 @@ const createPoll = {
         teamId
       }
     })
-    publish(SubscriptionChannel.MEETING, meetingId, 'AddPollSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
     return data
   }
 }

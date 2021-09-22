@@ -58828,6 +58828,11 @@ export interface ICreatePollSuccess {
   pollId: string;
 
   /**
+   * The id of the meeting where the poll was added
+   */
+  meetingId: string;
+
+  /**
    * the poll just created
    */
   poll: IPoll;
@@ -59001,6 +59006,7 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 
 export type MeetingSubscriptionPayload =
   | IAddCommentSuccess
+  | ICreatePollSuccess
   | IAddReactjiToReflectionSuccess
   | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload

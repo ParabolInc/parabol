@@ -1,25 +1,23 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {LocalHandlers, StandardMutation} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {CreatePollMutation as TCreatePollMutation} from '../__generated__/CreatePollMutation.graphql'
+import {CreatePollMutation_meeting} from '~/__generated__/CreatePollMutation_meeting.graphql'
 import {Poll_poll} from '~/__generated__/Poll_poll.graphql'
+import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
+import safePutNodeInConn from './handlers/safePutNodeInConn'
 
 graphql`
-  fragment CreatePollMutation_poll on CreatePollSuccess {
+  fragment CreatePollMutation_meeting on CreatePollSuccess {
+    meetingId
     poll {
-      id
-      title
-      createdBy
-      createdByUser {
-        id
-        preferredName
-        picture
-      }
+      ...ThreadedItem_threadable
+      discussionId
       threadSortOrder
+      id
       options {
         id
         title
-        placeholder
       }
     }
   }
@@ -33,10 +31,26 @@ const mutation = graphql`
           message
         }
       }
-      ...CreatePollMutation_poll @relay(mask: false)
+      ...CreatePollMutation_meeting @relay(mask: false)
     }
   }
 `
+
+export const createPollMeetingUpdater: SharedUpdater<CreatePollMutation_meeting> = (
+  payload,
+  {store}
+) => {
+  const poll = payload.getLinkedRecord('poll')
+  if (!poll) {
+    console.warn('No poll object found, skipping!')
+    return
+  }
+  const discussionId = poll.getValue('discussionId')
+  if (discussionId) {
+    const threadConn = getDiscussionThreadConn(store, discussionId)
+    safePutNodeInConn(threadConn, poll, store, 'threadSortOrder', true)
+  }
+}
 
 interface Handlers extends LocalHandlers {
   localPoll: Poll_poll
