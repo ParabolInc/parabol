@@ -29,6 +29,7 @@ const PollTitle = () => {
 
     return (
       <PollTitleInput
+        autoFocus
         value={poll.title}
         placeholder='Ask a question...'
         onChange={handleTitleChange}
