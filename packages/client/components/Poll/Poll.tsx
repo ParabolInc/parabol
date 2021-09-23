@@ -15,6 +15,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {updateLocalPollOption, addLocalPollOption, updateLocalPoll} from './local/newPoll'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import CreatePollMutation from '~/mutations/CreatePollMutation'
+import {Polls} from '~/types/constEnums'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -80,8 +81,8 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   )
   const atmosphere = useAtmosphere()
   const {picture, preferredName} = poll.createdByUser
-  const [selectedOptionId, setSelectedOptionId] = React.useState<string>('')
-  const onOptionSelected = React.useCallback((optionId: string) => {
+  const [selectedPollOptionId, setSelectedOptionId] = React.useState<string | null>(null)
+  const onPollOptionSelected = React.useCallback((optionId: string) => {
     setSelectedOptionId(optionId)
   }, [])
   const updatePollOption = useCallback(
@@ -114,21 +115,40 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       },
       {localPoll: poll}
     )
-  }, [atmosphere, poll, discussion])
-  const pollContextValue = React.useMemo(
-    () =>
-      ({
-        pollState: poll.id.includes('tmp') ? 'creating' : 'created',
-        poll,
-        onOptionSelected,
-        selectedOptionId,
-        updatePoll,
-        updatePollOption,
-        createPoll,
-        addPollOption
-      } as const),
-    [onOptionSelected, selectedOptionId, poll, updatePollOption, createPoll, addPollOption]
-  )
+  }, [atmosphere, poll, discussion.id])
+  const pollContextValue = React.useMemo(() => {
+    const {title, options} = poll
+    const pollState = poll.id.includes('tmp') ? 'creating' : 'created'
+    const isPollTitleValid =
+      title?.length > Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
+    const arePollOptionsValid =
+      options.length >= Polls.MIN_OPTIONS &&
+      options.length <= Polls.MAX_OPTIONS &&
+      options.every(
+        ({title}) =>
+          title?.length > Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
+      )
+    const canCreatePoll = pollState === 'creating' && isPollTitleValid && arePollOptionsValid
+
+    return {
+      pollState,
+      poll,
+      onPollOptionSelected,
+      selectedPollOptionId,
+      updatePoll,
+      updatePollOption,
+      createPoll,
+      addPollOption,
+      canCreatePoll
+    } as const
+  }, [
+    onPollOptionSelected,
+    selectedPollOptionId,
+    poll,
+    updatePollOption,
+    createPoll,
+    addPollOption
+  ])
 
   return (
     <PollContext.Provider value={pollContextValue}>

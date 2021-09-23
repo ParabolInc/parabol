@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Ref} from 'react'
 import styled from '@emotion/styled'
 import {usePollContext} from './PollContext'
 import {PALETTE} from '../../styles/paletteV3'
@@ -35,35 +35,34 @@ const SubmitVoteButton = styled(PlainButton)({
   fontSize: '14px',
   fontWeight: 500,
   background: PALETTE.SLATE_300,
-  outline: 'none',
   color: PALETTE.SLATE_700,
   border: 'none',
   borderRadius: '24px',
-  cursor: 'pointer',
   ':hover': {
     background: PALETTE.SLATE_400
   }
 })
 
-const PollActions = () => {
-  const {pollState, addPollOption, poll, createPoll} = usePollContext()
+const PollActions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
+  const {pollState, poll, canCreatePoll, addPollOption, createPoll} = usePollContext()
 
-  if (pollState === 'creating') {
-    return (
-      <PollActionsRoot>
-        {poll.options.length < Polls.MAX_OPTIONS && (
-          <AddPollOptionButton dataCy='poll-option' onClick={addPollOption} />
-        )}
-        <StartPollButton onClick={createPoll}>Start</StartPollButton>
-      </PollActionsRoot>
-    )
+  const renderPollActions = () => {
+    if (pollState === 'creating') {
+      return (
+        <>
+          {poll.options.length < Polls.MAX_OPTIONS && (
+            <AddPollOptionButton dataCy='poll-option' onClick={addPollOption} />
+          )}
+          <StartPollButton onClick={createPoll} disabled={!canCreatePoll}>
+            Start
+          </StartPollButton>
+        </>
+      )
+    }
+    return <SubmitVoteButton>Submit and view results</SubmitVoteButton>
   }
 
-  return (
-    <PollActionsRoot>
-      <SubmitVoteButton>Submit and view results</SubmitVoteButton>
-    </PollActionsRoot>
-  )
-}
+  return <PollActionsRoot ref={ref}>{renderPollActions()}</PollActionsRoot>
+})
 
 export default PollActions

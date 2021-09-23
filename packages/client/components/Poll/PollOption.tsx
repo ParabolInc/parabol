@@ -32,9 +32,9 @@ const PollOptionInput = styled('input')({
   }
 })
 
-const PollOption = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+const PollOption = React.forwardRef((props: Props, ref: Ref<HTMLDivElement | HTMLInputElement>) => {
   const {id, title, placeholder} = props
-  const {onOptionSelected, pollState, updatePollOption} = usePollContext()
+  const {onPollOptionSelected, pollState, updatePollOption} = usePollContext()
 
   if (pollState === 'creating') {
     const handlePollOptionUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +56,7 @@ const PollOption = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
       ref={ref}
       key={id}
       onClick={() => {
-        onOptionSelected(id)
+        onPollOptionSelected(id)
       }}
     >
       {title}

@@ -5,13 +5,14 @@ export type PollState = 'creating' | 'created'
 
 interface PollContextType {
   pollState: PollState
+  canCreatePoll: boolean
   poll: Poll_poll
   updatePoll: (optionId: string, title: string) => void
   updatePollOption: (optionId: string, title: string) => void
-  onOptionSelected: (optionId: string) => void
   createPoll: () => void
   addPollOption: () => void
-  selectedOptionId: string | null
+  onPollOptionSelected: (optionId: string) => void
+  selectedPollOptionId: string | null
 }
 export const PollContext = React.createContext<PollContextType | null>(null)
 
