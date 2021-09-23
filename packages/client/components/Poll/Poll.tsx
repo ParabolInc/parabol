@@ -79,9 +79,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
     discussionRef
   )
   const atmosphere = useAtmosphere()
-
-  // TODO fixme, should not be nullable
-  const {picture, preferredName} = poll.createdByUser!
+  const {picture, preferredName} = poll.createdByUser
   const [selectedOptionId, setSelectedOptionId] = React.useState<string>('')
   const onOptionSelected = React.useCallback((optionId: string) => {
     setSelectedOptionId(optionId)

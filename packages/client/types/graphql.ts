@@ -58867,7 +58867,7 @@ export interface IPoll {
   /**
    * The user that created the item
    */
-  createdByUser: IUser | null;
+  createdByUser: IUser;
 
   /**
    * the replies to this threadable item
