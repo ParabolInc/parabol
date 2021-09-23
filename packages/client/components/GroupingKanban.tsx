@@ -57,6 +57,7 @@ const GroupingKanban = (props: Props) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
       meeting.setValue(null, 'spotlightReflection')
+      meeting.setValue(null, 'spotlightSearch')
     })
   }
   const {closePortal, openPortal, modalPortal} = useModal({

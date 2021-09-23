@@ -136,7 +136,7 @@ interface Props {
   queryRef: PreloadedQuery<SpotlightModalQuery>
 }
 
-const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
+const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: string | null) => {
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
