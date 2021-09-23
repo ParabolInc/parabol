@@ -36,4 +36,4 @@ const withLinkedGitHubSchema = mergeSchemas({
 export {githubRequest}
 export type GitHubRequest = typeof githubRequest
 ;(withLinkedGitHubSchema as any).githubRequest = githubRequest
-export default withLinkedGitHubSchema as GraphQLSchema & {githubSchema: GitHubRequest}
+export default withLinkedGitHubSchema

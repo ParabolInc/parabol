@@ -6,7 +6,7 @@ query getRepoLabels($name: String!, $owner: String!, $issueNumber: Int!, $first:
       labels(first: $first) {
         nodes {
           id
-          description
+          name
         }
       }
     }

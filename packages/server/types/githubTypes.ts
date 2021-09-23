@@ -22100,7 +22100,7 @@ export type GetRepoLabelsQuery = {
       id: string
       labels?: Maybe<{
         __typename?: 'LabelConnection'
-        nodes?: Maybe<Array<Maybe<{__typename?: 'Label'; id: string; description?: Maybe<string>}>>>
+        nodes?: Maybe<Array<Maybe<{__typename?: 'Label'; id: string; name: string}>>>
       }>
     }>
     labels?: Maybe<{
