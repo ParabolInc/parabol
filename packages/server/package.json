@@ -115,6 +115,7 @@
     "jsonwebtoken": "^8.5.0",
     "mailcomposer": "^4.0.1",
     "mailgun.js": "^3.5.2",
+    "md-to-adf": "^0.6.4",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "nest-graphql-endpoint": "^0.2.2",

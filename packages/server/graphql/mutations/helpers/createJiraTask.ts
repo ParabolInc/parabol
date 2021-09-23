@@ -1,4 +1,5 @@
 import {stateToMarkdown} from 'draft-js-export-markdown'
+import convertMdToAdf from 'md-to-adf'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
@@ -15,10 +16,7 @@ const createJiraTask = async (
   const {accessToken, accountId} = atlassianAuth
   const manager = new AtlassianServerManager(accessToken)
 
-  const [issueMetaRes, description] = await Promise.all([
-    manager.getCreateMeta(cloudId, [projectKey]),
-    manager.convertMarkdownToADF(markdown)
-  ])
+  const issueMetaRes = await manager.getCreateMeta(cloudId, [projectKey])
   if (issueMetaRes instanceof Error) return {error: issueMetaRes}
   const {projects} = issueMetaRes
   // should always be the first and only item in the project arr
@@ -28,7 +26,7 @@ const createJiraTask = async (
   const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
   const payload = {
     summary,
-    description,
+    description: convertMdToAdf(markdown),
     // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
     assignee: {
       id: accountId
