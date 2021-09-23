@@ -1,8 +1,7 @@
-import {stateToMarkdown} from 'draft-js-export-markdown'
-import convertMdToAdf from 'md-to-adf'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
+import convertContentStateToADF from './convertContentStateToADF'
 
 const createJiraTask = async (
   rawContent: string,
@@ -11,7 +10,7 @@ const createJiraTask = async (
   atlassianAuth: AtlassianAuth
 ) => {
   const {title: summary, contentState} = splitDraftContent(rawContent)
-  const markdown = stateToMarkdown(contentState)
+  const description = convertContentStateToADF(contentState)
 
   const {accessToken, accountId} = atlassianAuth
   const manager = new AtlassianServerManager(accessToken)
@@ -26,7 +25,7 @@ const createJiraTask = async (
   const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
   const payload = {
     summary,
-    description: convertMdToAdf(markdown),
+    description,
     // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
     assignee: {
       id: accountId
