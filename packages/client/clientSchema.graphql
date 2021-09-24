@@ -107,4 +107,5 @@ extend type Discussion {
 
 extend type PollOption {
   placeholder: String
+  shouldAutoFocus: Boolean
 }

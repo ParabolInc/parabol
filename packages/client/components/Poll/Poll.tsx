@@ -70,6 +70,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
           id
           title
           placeholder
+          shouldAutoFocus
         }
       }
     `,

@@ -6,12 +6,17 @@ import safePutNodeInConn from '../../../mutations/handlers/safePutNodeInConn'
 
 const LocalPollOptionsNumber = 2
 
-const createEmptyPollOption = (store: RecordSourceProxy, index: number) => {
+const createEmptyPollOption = (
+  store: RecordSourceProxy,
+  index: number,
+  shouldAutoFocus = false
+) => {
   const dataID = clientTempId('poll')
   const newPollOption = store.create(dataID, 'PollOption')
   newPollOption.setValue(dataID, 'id')
   newPollOption.setValue('', 'title')
   newPollOption.setValue(`Add a choice ${index}...`, 'placeholder')
+  newPollOption.setValue(shouldAutoFocus, 'shouldAutoFocus')
 
   return newPollOption
 }
@@ -87,6 +92,6 @@ export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string, index
     }
 
     const pollOptions = poll.getLinkedRecords('options') || []
-    const pollOption = createEmptyPollOption(store, index)
+    const pollOption = createEmptyPollOption(store, index, true)
     poll.setLinkedRecords([...pollOptions, pollOption], 'options')
   })

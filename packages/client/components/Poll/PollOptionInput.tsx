@@ -1,4 +1,4 @@
-import React, {Ref} from 'react'
+import React, {Ref, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {usePollContext} from './PollContext'
 import {PALETTE} from '../../styles/paletteV3'
@@ -8,6 +8,7 @@ interface Props {
   id: string
   value: string
   placeholder: string | null
+  shouldAutoFocus: boolean | null
 }
 
 const PollOptionInputRoot = styled('div')({
@@ -45,29 +46,39 @@ const Counter = styled('div')<{
 }))
 
 const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {id, value, placeholder} = props
+  const {id, value, placeholder, shouldAutoFocus} = props
   const {updatePollOption} = usePollContext()
+  const pollInputRef = useRef<HTMLInputElement>(null)
   const [isCounterVisible, setIsCounterVisible] = React.useState(false)
   const handlePollOptionUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
     updatePollOption(id, event.target.value)
   }
   const inputValue = value ?? ''
   const hasReachedMaxValue = inputValue.length >= Polls.MAX_OPTION_LENGTH
+  const showCounter = () => {
+    setIsCounterVisible(true)
+  }
+  const hideCounter = () => {
+    setIsCounterVisible(false)
+  }
+
+  useEffect(() => {
+    if (shouldAutoFocus && pollInputRef.current) {
+      pollInputRef.current.focus()
+    }
+  }, [shouldAutoFocus])
 
   return (
     <PollOptionInputRoot ref={ref}>
       <Input
+        ref={pollInputRef}
         aria-label={AriaLabels.POLL_OPTION_EDITOR}
         placeholder={placeholder ?? ''}
         value={value}
         onChange={handlePollOptionUpdate}
         maxLength={Polls.MAX_OPTION_LENGTH}
-        onFocus={() => {
-          setIsCounterVisible(true)
-        }}
-        onBlur={() => {
-          setIsCounterVisible(false)
-        }}
+        onFocus={showCounter}
+        onBlur={hideCounter}
       />
       <Counter isVisible={isCounterVisible} isMax={hasReachedMaxValue}>
         {inputValue.length}/{Polls.MAX_OPTION_LENGTH}

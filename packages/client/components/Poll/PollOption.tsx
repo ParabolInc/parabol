@@ -8,6 +8,7 @@ interface Props {
   id: string
   title: string
   placeholder: string | null
+  shouldAutoFocus: boolean | null
 }
 
 const PollOptionRoot = styled('div')({
@@ -26,12 +27,19 @@ const PollOptionTitle = styled('div')({
 })
 
 const PollOption = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {id, title, placeholder} = props
+  const {id, title, placeholder, shouldAutoFocus} = props
   const {onPollOptionSelected, pollState} = usePollContext()
 
   const renderPollOption = () => {
     if (pollState === 'creating') {
-      return <PollOptionInput id={id} placeholder={placeholder} value={title} />
+      return (
+        <PollOptionInput
+          id={id}
+          placeholder={placeholder}
+          value={title}
+          shouldAutoFocus={shouldAutoFocus}
+        />
+      )
     }
 
     return <PollOptionTitle onClick={() => onPollOptionSelected(id)}>{title}</PollOptionTitle>

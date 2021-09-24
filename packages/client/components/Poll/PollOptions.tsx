@@ -22,6 +22,7 @@ const PollOptions = () => {
           id={option.id}
           title={option.title}
           placeholder={option.placeholder}
+          shouldAutoFocus={option.shouldAutoFocus}
         />
       ))}
     </PollOptionsRoot>
