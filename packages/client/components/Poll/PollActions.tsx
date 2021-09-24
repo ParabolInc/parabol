@@ -8,7 +8,7 @@ import {Polls} from '~/types/constEnums'
 
 const PollActionsRoot = styled('div')({
   width: '100%',
-  padding: `0px 12px 12px 12px`,
+  padding: `0px 12px`,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center'
@@ -38,13 +38,21 @@ const SubmitVoteButton = styled(PlainButton)({
   color: PALETTE.SLATE_700,
   border: 'none',
   borderRadius: '24px',
+  marginBottom: '12px',
   ':hover': {
     background: PALETTE.SLATE_400
   }
 })
 
 const PollActions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
-  const {pollState, poll, canCreatePoll, addPollOption, createPoll} = usePollContext()
+  const {
+    pollState,
+    poll,
+    canCreatePoll,
+    addPollOption,
+    createPoll,
+    selectedPollOptionId
+  } = usePollContext()
 
   const renderPollActions = () => {
     if (pollState === 'creating') {
@@ -59,7 +67,11 @@ const PollActions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
         </>
       )
     }
-    return <SubmitVoteButton>Submit and view results</SubmitVoteButton>
+
+    if (selectedPollOptionId) {
+      return <SubmitVoteButton>Submit and view results</SubmitVoteButton>
+    }
+    return null
   }
 
   return <PollActionsRoot ref={ref}>{renderPollActions()}</PollActionsRoot>
