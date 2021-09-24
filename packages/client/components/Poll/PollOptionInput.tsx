@@ -54,7 +54,7 @@ const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>
     updatePollOption(id, event.target.value)
   }
   const inputValue = value ?? ''
-  const hasReachedMaxValue = inputValue.length >= Polls.MAX_OPTION_LENGTH
+  const hasReachedMaxValue = inputValue.length >= Polls.MAX_OPTION_TITLE_LENGTH
   const showCounter = () => {
     setIsCounterVisible(true)
   }
@@ -76,12 +76,12 @@ const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>
         placeholder={placeholder ?? ''}
         value={value}
         onChange={handlePollOptionUpdate}
-        maxLength={Polls.MAX_OPTION_LENGTH}
+        maxLength={Polls.MAX_OPTION_TITLE_LENGTH}
         onFocus={showCounter}
         onBlur={hideCounter}
       />
       <Counter isVisible={isCounterVisible} isMax={hasReachedMaxValue}>
-        {inputValue.length}/{Polls.MAX_OPTION_LENGTH}
+        {inputValue.length}/{Polls.MAX_OPTION_TITLE_LENGTH}
       </Counter>
     </PollOptionInputRoot>
   )

@@ -138,7 +138,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       options.length <= Polls.MAX_OPTIONS &&
       options.every(
         ({title}) =>
-          title?.length > Polls.MIN_OPTION_LENGTH && title?.length <= Polls.MAX_OPTION_LENGTH
+          title?.length > Polls.MIN_OPTION_TITLE_LENGTH && title?.length <= Polls.MAX_OPTION_TITLE_LENGTH
       )
     const canCreatePoll = pollState === 'creating' && isPollTitleValid && arePollOptionsValid
 
