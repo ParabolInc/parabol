@@ -11,6 +11,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - Backend for creating a poll object (#5304)
 - RedisLockQueue implementation (#5311)
+- Custom ADF converter for pushing Jira tasks (#5429)
 
 ### Removed
 
