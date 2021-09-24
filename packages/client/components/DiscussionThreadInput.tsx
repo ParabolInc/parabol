@@ -20,7 +20,7 @@ import useInitialLocalState from '../hooks/useInitialLocalState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import {PALETTE} from '../styles/paletteV3'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
-import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
+import {isViewerTypingInPoll, isViewerTypingInTask} from '../utils/viewerTypingUtils'
 import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
@@ -103,7 +103,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
-  const [canCreateTask, setCanCreateTask] = useState(true)
+  const [canCreateTaskOrPoll, setCanCreateTaskOrPoll] = useState(true)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
@@ -243,7 +243,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   useEffect(() => {
     const focusListener = () => {
-      setCanCreateTask(!isViewerTypingInTask())
+      setCanCreateTaskOrPoll(!isViewerTypingInTask() && !isViewerTypingInPoll())
     }
 
     document.addEventListener('blur', focusListener, true)
@@ -283,10 +283,18 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       {isActionsContainerVisible && (
         <ActionsContainer>
           {allowTasks && (
-            <AddTaskButton dataCy={`${dataCy}-task`} onClick={addTask} disabled={!canCreateTask} />
+            <AddTaskButton
+              dataCy={`${dataCy}-task`}
+              onClick={addTask}
+              disabled={!canCreateTaskOrPoll}
+            />
           )}
           {allowPolls && (
-            <AddPollButton dataCy={`${dataCy}-poll`} onClick={addPoll} disabled={!canCreateTask} />
+            <AddPollButton
+              dataCy={`${dataCy}-poll`}
+              onClick={addPoll}
+              disabled={!canCreateTaskOrPoll}
+            />
           )}
         </ActionsContainer>
       )}

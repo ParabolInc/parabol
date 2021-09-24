@@ -2,12 +2,12 @@ import React, {Ref} from 'react'
 import styled from '@emotion/styled'
 import {usePollContext} from './PollContext'
 import {PALETTE} from '../../styles/paletteV3'
-import {Polls} from '../../types/constEnums'
+import {AriaLabels, Polls} from '../../types/constEnums'
 
 interface Props {
   id: string
-  value?: string
-  placeholder?: string
+  value: string
+  placeholder: string | null
 }
 
 const PollOptionInputRoot = styled('div')({
@@ -20,7 +20,7 @@ const PollOptionInputRoot = styled('div')({
 
 const Input = styled('input')({
   width: '100%',
-  padding: `10px 12px`,
+  padding: `8px 12px`,
   fontSize: '14px',
   color: PALETTE.SLATE_900,
   borderRadius: '7px',
@@ -57,7 +57,7 @@ const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>
   return (
     <PollOptionInputRoot ref={ref}>
       <Input
-        key={id}
+        aria-label={AriaLabels.POLL_OPTION_EDITOR}
         placeholder={placeholder ?? ''}
         value={value}
         onChange={handlePollOptionUpdate}

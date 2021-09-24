@@ -416,7 +416,9 @@ export const enum SprintPokerDefaults {
 
 export const enum AriaLabels {
   COMMENT_EDITOR = 'Comment Editor',
-  TASK_EDITOR = 'Task Editor'
+  TASK_EDITOR = 'Task Editor',
+  POLL_TITLE_EDITOR = 'Poll Editor',
+  POLL_OPTION_EDITOR = 'Poll Option Editor'
 }
 
 export const enum Polls {

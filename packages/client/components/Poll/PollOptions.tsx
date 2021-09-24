@@ -21,7 +21,7 @@ const PollOptions = () => {
           key={option.id}
           id={option.id}
           title={option.title}
-          placeholder={option.placeholder ?? ''}
+          placeholder={option.placeholder}
         />
       ))}
     </PollOptionsRoot>

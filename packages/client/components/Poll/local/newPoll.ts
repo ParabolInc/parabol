@@ -10,6 +10,7 @@ const createEmptyPollOption = (store: RecordSourceProxy, index: number) => {
   const dataID = clientTempId('poll')
   const newPollOption = store.create(dataID, 'PollOption')
   newPollOption.setValue(dataID, 'id')
+  newPollOption.setValue('', 'title')
   newPollOption.setValue(`Add a choice ${index}...`, 'placeholder')
 
   return newPollOption
@@ -43,6 +44,7 @@ export const createLocalPoll = (
     newPollRecord.setValue(now, 'createdAt')
     newPollRecord.setValue(now, 'updatedAt')
     newPollRecord.setValue(viewerId, 'createdById')
+    newPollRecord.setValue('', 'title')
     newPollRecord.setValue(threadSortOrder, 'threadSortOrder')
     newPollRecord.setLinkedRecord(user, 'createdByUser')
     newPollRecord.setLinkedRecords(

@@ -2,6 +2,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {usePollContext} from './PollContext'
 import {PALETTE} from '~/styles/paletteV3'
+import {AriaLabels} from '~/types/constEnums'
 
 const PollTitleHeader = styled('div')({
   padding: `10px 12px 0px 12px`,
@@ -29,6 +30,7 @@ const PollTitle = () => {
 
     return (
       <PollTitleInput
+        aria-label={AriaLabels.POLL_TITLE_EDITOR}
         autoFocus
         value={poll.title}
         placeholder='Ask a question...'

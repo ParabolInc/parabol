@@ -5,7 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
 import {Poll_discussion$key} from '~/__generated__/Poll_discussion.graphql'
 
-import {PollContext} from './PollContext'
+import {PollContext, PollState} from './PollContext'
 import {cardShadow, Elevation} from '~/styles/elevation'
 import ThreadedItemWrapper from '../ThreadedItemWrapper'
 import ThreadedAvatarColumn from '../ThreadedAvatarColumn'
@@ -26,8 +26,9 @@ const BodyCol = styled('div')({
 })
 
 const PollRoot = styled('div')<{
+  pollState: PollState
   isFocused: boolean
-}>(({isFocused}) => ({
+}>(({isFocused, pollState}) => ({
   ...cardRootStyles,
   display: 'flex',
   flexDirection: 'column',
@@ -37,8 +38,11 @@ const PollRoot = styled('div')<{
   overflow: 'hidden',
   color: PALETTE.SLATE_600,
   backgroundColor: PALETTE.WHITE,
-  border: `1.5px solid ${isFocused ? PALETTE.SKY_400 : PALETTE.SLATE_400}`,
-  boxShadow: isFocused ? cardShadow : Elevation.Z0
+  border: `1.5px solid ${
+    isFocused && pollState === 'creating' ? PALETTE.SKY_400 : PALETTE.SLATE_400
+  }`,
+  boxShadow: pollState === 'creating' ? cardShadow : Elevation.Z0,
+  transition: `box-shadow 100ms ease-in`
 }))
 
 interface Props {
@@ -122,7 +126,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       },
       {localPoll: poll}
     )
-  }, [atmosphere, poll, discussion.id])
+  }, [atmosphere, poll, discussion.id, onPollBlurred])
   const pollContextValue = useMemo(() => {
     const {title, options} = poll
     const pollState = poll.id.includes('tmp') ? 'creating' : 'created'
@@ -170,7 +174,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
               pollContextValue.pollState === 'creating' ? 'is creating a Poll...' : 'added a Poll'
             }
           />
-          <PollRoot ref={ref} isFocused={isPollFocused}>
+          <PollRoot ref={ref} pollState={pollContextValue.pollState} isFocused={isPollFocused}>
             {children}
           </PollRoot>
         </BodyCol>

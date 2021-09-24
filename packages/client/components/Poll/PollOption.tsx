@@ -6,8 +6,8 @@ import PollOptionInput from './PollOptionInput'
 
 interface Props {
   id: string
-  title?: string
-  placeholder?: string
+  title: string
+  placeholder: string | null
 }
 
 const PollOptionRoot = styled('div')({
