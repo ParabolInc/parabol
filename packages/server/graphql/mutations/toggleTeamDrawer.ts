@@ -9,11 +9,11 @@ import {DrawerTypes} from 'parabol-client/types/constEnums'
 
 const toggleTeamDrawer = {
   type: GraphQLNonNull(ToggleTeamDrawerPayload),
-  description: `Show/hide the manage team sidebar`,
+  description: `Show/hide the drawer in the team dashboard`,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'the team to hide the manage team sidebar for'
+      description: 'the team to show/hide the drawer for'
     },
     teamDrawerType: {
       type: new GraphQLNonNull(TeamDrawerEnum),

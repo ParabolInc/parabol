@@ -51,12 +51,12 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     },
     hideAgenda: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'hide the agenda list on the dashboard',
+      description: 'hide the agenda list drawer on the dashboard',
       resolve: ({hideAgenda}) => !!hideAgenda
     },
     hideManageTeam: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'hide the manage team sidebar on the dashboard',
+      description: 'hide the manage team drawer on the dashboard',
       resolve: ({hideManageTeam}) => !!hideManageTeam
     },
     /* denormalized from User */
