@@ -55735,12 +55735,6 @@ export interface IMutation {
   pokerAnnounceDeckHover: PokerAnnounceDeckHoverPayload;
 
   /**
-   * Update the final score field & push to the associated integration
-   * @deprecated "Use setTaskEstimate. Can delete this mutation Aug 15-2021"
-   */
-  pokerSetFinalScore: PokerSetFinalScorePayload;
-
-  /**
    * Move a scale value to an index
    */
   movePokerTemplateScaleValue: MovePokerTemplateScaleValuePayload;
@@ -56825,16 +56819,6 @@ export interface IPokerAnnounceDeckHoverOnMutationArguments {
    * true if the viewer has started hovering the deck, else false
    */
   isHover: boolean;
-}
-
-export interface IPokerSetFinalScoreOnMutationArguments {
-  meetingId: string;
-  stageId: string;
-
-  /**
-   * The label from the scale value
-   */
-  finalScore: string;
 }
 
 export interface IMovePokerTemplateScaleValueOnMutationArguments {
@@ -59146,22 +59130,6 @@ export interface IPokerAnnounceDeckHoverSuccess {
 }
 
 /**
- * Return object for PokerSetFinalScorePayload
- */
-export type PokerSetFinalScorePayload =
-  | IErrorPayload
-  | IPokerSetFinalScoreSuccess;
-
-export interface IPokerSetFinalScoreSuccess {
-  __typename: 'PokerSetFinalScoreSuccess';
-
-  /**
-   * The stage that holds the updated finalScore
-   */
-  stage: IEstimateStage;
-}
-
-/**
  * Return object for MovePokerTemplateScaleValuePayload
  */
 export type MovePokerTemplateScaleValuePayload =
@@ -59535,7 +59503,6 @@ export type MeetingSubscriptionPayload =
   | IPokerRevealVotesSuccess
   | IPokerResetDimensionSuccess
   | IPokerAnnounceDeckHoverSuccess
-  | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
   | ISetPokerSpectateSuccess
   | ISetTaskEstimateSuccess;
