@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Breakpoint, DrawerTypes, ElementHeight, ElementWidth} from '~/types/constEnums'
+import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -60,6 +61,7 @@ const StyledButton = styled(PlainButton)({
   color: PALETTE.SLATE_700,
   textAlign: 'center',
   width: '100%',
+  WebkitTapHighlightColor: 'transparent',
   '&:hover': {
     cursor: 'pointer'
   }
@@ -69,14 +71,34 @@ interface Props {
   team: DashboardAvatars_team
 }
 
+type Avatar = DashboardAvatars_team['teamMembers'][0]
+
 const DashboardAvatars = (props: Props) => {
   const {team} = props
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const maxAvatars = isDesktop ? 10 : 6
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
-  const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
-  const atmosphere = useAtmosphere()
+  const sortedAvatars = useMemo(() => {
+    const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
+    const connectedAvatars = [] as Avatar[]
+    const offlineAvatars = [] as Avatar[]
+    visibleAvatars.forEach((avatar) => {
+      const {id: teamMemberId, user} = avatar
+      const {isConnected} = user
+      const {userId} = fromTeamMemberId(teamMemberId)
+      if (userId === viewerId) {
+        connectedAvatars.unshift(avatar)
+      } else if (isConnected) {
+        connectedAvatars.push(avatar)
+      } else {
+        offlineAvatars.push(avatar)
+      }
+    })
+    return connectedAvatars.concat(offlineAvatars)
+  }, [teamMembers])
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
   const handleClick = (clickedOverflow: boolean) => {
@@ -101,7 +123,7 @@ const DashboardAvatars = (props: Props) => {
   return (
     <AvatarsList isDesktop={isDesktop}>
       <AvatarsWrapper>
-        {visibleAvatars.map((teamMember) => {
+        {sortedAvatars.map((teamMember) => {
           return (
             <ErrorBoundary key={`dbAvatar${teamMember.id}`}>
               <DashboardAvatar teamMember={teamMember} />
@@ -128,6 +150,9 @@ export default createFragmentContainer(DashboardAvatars, {
         ...DashboardAvatar_teamMember
         id
         preferredName
+        user {
+          isConnected
+        }
       }
     }
   `

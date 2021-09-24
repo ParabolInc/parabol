@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import styled from '@emotion/styled'
-import {ManageTeamList_team} from '../../../../__generated__/ManageTeamList_team.graphql'
+import {ManageTeamList_team$key} from '../../../../__generated__/ManageTeamList_team.graphql'
 import ManageTeamMember from './ManageTeamMember'
 
 const List = styled('div')({
@@ -17,11 +17,24 @@ const List = styled('div')({
 
 interface Props {
   manageTeamMemberId?: string | null
-  team: ManageTeamList_team
+  team: ManageTeamList_team$key
 }
 
 const ManageTeamList = (props: Props) => {
-  const {manageTeamMemberId, team} = props
+  const {manageTeamMemberId} = props
+  const team = useFragment(
+    graphql`
+      fragment ManageTeamList_team on Team {
+        isLead
+        teamMembers(sortBy: "preferredName") {
+          id
+          preferredName
+          ...ManageTeamMember_teamMember
+        }
+      }
+    `,
+    props.team
+  )
   const {isLead: isViewerLead, teamMembers} = team
   return (
     <List>
@@ -39,15 +52,4 @@ const ManageTeamList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ManageTeamList, {
-  team: graphql`
-    fragment ManageTeamList_team on Team {
-      isLead
-      teamMembers(sortBy: "preferredName") {
-        id
-        preferredName
-        ...ManageTeamMember_teamMember
-      }
-    }
-  `
-})
+export default ManageTeamList

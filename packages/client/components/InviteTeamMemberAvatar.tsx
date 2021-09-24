@@ -1,20 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import {useFragment} from 'react-relay'
 import useModal from '../hooks/useModal'
-import {InviteTeamMemberAvatar_teamMembers} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
+import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import AddTeamMemberModal from './AddTeamMemberModal'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
-
-interface Props extends WithAtmosphereProps {
-  meetingId?: string
-  teamId: string
-  teamMembers: InviteTeamMemberAvatar_teamMembers
-}
 
 const Label = styled('div')({
   fontSize: 12,
@@ -46,8 +39,22 @@ const Wrapper = styled('div')({
   }
 })
 
+interface Props {
+  meetingId?: string
+  teamId: string
+  teamMembers: InviteTeamMemberAvatar_teamMembers$key
+}
+
 const InviteTeamMemberAvatar = (props: Props) => {
-  const {meetingId, teamId, teamMembers} = props
+  const {meetingId, teamId} = props
+  const teamMembers = useFragment(
+    graphql`
+      fragment InviteTeamMemberAvatar_teamMembers on TeamMember @relay(plural: true) {
+        ...AddTeamMemberModal_teamMembers
+      }
+    `,
+    props.teamMembers
+  )
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   return (
     <>
@@ -69,10 +76,4 @@ const InviteTeamMemberAvatar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(InviteTeamMemberAvatar), {
-  teamMembers: graphql`
-    fragment InviteTeamMemberAvatar_teamMembers on TeamMember @relay(plural: true) {
-      ...AddTeamMemberModal_teamMembers
-    }
-  `
-})
+export default InviteTeamMemberAvatar

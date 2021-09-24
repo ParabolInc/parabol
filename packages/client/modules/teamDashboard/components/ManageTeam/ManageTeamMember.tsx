@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ManageTeamMember_teamMember} from '~/__generated__/ManageTeamMember_teamMember.graphql'
+import {useFragment} from 'react-relay'
+import {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import Row from '../../../../components/Row/Row'
 import Icon from '../../../../components/Icon'
@@ -68,11 +68,27 @@ const TeamMemberAvatarMenu = lazyPreload(() =>
 interface Props {
   isViewerLead: boolean
   manageTeamMemberId?: string | null
-  teamMember: ManageTeamMember_teamMember
+  teamMember: ManageTeamMember_teamMember$key
 }
 
 const ManageTeamMember = (props: Props) => {
-  const {isViewerLead, manageTeamMemberId, teamMember} = props
+  const {isViewerLead, manageTeamMemberId} = props
+  const teamMember = useFragment(
+    graphql`
+      fragment ManageTeamMember_teamMember on TeamMember {
+        ...TeamMemberAvatarMenu_teamMember
+        ...LeaveTeamModal_teamMember
+        ...PromoteTeamMemberModal_teamMember
+        ...RemoveTeamMemberModal_teamMember
+        id
+        isLead
+        preferredName
+        picture
+        userId
+      }
+    `,
+    props.teamMember
+  )
   const {id: teamMemberId, isLead, preferredName, picture, userId} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -127,18 +143,4 @@ const ManageTeamMember = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ManageTeamMember, {
-  teamMember: graphql`
-    fragment ManageTeamMember_teamMember on TeamMember {
-      ...TeamMemberAvatarMenu_teamMember
-      ...LeaveTeamModal_teamMember
-      ...PromoteTeamMemberModal_teamMember
-      ...RemoveTeamMemberModal_teamMember
-      id
-      isLead
-      preferredName
-      picture
-      userId
-    }
-  `
-})
+export default ManageTeamMember
