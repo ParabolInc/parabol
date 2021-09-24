@@ -127,7 +127,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       },
       {localPoll: poll}
     )
-  }, [atmosphere, poll, discussion.id, onPollBlurred])
+  }, [atmosphere, poll, discussion.id])
   const pollContextValue = useMemo(() => {
     const {title, options} = poll
     const pollState = poll.id.includes('tmp') ? 'creating' : 'created'
