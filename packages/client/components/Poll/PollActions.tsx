@@ -8,7 +8,7 @@ import {Polls} from '~/types/constEnums'
 
 const PollActionsRoot = styled('div')({
   width: '100%',
-  padding: `0px 12px`,
+  padding: `0px 12px 12px 12px`,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center'
@@ -32,16 +32,24 @@ const StartPollButton = styled(PlainButton)({
 
 const SubmitVoteButton = styled(PlainButton)({
   padding: `8px 24px`,
+  marginTop: '12px',
   fontSize: '14px',
   fontWeight: 500,
   background: PALETTE.SLATE_300,
   color: PALETTE.SLATE_700,
   border: 'none',
   borderRadius: '24px',
-  marginBottom: '12px',
   ':hover': {
     background: PALETTE.SLATE_400
   }
+})
+
+const StartPollWrapper = styled('div')({
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: '12px'
 })
 
 const PollActions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
@@ -57,14 +65,14 @@ const PollActions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
   const renderPollActions = () => {
     if (pollState === 'creating') {
       return (
-        <>
+        <StartPollWrapper>
           {poll.options.length < Polls.MAX_OPTIONS && (
             <AddPollOptionButton dataCy='poll-option' onClick={addPollOption} />
           )}
           <StartPollButton onClick={createPoll} disabled={!canCreatePoll}>
             Start
           </StartPollButton>
-        </>
+        </StartPollWrapper>
       )
     }
 

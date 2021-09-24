@@ -5,7 +5,7 @@ import PollOption from './PollOption'
 
 const PollOptionsRoot = styled('div')({
   fontSize: '14px',
-  padding: `12px`,
+  padding: `12px 12px 0px 12px`,
   display: 'flex',
   flexDirection: 'column',
   gap: '8px'

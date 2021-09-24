@@ -13,6 +13,8 @@ interface PollContextType {
   addPollOption: () => void
   onPollOptionSelected: (optionId: string) => void
   selectedPollOptionId: string | null
+  onPollFocused: () => void
+  onPollBlurred: () => void
 }
 export const PollContext = React.createContext<PollContextType | null>(null)
 

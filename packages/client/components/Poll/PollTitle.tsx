@@ -20,7 +20,7 @@ const PollTitleInput = styled('input')({
 })
 
 const PollTitle = () => {
-  const {pollState, poll, updatePoll} = usePollContext()
+  const {pollState, poll, updatePoll, onPollFocused, onPollBlurred} = usePollContext()
 
   if (pollState === 'creating') {
     const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,6 +33,8 @@ const PollTitle = () => {
         value={poll.title}
         placeholder='Ask a question...'
         onChange={handleTitleChange}
+        onFocus={onPollFocused}
+        onBlur={onPollBlurred}
       />
     )
   }

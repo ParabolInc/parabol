@@ -39,7 +39,7 @@ const Counter = styled('div')<{
   position: 'absolute',
   top: '0',
   right: '0',
-  margin: '4px',
+  margin: '2px 6px',
   fontSize: '10px',
   color: isMax ? PALETTE.TOMATO_500 : PALETTE.SLATE_600
 }))

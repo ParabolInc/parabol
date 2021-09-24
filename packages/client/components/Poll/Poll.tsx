@@ -1,11 +1,11 @@
-import React, {Ref, useCallback} from 'react'
+import React, {Ref, useCallback, useMemo} from 'react'
 import styled from '@emotion/styled'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
 import {Poll_discussion$key} from '~/__generated__/Poll_discussion.graphql'
 
-import {PollContext, PollState} from './PollContext'
+import {PollContext} from './PollContext'
 import {cardShadow, Elevation} from '~/styles/elevation'
 import ThreadedItemWrapper from '../ThreadedItemWrapper'
 import ThreadedAvatarColumn from '../ThreadedAvatarColumn'
@@ -26,8 +26,8 @@ const BodyCol = styled('div')({
 })
 
 const PollRoot = styled('div')<{
-  pollState: PollState
-}>(({pollState}) => ({
+  isFocused: boolean
+}>(({isFocused}) => ({
   ...cardRootStyles,
   display: 'flex',
   flexDirection: 'column',
@@ -37,8 +37,8 @@ const PollRoot = styled('div')<{
   overflow: 'hidden',
   color: PALETTE.SLATE_600,
   backgroundColor: PALETTE.WHITE,
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  boxShadow: pollState === 'creating' ? cardShadow : Elevation.Z0
+  border: `1.5px solid ${isFocused ? PALETTE.SKY_400 : PALETTE.SLATE_400}`,
+  boxShadow: isFocused ? cardShadow : Elevation.Z0
 }))
 
 interface Props {
@@ -81,9 +81,16 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   )
   const atmosphere = useAtmosphere()
   const {picture, preferredName} = poll.createdByUser
+  const [isPollFocused, setIsPollFocused] = React.useState(false)
   const [selectedPollOptionId, setSelectedOptionId] = React.useState<string | null>(null)
   const onPollOptionSelected = React.useCallback((optionId: string) => {
     setSelectedOptionId(optionId)
+  }, [])
+  const onPollFocused = useCallback(() => {
+    setIsPollFocused(true)
+  }, [])
+  const onPollBlurred = useCallback(() => {
+    setIsPollFocused(false)
   }, [])
   const updatePollOption = useCallback(
     (id: string, updatedValue: string) => {
@@ -116,7 +123,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       {localPoll: poll}
     )
   }, [atmosphere, poll, discussion.id])
-  const pollContextValue = React.useMemo(() => {
+  const pollContextValue = useMemo(() => {
     const {title, options} = poll
     const pollState = poll.id.includes('tmp') ? 'creating' : 'created'
     const isPollTitleValid =
@@ -139,7 +146,9 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       updatePollOption,
       createPoll,
       addPollOption,
-      canCreatePoll
+      canCreatePoll,
+      onPollFocused,
+      onPollBlurred
     } as const
   }, [
     onPollOptionSelected,
@@ -161,7 +170,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
               pollContextValue.pollState === 'creating' ? 'is creating a Poll...' : 'added a Poll'
             }
           />
-          <PollRoot ref={ref} pollState={pollContextValue.pollState}>
+          <PollRoot ref={ref} isFocused={isPollFocused}>
             {children}
           </PollRoot>
         </BodyCol>
