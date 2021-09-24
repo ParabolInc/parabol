@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Fragment} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import styled from '@emotion/styled'
 import {ManageTeamList_team} from '../../../../__generated__/ManageTeamList_team.graphql'
@@ -8,7 +8,7 @@ import ManageTeamMember from './ManageTeamMember'
 const List = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  overflowY: 'scroll',
+  overflowY: 'auto',
   padding: '0px 0px 8px',
   position: 'relative',
   width: '100%',
@@ -27,13 +27,12 @@ const ManageTeamList = (props: Props) => {
     <List>
       {teamMembers.map((teamMember) => {
         return (
-          <Fragment key={teamMember.id}>
-            <ManageTeamMember
-              isViewerLead={isViewerLead}
-              manageTeamMemberId={manageTeamMemberId}
-              teamMember={teamMember}
-            />
-          </Fragment>
+          <ManageTeamMember
+            key={teamMember.id}
+            isViewerLead={isViewerLead}
+            manageTeamMemberId={manageTeamMemberId}
+            teamMember={teamMember}
+          />
         )
       })}
     </List>

@@ -8,13 +8,13 @@ import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '../types/constEnums
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
-const Block = styled('div')<{isAbsolute?: boolean}>(({isAbsolute}) => ({
-  position: isAbsolute ? 'absolute' : 'fixed',
+const Block = styled('div')({
+  position: 'fixed',
   bottom: 16,
   right: 16,
   // hacky, but we need the FAB to show up over the team right nav
   zIndex: ZIndex.SIDE_SHEET
-}))
+})
 
 const Button = styled(FloatingActionButton)({
   color: '#fff',
@@ -42,11 +42,11 @@ const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 }))
 
 interface Props {
-  isAbsolute?: boolean
+  className?: string
 }
 
 const StartMeetingFAB = (props: Props) => {
-  const {isAbsolute} = props
+  const {className} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
@@ -85,7 +85,7 @@ const StartMeetingFAB = (props: Props) => {
     history.push(`/new-meeting/${teamId}`)
   }
   return (
-    <Block isAbsolute={isAbsolute}>
+    <Block className={className}>
       <Button onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <MeetingIcon isExpanded={isExpanded}>{'add'}</MeetingIcon>
         <MeetingLabel isExpanded={isExpanded}>{'Add Meeting'}</MeetingLabel>

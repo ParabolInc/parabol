@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {Breakpoint, ElementWidth} from '~/types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -39,7 +39,7 @@ const OverflowCount = styled('div')({
   backgroundColor: PALETTE.SKY_400,
   borderRadius: '50%',
   display: 'flex',
-  height: 28,
+  height: ElementHeight.DASHBOARD_AVATAR,
   justifyContent: 'center',
   color: '#fff',
   fontSize: 12,

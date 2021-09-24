@@ -9,6 +9,10 @@ import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasks
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import TeamDrawer from './TeamDrawer'
 
+const AbsoluteFab = styled(StartMeetingFAB)({
+  position: 'absolute'
+})
+
 const RootBlock = styled('div')({
   display: 'flex',
   height: '100%',
@@ -76,7 +80,7 @@ const TeamDashMain = (props: Props) => {
         <TasksContent>
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
-        <StartMeetingFAB isAbsolute />
+        <AbsoluteFab />
       </TasksMain>
       <TeamDrawer viewer={viewer} />
     </RootBlock>
