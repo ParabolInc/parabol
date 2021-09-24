@@ -131,16 +131,17 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const pollContextValue = useMemo(() => {
     const {title, options} = poll
     const pollState = poll.id.includes('tmp') ? 'creating' : 'created'
-    const isPollTitleValid =
+    const isTitleValid =
       title?.length > Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
-    const arePollOptionsValid =
+    const isEveryOptionValid =
       options.length >= Polls.MIN_OPTIONS &&
       options.length <= Polls.MAX_OPTIONS &&
       options.every(
         ({title}) =>
-          title?.length > Polls.MIN_OPTION_TITLE_LENGTH && title?.length <= Polls.MAX_OPTION_TITLE_LENGTH
+          title?.length > Polls.MIN_OPTION_TITLE_LENGTH &&
+          title?.length <= Polls.MAX_OPTION_TITLE_LENGTH
       )
-    const canCreatePoll = pollState === 'creating' && isPollTitleValid && arePollOptionsValid
+    const canCreatePoll = pollState === 'creating' && isTitleValid && isEveryOptionValid
 
     return {
       pollState,
@@ -161,7 +162,9 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
     poll,
     updatePollOption,
     createPoll,
-    addPollOption
+    addPollOption,
+    onPollFocused,
+    onPollBlurred
   ])
 
   return (

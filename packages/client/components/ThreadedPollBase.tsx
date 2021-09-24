@@ -36,7 +36,7 @@ const ThreadedPollBase = (props: Props) => {
   )
 
   return (
-    <Poll dataCy={`${dataCy}-poll`} poll={poll} discussion={discussion}>
+    <Poll dataCy={dataCy} poll={poll} discussion={discussion}>
       <PollTitle />
       <PollOptions />
       <PollActions />
