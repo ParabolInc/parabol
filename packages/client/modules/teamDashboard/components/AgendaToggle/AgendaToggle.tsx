@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
+import {DrawerTypes} from '~/types/constEnums'
 import Icon from '../../../../components/Icon'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
-import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
@@ -51,7 +52,11 @@ const AgendaToggle = (props: Props) => {
   const toggleHide = () => {
     if (!submitting) {
       submitMutation()
-      ToggleAgendaListMutation(atmosphere, teamId, onError, onCompleted)
+      ToggleTeamDrawerMutation(
+        atmosphere,
+        {teamId, teamDrawerType: DrawerTypes.AGENDA},
+        {onError, onCompleted}
+      )
     }
   }
   return (

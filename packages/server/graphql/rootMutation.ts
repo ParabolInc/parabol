@@ -107,7 +107,6 @@ import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
-import toggleAgendaList from './mutations/toggleAgendaList'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
@@ -132,7 +131,7 @@ import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import setTaskEstimate from './mutations/setTaskEstimate'
-import toggleManageTeam from './mutations/toggleManageTeam'
+import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -239,7 +238,6 @@ export default new GraphQLObjectType<any, Context>({
       startCheckIn,
       startRetrospective,
       startSprintPoker,
-      toggleAgendaList,
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,
@@ -274,6 +272,6 @@ export default new GraphQLObjectType<any, Context>({
       setPokerSpectate,
       persistGitHubSearchQuery,
       setTaskEstimate,
-      toggleManageTeam
+      toggleTeamDrawer
     } as any)
 })

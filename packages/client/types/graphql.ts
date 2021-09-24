@@ -55598,11 +55598,6 @@ export interface IMutation {
   startSprintPoker: StartSprintPokerPayload;
 
   /**
-   * Show/hide the agenda list
-   */
-  toggleAgendaList: ITeamMember | null;
-
-  /**
    * Update an agenda item
    */
   updateAgendaItem: IUpdateAgendaItemPayload | null;
@@ -55760,7 +55755,7 @@ export interface IMutation {
   /**
    * Show/hide the manage team sidebar
    */
-  toggleManageTeam: ToggleManageTeamPayload;
+  toggleTeamDrawer: ToggleTeamDrawerPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -56565,13 +56560,6 @@ export interface IStartSprintPokerOnMutationArguments {
   teamId: string;
 }
 
-export interface IToggleAgendaListOnMutationArguments {
-  /**
-   * the team to hide the agenda for
-   */
-  teamId: string;
-}
-
 export interface IUpdateAgendaItemOnMutationArguments {
   /**
    * The updated item including an id, content, status, sortOrder
@@ -56899,11 +56887,16 @@ export interface ISetTaskEstimateOnMutationArguments {
   taskEstimate: ITaskEstimateInput;
 }
 
-export interface IToggleManageTeamOnMutationArguments {
+export interface IToggleTeamDrawerOnMutationArguments {
   /**
    * the team to hide the manage team sidebar for
    */
   teamId: string;
+
+  /**
+   * The type of team drawer that the viewer is toggling
+   */
+  teamDrawerType: TeamDrawer;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -59266,17 +59259,30 @@ export interface ITaskEstimateInput {
 }
 
 /**
- * Return object for ToggleManageTeamPayload
+ * Return object for ToggleTeamDrawerPayload
  */
-export type ToggleManageTeamPayload = IErrorPayload | IToggleManageTeamSuccess;
+export type ToggleTeamDrawerPayload = IErrorPayload | IToggleTeamDrawerSuccess;
 
-export interface IToggleManageTeamSuccess {
-  __typename: 'ToggleManageTeamSuccess';
+export interface IToggleTeamDrawerSuccess {
+  __typename: 'ToggleTeamDrawerSuccess';
 
   /**
-   * Show/hide the manage team sidebar
+   * Show/hide the agenda drawer
+   */
+  hideAgenda: boolean;
+
+  /**
+   * Show/hide the manage team drawer
    */
   hideManageTeam: boolean;
+}
+
+/**
+ * The right drawer types available on the team dashboard
+ */
+export const enum TeamDrawer {
+  agenda = 'agenda',
+  manageTeam = 'manageTeam'
 }
 
 export interface ISubscription {

@@ -10,20 +10,19 @@ import ManageTeamList from '../ManageTeam/ManageTeamList'
 import CloseDrawer from '../CloseDrawer/CloseDrawer'
 import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import {PALETTE} from '../../../../styles/paletteV3'
-import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
-import ToggleManageTeamMutation from '../../../../mutations/ToggleManageTeamMutation'
+import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 
-const SidebarHeader = styled('div')({
+const DrawerHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'space-between',
   padding: '16px 8px 16px 16px'
 })
 
-const SidebarContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const DrawerContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.WHITE,
   display: 'flex',
   overflow: 'hidden',
@@ -65,46 +64,49 @@ const TeamDrawer = (props: Props) => {
   const {dashSearch, team, teamMember} = data
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const sidebarTypeRef = useRef<string | null>(null)
+  const drawerTypeRef = useRef<DrawerTypes | null>(null)
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   if (!team || !teamMember) return null
   const {hideAgenda, hideManageTeam, manageTeamMemberId} = teamMember
   const {id: teamId} = team
-  if (!hideAgenda && hideManageTeam) {
-    sidebarTypeRef.current = DrawerTypes.AGENDA
-  } else if (hideAgenda && !hideManageTeam) {
-    sidebarTypeRef.current = DrawerTypes.MANAGE_TEAM
-  }
-  const showAgenda = sidebarTypeRef.current === DrawerTypes.AGENDA
+  const teamDrawerType =
+    hideAgenda === false
+      ? DrawerTypes.AGENDA
+      : hideManageTeam === false
+      ? DrawerTypes.MANAGE_TEAM
+      : null
 
-  const toggleSidebar = () => {
+  // as drawer is closing, teamDrawerType is null. use ref to show prev content
+  if (teamDrawerType && drawerTypeRef.current !== teamDrawerType) {
+    drawerTypeRef.current = teamDrawerType
+  }
+
+  const toggleDrawer = () => {
     if (!submitting) {
       submitMutation()
-      if (!hideManageTeam) {
-        ToggleManageTeamMutation(atmosphere, {teamId: teamId!}, {onError, onCompleted})
-      } else if (!hideAgenda) {
-        ToggleAgendaListMutation(atmosphere, teamId, onError, onCompleted)
-      }
+      ToggleTeamDrawerMutation(
+        atmosphere,
+        {teamId, teamDrawerType: drawerTypeRef.current || DrawerTypes.AGENDA},
+        {onError, onCompleted}
+      )
     }
   }
 
   return (
-    <ResponsiveDashSidebar
-      isOpen={!hideAgenda || !hideManageTeam}
-      isRightDrawer
-      onToggle={toggleSidebar}
-    >
-      <SidebarContent isDesktop={isDesktop}>
-        <SidebarHeader>
-          <StyledLabelHeading>{showAgenda ? 'Team Agenda' : 'Manage Team'}</StyledLabelHeading>
-          <CloseDrawer isAgenda={showAgenda} teamId={teamId} />
-        </SidebarHeader>
-        {showAgenda ? (
-          <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
-        ) : (
+    <ResponsiveDashSidebar isOpen={teamDrawerType !== null} isRightDrawer onToggle={toggleDrawer}>
+      <DrawerContent isDesktop={isDesktop}>
+        <DrawerHeader>
+          <StyledLabelHeading>
+            {drawerTypeRef.current === DrawerTypes.MANAGE_TEAM ? 'Manage Team' : 'Team Agenda'}
+          </StyledLabelHeading>
+          <CloseDrawer teamDrawerType={drawerTypeRef.current} teamId={teamId} />
+        </DrawerHeader>
+        {drawerTypeRef.current === DrawerTypes.MANAGE_TEAM ? (
           <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
+        ) : (
+          <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />
         )}
-      </SidebarContent>
+      </DrawerContent>
     </ResponsiveDashSidebar>
   )
 }

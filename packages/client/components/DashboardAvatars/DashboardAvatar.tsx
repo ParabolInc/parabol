@@ -7,11 +7,11 @@ import Avatar from '../Avatar/Avatar'
 import {MenuPosition} from '../../hooks/useCoords'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {PALETTE} from '../../styles/paletteV3'
-import {ElementWidth} from '../../types/constEnums'
+import {DrawerTypes, ElementWidth} from '../../types/constEnums'
 import useTooltip from '../../hooks/useTooltip'
 import useMutationProps from '../../hooks/useMutationProps'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
+import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
 
 interface Props {
   teamMember: DashboardAvatar_teamMember
@@ -53,7 +53,11 @@ const DashboardAvatar = (props: Props) => {
     closeTooltip()
     if (submitting) return
     submitMutation()
-    ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
+    ToggleTeamDrawerMutation(
+      atmosphere,
+      {teamId, teamDrawerType: DrawerTypes.MANAGE_TEAM},
+      {onError, onCompleted}
+    )
     commitLocalUpdate(atmosphere, (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
       const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})

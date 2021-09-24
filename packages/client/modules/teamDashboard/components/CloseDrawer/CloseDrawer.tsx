@@ -1,27 +1,27 @@
 import React from 'react'
-import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
-import ToggleManageTeamMutation from '../../../../mutations/ToggleManageTeamMutation'
+import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
 import IconButton from '../../../../components/IconButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import {DrawerTypes} from '~/types/constEnums'
 
 interface Props {
-  isAgenda?: boolean
+  teamDrawerType: DrawerTypes | null
   teamId: string
 }
 
 const CloseDrawer = (props: Props) => {
-  const {isAgenda, teamId} = props
+  const {teamDrawerType, teamId} = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const toggleHide = () => {
     if (!submitting) {
       submitMutation()
-      if (isAgenda) {
-        ToggleAgendaListMutation(atmosphere, teamId, onError, onCompleted)
-      } else {
-        ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
-      }
+      ToggleTeamDrawerMutation(
+        atmosphere,
+        {teamId, teamDrawerType: teamDrawerType || DrawerTypes.AGENDA},
+        {onError, onCompleted}
+      )
     }
   }
   return <IconButton icon={'close'} onClick={toggleHide} palette='midGray' />

@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
+import {Breakpoint, DrawerTypes, ElementHeight, ElementWidth} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
-import ToggleManageTeamMutation from '../../mutations/ToggleManageTeamMutation'
+import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../styles/paletteV3'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import ErrorBoundary from '../ErrorBoundary'
@@ -82,7 +82,11 @@ const DashboardAvatars = (props: Props) => {
   const handleClick = (clickedOverflow: boolean) => {
     if (!submitting) {
       submitMutation()
-      ToggleManageTeamMutation(atmosphere, {teamId}, {onError, onCompleted})
+      ToggleTeamDrawerMutation(
+        atmosphere,
+        {teamId, teamDrawerType: DrawerTypes.MANAGE_TEAM},
+        {onError, onCompleted}
+      )
       commitLocalUpdate(atmosphere, (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
