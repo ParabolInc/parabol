@@ -7,9 +7,16 @@ import {PALETTE} from '../styles/paletteV3'
 const ButtonIcon = styled(Icon)({})
 
 const Button = styled(PlainButton)({
+  borderRadius: 100,
   cursor: 'pointer',
-  padding: '16px 8px',
-  position: 'relative'
+  display: 'flex',
+  justifyContent: 'center',
+  margin: '8px 4px',
+  padding: 4,
+  position: 'relative',
+  ':focus': {
+    boxShadow: '0 0 0 2px #61B1EB'
+  }
 })
 
 const Badge = styled('div')({

@@ -9,9 +9,20 @@ import {TopBarAvatar_viewer} from '~/__generated__/TopBarAvatar_viewer.graphql'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
 import Avatar from './Avatar/Avatar'
 
-const SpacedAvatar = styled(Avatar)({
-  marginLeft: 8
+const AvatarWrapper = styled('button') ({
+  background: 'transparent',
+  border: 'none',
+  borderRadius: 100,
+  marginLeft: 8,
+  padding: 4,
+  ':focus': {
+    boxShadow: '0 0 0 2px #61B1EB',
+    cursor: 'pointer',
+    outline: 'none'
+  }
 })
+
+const SpacedAvatar = styled(Avatar)({})
 
 const StandardHubUserMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'StandardHubUserMenu' */ './StandardHubUserMenu')
@@ -29,8 +40,8 @@ const TopBarAvatar = (props: Props) => {
   )
   return (
     <>
+    <AvatarWrapper onClick={togglePortal}>
       <SpacedAvatar
-        onClick={togglePortal}
         onMouseEnter={StandardHubUserMenu.preload}
         ref={originRef}
         hasBadge={false}
@@ -38,6 +49,7 @@ const TopBarAvatar = (props: Props) => {
         size={40}
       />
       {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer} />)}
+    </AvatarWrapper>
     </>
   )
 }
