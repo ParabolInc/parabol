@@ -59,6 +59,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       fragment Poll_poll on Poll {
         id
         title
+        updatedAt
         createdBy
         createdByUser {
           id

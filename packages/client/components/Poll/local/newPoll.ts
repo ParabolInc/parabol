@@ -94,4 +94,5 @@ export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string, index
     const pollOptions = poll.getLinkedRecords('options') || []
     const pollOption = createEmptyPollOption(store, index, true)
     poll.setLinkedRecords([...pollOptions, pollOption], 'options')
+    poll.setValue(new Date().toJSON(), 'updatedAt')
   })
