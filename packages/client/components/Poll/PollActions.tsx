@@ -24,7 +24,7 @@ const StartPollButton = styled(PlainButton)({
   border: 'none',
   borderRadius: '24px',
   cursor: 'pointer',
-  ':hover': {
+  ':hover,:focus': {
     background: PALETTE.SKY_600
   },
   marginLeft: 'auto'
