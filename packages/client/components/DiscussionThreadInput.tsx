@@ -20,7 +20,7 @@ import useInitialLocalState from '../hooks/useInitialLocalState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import {PALETTE} from '../styles/paletteV3'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
-import {isViewerTypingInPoll, isViewerTypingInTask} from '../utils/viewerTypingUtils'
+import {isViewerTypingInTask} from '../utils/viewerTypingUtils'
 import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
@@ -80,6 +80,7 @@ interface Props {
   setReplyMention?: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
+  isCreatingPoll?: boolean
 }
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
@@ -93,7 +94,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     replyMention,
     setReplyMention,
     dataCy,
-    viewer
+    viewer,
+    isCreatingPoll
   } = props
   const {picture} = viewer
   const isReply = !!props.isReply
@@ -103,7 +105,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
-  const [canCreateTaskOrPoll, setCanCreateTaskOrPoll] = useState(true)
+  const [isCreatingTask, setIsCreatingTask] = useState(false)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
@@ -243,7 +245,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   useEffect(() => {
     const focusListener = () => {
-      setCanCreateTaskOrPoll(!isViewerTypingInTask() && !isViewerTypingInPoll())
+      setIsCreatingTask(isViewerTypingInTask())
     }
 
     document.addEventListener('blur', focusListener, true)
@@ -255,6 +257,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   }, [])
 
   const isActionsContainerVisible = allowTasks || allowPolls
+  const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
@@ -286,14 +289,14 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
             <AddTaskButton
               dataCy={`${dataCy}-task`}
               onClick={addTask}
-              disabled={!canCreateTaskOrPoll}
+              disabled={isActionsContainerDisabled}
             />
           )}
           {allowPolls && (
             <AddPollButton
               dataCy={`${dataCy}-poll`}
               onClick={addPoll}
-              disabled={!canCreateTaskOrPoll}
+              disabled={isActionsContainerDisabled}
             />
           )}
         </ActionsContainer>

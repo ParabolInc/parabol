@@ -60,6 +60,7 @@ const DiscussionThread = (props: Props) => {
             thread(first: 1000) @connection(key: "DiscussionThread_thread") {
               edges {
                 node {
+                  id
                   threadSortOrder
                   discussionId
                   ...DiscussionThreadList_threadables
@@ -99,6 +100,9 @@ const DiscussionThread = (props: Props) => {
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
+  const isCreatingPoll = threadables.some(
+    (threadable) => threadable.id.startsWith('poll') && threadable.id.endsWith('tmp')
+  )
 
   return (
     <Wrapper isExpanded={isExpanded} width={width} ref={ref}>
@@ -120,6 +124,7 @@ const DiscussionThread = (props: Props) => {
         getMaxSortOrder={getMaxSortOrder}
         discussion={discussion}
         viewer={viewer}
+        isCreatingPoll={isCreatingPoll}
       />
     </Wrapper>
   )
