@@ -13,28 +13,30 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import useEditorState from '../../hooks/useEditorState'
+import Atmosphere from '~/Atmosphere'
 
-const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null; isInSpotlight: boolean}>(
-  ({isDropping, isInSpotlight}) => ({
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    boxShadow: isDropping ? Elevation.CARD_SHADOW : Elevation.CARD_DRAGGING,
-    pointerEvents: 'none',
-    transition: `all ${
-      isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
-    }ms ${BezierCurve.DECELERATE}`,
-    zIndex: isInSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
-  })
-)
+const RemoteReflectionModal = styled('div')<{
+  isDropping?: boolean | null
+  showAboveSpotlight: boolean
+}>(({isDropping, showAboveSpotlight}) => ({
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  boxShadow: isDropping ? Elevation.CARD_SHADOW : Elevation.CARD_DRAGGING,
+  pointerEvents: 'none',
+  transition: `all ${
+    isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
+  }ms ${BezierCurve.DECELERATE}`,
+  zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
+}))
 
-const HeaderModal = styled('div')<{isInSpotlight: boolean}>(({isInSpotlight}) => ({
+const HeaderModal = styled('div')<{showAboveSpotlight: boolean}>(({showAboveSpotlight}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
   pointerEvents: 'none',
   width: ElementWidth.REFLECTION_CARD,
-  zIndex: isInSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
+  zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
 }))
 
 const windowDims = {
@@ -44,7 +46,8 @@ const windowDims = {
 
 const OFFSCREEN_PADDING = 16
 const getCoords = (
-  remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
+  remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>,
+  showAboveSpotlight: boolean
 ) => {
   const {
     targetId,
@@ -56,11 +59,12 @@ const getCoords = (
     targetOffsetY
   } = remoteDrag
   const targetEl = targetId
-    ? (document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement)
+    ? (document.querySelector(
+        `div[${
+          showAboveSpotlight ? DragAttribute.DROPPABLE_SPOTLIGHT : DragAttribute.DROPPABLE
+        }='${targetId}']`
+      ) as HTMLElement)
     : null
-  // const targetEl = targetId
-  //   ? (document.querySelector(`div[${DragAttribute.SPOTLIGHT}='${targetId}']`) as HTMLElement)
-  //   : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!
     const minTop = getMinTop(-1, targetEl)
@@ -104,11 +108,30 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
 const getInlineStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
-  style: React.CSSProperties
+  style: React.CSSProperties,
+  showAboveSpotlight: boolean
 ) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
-  const {left, top, minTop} = getCoords(remoteDrag as any)
+  const {left, top, minTop} = getCoords(remoteDrag as any, showAboveSpotlight)
   return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
+}
+
+const getTarget = (meetingId: string, targetId: string, atmosphere: Atmosphere) => {
+  let isTargetInSpotlight = false
+  commitLocalUpdate(atmosphere, (store) => {
+    const meeting = store.get(meetingId)
+    const spotlightReflection = meeting?.getLinkedRecord('spotlightReflection')
+    const spotlightReflectionId = spotlightReflection?.getValue('id')
+    const viewer = store.getRoot().getLinkedRecord('viewer')
+    if (!viewer || !spotlightReflectionId) return
+    const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
+      reflectionId: spotlightReflectionId,
+      searchQuery: ''
+    })
+    const groupIds = similarReflectionGroups?.map((group) => group.getValue('id')) as string[]
+    isTargetInSpotlight = groupIds?.includes(targetId)
+  })
+  return isTargetInSpotlight
 }
 
 interface Props {
@@ -118,7 +141,7 @@ interface Props {
 
 const RemoteReflection = (props: Props) => {
   const {reflection, style} = props
-  const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
+  const {id: reflectionId, content, isDropping, meetingId, reflectionGroupId} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
@@ -139,23 +162,26 @@ const RemoteReflection = (props: Props) => {
   }, [remoteDrag])
 
   if (!remoteDrag) return null
-  const {dragUserId, dragUserName} = remoteDrag
-  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
-  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
+  const {dragUserId, dragUserName, targetId} = remoteDrag
+  const isTargetInSpotlight = getTarget(meetingId, targetId, atmosphere)
   const spotlightGroup = document.querySelector(
-    `div[${DragAttribute.SPOTLIGHT}='${reflectionGroupId}']`
+    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
   )
   const kanbanGroup = document.querySelector(
     `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
   )
   const isInSpotlight = !!(spotlightGroup && kanbanGroup)
+  const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
+
+  const {nextStyle, minTop} = getInlineStyle(remoteDrag, isDropping, style, showAboveSpotlight)
+  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
       <RemoteReflectionModal
         ref={ref}
         style={nextStyle}
         isDropping={isDropping}
-        isInSpotlight={isInSpotlight}
+        showAboveSpotlight={showAboveSpotlight}
       >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
@@ -163,7 +189,7 @@ const RemoteReflection = (props: Props) => {
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform && (
-        <HeaderModal isInSpotlight={isInSpotlight}>
+        <HeaderModal showAboveSpotlight={showAboveSpotlight}>
           <UserDraggingHeader
             userId={dragUserId}
             name={dragUserName}
@@ -182,6 +208,7 @@ export default createFragmentContainer(RemoteReflection, {
       id
       content
       isDropping
+      meetingId
       reflectionGroupId
       remoteDrag {
         dragUserId

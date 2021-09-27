@@ -167,7 +167,9 @@ const ReflectionGroup = (props: Props) => {
       )}
       <Group
         {...{
-          [isInSpotlight ? DragAttribute.SPOTLIGHT : DragAttribute.DROPPABLE]: reflectionGroupId
+          [isInSpotlight
+            ? DragAttribute.DROPPABLE_SPOTLIGHT
+            : DragAttribute.DROPPABLE]: reflectionGroupId
         }}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}

@@ -67,7 +67,7 @@ export const enum DragAttribute {
   CONTROL_BAR_COVERABLE = 'data-control-bar-coverable',
   DROPPABLE = 'data-droppable',
   DROPZONE = 'data-dropzone',
-  SPOTLIGHT = 'data-droppable-spotlight'
+  DROPPABLE_SPOTLIGHT = 'data-droppable-spotlight'
 }
 
 export const enum DroppableType {
