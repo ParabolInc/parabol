@@ -1,5 +1,5 @@
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {MutableRefObject, RefObject, useEffect, useRef} from 'react'
+import React, {RefObject, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
@@ -37,13 +37,6 @@ const HeaderModal = styled('div')<{isInSpotlight: boolean}>(({isInSpotlight}) =>
   zIndex: isInSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
 }))
 
-interface Props {
-  style: React.CSSProperties
-  reflection: RemoteReflection_reflection
-  isInSpotlight: boolean
-  localRef: HTMLDivElement
-}
-
 const windowDims = {
   innerWidth: window.innerWidth,
   innerHeight: window.innerHeight
@@ -65,6 +58,9 @@ const getCoords = (
   const targetEl = targetId
     ? (document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement)
     : null
+  // const targetEl = targetId
+  //   ? (document.querySelector(`div[${DragAttribute.SPOTLIGHT}='${targetId}']`) as HTMLElement)
+  //   : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!
     const minTop = getMinTop(-1, targetEl)
@@ -108,23 +104,21 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
 const getInlineStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
-  style: React.CSSProperties,
-  localRef: HTMLDivElement,
-  isInSpotlightRef: MutableRefObject<boolean>
+  style: React.CSSProperties
 ) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
-  if (isInSpotlightRef.current && localRef) {
-    const bbox = localRef.getBoundingClientRect()
-    isInSpotlightRef.current = false
-    return {nextStyle: {transform: `translate(${bbox.left}px,${bbox.top}px`}}
-  }
   const {left, top, minTop} = getCoords(remoteDrag as any)
   return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
 }
 
+interface Props {
+  style: React.CSSProperties
+  reflection: RemoteReflection_reflection
+}
+
 const RemoteReflection = (props: Props) => {
-  const {isInSpotlight, reflection, style, localRef} = props
-  const {id: reflectionId, content, isDropping} = reflection
+  const {reflection, style} = props
+  const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
@@ -144,17 +138,17 @@ const RemoteReflection = (props: Props) => {
     }
   }, [remoteDrag])
 
-  const isInSpotlightRef = useRef<boolean>(isInSpotlight)
   if (!remoteDrag) return null
   const {dragUserId, dragUserName} = remoteDrag
-  const {nextStyle, minTop} = getInlineStyle(
-    remoteDrag!,
-    isDropping,
-    style,
-    localRef,
-    isInSpotlightRef
-  )
+  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
+  const spotlightGroup = document.querySelector(
+    `div[${DragAttribute.SPOTLIGHT}='${reflectionGroupId}']`
+  )
+  const kanbanGroup = document.querySelector(
+    `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
+  )
+  const isInSpotlight = !!(spotlightGroup && kanbanGroup)
   return (
     <>
       <RemoteReflectionModal
@@ -188,6 +182,7 @@ export default createFragmentContainer(RemoteReflection, {
       id
       content
       isDropping
+      reflectionGroupId
       remoteDrag {
         dragUserId
         dragUserName
