@@ -85,7 +85,7 @@ interface Props {
 
 const AgendaInput = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const focusInput = (e?: React.KeyboardEvent | ExtendedKeyboardEvent) => {
+  const focusInput = (e?: React.KeyboardEvent | KeyboardEvent) => {
     e && e.preventDefault()
     if (inputRef.current) {
       inputRef.current.focus()

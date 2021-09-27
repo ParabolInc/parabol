@@ -1,19 +1,29 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import appOrigin from '../../appOrigin'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import {
+  AddCommentMutation,
+  AddCommentMutationVariables,
+  GetIssueIdQuery,
+  GetIssueIdQueryVariables
+} from '../../types/githubTypes'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
+import addComment from '../../utils/githubQueries/addComment.graphql'
+import getIssueId from '../../utils/githubQueries/getIssueId.graphql'
+import makeScoreGitHubComment from '../../utils/makeScoreGitHubComment'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
+import {GitHubRequest} from '../rootSchema'
 import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
 import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
-
 const setTaskEstimate = {
   type: GraphQLNonNull(SetTaskEstimatePayload),
   description: 'Update a task estimate',
@@ -25,8 +35,10 @@ const setTaskEstimate = {
   resolve: async (
     _source,
     {taskEstimate}: {taskEstimate: ITaskEstimateInput},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+    context: GQLContext,
+    info: GraphQLResolveInfo
   ) => {
+    const {authToken, dataLoader, socketId: mutatorId} = context
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -81,8 +93,9 @@ const setTaskEstimate = {
     // RESOLUTION
     let jiraFieldId: string | undefined = undefined
     const {integration} = task
-    if (integration?.service === 'jira') {
-      const {accessUserId, cloudId, issueKey, projectKey} = integration
+    const service = integration?.service
+    if (service === 'jira') {
+      const {accessUserId, cloudId, issueKey, projectKey} = integration!
       const [auth, team] = await Promise.all([
         dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
         dataLoader.get('teams').load(teamId)
@@ -99,8 +112,8 @@ const setTaskEstimate = {
           dimensionField.cloudId === cloudId &&
           dimensionField.projectKey === projectKey
       )
-      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_NULL
-      if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
+      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         if (!stage || !meeting) {
           return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
         }
@@ -117,15 +130,100 @@ const setTaskEstimate = {
         if ('message' in res) {
           return {error: {message: res.message}}
         }
-      } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
+      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
         const {fieldId, fieldType} = dimensionField!
         jiraFieldId = fieldId
         try {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
-          return {error: {message: e.message}}
+          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
+          return {error: {message}}
         }
+      }
+    } else if (service === 'github') {
+      const {accessUserId, issueNumber, nameWithOwner} = integration!
+      const [auth, fieldMap] = await Promise.all([
+        dataLoader.get('githubAuth').load({teamId, userId: accessUserId}),
+        dataLoader.get('githubDimensionFieldMaps').load({dimensionName, nameWithOwner, teamId})
+      ])
+      if (!auth) {
+        return {error: {message: 'User no longer has access to GitHub'}}
+      }
+      const labelTemplate = fieldMap?.labelTemplate ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+      if (labelTemplate === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+        if (!stage || !meeting) {
+          return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
+        }
+        const {accessToken} = auth
+        const githubRequest = (info.schema as any).githubRequest as GitHubRequest
+        const endpointContext = {accessToken}
+        const {repoName, repoOwner} = GitHubRepoId.split(nameWithOwner)
+        // get the issue ID so we can call addComment
+        const {data: issueRes, errors} = await githubRequest<
+          GetIssueIdQuery,
+          GetIssueIdQueryVariables
+        >({
+          query: getIssueId,
+          variables: {
+            name: repoName,
+            owner: repoOwner,
+            number: issueNumber
+          },
+          info,
+          endpointContext,
+          batchRef: context
+        })
+        if (errors) {
+          return {
+            error: {message: errors[0].message}
+          }
+        }
+        const {repository} = issueRes
+        if (!repository) {
+          return {error: {message: 'Repository not found on GitHub'}}
+        }
+
+        const {issue} = repository
+        if (!issue) {
+          return {error: {message: 'Issue not found on GitHub'}}
+        }
+        const {id: issueId} = issue
+        const {name: meetingName, phases} = meeting
+        const estimatePhase = getPhase(phases, 'ESTIMATE')
+        const {stages} = estimatePhase
+        const stageIdx = stages.indexOf(stage)
+        const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
+        const body = makeScoreGitHubComment(
+          dimensionName,
+          value || '<None>',
+          meetingName,
+          discussionURL
+        )
+
+        const {errors: commentErrors} = await githubRequest<
+          AddCommentMutation,
+          AddCommentMutationVariables
+        >({
+          query: addComment,
+          variables: {
+            input: {
+              body,
+              subjectId: issueId
+            }
+          },
+          info,
+          endpointContext,
+          batchRef: context
+        })
+        if (commentErrors) {
+          return {
+            error: {message: commentErrors[0].message}
+          }
+        }
+        // Comment added!
+      } else if (labelTemplate !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
+        // TODO support pushing to label
       }
     }
     const stageId = stage?.id

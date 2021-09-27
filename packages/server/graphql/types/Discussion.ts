@@ -10,10 +10,10 @@ import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
-import CommentorDetails from './CommentorDetails'
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {ThreadableConnection} from './Threadable'
+import User from './User'
 
 const Discussion = new GraphQLObjectType<any, GQLContext>({
   name: 'Discussion',
@@ -50,7 +50,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       }
     },
     commentors: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(CommentorDetails))),
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(User))),
       description: 'The users writing a comment right now',
       resolve: async ({id: discussionId}) => {
         const redis = getRedis()

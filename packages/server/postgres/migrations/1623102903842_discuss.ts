@@ -135,7 +135,7 @@ export async function up(): Promise<void> {
             meetingId,
             teamId,
             discussionTopicId: serviceTaskId,
-            discussionTopicType: taskServiceToDiscussionTopicType[service]
+            discussionTopicType: taskServiceToDiscussionTopicType[service] || 'task'
           })
         })
         return updateStagesWithDiscussionIds(meetingId, 'ESTIMATE', discussionIds)
@@ -186,7 +186,8 @@ export async function up(): Promise<void> {
       task: r.table('Task').indexCreate('discussionId')
     }).run()
   } catch (e) {
-    console.log('cannot create rethinkdb indexes', e)
+    // commented out because this is guaranteed to happen if installing from scratch
+    // console.log('cannot create rethinkdb indexes', e)
   }
 
   try {

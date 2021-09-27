@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {GitHubScopingSelectAllIssues_issues} from '../__generated__/GitHubScopingSelectAllIssues_issues.graphql'
+import {GitHubScopingSelectAllIssues_issues$key} from '../__generated__/GitHubScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
-
 const Item = styled('div')({
   display: 'flex',
   padding: '8px 16px',
@@ -29,21 +29,36 @@ const TitleAndError = styled('div')({
 })
 
 const ErrorMessage = styled('div')({
-  color: PALETTE.ERROR_MAIN,
+  color: PALETTE.TOMATO_500,
   fontWeight: 600
 })
 interface Props {
   meetingId: string
-  issues: GitHubScopingSelectAllIssues_issues
+  issuesRef: GitHubScopingSelectAllIssues_issues$key
   usedServiceTaskIds: Set<string>
 }
 
 const GitHubScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, issues} = props
-  const serviceTaskIds = issues.map((issueEdge) => issueEdge.node.id)
+  const {meetingId, usedServiceTaskIds, issuesRef} = props
+  const issues = useFragment(
+    graphql`
+      fragment GitHubScopingSelectAllIssues_issues on _xGitHubIssue @relay(plural: true) {
+        id
+        number
+        title
+        repository {
+          nameWithOwner
+        }
+      }
+    `,
+    issuesRef
+  )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(issues, usedServiceTaskIds)
+  const serviceTaskIds = issues.map((issue) =>
+    GitHubIssueId.join(issue.repository.nameWithOwner, issue.number)
+  )
+  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
@@ -64,7 +79,14 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
       meetingId,
       updates
     }
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    const contents = updates.map((update) => {
+      const issue = issues.find(
+        (issue) =>
+          GitHubIssueId.join(issue.repository.nameWithOwner, issue.number) === update.serviceTaskId
+      )
+      return issue?.title ?? 'Unknown Story'
+    })
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
   }
   if (issues.length < 2) return null
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
@@ -82,12 +104,4 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(GitHubScopingSelectAllIssues, {
-  issues: graphql`
-    fragment GitHubScopingSelectAllIssues_issues on _xGitHubIssueEdge @relay(plural: true) {
-      node {
-        id
-      }
-    }
-  `
-})
+export default GitHubScopingSelectAllIssues

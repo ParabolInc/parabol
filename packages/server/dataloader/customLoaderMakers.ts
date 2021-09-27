@@ -10,15 +10,20 @@ import {
   IGetDiscussionsByIdQueryResult
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
+import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import getGitHubDimensionFieldMaps, {
+  GitHubDimensionFieldMap
+} from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {TemplateRef} from '../postgres/queries/getTemplateRefsById'
-import getTemplateRefsById from '../postgres/queries/getTemplateRefsById'
+import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
+import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
@@ -61,6 +66,39 @@ const reactableLoaders = [
 export const users = () => {
   return new ProxiedCache('User')
 }
+
+export const teams = (parent: RethinkDataLoader) =>
+  new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
+    async (teamIds) => {
+      const teams = await getTeamsByIds(teamIds)
+      return normalizeRethinkDbResults(teamIds, teams)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+
+export const teamsByOrgIds = (parent: RethinkDataLoader) =>
+  new DataLoader<string, IGetTeamsByIdsQueryResult[], string>(
+    async (orgIds) => {
+      const teamLoader = parent.get('teams')
+      const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
+      teams.forEach((team) => {
+        teamLoader.clear(team.id).prime(team.id, team)
+      })
+
+      const teamsByOrgIds = teams.reduce((map, team) => {
+        const teamsByOrgId = map[team.orgId] ?? []
+        teamsByOrgId.push(team)
+        map[team.orgId] = teamsByOrgId
+        return map
+      }, {} as {[key: string]: IGetTeamsByIdsQueryResult[]})
+      return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
@@ -263,6 +301,29 @@ export const githubAuth = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
+    }
+  )
+}
+
+export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
+  return new DataLoader<
+    {teamId: string; dimensionName: string; nameWithOwner: string},
+    GitHubDimensionFieldMap | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, dimensionName, nameWithOwner}) =>
+          getGitHubDimensionFieldMaps(teamId, dimensionName, nameWithOwner)
+        )
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
+        `${teamId}:${dimensionName}:${nameWithOwner}`
     }
   )
 }

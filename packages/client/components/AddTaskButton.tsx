@@ -11,7 +11,7 @@ const StyledPlainButton = styled(PlainButton)({
   color: PALETTE.SKY_500,
   fontWeight: 600,
   fontSize: 14,
-  margin: 'auto',
+  margin: '0 8px',
   ':hover, :focus, :active': {
     color: PALETTE.SKY_600
   },

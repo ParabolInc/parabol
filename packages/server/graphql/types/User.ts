@@ -30,6 +30,7 @@ import MeetingMember from './MeetingMember'
 import NewFeatureBroadcast from './NewFeatureBroadcast'
 import Organization from './Organization'
 import OrganizationUser from './OrganizationUser'
+import RetroReflectionGroup from './RetroReflectionGroup'
 import SuggestedAction from './SuggestedAction'
 import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
@@ -402,6 +403,37 @@ const User = new GraphQLObjectType<any, GQLContext>({
         )
         if (isAnyMemberOfPaidOrg) return null
         return source.overLimitCopy
+      }
+    },
+    similarReflectionGroups: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
+      description:
+        'The reflection groups that are similar to the selected reflection in the Spotlight',
+      args: {
+        reflectionId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The id of the selected reflection in the Spotlight'
+        },
+        searchQuery: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: 'Only return reflection groups that match the search query'
+        }
+      },
+      resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
+        const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
+        if (!retroReflection) return []
+        const {meetingId} = retroReflection
+        const meetingMemberId = toTeamMemberId(meetingId, userId)
+        const [viewerMeetingMember, reflectionGroups] = await Promise.all([
+          dataLoader.get('meetingMembers').load(meetingMemberId),
+          dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+        ])
+        const {meetingId: viewerMeetingId} = viewerMeetingMember
+        if (viewerMeetingId !== meetingId) {
+          standardError(new Error('Not on team'), {userId})
+          return []
+        }
+        return reflectionGroups
       }
     },
     tasks: require('../queries/tasks').default,

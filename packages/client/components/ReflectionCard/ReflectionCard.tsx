@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {useEffect, useRef} from 'react'
+import React, {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {
@@ -14,26 +14,53 @@ import useMutationProps from '../../hooks/useMutationProps'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
+import {PALETTE} from '../../styles/paletteV3'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
+import CardButton from '../CardButton'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
+import IconLabel from '../IconLabel'
+import useBreakpoint from '../../hooks/useBreakpoint'
+import {Breakpoint, ZIndex} from '../../types/constEnums'
+import {MenuPosition} from '../../hooks/useCoords'
+import useTooltip from '../../hooks/useTooltip'
+import {OpenSpotlight} from '../GroupingKanbanColumn'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
 })
 
+const SearchIcon = styled(IconLabel)({
+  color: PALETTE.SLATE_700
+})
+
+const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) => ({
+  bottom: 2,
+  color: PALETTE.SLATE_700,
+  cursor: 'pointer',
+  opacity: 1,
+  position: 'absolute',
+  right: 2,
+  visibility: showSearch ? 'visible' : 'hidden',
+  zIndex: ZIndex.TOOLTIP,
+  ':hover': {
+    backgroundColor: PALETTE.SLATE_200
+  }
+}))
+
 interface Props {
   isClipped?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
+  openSpotlight?: OpenSpotlight
   stackCount?: number
   showOriginFooter?: boolean
   showReactji?: boolean
@@ -44,9 +71,11 @@ const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
   phaseType: NewMeetingPhaseTypeEnum,
   stackCount: number | undefined,
-  phases: any | null
+  phases: any | null,
+  inSpotlight: boolean
 ) => {
   const {isViewerCreator, isEditing, id} = reflection
+  if (inSpotlight) return true
   if (phases && isPhaseComplete('group', phases)) return true
   if (!isViewerCreator || isTempId(id)) return true
   if (phaseType === 'reflect') return stackCount && stackCount > 1
@@ -55,16 +84,23 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meeting, reflection, isClipped, stackCount, showReactji, dataCy} = props
-  const {meetingId, reactjis} = reflection
+  const {meeting, reflection, isClipped, openSpotlight, stackCount, showReactji, dataCy} = props
+  const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
+  const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
-  const {id: reflectionId, content, promptId, isViewerCreator} = reflection
+  const spotlightReflectionId = meeting?.spotlightReflection?.id
+  const inSpotlight = reflectionId === spotlightReflectionId
   const atmosphere = useAtmosphere()
+  const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
-
+  const [isHovering, setIsHovering] = useState(false)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
+    HTMLDivElement
+  >(MenuPosition.UPPER_CENTER)
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -154,7 +190,13 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
+  const readOnly = getReadOnly(
+    reflection,
+    phaseType as NewMeetingPhaseTypeEnum,
+    stackCount,
+    phases,
+    inSpotlight
+  )
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
   const onToggleReactji = (emojiId: string) => {
@@ -179,8 +221,30 @@ const ReflectionCard = (props: Props) => {
   const clearError = () => {
     onCompleted()
   }
+
+  const handleClickSpotlight = (e: MouseEvent) => {
+    e.stopPropagation()
+    const el = reflectionRef.current
+    if (openSpotlight && el) {
+      openSpotlight(reflectionId, reflectionRef)
+    }
+  }
+
+  const showSpotlight = false
+  const showSearch =
+    phaseType === 'group' &&
+    !inSpotlight &&
+    !isComplete &&
+    showSpotlight &&
+    (isHovering || !isDesktop)
   return (
-    <ReflectionCardRoot data-cy={`${dataCy}-root`}>
+    <ReflectionCardRoot
+      data-cy={`${dataCy}-root`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      ref={reflectionRef}
+      selectedForSpotlight={!!openSpotlight && inSpotlight}
+    >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
@@ -206,6 +270,16 @@ const ReflectionCard = (props: Props) => {
         />
       )}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
+      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
+      <SearchButton
+        onClick={handleClickSpotlight}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        showSearch={showSearch}
+      >
+        <SearchIcon ref={tooltipRef} icon='search' />
+      </SearchButton>
+      {tooltipPortal('Find similar')}
     </ReflectionCardRoot>
   )
 }
@@ -235,12 +309,18 @@ export default createFragmentContainer(ReflectionCard, {
       localPhase {
         phaseType
       }
+      localStage {
+        isComplete
+      }
       phases {
         phaseType
         stages {
           id
           isComplete
         }
+      }
+      spotlightReflection {
+        id
       }
     }
   `

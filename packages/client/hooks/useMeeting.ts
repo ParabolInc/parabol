@@ -18,7 +18,7 @@ import useMeetingLocalState from './useMeetingLocalState'
 import useMobileSidebarDefaultClosed from './useMobileSidebarDefaultClosed'
 import useToggleSidebar from './useToggleSidebar'
 
-const useMeeting = (meetingRef: any) => {
+const useMeeting = (meetingRef: useMeeting_meeting$key) => {
   const meeting = readInlineData<useMeeting_meeting$key>(
     graphql`
       fragment useMeeting_meeting on NewMeeting @inline {

@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useGotoNext from '~/hooks/useGotoNext'
 import {TransitionStatus} from '~/hooks/useTransition'
 import FlagReadyToAdvanceMutation from '~/mutations/FlagReadyToAdvanceMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve, Times} from '~/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import handleRightArrow from '~/utils/handleRightArrow'
-import {BottomControlBarReady_meeting} from '~/__generated__/BottomControlBarReady_meeting.graphql'
+import {BottomControlBarReady_meeting$key} from '~/__generated__/BottomControlBarReady_meeting.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
@@ -24,7 +24,7 @@ interface Props {
   isConfirming: boolean
   setConfirmingButton: (button: string) => void
   isDemoStageComplete?: boolean
-  meeting: BottomControlBarReady_meeting
+  meeting: BottomControlBarReady_meeting$key
   status: TransitionStatus
   onTransitionEnd: () => void
   handleGotoNext: ReturnType<typeof useGotoNext>
@@ -53,10 +53,39 @@ const BottomControlBarReady = (props: Props) => {
     isNext,
     setConfirmingButton,
     handleGotoNext,
-    meeting,
+    meeting: meetingRef,
     onTransitionEnd,
     status
   } = props
+  const meeting = useFragment(
+    graphql`
+      fragment BottomControlBarReady_meeting on NewMeeting {
+        ... on RetrospectiveMeeting {
+          reflectionGroups {
+            id
+          }
+        }
+        id
+        localStage {
+          ...BottomControlBarReadyStage @relay(mask: false)
+        }
+        localPhase {
+          stages {
+            ...BottomControlBarReadyStage @relay(mask: false)
+          }
+        }
+        meetingMembers {
+          id
+        }
+        phases {
+          stages {
+            ...BottomControlBarReadyStage @relay(mask: false)
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId, localPhase, localStage, meetingMembers, reflectionGroups} = meeting
   const stages = localPhase.stages || []
   const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
@@ -93,8 +122,8 @@ const BottomControlBarReady = (props: Props) => {
   }
   const onKeyDown = isNext
     ? handleRightArrow(() => {
-      gotoNext()
-    })
+        gotoNext()
+      })
     : undefined
   const icon = isNext ? 'arrow_forward' : 'check'
   const label = isNext ? 'Next' : 'Ready'
@@ -140,31 +169,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(BottomControlBarReady, {
-  meeting: graphql`
-    fragment BottomControlBarReady_meeting on NewMeeting {
-      ... on RetrospectiveMeeting {
-        reflectionGroups {
-          id
-        }
-      }
-      id
-      localStage {
-        ...BottomControlBarReadyStage @relay(mask: false)
-      }
-      localPhase {
-        stages {
-          ...BottomControlBarReadyStage @relay(mask: false)
-        }
-      }
-      meetingMembers {
-        id
-      }
-      phases {
-        stages {
-          ...BottomControlBarReadyStage @relay(mask: false)
-        }
-      }
-    }
-  `
-})
+export default BottomControlBarReady

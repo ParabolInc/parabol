@@ -5,10 +5,11 @@ import {USER_REASON_REMOVED_LIMIT} from '../../../postgres/constants'
 import updateUser from '../../../postgres/queries/updateUser'
 import segmentIo from '../../../utils/segmentIo'
 import db from '../../../db'
-import User from '../../../database/types/User'
 import {DataLoaderWorker} from '../../graphql'
+import {IGetUsersByIdQueryResult} from '../../../postgres/queries/generated/getUsersByIdQuery'
+import User from '../../../database/types/User'
 
-const softDeleteUser = async (user: User, dataLoader: DataLoaderWorker, reason?: string,) => {
+const softDeleteUser = async (user: IGetUsersByIdQueryResult | User, dataLoader: DataLoaderWorker, reason?: string,) => {
   const {id: userIdToDelete, tms} = user
   removeSlackAuths(userIdToDelete, tms, true)
   const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)

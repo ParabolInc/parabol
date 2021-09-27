@@ -117,8 +117,8 @@ const pokerSetFinalScore = {
           dimensionField.cloudId === cloudId &&
           dimensionField.projectKey === projectKey
       )
-      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_COMMENT
-      if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
+      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_COMMENT
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         const stageIdx = stages.findIndex((stage) => stage.id === stageId)
         const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
         const res = await manager.addComment(
@@ -129,7 +129,7 @@ const pokerSetFinalScore = {
         if ('message' in res) {
           return {error: {message: res.message}}
         }
-      } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
+      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
         const {fieldId} = dimensionField!
         jiraFieldId = fieldId
         try {
@@ -137,7 +137,8 @@ const pokerSetFinalScore = {
             dimensionField?.fieldType === 'string' ? finalScore : Number(finalScore)
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
-          return {error: {message: e.message}}
+          const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
+          return {error: {message}}
         }
       }
     }

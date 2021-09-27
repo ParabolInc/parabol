@@ -12,9 +12,7 @@ export interface SentryOptions {
 
 // Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
 const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
-  // if (!PROD) {
   console.error('SEND TO SENTRY', error, JSON.stringify(options.tags))
-  // }
   const {sampleRate, tags, userId, ip} = options
   if (sampleRate && Math.random() > sampleRate) return
   const fullUser = userId ? await db.read('User', userId) : null

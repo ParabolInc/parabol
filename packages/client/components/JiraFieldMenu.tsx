@@ -30,8 +30,9 @@ const JiraFieldMenu = (props: Props) => {
   const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
   const defaultActiveidx = useMemo(() => {
     if (serverFields.length === 0) return undefined
-    if (serviceFieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) return serverFields.length + 1
-    if (serviceFieldName === SprintPokerDefaults.JIRA_FIELD_NULL) return serverFields.length + 2
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
+      return serverFields.length + 1
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL) return serverFields.length + 2
     const idx = serverFields.indexOf(serviceFieldName)
     return idx === -1 ? undefined : idx
   }, [serviceFieldName, serverFields])
@@ -76,13 +77,13 @@ const JiraFieldMenu = (props: Props) => {
       <MenuItemHR />
       <MenuItem
         key={'__comment'}
-        label={SprintPokerDefaults.JIRA_FIELD_COMMENT_LABEL}
-        onClick={handleClick(SprintPokerDefaults.JIRA_FIELD_COMMENT)}
+        label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_COMMENT)}
       />
       <MenuItem
         key={'__null'}
-        label={SprintPokerDefaults.JIRA_FIELD_NULL_LABEL}
-        onClick={handleClick(SprintPokerDefaults.JIRA_FIELD_NULL)}
+        label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
+        onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
       />
     </Menu>
   )

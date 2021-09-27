@@ -15,7 +15,7 @@ const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) 
       })
       .run()
     organization.showConversionModal = false
-    const teams = await dataLoader.get('teamsByOrgId').load(orgId)
+    const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const activeMeetingsByTeamId = (
       await dataLoader.get('activeMeetingsByTeamId').loadMany(teamIds)

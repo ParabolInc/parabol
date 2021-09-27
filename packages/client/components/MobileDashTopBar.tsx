@@ -67,7 +67,7 @@ const MobileDashTopBar = (props: Props) => {
       </LeftNavHeader>
       <TopBarIcons>
         {/* Disable search in mobile for now */}
-        {false && <TopBarIcon icon={'search'} />}
+        {false && <TopBarIcon icon={'search'} ariaLabel={'Search'} />}
         <TopBarHelp />
         <TopBarNotifications viewer={viewer || null} />
       </TopBarIcons>

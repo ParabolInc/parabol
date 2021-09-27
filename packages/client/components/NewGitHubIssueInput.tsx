@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import {NewGitHubIssueInput_meeting} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
-import {NewGitHubIssueInput_viewer} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
+import {NewGitHubIssueInput_meeting$key} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
+import {NewGitHubIssueInput_viewer$key} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
 import Legitity from '../validation/Legitity'
@@ -91,9 +91,9 @@ const Error = styled(StyledError)({
 
 interface Props {
   isEditing: boolean
-  meeting: NewGitHubIssueInput_meeting
+  meetingRef: NewGitHubIssueInput_meeting$key
   setIsEditing: (isEditing: boolean) => void
-  viewer: NewGitHubIssueInput_viewer
+  viewerRef: NewGitHubIssueInput_viewer$key
 }
 
 const validateIssue = (issue: string) => {
@@ -101,7 +101,39 @@ const validateIssue = (issue: string) => {
 }
 
 const NewGitHubIssueInput = (props: Props) => {
-  const {isEditing, meeting, setIsEditing, viewer} = props
+  const {isEditing, meetingRef, setIsEditing, viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment NewGitHubIssueInput_viewer on User {
+        id
+        team(teamId: $teamId) {
+          id
+        }
+        teamMember(teamId: $teamId) {
+          ... on TeamMember {
+            suggestedIntegrations {
+              ...NewGitHubIssueMenu_suggestedIntegrations
+              items {
+                ... on SuggestedIntegrationGitHub {
+                  id
+                  nameWithOwner
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+  const meeting = useFragment(
+    graphql`
+      fragment NewGitHubIssueInput_meeting on PokerMeeting {
+        id
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
@@ -191,31 +223,4 @@ const NewGitHubIssueInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NewGitHubIssueInput, {
-  meeting: graphql`
-    fragment NewGitHubIssueInput_meeting on PokerMeeting {
-      id
-    }
-  `,
-  viewer: graphql`
-    fragment NewGitHubIssueInput_viewer on User {
-      id
-      team(teamId: $teamId) {
-        id
-      }
-      teamMember(teamId: $teamId) {
-        ... on TeamMember {
-          suggestedIntegrations {
-            ...NewGitHubIssueMenu_suggestedIntegrations
-            items {
-              ... on SuggestedIntegrationGitHub {
-                id
-                nameWithOwner
-              }
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default NewGitHubIssueInput

@@ -391,6 +391,7 @@ export const enum ZIndex {
   SIDEBAR = 16,
   SIDE_SHEET = 8,
   SNACKBAR = 24 /* snackbar is kind of dialog */,
+  SPOTLIGHT_MODAL = 25, // above the tooltip
   REFLECTION_IN_FLIGHT = 8,
   REFLECTION_IN_FLIGHT_LOCAL = 26, // keep it above the dialog
   TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
@@ -405,10 +406,10 @@ export const enum SprintPokerDefaults {
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
   JIRA_FIELD_LEGACY_DEFAULT = 'Story Points',
-  JIRA_FIELD_COMMENT = '__comment',
-  JIRA_FIELD_COMMENT_LABEL = 'As Comment',
-  JIRA_FIELD_NULL = '',
-  JIRA_FIELD_NULL_LABEL = 'Do Not Update',
+  SERVICE_FIELD_COMMENT = '__comment',
+  SERVICE_FIELD_COMMENT_LABEL = 'As Comment',
+  SERVICE_FIELD_NULL = '',
+  SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
   JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error'
 }
@@ -416,4 +417,11 @@ export const enum SprintPokerDefaults {
 export const enum AriaLabels {
   COMMENT_EDITOR = 'Comment Editor',
   TASK_EDITOR = 'Task Editor'
+}
+
+export const enum Polls {
+  MAX_OPTIONS = 4,
+  MIN_OPTIONS = 2,
+  MAX_TITLE_LENGTH = 100,
+  MIN_TITLE_LENGTH = 2
 }

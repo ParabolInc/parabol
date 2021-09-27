@@ -1,4 +1,4 @@
-const MID = BigInt(process.env.SERVER_ID)
+const MID = BigInt(process.env.SERVER_ID!)
 const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const len = BigInt(ALPHABET.length)
 const EPOCH = Date.UTC(2021, 0, 1)

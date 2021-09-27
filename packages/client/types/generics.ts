@@ -1,4 +1,5 @@
 import {MutableRefObject} from 'react'
+import {RecordProxy} from 'react-relay/node_modules/@types/relay-runtime'
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
 export type Subtract<T, K> = Omit<T, keyof K>
@@ -79,4 +80,9 @@ export type Enumerate<N extends number> = EnumerateInternal<[], N> extends (infe
 
 export type Range<FROM extends number, TO extends number> = Exclude<Enumerate<TO>, Enumerate<FROM>>
 
+export type GQLType<T, U> = Extract<T, {__typename: U}>
 export type MaybeReadonly<T> = T | Readonly<T>
+export type Unproxy<T> = T extends RecordProxy<infer U> ? U : T
+
+// Can remove when this gets merged: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55847
+export type DiscriminateProxy<T, U> = RecordProxy<Extract<Unproxy<T>, {__typename: U}>>

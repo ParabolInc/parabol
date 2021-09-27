@@ -5,6 +5,86 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.29.0 2021-Sep-22
+
+### Added
+
+- Backend for creating a poll object (#5304)
+- RedisLockQueue implementation (#5311)
+- Custom ADF converter for pushing Jira tasks (#5429)
+
+### Removed
+
+- Removed postdeploy migrations (#5396)
+
+### Changed
+
+- Bumped node and pm2 (#5418)
+
+## 6.28.0 2021-Sep-16
+
+### Added
+
+- Org backup (#5278)
+- Add get user by mail query (#5287)
+- Log verbose info when client receives no payload (#5353)
+
+### Fixed
+
+- Make sure that users can always see agenda items in check-in (#5365)
+
+### Changed
+
+- Upgrade to TypeScript v4.4.2 (#5356)
+
+## 6.27.0 2021-Sep-08
+
+### Added
+
+- Spotlight similarReflectionGroups query (#5277)
+- Add poll button (#5303)
+
+### Fixed
+
+- Ironbank mitigation fixes for @ Parabol version 6.22.0 (#5227)
+
+### Changed
+
+- Adds aria-labels to topBar nav icons (#5319)
+- Read autopauseUsers user from PG (#5329)
+- Team reads migration (#5201)
+- Do not format generated files (#5292)
+
+## 6.26.0 2021-Sep-01
+
+### Fixed
+
+- Fix bad lowercase call (#5332)
+- Fix stripeSucceedPayment (#5335)
+
+### Added
+
+- Animate reflection into Spotlight (#5271)
+
+## 6.25.0 2021-Aug-25
+
+### Fixed
+
+- TeamMemberStageItems rendering unnecessarily (#5322)
+- New/Added Jira Stories are auto-archived by default (#5321)
+- Viewer object is non-null (#5310)
+
+### Changed
+
+- Upgrade to latest graphql-tools packages (#5321)
+- Upgrade to Relay v11, React v17 (#5294)
+- Server checks 'x-application-authorization' for app auth first (#5318)
+- Client always sends auth via `x-application-authorization' (#5291)
+
+### Added
+
+- Polls table in PG (#5231)
+
 ## 6.24.1 2021-Aug-23
 
 ### Fixed

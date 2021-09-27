@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -36,31 +35,26 @@ interface Props {
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting, phaseType} = props
-  const {
-    id: meetingId,
-    facilitatorStageId,
-    facilitatorUserId,
-    localPhase,
-    localStage,
-    phases
-  } = meeting
-  const sidebarPhase = phases.find((phase) => phase.phaseType === phaseType)!
+  const {facilitatorStageId, facilitatorUserId, localPhase, localStage, phases} = meeting
+  const sidebarPhase = phases.find((phase) => phase.phaseType === phaseType)
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
-    const teamMemberStage = sidebarPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
+    const teamMemberStage =
+      sidebarPhase && sidebarPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
     gotoStageId(teamMemberStageId).catch()
     handleMenuClick()
   }
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isActive = localPhase.phaseType === sidebarPhase.phaseType
+  const isActive = !!(localPhase && localPhase.phaseType === sidebarPhase?.phaseType)
   const isViewerFacilitator = viewerId === facilitatorUserId
-  const {height, ref} = useAnimatedPhaseListChildren(isActive, sidebarPhase.stages.length)
+  const childItemCount = sidebarPhase ? sidebarPhase.stages.length : 0
+  const {height, ref} = useAnimatedPhaseListChildren(isActive, childItemCount)
   return (
     <MeetingSidebarPhaseItemChild minHeight={height} height={height}>
       <ScrollStageItems isActive={isActive} ref={ref}>
-        {sidebarPhase.stages.map((stage) => {
+        {sidebarPhase?.stages.map((stage) => {
           const {
             id: stageId,
             isComplete,
@@ -70,16 +64,9 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigable
           } = stage
           if (!teamMember) {
-            Sentry.captureException(
-              new Error(
-                `Team member is undefined. teamMemberId is ${teamMemberId}. phaseType is ${phaseType}. stageId is ${stageId}. meetingId is ${meetingId}. localStageId is ${localStageId}. stage is ${JSON.stringify(
-                  stage
-                )}.`
-              )
-            )
             return null
           }
-          const {picture, preferredName} = teamMember!
+          const {picture, preferredName} = teamMember
           const isLocalStage = localStageId === stageId
           const isFacilitatorStage = facilitatorStageId === stageId
           const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
