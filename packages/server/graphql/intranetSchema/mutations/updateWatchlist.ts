@@ -5,6 +5,8 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
 import db from '../../../db'
 import UpdateWatchlistPayload from '../../types/UpdateWatchlistPayload'
+import {InternalContext} from '../../graphql'
+import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 
 const updateWatchlist = {
   type: GraphQLNonNull(UpdateWatchlistPayload),
@@ -13,7 +15,7 @@ const updateWatchlist = {
   args: {
     emails: {
       type: GraphQLList(GraphQLNonNull(GraphQLString)),
-      description: `a list of the email addresses of users whose sessions we want to start/stop recording in LogRocket`
+      description: `a list of email addresses of users whose sessions we want to start/stop recording in LogRocket`
     },
     domain: {
       type: GraphQLString,
@@ -32,7 +34,7 @@ const updateWatchlist = {
       emails,
       domain
     }: {includeInWatchlist: boolean; emails: string[]; domain: string},
-    {authToken}
+    {authToken}: InternalContext
   ) => {
     const r = await getRethink()
     const now = new Date()
@@ -43,10 +45,7 @@ const updateWatchlist = {
     // RESOLUTION
     const users = [] as User[]
     if (emails) {
-      const usersByEmail = await r
-        .table('User')
-        .getAll(r.args(emails), {index: 'email'})
-        .run()
+      const usersByEmail = await getUsersByEmails(emails)
       users.push(...usersByEmail)
     }
     if (domain) {
@@ -68,7 +67,8 @@ const updateWatchlist = {
         .getAll(r.args(userIds))
         .update(update)
         .run(),
-      updateUser(update, userIds)
+      updateUser(update, userIds),
+      db.writeMany('User', userIds, update)
     ])
 
     return {success: true}

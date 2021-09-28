@@ -22,7 +22,7 @@ const publishInternalGQL = async (options: Options) => {
     })
   } catch (e) {
     const viewerId = getUserId(authToken)
-    const error = typeof e === 'string' ? new Error(e) : e
+    const error = e instanceof Error ? e : new Error('GQL executor failed to publish')
     sendToSentry(error, {userId: viewerId})
     return undefined
   }

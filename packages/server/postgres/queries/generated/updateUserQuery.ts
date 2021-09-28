@@ -1,13 +1,13 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/updateUserQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
+export type TierEnum = 'enterprise' | 'personal' | 'pro';
 
 export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
 
 /** 'UpdateUserQuery' parameters type */
 export interface IUpdateUserQueryParams {
-  ids: Array<string | null | void>;
+  ids: readonly (string | null | void)[];
   email: string | null | void;
   updatedAt: Date | null | void;
   inactive: boolean | null | void;

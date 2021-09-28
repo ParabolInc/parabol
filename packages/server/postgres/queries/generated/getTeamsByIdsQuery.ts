@@ -1,15 +1,15 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getTeamsByIdsQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type MeetingTypeEnum = 'action' | 'retrospective' | 'poker';
+export type MeetingTypeEnum = 'action' | 'poker' | 'retrospective';
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
+export type TierEnum = 'enterprise' | 'personal' | 'pro';
 
 export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
 
 /** 'GetTeamsByIdsQuery' parameters type */
 export interface IGetTeamsByIdsQueryParams {
-  ids: Array<string | null | void>;
+  ids: readonly (string | null | void)[];
 }
 
 /** 'GetTeamsByIdsQuery' return type */

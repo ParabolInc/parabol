@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/insertTaskEstimateQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type ChangeSourceEnum = 'meeting' | 'task' | 'external';
+export type ChangeSourceEnum = 'external' | 'meeting' | 'task';
 
 /** 'InsertTaskEstimateQuery' parameters type */
 export interface IInsertTaskEstimateQueryParams {

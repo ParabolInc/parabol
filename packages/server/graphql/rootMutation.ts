@@ -26,6 +26,7 @@ import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration
 import createImposterToken from './mutations/createImposterToken'
 import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
+import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
 import deleteComment from './mutations/deleteComment'
@@ -89,8 +90,8 @@ import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
-import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import resetPassword from './mutations/resetPassword'
+import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
@@ -102,6 +103,7 @@ import setPhaseFocus from './mutations/setPhaseFocus'
 import setPokerSpectate from './mutations/setPokerSpectate'
 import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
+import setTaskEstimate from './mutations/setTaskEstimate'
 import signUpWithPassword from './mutations/signUpWithPassword'
 import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
@@ -111,6 +113,7 @@ import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
+import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
@@ -130,7 +133,6 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
-import setTaskEstimate from './mutations/setTaskEstimate'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
@@ -272,6 +274,8 @@ export default new GraphQLObjectType<any, Context>({
       setPokerSpectate,
       persistGitHubSearchQuery,
       setTaskEstimate,
-      toggleTeamDrawer
+      toggleTeamDrawer,
+      updateGitHubDimensionField,
+      createPoll
     } as any)
 })

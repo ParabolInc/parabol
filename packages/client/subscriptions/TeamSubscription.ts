@@ -42,6 +42,7 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
+      ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false)
       ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)
       ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
       ...AcceptTeamInvitationMutation_team @relay(mask: false)

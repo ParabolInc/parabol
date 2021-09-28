@@ -49262,7 +49262,7 @@ export interface ITask {
 /**
  * An item that can be put in a thread
  */
-export type Threadable = ITask | IComment;
+export type Threadable = ITask | IComment | IPoll;
 
 /**
  * An item that can be put in a thread
@@ -49448,12 +49448,12 @@ export interface ITeamMember {
   isSpectatingPoker: boolean;
 
   /**
-   * hide the agenda list on the dashboard
+   * hide the agenda list drawer on the dashboard
    */
   hideAgenda: boolean;
 
   /**
-   * hide the manage team sidebar on the dashboard
+   * hide the manage team drawer on the dashboard
    */
   hideManageTeam: boolean;
 
@@ -55753,9 +55753,15 @@ export interface IMutation {
   setTaskEstimate: SetTaskEstimatePayload;
 
   /**
-   * Show/hide the manage team sidebar
+   * Show/hide the drawer in the team dashboard
    */
   toggleTeamDrawer: ToggleTeamDrawerPayload;
+
+  /**
+   * Update how a parabol dimension maps to a GitHub label
+   */
+  updateGitHubDimensionField: UpdateGitHubDimensionFieldPayload;
+  createPoll: CreatePollPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -56889,7 +56895,7 @@ export interface ISetTaskEstimateOnMutationArguments {
 
 export interface IToggleTeamDrawerOnMutationArguments {
   /**
-   * the team to hide the manage team sidebar for
+   * the team to show/hide the drawer for
    */
   teamId: string;
 
@@ -56897,6 +56903,32 @@ export interface IToggleTeamDrawerOnMutationArguments {
    * The type of team drawer that the viewer is toggling
    */
   teamDrawerType: TeamDrawer;
+}
+
+export interface IUpdateGitHubDimensionFieldOnMutationArguments {
+  dimensionName: string;
+
+  /**
+   * The template string to map to a label
+   */
+  labelTemplate: string;
+
+  /**
+   * The repo the issue lives on
+   */
+  nameWithOwner: string;
+
+  /**
+   * The meeting the update happend in. Returns a meeting object with updated serviceField
+   */
+  meetingId: string;
+}
+
+export interface ICreatePollOnMutationArguments {
+  /**
+   * The new poll including title and poll options
+   */
+  newPoll: ICreatePollInput;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -59285,6 +59317,197 @@ export const enum TeamDrawer {
   manageTeam = 'manageTeam'
 }
 
+/**
+ * Return object for UpdateGitHubDimensionFieldPayload
+ */
+export type UpdateGitHubDimensionFieldPayload =
+  | IErrorPayload
+  | IUpdateGitHubDimensionFieldSuccess;
+
+export interface IUpdateGitHubDimensionFieldSuccess {
+  __typename: 'UpdateGitHubDimensionFieldSuccess';
+  teamId: string;
+  meetingId: string;
+  team: ITeam;
+
+  /**
+   * The poker meeting the field was updated from
+   */
+  meeting: IPokerMeeting;
+}
+
+/**
+ * Return object for CreatePollPayload
+ */
+export type CreatePollPayload = IErrorPayload | ICreatePollSuccess;
+
+export interface ICreatePollSuccess {
+  __typename: 'CreatePollSuccess';
+
+  /**
+   * Poll id in a format of `poll:idGeneratedByDatabase`
+   */
+  pollId: string;
+
+  /**
+   * the poll just created
+   */
+  poll: IPoll;
+}
+
+/**
+ * A poll created during the meeting
+ */
+export interface IPoll {
+  __typename: 'Poll';
+
+  /**
+   * Poll id in a format of `poll:idGeneratedByDatabase`
+   */
+  id: string;
+
+  /**
+   * The rich text body of the item
+   */
+  content: string;
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId that created the item
+   */
+  createdBy: string | null;
+
+  /**
+   * The user that created the item
+   */
+  createdByUser: IUser | null;
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>;
+
+  /**
+   * The FK of the discussion this task was created in. Null if task was not created in a discussion
+   */
+  discussionId: string | null;
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null;
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null;
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any;
+
+  /**
+   * The foreign key for the meeting the poll was created in
+   */
+  meetingId: string | null;
+
+  /**
+   * The id of the team (indexed)
+   */
+  teamId: string;
+
+  /**
+   * The team this poll belongs to
+   */
+  team: ITeam;
+
+  /**
+   * Poll title
+   */
+  title: string;
+
+  /**
+   * A list of all the poll options related to this poll
+   */
+  options: Array<IPollOption>;
+}
+
+/**
+ * Poll options for a given poll
+ */
+export interface IPollOption {
+  __typename: 'PollOption';
+
+  /**
+   * Poll option id in a format of `pollOption:idGeneratedByDatabase`
+   */
+  id: string;
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any;
+
+  /**
+   * The foreign key of the poll this option belongs to in a format of `poll:idGeneratedByDatabase`
+   */
+  pollId: string;
+
+  /**
+   * The poll this option belongs to
+   */
+  poll: IPoll;
+
+  /**
+   * The ids of the users who voted for this option
+   */
+  voteUserIds: Array<string>;
+
+  /**
+   * Poll option title
+   */
+  title: string;
+}
+
+export interface ICreatePollInput {
+  /**
+   * Foreign key for the discussion this was created in
+   */
+  discussionId: string;
+
+  /**
+   * The order of this threadable
+   */
+  threadSortOrder: number;
+
+  /**
+   * Poll question
+   */
+  title: string;
+
+  /**
+   * All the poll voting options
+   */
+  options: Array<IPollOptionInput>;
+}
+
+export interface IPollOptionInput {
+  /**
+   * Poll option title
+   */
+  title: string;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -59632,7 +59855,8 @@ export type TeamSubscriptionPayload =
   | IMovePokerTemplateScaleValueSuccess
   | IUpdateJiraDimensionFieldSuccess
   | ISetDefaultSlackChannelSuccess
-  | ISetAppLocationSuccess;
+  | ISetAppLocationSuccess
+  | IUpdateGitHubDimensionFieldSuccess;
 
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';

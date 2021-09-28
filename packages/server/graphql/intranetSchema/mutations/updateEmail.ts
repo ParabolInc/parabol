@@ -4,6 +4,8 @@ import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 import updateUser from '../../../postgres/queries/updateUser'
 import GraphQLEmailType from '../../types/GraphQLEmailType'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import db from '../../../db'
 
 const updateEmail = {
   type: GraphQLNonNull(GraphQLBoolean),
@@ -18,7 +20,11 @@ const updateEmail = {
       description: 'User new email'
     }
   },
-  resolve: async (_source, {oldEmail, newEmail}, {authToken}: InternalContext) => {
+  resolve: async (
+    _source,
+    {oldEmail, newEmail}: {oldEmail: string; newEmail: string},
+    {authToken}: InternalContext
+  ) => {
     const r = await getRethink()
 
     // AUTH
@@ -29,12 +35,7 @@ const updateEmail = {
       throw new Error('New email is the same as the old one')
     }
 
-    const user = await r
-      .table('User')
-      .getAll(oldEmail, {index: 'email'})
-      .nth(0)
-      .default(null)
-      .run()
+    const user = await getUserByEmail(oldEmail)
     if (!user) {
       throw new Error(`User with ${oldEmail} not found`)
     }
@@ -58,7 +59,8 @@ const updateEmail = {
           email: newEmail
         })
         .run(),
-      updateUser(updates, userId)
+      updateUser(updates, userId),
+      db.write('User', userId, updates)
     ])
 
     return true
