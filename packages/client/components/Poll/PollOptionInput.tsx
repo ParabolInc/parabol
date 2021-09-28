@@ -2,7 +2,7 @@ import React, {Ref, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {usePollContext} from './PollContext'
 import {PALETTE} from '../../styles/paletteV3'
-import {AriaLabels, Polls} from '../../types/constEnums'
+import {Polls, PollsAriaLabels} from '../../types/constEnums'
 
 interface Props {
   id: string
@@ -72,7 +72,8 @@ const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>
     <PollOptionInputRoot ref={ref}>
       <Input
         ref={pollInputRef}
-        aria-label={AriaLabels.POLL_OPTION_EDITOR}
+        aria-label={PollsAriaLabels.POLL_OPTION_EDITOR}
+        data-cy='poll-option-input'
         placeholder={placeholder ?? ''}
         value={value}
         onChange={handlePollOptionUpdate}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Ref} from 'react'
 import styled from '@emotion/styled'
 import {usePollContext} from './PollContext'
 import PollOption from './PollOption'
@@ -11,11 +11,11 @@ const PollOptionsRoot = styled('div')({
   gap: '8px'
 })
 
-const PollOptions = () => {
+const PollOptions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
   const {poll} = usePollContext()
 
   return (
-    <PollOptionsRoot>
+    <PollOptionsRoot ref={ref}>
       {poll.options.map((option) => (
         <PollOption
           key={option.id}
@@ -27,6 +27,6 @@ const PollOptions = () => {
       ))}
     </PollOptionsRoot>
   )
-}
+})
 
 export default PollOptions

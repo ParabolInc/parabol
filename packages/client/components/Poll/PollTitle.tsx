@@ -1,8 +1,8 @@
-import React from 'react'
+import React, {Ref} from 'react'
 import styled from '@emotion/styled'
 import {usePollContext} from './PollContext'
 import {PALETTE} from '~/styles/paletteV3'
-import {AriaLabels} from '~/types/constEnums'
+import {PollsAriaLabels} from '~/types/constEnums'
 
 const PollTitleHeader = styled('div')({
   padding: `10px 12px 0px 12px`,
@@ -20,7 +20,7 @@ const PollTitleInput = styled('input')({
   }
 })
 
-const PollTitle = () => {
+const PollTitle = React.forwardRef((_, ref: Ref<any>) => {
   const {pollState, poll, updatePoll, onPollFocused, onPollBlurred} = usePollContext()
 
   if (pollState === 'creating') {
@@ -30,7 +30,9 @@ const PollTitle = () => {
 
     return (
       <PollTitleInput
-        aria-label={AriaLabels.POLL_TITLE_EDITOR}
+        ref={ref}
+        aria-label={PollsAriaLabels.POLL_TITLE_EDITOR}
+        data-cy='poll-title-input'
         autoFocus
         value={poll.title}
         placeholder='Ask a question...'
@@ -41,7 +43,7 @@ const PollTitle = () => {
     )
   }
 
-  return <PollTitleHeader>{poll.title}</PollTitleHeader>
-}
+  return <PollTitleHeader ref={ref}>{poll.title}</PollTitleHeader>
+})
 
 export default PollTitle

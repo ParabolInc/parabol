@@ -416,9 +416,7 @@ export const enum SprintPokerDefaults {
 
 export const enum AriaLabels {
   COMMENT_EDITOR = 'Comment Editor',
-  TASK_EDITOR = 'Task Editor',
-  POLL_TITLE_EDITOR = 'Poll Editor',
-  POLL_OPTION_EDITOR = 'Poll Option Editor'
+  TASK_EDITOR = 'Task Editor'
 }
 
 export const enum Polls {
@@ -428,4 +426,12 @@ export const enum Polls {
   MIN_TITLE_LENGTH = 2,
   MIN_OPTION_TITLE_LENGTH = 2,
   MAX_OPTION_TITLE_LENGTH = 30
+}
+
+export const enum PollsAriaLabels {
+  POLL_TITLE_EDITOR = 'Poll Editor',
+  POLL_OPTION_EDITOR = 'Poll Option Editor',
+  POLL_SUBMIT_VOTE = 'Submit poll vote',
+  POLL_START = 'Start a poll',
+  POLL_ADD_OPTION = 'Add a poll option'
 }

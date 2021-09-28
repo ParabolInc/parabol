@@ -4,7 +4,7 @@ import {usePollContext} from './PollContext'
 import {PALETTE} from '../../styles/paletteV3'
 import PlainButton from '../PlainButton/PlainButton'
 import {AddPollOptionButton} from './AddPollOptionButton'
-import {Polls} from '~/types/constEnums'
+import {PollsAriaLabels, Polls} from '~/types/constEnums'
 
 const PollActionsRoot = styled('div')({
   width: '100%',
@@ -67,9 +67,14 @@ const PollActions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
       return (
         <StartPollWrapper>
           {poll.options.length < Polls.MAX_OPTIONS && (
-            <AddPollOptionButton dataCy='poll-option' onClick={addPollOption} />
+            <AddPollOptionButton onClick={addPollOption} />
           )}
-          <StartPollButton onClick={createPoll} disabled={!canCreatePoll}>
+          <StartPollButton
+            aria-label={PollsAriaLabels.POLL_START}
+            data-cy='poll-start'
+            onClick={createPoll}
+            disabled={!canCreatePoll}
+          >
             Start
           </StartPollButton>
         </StartPollWrapper>
@@ -77,7 +82,11 @@ const PollActions = React.forwardRef((_, ref: Ref<HTMLDivElement>) => {
     }
 
     if (selectedPollOptionId) {
-      return <SubmitVoteButton>Submit and view results</SubmitVoteButton>
+      return (
+        <SubmitVoteButton aria-label={PollsAriaLabels.POLL_SUBMIT_VOTE} data-cy='vote-poll'>
+          Submit and view results
+        </SubmitVoteButton>
+      )
     }
     return null
   }
