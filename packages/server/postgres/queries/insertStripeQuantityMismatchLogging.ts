@@ -21,8 +21,8 @@ const insertStripeQuantityMismatchLogging = async (
         return {
           id,
           inactive,
-          joinedAt: joinedAt.getTime(),
-          removedAt: removedAt?.getTime() ?? -1,
+          joinedAt: JSON.stringify(joinedAt),
+          removedAt: removedAt ? JSON.stringify(removedAt) : "",
           userId,
           role,
           tier
