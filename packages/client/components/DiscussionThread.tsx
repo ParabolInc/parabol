@@ -10,6 +10,7 @@ import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import {DiscussionThreadQuery} from '../__generated__/DiscussionThreadQuery.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList, {DiscussionThreadables} from './DiscussionThreadList'
+import {isLocalPoll} from './Poll/local/newPoll'
 
 const Wrapper = styled('div')<{isExpanded: boolean; width?: string}>(({isExpanded, width}) => ({
   background: '#fff',
@@ -100,9 +101,7 @@ const DiscussionThread = (props: Props) => {
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
-  const isCreatingPoll = threadables.some(
-    (threadable) => threadable.id.startsWith('poll') && threadable.id.endsWith('tmp')
-  )
+  const isCreatingPoll = threadables.some(isLocalPoll)
 
   return (
     <Wrapper isExpanded={isExpanded} width={width} ref={ref}>

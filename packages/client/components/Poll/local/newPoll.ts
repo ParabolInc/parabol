@@ -6,20 +6,8 @@ import safePutNodeInConn from '../../../mutations/handlers/safePutNodeInConn'
 
 const LocalPollOptionsNumber = 2
 
-const createEmptyPollOption = (
-  store: RecordSourceProxy,
-  index: number,
-  shouldAutoFocus = false
-) => {
-  const dataID = clientTempId('poll')
-  const newPollOption = store.create(dataID, 'PollOption')
-  newPollOption.setValue(dataID, 'id')
-  newPollOption.setValue('', 'title')
-  newPollOption.setValue(`Add a choice ${index}...`, 'placeholder')
-  newPollOption.setValue(shouldAutoFocus, 'shouldAutoFocus')
-
-  return newPollOption
-}
+export const isLocalPoll = (threadable: {id: string}) =>
+  threadable.id.startsWith('poll') && threadable.id.endsWith('tmp')
 
 export const createLocalPoll = (
   atmosphere: Atmosphere,
@@ -96,3 +84,18 @@ export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string, index
     poll.setLinkedRecords([...pollOptions, pollOption], 'options')
     poll.setValue(new Date().toJSON(), 'updatedAt')
   })
+
+const createEmptyPollOption = (
+  store: RecordSourceProxy,
+  index: number,
+  shouldAutoFocus = false
+) => {
+  const dataID = clientTempId('poll')
+  const newPollOption = store.create(dataID, 'PollOption')
+  newPollOption.setValue(dataID, 'id')
+  newPollOption.setValue('', 'title')
+  newPollOption.setValue(`Add a choice ${index}...`, 'placeholder')
+  newPollOption.setValue(shouldAutoFocus, 'shouldAutoFocus')
+
+  return newPollOption
+}
