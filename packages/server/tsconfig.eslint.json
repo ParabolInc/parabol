@@ -10,6 +10,7 @@
     "email/**/*",
     "segmentFns/*",
     "utils/*",
-    "server.dev.ts"
+    "server.dev.ts",
+    "__tests__/*"
   ]
 }
