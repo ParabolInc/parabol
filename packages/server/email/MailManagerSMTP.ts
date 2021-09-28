@@ -20,8 +20,7 @@ export default class MailManagerSMTP extends MailManager {
       process.env.MAIL_SMTP_USE_TLS === '1'
         ? {
             rejectUnauthorized: false,
-            ciphers:
-              process.env.MAIL_SMTP_CIPHERS ?? 'HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH'
+            ciphers: process.env.MAIL_SMTP_CIPHERS
           }
         : undefined
   })
