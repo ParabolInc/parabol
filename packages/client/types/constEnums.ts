@@ -66,8 +66,8 @@ export const enum DiscussionThreadEnum {
 export const enum DragAttribute {
   CONTROL_BAR_COVERABLE = 'data-control-bar-coverable',
   DROPPABLE = 'data-droppable',
-  DROPZONE = 'data-dropzone',
-  DROPPABLE_SPOTLIGHT = 'data-droppable-spotlight'
+  DROPPABLE_SPOTLIGHT = 'data-droppable-spotlight',
+  DROPZONE = 'data-dropzone'
 }
 
 export const enum DroppableType {

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {DragAttribute} from '~/types/constEnums'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
@@ -80,13 +81,21 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage, spotlightReflection} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing} = reflection
+  const {isDropping, isEditing, reflectionGroupId} = reflection
   const isSpotlightOpen = !!spotlightReflection?.id
   const isInSpotlight = isSpotlightOpen && !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const [drag] = useState(makeDragState)
   const staticReflectionCount = staticReflections?.length || 0
   drag.isBehindSpotlight = isBehindSpotlight
+  const spotlightGroup = document.querySelector(
+    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
+  )
+  const kanbanGroup = document.querySelector(
+    `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
+  )
+  const disableDrag = !!(spotlightGroup && kanbanGroup) && isBehindSpotlight
+  // if (disableDrag) drag.ref = null
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -103,7 +112,7 @@ const DraggableReflectionCard = (props: Props) => {
   const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
     <DragWrapper
-      ref={(c) => (drag.ref = c)}
+      ref={(c) => (disableDrag ? undefined : (drag.ref = c))}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
       isDraggable={canDrag}
@@ -140,6 +149,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
       remoteDrag {
         dragUserId
         dragUserName
+        targetId
       }
     }
   `,

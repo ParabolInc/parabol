@@ -6,7 +6,7 @@ import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflec
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
-import {Times} from '../types/constEnums'
+import {DragAttribute, Times, ZIndex} from '../types/constEnums'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
@@ -33,18 +33,32 @@ const useRemoteDrag = (
   staticIdx: number
 ) => {
   const setPortal = useContext(PortalContext)
-  const {remoteDrag, isDropping} = reflection
+  const {remoteDrag, isDropping, reflectionGroupId} = reflection
   const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
     if (!drag.ref || timeRemaining <= 0) return
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
       // performance only
-      const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight, timeRemaining)
+      const style = getDroppingStyles(
+        drag.ref,
+        bbox,
+        windowDims.clientHeight,
+        timeRemaining,
+        remoteDrag,
+        reflectionGroupId
+      )
+      const targetId = reflection.remoteDrag?.targetId
+      const isInSpotlight = !!document.querySelector(
+        `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${targetId}']`
+      )
+      const zIndex = isInSpotlight
+        ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
+        : ZIndex.REFLECTION_IN_FLIGHT
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
-          style={isClose ? style : {transform: style.transform}}
+          style={isClose ? style : {transform: style.transform, zIndex}}
           reflection={reflection}
         />
       )

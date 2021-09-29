@@ -1,5 +1,6 @@
+import {DraggableReflectionCard_reflection} from '~/__generated__/DraggableReflectionCard_reflection.graphql'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, DragAttribute, Times} from '../../types/constEnums'
+import {BezierCurve, DragAttribute, Times, ZIndex} from '../../types/constEnums'
 import getDeCasteljau from '../getDeCasteljau'
 
 export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
@@ -26,16 +27,27 @@ export const getDroppingStyles = (
   targetEl: HTMLDivElement,
   bbox: ClientRect,
   maxTop: number,
-  timeRemaining: number
+  timeRemaining: number,
+  remoteDrag?: DraggableReflectionCard_reflection['remoteDrag'],
+  reflectionGroupId?: string
 ) => {
   const {top, left} = bbox
   const minTop = getMinTop(top, targetEl)
   const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
   const isClipped = clippedTop !== top
+  const targetId = remoteDrag?.targetId
+  const isTargetInSpotlight = !!document.querySelector(
+    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${targetId}']`
+  )
+  const isReflectionInSpotlight = !!document.querySelector(
+    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
+  )
+  const showAboveSpotlight = isReflectionInSpotlight || isTargetInSpotlight
   return {
     transform: `translate(${left}px,${clippedTop}px)`,
     transition: getTransition(isClipped, timeRemaining),
-    opacity: isClipped ? 0 : 1
+    opacity: isClipped ? 0 : 1,
+    zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
   }
 }
 

@@ -17,8 +17,7 @@ import Atmosphere from '~/Atmosphere'
 
 const RemoteReflectionModal = styled('div')<{
   isDropping?: boolean | null
-  showAboveSpotlight: boolean
-}>(({isDropping, showAboveSpotlight}) => ({
+}>(({isDropping}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -26,8 +25,7 @@ const RemoteReflectionModal = styled('div')<{
   pointerEvents: 'none',
   transition: `all ${
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
-  }ms ${BezierCurve.DECELERATE}`,
-  zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
+  }ms ${BezierCurve.DECELERATE}`
 }))
 
 const HeaderModal = styled('div')<{showAboveSpotlight: boolean}>(({showAboveSpotlight}) => ({
@@ -113,7 +111,8 @@ const getInlineStyle = (
 ) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any, showAboveSpotlight)
-  return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
+  const zIndex = showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : style.zIndex
+  return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
 }
 
 const getTarget = (meetingId: string, targetId: string, atmosphere: Atmosphere) => {
@@ -177,12 +176,7 @@ const RemoteReflection = (props: Props) => {
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
-      <RemoteReflectionModal
-        ref={ref}
-        style={nextStyle}
-        isDropping={isDropping}
-        showAboveSpotlight={showAboveSpotlight}
-      >
+      <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />
