@@ -36,7 +36,7 @@ export default {
     }
     const {meetingId} = discussion
 
-    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+    const meetingMemberId = MeetingMemberId.join({meetingId, userId: viewerId})
     const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
       return {error: {message: `Not a part of the meeting`}}

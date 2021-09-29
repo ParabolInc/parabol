@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DragAttribute} from '~/types/constEnums'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
@@ -81,20 +80,13 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage, spotlightReflection} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing, reflectionGroupId} = reflection
+  const {isDropping, isEditing} = reflection
   const isSpotlightOpen = !!spotlightReflection?.id
   const isInSpotlight = isSpotlightOpen && !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const [drag] = useState(makeDragState)
   const staticReflectionCount = staticReflections?.length || 0
   drag.isBehindSpotlight = isBehindSpotlight
-  const spotlightGroup = document.querySelector(
-    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
-  )
-  const kanbanGroup = document.querySelector(
-    `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
-  )
-  const disableDrag = !!(spotlightGroup && kanbanGroup) && isBehindSpotlight
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -104,14 +96,13 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-
   const isDragPhase = phaseType === 'group' && !isComplete
-  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
+  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping && !isBehindSpotlight
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
     <DragWrapper
-      ref={(c) => (disableDrag ? undefined : (drag.ref = c))}
+      ref={(c) => (drag.ref = c)}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
       isDraggable={canDrag}
@@ -140,11 +131,11 @@ export default createFragmentContainer(DraggableReflectionCard, {
       ...RemoteReflection_reflection
       id
       isEditing
-      reflectionGroupId
       promptId
       isViewerDragging
       isViewerCreator
       isDropping
+      reflectionGroupId
       remoteDrag {
         dragUserId
         dragUserName

@@ -28,14 +28,13 @@ const RemoteReflectionModal = styled('div')<{
   }ms ${BezierCurve.DECELERATE}`
 }))
 
-const HeaderModal = styled('div')<{showAboveSpotlight: boolean}>(({showAboveSpotlight}) => ({
+const HeaderModal = styled('div')({
   position: 'absolute',
   left: 0,
   top: 0,
   pointerEvents: 'none',
-  width: ElementWidth.REFLECTION_CARD,
-  zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
-}))
+  width: ElementWidth.REFLECTION_CARD
+})
 
 const windowDims = {
   innerWidth: window.innerWidth,
@@ -183,7 +182,7 @@ const RemoteReflection = (props: Props) => {
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform && (
-        <HeaderModal showAboveSpotlight={showAboveSpotlight}>
+        <HeaderModal>
           <UserDraggingHeader
             userId={dragUserId}
             name={dragUserName}

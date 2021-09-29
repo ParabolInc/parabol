@@ -13,6 +13,7 @@ import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleAddReflectionToGroup from './handlers/handleAddReflectionToGroup'
 import handleRemoveEmptyReflectionGroup from './handlers/handleRemoveEmptyReflectionGroup'
+import handleUpdateSpotlightResults from './handlers/handleUpdateSpotlightResults'
 
 graphql`
   fragment EndDraggingReflectionMutation_meeting on EndDraggingReflectionPayload {
@@ -87,42 +88,6 @@ const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
   addNodeToArray(reflectionGroup, meeting, 'reflectionGroups', 'sortOrder')
 }
 
-const handleAddReflectionToSpotlight = (
-  reflection: RecordProxy,
-  reflectionGroup: RecordProxy,
-  oldReflectionGroupId: string,
-  store: RecordSourceSelectorProxy
-) => {
-  const reflectionGroupId = reflection.getValue('reflectionGroupId')
-  if (reflectionGroupId === oldReflectionGroupId) return
-  const meetingId = reflection.getValue('meetingId') as string
-  const meeting = store.get(meetingId)
-  if (!meeting) return
-  const spotlightReflection = meeting?.getLinkedRecord('spotlightReflection')
-  const spotlightReflectionId = spotlightReflection?.getValue('id')
-  const viewer = store.getRoot().getLinkedRecord('viewer')
-  if (!viewer || !spotlightReflectionId) return
-  const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
-    reflectionId: spotlightReflectionId,
-    searchQuery: ''
-  })
-  const wasInSpotlightGroups = similarReflectionGroups?.find(
-    (group) => group.getValue('id') === oldReflectionGroupId
-  )
-  const isInSpotlightGroups = similarReflectionGroups?.find(
-    (group) => group.getValue('id') === reflectionGroupId
-  )
-  // check if ungrouping is happening in the spotlight
-  if (!isInSpotlightGroups && wasInSpotlightGroups) {
-    addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
-      storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
-        searchQuery: ''
-      }
-    })
-  }
-}
-
 export const moveReflectionLocation = (
   reflection: RecordProxy,
   reflectionGroup: RecordProxy,
@@ -132,7 +97,7 @@ export const moveReflectionLocation = (
   if (!reflection) return
   const reflectionId = reflection.getValue('id') as string
 
-  handleAddReflectionToSpotlight(reflection, reflectionGroup, oldReflectionGroupId, store)
+  handleUpdateSpotlightResults(reflection, reflectionGroup, oldReflectionGroupId, store)
   handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
   handleAddReflectionToGroup(reflection, store)
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
