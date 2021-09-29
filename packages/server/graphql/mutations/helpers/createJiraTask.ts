@@ -1,7 +1,7 @@
-import {stateToMarkdown} from 'draft-js-export-markdown'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
+import convertContentStateToADF from './convertContentStateToADF'
 
 const createJiraTask = async (
   rawContent: string,
@@ -10,15 +10,12 @@ const createJiraTask = async (
   atlassianAuth: AtlassianAuth
 ) => {
   const {title: summary, contentState} = splitDraftContent(rawContent)
-  const markdown = stateToMarkdown(contentState)
+  const description = convertContentStateToADF(contentState)
 
   const {accessToken, accountId} = atlassianAuth
   const manager = new AtlassianServerManager(accessToken)
 
-  const [issueMetaRes, description] = await Promise.all([
-    manager.getCreateMeta(cloudId, [projectKey]),
-    manager.convertMarkdownToADF(markdown)
-  ])
+  const issueMetaRes = await manager.getCreateMeta(cloudId, [projectKey])
   if (issueMetaRes instanceof Error) return {error: issueMetaRes}
   const {projects} = issueMetaRes
   // should always be the first and only item in the project arr

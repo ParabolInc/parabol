@@ -95,7 +95,6 @@ const DraggableReflectionCard = (props: Props) => {
     `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
   )
   const disableDrag = !!(spotlightGroup && kanbanGroup) && isBehindSpotlight
-  // if (disableDrag) drag.ref = null
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
