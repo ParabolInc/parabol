@@ -97,7 +97,6 @@ const PokerDimensionValueControl = (props: Props) => {
   const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
   const forceUpdate = useForceUpdate()
-
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
@@ -108,6 +107,9 @@ const PokerDimensionValueControl = (props: Props) => {
     if (submitting || !isStale || !isLocallyValidatedRef.current) {
       return
     }
+    // submitScore might be called when changing the integration field to push to
+    const noScoreYet = cardScore === '' && finalScore === ''
+    if (noScoreYet) return
     submitMutation()
     const handleCompleted = (res: SetTaskEstimateMutationResponse, errors) => {
       onCompleted(res as any, errors)

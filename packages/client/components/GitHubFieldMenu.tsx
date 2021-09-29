@@ -70,10 +70,11 @@ const ActionButton = styled(Icon)({
 interface Props {
   menuProps: MenuProps
   stageRef: GitHubFieldMenu_stage$key
+  submitScore(): void
 }
 
 const GitHubFieldMenu = (props: Props) => {
-  const {menuProps, stageRef} = props
+  const {menuProps, stageRef, submitScore} = props
   const atmosphere = useAtmosphere()
   const stage = useFragment(
     graphql`
@@ -119,12 +120,23 @@ const GitHubFieldMenu = (props: Props) => {
   const {nameWithOwner} = repository
   const handleClick = (labelTemplate: string) => () => {
     if (labelTemplate !== serviceFieldName) {
-      UpdateGitHubDimensionFieldMutation(atmosphere, {
-        dimensionName,
-        labelTemplate,
-        nameWithOwner,
-        meetingId
-      })
+      UpdateGitHubDimensionFieldMutation(
+        atmosphere,
+        {
+          dimensionName,
+          labelTemplate,
+          nameWithOwner,
+          meetingId
+        },
+        {
+          onCompleted: submitScore,
+          onError: () => {
+            /* noop */
+          }
+        }
+      )
+    } else {
+      submitScore()
     }
     closePortal()
   }

@@ -54,7 +54,6 @@ const LabelTemplateInput = styled(BasicInput)({
 const EditGitHubLabelTemplateModal = (props: Props) => {
   const {closePortal, defaultValue, placeholder, updateLabelTemplate} = props
   const INPUT_NAME = 'labelTemplate'
-  console.log({defaultValue})
   const {fields, onChange, setValue} = useForm({
     [INPUT_NAME]: {
       getDefault: () => defaultValue

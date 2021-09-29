@@ -17,6 +17,7 @@ interface Props {
   clearError: () => void
   isFacilitator: boolean
   stageRef: GitHubFieldDimensionDropdown_stage$key
+  submitScore(): void
 }
 
 const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
@@ -45,7 +46,7 @@ const labelLookup = {
 }
 
 const GitHubFieldDimensionDropdown = (props: Props) => {
-  const {clearError, stageRef, isFacilitator} = props
+  const {clearError, stageRef, isFacilitator, submitScore} = props
   const stage = useFragment(
     graphql`
       fragment GitHubFieldDimensionDropdown_stage on EstimateStage {
@@ -83,7 +84,7 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
         <CurrentValue>{label}</CurrentValue>
         <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
       </Wrapper>
-      {menuPortal(<GitHubFieldMenu menuProps={menuProps} stageRef={stage} />)}
+      {menuPortal(<GitHubFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore}/>)}
     </>
   )
 }

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {DiscriminateProxy} from '../types/generics'
-import {SimpleMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
 import {PokerMeeting_meeting} from '../__generated__/PokerMeeting_meeting.graphql'
@@ -61,9 +61,10 @@ const mutation = graphql`
   }
 `
 
-const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionFieldMutation> = (
+const UpdateJiraDimensionFieldMutation: StandardMutation<TUpdateJiraDimensionFieldMutation> = (
   atmosphere,
-  variables
+  variables,
+  {onCompleted, onError}
 ) => {
   return commitMutation<TUpdateJiraDimensionFieldMutation>(atmosphere, {
     mutation,
@@ -117,7 +118,9 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
         })
         stage.setLinkedRecord(nextServiceField, 'serviceField')
       })
-    }
+    },
+    onCompleted,
+    onError
   })
 }
 
