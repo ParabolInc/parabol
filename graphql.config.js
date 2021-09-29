@@ -1,9 +1,19 @@
 module.exports = {
   projects: {
     Parabol: {
-      schemaPath: './schema.graphql',
       name: 'Parabol GraphQL Schema',
-      includes: ['*']
+      schema: ['./schema.graphql', './packages/client/clientSchema.graphql'],
+      documents: './packages/**/*',
+      extensions: {
+        languageService: {
+          useSchemaFileDefinitions: true
+        },
+        endpoints: {
+          default: {
+            url: 'http://localhost:3000/graphql'
+          }
+        }
+      }
     }
   }
 }
