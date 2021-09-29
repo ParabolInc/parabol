@@ -80,7 +80,7 @@ const SlackNotificationList = (props: Props) => {
       submitMutation()
       SetDefaultSlackChannelMutation(
         atmosphere,
-        {slackChannelId, teamId},
+        {slackChannelId: slackChannelId!, teamId},
         {
           onError,
           onCompleted

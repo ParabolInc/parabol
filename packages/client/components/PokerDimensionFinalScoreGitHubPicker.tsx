@@ -102,6 +102,7 @@ const PokerDimensionFinalScoreGitHubPicker = (props: Props) => {
             clearError={clearError}
             stageRef={stage}
             isFacilitator={isFacilitator}
+            submitScore={submitScore}
           />
         </GitHubControlWrapper>
       </Mapper>

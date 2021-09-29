@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import Atmosphere from '../Atmosphere'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {
   OnNextHandler,
@@ -19,6 +20,7 @@ import {CreateTaskMutation_notification} from '../__generated__/CreateTaskMutati
 import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleEditTask from './handlers/handleEditTask'
+import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import popInvolvementToast from './toasts/popInvolvementToast'
@@ -50,6 +52,9 @@ graphql`
         ... on _xGitHubIssue {
           number
           title
+          repository {
+            nameWithOwner
+          }
         }
       }
     }
@@ -90,6 +95,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   handleEditTask(editorPayload, store)
   handleUpsertTasks(task, store)
   handleJiraCreateIssue(task, store)
+  handleGitHubCreateIssue(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -165,12 +171,31 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
             descriptionHTML: ''
           })
           task.setLinkedRecord(optimisticJiraIssue, 'integration')
+        } else if (service === 'github') {
+          const {nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(serviceProjectHash)
+          const repository = createProxyRecord(store, '_xGitHubRepository', {
+            nameWithOwner,
+            name: repoName,
+            owner: repoOwner
+          })
+          const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
+            number: 0,
+            title: plaintextContent,
+            description: '',
+            url: '',
+            bodyHTML: ''
+          })
+          optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
+          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
+        } else {
+          console.log('FIXME: implement createTask')
         }
       }
       const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
       handleEditTask(editorPayload, store)
       handleUpsertTasks(task as any, store)
       handleJiraCreateIssue(task, store)
+      handleGitHubCreateIssue(task as any, store)
     },
     onError,
     onCompleted
