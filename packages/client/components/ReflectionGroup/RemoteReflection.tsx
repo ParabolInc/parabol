@@ -116,11 +116,12 @@ const getInlineStyle = (
 interface Props {
   style: React.CSSProperties
   reflection: RemoteReflection_reflection
+  showAboveSpotlight?: boolean
 }
 
 const RemoteReflection = (props: Props) => {
-  const {reflection, style} = props
-  const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
+  const {reflection, style, showAboveSpotlight = false} = props
+  const {id: reflectionId, content, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
@@ -139,20 +140,8 @@ const RemoteReflection = (props: Props) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
-
   if (!remoteDrag) return null
-  const {dragUserId, dragUserName, targetId} = remoteDrag
-  const targetGroup = document.querySelector(
-    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${targetId}']`
-  )
-  const spotlightGroup = document.querySelector(
-    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
-  )
-  const kanbanGroup = document.querySelector(
-    `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
-  )
-  const isInSpotlight = !!(spotlightGroup && kanbanGroup)
-  const showAboveSpotlight = isInSpotlight || !!targetGroup
+  const {dragUserId, dragUserName} = remoteDrag
 
   const {nextStyle, minTop} = getInlineStyle(remoteDrag, isDropping, style, showAboveSpotlight)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)

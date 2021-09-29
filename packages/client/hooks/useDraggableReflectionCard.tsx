@@ -39,20 +39,23 @@ const useRemoteDrag = (
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
+      const targetId = remoteDrag?.targetId
+      const isTargetInSpotlight = !!document.querySelector(
+        `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${targetId}']`
+      )
+      const isInSpotlight = !!document.querySelector(
+        `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
+      )
+      const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
       // performance only
       const style = getDroppingStyles(
         drag.ref,
         bbox,
         windowDims.clientHeight,
         timeRemaining,
-        remoteDrag,
-        reflectionGroupId
+        showAboveSpotlight
       )
-      const targetId = reflection.remoteDrag?.targetId
-      const isInSpotlight = !!document.querySelector(
-        `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${targetId}']`
-      )
-      const zIndex = isInSpotlight
+      const zIndex = showAboveSpotlight
         ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
         : ZIndex.REFLECTION_IN_FLIGHT
       setPortal(
@@ -60,6 +63,7 @@ const useRemoteDrag = (
         <RemoteReflection
           style={isClose ? style : {transform: style.transform, zIndex}}
           reflection={reflection}
+          showAboveSpotlight={showAboveSpotlight}
         />
       )
     }
