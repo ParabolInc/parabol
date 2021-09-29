@@ -44,7 +44,7 @@ const enableSAMLForDomain = {
     },
     metadata: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'A big chunk of XML data containing th redirect URL and X.509 certificate'
+      description: 'A big chunk of XML data containing the redirect URL and X.509 certificate'
     }
   },
   async resolve(_source, {name, domains, metadata}) {

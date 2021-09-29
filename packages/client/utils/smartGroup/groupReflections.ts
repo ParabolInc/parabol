@@ -14,7 +14,7 @@ type Entity = {
   salience: number
 }
 
-type GroupedReflection = {
+type GroupedReflectionRes = {
   reflectionId: string
   entities: Entity[]
   oldReflectionGroupId: string
@@ -44,12 +44,12 @@ const groupReflections = <T extends Reflection>(
     groupingOptions
   )
   // replace the arrays with reflections
-  const updatedReflections = [] as GroupedReflection[]
+  const updatedReflections = [] as GroupedReflectionRes[]
   const reflectionGroupMapping = {} as Record<string, string>
   const updatedGroups = (groupedArrays as any[]).map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''
-    const groupedReflections = group.map((reflectionDistanceArr, sortOrder) => {
+    const groupedReflectionsRes = group.map((reflectionDistanceArr, sortOrder) => {
       const idx = distanceMatrix.indexOf(reflectionDistanceArr)
       const reflection = reflections[idx]
       reflectionGroupId = (reflectionGroupId || reflection.reflectionGroupId) as string
@@ -62,7 +62,7 @@ const groupReflections = <T extends Reflection>(
       }
     })
 
-    const groupedReflectionEntities = groupedReflections
+    const groupedReflectionEntities = groupedReflectionsRes
       .map(({entities}) => entities)
       .filter(Boolean)
     const smartTitle = getTitleFromComputedGroup(
@@ -72,9 +72,9 @@ const groupReflections = <T extends Reflection>(
       reflections
     )
 
-    updatedReflections.push(...groupedReflections)
+    updatedReflections.push(...groupedReflectionsRes)
 
-    groupedReflections.forEach((groupedReflection) => {
+    groupedReflectionsRes.forEach((groupedReflection) => {
       reflectionGroupMapping[groupedReflection.oldReflectionGroupId] = reflectionGroupId
     })
 
@@ -94,7 +94,7 @@ const groupReflections = <T extends Reflection>(
   return {
     autoGroupThreshold: thresh,
     groups: updatedGroups,
-    groupedReflections: updatedReflections,
+    groupedReflectionsRes: updatedReflections,
     reflectionGroupMapping,
     removedReflectionGroupIds,
     nextThresh

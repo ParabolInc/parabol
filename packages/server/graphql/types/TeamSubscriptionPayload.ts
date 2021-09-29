@@ -62,6 +62,7 @@ import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimen
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
+import {UpdateGitHubDimensionFieldSuccess} from './UpdateGitHubDimensionFieldPayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
 
 const types = [
@@ -128,7 +129,8 @@ const types = [
   MovePokerTemplateScaleValueSuccess,
   UpdateJiraDimensionFieldSuccess,
   SetDefaultSlackChannelSuccess,
-  SetAppLocationSuccess
+  SetAppLocationSuccess,
+  UpdateGitHubDimensionFieldSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

@@ -8,6 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
@@ -54,17 +55,24 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         if (!task) return NULL_FIELD
         const {integration} = task
         if (!integration) return NULL_FIELD
-        if (integration.service === 'jira') {
-          const {cloudId, projectKey} = integration
-          const [meeting, team] = await Promise.all([
-            dataLoader.get('newMeetings').load(meetingId),
-            dataLoader.get('teams').load(teamId)
-          ])
+        const {service} = integration
+        const getDimensionName = async (meetingId: string) => {
+          const meeting = await dataLoader.get('newMeetings').load(meetingId)
           const {templateRefId} = meeting
           const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
           const {dimensions} = templateRef
           const dimensionRef = dimensions[dimensionRefIdx]
           const {name: dimensionName} = dimensionRef
+          return dimensionName
+        }
+
+        if (service === 'jira') {
+          const {cloudId, issueKey} = integration
+          const projectKey = JiraProjectKeyId.join(issueKey)
+          const [dimensionName, team] = await Promise.all([
+            getDimensionName(meetingId),
+            dataLoader.get('teams').load(teamId)
+          ])
           const jiraDimensionFields = team.jiraDimensionFields || []
           const existingDimensionField = jiraDimensionFields.find(
             (field) =>
@@ -79,7 +87,24 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
               type: existingDimensionField.fieldType
             }
 
-          return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
+          return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+        }
+        if (service === 'github') {
+          const {nameWithOwner} = integration
+          const dimensionName = await getDimensionName(meetingId)
+          const githubFieldMap = await dataLoader
+            .get('githubDimensionFieldMaps')
+            .load({teamId, dimensionName, nameWithOwner})
+          if (githubFieldMap) {
+            return {
+              name: githubFieldMap.labelTemplate,
+              type: 'string'
+            }
+          }
+          return {
+            name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+            type: 'string'
+          }
         }
         return NULL_FIELD
       }

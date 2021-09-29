@@ -1,3 +1,4 @@
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -8,8 +9,11 @@ import {
   GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import toMeetingMemberId from 'parabol-client/utils/relay/toMeetingMemberId'
-import {AUTO_GROUPING_THRESHOLD} from '../../../client/utils/constants'
+import {
+  AUTO_GROUPING_THRESHOLD,
+  MAX_REDUCTION_PERCENTAGE,
+  MAX_RESULT_GROUP_SIZE
+} from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -428,7 +432,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
           return standardError(new Error('Invalid reflection id'), {userId})
         }
         const {meetingId} = retroReflection
-        const meetingMemberId = toMeetingMemberId({userId, meetingId})
+        const meetingMemberId = MeetingMemberId.join({meetingId, userId})
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
@@ -439,27 +443,24 @@ const User = new GraphQLObjectType<any, GQLContext>({
             .orderBy('createdAt')
             .run()
         ])
-        const {meetingId: viewerMeetingId} = viewerMeetingMember
-        if (viewerMeetingId !== meetingId) {
+        if (!viewerMeetingMember) {
           return standardError(new Error('Not on team'), {userId})
         }
         const reflectionsCount = reflections.length
-        const maxReductionPercent = 1
-        const maxResultGroupSize = 10
         const spotlightResultGroupIds = new Set<string>()
-        const spotlightResultGroupSize = Math.min(reflectionsCount, maxResultGroupSize)
+        const spotlightResultGroupSize = Math.min(reflectionsCount, MAX_RESULT_GROUP_SIZE)
         let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
         while (currentThresh) {
-          const {groupedReflections, nextThresh} = groupReflections(reflections, {
+          const {groupedReflectionsRes, nextThresh} = groupReflections(reflections, {
             groupingThreshold: currentThresh,
             maxGroupSize: reflectionsCount,
-            maxReductionPercent
+            maxReductionPercent: MAX_REDUCTION_PERCENTAGE
           })
-          const spotlightGroupedReflection = groupedReflections.find(
+          const spotlightGroupedReflection = groupedReflectionsRes.find(
             (group) => group.reflectionId === reflectionId
           )
           if (!spotlightGroupedReflection) break
-          for (const groupedReflection of groupedReflections) {
+          for (const groupedReflection of groupedReflectionsRes) {
             const {reflectionGroupId, oldReflectionGroupId} = groupedReflection
             if (
               reflectionGroupId === spotlightGroupedReflection.reflectionGroupId &&

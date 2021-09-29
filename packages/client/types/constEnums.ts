@@ -66,6 +66,7 @@ export const enum DiscussionThreadEnum {
 export const enum DragAttribute {
   CONTROL_BAR_COVERABLE = 'data-control-bar-coverable',
   DROPPABLE = 'data-droppable',
+  DROPPABLE_SPOTLIGHT = 'data-droppable-spotlight',
   DROPZONE = 'data-dropzone'
 }
 
@@ -406,10 +407,10 @@ export const enum SprintPokerDefaults {
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
   JIRA_FIELD_LEGACY_DEFAULT = 'Story Points',
-  JIRA_FIELD_COMMENT = '__comment',
-  JIRA_FIELD_COMMENT_LABEL = 'As Comment',
-  JIRA_FIELD_NULL = '',
-  JIRA_FIELD_NULL_LABEL = 'Do Not Update',
+  SERVICE_FIELD_COMMENT = '__comment',
+  SERVICE_FIELD_COMMENT_LABEL = 'As Comment',
+  SERVICE_FIELD_NULL = '',
+  SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
   JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error'
 }

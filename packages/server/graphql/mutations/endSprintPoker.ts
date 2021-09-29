@@ -66,7 +66,7 @@ export default {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
     const storyCount = new Set(
-      estimateStages.filter(({isComplete}) => isComplete).map(({serviceTaskId}) => serviceTaskId)
+      estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
     ).size
     const discussionIds = estimateStages.map((stage) => stage.discussionId)
     const {stage} = currentStageRes

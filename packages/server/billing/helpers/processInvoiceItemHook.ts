@@ -18,6 +18,7 @@ import {toEpochSeconds} from '../../utils/epochTime'
 import RedisLock from '../../utils/RedisLock'
 import sendToSentry from '../../utils/sendToSentry'
 import StripeManager from '../../utils/StripeManager'
+import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 
 const getTypeDelta = (type: InvoiceItemType) => {
   return [InvoiceItemType.ADD_USER, InvoiceItemType.UNPAUSE_USER].includes(type) ? 1 : -1
@@ -103,16 +104,24 @@ const processInvoiceItemHook = async (stripeSubscriptionId: string) => {
     .run()
 
   if (isFlushed) {
-    const orgUserCount = await r
+    const orgUsers = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({
         inactive: false,
         removedAt: null
       })
-      .count()
       .run()
+    const orgUserCount = orgUsers.length
     if (orgUserCount !== nextQuantity) {
+      insertStripeQuantityMismatchLogging(
+        userId,
+        new Date(),
+        type,
+        stripeQty,
+        nextQuantity,
+        orgUsers
+      )
       sendToSentry(new Error('Stripe Quantity Mismatch'), {
         userId,
         tags: {quantity: nextQuantity, expectedQuantity: orgUserCount, stripeSubscriptionId}

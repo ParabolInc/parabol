@@ -13,7 +13,7 @@ import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleAddReflectionToGroup from './handlers/handleAddReflectionToGroup'
 import handleRemoveEmptyReflectionGroup from './handlers/handleRemoveEmptyReflectionGroup'
-import handleUpdateSpotlight from './handlers/handleUpdateSpotlight'
+import handleUpdateSpotlightResults from './handlers/handleUpdateSpotlightResults'
 
 graphql`
   fragment EndDraggingReflectionMutation_meeting on EndDraggingReflectionPayload {
@@ -97,7 +97,7 @@ export const moveReflectionLocation = (
   if (!reflection) return
   const reflectionId = reflection.getValue('id') as string
 
-  handleUpdateSpotlight(reflection, reflectionGroup, oldReflectionGroupId, store)
+  handleUpdateSpotlightResults(reflection, reflectionGroup, oldReflectionGroupId, store)
   handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
   handleAddReflectionToGroup(reflection, store)
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)

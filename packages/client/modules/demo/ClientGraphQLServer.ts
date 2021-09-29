@@ -33,7 +33,6 @@ import splitDraftContent from '../../utils/draftjs/splitDraftContent'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
-import groupReflections from '../../utils/smartGroup/groupReflections'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
@@ -1067,73 +1066,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {updateDragLocation: data}
-    },
-    AutoGroupReflectionsMutation: ({meetingId, groupingThreshold}, userId) => {
-      const now = new Date().toJSON()
-      const reflections = this.db.reflections.filter((reflection) => reflection.isActive)
-      const {
-        autoGroupThreshold,
-        groupedReflections,
-        groups,
-        removedReflectionGroupIds,
-        nextThresh
-      } = groupReflections(reflections as any, {groupingThreshold})
-      removedReflectionGroupIds.forEach((groupId) => {
-        const group = this.db.reflectionGroups.find((group) => group.id === groupId)!
-        group.isActive = false
-        const meetingGroups = (this.db.newMeeting as any).reflectionGroups
-        meetingGroups.splice(meetingGroups.indexOf(group as any), 1)
-        group.reflections!.length = 0
-      })
-
-      groups.forEach((updatedGroup) => {
-        const group = this.db.reflectionGroups.find((group) => group.id === updatedGroup.id)
-        Object.assign(group, {
-          title: updatedGroup.title,
-          smartTitle: updatedGroup.smartTitle,
-          updatedAt: now
-        })
-      })
-      groupedReflections.forEach((updatedReflection) => {
-        const reflection = this.db.reflections.find((r) => r.id === updatedReflection.reflectionId)
-        const newGroup = this.db.reflectionGroups.find(
-          (group) => group.id === updatedReflection.reflectionGroupId
-        )!
-        if (!newGroup.reflections!.includes(reflection as any)) {
-          newGroup.reflections!.push(reflection as any)
-        }
-        Object.assign(reflection, {
-          autoReflectionGroupId: updatedReflection.reflectionGroupId,
-          reflectionGroupId: updatedReflection.reflectionGroupId,
-          sortOrder: updatedReflection.sortOrder,
-          updatedAt: now
-        })
-      })
-      Object.assign(this.db.newMeeting, {
-        autoGroupThreshold,
-        nextAutoGroupThreshold: nextThresh
-      })
-
-      const reflectionGroupIds = groups.map(({id}) => id)
-      const reflectionIds = groupedReflections.map(({reflectionId}) => reflectionId)
-      const data = {
-        error: null,
-        meeting: this.db.newMeeting,
-        meetingId,
-        reflections: groupedReflections,
-        reflectionGroups: groups,
-        removedReflectionGroups: this.db.reflectionGroups.filter((group) =>
-          removedReflectionGroupIds.includes(group.id as string)
-        ),
-        reflectionGroupIds,
-        reflectionIds,
-        removedReflectionGroupIds,
-        __typename: 'AutoGroupReflectionsMutation'
-      }
-      if (userId !== demoViewerId) {
-        this.emit(SubscriptionChannel.MEETING, data)
-      }
-      return {autoGroupReflections: data}
     },
     UpdateReflectionGroupTitleMutation: ({reflectionGroupId, title}, userId) => {
       const reflectionGroup = this.db.reflectionGroups.find(
