@@ -432,9 +432,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
           return standardError(new Error('Invalid reflection id'), {userId})
         }
         const {meetingId} = retroReflection
-        console.log('🚀  ~ MeetingMemberId', MeetingMemberId.join, meetingId, userId)
         const meetingMemberId = MeetingMemberId.join({meetingId, userId})
-        console.log('🚀  ~ meetingMemberId', meetingMemberId)
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),

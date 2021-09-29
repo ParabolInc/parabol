@@ -13,7 +13,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import useEditorState from '../../hooks/useEditorState'
-import Atmosphere from '~/Atmosphere'
 
 const RemoteReflectionModal = styled('div')<{
   isDropping?: boolean | null
@@ -114,24 +113,6 @@ const getInlineStyle = (
   return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
 }
 
-const getTarget = (meetingId: string, targetId: string, atmosphere: Atmosphere) => {
-  let isTargetInSpotlight = false
-  commitLocalUpdate(atmosphere, (store) => {
-    const meeting = store.get(meetingId)
-    const spotlightReflection = meeting?.getLinkedRecord('spotlightReflection')
-    const spotlightReflectionId = spotlightReflection?.getValue('id')
-    const viewer = store.getRoot().getLinkedRecord('viewer')
-    if (!viewer || !spotlightReflectionId) return
-    const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
-      reflectionId: spotlightReflectionId,
-      searchQuery: ''
-    })
-    const groupIds = similarReflectionGroups?.map((group) => group.getValue('id')) as string[]
-    isTargetInSpotlight = groupIds?.includes(targetId)
-  })
-  return isTargetInSpotlight
-}
-
 interface Props {
   style: React.CSSProperties
   reflection: RemoteReflection_reflection
@@ -139,7 +120,7 @@ interface Props {
 
 const RemoteReflection = (props: Props) => {
   const {reflection, style} = props
-  const {id: reflectionId, content, isDropping, meetingId, reflectionGroupId} = reflection
+  const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
@@ -161,7 +142,9 @@ const RemoteReflection = (props: Props) => {
 
   if (!remoteDrag) return null
   const {dragUserId, dragUserName, targetId} = remoteDrag
-  const isTargetInSpotlight = getTarget(meetingId, targetId, atmosphere)
+  const targetGroup = document.querySelector(
+    `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${targetId}']`
+  )
   const spotlightGroup = document.querySelector(
     `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
   )
@@ -169,7 +152,7 @@ const RemoteReflection = (props: Props) => {
     `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
   )
   const isInSpotlight = !!(spotlightGroup && kanbanGroup)
-  const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
+  const showAboveSpotlight = isInSpotlight || !!targetGroup
 
   const {nextStyle, minTop} = getInlineStyle(remoteDrag, isDropping, style, showAboveSpotlight)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
@@ -201,7 +184,6 @@ export default createFragmentContainer(RemoteReflection, {
       id
       content
       isDropping
-      meetingId
       reflectionGroupId
       remoteDrag {
         dragUserId

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {Suspense, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE, fadeUp} from '../styles/animation'
@@ -209,7 +209,9 @@ const SpotlightModal = (props: Props) => {
           </SearchItem>
         </SelectedReflectionSection>
         <SimilarGroups>
-          <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
+          <Suspense fallback={''}>
+            <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
+          </Suspense>
         </SimilarGroups>
       </ModalContainer>
       <ReflectionWrapper ref={flipRef}>
