@@ -179,7 +179,7 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
               pollContextValue.pollState === 'creating' ? 'is creating a Poll...' : 'added a Poll'
             }
           />
-          <PollRoot ref={ref} pollState={pollContextValue.pollState} isFocused={isPollFocused}>
+          <PollRoot pollState={pollContextValue.pollState} isFocused={isPollFocused}>
             {children}
           </PollRoot>
         </BodyCol>
