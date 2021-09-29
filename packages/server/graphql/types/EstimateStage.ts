@@ -8,6 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
@@ -66,7 +67,8 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         }
 
         if (service === 'jira') {
-          const {cloudId, projectKey} = integration
+          const {cloudId, issueKey} = integration
+          const projectKey = JiraProjectKeyId.join(issueKey)
           const [dimensionName, team] = await Promise.all([
             getDimensionName(meetingId),
             dataLoader.get('teams').load(teamId)

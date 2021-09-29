@@ -22,6 +22,7 @@ export interface IGetMeetingTaskEstimatesQueryResult {
   stageId: string | null;
   discussionId: string | null;
   jiraFieldId: string | null;
+  githubLabelName: string | null;
 }
 
 /** 'GetMeetingTaskEstimatesQuery' query type */
