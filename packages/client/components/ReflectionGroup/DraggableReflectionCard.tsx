@@ -87,8 +87,9 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage, spotlightReflection} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing} = reflection
+  const {id: reflectionId, isDropping, isEditing} = reflection
   const isSpotlightOpen = !!spotlightReflection?.id
+  const isSourceReflection = reflectionId === spotlightReflection?.id
   const isInSpotlight = isSpotlightOpen && !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const [drag] = useState(makeDragState)
@@ -107,8 +108,8 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-  const isDragPhase = phaseType === 'group' && !isComplete
-  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping && !isBehindSpotlight
+  const isDragPhase = phaseType === 'group' && !isComplete && (!isInSpotlight || isSourceReflection)
+  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
