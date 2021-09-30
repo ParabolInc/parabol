@@ -21,6 +21,7 @@ import PokerMeeting from './PokerMeeting'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
 import TeamMember from './TeamMember'
+import {MeetingTypeEnum as MeetingTypeEnumType} from '../../database/types/Meeting'
 
 export const newMeetingFields = () => ({
   id: {
@@ -38,7 +39,11 @@ export const newMeetingFields = () => ({
   createdByUser: {
     type: new GraphQLNonNull(require('./User').default),
     description: 'The user that created the meeting',
-    resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
+    resolve: (
+      {createdBy}: {createdBy: string},
+      _args: any,
+      {dataLoader}: GQLContext
+    ) => {
       return dataLoader.get('users').load(createdBy)
     }
   },
@@ -57,7 +62,11 @@ export const newMeetingFields = () => ({
   facilitator: {
     type: new GraphQLNonNull(TeamMember),
     description: 'The facilitator team member',
-    resolve: ({facilitatorUserId, teamId}, _args, {dataLoader}) => {
+    resolve: (
+      {facilitatorUserId, teamId}: {facilitatorUserId: string, teamId: string},
+      _args: any,
+      {dataLoader}: GQLContext
+    ) => {
       const teamMemberId = toTeamMemberId(teamId, facilitatorUserId)
       return dataLoader.get('teamMembers').load(teamMemberId)
     }
@@ -65,7 +74,11 @@ export const newMeetingFields = () => ({
   meetingMembers: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MeetingMember))),
     description: 'The team members that were active during the time of the meeting',
-    resolve: ({id: meetingId}, _args, {dataLoader}: GQLContext) => {
+    resolve: (
+      {id: meetingId}: {id: string},
+      _args: any,
+      {dataLoader}: GQLContext
+    ) => {
       return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     }
   },
@@ -83,7 +96,11 @@ export const newMeetingFields = () => ({
   organization: {
     type: new GraphQLNonNull(Organization),
     description: 'The organization this meeting belongs to',
-    resolve: async ({teamId}, _args, {dataLoader}: GQLContext) => {
+    resolve: async (
+      {teamId}: {teamId: string},
+      _args: any,
+      {dataLoader}: GQLContext
+    ) => {
       const team = await dataLoader.get('teams').load(teamId)
       const {orgId} = team
       return dataLoader.get('organizations').load(orgId)
@@ -92,8 +109,14 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: ({phases, id: meetingId, teamId}) => {
-      return phases.map((phase) => ({
+    resolve: (
+      {phases, id: meetingId, teamId}: {
+        phases: any,
+        id: string,
+        teamId: string
+      }
+    ) => {
+      return phases.map((phase: any) => ({
         ...phase,
         meetingId,
         teamId
@@ -103,7 +126,7 @@ export const newMeetingFields = () => ({
   showConversionModal: {
     type: new GraphQLNonNull(GraphQLBoolean),
     description: 'true if should show the org the conversion modal, else false',
-    resolve: ({showConversionModal}) => !!showConversionModal
+    resolve: ({showConversionModal}: {showConversionModal: boolean}) => !!showConversionModal
   },
   summarySentAt: {
     type: GraphQLISO8601Type,
@@ -125,7 +148,11 @@ export const newMeetingFields = () => ({
   viewerMeetingMember: {
     type: MeetingMember,
     description: 'The meeting member of the viewer',
-    resolve: async ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
+    resolve: async (
+      {id: meetingId}: {id: string},
+      _args: any,
+      {authToken, dataLoader}: GQLContext
+    ) => {
       const viewerId = getUserId(authToken)
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
       const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
@@ -134,11 +161,11 @@ export const newMeetingFields = () => ({
   }
 })
 
-const NewMeeting = new GraphQLInterfaceType({
+const NewMeeting: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'NewMeeting',
   description: 'A team meeting history for all previous meetings',
   fields: newMeetingFields,
-  resolveType: ({meetingType}) => {
+  resolveType: ({meetingType}: {meetingType: MeetingTypeEnumType}) => {
     const resolveTypeLookup = {
       retrospective: RetrospectiveMeeting,
       action: ActionMeeting,
