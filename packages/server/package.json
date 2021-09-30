@@ -145,5 +145,8 @@
     ],
     "testRegex": "/__tests__/.*.test\\.jsx?$",
     "testResultsProcessor": "./__tests__/teardown"
+  },
+  "resolutions": {
+    "minipass": "2.7.0"
   }
 }
