@@ -63,7 +63,7 @@ const getCoords = (
     : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!
-    const minTop = getMinTop(-1, targetEl)
+    const minTop = getMinTop(-1, targetEl, showAboveSpotlight)
     return {
       left: targetBBox.left + targetOffsetX,
       top: targetBBox.top + targetOffsetY,
