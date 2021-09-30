@@ -1,0 +1,7 @@
+mutation removeLabels($input: RemoveLabelsFromLabelableInput!) {
+  removeLabelsFromLabelable(input: $input) {
+    labelable {
+      __typename
+    }
+  }
+}

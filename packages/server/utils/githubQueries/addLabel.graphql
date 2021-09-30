@@ -1,0 +1,7 @@
+mutation addLabel($input: AddLabelsToLabelableInput!) {
+  addLabelsToLabelable(input: $input) {
+    labelable {
+      __typename
+    }
+  }
+}

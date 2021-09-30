@@ -492,15 +492,6 @@ export default abstract class AtlassianManager {
     return project
   }
 
-  async convertMarkdownToADF(markdown: string) {
-    return this.post<any>(
-      'https://api.atlassian.com/pf-editor-service/convert?from=markdown&to=adf',
-      {
-        input: markdown
-      }
-    )
-  }
-
   async getCreateMeta(cloudId: string, projectKeys?: string[]) {
     let args = ''
     if (projectKeys) {

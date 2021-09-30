@@ -29,6 +29,8 @@ const getEmptiestColumnIdx = (
   return columnLengths.indexOf(emptiestColumn)
 }
 
+// if a remote user groups/ungroups a result, a reflectionGroupId is created or removed
+// update the similarReflectionGroup to reflect this
 const handleUpdateSpotlight = (
   reflection: RecordProxy,
   reflectionGroup: RecordProxy,

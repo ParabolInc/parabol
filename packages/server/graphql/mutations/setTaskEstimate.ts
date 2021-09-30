@@ -1,8 +1,7 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
-import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -13,6 +12,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
 import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
+import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
 
 const setTaskEstimate = {
   type: GraphQLNonNull(SetTaskEstimatePayload),
@@ -25,8 +25,10 @@ const setTaskEstimate = {
   resolve: async (
     _source,
     {taskEstimate}: {taskEstimate: ITaskEstimateInput},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+    context: GQLContext,
+    info: GraphQLResolveInfo
   ) => {
+    const {authToken, dataLoader, socketId: mutatorId} = context
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -55,7 +57,9 @@ const setTaskEstimate = {
     if (dimensionName.length === 0 || dimensionName.length > Threshold.MAX_POKER_DIMENSION_NAME) {
       return {error: {message: 'Invalid dimension name'}}
     }
-    let stage: EstimateStage | undefined = undefined
+
+    let stageId: string | undefined = undefined
+    let discussionId: string | undefined = undefined
     if (meeting) {
       const {phases, meetingType, templateRefId} = meeting as MeetingPoker
       if (meetingType !== 'poker') {
@@ -70,19 +74,23 @@ const setTaskEstimate = {
 
       const estimatePhase = getPhase(phases, 'ESTIMATE')
       const {stages} = estimatePhase
-      stage = stages.find(
+      const stage = stages.find(
         (stage) => stage.taskId === taskId && stage.dimensionRefIdx === dimensionRefIdx
       )
       if (!stage) {
         return {error: {message: 'Stage not found for meetingId'}}
       }
+      discussionId = stage.discussionId
+      stageId = stage.id
     }
 
     // RESOLUTION
     let jiraFieldId: string | undefined = undefined
+    let githubLabelName: string | undefined = undefined
     const {integration} = task
-    if (integration?.service === 'jira') {
-      const {accessUserId, cloudId, issueKey, projectKey} = integration
+    const service = integration?.service
+    if (service === 'jira') {
+      const {accessUserId, cloudId, issueKey, projectKey} = integration!
       const [auth, team] = await Promise.all([
         dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
         dataLoader.get('teams').load(teamId)
@@ -99,15 +107,15 @@ const setTaskEstimate = {
           dimensionField.cloudId === cloudId &&
           dimensionField.projectKey === projectKey
       )
-      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_NULL
-      if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
-        if (!stage || !meeting) {
+      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+        if (!stageId || !meeting) {
           return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
         }
         const {name: meetingName, phases} = meeting
         const estimatePhase = getPhase(phases, 'ESTIMATE')
         const {stages} = estimatePhase
-        const stageIdx = stages.indexOf(stage)
+        const stageIdx = stages.findIndex((stage) => stage.id === stageId)
         const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
         const res = await manager.addComment(
           cloudId,
@@ -117,7 +125,7 @@ const setTaskEstimate = {
         if ('message' in res) {
           return {error: {message: res.message}}
         }
-      } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
+      } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
         const {fieldId, fieldType} = dimensionField!
         jiraFieldId = fieldId
         try {
@@ -128,12 +136,19 @@ const setTaskEstimate = {
           return {error: {message}}
         }
       }
+    } else if (service === 'github') {
+      const githubPushRes = await pushEstimateToGitHub(taskEstimate, context, info, stageId)
+      if (githubPushRes instanceof Error) {
+        const {message} = githubPushRes
+        return {error: {message}}
+      }
+      githubLabelName = githubPushRes
     }
-    const stageId = stage?.id
     await insertTaskEstimate({
       changeSource: meeting ? 'meeting' : 'task',
-      discussionId: stage?.discussionId,
+      discussionId,
       jiraFieldId,
+      githubLabelName,
       label: value,
       name: dimensionName,
       meetingId,

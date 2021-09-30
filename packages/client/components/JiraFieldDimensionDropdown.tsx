@@ -20,6 +20,7 @@ interface Props {
   clearError: () => void
   isFacilitator: boolean
   stage: JiraFieldDimensionDropdown_stage
+  submitScore(): void
 
 }
 
@@ -44,12 +45,12 @@ const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => (
 }))
 
 const labelLookup = {
-  [SprintPokerDefaults.JIRA_FIELD_COMMENT]: SprintPokerDefaults.JIRA_FIELD_COMMENT_LABEL,
-  [SprintPokerDefaults.JIRA_FIELD_NULL]: SprintPokerDefaults.JIRA_FIELD_NULL_LABEL,
+  [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+  [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL,
 }
 
 const JiraFieldDimensionDropdown = (props: Props) => {
-  const {clearError, stage, isFacilitator} = props
+  const {clearError, stage, isFacilitator, submitScore} = props
   const {serviceField} = stage
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
@@ -73,7 +74,7 @@ const JiraFieldDimensionDropdown = (props: Props) => {
       <CurrentValue>{label}</CurrentValue>
       <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
       {menuPortal(
-        <JiraFieldMenuRoot menuProps={menuProps} stage={stage} />
+        <JiraFieldMenuRoot menuProps={menuProps} stage={stage} submitScore={submitScore}/>
       )}
     </Wrapper>
   )

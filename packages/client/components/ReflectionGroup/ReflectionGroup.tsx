@@ -80,7 +80,7 @@ const ReflectionGroup = (props: Props) => {
     spotlightReflectionIds
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage} = meeting
+  const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
@@ -88,6 +88,8 @@ const ReflectionGroup = (props: Props) => {
   const visibleReflections = isSpotlightSource
     ? reflections.filter(({id}) => spotlightReflectionIds?.includes(id))
     : reflections
+  const isSpotlightOpen = !!spotlightGroup?.id
+  const isInSpotlight = isSpotlightOpen && !openSpotlight
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -178,7 +180,11 @@ const ReflectionGroup = (props: Props) => {
         />
       )}
       <Group
-        {...{[DragAttribute.DROPPABLE]: reflectionGroupId}}
+        {...{
+          [isInSpotlight
+            ? DragAttribute.DROPPABLE_SPOTLIGHT
+            : DragAttribute.DROPPABLE]: reflectionGroupId
+        }}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         data-cy={dataCy}

@@ -3,9 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Providers} from '../types/constEnums'
-import {
-  ScopePhaseAreaGitHub_meeting$key
-} from '../__generated__/ScopePhaseAreaGitHub_meeting.graphql'
+import {ScopePhaseAreaGitHub_meeting$key} from '../__generated__/ScopePhaseAreaGitHub_meeting.graphql'
 import ScopePhaseAreaAddGitHub from './ScopePhaseAreaAddGitHub'
 import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
 
@@ -22,6 +20,16 @@ interface Props {
   meetingRef: ScopePhaseAreaGitHub_meeting$key
 }
 
+graphql`
+  fragment ScopePhaseAreaGitHub_teamMember on TeamMember {
+    integrations {
+      github {
+        isActive
+        scope
+      }
+    }
+  }
+`
 const ScopePhaseAreaGitHub = (props: Props) => {
   const {isActive, gotoParabol, meetingRef} = props
   const meeting = useFragment(
@@ -31,12 +39,7 @@ const ScopePhaseAreaGitHub = (props: Props) => {
         ...ScopePhaseAreaGitHubScoping_meeting
         viewerMeetingMember {
           teamMember {
-            integrations {
-              github {
-                isActive
-                scope
-              }
-            }
+            ...ScopePhaseAreaGitHub_teamMember @relay(mask: false)
           }
         }
       }

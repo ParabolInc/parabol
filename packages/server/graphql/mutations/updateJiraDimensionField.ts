@@ -12,9 +12,12 @@ import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
 
 const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
-  // we have 2 special treatment fields, JIRA_FIELD_COMMENT and JIRA_FIELD_NULL which are handled
+  // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled
   // differently and can't be found on Jira fields list
-  const customFields = [SprintPokerDefaults.JIRA_FIELD_COMMENT, SprintPokerDefaults.JIRA_FIELD_NULL]
+  const customFields = [
+    SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+    SprintPokerDefaults.SERVICE_FIELD_NULL
+  ]
   if (customFields.includes(fieldName as any)) {
     return {fieldId: fieldName, type: 'string' as const}
   }

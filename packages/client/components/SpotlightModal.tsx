@@ -10,7 +10,6 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, ElementHeight, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
-import LoadingComponent from './LoadingComponent/LoadingComponent'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
@@ -239,9 +238,7 @@ const SpotlightModal = (props: Props) => {
           </SearchItem>
         </SelectedReflectionSection>
         <SimilarGroups>
-          <Suspense
-            fallback={<LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />}
-          >
+          <Suspense fallback={''}>
             <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
           </Suspense>
         </SimilarGroups>
