@@ -208,7 +208,7 @@ const useDragAndDrop = (
     drag.isDrag = false
     drag.targets.length = 0
     drag.prevTargetId = ''
-    const targetGroupId = getTargetGroupId(e)
+    const targetGroupId = getTargetGroupId(e, drag.droppableType)
     const targetType: DragReflectionDropTargetTypeEnum | null =
       targetGroupId && reflectionGroupId !== targetGroupId
         ? 'REFLECTION_GROUP'
@@ -279,12 +279,16 @@ const useDragAndDrop = (
     drag.clientY = clientY
     drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
       drag.cardOffsetY}px)`
-    const dropZoneEl = findDropZoneFromEvent(e)
+    const dropZoneEl = findDropZoneFromEvent(e, drag.dropZoneType)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl
       if (dropZoneEl) {
         drag.dropZoneBBox = dropZoneEl.getBoundingClientRect()
-        drag.targets = measureDroppableReflections(dropZoneEl, drag.dropZoneBBox)
+        drag.targets = measureDroppableReflections(
+          dropZoneEl,
+          drag.dropZoneBBox,
+          drag.droppableType
+        )
         maybeStartReflectionScroll(drag)
       }
     }

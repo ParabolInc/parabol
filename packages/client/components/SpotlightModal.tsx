@@ -7,7 +7,7 @@ import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, DragAttribute, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
@@ -168,6 +168,7 @@ const SpotlightModal = (props: Props) => {
                 }
               }
               spotlightReflection {
+                id
                 ...DraggableReflectionCard_reflection
               }
             }
@@ -192,7 +193,10 @@ const SpotlightModal = (props: Props) => {
   }
   return (
     <>
-      <ModalContainer ref={phaseRef}>
+      <ModalContainer
+        ref={phaseRef}
+        {...{[DragAttribute.DROPZONE_SPOTLIGHT]: spotlightReflection?.id}}
+      >
         <SelectedReflectionSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>
