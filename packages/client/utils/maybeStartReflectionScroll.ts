@@ -6,7 +6,11 @@ const scheduleScroll = (drag: ReflectionDragState, initialDropZoneEl: HTMLDivEle
   const scroll = (isChange: boolean) => {
     requestAnimationFrame(() => {
       if (isChange) {
-        drag.targets = measureDroppableReflections(drag.dropZoneEl, drag.dropZoneBBox)
+        drag.targets = measureDroppableReflections(
+          drag.dropZoneEl,
+          drag.dropZoneBBox,
+          drag.droppableType
+        )
       }
       scheduleScroll(drag, initialDropZoneEl)
     })

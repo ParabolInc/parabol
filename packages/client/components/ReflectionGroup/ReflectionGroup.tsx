@@ -177,6 +177,7 @@ const ReflectionGroup = (props: Props) => {
           meeting={meeting}
           reflectionGroupId={reflectionGroupId}
           openSpotlight={openSpotlight}
+          isInSpotlight={isInSpotlight}
         />
       )}
       <Group

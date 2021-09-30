@@ -1,14 +1,18 @@
-import {DropZoneBBox, TargetBBox} from '../components/ReflectionGroup/DraggableReflectionCard'
-import {DragAttribute} from '../types/constEnums'
+import {
+  Droppable,
+  DropZoneBBox,
+  TargetBBox
+} from '../components/ReflectionGroup/DraggableReflectionCard'
 
 const measureDroppableReflections = (
   dropZoneEl: HTMLDivElement | null,
-  dropZoneBBox: DropZoneBBox | null
+  dropZoneBBox: DropZoneBBox | null,
+  droppableType: Droppable
 ) => {
   const arr = [] as TargetBBox[]
   if (!dropZoneEl || !dropZoneBBox) return arr
-  dropZoneEl.querySelectorAll(`div[${DragAttribute.DROPPABLE}]`).forEach((el) => {
-    const targetId = el.getAttribute(DragAttribute.DROPPABLE)!
+  dropZoneEl.querySelectorAll(`div[${droppableType}]`).forEach((el) => {
+    const targetId = el.getAttribute(droppableType)!
     const bbox = el.getBoundingClientRect()
     const {top, bottom, left, height} = bbox
     if (top >= dropZoneBBox.top && bottom <= dropZoneBBox.bottom) {
