@@ -84,7 +84,7 @@ const ReflectionGroup = (props: Props) => {
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
-  const isSpotlightSource = spotlightReflectionIds?.length
+  const isSpotlightSource = !!spotlightReflectionIds?.length
   const visibleReflections = isSpotlightSource
     ? reflections.filter(({id}) => spotlightReflectionIds?.includes(id))
     : reflections

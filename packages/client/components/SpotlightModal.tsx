@@ -201,6 +201,7 @@ const SpotlightModal = (props: Props) => {
 
   useEffect(() => {
     if (!spotlightGroup) return
+    let timeout: number | undefined
     const {current: ids} = spotlightReflectionIds
     if (!ids && firstReflectionId) {
       spotlightReflectionIds.current = [firstReflectionId]
@@ -210,10 +211,11 @@ const SpotlightModal = (props: Props) => {
     //   spotlightReflectionIds.current = [...ids, firstReflectionId]
     // }
     else if (!firstReflectionId || !ids?.includes(firstReflectionId)) {
-      setTimeout(() => {
+      timeout = window.setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
     }
+    return () => clearTimeout(timeout)
   }, [firstReflectionId])
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
