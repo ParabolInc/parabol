@@ -12,7 +12,7 @@ const useEventCallback = <T extends (...args: any[]) => any>(fn: T) => {
 
   return useCallback((...args: any[]) => {
     return ref.current(...args)
-  }, [])
+  }, []) as T
 }
 
 export default useEventCallback

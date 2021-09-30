@@ -10,7 +10,7 @@ const EditorHelpModal = lazy(() =>
 
 const EditorHelpModalContainer = () => {
   const {togglePortal, closePortal, modalPortal} = useModal()
-  useHotkey('?', togglePortal)
+  useHotkey('?', togglePortal as any)
   useHotkey('escape', closePortal)
   return (
     <Suspense fallback={''}>

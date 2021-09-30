@@ -79,33 +79,33 @@ const PokerDimensionFinalScoreJiraPicker = (props: Props) => {
   const focusInput = () => inputRef.current!.focus()
   return (
     <Wrapper>
-      {isFacilitator
-        ? canUpdate
-          ? <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
-          : <StyledLinkButton onClick={focusInput}>{'Edit Score'}</StyledLinkButton>
-        : null
-      }
+      {isFacilitator ? (
+        canUpdate ? (
+          <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
+        ) : (
+          <StyledLinkButton onClick={focusInput}>{'Edit Score'}</StyledLinkButton>
+        )
+      ) : null}
       <Mapper isDesktop={isDesktop}>
         {error && <ErrorMessage isDesktop={isDesktop}>{error}</ErrorMessage>}
         <JiraControlWrapper>
-          {isDesktop
-            ? <Label>{'Jira Issue Field: '}</Label>
-            : <MobileLabel>{'Jira:'}</MobileLabel>
-          }
-          <JiraFieldDimensionDropdown clearError={clearError} stage={stage} isFacilitator={isFacilitator} />
+          {isDesktop ? <Label>{'Jira Issue Field: '}</Label> : <MobileLabel>{'Jira:'}</MobileLabel>}
+          <JiraFieldDimensionDropdown
+            clearError={clearError}
+            stage={stage}
+            isFacilitator={isFacilitator}
+            submitScore={submitScore}
+          />
         </JiraControlWrapper>
       </Mapper>
     </Wrapper>
   )
 }
 
-export default createFragmentContainer(
-  PokerDimensionFinalScoreJiraPicker,
-  {
-    stage: graphql`
+export default createFragmentContainer(PokerDimensionFinalScoreJiraPicker, {
+  stage: graphql`
     fragment PokerDimensionFinalScoreJiraPicker_stage on EstimateStage {
       ...JiraFieldDimensionDropdown_stage
     }
-    `
-  }
-)
+  `
+})

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useReducer} from 'react'
+import React, {Reducer, useCallback, useMemo, useReducer} from 'react'
 import Legitity from '../validation/Legitity'
 import useEventCallback from './useEventCallback'
 
@@ -18,8 +18,8 @@ export interface UseFormField {
   setError: (error: string) => void
 }
 
-interface FieldState {
-  [name: string]: UseFormField
+type FieldState<T> = {
+  [P in keyof T]: UseFormField
 }
 
 interface SetError {
@@ -41,7 +41,7 @@ interface SetValue {
 
 type FormAction = SetError | SetDirty | SetValue
 
-const reducer = (state: FieldState, action: FormAction) => {
+const reducer = (state: FieldState<any>, action: FormAction) => {
   switch (action.type) {
     case 'setDirty':
       if (state[action.name].dirty) return state
@@ -73,13 +73,13 @@ const reducer = (state: FieldState, action: FormAction) => {
   }
 }
 
-const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
-  const [state, dispatch] = useReducer(
+const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) => {
+  const [state, dispatch] = useReducer<Reducer<FieldState<T>, FormAction>>(
     reducer,
     useMemo(
       () =>
         Object.keys(fieldInputDict).reduce((obj, name) => {
-          obj[name] = {
+          obj[name as keyof T] = {
             value: fieldInputDict[name].getDefault(),
             error: undefined,
             dirty: false,
@@ -91,7 +91,7 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
             }
           }
           return obj
-        }, {} as FieldState),
+        }, {} as FieldState<T>),
       [
         /* eslint-disable-line react-hooks/exhaustive-deps */
       ]
@@ -115,15 +115,19 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
     return res
   })
 
-  const validateField = useEventCallback((name?: string) => {
+  function _validateField(name: string): Legitity
+  function _validateField(name?: string): {[name: string]: Legitity}
+  function _validateField(name?: string) {
     if (!name) {
       return Object.keys(state).reduce((obj, name) => {
-        obj[name] = validateField(name)
+        obj[name] = _validateField(name)
         return obj
       }, {})
     }
     return validate(name, state[name].value)
-  })
+  }
+
+  const validateField = useEventCallback(_validateField)
 
   const setDirty = useEventCallback((name?: string) => {
     if (!name) {
@@ -133,15 +137,18 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
     dispatch({type: 'setDirty', name})
   })
 
+  const setValue = useEventCallback((name: string, value: string) => {
+    dispatch({type: 'setValue', name, value})
+  })
   const onChange = useEventCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     const name = e.target.name
     const normalizedValue = normalize(name, value)
-    dispatch({type: 'setValue', name, value: normalizedValue})
+    setValue(name, normalizedValue)
     validate(name, normalizedValue)
   })
 
-  return {setDirtyField: setDirty, onChange, validateField, fields: state}
+  return {setDirtyField: setDirty, setValue, onChange, validateField, fields: state}
 }
 
 export default useForm
