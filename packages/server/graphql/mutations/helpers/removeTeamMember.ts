@@ -4,6 +4,7 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import EstimateStage from '../../../database/types/EstimateStage'
 import db from '../../../db'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import {DataLoaderWorker} from '../../graphql'
@@ -138,9 +139,9 @@ const removeTeamMember = async (
   const archivedTaskIds = archivedTasks.map(({id}) => id)
 
   // if a new meeting was currently running, remove them from it
-  const filterFn = (stage: CheckInStage | UpdatesStage) => {
-    return stage.teamMemberId === teamMemberId
-  }
+  const filterFn = (stage: CheckInStage | UpdatesStage | EstimateStage) =>
+    (stage as CheckInStage | UpdatesStage).teamMemberId === teamMemberId ||
+    (stage as EstimateStage).creatorUserId === userId
   removeSlackAuths(userId, teamId)
   await removeStagesFromMeetings(filterFn, teamId, dataLoader)
   await removeUserFromMeetingStages(userId, teamId, dataLoader)

@@ -108,7 +108,7 @@ export default {
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
-    const isKill = phase.phaseType !== 'ESTIMATE'
+    const isKill = phase?.phaseType !== 'ESTIMATE'
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     }

@@ -138,10 +138,13 @@
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",
-    "sharp": "^0.26.2",
+    "sharp": "^0.29.0",
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v19.3.0"
+  },
+  "resolutions": {
+    "minipass": "2.7.0"
   }
 }
