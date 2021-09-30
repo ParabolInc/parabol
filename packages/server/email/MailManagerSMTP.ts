@@ -37,8 +37,8 @@ export default class MailManagerSMTP extends MailManager {
         attachments
       })
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Failed to sendMail'
-      sendToSentry(new Error(`SMTP nodemailer error: ${message}`), {
+      const error = e instanceof Error ? e : new Error('SMTP nodemailer error')
+      sendToSentry(error, {
         tags: {to: JSON.stringify(to)}
       })
       return false
