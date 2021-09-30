@@ -142,10 +142,10 @@ const removeTeamMember = async (
     return stage.teamMemberId === teamMemberId
   }
   removeSlackAuths(userId, teamId)
-  await removeStagesFromMeetings(filterFn, teamId, dataLoader)
-  await removeUserFromMeetingStages(userId, teamId, dataLoader)
-  // TODO should probably just inactivate the meeting member
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  await removeStagesFromMeetings(filterFn, activeMeetings)
+  await removeUserFromMeetingStages(userId, activeMeetings)
+  // TODO should probably just inactivate the meeting member
   const meetingIds = activeMeetings.map(({id}) => id)
   await r
     .table('MeetingMember')

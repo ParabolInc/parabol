@@ -1,21 +1,16 @@
 import getRethink from '../../../database/rethinkDriver'
 import getNextFacilitatorStageAfterStageRemoved from './getNextFacilitatorStageAfterStageRemoved'
-import {DataLoaderWorker} from '../../graphql'
+import Meeting from '../../../database/types/Meeting'
 
 /*
  * NewMeetings have a predefined set of stages, we need to remove it manually
  */
 
-const removeStagesFromMeetings = async (
-  filterFn: (stage: any) => boolean,
-  teamId: string,
-  dataLoader: DataLoaderWorker
-) => {
+const removeStagesFromMeetings = async (filterFn: (stage: any) => boolean, meetings: Meeting[]) => {
   const now = new Date()
   const r = await getRethink()
-  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   await Promise.all(
-    activeMeetings.map((meeting) => {
+    meetings.map((meeting) => {
       const {id: meetingId, phases} = meeting
       phases.forEach((phase) => {
         // do this inside the loop since it's mutative
@@ -52,7 +47,7 @@ const removeStagesFromMeetings = async (
         .run()
     })
   )
-  return activeMeetings.map((activeMeeting) => activeMeeting.id)
+  return meetings.map((meeting) => meeting.id)
 }
 
 export default removeStagesFromMeetings
