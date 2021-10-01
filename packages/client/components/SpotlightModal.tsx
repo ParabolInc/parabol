@@ -18,9 +18,10 @@ import SpotlightGroups from './SpotlightGroups'
 import useSourceHeight from '../hooks/useSourceHeight'
 
 const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.NEW_MEETING_SELECTOR)
-
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const SELECTED_HEIGHT_PERC = 33.3
+const MODAL_PADDING = 72
+
 const ModalContainer = styled('div')({
   animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
   background: '#FFFF',
@@ -35,10 +36,9 @@ const ModalContainer = styled('div')({
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
-    width: '80vw'
+    width: `${ElementWidth.REFLECTION_COLUMN * 3 + MODAL_PADDING}px`
   },
   [dashWidestBreakpoint]: {
-    width: '65vw',
     height: '80vh'
   }
 })

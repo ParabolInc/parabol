@@ -12,14 +12,13 @@ import {ElementWidth} from '~/types/constEnums'
 import useSpotlightGroupsHeight from '../hooks/useSpotlightGroupsHeight'
 
 export const MAX_GROUPS_HEIGHT_PERC = 66.6
-export const GROUPS_PADDING = 48
 
 const SimilarGroups = styled('div')<{height: number | string}>(({height}) => ({
   maxHeight: `${MAX_GROUPS_HEIGHT_PERC}%`,
   height,
   width: '100%',
   display: 'flex',
-  padding: `${GROUPS_PADDING}px 0px`,
+  padding: '48px 0px 24px 0px',
   border: '2px solid red'
 }))
 
@@ -42,7 +41,7 @@ const ColumnsWrapper = styled('div')({
 
 const Column = styled('div')({
   display: 'flex',
-  maxWidth: ElementWidth.MEETING_CARD,
+  maxWidth: ElementWidth.REFLECTION_COLUMN,
   margin: '0 8px',
   flexDirection: 'column',
   height: 'fit-content',

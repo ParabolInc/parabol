@@ -1,4 +1,4 @@
-import {GROUPS_PADDING, MAX_GROUPS_HEIGHT_PERC} from '../components/SpotlightGroups'
+import {MAX_GROUPS_HEIGHT_PERC} from '../components/SpotlightGroups'
 import {ElementHeight} from '~/types/constEnums'
 import {RefObject, useLayoutEffect, useState} from 'react'
 import useResizeObserver from './useResizeObserver'
@@ -18,7 +18,8 @@ const useSpotlightGroupsHeight = (
     // if (!columnsHeight || !groupsHeight) return
     if (!columnsHeight || !groupsHeight || columnsHeight < 20) return
     // make sure there's space in the scrollbar for a large reflection group to be added
-    const maxGroupsHeight = columnsHeight + ElementHeight.REFLECTION_GROUP_MAX + GROUPS_PADDING * 2
+    const groupsPadding = 48 + 24
+    const maxGroupsHeight = columnsHeight + ElementHeight.REFLECTION_GROUP_MAX + groupsPadding
     // groupsHeight is too big. reduce the height so there's less whitespace
     if (maxGroupsHeight < groupsHeight) {
       setHeight(maxGroupsHeight)
