@@ -7,22 +7,21 @@ import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, DragAttribute, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, DragAttribute, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
-import SpotlightGroups from './SpotlightGroups'
-import useSourceHeight from '../hooks/useSourceHeight'
+import SpotlightGroups, {GROUPS_PADDING} from './SpotlightGroups'
+import useGetRefHeight from '../hooks/useGetRefHeight'
 
-const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
-const SELECTED_HEIGHT_PERC = 33.3
 const MODAL_PADDING = 72
+export const TOP_SECTION_HEIGHT = 236
 
-const ModalContainer = styled('div')({
+const ModalContainer = styled('div')<{modalHeight: number}>(({modalHeight}) => ({
   animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
   background: '#FFFF',
   borderRadius: 8,
@@ -36,12 +35,11 @@ const ModalContainer = styled('div')({
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
+    maxHeight: '90vh',
+    height: modalHeight,
     width: `${ElementWidth.REFLECTION_COLUMN * 3 + MODAL_PADDING}px`
-  },
-  [dashWidestBreakpoint]: {
-    height: '80vh'
   }
-})
+}))
 
 const SelectedReflectionSection = styled('div')({
   alignItems: 'flex-start',
@@ -49,7 +47,7 @@ const SelectedReflectionSection = styled('div')({
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
   flexWrap: 'wrap',
-  height: `${SELECTED_HEIGHT_PERC}%`,
+  height: `${TOP_SECTION_HEIGHT}px`,
   justifyContent: 'center',
   padding: 16,
   position: 'relative',
@@ -74,7 +72,7 @@ const SourceWrapper = styled('div')<{sourceHeight: number}>(({sourceHeight}) => 
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
-  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${sourceHeight / 2}px)`,
+  top: `calc(${TOP_SECTION_HEIGHT / 2}px - ${sourceHeight / 2}px)`,
   left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
 }))
@@ -182,7 +180,14 @@ const SpotlightModal = (props: Props) => {
   const {meeting} = viewer
   const sourceRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef(null)
-  const sourceHeight = useSourceHeight(sourceRef)
+  const groupsRef = useRef(null)
+  const columnsRef = useRef(null)
+  const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
+  const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
+  const columnsRefHeight = useGetRefHeight(columnsRef, 0, groupsRef)
+  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + GROUPS_PADDING * 2
+  const modalHeight = TOP_SECTION_HEIGHT + groupsHeight
+
   if (!meeting) return null
   const {spotlightReflection} = meeting
 
@@ -196,6 +201,7 @@ const SpotlightModal = (props: Props) => {
       <ModalContainer
         ref={phaseRef}
         {...{[DragAttribute.DROPZONE_SPOTLIGHT]: spotlightReflection?.id}}
+        modalHeight={modalHeight}
       >
         <SelectedReflectionSection>
           <TopRow>
@@ -219,7 +225,13 @@ const SpotlightModal = (props: Props) => {
           </SearchItem>
         </SelectedReflectionSection>
         <Suspense fallback={''}>
-          <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
+          <SpotlightGroups
+            meeting={meeting}
+            columnsRef={columnsRef}
+            groupsRef={groupsRef}
+            phaseRef={phaseRef}
+            viewer={viewer}
+          />
         </Suspense>
       </ModalContainer>
       <SourceWrapper ref={flipRef} sourceHeight={sourceHeight}>

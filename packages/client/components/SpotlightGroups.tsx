@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useRef} from 'react'
+import React, {RefObject} from 'react'
 import {SpotlightGroups_meeting$key} from '~/__generated__/SpotlightGroups_meeting.graphql'
 import {SpotlightGroups_viewer$key} from '~/__generated__/SpotlightGroups_viewer.graphql'
 import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
@@ -8,18 +8,17 @@ import {useFragment} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import useSpotlightColumns from '../hooks/useSpotlightColumns'
 import useSortGroupsIntoColumns from '../hooks/useSortGroupsIntoColumns'
-import {ElementWidth} from '~/types/constEnums'
-import useSpotlightGroupsHeight from '../hooks/useSpotlightGroupsHeight'
+import {Breakpoint, ElementWidth} from '~/types/constEnums'
+import {TOP_SECTION_HEIGHT} from './SpotlightModal'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
-export const MAX_GROUPS_HEIGHT_PERC = 66.6
+export const GROUPS_PADDING = 60
 
-const SimilarGroups = styled('div')<{height: number | string}>(({height}) => ({
-  maxHeight: `${MAX_GROUPS_HEIGHT_PERC}%`,
-  height,
+const SimilarGroups = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  height: `calc(100% - ${TOP_SECTION_HEIGHT}px)`,
   width: '100%',
   display: 'flex',
-  padding: '48px 0px 24px 0px',
-  border: '2px solid red'
+  padding: `${isDesktop ? GROUPS_PADDING : GROUPS_PADDING / 2}px 0px`
 }))
 
 const Scrollbar = styled('div')({
@@ -27,16 +26,14 @@ const Scrollbar = styled('div')({
   justifyContent: 'center',
   overflow: 'auto',
   height: '100%',
-  width: '100%',
-  border: '2px solid blue'
+  width: '100%'
 })
 
 const ColumnsWrapper = styled('div')({
   display: 'flex',
   width: '100%',
   height: 'fit-content',
-  justifyContent: 'center',
-  border: '2px solid pink'
+  justifyContent: 'center'
 })
 
 const Column = styled('div')({
@@ -44,18 +41,19 @@ const Column = styled('div')({
   maxWidth: ElementWidth.REFLECTION_COLUMN,
   margin: '0 8px',
   flexDirection: 'column',
-  height: 'fit-content',
-  border: '2px solid green'
+  height: 'fit-content'
 })
 
 interface Props {
   meeting: SpotlightGroups_meeting$key
+  columnsRef: RefObject<HTMLDivElement>
+  groupsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   viewer: SpotlightGroups_viewer$key
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {phaseRef} = props
+  const {columnsRef, groupsRef, phaseRef} = props
   const userData = useFragment(
     graphql`
       fragment SpotlightGroups_viewer on User {
@@ -80,16 +78,14 @@ const SpotlightGroups = (props: Props) => {
     props.meeting
   )
   const {similarReflectionGroups} = userData
-  const groupsRef = useRef(null)
-  const columnsRef = useRef(null)
   const groupsCount = similarReflectionGroups.length
   const columns = useSpotlightColumns(groupsRef, groupsCount)
   useSortGroupsIntoColumns(similarReflectionGroups, columns)
-  const height = useSpotlightGroupsHeight(groupsRef, columnsRef)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   if (!groupsCount) return <SpotlightGroupsEmptyState />
   return (
-    <SimilarGroups ref={groupsRef} height={height}>
+    <SimilarGroups isDesktop={isDesktop} ref={groupsRef}>
       <Scrollbar>
         <ColumnsWrapper ref={columnsRef}>
           {columns?.map((columnIdx) => (
