@@ -69,7 +69,7 @@ const tabs = [
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(__PRODUCTION__ ? 1 : 0)
+  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const updateActiveIdx = (idx: number) => {

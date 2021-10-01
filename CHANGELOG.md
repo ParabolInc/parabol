@@ -5,7 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.30.0 2021-Sept-30
+## 6.30.1 2021-Sep-30
+
+### Hotfix
+
+- Turn on GitHub Label in prod
+
+## 6.30.0 2021-Sep-30
 
 ### Added
 
