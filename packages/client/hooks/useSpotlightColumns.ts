@@ -3,6 +3,7 @@ import {RefObject, useLayoutEffect, useState} from 'react'
 import {ElementWidth} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
 import {commitLocalUpdate} from 'relay-runtime'
+import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
 
 const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: number) => {
   const [columns, setColumns] = useState<null | number[]>(null)
@@ -15,11 +16,13 @@ const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: 
     if (groupsCount <= 2) {
       setColumns([0])
     } else {
-      const maxColumns = 3
       const minColumns = 1
       const minGroupsPerColumn = 2
       const maxColumnsInRef = Math.floor(width / ElementWidth.MEETING_CARD_WITH_MARGIN)
-      const maxPossibleColumns = Math.max(Math.min(maxColumnsInRef, maxColumns), minColumns)
+      const maxPossibleColumns = Math.max(
+        Math.min(maxColumnsInRef, MAX_SPOTLIGHT_COLUMNS),
+        minColumns
+      )
       const groupsInSmallestColumn = Math.floor(groupsCount / maxPossibleColumns)
       // if there's just 1/2 groups in a column, reduce the no. of columns
       const columnsCount =

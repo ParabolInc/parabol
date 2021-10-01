@@ -14,12 +14,16 @@ import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
-import SpotlightGroups, {GROUPS_PADDING} from './SpotlightGroups'
+import SpotlightGroups from './SpotlightGroups'
 import useGetRefHeight from '../hooks/useGetRefHeight'
+import {
+  MAX_SPOTLIGHT_COLUMNS,
+  SPOTLIGHT_GROUPS_PADDING,
+  SPOTLIGHT_TOP_SECTION_HEIGHT
+} from '~/utils/constants'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
-export const TOP_SECTION_HEIGHT = 236
 
 const ModalContainer = styled('div')<{modalHeight: number}>(({modalHeight}) => ({
   animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
@@ -37,7 +41,7 @@ const ModalContainer = styled('div')<{modalHeight: number}>(({modalHeight}) => (
   [desktopBreakpoint]: {
     maxHeight: '90vh',
     height: modalHeight,
-    width: `${ElementWidth.REFLECTION_COLUMN * 3 + MODAL_PADDING}px`
+    width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
 }))
 
@@ -47,7 +51,7 @@ const SelectedReflectionSection = styled('div')({
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
   flexWrap: 'wrap',
-  height: `${TOP_SECTION_HEIGHT}px`,
+  height: `${SPOTLIGHT_TOP_SECTION_HEIGHT}px`,
   justifyContent: 'center',
   padding: 16,
   position: 'relative',
@@ -72,7 +76,7 @@ const SourceWrapper = styled('div')<{sourceHeight: number}>(({sourceHeight}) => 
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
-  top: `calc(${TOP_SECTION_HEIGHT / 2}px - ${sourceHeight / 2}px)`,
+  top: `calc(${SPOTLIGHT_TOP_SECTION_HEIGHT / 2}px - ${sourceHeight / 2}px)`,
   left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
 }))
@@ -185,8 +189,8 @@ const SpotlightModal = (props: Props) => {
   const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
   const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
   const columnsRefHeight = useGetRefHeight(columnsRef, 0, groupsRef)
-  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + GROUPS_PADDING * 2
-  const modalHeight = TOP_SECTION_HEIGHT + groupsHeight
+  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + SPOTLIGHT_GROUPS_PADDING * 2
+  const modalHeight = SPOTLIGHT_TOP_SECTION_HEIGHT + groupsHeight
 
   if (!meeting) return null
   const {spotlightReflection} = meeting
