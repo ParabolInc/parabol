@@ -7,25 +7,37 @@ import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
 import {useFragment} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import useSpotlightColumns from '../hooks/useSpotlightColumns'
-import useGroupsByColumn from '../hooks/useGroupsByColumn'
+import useSortGroupsIntoColumns from '../hooks/useSortGroupsIntoColumns'
 import {ElementWidth} from '~/types/constEnums'
+import useSpotlightGroupsHeight from '../hooks/useSpotlightGroupsHeight'
 
-const Container = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignContent: 'center',
-  flexWrap: 'wrap',
+export const MAX_GROUPS_HEIGHT_PERC = 66.6
+export const GROUPS_PADDING = 48
+
+const SimilarGroups = styled('div')<{height: number | string}>(({height}) => ({
+  maxHeight: `${MAX_GROUPS_HEIGHT_PERC}%`,
+  height,
   width: '100%',
-  height: '100%',
-  padding: '48px 0px'
-})
+  display: 'flex',
+  padding: `${GROUPS_PADDING}px 0px`,
+  border: '2px solid red'
+}))
 
 const Scrollbar = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   overflow: 'auto',
   height: '100%',
-  width: '100%'
+  width: '100%',
+  border: '2px solid blue'
+})
+
+const ColumnsWrapper = styled('div')({
+  display: 'flex',
+  width: '100%',
+  height: 'fit-content',
+  justifyContent: 'center',
+  border: '2px solid pink'
 })
 
 const Column = styled('div')({
@@ -33,7 +45,8 @@ const Column = styled('div')({
   maxWidth: ElementWidth.MEETING_CARD,
   margin: '0 8px',
   flexDirection: 'column',
-  height: '100%'
+  height: 'fit-content',
+  border: '2px solid green'
 })
 
 interface Props {
@@ -69,33 +82,35 @@ const SpotlightGroups = (props: Props) => {
   )
   const {similarReflectionGroups} = userData
   const groupsRef = useRef(null)
+  const columnsRef = useRef(null)
   const groupsCount = similarReflectionGroups.length
   const columns = useSpotlightColumns(groupsRef, groupsCount)
-  useGroupsByColumn(similarReflectionGroups, columns)
+  useSortGroupsIntoColumns(similarReflectionGroups, columns)
+  const height = useSpotlightGroupsHeight(groupsRef, columnsRef)
 
-  if (!groupsCount) {
-    return <SpotlightGroupsEmptyState />
-  }
+  if (!groupsCount) return <SpotlightGroupsEmptyState />
   return (
-    <Container>
-      <Scrollbar ref={groupsRef}>
-        {columns?.map((columnIdx) => (
-          <Column key={columnIdx}>
-            {similarReflectionGroups.map((reflectionGroup) => {
-              if (reflectionGroup.spotlightColumnIdx !== columnIdx) return null
-              return (
-                <ReflectionGroup
-                  key={reflectionGroup.id}
-                  meeting={meetingData}
-                  phaseRef={phaseRef}
-                  reflectionGroup={reflectionGroup}
-                />
-              )
-            })}
-          </Column>
-        ))}
+    <SimilarGroups ref={groupsRef} height={height}>
+      <Scrollbar>
+        <ColumnsWrapper ref={columnsRef}>
+          {columns?.map((columnIdx) => (
+            <Column key={columnIdx}>
+              {similarReflectionGroups.map((reflectionGroup) => {
+                if (reflectionGroup.spotlightColumnIdx !== columnIdx) return null
+                return (
+                  <ReflectionGroup
+                    key={reflectionGroup.id}
+                    meeting={meetingData}
+                    phaseRef={phaseRef}
+                    reflectionGroup={reflectionGroup}
+                  />
+                )
+              })}
+            </Column>
+          ))}
+        </ColumnsWrapper>
       </Scrollbar>
-    </Container>
+    </SimilarGroups>
   )
 }
 

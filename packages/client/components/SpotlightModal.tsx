@@ -7,7 +7,7 @@ import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, DragAttribute, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, DragAttribute, ElementWidth, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
@@ -15,6 +15,7 @@ import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import SpotlightGroups from './SpotlightGroups'
+import useSourceHeight from '../hooks/useSourceHeight'
 
 const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.NEW_MEETING_SELECTOR)
@@ -37,7 +38,7 @@ const ModalContainer = styled('div')({
     width: '80vw'
   },
   [dashWidestBreakpoint]: {
-    width: '70vw',
+    width: '65vw',
     height: '80vh'
   }
 })
@@ -55,11 +56,6 @@ const SelectedReflectionSection = styled('div')({
   width: '100%'
 })
 
-const SimilarGroups = styled('div')({
-  height: `${SELECTED_HEIGHT_PERC * 2}%`,
-  width: '100%'
-})
-
 const Title = styled('div')({
   color: PALETTE.SLATE_800,
   fontSize: 16,
@@ -74,14 +70,16 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const ReflectionWrapper = styled('div')({
+const SourceWrapper = styled('div')<{sourceHeight: number}>(({sourceHeight}) => ({
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
-  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${ElementHeight.REFLECTION_CARD / 2}px)`,
+  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${sourceHeight / 2}px)`,
   left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
-})
+}))
+
+const SourceInner = styled('div')()
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -182,7 +180,9 @@ const SpotlightModal = (props: Props) => {
 
   const {viewer} = data
   const {meeting} = viewer
+  const sourceRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef(null)
+  const sourceHeight = useSourceHeight(sourceRef)
   if (!meeting) return null
   const {spotlightReflection} = meeting
 
@@ -218,22 +218,22 @@ const SpotlightModal = (props: Props) => {
             />
           </SearchItem>
         </SelectedReflectionSection>
-        <SimilarGroups>
-          <Suspense fallback={''}>
-            <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
-          </Suspense>
-        </SimilarGroups>
+        <Suspense fallback={''}>
+          <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
+        </Suspense>
       </ModalContainer>
-      <ReflectionWrapper ref={flipRef}>
-        {spotlightReflection && (
-          <DraggableReflectionCard
-            isDraggable
-            reflection={spotlightReflection}
-            meeting={meeting}
-            staticReflections={null}
-          />
-        )}
-      </ReflectionWrapper>
+      <SourceWrapper ref={flipRef} sourceHeight={sourceHeight}>
+        <SourceInner ref={sourceRef}>
+          {spotlightReflection && (
+            <DraggableReflectionCard
+              isDraggable
+              reflection={spotlightReflection}
+              meeting={meeting}
+              staticReflections={null}
+            />
+          )}
+        </SourceInner>
+      </SourceWrapper>
     </>
   )
 }

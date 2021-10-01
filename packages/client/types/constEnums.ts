@@ -105,6 +105,7 @@ export const enum ElementHeight {
   MEETING_CARD_AVATARS = 32,
   REFLECTION_CARD = 44,
   REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
+  REFLECTION_GROUP_MAX = 154, // REFLECTION_CARD_MAX + header + padding
   MEETING_CARD_IMG = 180,
   MEETING_CARD_MARGIN = 16
 }

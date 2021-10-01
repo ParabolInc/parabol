@@ -3,7 +3,7 @@ import {commitLocalUpdate} from 'react-relay'
 import {useLayoutEffect, useMemo} from 'react'
 import {SpotlightGroups_viewer} from '~/__generated__/SpotlightGroups_viewer.graphql'
 
-const useGroupsByColumn = (
+const useSortGroupsIntoColumns = (
   similarReflectionGroups: SpotlightGroups_viewer['similarReflectionGroups'],
   columns: null | number[]
 ) => {
@@ -30,4 +30,4 @@ const useGroupsByColumn = (
   }, [columns?.length, unassignedGroups.length])
 }
 
-export default useGroupsByColumn
+export default useSortGroupsIntoColumns
