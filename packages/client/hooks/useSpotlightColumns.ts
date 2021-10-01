@@ -5,12 +5,12 @@ import useResizeObserver from './useResizeObserver'
 import {commitLocalUpdate} from 'relay-runtime'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
 
-const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: number) => {
+const useSpotlightColumns = (columnsRef: RefObject<HTMLDivElement>, groupsCount: number) => {
   const [columns, setColumns] = useState<null | number[]>(null)
   const atmosphere = useAtmosphere()
 
   const getColumns = () => {
-    const {current: el} = groupsRef
+    const {current: el} = columnsRef
     const width = el?.clientWidth
     if (!width) return
     if (groupsCount <= 2) {
@@ -38,8 +38,8 @@ const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: 
     }
   }
 
-  useLayoutEffect(getColumns, [groupsRef, groupsCount])
-  useResizeObserver(getColumns, groupsRef)
+  useLayoutEffect(getColumns, [columnsRef, groupsCount])
+  useResizeObserver(getColumns, columnsRef)
   return columns
 }
 

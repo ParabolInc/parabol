@@ -30,7 +30,8 @@ const Scrollbar = styled('div')({
 const ColumnsWrapper = styled('div')({
   display: 'flex',
   height: 'fit-content',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  width: '100%'
 })
 
 const Column = styled('div')({
@@ -44,13 +45,12 @@ const Column = styled('div')({
 interface Props {
   meeting: SpotlightGroups_meeting$key
   columnsRef: RefObject<HTMLDivElement>
-  groupsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   viewer: SpotlightGroups_viewer$key
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {columnsRef, groupsRef, phaseRef} = props
+  const {columnsRef, phaseRef} = props
   const userData = useFragment(
     graphql`
       fragment SpotlightGroups_viewer on User {
@@ -76,13 +76,13 @@ const SpotlightGroups = (props: Props) => {
   )
   const {similarReflectionGroups} = userData
   const groupsCount = similarReflectionGroups.length
-  const columns = useSpotlightColumns(groupsRef, groupsCount)
+  const columns = useSpotlightColumns(columnsRef, groupsCount)
   useSortGroupsIntoColumns(similarReflectionGroups, columns)
   const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   if (!groupsCount) return <SpotlightGroupsEmptyState />
   return (
-    <SimilarGroups isDesktop={isDesktop} ref={groupsRef}>
+    <SimilarGroups isDesktop={isDesktop}>
       <Scrollbar>
         <ColumnsWrapper ref={columnsRef}>
           {columns?.map((columnIdx) => (

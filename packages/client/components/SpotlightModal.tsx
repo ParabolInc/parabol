@@ -179,19 +179,16 @@ const SpotlightModal = (props: Props) => {
     queryRef,
     {UNSTABLE_renderPolicy: 'full'}
   )
-
   const {viewer} = data
   const {meeting} = viewer
   const sourceRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef(null)
-  const groupsRef = useRef(null)
   const columnsRef = useRef(null)
   const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
   const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
-  const columnsRefHeight = useGetRefHeight(columnsRef, 0, groupsRef)
+  const columnsRefHeight = useGetRefHeight(columnsRef, 0, phaseRef)
   const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + SPOTLIGHT_GROUPS_PADDING * 2
   const modalHeight = SPOTLIGHT_TOP_SECTION_HEIGHT + groupsHeight
-
   if (!meeting) return null
   const {spotlightReflection} = meeting
 
@@ -232,7 +229,6 @@ const SpotlightModal = (props: Props) => {
           <SpotlightGroups
             meeting={meeting}
             columnsRef={columnsRef}
-            groupsRef={groupsRef}
             phaseRef={phaseRef}
             viewer={viewer}
           />

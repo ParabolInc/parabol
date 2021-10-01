@@ -3,6 +3,32 @@ import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getNextSortOrder from '~/utils/getNextSortOrder'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
+const getEmptiestColumnIdx = (
+  similarReflectionGroups: RecordProxy[],
+  maxSpotlightColumns?: number
+) => {
+  type ColumnCounts = {
+    [index: number]: number
+  }
+  const columnCounts = {} as ColumnCounts
+  if (maxSpotlightColumns) {
+    const columnsArr = [...Array(maxSpotlightColumns).keys()]
+    columnsArr.forEach((column) => (columnCounts[column] = 0))
+  }
+  for (const group of similarReflectionGroups) {
+    const spotlightColumnIdx = group.getValue('spotlightColumnIdx') as number
+    if (spotlightColumnIdx === undefined) continue
+    if (columnCounts[spotlightColumnIdx] !== undefined) {
+      columnCounts[spotlightColumnIdx] += 1
+    } else {
+      columnCounts[spotlightColumnIdx] = 1
+    }
+  }
+  const columnLengths = Object.values(columnCounts)
+  const emptiestColumn = Math.min(...columnLengths)
+  return columnLengths.indexOf(emptiestColumn)
+}
+
 // if a remote user groups/ungroups a result, a reflectionGroupId is created or removed
 // update the similarReflectionGroup to reflect this
 const handleUpdateSpotlightResults = (
@@ -54,6 +80,9 @@ const handleUpdateSpotlightResults = (
     }))
     const nextSortOrder = getNextSortOrder(sortOrders)
     reflectionGroup.setValue(nextSortOrder, 'sortOrder')
+    const maxSpotlightColumns = viewer.getValue('maxSpotlightColumns') as number
+    const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups, maxSpotlightColumns)
+    reflectionGroup.setValue(emptiestColumnIdx, 'spotlightColumnIdx')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
