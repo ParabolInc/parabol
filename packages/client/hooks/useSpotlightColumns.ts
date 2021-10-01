@@ -20,16 +20,17 @@ const useSpotlightColumns = (groupsRef: RefObject<HTMLDivElement>, groupsCount: 
       const minGroupsPerColumn = 2
       const maxColumnsInRef = Math.floor(width / ElementWidth.MEETING_CARD_WITH_MARGIN)
       const maxColumns = Math.max(Math.min(maxColumnsInRef, maxColumnsLargeScreen), minColumns)
-      const groupsPerColumn = Math.ceil(groupsCount / maxColumns)
+      const smallestColumn = Math.floor(groupsCount / maxColumns)
+      // if there's just 1/2 groups in a column, reduce the no. of columns
       const columnsCount =
-        groupsPerColumn < minGroupsPerColumn && maxColumns !== minColumns
+        smallestColumn < minGroupsPerColumn && maxColumns !== minColumns
           ? maxColumns - 1
           : maxColumns
-      const newColumns = [...Array(columnsCount).keys()]
       commitLocalUpdate(atmosphere, (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         viewer?.setValue(columnsCount, 'maxSpotlightColumns')
       })
+      const newColumns = [...Array(columnsCount).keys()]
       setColumns(newColumns)
     }
   }
