@@ -29,7 +29,6 @@ const Scrollbar = styled('div')({
 
 const ColumnsWrapper = styled('div')({
   display: 'flex',
-  width: '100%',
   height: 'fit-content',
   justifyContent: 'center'
 })
