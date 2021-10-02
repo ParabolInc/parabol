@@ -3,8 +3,6 @@ import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getNextSortOrder from '~/utils/getNextSortOrder'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
-// if a remote user groups/ungroups a result, a reflectionGroupId is created or removed
-// update the similarReflectionGroup to reflect this
 const getEmptiestColumnIdx = (
   similarReflectionGroups: RecordProxy[],
   maxSpotlightColumns?: number
