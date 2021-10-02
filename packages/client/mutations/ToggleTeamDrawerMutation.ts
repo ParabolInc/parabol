@@ -1,4 +1,3 @@
-import {DrawerTypes} from 'parabol-client/types/constEnums'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
@@ -7,8 +6,9 @@ import {ToggleTeamDrawerMutation as TToggleTeamDrawerMutation} from '../__genera
 
 graphql`
   fragment ToggleTeamDrawerMutation_teamMember on ToggleTeamDrawerSuccess {
-    hideAgenda
-    hideManageTeam
+    teamMember {
+      openDrawer
+    }
   }
 `
 
@@ -33,36 +33,17 @@ const ToggleTeamDrawerMutation: StandardMutation<TToggleTeamDrawerMutation> = (
   return commitMutation<TToggleTeamDrawerMutation>(atmosphere, {
     mutation,
     variables,
-    updater: (store) => {
-      const {viewerId} = atmosphere
-      const {teamId} = variables
-      const payload = store.getRootField('toggleTeamDrawer')
-      if (!payload) return
-      const hideManageTeam = payload.getValue('hideManageTeam')
-      const hideAgenda = payload.getValue('hideAgenda')
-      const teamMemberId = toTeamMemberId(teamId, viewerId)
-      const teamMember = store.get(teamMemberId)
-      if (!teamMember) return
-      teamMember.setValue(hideManageTeam, 'hideManageTeam')
-      teamMember.setValue(hideAgenda, 'hideAgenda')
-      if (hideManageTeam) {
-        teamMember.setValue(null, 'manageTeamMemberId')
-      }
-    },
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
       const {teamId, teamDrawerType} = variables
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const teamMember = store.get(teamMemberId)
       if (!teamMember) return
-      const hideManageTeam = teamMember.getValue('hideManageTeam')
-      const hideAgenda = teamMember.getValue('hideAgenda')
-      if (teamDrawerType === DrawerTypes.AGENDA) {
-        teamMember.setValue(!hideAgenda, 'hideAgenda')
-        teamMember.setValue(true, 'hideManageTeam')
-      } else if (teamDrawerType === DrawerTypes.MANAGE_TEAM) {
-        teamMember.setValue(!hideManageTeam, 'hideManageTeam')
-        teamMember.setValue(true, 'hideAgenda')
+      const openDrawer = teamMember.getValue('openDrawer')
+      if (teamDrawerType === openDrawer) {
+        teamMember.setValue(null, 'openDrawer')
+      } else {
+        teamMember.setValue(teamDrawerType, 'openDrawer')
       }
     },
     onCompleted,

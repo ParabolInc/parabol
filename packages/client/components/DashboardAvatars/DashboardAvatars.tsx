@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {Breakpoint, DrawerTypes, ElementHeight, ElementWidth} from '~/types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
 import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
@@ -106,7 +106,7 @@ const DashboardAvatars = (props: Props) => {
       submitMutation()
       ToggleTeamDrawerMutation(
         atmosphere,
-        {teamId, teamDrawerType: DrawerTypes.MANAGE_TEAM},
+        {teamId, teamDrawerType: 'manageTeam'},
         {onError, onCompleted}
       )
       commitLocalUpdate(atmosphere, (store) => {

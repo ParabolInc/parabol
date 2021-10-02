@@ -7,7 +7,7 @@ import Avatar from '../Avatar/Avatar'
 import {MenuPosition} from '../../hooks/useCoords'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {PALETTE} from '../../styles/paletteV3'
-import {DrawerTypes, ElementWidth} from '../../types/constEnums'
+import {ElementWidth} from '../../types/constEnums'
 import useTooltip from '../../hooks/useTooltip'
 import useMutationProps from '../../hooks/useMutationProps'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -55,7 +55,7 @@ const DashboardAvatar = (props: Props) => {
     submitMutation()
     ToggleTeamDrawerMutation(
       atmosphere,
-      {teamId, teamDrawerType: DrawerTypes.MANAGE_TEAM},
+      {teamId, teamDrawerType: 'manageTeam'},
       {onError, onCompleted}
     )
     commitLocalUpdate(atmosphere, (store) => {

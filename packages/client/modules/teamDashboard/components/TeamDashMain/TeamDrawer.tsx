@@ -4,7 +4,7 @@ import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import {TeamDrawer_viewer$key} from '~/__generated__/TeamDrawer_viewer.graphql'
-import {Breakpoint, DrawerTypes, RightSidebar} from '../../../../types/constEnums'
+import {Breakpoint, RightSidebar} from '../../../../types/constEnums'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import ManageTeamList from '../ManageTeam/ManageTeamList'
 import CloseDrawer from '../CloseDrawer/CloseDrawer'
@@ -14,6 +14,7 @@ import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMuta
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import {TeamDrawer as TeamDrawerType} from '~/__generated__/ToggleTeamDrawerMutation.graphql'
 
 const DrawerHeader = styled('div')({
   alignItems: 'center',
@@ -53,8 +54,7 @@ const TeamDrawer = (props: Props) => {
           ...ManageTeamList_team
         }
         teamMember(teamId: $teamId) {
-          hideAgenda
-          hideManageTeam
+          openDrawer
           manageTeamMemberId
         }
       }
@@ -64,21 +64,15 @@ const TeamDrawer = (props: Props) => {
   const {dashSearch, team, teamMember} = data
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const drawerTypeRef = useRef<DrawerTypes | null>(null)
+  const drawerTypeRef = useRef<TeamDrawerType | null>(null)
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   if (!team || !teamMember) return null
-  const {hideAgenda, hideManageTeam, manageTeamMemberId} = teamMember
+  const {openDrawer, manageTeamMemberId} = teamMember
   const {id: teamId} = team
-  const teamDrawerType =
-    hideAgenda === false
-      ? DrawerTypes.AGENDA
-      : hideManageTeam === false
-      ? DrawerTypes.MANAGE_TEAM
-      : null
 
   // as drawer is closing, teamDrawerType is null. use ref to show prev content
-  if (teamDrawerType && drawerTypeRef.current !== teamDrawerType) {
-    drawerTypeRef.current = teamDrawerType
+  if (openDrawer && drawerTypeRef.current !== openDrawer) {
+    drawerTypeRef.current = openDrawer
   }
 
   const toggleDrawer = () => {
@@ -86,22 +80,22 @@ const TeamDrawer = (props: Props) => {
       submitMutation()
       ToggleTeamDrawerMutation(
         atmosphere,
-        {teamId, teamDrawerType: drawerTypeRef.current || DrawerTypes.AGENDA},
+        {teamId, teamDrawerType: drawerTypeRef.current || 'agenda'},
         {onError, onCompleted}
       )
     }
   }
 
   return (
-    <ResponsiveDashSidebar isOpen={teamDrawerType !== null} isRightDrawer onToggle={toggleDrawer}>
+    <ResponsiveDashSidebar isOpen={openDrawer !== null} isRightDrawer onToggle={toggleDrawer}>
       <DrawerContent isDesktop={isDesktop}>
         <DrawerHeader>
           <StyledLabelHeading>
-            {drawerTypeRef.current === DrawerTypes.MANAGE_TEAM ? 'Manage Team' : 'Team Agenda'}
+            {drawerTypeRef.current === 'manageTeam' ? 'Manage Team' : 'Team Agenda'}
           </StyledLabelHeading>
           <CloseDrawer teamDrawerType={drawerTypeRef.current} teamId={teamId} />
         </DrawerHeader>
-        {drawerTypeRef.current === DrawerTypes.MANAGE_TEAM ? (
+        {drawerTypeRef.current === 'manageTeam' ? (
           <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />
         ) : (
           <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team} />

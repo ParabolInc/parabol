@@ -49467,14 +49467,9 @@ export interface ITeamMember {
   isSpectatingPoker: boolean;
 
   /**
-   * hide the agenda list drawer on the dashboard
+   * the type of drawer that is open in the team dash. Null if neither are open
    */
-  hideAgenda: boolean;
-
-  /**
-   * hide the manage team drawer on the dashboard
-   */
-  hideManageTeam: boolean;
+  openDrawer: TeamDrawer | null;
 
   /**
    * The user email
@@ -49567,6 +49562,14 @@ export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
   PARABOL = 'PARABOL'
+}
+
+/**
+ * The right drawer types available on the team dashboard
+ */
+export const enum TeamDrawer {
+  agenda = 'agenda',
+  manageTeam = 'manageTeam'
 }
 
 /**
@@ -59284,19 +59287,8 @@ export type ToggleTeamDrawerPayload = IErrorPayload | IToggleTeamDrawerSuccess;
 
 export interface IToggleTeamDrawerSuccess {
   __typename: 'ToggleTeamDrawerSuccess';
-
-  /**
-   * Toggle the drawer of this team
-   */
   team: ITeam;
-}
-
-/**
- * The right drawer types available on the team dashboard
- */
-export const enum TeamDrawer {
-  agenda = 'agenda',
-  manageTeam = 'manageTeam'
+  teamMember: ITeamMember;
 }
 
 /**

@@ -66,11 +66,6 @@ export const enum DragAttribute {
   DROPZONE = 'data-dropzone'
 }
 
-export const enum DrawerTypes {
-  AGENDA = 'agenda',
-  MANAGE_TEAM = 'manageTeam'
-}
-
 export const enum DroppableType {
   TASK = 'task',
   REFLECTION = 'reflection'

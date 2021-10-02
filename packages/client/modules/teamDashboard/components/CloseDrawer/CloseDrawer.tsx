@@ -3,10 +3,10 @@ import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMuta
 import IconButton from '../../../../components/IconButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import {DrawerTypes} from '~/types/constEnums'
+import {TeamDrawer} from '~/__generated__/ToggleTeamDrawerMutation.graphql'
 
 interface Props {
-  teamDrawerType: DrawerTypes | null
+  teamDrawerType: TeamDrawer | null
   teamId: string
 }
 
@@ -19,7 +19,7 @@ const CloseDrawer = (props: Props) => {
       submitMutation()
       ToggleTeamDrawerMutation(
         atmosphere,
-        {teamId, teamDrawerType: teamDrawerType || DrawerTypes.AGENDA},
+        {teamId, teamDrawerType: teamDrawerType || 'agenda'},
         {onError, onCompleted}
       )
     }

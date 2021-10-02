@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
-import {DrawerTypes} from '~/types/constEnums'
 import Icon from '../../../../components/Icon'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -54,7 +53,7 @@ const AgendaToggle = (props: Props) => {
       submitMutation()
       ToggleTeamDrawerMutation(
         atmosphere,
-        {teamId, teamDrawerType: DrawerTypes.AGENDA},
+        {teamId, teamDrawerType: 'agenda'},
         {onError, onCompleted}
       )
     }
