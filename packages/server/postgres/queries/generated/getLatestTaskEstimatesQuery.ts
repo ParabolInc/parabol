@@ -21,6 +21,7 @@ export interface IGetLatestTaskEstimatesQueryResult {
   stageId: string | null;
   discussionId: string | null;
   jiraFieldId: string | null;
+  githubLabelName: string | null;
 }
 
 /** 'GetLatestTaskEstimatesQuery' query type */

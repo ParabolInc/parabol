@@ -2,12 +2,14 @@ import MailManager from './MailManager'
 import MailManagerDebug from './MailManagerDebug'
 import MailManagerGoogle from './MailManagerGoogle'
 import MailManagerMailgun from './MailManagerMailgun'
+import MailManagerSMTP from './MailManagerSMTP'
 
 let mailManager: MailManager
 
 const managers = {
   mailgun: MailManagerMailgun,
-  google: MailManagerGoogle
+  google: MailManagerGoogle,
+  smtp: MailManagerSMTP
 }
 
 const getMailManager = () => {

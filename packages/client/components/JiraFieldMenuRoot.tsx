@@ -17,10 +17,11 @@ const query = graphql`
 interface Props {
   menuProps: MenuProps
   stage: JiraFieldMenuRoot_stage
+  submitScore(): void
 }
 
 const JiraFieldMenuRoot = (props: Props) => {
-  const {menuProps, stage} = props
+  const {menuProps, stage, submitScore} = props
   const atmosphere = useAtmosphere()
   const {task, teamId} = stage
   if (!task) return null
@@ -35,7 +36,7 @@ const JiraFieldMenuRoot = (props: Props) => {
       fetchPolicy={'store-or-network' as any}
       render={({props, error}) => {
         const viewer = (props as any)?.viewer ?? null
-        return <JiraFieldMenu viewer={viewer} error={error} menuProps={menuProps} stage={stage} />
+        return <JiraFieldMenu viewer={viewer} error={error} menuProps={menuProps} stage={stage} submitScore={submitScore} />
       }}
     />
   )

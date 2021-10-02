@@ -1,12 +1,22 @@
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, DragAttribute, Times} from '../../types/constEnums'
+import {BezierCurve, DragAttribute, Times, ZIndex} from '../../types/constEnums'
 import getDeCasteljau from '../getDeCasteljau'
 
-export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
+export const getMinTop = (
+  top: number,
+  targetEl: HTMLElement | null,
+  showAboveSpotlight: boolean
+) => {
   if (top >= 0) return top
   let dropzone = targetEl
   while (dropzone && dropzone.hasAttribute) {
-    if (dropzone.hasAttribute(DragAttribute.DROPZONE)) return dropzone.getBoundingClientRect().top
+    if (
+      dropzone.hasAttribute(
+        showAboveSpotlight ? DragAttribute.DROPZONE_SPOTLIGHT : DragAttribute.DROPZONE
+      )
+    ) {
+      return dropzone.getBoundingClientRect().top
+    }
     dropzone = dropzone.parentElement
   }
   return top
@@ -26,16 +36,18 @@ export const getDroppingStyles = (
   targetEl: HTMLDivElement,
   bbox: ClientRect,
   maxTop: number,
-  timeRemaining: number
+  timeRemaining: number,
+  showAboveSpotlight?: boolean
 ) => {
   const {top, left} = bbox
-  const minTop = getMinTop(top, targetEl)
+  const minTop = getMinTop(top, targetEl, showAboveSpotlight || false)
   const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
   const isClipped = clippedTop !== top
   return {
     transform: `translate(${left}px,${clippedTop}px)`,
     transition: getTransition(isClipped, timeRemaining),
-    opacity: isClipped ? 0 : 1
+    opacity: isClipped ? 0 : 1,
+    zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
   }
 }
 

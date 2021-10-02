@@ -19,7 +19,9 @@
       "dom"
     ],
     "types": [
-      "node"
+      "node",
+      "jest",
+      "jest-extended"
     ],
   },
   "exclude": [

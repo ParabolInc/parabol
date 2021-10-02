@@ -1,5 +1,5 @@
 {
-  "schema": "packages/server/utils/githubSchema.ts",
+  "schema": "packages/server/utils/githubSchema.graphql",
   "documents": "packages/server/utils/githubQueries/*.graphql",
   "generates": {
     "packages/server/types/githubTypes.ts": {

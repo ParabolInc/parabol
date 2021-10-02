@@ -142,64 +142,65 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           if (stageExists) return
           const lastSortOrder = stages[stages.length - 1]?.getValue('sortOrder') ?? -1
 
-          const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
-            const plaintextContent = contents[idx]
-            const content = convertToTaskContent(plaintextContent)
-            const {title, contentState} = splitDraftContent(content)
-            const optimisticTask = createProxyRecord(store, 'Task', {
-              createdBy: viewerId,
-              plaintextContent,
-              content,
-              sortOrder: 0,
-              status: 'future',
-              tags: ['#archived'],
-              teamId,
-              title,
-              integrationHash: service === 'PARABOL' ? '' : serviceTaskId
-            })
-            optimisticTask
-              .setLinkedRecord(viewer, 'createdByUser')
-              .setLinkedRecords([], 'estimates')
-              .setLinkedRecords([], 'editors')
-              .setLinkedRecord(team!, 'team')
+          // create a task if it doesn't exist
+          const plaintextContent = contents[idx]
+          const content = convertToTaskContent(plaintextContent)
+          const {title, contentState} = splitDraftContent(content)
+          const optimisticTask = createProxyRecord(store, 'Task', {
+            createdBy: viewerId,
+            plaintextContent,
+            content,
+            sortOrder: 0,
+            status: 'future',
+            tags: ['#archived'],
+            teamId,
+            title,
+            integrationHash: service === 'PARABOL' ? '' : serviceTaskId
+          })
+          optimisticTask
+            .setLinkedRecord(viewer, 'createdByUser')
+            .setLinkedRecords([], 'estimates')
+            .setLinkedRecords([], 'editors')
+            .setLinkedRecord(team!, 'team')
 
-            if (service === 'jira') {
-              const descriptionHTML = stateToHTML(contentState)
-              const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
-              const optimisticTaskIntegration = createProxyRecord(store, 'JiraIssue', {
-                teamId,
-                meetingId,
-                userId: viewerId,
-                cloudId,
-                cloudName: '',
-                url: '',
-                issueKey,
-                projectKey,
-                summary: plaintextContent,
-                description: '',
-                descriptionHTML
-              })
-              optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
-            } else if (service === 'github') {
-              const bodyHTML = stateToHTML(contentState)
-              const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
-                serviceTaskId
-              )
-              const repository = createProxyRecord(store, '_xGitHubRepository', {
-                nameWithOwner,
-                name: repoName,
-                owner: repoOwner
-              })
-              const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
-                number: issueNumber,
-                title,
-                description: '',
-                url: '',
-                bodyHTML
-              })
-              optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
-              optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
-            }
+          if (service === 'jira') {
+            const descriptionHTML = stateToHTML(contentState)
+            const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
+            const optimisticTaskIntegration = createProxyRecord(store, 'JiraIssue', {
+              teamId,
+              meetingId,
+              userId: viewerId,
+              cloudId,
+              cloudName: '',
+              url: '',
+              issueKey,
+              projectKey,
+              summary: plaintextContent,
+              description: '',
+              descriptionHTML
+            })
+            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+          } else if (service === 'github') {
+            const bodyHTML = stateToHTML(contentState)
+            const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
+              serviceTaskId
+            )
+            const repository = createProxyRecord(store, '_xGitHubRepository', {
+              nameWithOwner,
+              name: repoName,
+              owner: repoOwner
+            })
+            const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
+              number: issueNumber,
+              title,
+              description: '',
+              url: '',
+              bodyHTML
+            })
+            optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
+            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
+          }
+          const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
             const nextStage = createProxyRecord(store, 'EstimateStage', {
               sortOrder: lastSortOrder + 1,
               durations: undefined,

@@ -30,7 +30,6 @@ INSERT INTO "Team" (
     "updatedAt"
 ) VALUES :teams
 ON CONFLICT (id) DO UPDATE SET
-  "id" = EXCLUDED."id",
   "name" = EXCLUDED."name",
   "createdAt" = EXCLUDED."createdAt",
   "createdBy" = EXCLUDED."createdBy",

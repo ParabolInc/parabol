@@ -1,8 +1,8 @@
+import {Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
 import getIsDrag from '~/utils/retroGroup/getIsDrag'
+import useBreakpoint from './useBreakpoint'
 import {cacheCoveringBBox, ensureAllCovering} from './useControlBarCovers'
 import useEventCallback from './useEventCallback'
-import useBreakpoint from './useBreakpoint'
-import {Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
 
 const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
   ref,
@@ -16,7 +16,7 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
 
 let drag: ReturnType<typeof makeDrag>
 
-const noop = () => {}
+const noop = () => { }
 const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -74,8 +74,8 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
     (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
       const isTouchStart = e.type === 'touchstart'
       if (isTouchStart) {
-        e.target.addEventListener('touchmove', onMouseMove)
-        e.target.addEventListener('touchend', onMouseUp)
+        e.target.addEventListener('touchmove', onMouseMove as any)
+        e.target.addEventListener('touchend', onMouseUp as any)
       } else {
         document.addEventListener('mousemove', onMouseMove)
         document.addEventListener('mouseup', onMouseUp)
