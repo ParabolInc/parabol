@@ -59286,14 +59286,9 @@ export interface IToggleTeamDrawerSuccess {
   __typename: 'ToggleTeamDrawerSuccess';
 
   /**
-   * Show/hide the agenda drawer
+   * Toggle the drawer of this team
    */
-  hideAgenda: boolean;
-
-  /**
-   * Show/hide the manage team drawer
-   */
-  hideManageTeam: boolean;
+  team: ITeam;
 }
 
 /**

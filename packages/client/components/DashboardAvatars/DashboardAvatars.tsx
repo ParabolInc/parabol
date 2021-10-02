@@ -82,10 +82,9 @@ const DashboardAvatars = (props: Props) => {
   const maxAvatars = isDesktop ? 10 : 6
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const sortedAvatars = useMemo(() => {
-    const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
     const connectedAvatars = [] as Avatar[]
     const offlineAvatars = [] as Avatar[]
-    visibleAvatars.forEach((avatar) => {
+    teamMembers.forEach((avatar) => {
       const {id: teamMemberId, user} = avatar
       const {isConnected} = user
       const {userId} = fromTeamMemberId(teamMemberId)
@@ -97,7 +96,8 @@ const DashboardAvatars = (props: Props) => {
         offlineAvatars.push(avatar)
       }
     })
-    return connectedAvatars.concat(offlineAvatars)
+    const sortedAvatars = connectedAvatars.concat(offlineAvatars)
+    return overflowCount === 0 ? sortedAvatars : sortedAvatars.slice(0, maxAvatars - 1)
   }, [teamMembers])
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
