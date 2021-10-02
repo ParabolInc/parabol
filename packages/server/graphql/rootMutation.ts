@@ -65,7 +65,6 @@ import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerResetDimension from './mutations/pokerResetDimension'
 import pokerRevealVotes from './mutations/pokerRevealVotes'
-import pokerSetFinalScore from './mutations/pokerSetFinalScore'
 import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
 import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from './mutations/promoteToTeamLead'
@@ -266,7 +265,6 @@ export default new GraphQLObjectType<any, Context>({
       pokerRevealVotes,
       pokerResetDimension,
       pokerAnnounceDeckHover,
-      pokerSetFinalScore,
       movePokerTemplateScaleValue,
       updateJiraDimensionField,
       joinMeeting,

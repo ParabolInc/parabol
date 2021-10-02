@@ -7,6 +7,8 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import OrganizationUser from '../../database/types/OrganizationUser'
+import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForBillingLeaders} from '../resolvers'
@@ -20,7 +22,7 @@ import Team from './Team'
 import TierEnum from './TierEnum'
 import User from './User'
 
-const Organization = new GraphQLObjectType<any, GQLContext>({
+const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'Organization',
   description: 'An organization',
   fields: () => ({
@@ -76,7 +78,9 @@ const Organization = new GraphQLObjectType<any, GQLContext>({
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
         return isSuperUser(authToken)
           ? allTeamsOnOrg
-          : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+          : allTeamsOnOrg.filter((team: IGetTeamsByIdsQueryResult) =>
+              authToken.tms.includes(team.id)
+            )
       }
     },
     tier: {
@@ -138,8 +142,10 @@ const Organization = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(OrganizationUserConnection),
       resolve: async ({id: orgId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
-        const edges = organizationUsers.map((node) => ({
+        organizationUsers.sort((a: OrganizationUser, b: OrganizationUser) =>
+          a.orgId > b.orgId ? 1 : -1
+        )
+        const edges = organizationUsers.map((node: OrganizationUser) => ({
           cursor: node.id,
           node
         }))
@@ -159,7 +165,9 @@ const Organization = new GraphQLObjectType<any, GQLContext>({
       description: 'The count of active & inactive users',
       resolve: async ({id: orgId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-        const inactiveUserCount = organizationUsers.filter(({inactive}) => inactive).length
+        const inactiveUserCount = organizationUsers.filter(
+          ({inactive}: OrganizationUser) => inactive
+        ).length
         return {
           inactiveUserCount,
           activeUserCount: organizationUsers.length - inactiveUserCount
@@ -172,8 +180,10 @@ const Organization = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: orgId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const billingLeaderUserIds = organizationUsers
-          .filter((organizationUser) => organizationUser.role === 'BILLING_LEADER')
-          .map(({userId}) => userId)
+          .filter(
+            (organizationUser: OrganizationUser) => organizationUser.role === 'BILLING_LEADER'
+          )
+          .map(({userId}: {userId: string}) => userId)
         return dataLoader.get('users').loadMany(billingLeaderUserIds)
       }
     }

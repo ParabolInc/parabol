@@ -1,8 +1,8 @@
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import StyledError from '../StyledError'
+import React, {forwardRef, Ref} from 'react'
 import makeFieldColorPalette from '../../styles/helpers/makeFieldColorPalette'
 import ui from '../../styles/ui'
+import StyledError from '../StyledError'
 
 const Input = styled('input')<{disabled: boolean}>(
   ({disabled}) => ({
@@ -20,7 +20,9 @@ const Error = styled(StyledError)({
 })
 
 interface Props {
+  autoComplete?: 'off'
   autoFocus?: boolean
+  className?: string
   disabled?: boolean
   error: string | undefined
   name: string
@@ -34,7 +36,9 @@ interface Props {
 
 const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
   const {
+    autoComplete,
     autoFocus,
+    className,
     disabled,
     error,
     name,
@@ -48,7 +52,9 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
   return (
     <React.Fragment>
       <Input
+        autoComplete={autoComplete}
         autoFocus={autoFocus}
+        className={className}
         disabled={Boolean(disabled)}
         ref={ref}
         name={name}
