@@ -52,14 +52,16 @@ const handleUpdateSpotlightResults = (
     searchQuery: ''
   })
   if (!similarReflectionGroups) return
-  const wasInSpotlightGroups = similarReflectionGroups.find(
+  const wasInResultsGroups = similarReflectionGroups.find(
     (group) => group.getValue('id') === oldReflectionGroupId
   )
-  const isInSpotlightGroups = similarReflectionGroups.find(
+  const isInResultsGroups = similarReflectionGroups.find(
     (group) => group.getValue('id') === reflectionGroupId
   )
+  const wasInSourceGroup = oldReflectionGroupId === spotlightGroupId
+  const isInSourceGroup = reflectionGroupId === spotlightGroupId
   // added to an existing group. old reflection group needs to be removed
-  if (isInSpotlightGroups && wasInSpotlightGroups) {
+  if (isInResultsGroups && wasInResultsGroups) {
     const removedReflectionGroup = store.get(oldReflectionGroupId)
     // make sure the old group is empty
     const oldReflections = removedReflectionGroup?.getLinkedRecords('reflections')
@@ -74,15 +76,16 @@ const handleUpdateSpotlightResults = (
     }
   }
   // ungrouping created a new group id which needs to be added to Spotlight
-  else if (!isInSpotlightGroups && wasInSpotlightGroups && reflectionGroupId !== spotlightGroupId) {
+  else if ((!isInResultsGroups && wasInResultsGroups && !isInSourceGroup) || wasInSourceGroup) {
     const sortOrders = similarReflectionGroups.map((group) => ({
       sortOrder: group.getValue('sortOrder') as number
     }))
     const nextSortOrder = getNextSortOrder(sortOrders)
-    reflectionGroup.setValue(nextSortOrder, 'sortOrder')
     const maxSpotlightColumns = viewer.getValue('maxSpotlightColumns') as number
     const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups, maxSpotlightColumns)
-    reflectionGroup.setValue(emptiestColumnIdx, 'spotlightColumnIdx')
+    reflectionGroup
+      .setValue(nextSortOrder, 'sortOrder')
+      .setValue(emptiestColumnIdx, 'spotlightColumnIdx')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionGroupId: spotlightGroupId,
