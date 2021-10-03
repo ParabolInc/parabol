@@ -74,7 +74,7 @@ const handleUpdateSpotlightResults = (
     }
   }
   // ungrouping created a new group id which needs to be added to Spotlight
-  else if (!isInSpotlightGroups && wasInSpotlightGroups) {
+  else if (!isInSpotlightGroups && wasInSpotlightGroups && reflectionGroupId !== spotlightGroupId) {
     const sortOrders = similarReflectionGroups.map((group) => ({
       sortOrder: group.getValue('sortOrder') as number
     }))
