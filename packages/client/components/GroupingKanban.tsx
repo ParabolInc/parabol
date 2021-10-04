@@ -61,7 +61,9 @@ const GroupingKanban = (props: Props) => {
     })
   }
   const {closePortal, openPortal, modalPortal} = useModal({
-    onClose: closeSpotlight
+    id: 'spotlight-portal',
+    onClose: closeSpotlight,
+    noClosePortal: true
   })
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}

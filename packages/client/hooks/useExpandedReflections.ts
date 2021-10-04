@@ -37,6 +37,7 @@ const useExpandedReflections = (
   const [modalHeaderRef, headerReverse] = useFlip({firstRef: headerRef, isGroup})
   const [setItemsRef, itemsReverse] = useFlipDeal(count)
   const {terminatePortal, openPortal, portal, portalStatus, setPortalStatus} = usePortal({
+    id: 'expanded-reflections-portal',
     noClose: true
   })
   const collapse = () => {
