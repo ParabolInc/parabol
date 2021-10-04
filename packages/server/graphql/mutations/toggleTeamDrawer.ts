@@ -15,13 +15,14 @@ const toggleTeamDrawer = {
       description: 'the team to show/hide the drawer for'
     },
     teamDrawerType: {
-      type: new GraphQLNonNull(TeamDrawerEnum),
-      description: 'The type of team drawer that the viewer is toggling'
+      type: TeamDrawerEnum,
+      description:
+        'The type of team drawer that the viewer is toggling. Null if closing the drawer.'
     }
   },
   resolve: async (
     _source,
-    {teamId, teamDrawerType}: {teamId: string; teamDrawerType: TeamDrawer},
+    {teamId, teamDrawerType}: {teamId: string; teamDrawerType: TeamDrawer | null},
     {authToken}: GQLContext
   ) => {
     const r = await getRethink()

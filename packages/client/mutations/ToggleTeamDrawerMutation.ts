@@ -13,7 +13,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation ToggleTeamDrawerMutation($teamId: ID!, $teamDrawerType: TeamDrawer!) {
+  mutation ToggleTeamDrawerMutation($teamId: ID!, $teamDrawerType: TeamDrawer) {
     toggleTeamDrawer(teamId: $teamId, teamDrawerType: $teamDrawerType) {
       ... on ErrorPayload {
         error {

@@ -93,7 +93,7 @@ const TeamDrawer = (props: Props) => {
           <StyledLabelHeading>
             {drawerTypeRef.current === 'manageTeam' ? 'Manage Team' : 'Team Agenda'}
           </StyledLabelHeading>
-          <CloseDrawer teamDrawerType={drawerTypeRef.current} teamId={teamId} />
+          <CloseDrawer teamId={teamId} />
         </DrawerHeader>
         {drawerTypeRef.current === 'manageTeam' ? (
           <ManageTeamList manageTeamMemberId={manageTeamMemberId} team={team} />

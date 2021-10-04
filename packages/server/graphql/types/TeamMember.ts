@@ -52,8 +52,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     },
     openDrawer: {
       type: TeamDrawerEnum,
-      description: 'the type of drawer that is open in the team dash. Null if the drawer is closed',
-      resolve: ({openDrawer}) => openDrawer
+      description: 'the type of drawer that is open in the team dash. Null if the drawer is closed'
     },
     /* denormalized from User */
     email: {

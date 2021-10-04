@@ -56906,9 +56906,9 @@ export interface IToggleTeamDrawerOnMutationArguments {
   teamId: string;
 
   /**
-   * The type of team drawer that the viewer is toggling
+   * The type of team drawer that the viewer is toggling. Null if closing the drawer.
    */
-  teamDrawerType: TeamDrawer;
+  teamDrawerType?: TeamDrawer | null;
 }
 
 export interface IUpdateGitHubDimensionFieldOnMutationArguments {
