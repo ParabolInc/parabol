@@ -38,7 +38,7 @@ const makeDragState = () => ({
   prevTargetId: '',
   isBroadcasting: false,
   isBehindSpotlight: false,
-  isInSpotlight: false,
+  spotlightGroupId: null as null | string,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
@@ -46,6 +46,24 @@ const makeDragState = () => ({
   droppableType: DragAttribute.DROPPABLE as Droppable,
   timeout: null as null | number
 })
+
+const updateSpotlightDrag = (
+  drag: ReflectionDragState,
+  isBehindSpotlight: boolean,
+  isInSpotlight: boolean,
+  spotlightGroupId?: string
+) => {
+  drag.isBehindSpotlight = isBehindSpotlight
+  if (isInSpotlight && spotlightGroupId) {
+    drag.dropZoneType = DragAttribute.DROPZONE_SPOTLIGHT
+    drag.droppableType = DragAttribute.DROPPABLE_SPOTLIGHT
+    drag.spotlightGroupId = spotlightGroupId
+  } else {
+    drag.dropZoneType = DragAttribute.DROPZONE
+    drag.droppableType = DragAttribute.DROPPABLE
+    drag.spotlightGroupId = null
+  }
+}
 
 const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDraggable}) => ({
   cursor: isDraggable ? 'grab' : undefined
@@ -87,18 +105,13 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage, spotlightReflection} = meeting
   const {isComplete, phaseType} = localStage
-  const {id: reflectionId, isDropping, isEditing} = reflection
+  const {isDropping, isEditing} = reflection
   const isSpotlightOpen = !!spotlightReflection?.id
-  const isSourceReflection = reflectionId === spotlightReflection?.id
   const isInSpotlight = isSpotlightOpen && !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
-  const [drag] = useState(makeDragState)
   const staticReflectionCount = staticReflections?.length || 0
-  drag.isBehindSpotlight = isBehindSpotlight
-  if (isInSpotlight) {
-    drag.dropZoneType = DragAttribute.DROPZONE_SPOTLIGHT
-    drag.droppableType = DragAttribute.DROPPABLE_SPOTLIGHT
-  }
+  const [drag] = useState(makeDragState)
+  updateSpotlightDrag(drag, isBehindSpotlight, isInSpotlight, spotlightReflection?.id)
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -108,7 +121,7 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-  const isDragPhase = phaseType === 'group' && !isComplete && (!isInSpotlight || isSourceReflection)
+  const isDragPhase = phaseType === 'group' && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
