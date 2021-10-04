@@ -200,8 +200,9 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
     metadata: {userId, type},
     period: {start}
   } = lineItem
-  const safeType = (type === InvoiceItemType.AUTO_PAUSE_USER ? 
-    InvoiceItemType.PAUSE_USER : type) as keyof TypesDict
+  const safeType = (type === InvoiceItemType.AUTO_PAUSE_USER
+    ? InvoiceItemType.PAUSE_USER
+    : type) as keyof TypesDict
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
   itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}

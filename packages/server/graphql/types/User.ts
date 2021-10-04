@@ -39,7 +39,7 @@ import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
 import OrganizationUserType from '../../database/types/OrganizationUser'
-import { IGetTeamsByIdsQueryResult } from '../../postgres/queries/generated/getTeamsByIdsQuery'
+import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import OrganizationType from '../../database/types/Organization'
 import SuggestedActionType from '../../database/types/SuggestedAction'
@@ -102,8 +102,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
-          (organizationUser: OrganizationUserType) => 
-            organizationUser.role === 'BILLING_LEADER')
+          (organizationUser: OrganizationUserType) => organizationUser.role === 'BILLING_LEADER'
+        )
       }
     },
     isConnected: {
@@ -151,8 +151,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const lastMetAt = Math.max(
           0,
-          ...meetingMembers
-            .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+          ...meetingMembers.map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
         )
         return lastMetAt ? new Date(lastMetAt) : null
       }
@@ -196,10 +195,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
-        suggestedActions.sort((
-          a: SuggestedActionType,
-          b: SuggestedActionType
-        ) => (a.priority! < b.priority! ? -1 : 1))
+        suggestedActions.sort((a: SuggestedActionType, b: SuggestedActionType) =>
+          a.priority! < b.priority! ? -1 : 1
+        )
         return suggestedActions
       }
     },
@@ -350,8 +348,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const organizationUsersForOrgId = organizationUsers.find(
-          (organizationUser: OrganizationUserType) => 
-            organizationUser.orgId === orgId)
+          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
+        )
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsersForOrgId
         }
@@ -359,7 +357,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           .get('organizationUsersByUserId')
           .load(viewerId)
         const viewerOrganizationUsersForOrgId = viewerOrganizationUsers.find(
-          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId)
+          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
+        )
         return viewerOrganizationUsersForOrgId ? organizationUsersForOrgId : null
       }
     },
@@ -369,21 +368,19 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       resolve: async ({id: userId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        organizationUsers.sort((
-          a: OrganizationUserType,
-          b: OrganizationUserType
-        ) => (a.orgId > b.orgId ? 1 : -1))
+        organizationUsers.sort((a: OrganizationUserType, b: OrganizationUserType) =>
+          a.orgId > b.orgId ? 1 : -1
+        )
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsers
         }
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers
-          .map(({orgId}: OrganizationUserType) => orgId)
-        return organizationUsers
-          .filter((organizationUser: OrganizationUserType) =>
-            viewerOrgIds.includes(organizationUser.orgId))
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
+        return organizationUsers.filter((organizationUser: OrganizationUserType) =>
+          viewerOrgIds.includes(organizationUser.orgId)
+        )
       }
     },
     organizations: {
@@ -395,10 +392,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(
           errorFilter
         )
-        organizations.sort((
-          a: OrganizationType,
-          b: OrganizationType
-        ) => (a.name > b.name ? 1 : -1))
+        organizations.sort((a: OrganizationType, b: OrganizationType) => (a.name > b.name ? 1 : -1))
         const viewerId = getUserId(authToken)
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizations
@@ -406,11 +400,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers
-          .map(({orgId}: OrganizationUserType) => orgId)
-        return organizations
-          .filter((organization: OrganizationType) => 
-            viewerOrgIds.includes(organization.id))
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
+        return organizations.filter((organization: OrganizationType) =>
+          viewerOrgIds.includes(organization.id)
+        )
       }
     },
     overLimitCopy: {
@@ -486,8 +479,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           teamId = meeting.teamId
         }
         const teamInvitations = await dataLoader.get('teamInvitationsByTeamId').load(teamId)
-        const teamInvitation = teamInvitations
-          .find((invitation: TeamInvitation) => invitation.email === email)
+        const teamInvitation = teamInvitations.find(
+          (invitation: TeamInvitation) => invitation.email === email
+        )
         return {teamInvitation, teamId, meetingId}
       }
     },
@@ -500,13 +494,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const teamIds =
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
-            : user.tms.filter((teamId: string) => 
-              authToken.tms.includes(teamId))
+            : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
         const teams = await dataLoader.get('teams').loadMany(teamIds)
-        teams.sort((
-          a: IGetTeamsByIdsQueryResult,
-          b: IGetTeamsByIdsQueryResult
-        ) => (a.name > b.name ? 1 : -1))
+        teams.sort((a: IGetTeamsByIdsQueryResult, b: IGetTeamsByIdsQueryResult) =>
+          a.name > b.name ? 1 : -1
+        )
         return teams
       }
     },
@@ -543,9 +535,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description: 'all the teams the user is a part of that the viewer can see',
       resolve: ({id: userId, tms}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        return viewerId === userId ?
-          tms :
-          tms.filter((teamId: string) => authToken.tms.includes(teamId))
+        return viewerId === userId
+          ? tms
+          : tms.filter((teamId: string) => authToken.tms.includes(teamId))
       }
     },
     updatedAt: {

@@ -32,11 +32,7 @@ export const timelineEventInterfaceFields = () => ({
   organization: {
     type: Organization,
     description: 'The organization this event is associated with',
-    resolve: (
-      {orgId}: {orgId: string},
-      _args: any,
-      {dataLoader}: GQLContext
-    ) => {
+    resolve: ({orgId}: {orgId: string}, _args: any, {dataLoader}: GQLContext) => {
       return dataLoader.get('organizations').load(orgId)
     }
   },
@@ -51,11 +47,7 @@ export const timelineEventInterfaceFields = () => ({
   team: {
     type: Team,
     description: 'The team that can see this event',
-    resolve: (
-      {teamId}: {teamId: string},
-      _args: any,
-      {dataLoader}: GQLContext
-    ) => {
+    resolve: ({teamId}: {teamId: string}, _args: any, {dataLoader}: GQLContext) => {
       return dataLoader.get('teams').load(teamId)
     }
   },
@@ -70,11 +62,7 @@ export const timelineEventInterfaceFields = () => ({
   user: {
     type: new GraphQLNonNull(User),
     description: 'The user than can see this event',
-    resolve: (
-      {userId}: {userId: string},
-      _args: any,
-      {dataLoader}: GQLContext
-    ) => {
+    resolve: ({userId}: {userId: string}, _args: any, {dataLoader}: GQLContext) => {
       return dataLoader.get('users').load(userId)
     }
   }

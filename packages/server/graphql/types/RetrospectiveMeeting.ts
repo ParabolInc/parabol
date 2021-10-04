@@ -31,7 +31,10 @@ const ReflectionGroupSortEnum = new GraphQLEnumType({
   }
 })
 
-const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
+const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<
+  any,
+  GQLContext
+>({
   name: 'RetrospectiveMeeting',
   interfaces: () => [NewMeeting],
   description: 'A retrospective meeting',
@@ -98,11 +101,9 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
           .get('retroReflectionGroupsByMeetingId')
           .load(meetingId)
         if (sortBy === 'voteCount') {
-          reflectionGroups
-            .sort((
-              a: ReflectionGroupType,
-              b: ReflectionGroupType
-            ) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
+          reflectionGroups.sort((a: ReflectionGroupType, b: ReflectionGroupType) =>
+            a.voterIds.length < b.voterIds.length ? 1 : -1
+          )
           return reflectionGroups
         } else if (sortBy === 'stageOrder') {
           const meeting = await dataLoader.get('newMeetings').load(meetingId)
@@ -116,18 +117,14 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
             const idx = stages.findIndex((stage) => stage.reflectionGroupId === group.id)
             sortLookup[group.id] = idx
           })
-          reflectionGroups.sort((
-            a: ReflectionGroupType,
-            b: ReflectionGroupType
-          ) => {
+          reflectionGroups.sort((a: ReflectionGroupType, b: ReflectionGroupType) => {
             return sortLookup[a.id] < sortLookup[b.id] ? -1 : 1
           })
           return reflectionGroups
         }
-        reflectionGroups.sort((
-          a: ReflectionGroupType,
-          b: ReflectionGroupType
-        ) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        reflectionGroups.sort((a: ReflectionGroupType, b: ReflectionGroupType) =>
+          a.sortOrder < b.sortOrder ? -1 : 1
+        )
         return reflectionGroups
       }
     },

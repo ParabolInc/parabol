@@ -19,7 +19,7 @@ import TeamMember from '../database/types/TeamMember'
 import {Loaders} from '../dataloader/RethinkDataLoader'
 
 export const resolveAgendaItem = (
-  {agendaItemId, agendaItem}: {agendaItemId: string, agendaItem: AgendaItem},
+  {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -27,8 +27,11 @@ export const resolveAgendaItem = (
 }
 
 export const resolveNewMeeting = (
-  {meeting, meetingId}: {
-    meetingId: string,
+  {
+    meeting,
+    meetingId
+  }: {
+    meetingId: string
     meeting: MeetingRetrospective | MeetingAction | MeetingPoker
   },
   _args: any,
@@ -38,7 +41,7 @@ export const resolveNewMeeting = (
 }
 
 export const resolveNotification = (
-  {notificationId, notification}: {notificationId: string, notification: Notification},
+  {notificationId, notification}: {notificationId: string; notification: Notification},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -46,7 +49,7 @@ export const resolveNotification = (
 }
 
 export const resolveMeetingMember = (
-  {meetingId, userId}: {meetingId: string, userId: string},
+  {meetingId, userId}: {meetingId: string; userId: string},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -56,7 +59,7 @@ export const resolveMeetingMember = (
 }
 
 export const resolveOrganization = (
-  {orgId, organization}: {orgId: string, organization: Organization},
+  {orgId, organization}: {orgId: string; organization: Organization},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -64,7 +67,7 @@ export const resolveOrganization = (
 }
 
 export const resolveTask = async (
-  {task, taskId}: {taskId: string, task: Task},
+  {task, taskId}: {taskId: string; task: Task},
   _args: any,
   {authToken, dataLoader}: GQLContext
 ) => {
@@ -86,13 +89,13 @@ export const resolveTasks = async (
   const {userId} = tasks[0]
   const isViewer = userId === getUserId(authToken)
   const teamTasks = tasks.filter(({teamId}: {teamId: string}) => authToken.tms.includes(teamId))
-  return isViewer ?
-    teamTasks :
-    nullIfEmpty(teamTasks.filter((p: Task) => !p.tags.includes('private')))
+  return isViewer
+    ? teamTasks
+    : nullIfEmpty(teamTasks.filter((p: Task) => !p.tags.includes('private')))
 }
 
 export const resolveTeam = (
-  {team, teamId}: {teamId: string, team: IGetTeamsByIdsQueryResult},
+  {team, teamId}: {teamId: string; team: IGetTeamsByIdsQueryResult},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -104,7 +107,7 @@ export const resolveTeam = (
 }
 
 export const resolveTeams = (
-  {teamIds, teams}: {teamIds: string, teams: IGetTeamsByIdsQueryResult[]},
+  {teamIds, teams}: {teamIds: string; teams: IGetTeamsByIdsQueryResult[]},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -116,7 +119,7 @@ export const resolveTeams = (
 }
 
 export const resolveTeamMember = (
-  {teamMemberId, teamMember}: {teamMemberId: string, teamMember: TeamMember},
+  {teamMemberId, teamMember}: {teamMemberId: string; teamMember: TeamMember},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -124,7 +127,7 @@ export const resolveTeamMember = (
 }
 
 export const resolveTeamMembers = (
-  {teamMemberIds, teamMembers}: {teamMemberIds: string, teamMembers: TeamMember[]},
+  {teamMemberIds, teamMembers}: {teamMemberIds: string; teamMembers: TeamMember[]},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -170,7 +173,7 @@ export const resolveGQLStagesFromPhase = ({
 }
 
 export const resolveUnlockedStages = async (
-  {meetingId, unlockedStageIds}: {meetingId: string, unlockedStageIds: string[]},
+  {meetingId, unlockedStageIds}: {meetingId: string; unlockedStageIds: string[]},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -180,7 +183,7 @@ export const resolveUnlockedStages = async (
 }
 
 export const resolveUser = (
-  {userId, user}: {userId: string, user: User},
+  {userId, user}: {userId: string; user: User},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -202,11 +205,7 @@ export const makeResolve = (
   docName: string,
   dataLoaderName: Loaders,
   isMany?: boolean
-) => (
-  source: any,
-  _args: any,
-  {dataLoader}: GQLContext
-) => {
+) => (source: any, _args: any, {dataLoader}: GQLContext) => {
   const idValue = source[idName]
   const method = isMany ? 'loadMany' : 'load'
   return idValue ? dataLoader.get(dataLoaderName)[method](idValue) : source[docName]
@@ -215,11 +214,7 @@ export const makeResolve = (
 export const resolveFilterByTeam = (
   resolver: (source: any, _args: any, context: GQLContext) => Promise<any>,
   getTeamId: (obj: any) => string
-) => async (
-  source: any,
-  _args: any,
-  context: GQLContext
-) => {
+) => async (source: any, _args: any, context: GQLContext) => {
   const {teamIdFilter} = source
   const resolvedArray = await resolver(source, _args, context)
   return teamIdFilter

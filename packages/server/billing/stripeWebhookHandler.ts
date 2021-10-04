@@ -4,7 +4,9 @@ import parseBody from '../parseBody'
 import publishWebhookGQL from '../utils/publishWebhookGQL'
 import StripeManager from '../utils/StripeManager'
 
-interface InvoiceEventCallBackArg {id: string}
+interface InvoiceEventCallBackArg {
+  id: string
+}
 
 const eventLookup = {
   invoice: {
@@ -72,7 +74,7 @@ const splitType = (type = '') => {
   const names = type.split('.')
   return {
     event: names[0],
-    subEvent: (names.length === 3 ? names[1] : undefined),
+    subEvent: names.length === 3 ? names[1] : undefined,
     action: names[names.length - 1]
   }
 }

@@ -12,20 +12,19 @@ import useTransition from '../hooks/useTransition'
 import {Breakpoint, Layout} from '../types/constEnums'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
+import StartMeetingFAB from './StartMeetingFAB'
 
 interface Props {
   meetingsDashRef: RefObject<HTMLDivElement>
   viewer: MeetingsDash_viewer | null
 }
 
-const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(
-  ({maybeTabletPlus}) => ({
-    padding: maybeTabletPlus ? 0 : 16,
-    display: 'flex',
-    flexWrap: 'wrap',
-    position: 'relative'
-  })
-)
+const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+  padding: maybeTabletPlus ? 0 : 16,
+  display: 'flex',
+  flexWrap: 'wrap',
+  position: 'relative'
+}))
 
 const EmptyContainer = styled('div')({
   display: 'flex',
@@ -80,13 +79,13 @@ const MeetingsDash = (props: Props) => {
             const {child} = meeting
             const {id, displayIdx} = child
             return (
-                <MeetingCard
-                  key={id}
-                  displayIdx={displayIdx}
+              <MeetingCard
+                key={id}
+                displayIdx={displayIdx}
                 meeting={meeting.child}
                 onTransitionEnd={meeting.onTransitionEnd}
                 status={meeting.status}
-                />
+              />
             )
           })}
         </Wrapper>
@@ -101,6 +100,7 @@ const MeetingsDash = (props: Props) => {
           ) : null}
         </EmptyContainer>
       )}
+      <StartMeetingFAB />
     </>
   )
 }

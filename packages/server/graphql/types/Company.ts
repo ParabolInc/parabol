@@ -42,8 +42,9 @@ const Company = new GraphQLObjectType<any, GQLContext>({
         const activeOrganizationUsers = organizationUsers.filter(
           (organizationUser: OrganizationUser) => !organizationUser.inactive
         )
-        const userIds = activeOrganizationUsers
-          .map((organizationUser: OrganizationUser) => organizationUser.userId)
+        const userIds = activeOrganizationUsers.map(
+          (organizationUser: OrganizationUser) => organizationUser.userId
+        )
         const uniqueUserIds = new Set(userIds)
         return uniqueUserIds.size
       }
@@ -190,8 +191,9 @@ const Company = new GraphQLObjectType<any, GQLContext>({
           await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds)
         ).filter(errorFilter)
         const organizationUsers = organizationUsersByOrgId.flat()
-        const userIds = organizationUsers
-          .map((organizationUser: OrganizationUser) => organizationUser.userId)
+        const userIds = organizationUsers.map(
+          (organizationUser: OrganizationUser) => organizationUser.userId
+        )
         const uniqueUserIds = new Set(userIds)
         return uniqueUserIds.size
       }

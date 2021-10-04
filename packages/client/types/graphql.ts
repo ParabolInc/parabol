@@ -49459,7 +49459,7 @@ export interface ITeamMember {
   /**
    * Is user a team lead?
    */
-  isLead: boolean | null;
+  isLead: boolean;
 
   /**
    * true if the user prefers to not vote during a poker meeting
@@ -49467,9 +49467,9 @@ export interface ITeamMember {
   isSpectatingPoker: boolean;
 
   /**
-   * hide the agenda list on the dashboard
+   * the type of drawer that is open in the team dash. Null if the drawer is closed
    */
-  hideAgenda: boolean;
+  openDrawer: TeamDrawer | null;
 
   /**
    * The user email
@@ -49562,6 +49562,14 @@ export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
   PARABOL = 'PARABOL'
+}
+
+/**
+ * The right drawer types available on the team dashboard
+ */
+export const enum TeamDrawer {
+  agenda = 'agenda',
+  manageTeam = 'manageTeam'
 }
 
 /**
@@ -55612,11 +55620,6 @@ export interface IMutation {
   startSprintPoker: StartSprintPokerPayload;
 
   /**
-   * Show/hide the agenda list
-   */
-  toggleAgendaList: ITeamMember | null;
-
-  /**
    * Update an agenda item
    */
   updateAgendaItem: IUpdateAgendaItemPayload | null;
@@ -55764,6 +55767,11 @@ export interface IMutation {
    * Update a task estimate
    */
   setTaskEstimate: SetTaskEstimatePayload;
+
+  /**
+   * Show/hide the drawer in the team dashboard
+   */
+  toggleTeamDrawer: ToggleTeamDrawerPayload;
 
   /**
    * Update how a parabol dimension maps to a GitHub label
@@ -56574,13 +56582,6 @@ export interface IStartSprintPokerOnMutationArguments {
   teamId: string;
 }
 
-export interface IToggleAgendaListOnMutationArguments {
-  /**
-   * the team to hide the agenda for
-   */
-  teamId: string;
-}
-
 export interface IUpdateAgendaItemOnMutationArguments {
   /**
    * The updated item including an id, content, status, sortOrder
@@ -56896,6 +56897,18 @@ export interface IPersistGitHubSearchQueryOnMutationArguments {
 
 export interface ISetTaskEstimateOnMutationArguments {
   taskEstimate: ITaskEstimateInput;
+}
+
+export interface IToggleTeamDrawerOnMutationArguments {
+  /**
+   * the team to show/hide the drawer for
+   */
+  teamId: string;
+
+  /**
+   * The type of team drawer that the viewer is toggling. Null if closing the drawer.
+   */
+  teamDrawerType?: TeamDrawer | null;
 }
 
 export interface IUpdateGitHubDimensionFieldOnMutationArguments {
@@ -59265,6 +59278,16 @@ export interface ITaskEstimateInput {
    */
   dimensionName: string;
   meetingId?: string | null;
+}
+
+/**
+ * Return object for ToggleTeamDrawerPayload
+ */
+export type ToggleTeamDrawerPayload = IErrorPayload | IToggleTeamDrawerSuccess;
+
+export interface IToggleTeamDrawerSuccess {
+  __typename: 'ToggleTeamDrawerSuccess';
+  teamMember: ITeamMember;
 }
 
 /**

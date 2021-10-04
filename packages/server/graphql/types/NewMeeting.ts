@@ -39,11 +39,7 @@ export const newMeetingFields = () => ({
   createdByUser: {
     type: new GraphQLNonNull(require('./User').default),
     description: 'The user that created the meeting',
-    resolve: (
-      {createdBy}: {createdBy: string},
-      _args: any,
-      {dataLoader}: GQLContext
-    ) => {
+    resolve: ({createdBy}: {createdBy: string}, _args: any, {dataLoader}: GQLContext) => {
       return dataLoader.get('users').load(createdBy)
     }
   },
@@ -63,7 +59,7 @@ export const newMeetingFields = () => ({
     type: new GraphQLNonNull(TeamMember),
     description: 'The facilitator team member',
     resolve: (
-      {facilitatorUserId, teamId}: {facilitatorUserId: string, teamId: string},
+      {facilitatorUserId, teamId}: {facilitatorUserId: string; teamId: string},
       _args: any,
       {dataLoader}: GQLContext
     ) => {
@@ -74,11 +70,7 @@ export const newMeetingFields = () => ({
   meetingMembers: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MeetingMember))),
     description: 'The team members that were active during the time of the meeting',
-    resolve: (
-      {id: meetingId}: {id: string},
-      _args: any,
-      {dataLoader}: GQLContext
-    ) => {
+    resolve: ({id: meetingId}: {id: string}, _args: any, {dataLoader}: GQLContext) => {
       return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     }
   },
@@ -96,11 +88,7 @@ export const newMeetingFields = () => ({
   organization: {
     type: new GraphQLNonNull(Organization),
     description: 'The organization this meeting belongs to',
-    resolve: async (
-      {teamId}: {teamId: string},
-      _args: any,
-      {dataLoader}: GQLContext
-    ) => {
+    resolve: async ({teamId}: {teamId: string}, _args: any, {dataLoader}: GQLContext) => {
       const team = await dataLoader.get('teams').load(teamId)
       const {orgId} = team
       return dataLoader.get('organizations').load(orgId)
@@ -109,13 +97,7 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: (
-      {phases, id: meetingId, teamId}: {
-        phases: any,
-        id: string,
-        teamId: string
-      }
-    ) => {
+    resolve: ({phases, id: meetingId, teamId}: {phases: any; id: string; teamId: string}) => {
       return phases.map((phase: any) => ({
         ...phase,
         meetingId,

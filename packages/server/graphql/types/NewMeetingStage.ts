@@ -7,7 +7,7 @@ import {
   GraphQLNonNull
 } from 'graphql'
 import AuthToken from '../../database/types/AuthToken'
-import GenericMeetingPhase,{
+import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum as NewMeetingPhaseTypeEnumType
 } from '../../database/types/GenericMeetingPhase'
 import {getUserId} from '../../utils/authorization'
@@ -45,11 +45,8 @@ export const newMeetingStageFields = () => ({
   meeting: {
     type: NewMeeting,
     description: 'The meeting this stage belongs to',
-    resolve: (
-      {meetingId}: {meetingId: string},
-      _args: any,
-      {dataLoader}: GQLContext
-    ) => dataLoader.get('newMeetings').load(meetingId)
+    resolve: ({meetingId}: {meetingId: string}, _args: any, {dataLoader}: GQLContext) =>
+      dataLoader.get('newMeetings').load(meetingId)
   },
   isComplete: {
     type: new GraphQLNonNull(GraphQLBoolean),
@@ -68,14 +65,13 @@ export const newMeetingStageFields = () => ({
     type: NewMeetingPhase,
     description: 'The phase this stage belongs to',
     resolve: async (
-      {meetingId, phaseType}: {meetingId: string, phaseType: NewMeetingPhaseTypeEnumType},
+      {meetingId, phaseType}: {meetingId: string; phaseType: NewMeetingPhaseTypeEnumType},
       _args: any,
       {dataLoader}: GQLContext
     ) => {
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       const {phases} = meeting
-      return phases.find((phase: GenericMeetingPhase) =>
-        phase.phaseType === phaseType)
+      return phases.find((phase: GenericMeetingPhase) => phase.phaseType === phaseType)
     }
   },
   phaseType: {
@@ -110,16 +106,16 @@ export const newMeetingStageFields = () => ({
     type: GraphQLNonNull(GraphQLInt),
     description: 'the number of meeting members ready to advance, excluding the facilitator',
     resolve: async (
-      {meetingId, readyToAdvance}: {meetingId: string, readyToAdvance: string[]},
+      {meetingId, readyToAdvance}: {meetingId: string; readyToAdvance: string[]},
       _args: any,
       {dataLoader}: GQLContext,
-      ref: any) => {
+      ref: any
+    ) => {
       if (!readyToAdvance) return 0
       if (!meetingId) console.log('no meetingid', ref)
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       const {facilitatorUserId} = meeting
-      return readyToAdvance.filter((userId: string) => 
-        userId !== facilitatorUserId).length
+      return readyToAdvance.filter((userId: string) => userId !== facilitatorUserId).length
     }
   },
   scheduledEndTime: {
