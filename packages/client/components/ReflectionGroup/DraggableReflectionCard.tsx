@@ -53,6 +53,24 @@ const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDragga
 
 export type ReflectionDragState = ReturnType<typeof makeDragState>
 
+const updateSpotlightDrag = (
+  drag: ReflectionDragState,
+  isBehindSpotlight: boolean,
+  isInSpotlight: boolean,
+  spotlightGroupId?: string
+) => {
+  drag.isBehindSpotlight = isBehindSpotlight
+  if (isInSpotlight && spotlightGroupId) {
+    drag.dropZoneType = DragAttribute.DROPZONE_SPOTLIGHT
+    drag.droppableType = DragAttribute.DROPPABLE_SPOTLIGHT
+    drag.spotlightGroupId = spotlightGroupId
+  } else {
+    drag.dropZoneType = DragAttribute.DROPZONE
+    drag.droppableType = DragAttribute.DROPPABLE
+    drag.spotlightGroupId = null
+  }
+}
+
 interface Props {
   isClipped?: boolean
   isDraggable?: boolean
@@ -93,16 +111,7 @@ const DraggableReflectionCard = (props: Props) => {
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  drag.isBehindSpotlight = isBehindSpotlight
-  if (isInSpotlight) {
-    drag.dropZoneType = DragAttribute.DROPZONE_SPOTLIGHT
-    drag.droppableType = DragAttribute.DROPPABLE_SPOTLIGHT
-    drag.spotlightGroupId = spotlightGroup.id
-  } else {
-    drag.dropZoneType = DragAttribute.DROPZONE
-    drag.droppableType = DragAttribute.DROPPABLE
-    drag.spotlightGroupId = null
-  }
+  updateSpotlightDrag(drag, isBehindSpotlight, isInSpotlight, spotlightGroup?.id)
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
