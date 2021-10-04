@@ -49467,7 +49467,7 @@ export interface ITeamMember {
   isSpectatingPoker: boolean;
 
   /**
-   * the type of drawer that is open in the team dash. Null if neither are open
+   * the type of drawer that is open in the team dash. Null if the drawer is closed
    */
   openDrawer: TeamDrawer | null;
 
@@ -59287,7 +59287,6 @@ export type ToggleTeamDrawerPayload = IErrorPayload | IToggleTeamDrawerSuccess;
 
 export interface IToggleTeamDrawerSuccess {
   __typename: 'ToggleTeamDrawerSuccess';
-  team: ITeam;
   teamMember: ITeamMember;
 }
 

@@ -135,7 +135,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+  new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -179,7 +179,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ; (phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -201,7 +201,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.ops[op](variables, botId)
       return mutations
     }
-    const timeout = (window as any).Cypress ? 400 : delay
 
     this.pendingBotTimeout = window.setTimeout(() => {
       this.pendingBotTimeout = undefined
@@ -210,7 +209,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.pendingBotAction = undefined
       }
       this.startBot()
-    }, timeout)
+    }, delay)
   }
 
   isBotFinished = () => {
