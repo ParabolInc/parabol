@@ -33,16 +33,14 @@ const getEmptiestColumnIdx = (
 // update the similarReflectionGroup to reflect this
 const handleUpdateSpotlightResults = (
   reflection: RecordProxy,
-  reflectionGroup: RecordProxy,
+  reflectionGroup: RecordProxy | null,
   oldReflectionGroupId: string,
   store: RecordSourceSelectorProxy
 ) => {
-  const reflectionGroupId = reflection.getValue('reflectionGroupId')
-  const reflectionId = reflection.getValue('id')
-  if (reflectionGroupId === oldReflectionGroupId) return
   const meetingId = reflection.getValue('meetingId') as string
   const meeting = store.get(meetingId)
-  if (!meeting) return
+  // reflectionGroup is null if there's no target type
+  if (!meeting || !reflectionGroup) return
   const spotlightGroup = meeting?.getLinkedRecord('spotlightGroup')
   const spotlightGroupId = spotlightGroup?.getValue('id')
   const viewer = store.getRoot().getLinkedRecord('viewer')
@@ -52,37 +50,31 @@ const handleUpdateSpotlightResults = (
     searchQuery: ''
   })
   if (!similarReflectionGroups) return
-  const wasInSpotlightGroups = similarReflectionGroups.find(
-    (group) => group.getValue('id') === oldReflectionGroupId
-  )
-  const isInSpotlightGroups = similarReflectionGroups.find(
-    (group) => group.getValue('id') === reflectionGroupId
-  )
+  const reflectionsCount = reflectionGroup?.getLinkedRecords('reflections')?.length
+  const oldReflections = store.get(oldReflectionGroupId)?.getLinkedRecords('reflections')
+  const reflectionId = reflection.getValue('id')
+  const isStaleGroup =
+    oldReflections?.length === 1 && oldReflections[0].getValue('id') === reflectionId
   // added to an existing group. old reflection group needs to be removed
-  if (isInSpotlightGroups && wasInSpotlightGroups) {
-    const removedReflectionGroup = store.get(oldReflectionGroupId)
-    // make sure the old group is empty
-    const oldReflections = removedReflectionGroup?.getLinkedRecords('reflections')
-    const oldReflectionIds = oldReflections?.map((reflection) => reflection.getValue('id'))
-    if (oldReflectionIds?.length === 1 && oldReflectionIds[0] === reflectionId) {
-      safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
-        storageKeyArgs: {
-          reflectionGroupId: spotlightGroupId,
-          searchQuery: ''
-        }
-      })
-    }
+  if (isStaleGroup) {
+    safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
+      storageKeyArgs: {
+        reflectionGroupId: spotlightGroupId,
+        searchQuery: ''
+      }
+    })
   }
   // ungrouping created a new group id which needs to be added to Spotlight
-  else if (!isInSpotlightGroups && wasInSpotlightGroups) {
+  else if (reflectionsCount === 1) {
     const sortOrders = similarReflectionGroups.map((group) => ({
       sortOrder: group.getValue('sortOrder') as number
     }))
     const nextSortOrder = getNextSortOrder(sortOrders)
-    reflectionGroup.setValue(nextSortOrder, 'sortOrder')
     const maxSpotlightColumns = viewer.getValue('maxSpotlightColumns') as number
     const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups, maxSpotlightColumns)
-    reflectionGroup.setValue(emptiestColumnIdx, 'spotlightColumnIdx')
+    reflectionGroup
+      .setValue(nextSortOrder, 'sortOrder')
+      .setValue(emptiestColumnIdx, 'spotlightColumnIdx')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionGroupId: spotlightGroupId,
