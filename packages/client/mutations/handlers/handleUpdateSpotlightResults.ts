@@ -37,7 +37,6 @@ const handleUpdateSpotlightResults = (
   oldReflectionGroupId: string,
   store: RecordSourceSelectorProxy
 ) => {
-  const reflectionId = reflection.getValue('id')
   const meetingId = reflection.getValue('meetingId') as string
   const meeting = store.get(meetingId)
   // reflectionGroup is null if there's no target type
@@ -53,6 +52,7 @@ const handleUpdateSpotlightResults = (
   if (!similarReflectionGroups) return
   const reflectionsCount = reflectionGroup?.getLinkedRecords('reflections')?.length
   const oldReflections = store.get(oldReflectionGroupId)?.getLinkedRecords('reflections')
+  const reflectionId = reflection.getValue('id')
   const isStaleGroup =
     oldReflections?.length === 1 && oldReflections[0].getValue('id') === reflectionId
   // added to an existing group. old reflection group needs to be removed
