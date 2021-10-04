@@ -16,11 +16,8 @@ import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import SpotlightGroups from './SpotlightGroups'
 import useGetRefHeight from '../hooks/useGetRefHeight'
-import {
-  MAX_SPOTLIGHT_COLUMNS,
-  SPOTLIGHT_GROUPS_PADDING,
-  SPOTLIGHT_TOP_SECTION_HEIGHT
-} from '~/utils/constants'
+import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
@@ -187,7 +184,9 @@ const SpotlightModal = (props: Props) => {
   const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
   const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
   const columnsRefHeight = useGetRefHeight(columnsRef, 0, phaseRef)
-  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + SPOTLIGHT_GROUPS_PADDING * 2
+  const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const groupsPadding = isDesktop ? 64 : 54
+  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + groupsPadding
   const modalHeight = SPOTLIGHT_TOP_SECTION_HEIGHT + groupsHeight
   if (!meeting) return null
   const {spotlightReflection} = meeting
