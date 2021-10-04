@@ -209,15 +209,15 @@ const useDragAndDrop = (
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e, drag.droppableType)
-    const isTargetSpotlightGroups = !!(
-      drag.spotlightGroupId && targetGroupId !== drag.spotlightGroupId
+    const isInvalidSpotlightDrag = !!(
+      drag.spotlightGroupId &&
+      reflectionGroupId !== drag.spotlightGroupId &&
+      targetGroupId !== drag.spotlightGroupId
     )
-    const isSpotlightSourceGroup = drag.spotlightGroupId === reflectionGroupId
-    const isInvalidSpotlightDrag = isTargetSpotlightGroups && !isSpotlightSourceGroup
     const targetType: DragReflectionDropTargetTypeEnum | null =
       targetGroupId && reflectionGroupId !== targetGroupId && !isInvalidSpotlightDrag
         ? 'REFLECTION_GROUP'
-        : !targetGroupId && reflectionCount > 0
+        : !targetGroupId && reflectionCount > 0 && !isInvalidSpotlightDrag
         ? 'REFLECTION_GRID'
         : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
