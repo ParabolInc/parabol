@@ -200,7 +200,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.ops[op](variables, botId)
       return mutations
     }
-    const timeout = (window as any).Cypress ? 400 : delay
 
     this.pendingBotTimeout = window.setTimeout(() => {
       this.pendingBotTimeout = undefined
@@ -209,7 +208,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.pendingBotAction = undefined
       }
       this.startBot()
-    }, timeout)
+    }, delay)
   }
 
   isBotFinished = () => {

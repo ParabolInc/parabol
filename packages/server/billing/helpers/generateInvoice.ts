@@ -74,7 +74,7 @@ const getEmailLookup = async (userIds: string[]) => {
   return usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email
     return dict
-  }, {}) as EmailLookup
+  }, {} as {[key: string]: string}) as EmailLookup
 }
 
 const reduceItemsByType = (typesDict: TypesDict, email: string) => {
@@ -148,7 +148,7 @@ const makeDetailedPauseEvents = (
 
 const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) => {
   const quantityChangeLineItems: QuantityChangeLineItem[] = []
-  const lineItemTypes = Object.keys(detailedLineItems) as InvoiceLineItemEnum[]
+  const lineItemTypes = Object.keys(detailedLineItems) as (keyof DetailedLineItemDict)[]
   for (let i = 0; i < lineItemTypes.length; i++) {
     const lineItemType = lineItemTypes[i]
     const details = detailedLineItems[lineItemType] as ReducedItem[]
@@ -200,7 +200,9 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
     metadata: {userId, type},
     period: {start}
   } = lineItem
-  const safeType = type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
+  const safeType = (type === InvoiceItemType.AUTO_PAUSE_USER
+    ? InvoiceItemType.PAUSE_USER
+    : type) as keyof TypesDict
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
   itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}
