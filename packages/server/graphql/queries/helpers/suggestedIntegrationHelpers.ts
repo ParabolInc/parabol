@@ -76,10 +76,15 @@ export const getTeamIntegrationsByUserId = async (
       lastUsedAt: row('reduction')
     }))
     .run()
-  return res.map((item) => ({
-    ...item,
-    id: makeSuggestedIntegrationId(item)
-  }))
+  return (
+    res
+      // jira integrations are making it through that don't have a projectKey
+      .filter((res) => res.service !== 'jira' || res.projectKey)
+      .map((item) => ({
+        ...item,
+        id: makeSuggestedIntegrationId(item)
+      }))
+  )
 }
 
 export const getPermsByTaskService = async (
