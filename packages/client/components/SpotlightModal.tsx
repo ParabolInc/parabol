@@ -205,9 +205,7 @@ const SpotlightModal = (props: Props) => {
     const {current: ids} = spotlightReflectionIds
     if (!ids && firstReflectionId) {
       spotlightReflectionIds.current = [firstReflectionId]
-    }
-    // TODO: uncomment for groups -> source issue
-    else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
+    } else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
       spotlightReflectionIds.current = [...ids, firstReflectionId]
     } else if (!firstReflectionId || !ids?.includes(firstReflectionId)) {
       timeout = window.setTimeout(() => {

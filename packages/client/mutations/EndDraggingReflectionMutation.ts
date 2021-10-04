@@ -97,7 +97,7 @@ export const moveReflectionLocation = (
   if (!reflection) return
   const reflectionId = reflection.getValue('id') as string
 
-  // handleUpdateSpotlightResults(reflection, reflectionGroup, oldReflectionGroupId, store)
+  handleUpdateSpotlightResults(reflection, reflectionGroup, oldReflectionGroupId, store)
   handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
   handleAddReflectionToGroup(reflection, store)
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
@@ -121,7 +121,6 @@ export const endDraggingReflectionMeetingUpdater: SharedUpdater<EndDraggingRefle
     reflection.setValue(nextDragStarts, 'ignoreDragStarts')
     reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
   }
-  handleUpdateSpotlightResults(reflection, reflectionGroup, oldReflectionGroupId, store)
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
 }
 
@@ -152,7 +151,6 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       reflection.setValue(false, 'isViewerDragging')
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
-      handleUpdateSpotlightResults(reflection, reflectionGroup, oldReflectionGroupId, store)
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {
