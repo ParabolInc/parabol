@@ -1,37 +1,29 @@
+import getPg from '../postgres/getPg'
 import getRethink from '../database/rethinkDriver'
-import getDomainFromEmail from './getDomainFromEmail'
 import isCompanyDomain from './isCompanyDomain'
 
-const getGroupMajority = (tlds: string[]) => {
-  const countByDomain = {} as {[tld: string]: number}
-  tlds.forEach((tld) => {
-    countByDomain[tld] = countByDomain[tld] || 0
-    countByDomain[tld]++
-  })
-  let maxCount = 0
-  let maxDomain = ''
-  Object.keys(countByDomain).forEach((tld) => {
-    const curCount = countByDomain[tld]
-    if (curCount > maxCount) {
-      maxCount = curCount
-      maxDomain = tld
-    }
-  })
-  return maxDomain || undefined
-}
-
+// Most used company domain for a given orgId
 const getActiveDomainForOrgId = async (orgId: string) => {
   const r = await getRethink()
-  const emails = await r
+  const pg = getPg()
+
+  const userIds = await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null})
-    .map((row) => r.table('User').get(row('userId'))('email'))
+    .filter({removedAt: null})('userId')
     .run()
 
-  const domains = emails.map(getDomainFromEmail)
-  const companyDomains = domains.filter(isCompanyDomain)
-  return getGroupMajority(companyDomains)
+  const domainCount = await pg.query(
+    `SELECT count(*) as total, split_part(email, '@', 2) as "domain" from "User"
+     WHERE id = ANY($1::text[])
+     GROUP BY split_part(email, '@', 2)
+     ORDER BY total DESC`,
+    [userIds]
+  )
+
+  const activeDomain = domainCount.rows.find((row) => isCompanyDomain(row.domain))?.domain
+
+  return activeDomain
 }
 
 export default getActiveDomainForOrgId
