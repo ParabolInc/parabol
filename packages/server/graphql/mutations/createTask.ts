@@ -27,7 +27,7 @@ const validateTaskMeetingId = async (
   dataLoader: DataLoaderWorker
 ) => {
   if (!meetingId) return undefined
-  const meetingMemberId = MeetingMemberId.join({meetingId, userId: viewerId})
+  const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
   const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
   if (!meetingMember) return 'Viewer is not in meeting'
   return undefined

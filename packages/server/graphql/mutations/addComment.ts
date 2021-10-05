@@ -49,7 +49,7 @@ const addComment = {
     if (!meetingId) {
       return {error: {message: 'Discussion does not take place in a meeting'}}
     }
-    const meetingMemberId = MeetingMemberId.join({meetingId, userId: viewerId})
+    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
     const [meeting, viewerMeetingMember] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('meetingMembers').load(meetingMemberId)

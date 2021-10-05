@@ -446,7 +446,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           return standardError(new Error('Invalid reflection id'), {userId})
         }
         const {meetingId} = retroReflection
-        const meetingMemberId = MeetingMemberId.join({meetingId, userId})
+        const meetingMemberId = MeetingMemberId.join(meetingId, userId)
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
@@ -474,8 +474,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             (group) => group.reflectionId === reflectionId
           )
           if (!spotlightGroup) break
-          for (const groupedReflection of groupedReflectionsRes) {
-            const {reflectionGroupId, oldReflectionGroupId} = groupedReflection
+          for (const groupedReflectionRes of groupedReflectionsRes) {
+            const {reflectionGroupId, oldReflectionGroupId} = groupedReflectionRes
             if (
               reflectionGroupId === spotlightGroup.reflectionGroupId &&
               oldReflectionGroupId !== spotlightGroup.oldReflectionGroupId
@@ -483,7 +483,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
               spotlightResultGroupIds.add(oldReflectionGroupId)
             }
             currentThresh = nextThresh
-            if (spotlightResultGroupIds.size >= spotlightResultGroupSize) break
+            if (spotlightResultGroupIds.size >= spotlightResultGroupSize) {
+              currentThresh = null
+              break
+            }
           }
         }
         const slicedIds = Array.from(spotlightResultGroupIds).slice(0, spotlightResultGroupSize)
