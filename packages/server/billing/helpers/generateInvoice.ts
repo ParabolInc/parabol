@@ -351,7 +351,7 @@ export default async function generateInvoice(
   }).run()
 
   const billingLeaders = await getUsersById(billingLeaderIds)
-  const billingLeaderEmails = billingLeaders?.map((user) => user.email) ?? []
+  const billingLeaderEmails = billingLeaders.map((user) => user.email)
 
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null
 

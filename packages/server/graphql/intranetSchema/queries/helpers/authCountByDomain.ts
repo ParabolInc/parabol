@@ -18,8 +18,7 @@ const authCountByDomain = async (
         `SELECT count(*) as total, split_part(email, '@', 2) as "domain" from "User"
          WHERE (NOT $1 OR inactive = FALSE)
          AND "${filterField}" >= $2
-         GROUP BY split_part(email, '@', 2)
-         `,
+         GROUP BY split_part(email, '@', 2)`,
         [countOnlyActive ?? false, after]
       )
     : await pg.query(

@@ -23,7 +23,7 @@ const updateEmail = {
   resolve: async (
     _source,
     {oldEmail, newEmail}: {oldEmail: string; newEmail: string},
-    {authToken, dataLoader}: InternalContext
+    {authToken}: InternalContext
   ) => {
     const r = await getRethink()
 
@@ -62,7 +62,6 @@ const updateEmail = {
       updateUser(updates, userId),
       db.write('User', userId, updates)
     ])
-    await dataLoader.get('users').clear(userId)
 
     return true
   }

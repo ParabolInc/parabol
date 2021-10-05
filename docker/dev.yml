@@ -1,28 +1,29 @@
-version: '3.7'
+
+version: "3.7"
 
 services:
   db:
     image: rethinkdb:latest
     restart: unless-stopped
     ports:
-      - '8080:8080'
-      - '29015:29015'
-      - '28015:28015'
+      - "8080:8080"
+      - "29015:29015"
+      - "28015:28015"
     volumes:
       - rethink-data:/data
     networks:
       - parabol-network
   postgres:
     build:
-      context: '../packages/server/postgres'
+      context: "../packages/server/postgres"
     restart: unless-stopped
     env_file: ../.env
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - '../packages/server/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf'
-      - 'postgres-data:/data'
-    command: 'postgres -c config_file=/usr/local/etc/postgres/postgres.conf'
+      - "../packages/server/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf"
+      - "postgres-data:/data"
+    command: "postgres -c config_file=/usr/local/etc/postgres/postgres.conf"
     networks:
       - parabol-network
   pgadmin:
@@ -32,9 +33,9 @@ services:
       - postgres
     env_file: ../.env
     volumes:
-      - 'pgadmin-data:/var/lib/pgadmin'
+       - "pgadmin-data:/var/lib/pgadmin"
     ports:
-      - '5050:80'
+      - "5050:80"
     networks:
       - parabol-network
     restart: unless-stopped
@@ -42,22 +43,9 @@ services:
     image: redis:latest
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis-data:/data
-    networks:
-      - parabol-network
-  redis-commander:
-    container_name: redis-commander
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    depends_on:
-      - redis
-    ports:
-      - '8081:8081'
     networks:
       - parabol-network
 networks:
