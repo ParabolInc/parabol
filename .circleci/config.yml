@@ -11,7 +11,7 @@ jobs:
           POSTGRES_DB: 'web'
           POSTGRES_HOST: 'localhost'
           POSTGRES_PORT: '5432'
-      - image: redis:3.2.8
+      - image: redis:6.2.6-alpine
         environment:
           TERM: xterm
     environment:
@@ -59,6 +59,16 @@ jobs:
           name: DevOps checkout
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+      - run:
+          name: GraphQL server tests
+          command: |
+            cp $DEVOPS_WORKDIR/environments/cypress .env
+            echo SOCKET_PORT=3001 >> .env
+            yarn dev &
+            DEV_PID=$!
+            curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
+            yarn workspace parabol-server test --forceExit
+            kill $DEV_PID
       - run:
           name: Build Assets
           command: |
