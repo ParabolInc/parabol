@@ -8,6 +8,8 @@ import getMailManager from '../../../email/getMailManager'
 import {requireSU} from '../../../utils/authorization'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
+import {getUsersById} from '../../../postgres/queries/getUsersById'
+import IUser from '../../../postgres/types/IUser'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]
@@ -21,18 +23,21 @@ const makePeriodEndStr = (periodEnd: Date) => {
   return `${monthStr} ${day}`
 }
 
-const getEmailDetails = (organizations) => {
+const getEmailDetails = (organizations, userMap: Map<string, IUser>) => {
   const details = [] as Details[]
   for (let ii = 0; ii < organizations.length; ii++) {
     const organization = organizations[ii]
     const {id: orgId, billingLeaders, periodEnd} = organization
-    const newUsers = organization.newUsers.map((newUser) => ({
-      email: newUser.user.email,
-      name: newUser.user.preferredName
-    }))
+    const newUsers = organization.newUsers.map((id) => {
+      const newUser = userMap.get(id)
+      return {
+        email: newUser?.email,
+        name: newUser?.preferredName
+      }
+    })
     details.push({
       appOrigin,
-      emails: billingLeaders.map((billingLeader) => billingLeader.user.email),
+      emails: billingLeaders.map((id) => userMap.get(id)?.email),
       periodEndStr: makePeriodEndStr(periodEnd),
       memberUrl: makeAppURL(appOrigin, `me/organizations/${orgId}/members`),
       newUsers
@@ -71,14 +76,8 @@ const sendUpcomingInvoiceEmails = {
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
           .filter((organizationUser) => organizationUser('newUserUntil').ge(now))
-          .filter({removedAt: null, role: null})
+          .filter({removedAt: null, role: null})('userId')
           .coerceTo('array')
-          .merge((organizationUser) => ({
-            user: r
-              .table('User')
-              .get(organizationUser('userId'))
-              .pluck('preferredName', 'email')
-          }))
       }))
       .filter((organization) =>
         organization('newUsers')
@@ -89,21 +88,26 @@ const sendUpcomingInvoiceEmails = {
         billingLeaders: r
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
-          .filter({role: 'BILLING_LEADER', removedAt: null})
+          .filter({role: 'BILLING_LEADER', removedAt: null})('userId')
           .coerceTo('array')
-          .merge((organizationUser) => ({
-            user: r
-              .table('User')
-              .get(organizationUser('userId'))
-              .pluck('preferredName', 'email')
-          }))
       }))
       .coerceTo('array')
       .run()
 
     if (organizations.length === 0) return []
 
-    const details = getEmailDetails(organizations)
+    // collect all users to reduce roundtrips to db and do the merging when formatting the data
+    const allUserIds = organizations.reduce(
+      (prev, cur) => prev.concat(cur.billingLeaders, cur.newUsers),
+      [] as string[]
+    )
+    const allUsers = await getUsersById(allUserIds)
+    const allUserMap = allUsers.reduce((prev, cur) => {
+      prev.set(cur.id, cur)
+      return prev
+    }, new Map<string, IUser>())
+
+    const details = getEmailDetails(organizations, allUserMap)
     await Promise.all(
       details.map((detail) => {
         const {emails, ...props} = detail
