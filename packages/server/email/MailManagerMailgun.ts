@@ -14,7 +14,7 @@ export default class MailManagerMailgun extends MailManager {
     const toArr = Array.isArray(to) ? to : [to]
     const toStr = toArr.join(',')
     try {
-      await this.mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
+      await this.mailgunClient.messages.create(process.env.MAILGUN_DOMAIN!, {
         to: toStr,
         from: process.env.MAIL_FROM,
         subject,

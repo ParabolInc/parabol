@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
+import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import fkLoader from './fkLoader'
@@ -17,11 +18,12 @@ const loaderMakers = {
   ...primaryLoaderMakers,
   ...foreignLoaderMakers,
   ...customLoaderMakers,
-  ...atlassianLoaders
+  ...atlassianLoaders,
+  ...pollLoaders
 } as const
 
 type LoaderMakers = typeof loaderMakers
-type Loaders = keyof LoaderMakers
+export type Loaders = keyof LoaderMakers
 
 type PrimaryLoaderMakers = typeof primaryLoaderMakers
 type PrimaryLoaders = keyof PrimaryLoaderMakers
@@ -33,7 +35,7 @@ type ForeignLoaders = keyof ForeignLoaderMakers
 type Unforeign<T> = T extends LoaderMakerForeign<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
-type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders
+type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof pollLoaders
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RethinkDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>

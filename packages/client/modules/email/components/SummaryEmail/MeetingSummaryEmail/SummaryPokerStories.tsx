@@ -70,7 +70,7 @@ const SummaryPokerStories = (props: Props) => {
                 } else if (integration?.__typename === '_xGitHubIssue') {
                   title = integration.title
                 }
-                const urlPath = `/meet/${meetingId}/estimate/${usedTaskIds.size}`
+                const urlPath = `/meet/${meetingId}/estimate/${idx + 1}`
                 const to = isEmail
                   ? makeAppURL(appOrigin, urlPath, {
                       searchParams: {

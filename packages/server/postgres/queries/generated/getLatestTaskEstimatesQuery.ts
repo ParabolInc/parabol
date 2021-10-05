@@ -1,11 +1,11 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getLatestTaskEstimatesQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type ChangeSourceEnum = 'meeting' | 'task' | 'external';
+export type ChangeSourceEnum = 'external' | 'meeting' | 'task';
 
 /** 'GetLatestTaskEstimatesQuery' parameters type */
 export interface IGetLatestTaskEstimatesQueryParams {
-  taskIds: Array<string | null | void>;
+  taskIds: readonly (string | null | void)[];
 }
 
 /** 'GetLatestTaskEstimatesQuery' return type */
@@ -21,6 +21,7 @@ export interface IGetLatestTaskEstimatesQueryResult {
   stageId: string | null;
   discussionId: string | null;
   jiraFieldId: string | null;
+  githubLabelName: string | null;
 }
 
 /** 'GetLatestTaskEstimatesQuery' query type */

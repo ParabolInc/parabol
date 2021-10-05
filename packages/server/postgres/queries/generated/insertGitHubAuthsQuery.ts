@@ -3,7 +3,7 @@ import { PreparedQuery } from '@pgtyped/query';
 
 /** 'InsertGitHubAuthsQuery' parameters type */
 export interface IInsertGitHubAuthsQueryParams {
-  auths: Array<{
+  auths: readonly ({
     accessToken: string | null | void,
     createdAt: Date | null | void,
     updatedAt: Date | null | void,
@@ -11,7 +11,7 @@ export interface IInsertGitHubAuthsQueryParams {
     login: string | null | void,
     teamId: string | null | void,
     userId: string | null | void
-  }>;
+  })[];
 }
 
 /** 'InsertGitHubAuthsQuery' return type */

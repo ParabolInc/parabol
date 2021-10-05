@@ -5,9 +5,9 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
 import db from '../../../db'
 import UpdateWatchlistPayload from '../../types/UpdateWatchlistPayload'
+import {InternalContext} from '../../graphql'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
-import {InternalContext} from '../../graphql'
 
 const updateWatchlist = {
   type: GraphQLNonNull(UpdateWatchlistPayload),
@@ -65,7 +65,8 @@ const updateWatchlist = {
         .getAll(r.args(userIds))
         .update(update)
         .run(),
-      updateUser(update, userIds)
+      updateUser(update, userIds),
+      db.writeMany('User', userIds, update)
     ])
     const dl = dataLoader.get('users')
     await Promise.all(userIds.map((userId) => dl.clear(userId)))

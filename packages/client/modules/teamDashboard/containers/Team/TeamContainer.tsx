@@ -8,8 +8,8 @@ import useRouter from '../../../../hooks/useRouter'
 import {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
 import Team from '../../components/Team/Team'
 
-const AgendaTasks = lazy(() =>
-  import(/* webpackChunkName: 'AgendaAndTasksRoot' */ '../../components/AgendaAndTasksRoot')
+const TeamDashMain = lazy(() =>
+  import(/* webpackChunkName: 'TeamDashMainRoot' */ '../../components/TeamDashMainRoot')
 )
 const TeamSettings = lazy(() =>
   import(
@@ -71,7 +71,7 @@ const TeamContainer = (props: Props) => {
         <Suspense fallback={''}>
           <Switch>
             {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
-            <Route exact path={match.path} component={AgendaTasks} />
+            <Route exact path={match.path} component={TeamDashMain} />
             <Route path={`${match.path}/settings`} component={TeamSettings} />
             <Route
               path={`${match.path}/archive`}

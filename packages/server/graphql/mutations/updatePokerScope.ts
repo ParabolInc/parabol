@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {Writeable} from '../../../client/types/generics'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
@@ -11,7 +12,7 @@ import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
-import RedisLock from '../../utils/RedisLock'
+import RedisLockQueue from '../../utils/RedisLockQueue'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
@@ -68,7 +69,7 @@ const updatePokerScope = {
     }
 
     // lock the meeting while the scope is updating
-    const redisLock = new RedisLock(`meeting:${meetingId}`, 3000)
+    const redisLock = new RedisLockQueue(`meeting:${meetingId}`, 3000)
     await redisLock.lock(10000)
 
     // RESOLUTION
@@ -110,7 +111,7 @@ const updatePokerScope = {
     const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
     const {dimensions} = templateRef
     const firstDimensionName = dimensions[0].name
-    const newDiscussions = [] as InputDiscussions
+    const newDiscussions = [] as Writeable<InputDiscussions>
     const additiveUpdates = updates.filter((update) => {
       const {action, serviceTaskId} = update
       return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)

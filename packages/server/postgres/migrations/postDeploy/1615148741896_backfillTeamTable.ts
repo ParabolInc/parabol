@@ -2,10 +2,9 @@ import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import Team from '../../../database/types/Team'
+import {TEAM_NAME_LIMIT} from '../../constants'
 import getPg from '../../getPg'
 import {backupTeamQuery, IBackupTeamQueryParams} from '../../queries/generated/backupTeamQuery'
-import catchAndLog from '../../utils/catchAndLog'
-import {TEAM_NAME_LIMIT} from '../../constants'
 
 const undefinedTeamFieldsAndTheirDefaultValues = {
   jiraDimensionFields: [],
@@ -51,7 +50,13 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       }
       foundTeams = true
       const pgTeams = cleanTeams(rethinkTeams)
-      await catchAndLog(() => backupTeamQuery.run({teams: pgTeams}, getPg()))
+      if (pgTeams.length > 0) {
+        try {
+          await backupTeamQuery.run({teams: pgTeams}, getPg())
+        } catch (e) {
+          console.log('bad backup team', pgTeams, pgTeams.length, Object.keys(pgTeams[0]).length)
+        }
+      }
       i += 1
     }
     return foundTeams

@@ -1,8 +1,11 @@
 require('../../../scripts/webpack/utils/dotenv')
-import axios from 'axios'
+import fetch from 'node-fetch'
 import faker from 'faker'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'
+
+const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
+const PROTOCOL = process.env.GRAPHQL_PROTOCOL || 'http'
 
 export async function sendIntranet(req: {
   query: string
@@ -10,28 +13,21 @@ export async function sendIntranet(req: {
   isPrivate?: boolean
 }) {
   const authToken = encodeAuthToken(new ServerAuthToken())
-  const headers: any = {
-    'content-type': 'application/json',
-    'x-application-authorization': `Bearer ${authToken}`
-  }
 
-  const client = axios.create({
-    baseURL: 'http://localhost:3000/',
-    responseType: 'json'
-  })
-
-  const response = await client.post(
-    'intranet-graphql',
-    {
+  const response = await fetch(`${PROTOCOL}://${HOST}/intranet-graphql`, {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      'x-application-authorization': `Bearer ${authToken}`
+    },
+    body: JSON.stringify({
       isPrivate: req.isPrivate,
       query: req.query,
       variables: req.variables
-    },
-    {
-      headers
-    }
-  )
-  return response.data
+    })
+  })
+  return response.json()
 }
 
 export async function sendPublic(req: {
@@ -40,30 +36,24 @@ export async function sendPublic(req: {
   authToken?: string
 }) {
   const authToken = req.authToken ?? ''
-  const headers: any = {
-    'content-type': 'application/json',
-    'x-application-authorization': `Bearer ${authToken}`
-  }
 
-  const client = axios.create({
-    baseURL: 'http://localhost:3000/',
-    responseType: 'json'
-  })
-
-  const response = await client.post(
-    '/graphql',
-    {
+  const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      'x-application-authorization': `Bearer ${authToken}`
+    },
+    body: JSON.stringify({
       type: 'start',
       payload: {
         query: req.query,
         variables: req.variables
       }
-    },
-    {
-      headers
-    }
-  )
-  return response.data.payload
+    })
+  })
+  const body = await response.json()
+  return body.payload
 }
 
 const SIGNUP_WITH_PASSWORD_MUTATION = `

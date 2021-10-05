@@ -1,16 +1,16 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/insertOrgUserAuditQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type OrganizationUserAuditEventTypeEnum = 'added' | 'activated' | 'inactivated' | 'removed';
+export type OrganizationUserAuditEventTypeEnum = 'activated' | 'added' | 'inactivated' | 'removed';
 
 /** 'InsertOrgUserAuditQuery' parameters type */
 export interface IInsertOrgUserAuditQueryParams {
-  auditRows: Array<{
+  auditRows: readonly ({
     orgId: string | null | void,
     userId: string | null | void,
     eventDate: Date | null | void,
     eventType: OrganizationUserAuditEventTypeEnum | null | void
-  }>;
+  })[];
 }
 
 /** 'InsertOrgUserAuditQuery' return type */
