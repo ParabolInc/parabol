@@ -71,12 +71,11 @@ interface Props {
 const ReflectionGroup = (props: Props) => {
   const {meeting, openSpotlight, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage, spotlightReflection} = meeting
+  const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
-  const isSpotlightOpen = !!spotlightReflection?.id
-  const isInSpotlight = isSpotlightOpen && !openSpotlight
+  const isInSpotlight = !openSpotlight
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -232,9 +231,6 @@ export default createFragmentContainer(ReflectionGroup, {
         isComplete
       }
       isViewerDragInProgress
-      spotlightReflection {
-        id
-      }
     }
   `,
   reflectionGroup: graphql`

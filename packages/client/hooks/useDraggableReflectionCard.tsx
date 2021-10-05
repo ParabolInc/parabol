@@ -6,7 +6,7 @@ import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflec
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
-import {DragAttribute, Times, ZIndex} from '../types/constEnums'
+import {DragAttribute, Times} from '../types/constEnums'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
@@ -55,13 +55,10 @@ const useRemoteDrag = (
         timeRemaining,
         showAboveSpotlight
       )
-      const zIndex = showAboveSpotlight
-        ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
-        : ZIndex.REFLECTION_IN_FLIGHT
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
-          style={isClose ? style : {transform: style.transform, zIndex}}
+          style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
           reflection={reflection}
           showAboveSpotlight={showAboveSpotlight}
         />

@@ -107,7 +107,7 @@ const DraggableReflectionCard = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
   const isSpotlightOpen = !!spotlightReflection?.id
-  const isInSpotlight = isSpotlightOpen && !openSpotlight
+  const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)

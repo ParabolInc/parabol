@@ -21,8 +21,9 @@ const handleUpdateSpotlightResults = (
   if (!viewer || !spotlightReflectionId) return
   const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
     reflectionId: spotlightReflectionId,
-    searchQuery: ''
+    searchQuery: '' // TODO: add search query
   })
+  console.log('Add searchQuery')
   if (!similarReflectionGroups) return
   const reflectionsCount = reflectionGroup?.getLinkedRecords('reflections')?.length
   const oldReflections = store.get(oldReflectionGroupId)?.getLinkedRecords('reflections')
@@ -34,7 +35,7 @@ const handleUpdateSpotlightResults = (
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
-        searchQuery: ''
+        searchQuery: '' // TODO: add search query
       }
     })
   }
@@ -48,7 +49,7 @@ const handleUpdateSpotlightResults = (
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
-        searchQuery: ''
+        searchQuery: '' // TODO: add search query
       }
     })
   }
