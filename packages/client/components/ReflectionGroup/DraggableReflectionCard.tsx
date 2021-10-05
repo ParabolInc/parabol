@@ -18,9 +18,6 @@ export interface DropZoneBBox {
   width: number
 }
 
-export type DropZone = DragAttribute.DROPZONE | DragAttribute.DROPZONE_SPOTLIGHT
-export type Droppable = DragAttribute.DROPPABLE | DragAttribute.DROPPABLE_SPOTLIGHT
-
 const makeDragState = () => ({
   id: '',
   cardOffsetX: 0,
@@ -42,28 +39,9 @@ const makeDragState = () => ({
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
-  dropZoneType: DragAttribute.DROPZONE as DropZone,
-  droppableType: DragAttribute.DROPPABLE as Droppable,
+  droppableType: DragAttribute.DROPPABLE as DragAttribute.DROPPABLE | null,
   timeout: null as null | number
 })
-
-const updateSpotlightDrag = (
-  drag: ReflectionDragState,
-  isBehindSpotlight: boolean,
-  isInSpotlight: boolean,
-  spotlightGroupId?: string
-) => {
-  drag.isBehindSpotlight = isBehindSpotlight
-  if (isInSpotlight && spotlightGroupId) {
-    drag.dropZoneType = DragAttribute.DROPZONE_SPOTLIGHT
-    drag.droppableType = DragAttribute.DROPPABLE_SPOTLIGHT
-    drag.spotlightGroupId = spotlightGroupId
-  } else {
-    drag.dropZoneType = DragAttribute.DROPZONE
-    drag.droppableType = DragAttribute.DROPPABLE
-    drag.spotlightGroupId = null
-  }
-}
 
 const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDraggable}) => ({
   cursor: isDraggable ? 'grab' : undefined
@@ -111,7 +89,8 @@ const DraggableReflectionCard = (props: Props) => {
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  updateSpotlightDrag(drag, isBehindSpotlight, isInSpotlight, spotlightReflection?.id)
+  drag.isBehindSpotlight = isBehindSpotlight
+  drag.droppableType = isBehindSpotlight ? null : DragAttribute.DROPPABLE
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,

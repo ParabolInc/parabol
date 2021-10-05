@@ -1,6 +1,10 @@
-import {Droppable} from '~/components/ReflectionGroup/DraggableReflectionCard'
+import {DragAttribute} from '~/types/constEnums'
 
-const getTargetGroupId = (e: MouseEvent | TouchEvent, droppableType: Droppable) => {
+const getTargetGroupId = (
+  e: MouseEvent | TouchEvent,
+  droppableType: DragAttribute.DROPPABLE | null
+) => {
+  if (!droppableType) return null
   if ((e as TouchEvent).touches) {
     const touch = (e as TouchEvent).changedTouches.item(0)
     if (!touch) return null

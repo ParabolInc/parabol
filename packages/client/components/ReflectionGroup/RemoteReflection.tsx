@@ -55,11 +55,7 @@ const getCoords = (
     targetOffsetY
   } = remoteDrag
   const targetEl = targetId
-    ? (document.querySelector(
-        `div[${
-          showAboveSpotlight ? DragAttribute.DROPPABLE_SPOTLIGHT : DragAttribute.DROPPABLE
-        }='${targetId}']`
-      ) as HTMLElement)
+    ? (document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement)
     : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!

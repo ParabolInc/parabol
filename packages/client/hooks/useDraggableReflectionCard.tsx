@@ -41,10 +41,10 @@ const useRemoteDrag = (
     if (bbox.top !== lastTop) {
       const targetId = remoteDrag?.targetId
       const isTargetInSpotlight = !!document.querySelector(
-        `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${targetId}']`
+        `div[${DragAttribute.DROPPABLE}='${targetId}']`
       )
       const isInSpotlight = !!document.querySelector(
-        `div[${DragAttribute.DROPPABLE_SPOTLIGHT}='${reflectionGroupId}']`
+        `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
       )
       const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
       // performance only
@@ -276,7 +276,7 @@ const useDragAndDrop = (
     drag.clientY = clientY
     drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
       drag.cardOffsetY}px)`
-    const dropZoneEl = findDropZoneFromEvent(e, drag.dropZoneType)
+    const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl
       if (dropZoneEl) {

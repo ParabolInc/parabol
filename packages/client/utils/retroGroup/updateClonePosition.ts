@@ -11,9 +11,7 @@ export const getMinTop = (
   let dropzone = targetEl
   while (dropzone && dropzone.hasAttribute) {
     if (
-      dropzone.hasAttribute(
-        showAboveSpotlight ? DragAttribute.DROPZONE_SPOTLIGHT : DragAttribute.DROPZONE
-      )
+      dropzone.hasAttribute(showAboveSpotlight ? DragAttribute.DROPZONE : DragAttribute.DROPZONE)
     ) {
       return dropzone.getBoundingClientRect().top
     }
