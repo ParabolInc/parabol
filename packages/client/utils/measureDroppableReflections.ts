@@ -3,13 +3,12 @@ import {DropZoneBBox, TargetBBox} from '../components/ReflectionGroup/DraggableR
 
 const measureDroppableReflections = (
   dropZoneEl: HTMLDivElement | null,
-  dropZoneBBox: DropZoneBBox | null,
-  droppableType: DragAttribute.DROPPABLE | null
+  dropZoneBBox: DropZoneBBox | null
 ) => {
   const arr = [] as TargetBBox[]
-  if (!dropZoneEl || !dropZoneBBox || !droppableType) return arr
-  dropZoneEl.querySelectorAll(`div[${droppableType}]`).forEach((el) => {
-    const targetId = el.getAttribute(droppableType)!
+  if (!dropZoneEl || !dropZoneBBox) return arr
+  dropZoneEl.querySelectorAll(`div[${DragAttribute.DROPPABLE}]`).forEach((el) => {
+    const targetId = el.getAttribute(DragAttribute.DROPPABLE)!
     const bbox = el.getBoundingClientRect()
     const {top, bottom, left, height} = bbox
     if (top >= dropZoneBBox.top && bottom <= dropZoneBBox.bottom) {

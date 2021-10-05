@@ -33,7 +33,7 @@ const useRemoteDrag = (
   staticIdx: number
 ) => {
   const setPortal = useContext(PortalContext)
-  const {remoteDrag, isDropping, reflectionGroupId} = reflection
+  const {remoteDrag, isDropping} = reflection
   const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
     if (!drag.ref || timeRemaining <= 0) return
     const beforeFrame = Date.now()
@@ -43,24 +43,20 @@ const useRemoteDrag = (
       const isTargetInSpotlight = !!document.querySelector(
         `div[${DragAttribute.DROPPABLE}='${targetId}']`
       )
-      const isInSpotlight = !!document.querySelector(
-        `div[${DragAttribute.DROPPABLE}='${reflectionGroupId}']`
-      )
-      const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
       // performance only
       const style = getDroppingStyles(
         drag.ref,
         bbox,
         windowDims.clientHeight,
         timeRemaining,
-        showAboveSpotlight
+        isTargetInSpotlight
       )
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
           style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
           reflection={reflection}
-          showAboveSpotlight={showAboveSpotlight}
+          showAboveSpotlight={isTargetInSpotlight}
         />
       )
     }
@@ -205,7 +201,7 @@ const useDragAndDrop = (
     drag.isDrag = false
     drag.targets.length = 0
     drag.prevTargetId = ''
-    const targetGroupId = getTargetGroupId(e, drag.droppableType)
+    const targetGroupId = getTargetGroupId(e)
     const targetType: DragReflectionDropTargetTypeEnum | null =
       targetGroupId && reflectionGroupId !== targetGroupId
         ? 'REFLECTION_GROUP'
@@ -281,11 +277,7 @@ const useDragAndDrop = (
       drag.dropZoneEl = dropZoneEl
       if (dropZoneEl) {
         drag.dropZoneBBox = dropZoneEl.getBoundingClientRect()
-        drag.targets = measureDroppableReflections(
-          dropZoneEl,
-          drag.dropZoneBBox,
-          drag.droppableType
-        )
+        drag.targets = measureDroppableReflections(dropZoneEl, drag.dropZoneBBox)
         maybeStartReflectionScroll(drag)
       }
     }

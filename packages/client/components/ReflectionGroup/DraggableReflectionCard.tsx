@@ -90,7 +90,6 @@ const DraggableReflectionCard = (props: Props) => {
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
   drag.isBehindSpotlight = isBehindSpotlight
-  drag.droppableType = isBehindSpotlight ? null : DragAttribute.DROPPABLE
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
