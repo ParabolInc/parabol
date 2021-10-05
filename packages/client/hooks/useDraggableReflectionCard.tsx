@@ -94,7 +94,7 @@ const useLocalDrag = (
   const atmosphere = useAtmosphere()
   // handle drag end
   useEffect(() => {
-    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag && !drag.isBehindSpotlight) {
+    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag) {
       updateClonePosition(drag.ref, reflectionId, windowDims.clientHeight)
     }
   }, [isDropping, staticIdx, drag, remoteDrag, reflectionId])

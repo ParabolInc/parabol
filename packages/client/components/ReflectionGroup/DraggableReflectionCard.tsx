@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DragAttribute} from '~/types/constEnums'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
@@ -34,12 +33,10 @@ const makeDragState = () => ({
   targets: [] as TargetBBox[],
   prevTargetId: '',
   isBroadcasting: false,
-  isBehindSpotlight: false,
   spotlightGroupId: null as null | string,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
-  droppableType: DragAttribute.DROPPABLE as DragAttribute.DROPPABLE | null,
   timeout: null as null | number
 })
 
@@ -89,7 +86,6 @@ const DraggableReflectionCard = (props: Props) => {
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  drag.isBehindSpotlight = isBehindSpotlight
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -105,7 +101,7 @@ const DraggableReflectionCard = (props: Props) => {
   const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
     <DragWrapper
-      ref={(c) => (drag.ref = c)}
+      ref={(c) => (isBehindSpotlight ? null : (drag.ref = c))}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
       isDraggable={canDrag}
