@@ -121,9 +121,11 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
           discussionId: discussion.id,
           title: poll.title,
           threadSortOrder: poll.threadSortOrder!,
-          options: poll.options.map((option) => {
-            return {title: option.title}
-          })
+          options: poll.options
+            .filter((option) => option.title.length > 0) // option 3 and 4 might be empty
+            .map((option) => {
+              return {title: option.title}
+            })
         }
       },
       {localPoll: poll}
@@ -133,15 +135,17 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
     const {title, options} = poll
     const pollState = poll.id.includes('tmp') ? 'creating' : 'created'
     const isTitleValid =
-      title?.length > Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
+      title.length > Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
+    const hasAtLeastTwoValidOptions =
+      options.filter(
+        ({title}) =>
+          title.length > Polls.MIN_OPTION_TITLE_LENGTH &&
+          title.length <= Polls.MAX_OPTION_TITLE_LENGTH
+      ).length > 1
     const isEveryOptionValid =
       options.length >= Polls.MIN_OPTIONS &&
       options.length <= Polls.MAX_OPTIONS &&
-      options.every(
-        ({title}) =>
-          title?.length > Polls.MIN_OPTION_TITLE_LENGTH &&
-          title?.length <= Polls.MAX_OPTION_TITLE_LENGTH
-      )
+      hasAtLeastTwoValidOptions
     const canCreatePoll = pollState === 'creating' && isTitleValid && isEveryOptionValid
 
     return {

@@ -79,7 +79,7 @@ const CreatePollMutation: StandardMutation<TCreatePollMutation, Handlers> = (
       const newlyCreatedPollId = newlyCreatedPoll.getValue('id')
       existingPoll.setValue(newlyCreatedPollId, 'id')
 
-      const newPollOptions = existingPoll.getLinkedRecords('options')
+      const newPollOptions = newlyCreatedPoll.getLinkedRecords('options')
       if (!newPollOptions) {
         console.warn(`Could not find poll options for poll id: ${localPoll.id}, skipping update!`)
         return
