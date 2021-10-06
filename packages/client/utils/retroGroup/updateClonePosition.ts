@@ -2,19 +2,11 @@ import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, Times, ZIndex} from '../../types/constEnums'
 import getDeCasteljau from '../getDeCasteljau'
 
-export const getMinTop = (
-  top: number,
-  targetEl: HTMLElement | null,
-  showAboveSpotlight: boolean
-) => {
+export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
   if (top >= 0) return top
   let dropzone = targetEl
   while (dropzone && dropzone.hasAttribute) {
-    if (
-      dropzone.hasAttribute(
-        showAboveSpotlight ? DragAttribute.DROPZONE_SPOTLIGHT : DragAttribute.DROPZONE
-      )
-    ) {
+    if (dropzone.hasAttribute(DragAttribute.DROPZONE)) {
       return dropzone.getBoundingClientRect().top
     }
     dropzone = dropzone.parentElement
@@ -40,7 +32,7 @@ export const getDroppingStyles = (
   showAboveSpotlight?: boolean
 ) => {
   const {top, left} = bbox
-  const minTop = getMinTop(top, targetEl, showAboveSpotlight || false)
+  const minTop = getMinTop(top, targetEl)
   const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
   const isClipped = clippedTop !== top
   return {

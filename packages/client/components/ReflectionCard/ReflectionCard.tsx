@@ -89,7 +89,7 @@ const ReflectionCard = (props: Props) => {
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
   const spotlightReflectionId = meeting?.spotlightReflection?.id
-  const inSpotlight = reflectionId === spotlightReflectionId
+  const isSpotlighSource = reflectionId === spotlightReflectionId
   const isSpotlightOpen = !!spotlightReflectionId
   const atmosphere = useAtmosphere()
   const reflectionRef = useRef<HTMLDivElement>(null)
@@ -238,7 +238,7 @@ const ReflectionCard = (props: Props) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       ref={reflectionRef}
-      selectedForSpotlight={!!openSpotlight && inSpotlight}
+      selectedForSpotlight={!!openSpotlight && isSpotlighSource}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
