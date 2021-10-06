@@ -1,53 +1,70 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import IconLabel from '../../../../components/IconLabel'
-import LinkButton from '../../../../components/LinkButton'
+import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
+import Icon from '../../../../components/Icon'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
-import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint} from '../../../../types/constEnums'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
-import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
-
-const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SLATE_600,
+const Label = styled('div')({
+  fontSize: 12,
   fontWeight: 600,
-  height: 24,
-  marginTop: 16,
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
+  lineHeight: '16px',
+  color: PALETTE.SLATE_700,
+  textAlign: 'center'
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.SKY_500,
+  fontSize: ICON_SIZE.MD24,
+  alignSelf: 'center'
+})
+
+const IconWrapper = styled('div')({
+  height: 28,
+  display: 'flex',
+  justifyContent: 'center'
+})
+
+const Wrapper = styled('div')({
+  margin: '0 6px',
+  ':hover': {
+    cursor: 'pointer'
   },
-  [desktopBreakpoint]: {
-    marginTop: 0
+  ':hover i': {
+    color: PALETTE.SKY_600
   }
 })
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
-  hideAgenda?: boolean
   onCompleted: CompletedHandler
   onError: ErrorHandler
   teamId: string
 }
 
 const AgendaToggle = (props: Props) => {
-  const {atmosphere, hideAgenda, submitMutation, submitting, onError, onCompleted, teamId} = props
+  const {atmosphere, submitMutation, submitting, onError, onCompleted, teamId} = props
   const toggleHide = () => {
     if (!submitting) {
       submitMutation()
-      ToggleAgendaListMutation(atmosphere, teamId, onError, onCompleted)
+      ToggleTeamDrawerMutation(
+        atmosphere,
+        {teamId, teamDrawerType: 'agenda'},
+        {onError, onCompleted}
+      )
     }
   }
-  const label = `${hideAgenda ? 'See' : 'Hide'} ${AGENDA_ITEM_LABEL}s`
   return (
-    <StyledLinkButton key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`} onClick={toggleHide}>
-      <IconLabel icon='comment' iconLarge label={label} />
-    </StyledLinkButton>
+    <Wrapper onClick={toggleHide}>
+      <IconWrapper>
+        <StyledIcon>chat</StyledIcon>
+      </IconWrapper>
+      <Label>Agenda</Label>
+    </Wrapper>
   )
 }
 
