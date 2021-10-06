@@ -94,7 +94,7 @@ const createEmptyPollOption = (
   const newPollOption = store.create(dataID, 'PollOption')
   newPollOption.setValue(dataID, 'id')
   newPollOption.setValue('', 'title')
-  newPollOption.setValue(`Add a choice ${index}...`, 'placeholder')
+  newPollOption.setValue(`Add a choice ${index} ${index > 2 ? '(optional)' : ''}...`, 'placeholder')
   newPollOption.setValue(shouldAutoFocus, 'shouldAutoFocus')
 
   return newPollOption
