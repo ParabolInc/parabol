@@ -7,7 +7,7 @@ interface PollContextType {
   pollState: PollState
   canCreatePoll: boolean
   poll: Poll_poll
-  updatePoll: (optionId: string, title: string) => void
+  updatePoll: (pollId: string, title: string) => void
   updatePollOption: (optionId: string, title: string) => void
   createPoll: () => void
   addPollOption: () => void
