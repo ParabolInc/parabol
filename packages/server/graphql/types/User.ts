@@ -461,10 +461,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           return standardError(new Error('Not on team'), {userId})
         }
         const reflectionsCount = reflections.length
-        const spotlightResultGroupIds = new Set<string>()
-        const spotlightResultGroupSize = Math.min(reflectionsCount, MAX_RESULT_GROUP_SIZE)
+        const spotlightResultGroupSize = Math.min(reflectionsCount - 1, MAX_RESULT_GROUP_SIZE)
+        let currentResultGroupIds = new Set<string>()
         let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
         while (currentThresh) {
+          const nextResultGroupIds = new Set<string>()
           const {groupedReflectionsRes, nextThresh} = groupReflections(reflections, {
             groupingThreshold: currentThresh,
             maxGroupSize: reflectionsCount,
@@ -480,19 +481,24 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
               reflectionGroupId === spotlightGroup.reflectionGroupId &&
               oldReflectionGroupId !== spotlightGroup.oldReflectionGroupId
             ) {
-              spotlightResultGroupIds.add(oldReflectionGroupId)
+              nextResultGroupIds.add(oldReflectionGroupId)
             }
             currentThresh = nextThresh
-            if (spotlightResultGroupIds.size >= spotlightResultGroupSize) {
+            if (nextResultGroupIds.size > spotlightResultGroupSize) {
               currentThresh = null
               break
+            } else {
+              currentResultGroupIds = nextResultGroupIds
+              if (nextResultGroupIds.size === spotlightResultGroupSize) {
+                currentThresh = null
+                break
+              }
             }
           }
         }
-        const slicedIds = Array.from(spotlightResultGroupIds).slice(0, spotlightResultGroupSize)
         return r
           .table('RetroReflectionGroup')
-          .getAll(r.args(slicedIds), {index: 'id'})
+          .getAll(r.args(Array.from(currentResultGroupIds)), {index: 'id'})
           .run()
       }
     },
