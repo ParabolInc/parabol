@@ -14,7 +14,7 @@ import {fromEpochSeconds} from '../../utils/epochTime'
 import StripeManager from '../../utils/StripeManager'
 import {InvoiceStatusEnum} from '../../database/types/Invoice'
 import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
-import {getUsersById} from '../../postgres/queries/getUsersById'
+import {getUsersByIds} from '../../postgres/queries/getUsersByIds'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -350,7 +350,7 @@ export default async function generateInvoice(
       .coerceTo('array')('userId') as unknown) as string[]
   }).run()
 
-  const billingLeaders = await getUsersById(billingLeaderIds)
+  const billingLeaders = await getUsersByIds(billingLeaderIds)
   const billingLeaderEmails = billingLeaders.map((user) => user.email)
 
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null

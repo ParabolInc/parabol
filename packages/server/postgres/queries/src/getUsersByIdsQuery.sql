@@ -1,5 +1,5 @@
 /*
-  @name getUsersByIdQuery
+  @name getUsersByIdsQuery
   @param ids -> (...)
 */
 SELECT * FROM "User"

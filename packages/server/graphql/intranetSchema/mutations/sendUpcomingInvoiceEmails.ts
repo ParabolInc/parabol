@@ -8,7 +8,7 @@ import getMailManager from '../../../email/getMailManager'
 import {requireSU} from '../../../utils/authorization'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import {getUsersById} from '../../../postgres/queries/getUsersById'
+import {getUsersByIds} from '../../../postgres/queries/getUsersByIds'
 import IUser from '../../../postgres/types/IUser'
 
 interface Details extends UpcomingInvoiceEmailProps {
@@ -101,7 +101,7 @@ const sendUpcomingInvoiceEmails = {
       (prev, cur) => prev.concat(cur.billingLeaders, cur.newUsers),
       [] as string[]
     )
-    const allUsers = await getUsersById(allUserIds)
+    const allUsers = await getUsersByIds(allUserIds)
     const allUserMap = allUsers.reduce((prev, cur) => {
       prev.set(cur.id, cur)
       return prev

@@ -9,7 +9,7 @@ import updateUser from '../../postgres/queries/updateUser'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import removeSlackAuths from './helpers/removeSlackAuths'
 import getDeletedEmail from '../../utils/getDeletedEmail'
-import {getUserById} from '../../postgres/queries/getUsersById'
+import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {

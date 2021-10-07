@@ -1,6 +1,6 @@
-import {IGetUsersByIdQueryResult} from '../queries/generated/getUsersByIdQuery'
+import {IGetUsersByIdsQueryResult} from '../queries/generated/getUsersByIdsQuery'
 
-interface IUser extends IGetUsersByIdQueryResult {
+interface IUser extends IGetUsersByIdsQueryResult {
   identities: {
     isEmailVerified: boolean
     type: 'GOOGLE' | 'LOCAL'

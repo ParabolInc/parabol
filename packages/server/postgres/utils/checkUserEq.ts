@@ -1,7 +1,7 @@
 import User from '../../database/types/User'
 import getRethink from '../../database/rethinkDriver'
 import {checkTableEq} from './checkEqBase'
-import {getUsersById} from '../queries/getUsersById'
+import {getUsersByIds} from '../queries/getUsersByIds'
 
 const alwaysDefinedFields: (keyof Partial<User>)[] = [
   'email',
@@ -43,7 +43,7 @@ const checkUserEq = async (maxErrors = 10) => {
   const errors = await checkTableEq(
     'User',
     rethinkQuery,
-    getUsersById,
+    getUsersByIds,
     alwaysDefinedFields,
     maybeUndefinedFieldsDefaultValues,
     maybeNullFieldsDefaultValues,

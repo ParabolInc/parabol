@@ -1,5 +1,5 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {getUserById} from '../postgres/queries/getUsersById'
+import {getUserById} from '../postgres/queries/getUsersByIds'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
