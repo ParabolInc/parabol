@@ -13,7 +13,7 @@ const getActiveDomainForOrgId = async (orgId: string) => {
     .filter({removedAt: null})('userId')
     .run()
 
-  const domainCount = await pg.query(
+  const countedDomains = await pg.query(
     `SELECT count(*) as total, split_part(email, '@', 2) as "domain" from "User"
      WHERE id = ANY($1::text[])
      GROUP BY split_part(email, '@', 2)
@@ -21,7 +21,7 @@ const getActiveDomainForOrgId = async (orgId: string) => {
     [userIds]
   )
 
-  const activeDomain = domainCount.rows.find((row) => isCompanyDomain(row.domain))?.domain
+  const activeDomain = countedDomains.rows.find((row) => isCompanyDomain(row.domain))?.domain
 
   return activeDomain
 }
