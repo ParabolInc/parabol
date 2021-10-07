@@ -126,7 +126,6 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
             projectKeyFiltersByCloudId[cloudId] = []
           })
         }
-
         const issueRes = await manager.getIssues(queryString, isJQL, projectKeyFiltersByCloudId)
         const {error, issues} = issueRes
         const mappedIssues = issues.map((issue) => {

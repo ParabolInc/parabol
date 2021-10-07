@@ -271,6 +271,17 @@ export type JiraPermissionScope =
   | 'offline_access'
   | 'manage:jira-project'
 
+export class RateLimitError extends Error {
+  _infoParams: {[key: string]: any}
+  constructor(message, infoParams) {
+    super(message)
+    this._infoParams = infoParams
+  }
+  get infoParams() {
+    return this._infoParams
+  }
+}
+
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
   static SCOPE: JiraPermissionScope[] = [
@@ -307,6 +318,12 @@ export default abstract class AtlassianManager {
       return res
     }
     const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
+
+    if (res.status === 429) {
+      const retryAfter = res.headers.get('Retry-After') // value is in sec
+      return new RateLimitError('error', {retryAfter})
+    }
+
     if ('message' in json) {
       if (json.message === 'No message available' && 'error' in json) {
         return new Error(json.error)

@@ -59777,6 +59777,7 @@ export type TeamSubscriptionPayload =
   | IEndNewMeetingPayload
   | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess
+  | IJiraIssue
   | INavigateMeetingPayload
   | IPushInvitationPayload
   | IPromoteToTeamLeadPayload

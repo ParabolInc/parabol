@@ -80,6 +80,13 @@ const subscription = graphql`
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpdateUserProfileMutation_team @relay(mask: false)
       ...UpgradeToProMutation_team @relay(mask: false)
+
+      ... on JiraIssue {
+        id
+        summary
+        description
+        descriptionHTML
+      }
     }
   }
 `

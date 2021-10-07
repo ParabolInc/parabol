@@ -55,6 +55,7 @@ import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
 import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
+import JiraIssue from './JiraIssue'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import {UpdateJiraDimensionFieldSuccess} from './UpdateJiraDimensionFieldPayload'
@@ -79,6 +80,7 @@ const types = [
   EndNewMeetingPayload,
   EndRetrospectiveSuccess,
   EndSprintPokerSuccess,
+  JiraIssue,
   NavigateMeetingPayload,
   PushInvitationPayload,
   PromoteToTeamLeadPayload,
