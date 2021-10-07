@@ -7,14 +7,7 @@ import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {
-  Breakpoint,
-  DragAttribute,
-  ElementHeight,
-  ElementWidth,
-  Times,
-  ZIndex
-} from '../types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
@@ -23,11 +16,8 @@ import PlainButton from './PlainButton/PlainButton'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import SpotlightGroups from './SpotlightGroups'
 import useGetRefHeight from '../hooks/useGetRefHeight'
-import {
-  MAX_SPOTLIGHT_COLUMNS,
-  SPOTLIGHT_GROUPS_PADDING,
-  SPOTLIGHT_TOP_SECTION_HEIGHT
-} from '~/utils/constants'
+import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
@@ -221,7 +211,9 @@ const SpotlightModal = (props: Props) => {
   const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
   const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
   const columnsRefHeight = useGetRefHeight(columnsRef, 0, phaseRef)
-  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + SPOTLIGHT_GROUPS_PADDING * 2
+  const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const groupsPadding = isDesktop ? 64 : 54
+  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + groupsPadding
   const modalHeight = SPOTLIGHT_TOP_SECTION_HEIGHT + groupsHeight
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -231,11 +223,7 @@ const SpotlightModal = (props: Props) => {
   }
   return (
     <>
-      <ModalContainer
-        ref={phaseRef}
-        {...{[DragAttribute.DROPZONE_SPOTLIGHT]: spotlightGroup?.id}}
-        modalHeight={modalHeight}
-      >
+      <ModalContainer ref={phaseRef} modalHeight={modalHeight}>
         <SelectedReflectionSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>

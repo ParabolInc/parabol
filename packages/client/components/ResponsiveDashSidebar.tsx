@@ -12,6 +12,7 @@ interface Props {
   isOpen: boolean
   onToggle: () => void
   isRightDrawer?: boolean
+  sidebarWidth?: number
 }
 
 const Sidebar = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
@@ -20,7 +21,7 @@ const Sidebar = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
 }))
 
 const ResponsiveDashSidebar = (props: Props) => {
-  const {children, isOpen, onToggle, isRightDrawer = false} = props
+  const {children, isOpen, onToggle, isRightDrawer = false, sidebarWidth} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   if (isDesktop) {
     return (
@@ -30,7 +31,12 @@ const ResponsiveDashSidebar = (props: Props) => {
     )
   }
   return (
-    <SwipeableDashSidebar isOpen={isOpen} isRightDrawer={isRightDrawer} onToggle={onToggle}>
+    <SwipeableDashSidebar
+      isOpen={isOpen}
+      isRightDrawer={isRightDrawer}
+      onToggle={onToggle}
+      sidebarWidth={sidebarWidth}
+    >
       {children}
     </SwipeableDashSidebar>
   )

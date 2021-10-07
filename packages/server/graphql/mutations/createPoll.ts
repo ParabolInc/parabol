@@ -84,7 +84,7 @@ const createPoll = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }
-    const meetingMemberId = MeetingMemberId.join({meetingId, userId: viewerId})
+    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
     const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
       return {error: {message: 'Not a member of the meeting'}}

@@ -18,6 +18,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import {TaskConnection} from './Task'
 import Team from './Team'
+import TeamDrawerEnum from './TeamDrawerEnum'
 import TeamMemberIntegrations from './TeamMemberIntegrations'
 import User from './User'
 
@@ -39,16 +40,19 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLBoolean,
       description: 'true if the user is a part of the team, false if they no longer are'
     },
-    isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
+    isLead: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'Is user a team lead?',
+      resolve: ({isLead}) => !!isLead
+    },
     isSpectatingPoker: {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user prefers to not vote during a poker meeting',
       resolve: ({isSpectatingPoker}) => !!isSpectatingPoker
     },
-    hideAgenda: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'hide the agenda list on the dashboard',
-      resolve: ({hideAgenda}) => !!hideAgenda
+    openDrawer: {
+      type: TeamDrawerEnum,
+      description: 'the type of drawer that is open in the team dash. Null if the drawer is closed'
     },
     /* denormalized from User */
     email: {
