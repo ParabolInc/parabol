@@ -2,9 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {matchPath, Route, RouteProps, Switch} from 'react-router'
+import {Route, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import useRouter from '~/hooks/useRouter'
 import useSnackNag from '~/hooks/useSnackNag'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
@@ -14,8 +13,6 @@ import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
-import StartMeetingFAB from './StartMeetingFAB'
-import StaticStartMeetingFAB from './StaticStartMeetingFAB'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 const MeetingsDash = lazy(() =>
@@ -34,28 +31,6 @@ const NewTeam = lazy(() =>
     /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
   )
 )
-
-const getShowFAB = (location: NonNullable<RouteProps['location']>) => {
-  const {pathname} = location
-  return (
-    pathname.includes('/me/tasks') ||
-    !!matchPath(pathname, {
-      path: '/me',
-      exact: true,
-      strict: false
-    }) ||
-    !!matchPath(pathname, {
-      path: '/meetings',
-      exact: true,
-      strict: false
-    }) ||
-    !!matchPath(pathname, {
-      path: '/team/:teamId',
-      exact: true,
-      strict: false
-    })
-  )
-}
 
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
@@ -113,7 +88,6 @@ const Dashboard = (props: Props) => {
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {location} = useRouter()
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
   useSnackNag(overLimitCopy)
@@ -147,7 +121,6 @@ const Dashboard = (props: Props) => {
           </Switch>
         </DashMain>
       </DashPanel>
-      {getShowFAB(location) ? isDesktop ? <StaticStartMeetingFAB /> : <StartMeetingFAB /> : null}
     </DashLayout>
   )
 }

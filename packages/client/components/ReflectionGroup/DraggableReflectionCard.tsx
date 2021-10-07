@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DragAttribute} from '~/types/constEnums'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
@@ -17,9 +16,6 @@ export interface DropZoneBBox {
   bottom: number
   width: number
 }
-
-export type DropZone = DragAttribute.DROPZONE | DragAttribute.DROPZONE_SPOTLIGHT
-export type Droppable = DragAttribute.DROPPABLE | DragAttribute.DROPPABLE_SPOTLIGHT
 
 const makeDragState = () => ({
   id: '',
@@ -37,13 +33,10 @@ const makeDragState = () => ({
   targets: [] as TargetBBox[],
   prevTargetId: '',
   isBroadcasting: false,
-  isBehindSpotlight: false,
   spotlightGroupId: null as null | string,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
-  dropZoneType: DragAttribute.DROPZONE as DropZone,
-  droppableType: DragAttribute.DROPPABLE as Droppable,
   timeout: null as null | number
 })
 
@@ -52,24 +45,6 @@ const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDragga
 }))
 
 export type ReflectionDragState = ReturnType<typeof makeDragState>
-
-const updateSpotlightDrag = (
-  drag: ReflectionDragState,
-  isBehindSpotlight: boolean,
-  isInSpotlight: boolean,
-  spotlightGroupId?: string
-) => {
-  drag.isBehindSpotlight = isBehindSpotlight
-  if (isInSpotlight && spotlightGroupId) {
-    drag.dropZoneType = DragAttribute.DROPZONE_SPOTLIGHT
-    drag.droppableType = DragAttribute.DROPPABLE_SPOTLIGHT
-    drag.spotlightGroupId = spotlightGroupId
-  } else {
-    drag.dropZoneType = DragAttribute.DROPZONE
-    drag.droppableType = DragAttribute.DROPPABLE
-    drag.spotlightGroupId = null
-  }
-}
 
 interface Props {
   isClipped?: boolean
@@ -107,11 +82,11 @@ const DraggableReflectionCard = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
   const isSpotlightOpen = !!spotlightGroup?.id
-  const isInSpotlight = isSpotlightOpen && !openSpotlight
+  const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  updateSpotlightDrag(drag, isBehindSpotlight, isInSpotlight, spotlightGroup?.id)
+  drag.spotlightGroupId = spotlightGroup?.id || null
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -127,7 +102,7 @@ const DraggableReflectionCard = (props: Props) => {
   const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
     <DragWrapper
-      ref={(c) => (drag.ref = c)}
+      ref={(c) => (isBehindSpotlight ? null : (drag.ref = c))}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
       isDraggable={canDrag}

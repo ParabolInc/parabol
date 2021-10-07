@@ -10,13 +10,13 @@ import useSpotlightColumns from '../hooks/useSpotlightColumns'
 import useSortGroupsIntoColumns from '../hooks/useSortGroupsIntoColumns'
 import {Breakpoint, ElementWidth} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {SPOTLIGHT_GROUPS_PADDING, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
+import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 
 const SimilarGroups = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`,
   width: '100%',
   display: 'flex',
-  padding: `${isDesktop ? SPOTLIGHT_GROUPS_PADDING : SPOTLIGHT_GROUPS_PADDING / 2}px 0px`
+  padding: `${isDesktop ? '40px' : '30px'} 0px 24px 0px`
 }))
 
 const Scrollbar = styled('div')({

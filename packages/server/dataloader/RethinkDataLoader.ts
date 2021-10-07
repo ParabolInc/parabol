@@ -23,7 +23,7 @@ const loaderMakers = {
 } as const
 
 type LoaderMakers = typeof loaderMakers
-type Loaders = keyof LoaderMakers
+export type Loaders = keyof LoaderMakers
 
 type PrimaryLoaderMakers = typeof primaryLoaderMakers
 type PrimaryLoaders = keyof PrimaryLoaderMakers

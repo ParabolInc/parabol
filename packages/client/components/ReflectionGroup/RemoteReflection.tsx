@@ -42,8 +42,7 @@ const windowDims = {
 
 const OFFSCREEN_PADDING = 16
 const getCoords = (
-  remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>,
-  showAboveSpotlight: boolean
+  remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
 ) => {
   const {
     targetId,
@@ -55,15 +54,11 @@ const getCoords = (
     targetOffsetY
   } = remoteDrag
   const targetEl = targetId
-    ? (document.querySelector(
-        `div[${
-          showAboveSpotlight ? DragAttribute.DROPPABLE_SPOTLIGHT : DragAttribute.DROPPABLE
-        }='${targetId}']`
-      ) as HTMLElement)
+    ? (document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement)
     : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!
-    const minTop = getMinTop(-1, targetEl, showAboveSpotlight)
+    const minTop = getMinTop(-1, targetEl)
     return {
       left: targetBBox.left + targetOffsetX,
       top: targetBBox.top + targetOffsetY,
@@ -108,7 +103,7 @@ const getInlineStyle = (
   showAboveSpotlight: boolean
 ) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
-  const {left, top, minTop} = getCoords(remoteDrag as any, showAboveSpotlight)
+  const {left, top, minTop} = getCoords(remoteDrag as any)
   const zIndex = showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : style.zIndex
   return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
 }
