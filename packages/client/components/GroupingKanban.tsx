@@ -6,6 +6,7 @@ import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
+import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
@@ -44,6 +45,7 @@ const GroupingKanban = (props: Props) => {
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
+  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag()
   const [flipRef, flipReverse] = useFlip({
     firstRef: spotlightReflectionRef
   })
@@ -59,6 +61,7 @@ const GroupingKanban = (props: Props) => {
       if (!meeting) return
       meeting.setValue(null, 'spotlightReflection')
     })
+    onCloseSpotlight()
   }
   const {closePortal, openPortal, modalPortal} = useModal({
     onClose: closeSpotlight
@@ -101,6 +104,7 @@ const GroupingKanban = (props: Props) => {
       if (!reflection || !meeting) return
       meeting.setLinkedRecord(reflection, 'spotlightReflection')
     })
+    onOpenSpotlight(reflectionId)
   }
 
   if (!phaseRef.current) return null

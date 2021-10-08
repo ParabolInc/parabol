@@ -1,5 +1,5 @@
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {RefObject, useEffect, useRef} from 'react'
+import React, {RefObject, useEffect, useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
@@ -13,7 +13,28 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import useEditorState from '../../hooks/useEditorState'
-const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isDropping}) => ({
+import {keyframes} from '@emotion/core'
+
+const circle = (transform?: string) => keyframes`
+  0%{
+    transform:rotate(0deg)
+              translate(-5px)
+              rotate(0deg)
+              ${transform ?? ''}
+  }
+  100%{
+    transform:rotate(360deg)
+              translate(-5px)
+              rotate(-360deg)
+              ${transform ?? ''}
+  }
+`
+
+const RemoteReflectionModal = styled('div')<{
+  isDropping?: boolean | null
+  transform?: string
+  isWiggling?: boolean
+}>(({isDropping, transform, isWiggling}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -22,6 +43,8 @@ const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isD
   transition: `all ${
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
   }ms ${BezierCurve.DECELERATE}`,
+  transform,
+  animation: isWiggling ? `${circle(transform)} 3s ease infinite;` : undefined,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
@@ -100,14 +123,21 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
   }
 }
 
-const getInlineStyle = (
+/*
+  Having the dragging transform in inline style results in a smoother motion.
+  Animations don't work in inline style but these still need to have the correct
+  transform applied, thus switch between applying the transformation in inline style
+  and in the styled component depending on situation
+*/
+const getStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
+  isWiggling: boolean,
   style: React.CSSProperties
 ) => {
-  if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
+  if (isWiggling || isDropping || !remoteDrag?.clientX) return {transform: style.transform}
   const {left, top, minTop} = getCoords(remoteDrag as any)
-  return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
+  return {newStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
 }
 
 const RemoteReflection = (props: Props) => {
@@ -118,27 +148,42 @@ const RemoteReflection = (props: Props) => {
   >
   const ref = useRef<HTMLDivElement>(null)
   const [editorState] = useEditorState(content)
-  const timeoutRef = useRef(0)
+  const [isWiggling, setWiggling] = useState(false)
+  const staleTimeoutRef = useRef(0)
+  const animationTimeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    timeoutRef.current = window.setTimeout(() => {
+    setWiggling(false)
+    staleTimeoutRef.current = window.setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)!
         reflection.setValue(true, 'isDropping')
       })
     }, Times.REFLECTION_STALE_LIMIT)
+    animationTimeoutRef.current = window.setTimeout(() => {
+      setWiggling(true)
+    }, 300)
     return () => {
-      window.clearTimeout(timeoutRef.current)
+      window.clearTimeout(staleTimeoutRef.current)
+      window.clearTimeout(animationTimeoutRef.current)
     }
   }, [remoteDrag])
 
   if (!remoteDrag) return null
   const {dragUserId, dragUserName} = remoteDrag
-  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
+
+  const {newStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isWiggling, style)
+
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
-      <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>
+      <RemoteReflectionModal
+        ref={ref}
+        style={newStyle}
+        isDropping={isDropping}
+        isWiggling={isWiggling}
+        transform={transform}
+      >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />
