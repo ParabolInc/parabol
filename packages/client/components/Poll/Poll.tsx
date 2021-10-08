@@ -135,11 +135,11 @@ const Poll = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
     const {title, options} = poll
     const pollState = poll.id.includes('tmp') ? 'creating' : 'created'
     const isTitleValid =
-      title.length > Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
+      title.length >= Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
     const hasAtLeastTwoValidOptions =
       options.filter(
         ({title}) =>
-          title.length > Polls.MIN_OPTION_TITLE_LENGTH &&
+          title.length >= Polls.MIN_OPTION_TITLE_LENGTH &&
           title.length <= Polls.MAX_OPTION_TITLE_LENGTH
       ).length > 1
     const isEveryOptionValid =
