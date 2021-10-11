@@ -133,6 +133,7 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
+import persistGitHubQuery from './mutations/persistGitHubQuery'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -274,6 +275,7 @@ export default new GraphQLObjectType<any, Context>({
       persistGitHubSearchQuery,
       setTaskEstimate,
       updateGitHubDimensionField,
-      createPoll
+      createPoll,
+      persistGitHubQuery
     } as any)
 })

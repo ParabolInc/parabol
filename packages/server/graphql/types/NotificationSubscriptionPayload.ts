@@ -20,6 +20,7 @@ import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 import User from './User'
 import {EndCheckInSuccess} from './EndCheckInPayload'
 import {PersistGitHubSearchQuerySuccess} from './PersistGitHubSearchQueryPayload'
+import {PersistGitHubQuerySuccess} from './PersistGitHubQueryPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 
 const types = [
@@ -46,7 +47,8 @@ const types = [
   User,
   // a one off used so the server can sniff it & update its connection context
   AuthTokenPayload,
-  PersistGitHubSearchQuerySuccess
+  PersistGitHubSearchQuerySuccess,
+  PersistGitHubQuerySuccess
 ]
 
 export default graphQLSubscriptionType('NotificationSubscriptionPayload', types)

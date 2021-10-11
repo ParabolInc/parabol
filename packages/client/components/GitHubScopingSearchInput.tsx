@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import {SprintPokerDefaults} from '../types/constEnums'
-import {GitHubScopingSearchInput_meeting} from '../__generated__/GitHubScopingSearchInput_meeting.graphql'
+import {GitHubScopingSearchInput_meeting$key} from '../__generated__/GitHubScopingSearchInput_meeting.graphql'
 import Icon from './Icon'
 
 const SearchInput = styled('input')({
@@ -43,17 +43,44 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
 }
 
 interface Props {
-  meeting: GitHubScopingSearchInput_meeting
+  meetingRef: GitHubScopingSearchInput_meeting$key
 }
 
 const GitHubScopingSearchInput = (props: Props) => {
-  const {meeting} = props
-  const {id: meetingId, githubSearchQuery} = meeting
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment GitHubScopingSearchInput_meeting on PokerMeeting {
+        id
+        githubSearchQuery {
+          queryString
+        }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              github {
+                githubSearchQueries {
+                  queryString
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+  const {id: meetingId, githubSearchQuery, viewerMeetingMember} = meeting
+  const {teamMember} = viewerMeetingMember!
+  const {integrations} = teamMember
+  const {github} = integrations
+  const {githubSearchQueries} = github!
+  const defaultInput =
+    githubSearchQueries[0]?.queryString ?? SprintPokerDefaults.GITHUB_DEFAULT_QUERY
   const {queryString} = githubSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    const defaultInput = `${SprintPokerDefaults.GITHUB_DEFAULT_QUERY} `
     setSearch(atmosphere, meetingId, defaultInput)
   }, [])
 
@@ -67,7 +94,12 @@ const GitHubScopingSearchInput = (props: Props) => {
 
   return (
     <Wrapper>
-      <SearchInput autoFocus value={queryString} onChange={onChange} />
+      <SearchInput
+        autoFocus
+        value={queryString}
+        onChange={onChange}
+        placeholder={'Search GitHub issues...'}
+      />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>
@@ -75,13 +107,4 @@ const GitHubScopingSearchInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(GitHubScopingSearchInput, {
-  meeting: graphql`
-    fragment GitHubScopingSearchInput_meeting on PokerMeeting {
-      id
-      githubSearchQuery {
-        queryString
-      }
-    }
-  `
-})
+export default GitHubScopingSearchInput

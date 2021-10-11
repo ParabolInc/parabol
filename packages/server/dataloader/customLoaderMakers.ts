@@ -12,7 +12,7 @@ import {
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getGitHubAuthByUserIdTeamId, {
-  GetGitHubAuthByUserIdTeamIdResult
+  GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
@@ -289,11 +289,7 @@ export const discussions = (parent: RethinkDataLoader) => {
 }
 
 export const githubAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<
-    {teamId: string; userId: string},
-    GetGitHubAuthByUserIdTeamIdResult | null,
-    string
-  >(
+  return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => getGitHubAuthByUserIdTeamId(userId, teamId))

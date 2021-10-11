@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
@@ -10,7 +10,11 @@ import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {IXGitHubCreatedCommitContribution} from '../types/graphql'
-import {GitHubScopingSearchFilterMenu_viewer} from '../__generated__/GitHubScopingSearchFilterMenu_viewer.graphql'
+import getReposFromQueryStr from '../utils/getReposFromQueryStr'
+import {
+  GitHubScopingSearchFilterMenuQuery,
+  GitHubScopingSearchFilterMenuQueryResponse
+} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
 import Menu from './Menu'
@@ -18,17 +22,11 @@ import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MenuSearch from './MenuSearch'
-import MockFieldList from './MockFieldList'
 import TypeAheadLabel from './TypeAheadLabel'
-import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
-})
-
-const StyledMenu = styled(Menu)({
-  width: 450
 })
 
 const NoResults = styled(MenuItemLabel)({
@@ -62,12 +60,11 @@ const StyledMenuItemLabel = styled(MenuItemLabel)({})
 
 interface Props {
   menuProps: MenuProps
-  viewer: GitHubScopingSearchFilterMenu_viewer | null
-  error: Error | null
+  queryRef: PreloadedQuery<GitHubScopingSearchFilterMenuQuery>
 }
 
 type GitHubSearchQuery = NonNullable<
-  NonNullable<GitHubScopingSearchFilterMenu_viewer['meeting']>['githubSearchQuery']
+  NonNullable<GitHubScopingSearchFilterMenuQueryResponse['viewer']['meeting']>['githubSearchQuery']
 >
 
 type Contribution = Pick<IXGitHubCreatedCommitContribution, 'occurredAt' | 'repository'>
@@ -80,14 +77,58 @@ const getValue = (item: {nameWithOwner?: string}) => {
 }
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
-  const {menuProps, viewer} = props
-  const meeting = viewer?.meeting ?? null
+  const {menuProps, queryRef} = props
+  const query = usePreloadedQuery<GitHubScopingSearchFilterMenuQuery>(
+    graphql`
+      query GitHubScopingSearchFilterMenuQuery($teamId: ID!, $meetingId: ID!) {
+        viewer {
+          meeting(meetingId: $meetingId) {
+            id
+            ... on PokerMeeting {
+              githubSearchQuery {
+                queryString
+              }
+            }
+          }
+          teamMember(teamId: $teamId) {
+            integrations {
+              github {
+                api {
+                  query {
+                    viewer {
+                      contributionsCollection {
+                        commitContributionsByRepository(maxRepositories: 100) {
+                          contributions(orderBy: {field: OCCURRED_AT, direction: DESC}, first: 1) {
+                            nodes {
+                              occurredAt
+                              repository {
+                                id
+                                nameWithOwner
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+
+  const meeting = query?.viewer?.meeting
   const meetingId = meeting?.id ?? ''
-  const queryString = meeting?.githubSearchQuery?.queryString ?? null
-  const isLoading = viewer === null
+  const githubSearchQuery = meeting?.githubSearchQuery
+  const queryString = githubSearchQuery?.queryString ?? null
   const atmosphere = useAtmosphere()
   const contributionsByRepo =
-    viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
+    query?.viewer?.teamMember?.integrations.github?.api?.query?.viewer?.contributionsCollection
       ?.commitContributionsByRepository ?? []
   const repoContributions = useMemo(() => {
     const contributions = contributionsByRepo.map((contributionByRepo) =>
@@ -101,7 +142,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       )
       .map((sortedContributions) => sortedContributions?.repository)
   }, [contributionsByRepo])
-
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -109,18 +149,22 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   })
   const {search} = fields
   const {value} = search
-  const query = value.toLowerCase()
+  const searchQuery = value.toLowerCase()
   // TODO parse the query string & extract out the repositories
-  const filteredRepoContributions = useFilteredItems(query, repoContributions, getValue)
+  const filteredRepoContributions = useFilteredItems(searchQuery, repoContributions, getValue)
   const selectedRepos = getReposFromQueryStr(queryString)
   const selectedAndFilteredRepos = useMemo(() => {
     const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
-    const repos = filteredRepoContributions.map(({nameWithOwner}) => nameWithOwner)
+    const repos = filteredRepoContributions.map(({nameWithOwner}) =>
+      nameWithOwner.toLowerCase().trim()
+    )
     return Array.from(new Set([...selectedRepos, ...repos])).slice(0, adjustedMax)
   }, [filteredRepoContributions])
+
   const {portalStatus, isDropdown} = menuProps
+  if (repoContributions.length === 0) return <NoResults key='no-results'>No repos found!</NoResults>
   return (
-    <StyledMenu
+    <Menu
       keepParentFocus
       ariaLabel={'Define the GitHub search query'}
       portalStatus={portalStatus}
@@ -132,10 +176,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         </StyledMenuItemIcon>
         <MenuSearch placeholder={'Search your GitHub repos'} value={value} onChange={onChange} />
       </SearchItem>
-      {isLoading && <MockFieldList />}
-      {repoContributions.length === 0 && !isLoading && (
-        <NoResults key='no-results'>No repos found!</NoResults>
-      )}
       {selectedAndFilteredRepos.map((repo) => {
         const isSelected = selectedRepos.includes(repo)
         const handleClick = () => {
@@ -161,53 +201,15 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             label={
               <StyledMenuItemLabel>
                 <StyledCheckBox active={isSelected} />
-                <TypeAheadLabel query={query} label={repo} />
+                <TypeAheadLabel query={searchQuery} label={repo} />
               </StyledMenuItemLabel>
             }
             onClick={handleClick}
           />
         )
       })}
-    </StyledMenu>
+    </Menu>
   )
 }
 
-export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
-  viewer: graphql`
-    fragment GitHubScopingSearchFilterMenu_viewer on User {
-      meeting(meetingId: $meetingId) {
-        id
-        ... on PokerMeeting {
-          githubSearchQuery {
-            queryString
-          }
-        }
-      }
-      teamMember(teamId: $teamId) {
-        integrations {
-          github {
-            api {
-              query {
-                viewer {
-                  contributionsCollection {
-                    commitContributionsByRepository(maxRepositories: 100) {
-                      contributions(orderBy: {field: OCCURRED_AT, direction: DESC}, first: 1) {
-                        nodes {
-                          occurredAt
-                          repository {
-                            id
-                            nameWithOwner
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default GitHubScopingSearchFilterMenu

@@ -14,7 +14,7 @@ const persistJiraSearchQuery = {
   args: {
     teamId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'the team witht the settings we add the query to'
+      description: 'the team with the settings we add the query to'
     },
     input: {
       type: GraphQLNonNull(JiraSearchQueryInput),
