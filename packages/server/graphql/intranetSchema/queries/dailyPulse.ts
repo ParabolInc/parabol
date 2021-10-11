@@ -8,6 +8,7 @@ import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
 import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import getPg from '../../../postgres/getPg'
 
 interface TypeField {
   type: 'mrkdwn'
@@ -34,17 +35,20 @@ const getTotal = (domainCount: DomainCount[]) =>
 const filterCounts = (domainCount: DomainCount[]) =>
   domainCount.filter(({domain, total}) => isCompanyDomain(domain) && total > 1).slice(0, TOP_X)
 
-const addAllTimeTotals = async (domainCount: DomainCount[]) => {
-  const r = await getRethink()
-  const result = await r(domainCount)
-    .merge((item) => ({
-      allTimeTotal: r
-        .table('User')
-        .filter((row) => row('email').match(item('domain').add('$')) as any)
-        .count()
-    }))
-    .run()
-  return result as DomainCountWithAllTime[]
+const addAllTimeTotals = async (domainCount: DomainCount[]): Promise<DomainCountWithAllTime[]> => {
+  const pg = getPg()
+  const allTimeCount = await pg.query(
+    `SELECT count(*) as "allTimeTotal", split_part(email, '@', 2) as domain from "User"
+     WHERE split_part(email, '@', 2) = ANY($1::text[])
+     GROUP BY split_part(email, '@', 2)`,
+    [domainCount.map((count) => count.domain)]
+  )
+
+  const mergedCount = domainCount.map((count) => ({
+    ...count,
+    allTimeTotal: allTimeCount.rows.find((allTime) => allTime.domain === count.domain)?.allTimeTotal
+  }))
+  return mergedCount
 }
 
 const makeTopXSection = async (domainCount: DomainCount[]) => {

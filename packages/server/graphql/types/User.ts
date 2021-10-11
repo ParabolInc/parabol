@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import getPg from '../../postgres/getPg'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
@@ -119,15 +120,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is the first to sign up from their domain, else false',
       resolve: async ({id: userId, email}) => {
-        const r = await getRethink()
         const domain = getDomainFromEmail(email)
-        return r
-          .table('User')
-          .filter((row: any) => row('email').match(`${domain}$`))
-          .orderBy('createdAt')
-          .nth(0)('id')
-          .eq(userId)
-          .run()
+        const pg = getPg()
+        const patientZeroId = await pg.query(
+          'SELECT id FROM "User" WHERE split_part(email, \'@\', 2) = $1 ORDER BY "createdAt" LIMIT 1',
+          [domain]
+        )
+        return patientZeroId.rows[0]?.id === userId
       }
     },
     reasonRemoved: {
