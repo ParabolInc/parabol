@@ -7,6 +7,7 @@ import db from '../../../db'
 import UpdateWatchlistPayload from '../../types/UpdateWatchlistPayload'
 import {InternalContext} from '../../graphql'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
+import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 
 const updateWatchlist = {
   type: GraphQLNonNull(UpdateWatchlistPayload),
@@ -49,10 +50,7 @@ const updateWatchlist = {
       users.push(...usersByEmail)
     }
     if (domain) {
-      const usersByDomain = await r
-        .table('User')
-        .filter((doc) => (doc as any)('email').match(domain))
-        .run()
+      const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
     }
     await db.prime('User', users)

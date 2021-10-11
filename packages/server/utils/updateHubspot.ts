@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import User from '../database/types/User'
+import IUser from '../postgres/types/IUser'
 import executeGraphQL from '../graphql/executeGraphQL'
 import sendToSentry from './sendToSentry'
 
@@ -366,7 +366,7 @@ const updateHubspotParallel = async (query: string | undefined, userId: string) 
   await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
 }
 
-const updateHubspot = async (event: string, user: User, properties: BulkRecord) => {
+const updateHubspot = async (event: string, user: IUser, properties: BulkRecord) => {
   if (!hapiKey) return
   const query = queries[event]
   if (!query) return

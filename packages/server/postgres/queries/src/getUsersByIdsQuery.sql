@@ -1,6 +1,6 @@
 /*
-  @name getUsersByIdQuery
+  @name getUsersByIdsQuery
   @param ids -> (...)
 */
 SELECT * FROM "User"
-WHERE id in :ids;
+WHERE id IN :ids;

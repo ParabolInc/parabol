@@ -6,14 +6,14 @@ import appOrigin from '../../appOrigin'
 interface Input {
   sub: string
   tms: string[]
-  rol?: 'su'
+  rol?: 'su' | null
   bet?: 1
 }
 
 export default class AuthToken {
   sub: string
   tms: string[]
-  rol?: 'su'
+  rol: 'su' | null
   bet?: 1
   iat: number
   iss: string
@@ -28,12 +28,10 @@ export default class AuthToken {
     this.aud = 'action'
     this.iss = makeAppURL(appOrigin, '/')
     this.exp = toEpochSeconds(now.getTime() + Threshold.JWT_LIFESPAN)
+    this.rol = rol ?? null
 
     if (bet) {
       this.bet = bet
-    }
-    if (rol) {
-      this.rol = rol
     }
   }
 }
