@@ -9,6 +9,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, ElementHeight, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
+import {SpotlightPortalId} from './GroupingKanban'
 import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
@@ -248,6 +249,7 @@ const SpotlightModal = (props: Props) => {
           <ReflectionGroup
             phaseRef={phaseRef}
             reflectionGroup={spotlightGroup}
+            expandedReflectionGroupPortalParentId={SpotlightPortalId}
             meeting={meeting}
             spotlightReflectionIds={spotlightReflectionIds.current}
           />

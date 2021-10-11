@@ -9,6 +9,7 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import useSpotlightColumns from '../hooks/useSpotlightColumns'
 import useGroupsByColumn from '../hooks/useGroupsByColumn'
 import {ElementWidth} from '~/types/constEnums'
+import {SpotlightPortalId} from './GroupingKanban'
 
 const Container = styled('div')({
   display: 'flex',
@@ -89,6 +90,7 @@ const SpotlightGroups = (props: Props) => {
                   meeting={meetingData}
                   phaseRef={phaseRef}
                   reflectionGroup={reflectionGroup}
+                  expandedReflectionGroupPortalParentId={SpotlightPortalId}
                 />
               )
             })}

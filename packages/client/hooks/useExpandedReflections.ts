@@ -18,7 +18,8 @@ const useExpandedReflections = (
   groupRef: MutableRefObject<any>,
   stackRef: RefObject<HTMLDivElement>,
   count: number,
-  headerRef?: RefObject<HTMLDivElement>
+  headerRef?: RefObject<HTMLDivElement>,
+  expandedReflectionGroupPortalParentId?: string
 ) => {
   const offsetLeft = ElementWidth.REFLECTION_CARD_PADDING * 2
   const offsetTop = ElementWidth.REFLECTION_CARD_PADDING * 2
@@ -37,7 +38,8 @@ const useExpandedReflections = (
   const [modalHeaderRef, headerReverse] = useFlip({firstRef: headerRef, isGroup})
   const [setItemsRef, itemsReverse] = useFlipDeal(count)
   const {terminatePortal, openPortal, portal, portalStatus, setPortalStatus} = usePortal({
-    id: 'expanded-reflections-portal',
+    parentId: expandedReflectionGroupPortalParentId,
+    id: 'expandedReflectionGroupPortal',
     noClose: true
   })
   const collapse = () => {
