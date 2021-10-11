@@ -9,16 +9,13 @@ const LabelBlock = styled('div')({
   justifyContent: 'center'
 })
 
-const Label = styled('div')<Pick<Props, 'iconAfter'>>(({iconAfter}) => {
-  const gutter = '8px'
-  return {
-    color: 'inherit',
-    fontSize: 'inherit',
-    lineHeight: 'inherit',
-    margin: iconAfter ? `0 ${gutter} 0 0` : `0 0 0 ${gutter}`,
-    whiteSpace: 'nowrap'
-  }
-})
+const Label = styled('div')<{iconAfter?: boolean}>(({iconAfter}) => ({
+  color: 'inherit',
+  fontSize: 'inherit',
+  lineHeight: 'inherit',
+  margin: iconAfter ? `0 8px 0 0` : `0 0 0 8px`,
+  whiteSpace: 'nowrap'
+}))
 
 const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconLarge'>>(
   ({iconAfter, iconLarge}) => ({

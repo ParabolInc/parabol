@@ -66,7 +66,6 @@ const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       __typename
-      ...PersistGitHubQueryMutation_notification @relay(mask: false)
       ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
       ...AddOrgMutation_notification @relay(mask: false)
       ...AddTeamMutation_notification @relay(mask: false)

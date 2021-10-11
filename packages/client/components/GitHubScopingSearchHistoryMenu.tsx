@@ -4,7 +4,7 @@ import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import PersistGitHubQueryMutation from '../mutations/PersistGitHubQueryMutation'
+import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -80,9 +80,9 @@ const GitHubScopingSearchHistoryMenu = (props: Props) => {
   const removeSearchQuery = (searchQuery: {queryString: string}) => {
     const {queryString} = searchQuery
     const normalizedQueryString = queryString.toLowerCase().trim()
-    PersistGitHubQueryMutation(atmosphere, {
+    PersistGitHubSearchQueryMutation(atmosphere, {
       teamId,
-      input: normalizedQueryString,
+      queryString: normalizedQueryString,
       isRemove: true
     })
   }

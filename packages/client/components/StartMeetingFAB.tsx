@@ -3,7 +3,8 @@ import React, {useEffect, useRef, useState} from 'react'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
-import {BezierCurve, ElementWidth, ZIndex} from '../types/constEnums'
+import useBreakpoint from '../hooks/useBreakpoint'
+import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
@@ -40,43 +41,54 @@ const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   width: isExpanded ? ElementWidth.NEW_MEETING_FAB : 0
 }))
 
-interface Props { }
+interface Props {
+  className?: string
+}
 
 const StartMeetingFAB = (props: Props) => {
-  const { } = props
+  const {className} = props
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const teamId = getTeamIdFromPathname()
   const {history} = useRouter()
-  const [isBig, setIsBig] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(true)
   const hoverTimerId = useRef<number | undefined>()
   const initTimerId = useRef<number | undefined>()
 
   useEffect(() => {
-    initTimerId.current = window.setTimeout(() => {
-      setIsBig(false)
-    }, 10000)
+    if (!isDesktop) {
+      initTimerId.current = window.setTimeout(() => {
+        setIsExpanded(false)
+      }, 10000)
+    } else if (!isExpanded) {
+      setIsExpanded(true)
+    }
     return () => {
       window.clearTimeout(initTimerId.current)
       window.clearTimeout(hoverTimerId.current)
     }
-  }, [])
+  }, [isDesktop])
 
   const onMouseEnter = () => {
-    hoverTimerId.current = window.setTimeout(() => {
-      setIsBig(true)
-    }, 500)
+    if (!isDesktop) {
+      hoverTimerId.current = window.setTimeout(() => {
+        setIsExpanded(true)
+      }, 500)
+    }
   }
   const onMouseLeave = () => {
-    window.clearTimeout(hoverTimerId.current)
-    setIsBig(false)
+    if (!isDesktop) {
+      window.clearTimeout(hoverTimerId.current)
+      setIsExpanded(false)
+    }
   }
   const onClick = () => {
     history.push(`/new-meeting/${teamId}`)
   }
   return (
-    <Block>
+    <Block className={className}>
       <Button onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <MeetingIcon isExpanded={isBig}>{'add'}</MeetingIcon>
-        <MeetingLabel isExpanded={isBig}>{'Add Meeting'}</MeetingLabel>
+        <MeetingIcon isExpanded={isExpanded}>{'add'}</MeetingIcon>
+        <MeetingLabel isExpanded={isExpanded}>{'Add Meeting'}</MeetingLabel>
       </Button>
     </Block>
   )

@@ -12,7 +12,7 @@ export const isAuthenticated = (authToken: any): authToken is AuthToken => {
   return typeof authToken?.sub === 'string'
 }
 
-export const isSuperUser = (authToken) => {
+export const isSuperUser = (authToken: AuthToken) => {
   const userId = getUserId(authToken)
   return userId ? authToken.rol === 'su' : false
 }
@@ -33,7 +33,7 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
 //     .run()
 // }
 
-export const isTeamLead = async (userId, teamId) => {
+export const isTeamLead = async (userId: string, teamId: string) => {
   const r = await getRethink()
   const teamMemberId = toTeamMemberId(teamId, userId)
   return r
@@ -43,7 +43,7 @@ export const isTeamLead = async (userId, teamId) => {
     .run()
 }
 
-export const requireSU = (authToken) => {
+export const requireSU = (authToken: AuthToken) => {
   if (!isSuperUser(authToken)) {
     throw new Error('Unauthorized. Must be a super user to run this query.')
   }
@@ -60,7 +60,7 @@ export const isUserBillingLeader = async (
 ) => {
   const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
   const organizationUser = organizationUsers.find(
-    (organizationUser) => organizationUser.orgId === orgId
+    (organizationUser: OrganizationUser) => organizationUser.orgId === orgId
   )
   if (options && options.clearCache) {
     dataLoader.get('organizationUsersByUserId').clear(userId)
@@ -68,7 +68,7 @@ export const isUserBillingLeader = async (
   return organizationUser ? organizationUser.role === 'BILLING_LEADER' : false
 }
 
-export const isUserInOrg = async (userId, orgId) => {
+export const isUserInOrg = async (userId: string, orgId: string) => {
   const r = await getRethink()
   const organizationUser = await r
     .table('OrganizationUser')
@@ -80,7 +80,7 @@ export const isUserInOrg = async (userId, orgId) => {
   return !!organizationUser
 }
 
-export const isOrgLeaderOfUser = async (authToken, userId) => {
+export const isOrgLeaderOfUser = async (authToken: AuthToken, userId: string) => {
   const r = await getRethink()
   const viewerId = getUserId(authToken)
   const {viewerOrgIds, userOrgIds} = await r({

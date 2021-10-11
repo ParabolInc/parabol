@@ -162,7 +162,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   }, [filteredRepoContributions])
 
   const {portalStatus, isDropdown} = menuProps
-  if (repoContributions.length === 0) return <NoResults key='no-results'>No repos found!</NoResults>
   return (
     <Menu
       keepParentFocus
@@ -176,6 +175,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         </StyledMenuItemIcon>
         <MenuSearch placeholder={'Search your GitHub repos'} value={value} onChange={onChange} />
       </SearchItem>
+      {repoContributions.length === 0 && <NoResults key='no-results'>No repos found!</NoResults>}
       {selectedAndFilteredRepos.map((repo) => {
         const isSelected = selectedRepos.includes(repo)
         const handleClick = () => {

@@ -14,6 +14,7 @@ import {fromEpochSeconds} from '../../utils/epochTime'
 import StripeManager from '../../utils/StripeManager'
 import {InvoiceStatusEnum} from '../../database/types/Invoice'
 import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
+import {getUsersByIds} from '../../postgres/queries/getUsersByIds'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -74,7 +75,7 @@ const getEmailLookup = async (userIds: string[]) => {
   return usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email
     return dict
-  }, {}) as EmailLookup
+  }, {} as {[key: string]: string}) as EmailLookup
 }
 
 const reduceItemsByType = (typesDict: TypesDict, email: string) => {
@@ -148,7 +149,7 @@ const makeDetailedPauseEvents = (
 
 const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) => {
   const quantityChangeLineItems: QuantityChangeLineItem[] = []
-  const lineItemTypes = Object.keys(detailedLineItems) as InvoiceLineItemEnum[]
+  const lineItemTypes = Object.keys(detailedLineItems) as (keyof DetailedLineItemDict)[]
   for (let i = 0; i < lineItemTypes.length; i++) {
     const lineItemType = lineItemTypes[i]
     const details = detailedLineItems[lineItemType] as ReducedItem[]
@@ -200,7 +201,9 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
     metadata: {userId, type},
     period: {start}
   } = lineItem
-  const safeType = type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
+  const safeType = (type === InvoiceItemType.AUTO_PAUSE_USER
+    ? InvoiceItemType.PAUSE_USER
+    : type) as keyof TypesDict
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
   itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}
@@ -338,18 +341,17 @@ export default async function generateInvoice(
   }
   const paidAt = status === 'PAID' ? now : undefined
 
-  const {organization, billingLeaderEmails} = await r({
+  const {organization, billingLeaderIds} = await r({
     organization: (r.table('Organization').get(orgId) as unknown) as Organization,
-    billingLeaderEmails: (r
+    billingLeaderIds: (r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null, role: 'BILLING_LEADER'})
-      .coerceTo('array')('userId')
-      .do((userIds) => {
-        return r.table('User').getAll(r.args(userIds), {index: 'id'})('email')
-      })
-      .coerceTo('array') as unknown) as string[]
+      .coerceTo('array')('userId') as unknown) as string[]
   }).run()
+
+  const billingLeaders = await getUsersByIds(billingLeaderIds)
+  const billingLeaderEmails = billingLeaders.map((user) => user.email)
 
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null
 
