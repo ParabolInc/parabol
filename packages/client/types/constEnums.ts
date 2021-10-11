@@ -425,3 +425,7 @@ export const enum Polls {
   MAX_TITLE_LENGTH = 100,
   MIN_TITLE_LENGTH = 2
 }
+
+export const enum Spotlight {
+  SELECTED_HEIGHT_PERC = 33.3
+}

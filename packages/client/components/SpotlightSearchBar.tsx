@@ -5,20 +5,19 @@ import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import Icon from './Icon'
-import {ElementWidth} from '../types/constEnums'
+import {ElementWidth, Spotlight} from '../types/constEnums'
 import Atmosphere from '../Atmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import React from 'react'
 
-const SELECTED_HEIGHT_PERC = 33.3
 const SelectedReflectionSection = styled('div')({
   alignItems: 'flex-start',
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
   flexWrap: 'wrap',
-  height: `${SELECTED_HEIGHT_PERC}%`,
+  height: `${Spotlight.SELECTED_HEIGHT_PERC}%`,
   justifyContent: 'center',
   padding: 16,
   position: 'relative',

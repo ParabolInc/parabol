@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useRef} from 'react'
-import {ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {ElementHeight, ElementWidth, ZIndex, Spotlight} from '../types/constEnums'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SpotlightGroups from './SpotlightGroups'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
@@ -10,12 +10,11 @@ import {
 } from '../__generated__/SpotlightResultsRootQuery.graphql'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 
-const SELECTED_HEIGHT_PERC = 33.3
 const SimilarGroups = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: `${SELECTED_HEIGHT_PERC * 2}%`,
+  height: `${Spotlight.SELECTED_HEIGHT_PERC * 2}%`,
   padding: 16
 })
 
@@ -23,7 +22,7 @@ const ReflectionWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
-  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${ElementHeight.REFLECTION_CARD / 2}px)`,
+  top: `calc(${Spotlight.SELECTED_HEIGHT_PERC / 2}% - ${ElementHeight.REFLECTION_CARD / 2}px)`,
   left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
 })
