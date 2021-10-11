@@ -1,5 +1,5 @@
 import {GraphQLInt} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
+import getPg from '../../postgres/getPg'
 import {requireSU} from '../../utils/authorization'
 import TierEnum from '../types/TierEnum'
 
@@ -14,16 +14,15 @@ export default {
   },
   // Only counts users who are active
   async resolve(_source, {tier}, {authToken}) {
-    const r = await getRethink()
-
     // AUTH
     requireSU(authToken)
 
     // RESOLUTION
-    return r
-      .table('User')
-      .filter({tier: tier, inactive: false})
-      .count()
-      .run()
+    const pg = getPg()
+    const result = await pg.query(
+      'SELECT count(*) FROM "User" WHERE inactive = FALSE AND tier = $1',
+      [tier]
+    )
+    return result.rows[0].count
   }
 }
