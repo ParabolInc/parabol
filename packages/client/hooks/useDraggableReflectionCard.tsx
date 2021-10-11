@@ -40,8 +40,9 @@ const useRemoteDrag = (
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
       const targetId = remoteDrag?.targetId
-      const isTargetInSpotlight = !!document.querySelector(
-        `div[${DragAttribute.DROPPABLE}='${targetId}']`
+      const isTargetInSpotlight = !!(
+        drag.spotlightReflectionId &&
+        document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`)
       )
       // performance only
       const style = getDroppingStyles(

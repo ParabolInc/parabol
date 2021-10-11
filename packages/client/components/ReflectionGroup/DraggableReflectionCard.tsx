@@ -33,7 +33,7 @@ const makeDragState = () => ({
   targets: [] as TargetBBox[],
   prevTargetId: '',
   isBroadcasting: false,
-  spotlightGroupId: null as null | string,
+  spotlightReflectionId: null as null | string,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
@@ -86,6 +86,7 @@ const DraggableReflectionCard = (props: Props) => {
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
+  drag.spotlightReflectionId = spotlightReflection?.id || null
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
