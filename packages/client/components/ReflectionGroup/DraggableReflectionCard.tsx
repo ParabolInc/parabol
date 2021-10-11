@@ -33,6 +33,7 @@ const makeDragState = () => ({
   targets: [] as TargetBBox[],
   prevTargetId: '',
   isBroadcasting: false,
+  spotlightGroupId: null as null | string,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
@@ -81,10 +82,11 @@ const DraggableReflectionCard = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
   const isSpotlightOpen = !!spotlightGroup?.id
-  const isInSpotlight = isSpotlightOpen && !openSpotlight
+  const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
-  const [drag] = useState(makeDragState)
   const staticReflectionCount = staticReflections?.length || 0
+  const [drag] = useState(makeDragState)
+  drag.spotlightGroupId = spotlightGroup?.id || null
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -92,17 +94,15 @@ const DraggableReflectionCard = (props: Props) => {
     meetingId,
     teamId,
     staticReflectionCount,
-    isInSpotlight,
     swipeColumn
   )
-
   const isDragPhase = phaseType === 'group' && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
     <DragWrapper
-      ref={(c) => (drag.ref = isBehindSpotlight ? null : c)}
+      ref={(c) => (isBehindSpotlight ? null : (drag.ref = c))}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
       isDraggable={canDrag}
@@ -131,14 +131,15 @@ export default createFragmentContainer(DraggableReflectionCard, {
       ...RemoteReflection_reflection
       id
       isEditing
-      reflectionGroupId
       promptId
       isViewerDragging
       isViewerCreator
       isDropping
+      reflectionGroupId
       remoteDrag {
         dragUserId
         dragUserName
+        targetId
       }
     }
   `,

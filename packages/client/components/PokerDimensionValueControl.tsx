@@ -16,6 +16,7 @@ import {SetTaskEstimateMutationResponse} from '../__generated__/SetTaskEstimateM
 import AddMissingJiraFieldModal from './AddMissingJiraFieldModal'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
+import PokerDimensionFinalScoreGitHubPicker from './PokerDimensionFinalScoreGitHubPicker'
 import PokerDimensionFinalScoreJiraPicker from './PokerDimensionFinalScoreJiraPicker'
 import StyledError from './StyledError'
 
@@ -96,7 +97,6 @@ const PokerDimensionValueControl = (props: Props) => {
   const isStale = cardScore !== finalScore || lastSubmittedFieldRef.current !== serviceFieldName
   const {closePortal, openPortal, modalPortal} = useModal()
   const forceUpdate = useForceUpdate()
-
   useEffect(() => {
     // if the final score changes, change what the card says & recalculate is stale
     setCardScore(finalScore)
@@ -107,6 +107,9 @@ const PokerDimensionValueControl = (props: Props) => {
     if (submitting || !isStale || !isLocallyValidatedRef.current) {
       return
     }
+    // submitScore might be called when changing the integration field to push to
+    const noScoreYet = cardScore === '' && finalScore === ''
+    if (noScoreYet) return
     submitMutation()
     const handleCompleted = (res: SetTaskEstimateMutationResponse, errors) => {
       onCompleted(res as any, errors)
@@ -171,7 +174,7 @@ const PokerDimensionValueControl = (props: Props) => {
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && cardScore === finalScore
-  const isJira = task?.integration?.__typename === 'JiraIssue'
+  const integrationType = task?.integration?.__typename ?? ''
   const handleLabelClick = () => inputRef.current!.focus()
   const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (
@@ -191,7 +194,7 @@ const PokerDimensionValueControl = (props: Props) => {
           />
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
-        {isJira && (
+        {integrationType === 'JiraIssue' && (
           <PokerDimensionFinalScoreJiraPicker
             canUpdate={isStale}
             stage={stage}
@@ -202,7 +205,18 @@ const PokerDimensionValueControl = (props: Props) => {
             isFacilitator={isFacilitator}
           />
         )}
-        {!isJira && isFacilitator && (
+        {integrationType === '_xGitHubIssue' && (
+          <PokerDimensionFinalScoreGitHubPicker
+            canUpdate={isStale}
+            stageRef={stage}
+            error={errorStr}
+            submitScore={submitScore}
+            clearError={onCompleted}
+            inputRef={inputRef}
+            isFacilitator={isFacilitator}
+          />
+        )}
+        {!integrationType && isFacilitator && (
           <>
             {isStale ? (
               <>
@@ -230,6 +244,7 @@ export default createFragmentContainer(PokerDimensionValueControl, {
   stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
       ...PokerDimensionFinalScoreJiraPicker_stage
+      ...PokerDimensionFinalScoreGitHubPicker_stage
       ...AddMissingJiraFieldModal_stage
       id
       meetingId

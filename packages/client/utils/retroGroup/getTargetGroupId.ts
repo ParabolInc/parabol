@@ -1,4 +1,4 @@
-import {DragAttribute} from '../../types/constEnums'
+import {DragAttribute} from '~/types/constEnums'
 
 const getTargetGroupId = (e: MouseEvent | TouchEvent) => {
   if ((e as TouchEvent).touches) {

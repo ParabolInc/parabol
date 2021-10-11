@@ -2,10 +2,9 @@ import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import getRethink from '../../../database/rethinkDriver'
 import User from '../../../database/types/User'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
+import {USER_EMAIL_LIMIT, USER_PREFERRED_NAME_LIMIT} from '../../constants'
 import getPg from '../../getPg'
 import {backupUserQuery, IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
-import catchAndLog from '../../utils/catchAndLog'
-import {USER_EMAIL_LIMIT, USER_PREFERRED_NAME_LIMIT} from '../../constants'
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -60,7 +59,13 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       }
       foundUsers = true
       const pgUsers = cleanUsers(rethinkUsers)
-      await catchAndLog(() => backupUserQuery.run({users: pgUsers}, getPg()))
+      if (pgUsers.length > 0) {
+        try {
+          await backupUserQuery.run({users: pgUsers}, getPg())
+        } catch (e) {
+          console.log('backupUserQuery failed', e, pgUsers.length)
+        }
+      }
     }
     return foundUsers
   }

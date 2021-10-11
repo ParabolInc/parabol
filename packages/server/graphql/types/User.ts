@@ -1,3 +1,4 @@
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -8,8 +9,11 @@ import {
   GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import toMeetingMemberId from 'parabol-client/utils/relay/toMeetingMemberId'
-import {AUTO_GROUPING_THRESHOLD} from '../../../client/utils/constants'
+import {
+  AUTO_GROUPING_THRESHOLD,
+  MAX_REDUCTION_PERCENTAGE,
+  MAX_RESULT_GROUP_SIZE
+} from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -41,8 +45,14 @@ import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
+import OrganizationUserType from '../../database/types/OrganizationUser'
+import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
+import TeamInvitation from '../../database/types/TeamInvitation'
+import OrganizationType from '../../database/types/Organization'
+import SuggestedActionType from '../../database/types/SuggestedAction'
+import MeetingMemberType from '../../database/types/MeetingMember'
 
-const User = new GraphQLObjectType<any, GQLContext>({
+const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
   description: 'The user account profile',
   fields: () => ({
@@ -73,8 +83,8 @@ const User = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(UserFeatureFlags),
       description: 'Any super power given to the user via a super user',
       resolve: (source: any) => {
-        const featureFlags = source.featureFlags || []
-        const flagObj = {}
+        const featureFlags: string[] = source.featureFlags || []
+        const flagObj: {[key: string]: boolean} = {}
         featureFlags.forEach((flag) => {
           flagObj[flag] = true
         })
@@ -99,7 +109,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
-          (organizationUser) => organizationUser.role === 'BILLING_LEADER'
+          (organizationUser: OrganizationUserType) => organizationUser.role === 'BILLING_LEADER'
         )
       }
     },
@@ -146,7 +156,10 @@ const User = new GraphQLObjectType<any, GQLContext>({
       description: 'the endedAt timestamp of the most recent meeting they were a member of',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
-        const lastMetAt = Math.max(0, ...meetingMembers.map(({updatedAt}) => updatedAt.getTime()))
+        const lastMetAt = Math.max(
+          0,
+          ...meetingMembers.map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+        )
         return lastMetAt ? new Date(lastMetAt) : null
       }
     },
@@ -164,8 +177,8 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
-          .map(({updatedAt}) => updatedAt.getTime())
-          .sort((a, b) => (a < b ? 1 : -1))
+          .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+          .sort((a: Date, b: Date) => (a < b ? 1 : -1))
 
         return getMonthlyStreak(meetingDates)
       }
@@ -177,8 +190,8 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
-          .map(({updatedAt}) => updatedAt.getTime())
-          .sort((a, b) => (a < b ? 1 : -1))
+          .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+          .sort((a: Date, b: Date) => (a < b ? 1 : -1))
         return getMonthlyStreak(meetingDates, true)
       }
     },
@@ -189,7 +202,9 @@ const User = new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
-        suggestedActions.sort((a, b) => (a.priority! < b.priority! ? -1 : 1))
+        suggestedActions.sort((a: SuggestedActionType, b: SuggestedActionType) =>
+          a.priority! < b.priority! ? -1 : 1
+        )
         return suggestedActions
       }
     },
@@ -340,7 +355,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const organizationUsersForOrgId = organizationUsers.find(
-          (organizationUser) => organizationUser.orgId === orgId
+          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
         )
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsersForOrgId
@@ -349,7 +364,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
           .get('organizationUsersByUserId')
           .load(viewerId)
         const viewerOrganizationUsersForOrgId = viewerOrganizationUsers.find(
-          (organizationUser) => organizationUser.orgId === orgId
+          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
         )
         return viewerOrganizationUsersForOrgId ? organizationUsersForOrgId : null
       }
@@ -360,15 +375,17 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: userId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
+        organizationUsers.sort((a: OrganizationUserType, b: OrganizationUserType) =>
+          a.orgId > b.orgId ? 1 : -1
+        )
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsers
         }
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
-        return organizationUsers.filter((organizationUser) =>
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
+        return organizationUsers.filter((organizationUser: OrganizationUserType) =>
           viewerOrgIds.includes(organizationUser.orgId)
         )
       }
@@ -378,12 +395,11 @@ const User = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
       async resolve({id: userId}, _args, {authToken, dataLoader}) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        const orgIds = organizationUsers.map(({orgId}) => orgId)
+        const orgIds = organizationUsers.map(({orgId}: OrganizationUserType) => orgId)
         const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(
           errorFilter
         )
-
-        organizations.sort((a, b) => (a.name > b.name ? 1 : -1))
+        organizations.sort((a: OrganizationType, b: OrganizationType) => (a.name > b.name ? 1 : -1))
         const viewerId = getUserId(authToken)
         if (viewerId === userId || isSuperUser(authToken)) {
           return organizations
@@ -391,8 +407,10 @@ const User = new GraphQLObjectType<any, GQLContext>({
         const viewerOrganizationUsers = await dataLoader
           .get('organizationUsersByUserId')
           .load(viewerId)
-        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
-        return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}: OrganizationUserType) => orgId)
+        return organizations.filter((organization: OrganizationType) =>
+          viewerOrgIds.includes(organization.id)
+        )
       }
     },
     overLimitCopy: {
@@ -402,7 +420,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async (source, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(source.id)
         const isAnyMemberOfPaidOrg = organizationUsers.some(
-          (organizationUser) => organizationUser.tier !== 'personal'
+          (organizationUser: OrganizationUserType) => organizationUser.tier !== 'personal'
         )
         if (isAnyMemberOfPaidOrg) return null
         return source.overLimitCopy
@@ -430,7 +448,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
           return standardError(new Error('Invalid reflection id'), {userId})
         }
         const {meetingId} = retroReflectionGroup
-        const meetingMemberId = toMeetingMemberId({userId, meetingId})
+        const meetingMemberId = MeetingMemberId.join(meetingId, userId)
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
@@ -441,42 +459,48 @@ const User = new GraphQLObjectType<any, GQLContext>({
             .orderBy('createdAt')
             .run()
         ])
-        const {meetingId: viewerMeetingId} = viewerMeetingMember
-        if (viewerMeetingId !== meetingId) {
+        if (!viewerMeetingMember) {
           return standardError(new Error('Not on team'), {userId})
         }
         const reflectionsCount = reflections.length
-        const maxReductionPercent = 1
-        const maxResultGroupSize = 10
-        const spotlightResultGroupIds = new Set<string>()
-        const spotlightResultGroupSize = Math.min(reflectionsCount, maxResultGroupSize)
+        const spotlightResultGroupSize = Math.min(reflectionsCount - 1, MAX_RESULT_GROUP_SIZE)
+        let currentResultGroupIds = new Set<string>()
         let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
         while (currentThresh) {
-          const {groupedReflections, nextThresh} = groupReflections(reflections, {
+          const nextResultGroupIds = new Set<string>()
+          const {groupedReflectionsRes, nextThresh} = groupReflections(reflections, {
             groupingThreshold: currentThresh,
             maxGroupSize: reflectionsCount,
-            maxReductionPercent
+            maxReductionPercent: MAX_REDUCTION_PERCENTAGE
           })
-          const spotlightGroupedReflection = groupedReflections.find(
+          const spotlightGroupedReflection = groupedReflectionsRes.find(
             (group) => group.oldReflectionGroupId === reflectionGroupId
           )
           if (!spotlightGroupedReflection) break
-          for (const groupedReflection of groupedReflections) {
-            const {reflectionGroupId, oldReflectionGroupId} = groupedReflection
+          for (const groupedReflectionRes of groupedReflectionsRes) {
+            const {reflectionGroupId, oldReflectionGroupId} = groupedReflectionRes
             if (
               reflectionGroupId === spotlightGroupedReflection.reflectionGroupId &&
               oldReflectionGroupId !== spotlightGroupedReflection.oldReflectionGroupId
             ) {
-              spotlightResultGroupIds.add(oldReflectionGroupId)
+              nextResultGroupIds.add(oldReflectionGroupId)
             }
             currentThresh = nextThresh
-            if (spotlightResultGroupIds.size >= spotlightResultGroupSize) break
+            if (nextResultGroupIds.size > spotlightResultGroupSize) {
+              currentThresh = null
+              break
+            } else {
+              currentResultGroupIds = nextResultGroupIds
+              if (nextResultGroupIds.size === spotlightResultGroupSize) {
+                currentThresh = null
+                break
+              }
+            }
           }
         }
-        const slicedIds = Array.from(spotlightResultGroupIds).slice(0, spotlightResultGroupSize)
         return r
           .table('RetroReflectionGroup')
-          .getAll(r.args(slicedIds), {index: 'id'})
+          .getAll(r.args(Array.from(currentResultGroupIds)), {index: 'id'})
           .run()
       }
     },
@@ -509,7 +533,9 @@ const User = new GraphQLObjectType<any, GQLContext>({
           teamId = meeting.teamId
         }
         const teamInvitations = await dataLoader.get('teamInvitationsByTeamId').load(teamId)
-        const teamInvitation = teamInvitations.find((invitation) => invitation.email === email)
+        const teamInvitation = teamInvitations.find(
+          (invitation: TeamInvitation) => invitation.email === email
+        )
         return {teamInvitation, teamId, meetingId}
       }
     },
@@ -522,9 +548,11 @@ const User = new GraphQLObjectType<any, GQLContext>({
         const teamIds =
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
-            : user.tms.filter((teamId) => authToken.tms.includes(teamId))
+            : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
         const teams = await dataLoader.get('teams').loadMany(teamIds)
-        teams.sort((a, b) => (a.name > b.name ? 1 : -1))
+        teams.sort((a: IGetTeamsByIdsQueryResult, b: IGetTeamsByIdsQueryResult) =>
+          a.name > b.name ? 1 : -1
+        )
         return teams
       }
     },
@@ -561,7 +589,9 @@ const User = new GraphQLObjectType<any, GQLContext>({
       description: 'all the teams the user is a part of that the viewer can see',
       resolve: ({id: userId, tms}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        return viewerId === userId ? tms : tms.filter((teamId) => authToken.tms.includes(teamId))
+        return viewerId === userId
+          ? tms
+          : tms.filter((teamId: string) => authToken.tms.includes(teamId))
       }
     },
     updatedAt: {

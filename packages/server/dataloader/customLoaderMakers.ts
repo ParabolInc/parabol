@@ -10,21 +10,26 @@ import {
   IGetDiscussionsByIdQueryResult
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
+import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import getGitHubDimensionFieldMaps, {
+  GitHubDimensionFieldMap
+} from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {TemplateRef} from '../postgres/queries/getTemplateRefsById'
-import getTemplateRefsById from '../postgres/queries/getTemplateRefsById'
+import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
+import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
+import getTemplateScaleRefsByIds, {
+  TemplateScaleRef
+} from '../postgres/queries/getTemplateScaleRefsByIds'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
-import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 
 export interface UserTasksKey {
   first: number
@@ -303,6 +308,29 @@ export const githubAuth = (parent: RethinkDataLoader) => {
   )
 }
 
+export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
+  return new DataLoader<
+    {teamId: string; dimensionName: string; nameWithOwner: string},
+    GitHubDimensionFieldMap | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, dimensionName, nameWithOwner}) =>
+          getGitHubDimensionFieldMaps(teamId, dimensionName, nameWithOwner)
+        )
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
+        `${teamId}:${dimensionName}:${nameWithOwner}`
+    }
+  )
+}
+
 export const meetingSettingsByType = (parent: RethinkDataLoader) => {
   return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
@@ -376,6 +404,18 @@ export const templateRefs = (parent: RethinkDataLoader) => {
     async (refIds) => {
       const templateRefs = await getTemplateRefsById(refIds)
       return refIds.map((refId) => templateRefs.find((ref) => ref.id === refId)!)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const templateScaleRefs = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, TemplateScaleRef, string>(
+    async (refIds) => {
+      const templateScaleRefs = await getTemplateScaleRefsByIds(refIds)
+      return refIds.map((refId) => templateScaleRefs.find((ref) => ref.id === refId)!)
     },
     {
       ...parent.dataLoaderOptions

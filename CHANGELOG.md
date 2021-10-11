@@ -5,6 +5,41 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.30.1 2021-Sep-30
+
+### Hotfix
+
+- Turn on GitHub Label in prod
+
+## 6.30.0 2021-Sep-30
+
+### Added
+
+- Add server tests (#5330)
+- Push Estimate to GitHub Label (#5423)
+- Enable use of SMTP endpoints for sending mail (#5432)
+
+### Changed
+
+- Bumped nth-check from 2.0.0 to 2.0.1 (#5422)
+- Add more logging info to Stripe Quantity Mismatch issue (#5395)
+
+## 6.29.0 2021-Sep-22
+
+### Added
+
+- Backend for creating a poll object (#5304)
+- RedisLockQueue implementation (#5311)
+- Custom ADF converter for pushing Jira tasks (#5429)
+
+### Removed
+
+- Removed postdeploy migrations (#5396)
+
+### Changed
+
+- Bumped node and pm2 (#5418)
+
 ## 6.28.0 2021-Sep-16
 
 ### Added

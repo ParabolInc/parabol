@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import JiraIssueId from '../shared/gqlIds/JiraIssueId'
-import {SimpleMutation} from '../types/relayMutations'
+import {DiscriminateProxy} from '../types/generics'
+import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
 import {PokerMeeting_meeting} from '../__generated__/PokerMeeting_meeting.graphql'
 import {UpdateJiraDimensionFieldMutation as TUpdateJiraDimensionFieldMutation} from '../__generated__/UpdateJiraDimensionFieldMutation.graphql'
 
@@ -60,9 +61,10 @@ const mutation = graphql`
   }
 `
 
-const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionFieldMutation> = (
+const UpdateJiraDimensionFieldMutation: StandardMutation<TUpdateJiraDimensionFieldMutation> = (
   atmosphere,
-  variables
+  variables,
+  {onCompleted, onError}
 ) => {
   return commitMutation<TUpdateJiraDimensionFieldMutation>(atmosphere, {
     mutation,
@@ -99,21 +101,26 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       // handle meeting records
       const phases = meeting.getLinkedRecords('phases')
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
-      const stages = estimatePhase.getLinkedRecords('stages')
+      const stages = estimatePhase.getLinkedRecords<JiraFieldMenu_stage[]>('stages')
       stages.forEach((stage) => {
-        const {cloudId: stageCloudId} = JiraIssueId.split(
-          stage.getValue('serviceTaskId') as string
-        )
-        if (stage.getValue('dimensionName') === dimensionName && stageCloudId === cloudId) {
+        const dimensionRef = stage.getLinkedRecord('dimensionRef')
+        const dimensionRefName = dimensionRef.getValue('name')
+        if (dimensionRefName !== dimensionName) return
+        const task = stage.getLinkedRecord('task')
+        const _integration = task.getLinkedRecord('integration')
+        if (_integration.getValue('__typename') !== 'JiraIssue') return
+        const integration = _integration as DiscriminateProxy<typeof _integration, 'JiraIssue'>
+        if (integration.getValue('cloudId') !== cloudId) return
+        const nextServiceField = createProxyRecord(store, 'ServiceField', {
+          name: fieldName,
           // the type being a number is just a guess
-          const nextServiceField = createProxyRecord(store, 'ServiceField', {
-            name: fieldName,
-            type: 'number'
-          })
-          stage.setLinkedRecord(nextServiceField, 'serviceField')
-        }
+          type: 'number'
+        })
+        stage.setLinkedRecord(nextServiceField, 'serviceField')
       })
-    }
+    },
+    onCompleted,
+    onError
   })
 }
 

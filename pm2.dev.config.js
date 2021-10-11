@@ -6,6 +6,7 @@ module.exports = {
       instances: 1,
       autorestart: true,
       watch: ['packages/server'],
+      ignore_watch: ['**/__tests__'],
       max_memory_restart: '3000M',
       env_production: {
         NODE_ENV: 'development'

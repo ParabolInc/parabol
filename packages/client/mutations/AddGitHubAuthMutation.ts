@@ -6,6 +6,7 @@ import {AddGitHubAuthMutation as TAddGitHubAuthMutation} from '../__generated__/
 graphql`
   fragment AddGitHubAuthMutation_team on AddGitHubAuthPayload {
     teamMember {
+      ...ScopePhaseAreaGitHub_teamMember
       integrations {
         github {
           ...TaskFooterIntegrateMenuViewerGitHubIntegration

@@ -81,7 +81,12 @@ const PokerEstimatePhase = (props: Props) => {
           </EstimateAreaWrapper>
         </StoryAndEstimateWrapper>
       </StyledMeetingHeaderAndPhase>
-      <ResponsiveDashSidebar isOpen={isRightDrawerOpen} isRightDrawer onToggle={toggleDrawer}>
+      <ResponsiveDashSidebar
+        isOpen={isRightDrawerOpen}
+        isRightDrawer
+        onToggle={toggleDrawer}
+        sidebarWidth={DiscussionThreadEnum.WIDTH}
+      >
         <EstimatePhaseDiscussionDrawer
           isDesktop={isDesktop}
           isOpen={isRightDrawerOpen}

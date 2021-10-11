@@ -98,7 +98,7 @@ const GroupingKanban = (props: Props) => {
     spotlightGroupRef.current = reflectionRef.current
     openPortal()
     commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
+      const meeting = store.get<GroupingKanban_meeting>(meetingId)
       const reflectionGroup = store.get(reflectionGroupId)
       if (!meeting || !reflectionGroup) return
       meeting.setLinkedRecord(reflectionGroup, 'spotlightGroup')

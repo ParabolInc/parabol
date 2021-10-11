@@ -7,8 +7,8 @@ import {
 } from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 
-export interface CompletedHandler {
-  (response: any, errors?: readonly any[] | null): void
+export interface CompletedHandler<TResponse = any> {
+  (response: TResponse, errors?: readonly any[] | null): void
 }
 
 export interface ErrorHandler {

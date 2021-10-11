@@ -6,7 +6,7 @@ import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflec
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
-import {Times} from '../types/constEnums'
+import {DragAttribute, Times} from '../types/constEnums'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
@@ -30,8 +30,7 @@ const windowDims = {
 const useRemoteDrag = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
-  staticIdx: number,
-  isInSpotlight: boolean
+  staticIdx: number
 ) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
@@ -40,15 +39,24 @@ const useRemoteDrag = (
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
+      const targetId = remoteDrag?.targetId
+      const isTargetInSpotlight = !!document.querySelector(
+        `div[${DragAttribute.DROPPABLE}='${targetId}']`
+      )
       // performance only
-      const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight, timeRemaining)
+      const style = getDroppingStyles(
+        drag.ref,
+        bbox,
+        windowDims.clientHeight,
+        timeRemaining,
+        isTargetInSpotlight
+      )
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
-          style={isClose ? style : {transform: style.transform}}
+          style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
           reflection={reflection}
-          isInSpotlight={isInSpotlight}
-          localRef={drag.ref}
+          showAboveSpotlight={isTargetInSpotlight}
         />
       )
     }
@@ -84,7 +92,6 @@ const useLocalDrag = (
 ) => {
   const {remoteDrag, isDropping, id: reflectionId, isViewerDragging} = reflection
   const atmosphere = useAtmosphere()
-
   // handle drag end
   useEffect(() => {
     if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag) {
@@ -195,10 +202,15 @@ const useDragAndDrop = (
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
+    const isInvalidSpotlightDrag = !!(
+      drag.spotlightGroupId &&
+      reflectionGroupId !== drag.spotlightGroupId &&
+      targetGroupId !== drag.spotlightGroupId
+    )
     const targetType: DragReflectionDropTargetTypeEnum | null =
-      targetGroupId && reflectionGroupId !== targetGroupId
+      targetGroupId && reflectionGroupId !== targetGroupId && !isInvalidSpotlightDrag
         ? 'REFLECTION_GROUP'
-        : !targetGroupId && reflectionCount > 0
+        : !targetGroupId && reflectionCount > 0 && !isInvalidSpotlightDrag
         ? 'REFLECTION_GRID'
         : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
@@ -362,10 +374,9 @@ const useDraggableReflectionCard = (
   meetingId: string,
   teamId: string,
   staticReflectionCount: number,
-  isInSpotlight: boolean,
   swipeColumn?: SwipeColumn
 ) => {
-  useRemoteDrag(reflection, drag, staticIdx, isInSpotlight)
+  useRemoteDrag(reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
   usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
   const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(
