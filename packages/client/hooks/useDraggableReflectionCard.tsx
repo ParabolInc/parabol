@@ -255,7 +255,6 @@ const useDragAndDrop = (
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
       drag.clone = cloneReflection(drag.ref, reflectionId)
       drag.id = clientTempId()
-      console.log('start dragging', reflectionId)
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
     }
     if (!drag.clone) return
