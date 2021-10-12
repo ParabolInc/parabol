@@ -42,7 +42,7 @@ const Content = styled('div')({
   alignItems: 'center'
 })
 
-const SpotlightEmptyState = () => {
+const SpotlightGroupsEmptyState = () => {
   return (
     <EmptyState>
       <Emoji>😔</Emoji>
@@ -58,4 +58,4 @@ const SpotlightEmptyState = () => {
   )
 }
 
-export default SpotlightEmptyState
+export default SpotlightGroupsEmptyState

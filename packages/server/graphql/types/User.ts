@@ -1,3 +1,4 @@
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -8,6 +9,12 @@ import {
   GraphQLString
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {
+  AUTO_GROUPING_THRESHOLD,
+  MAX_REDUCTION_PERCENTAGE,
+  MAX_RESULT_GROUP_SIZE
+} from '../../../client/utils/constants'
+import groupReflections from '../../../client/utils/smartGroup/groupReflections'
 import getPg from '../../postgres/getPg'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -434,19 +441,64 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       },
       resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
         const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
-        if (!retroReflection) return []
-        const {meetingId} = retroReflection
-        const meetingMemberId = toTeamMemberId(meetingId, userId)
-        const [viewerMeetingMember, reflectionGroups] = await Promise.all([
-          dataLoader.get('meetingMembers').load(meetingMemberId),
-          dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
-        ])
-        const {meetingId: viewerMeetingId} = viewerMeetingMember
-        if (viewerMeetingId !== meetingId) {
-          standardError(new Error('Not on team'), {userId})
-          return []
+        if (!retroReflection) {
+          return standardError(new Error('Invalid reflection id'), {userId})
         }
-        return reflectionGroups
+        const {meetingId} = retroReflection
+        const meetingMemberId = MeetingMemberId.join(meetingId, userId)
+        const r = await getRethink()
+        const [viewerMeetingMember, reflections] = await Promise.all([
+          dataLoader.get('meetingMembers').load(meetingMemberId),
+          r
+            .table('RetroReflection')
+            .getAll(meetingId, {index: 'meetingId'})
+            .filter({isActive: true})
+            .orderBy('createdAt')
+            .run()
+        ])
+        if (!viewerMeetingMember) {
+          return standardError(new Error('Not on team'), {userId})
+        }
+        const reflectionsCount = reflections.length
+        const spotlightResultGroupSize = Math.min(reflectionsCount - 1, MAX_RESULT_GROUP_SIZE)
+        let currentResultGroupIds = new Set<string>()
+        let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
+        while (currentThresh) {
+          const nextResultGroupIds = new Set<string>()
+          const {groupedReflectionsRes, nextThresh} = groupReflections(reflections, {
+            groupingThreshold: currentThresh,
+            maxGroupSize: reflectionsCount,
+            maxReductionPercent: MAX_REDUCTION_PERCENTAGE
+          })
+          const spotlightGroup = groupedReflectionsRes.find(
+            (group) => group.reflectionId === reflectionId
+          )
+          if (!spotlightGroup) break
+          for (const groupedReflectionRes of groupedReflectionsRes) {
+            const {reflectionGroupId, oldReflectionGroupId} = groupedReflectionRes
+            if (
+              reflectionGroupId === spotlightGroup.reflectionGroupId &&
+              oldReflectionGroupId !== spotlightGroup.oldReflectionGroupId
+            ) {
+              nextResultGroupIds.add(oldReflectionGroupId)
+            }
+            currentThresh = nextThresh
+            if (nextResultGroupIds.size > spotlightResultGroupSize) {
+              currentThresh = null
+              break
+            } else {
+              currentResultGroupIds = nextResultGroupIds
+              if (nextResultGroupIds.size === spotlightResultGroupSize) {
+                currentThresh = null
+                break
+              }
+            }
+          }
+        }
+        return r
+          .table('RetroReflectionGroup')
+          .getAll(r.args(Array.from(currentResultGroupIds)), {index: 'id'})
+          .run()
       }
     },
     tasks: require('../queries/tasks').default,
