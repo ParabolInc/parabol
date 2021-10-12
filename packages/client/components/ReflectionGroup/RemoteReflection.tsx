@@ -1,18 +1,18 @@
-import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {RefObject, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
-import {Elevation} from '../../styles/elevation'
-import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
-import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
-import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useEffect, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
-import getBBox from '../RetroReflectPhase/getBBox'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useEditorState from '../../hooks/useEditorState'
+import {Elevation} from '../../styles/elevation'
+import {BezierCurve, DragAttribute, ElementWidth, Times} from '../../types/constEnums'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
-import useEditorState from '../../hooks/useEditorState'
+import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
+import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
+import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
+import getBBox from '../RetroReflectPhase/getBBox'
+import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 
 const RemoteReflectionModal = styled('div')<{
   isDropping?: boolean | null
@@ -100,22 +100,20 @@ const getInlineStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
   style: React.CSSProperties,
-  showAboveSpotlight: boolean
 ) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
-  const zIndex = showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : style.zIndex
+  const {zIndex} = style
   return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
 }
 
 interface Props {
   style: React.CSSProperties
   reflection: RemoteReflection_reflection
-  showAboveSpotlight?: boolean
 }
 
 const RemoteReflection = (props: Props) => {
-  const {reflection, style, showAboveSpotlight = false} = props
+  const {reflection, style} = props
   const {id: reflectionId, content, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
@@ -138,7 +136,7 @@ const RemoteReflection = (props: Props) => {
   if (!remoteDrag) return null
   const {dragUserId, dragUserName} = remoteDrag
 
-  const {nextStyle, minTop} = getInlineStyle(remoteDrag, isDropping, style, showAboveSpotlight)
+  const {nextStyle, minTop} = getInlineStyle(remoteDrag, isDropping, style)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
