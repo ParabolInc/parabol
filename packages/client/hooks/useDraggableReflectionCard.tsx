@@ -1,12 +1,13 @@
 import React, {useContext, useEffect} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
-import {DragAttribute, Times} from '../types/constEnums'
+import {Times} from '../types/constEnums'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
@@ -18,7 +19,6 @@ import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
 import handleDrop from '../utils/retroGroup/handleDrop'
 import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
 import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
-import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 
@@ -39,25 +39,13 @@ const useRemoteDrag = (
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
-      const targetId = remoteDrag?.targetId
-      const isTargetInSpotlight = !!(
-        drag.spotlightReflectionId &&
-        document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`)
-      )
       // performance only
-      const style = getDroppingStyles(
-        drag.ref,
-        bbox,
-        windowDims.clientHeight,
-        timeRemaining,
-        isTargetInSpotlight
-      )
+      const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight, timeRemaining)
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
           style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
           reflection={reflection}
-          showAboveSpotlight={isTargetInSpotlight}
         />
       )
     }
@@ -95,7 +83,7 @@ const useLocalDrag = (
   const atmosphere = useAtmosphere()
   // handle drag end
   useEffect(() => {
-    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag && !drag.isBehindSpotlight) {
+    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag) {
       updateClonePosition(drag.ref, reflectionId, windowDims.clientHeight)
     }
   }, [isDropping, staticIdx, drag, remoteDrag, reflectionId])
