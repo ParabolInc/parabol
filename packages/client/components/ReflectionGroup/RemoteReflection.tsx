@@ -1,5 +1,5 @@
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {RefObject, useEffect, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
@@ -33,8 +33,8 @@ const circle = (transform?: string) => keyframes`
 const RemoteReflectionModal = styled('div')<{
   isDropping?: boolean | null
   transform?: string
-  isWiggling?: boolean
-}>(({isDropping, transform, isWiggling}) => ({
+  isSpotlight?: boolean
+}>(({isDropping, transform, isSpotlight}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -44,7 +44,7 @@ const RemoteReflectionModal = styled('div')<{
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
   }ms ${BezierCurve.DECELERATE}`,
   transform,
-  animation: isWiggling ? `${circle(transform)} 3s ease infinite;` : undefined,
+  animation: isSpotlight ? `${circle(transform)} 3s ease infinite;` : undefined,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
@@ -144,35 +144,28 @@ const RemoteReflection = (props: Props) => {
   const {reflection, style} = props
   const {id: reflectionId, content, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
-    NonNullable<RemoteReflection_reflection['remoteDrag']>
+    RemoteReflection_reflection['remoteDrag']
   >
   const ref = useRef<HTMLDivElement>(null)
   const [editorState] = useEditorState(content)
-  const [isWiggling, setWiggling] = useState(false)
-  const staleTimeoutRef = useRef(0)
-  const animationTimeoutRef = useRef(0)
+  const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    setWiggling(false)
-    staleTimeoutRef.current = window.setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)!
         reflection.setValue(true, 'isDropping')
       })
     }, Times.REFLECTION_STALE_LIMIT)
-    animationTimeoutRef.current = window.setTimeout(() => {
-      setWiggling(true)
-    }, 300)
     return () => {
-      window.clearTimeout(staleTimeoutRef.current)
-      window.clearTimeout(animationTimeoutRef.current)
+      window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
 
   if (!remoteDrag) return null
-  const {dragUserId, dragUserName} = remoteDrag
+  const {dragUserId, dragUserName, isSpotlight} = remoteDrag
 
-  const {newStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isWiggling, style)
+  const {newStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
 
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
@@ -181,7 +174,7 @@ const RemoteReflection = (props: Props) => {
         ref={ref}
         style={newStyle}
         isDropping={isDropping}
-        isWiggling={isWiggling}
+        isSpotlight={isSpotlight}
         transform={transform}
       >
         <ReflectionCardRoot>
@@ -212,6 +205,8 @@ export default createFragmentContainer(RemoteReflection, {
       remoteDrag {
         dragUserId
         dragUserName
+        isSpotlight
+        updatedAt
         clientHeight
         clientWidth
         clientX

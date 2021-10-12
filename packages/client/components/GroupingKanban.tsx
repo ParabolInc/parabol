@@ -40,12 +40,12 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases} = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
-  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag()
+  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meetingId, teamId)
   const [flipRef, flipReverse] = useFlip({
     firstRef: spotlightReflectionRef
   })
@@ -147,6 +147,7 @@ export default createFragmentContainer(GroupingKanban, {
       ...GroupingKanbanColumn_meeting
       ...SpotlightRoot_meeting
       id
+      teamId
       phases {
         ... on ReflectPhase {
           phaseType

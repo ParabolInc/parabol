@@ -19,7 +19,13 @@ const updateDragLocation = {
     const {teamId, meetingId, ...inputData} = input
     const viewerId = getUserId(authToken)
     if (viewerId && authToken.tms.includes(teamId)) {
-      const data = {remoteDrag: inputData, userId: viewerId}
+      const data = {
+        remoteDrag: {
+          ...inputData,
+          updatedAt: new Date()
+        },
+        userId: viewerId
+      }
       publish(SubscriptionChannel.MEETING, meetingId, 'UpdateDragLocationPayload', data, subOptions)
     }
   }

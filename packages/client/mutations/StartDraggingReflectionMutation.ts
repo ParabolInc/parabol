@@ -20,13 +20,22 @@ graphql`
       id
       dragUserId
       dragUserName
+      isSpotlight
     }
   }
 `
 
 const mutation = graphql`
-  mutation StartDraggingReflectionMutation($reflectionId: ID!, $dragId: ID!) {
-    startDraggingReflection(reflectionId: $reflectionId, dragId: $dragId) {
+  mutation StartDraggingReflectionMutation(
+    $reflectionId: ID!
+    $dragId: ID!
+    $isSpotlight: Boolean
+  ) {
+    startDraggingReflection(
+      reflectionId: $reflectionId
+      dragId: $dragId
+      isSpotlight: $isSpotlight
+    ) {
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
     }
   }

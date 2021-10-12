@@ -134,6 +134,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
       remoteDrag {
         dragUserId
         dragUserName
+        isSpotlight
       }
     }
   `,

@@ -13,6 +13,8 @@ graphql`
       targetId
       targetOffsetX
       targetOffsetY
+      isSpotlight
+      updatedAt
     }
   }
 `

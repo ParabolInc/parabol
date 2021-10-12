@@ -27,7 +27,8 @@ const windowDims = {
   clientWidth: window.innerWidth
 }
 
-const useRemoteDrag = (
+// Adds the remotely dragged card substitute, does not hide the local card or collapse anything
+const useRemotelyDraggedCard = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number
@@ -312,13 +313,21 @@ const useDragAndDrop = (
   return {onMouseDown, onMouseMove, onMouseUp}
 }
 
-const usePlaceholder = (
+// Collapse the position of the card in the list if necessary
+const useCollapsePlaceholder = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
   staticReflectionCount: number
 ) => {
   useEffect(() => {
+    // do not collapse if remote opened spotlight
+    const {remoteDrag} = reflection
+    const isSpotlight = remoteDrag?.isSpotlight
+    if (isSpotlight) {
+      return
+    }
+
     const {ref} = drag
     const {style, scrollHeight} = ref!
     if (staticIdx === -1) {
@@ -360,9 +369,9 @@ const useDraggableReflectionCard = (
   staticReflectionCount: number,
   swipeColumn?: SwipeColumn
 ) => {
-  useRemoteDrag(reflection, drag, staticIdx)
+  useRemotelyDraggedCard(reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
-  usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
+  useCollapsePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
   const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(
     drag,
     reflection,

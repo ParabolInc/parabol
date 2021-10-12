@@ -56559,6 +56559,7 @@ export interface ISignUpWithPasswordOnMutationArguments {
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
   dragId: string;
+  isSpotlight?: boolean | null;
 }
 
 export interface IStartCheckInOnMutationArguments {
@@ -57840,6 +57841,12 @@ export interface IRemoteReflectionDrag {
    * The name of the dragUser
    */
   dragUserName: string | null;
+  isSpotlight: boolean | null;
+
+  /**
+   * Used to have a changing field for updating spotlight
+   */
+  updatedAt: any | null;
   clientHeight: number | null;
   clientWidth: number | null;
 
@@ -58851,6 +58858,11 @@ export interface IUpdateDragLocationInput {
    * the top of the source, relative to the client window
    */
   clientY?: number | null;
+
+  /**
+   * Is this update indicating an open Spotlight modal?
+   */
+  isSpotlight?: boolean | null;
 }
 
 /**
