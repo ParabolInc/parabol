@@ -2,12 +2,14 @@ import React from 'react'
 import styled from '@emotion/styled'
 import purpleLines from '../styles/theme/images/purpleLines.svg'
 import {PALETTE} from '../styles/paletteV3'
+import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 
 const EmptyState = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
-  flexWrap: 'wrap'
+  flexWrap: 'wrap',
+  height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`
 })
 
 const MessageWrapper = styled('div')({

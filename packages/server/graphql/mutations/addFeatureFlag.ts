@@ -1,7 +1,6 @@
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import User from '../../database/types/User'
+import IUser from '../../postgres/types/IUser'
 import db from '../../db'
 import {requireSU} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -10,6 +9,8 @@ import UserFlagEnum from '../types/UserFlagEnum'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import getPg from '../../postgres/getPg'
 import catchAndLog from '../../postgres/utils/catchAndLog'
+import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
+import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
 
 export default {
   type: GraphQLNonNull(AddFeatureFlagPayload),
@@ -34,7 +35,6 @@ export default {
     {emails, domain, flag}: {emails: string[] | null; domain: string | null; flag: string},
     {authToken, dataLoader}
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId}
 
@@ -42,19 +42,13 @@ export default {
     requireSU(authToken)
 
     // RESOLUTION
-    const users = [] as User[]
+    const users = [] as IUser[]
     if (emails) {
-      const usersByEmail = await r
-        .table('User')
-        .getAll(r.args(emails), {index: 'email'})
-        .run()
+      const usersByEmail = await getUsersByEmails(emails)
       users.push(...usersByEmail)
     }
     if (domain) {
-      const usersByDomain = await r
-        .table('User')
-        .filter((doc) => (doc as any)('email').match(domain))
-        .run()
+      const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
     }
     await db.prime('User', users)
