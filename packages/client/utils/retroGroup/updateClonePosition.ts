@@ -28,9 +28,10 @@ export const getDroppingStyles = (
   targetEl: HTMLDivElement,
   bbox: ClientRect,
   maxTop: number,
-  timeRemaining: number,
-  showAboveSpotlight?: boolean
+  timeRemaining: number
 ) => {
+  const spotlightEl = document.getElementById('spotlight')
+  const showAboveSpotlight = spotlightEl ? spotlightEl.contains(targetEl) : false
   const {top, left} = bbox
   const minTop = getMinTop(top, targetEl)
   const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)

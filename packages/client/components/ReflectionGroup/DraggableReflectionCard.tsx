@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, useLazyLoadQuery} from 'react-relay'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
+import {DraggableReflectionCardLocalQuery} from '../../__generated__/DraggableReflectionCardLocalQuery.graphql'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
 import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
@@ -33,7 +34,6 @@ const makeDragState = () => ({
   targets: [] as TargetBBox[],
   prevTargetId: '',
   isBroadcasting: false,
-  spotlightGroupId: null as null | string,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
@@ -80,12 +80,32 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage, spotlightReflection} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing} = reflection
-  const isSpotlightOpen = !!spotlightReflection?.id
+  const {isDropping, isEditing, reflectionGroupId} = reflection
+  const spotlightReflectionId = spotlightReflection?.id ?? null
+  const isSpotlightOpen = !!spotlightReflectionId
   const isInSpotlight = !openSpotlight
-  const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
+  const spotlightSearchResults = useLazyLoadQuery<DraggableReflectionCardLocalQuery>(
+    graphql`
+      query DraggableReflectionCardLocalQuery($reflectionId: ID!, $searchQuery: String!) {
+        viewer {
+          similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
+            id
+          }
+        }
+      }
+    `,
+    // TODO: add search query
+    {reflectionId: spotlightReflectionId || '', searchQuery: ''},
+    {fetchPolicy: 'store-only'}
+  )
+  const {viewer} = spotlightSearchResults
+  const {similarReflectionGroups} = viewer
+  const reflectionGroupIdsInSpotlight = similarReflectionGroups
+    ? similarReflectionGroups.map((group) => group.id)
+    : []
+  const isReflectionGroupIdInSpotlight = reflectionGroupIdsInSpotlight.includes(reflectionGroupId)
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -101,7 +121,15 @@ const DraggableReflectionCard = (props: Props) => {
   const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
     <DragWrapper
-      ref={(c) => (isBehindSpotlight ? null : (drag.ref = c))}
+      ref={(c) => {
+        // if the spotlight is closed, this card is the single source of truth
+        // Else, if it is not in the spotlight search results
+        // Else, if this is the instance in the search results
+        const isPriorityCard = !isSpotlightOpen || !isReflectionGroupIdInSpotlight || isInSpotlight
+        if (isPriorityCard) {
+          drag.ref = c
+        }
+      }}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
       isDraggable={canDrag}
