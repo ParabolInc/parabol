@@ -58820,8 +58820,16 @@ export interface IUpdateNewCheckInQuestionPayload {
 
 export interface IUpdateDragLocationInput {
   id: string;
-  clientHeight: number;
-  clientWidth: number;
+
+  /**
+   * Required unless isSpotlight=true
+   */
+  clientHeight?: number | null;
+
+  /**
+   * Required unless isSpotlight=true
+   */
+  clientWidth?: number | null;
   meetingId: string;
 
   /**

@@ -15,7 +15,7 @@ import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import useEditorState from '../../hooks/useEditorState'
 import {keyframes} from '@emotion/core'
 
-const circle = (transform?: string) => keyframes`
+const circleAnimation = (transform?: string) => keyframes`
   0%{
     transform:rotate(0deg)
               translate(-5px)
@@ -44,7 +44,7 @@ const RemoteReflectionModal = styled('div')<{
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
   }ms ${BezierCurve.DECELERATE}`,
   transform,
-  animation: isSpotlight ? `${circle(transform)} 3s ease infinite;` : undefined,
+  animation: isSpotlight ? `${circleAnimation(transform)} 3s ease infinite;` : undefined,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
@@ -132,10 +132,11 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
 const getStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
-  isWiggling: boolean,
+  isSpotlight: boolean,
   style: React.CSSProperties
 ) => {
-  if (isWiggling || isDropping || !remoteDrag?.clientX) return {transform: style.transform}
+  if (isSpotlight) return {transform: style.transform}
+  if (isDropping || !remoteDrag?.clientX) return {newStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
   return {newStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
 }

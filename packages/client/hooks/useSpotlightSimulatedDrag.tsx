@@ -39,12 +39,12 @@ const useSpotlightSimulatedDrag = (meetingId: string, teamId: string) => {
       dragId: dragId.current,
       isSpotlight: true
     })
+
+    // send regular updates so the remote end doesn't time out the drag
     updateTimer.current = window.setInterval(() => {
       UpdateDragLocationMutation(atmosphere, {
         input: {
           id: dragId.current,
-          clientHeight: 0,
-          clientWidth: 0,
           meetingId,
           sourceId: reflectionId.current,
           teamId,

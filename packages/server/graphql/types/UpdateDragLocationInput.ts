@@ -13,10 +13,12 @@ const UpdateDragLocationInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID)
     },
     clientHeight: {
-      type: new GraphQLNonNull(GraphQLFloat)
+      type: GraphQLFloat,
+      description: 'Required unless isSpotlight=true'
     },
     clientWidth: {
-      type: new GraphQLNonNull(GraphQLFloat)
+      type: GraphQLFloat,
+      description: 'Required unless isSpotlight=true'
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
