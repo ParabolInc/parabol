@@ -5,7 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.31.1 2021-Oct-06
+## 6.32.0 2021-Oct-13
+
+### Fixed
+
+- Replace codeblock with zero width space (#5511)
+
+### Added
+
+- Spotlight null query case (#5376)
+- Convert remaining User reads to PG (#5408)
+
+## 6.31.0 2021-Oct-06
 
 ### Fixed
 
