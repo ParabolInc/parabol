@@ -50,6 +50,7 @@ export default {
     }
 
     // RESOLUTION
+    // filter mentions of old team members from task content
     const [oldTeamMembers, newTeamMembers] = await dataLoader
       .get('teamMembersByTeamId')
       .loadMany([oldTeamId, teamId])
@@ -69,7 +70,18 @@ export default {
       updatedAt: now,
       teamId
     }
-    await r({
+
+    // If there is a task with the same integration hash in the new team, then delete it first.
+    // This is done so there are no duplicates and also solves the issue of the conflicting task being
+    // private or archived.
+    const {deletedConflictingIntegrationTask} = await r({
+      deletedConflictingIntegrationTask:
+        task.integrationHash &&
+        r
+          .table('Task')
+          .getAll(task.integrationHash, {index: 'integrationHash'})
+          .filter({teamId})
+          .delete({returnChanges: true}),
       newTask: r
         .table('Task')
         .get(taskId)
@@ -91,6 +103,19 @@ export default {
           )
         })
     }).run()
+
+    const deletedTasks = (deletedConflictingIntegrationTask as any)?.changes?.map(
+      ({old_val}) => old_val
+    )
+    deletedTasks?.forEach((task) => {
+      const isPrivate = task.tags.includes('private')
+      const data = {task}
+      newTeamMembers.forEach(({userId}) => {
+        if (!isPrivate || userId === task.userId) {
+          publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
+        }
+      })
+    })
 
     const isPrivate = tags.includes('private')
     const data = {taskId}
