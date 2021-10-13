@@ -11,7 +11,6 @@ import useSortGroupsIntoColumns from '../hooks/useSortGroupsIntoColumns'
 import {Breakpoint, ElementWidth} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
-import {SpotlightPortalId} from './GroupingKanban'
 
 const SimilarGroups = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`,
@@ -98,7 +97,7 @@ const SpotlightGroups = (props: Props) => {
                     meeting={meetingData}
                     phaseRef={phaseRef}
                     reflectionGroup={reflectionGroup}
-                    expandedReflectionGroupPortalParentId={SpotlightPortalId}
+                    expandedReflectionGroupPortalParentId='spotlight'
                   />
                 )
               })}

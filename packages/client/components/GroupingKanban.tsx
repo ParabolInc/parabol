@@ -35,8 +35,6 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 export type SwipeColumn = (offset: number) => void
-export const SpotlightPortalId = 'spotlightPortal'
-
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
   const {id: meetingId, reflectionGroups, phases, spotlightGroup} = meeting
@@ -61,7 +59,7 @@ const GroupingKanban = (props: Props) => {
     })
   }
   const {closePortal, openPortal, modalPortal} = useModal({
-    id: SpotlightPortalId,
+    id: 'spotlight',
     onClose: closeSpotlight
   })
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {

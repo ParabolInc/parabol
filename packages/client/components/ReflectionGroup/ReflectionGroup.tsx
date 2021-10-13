@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -67,7 +68,7 @@ interface Props {
   swipeColumn?: SwipeColumn
   dataCy?: string
   spotlightReflectionIds?: string[] | null
-  expandedReflectionGroupPortalParentId?: string
+  expandedReflectionGroupPortalParentId?: PortalId
 }
 
 const ReflectionGroup = (props: Props) => {
