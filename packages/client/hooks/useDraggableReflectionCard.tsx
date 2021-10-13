@@ -324,9 +324,7 @@ const useCollapsePlaceholder = (
     // do not collapse if remote opened spotlight
     const {remoteDrag} = reflection
     const isSpotlight = remoteDrag?.isSpotlight
-    if (isSpotlight) {
-      return
-    }
+    if (isSpotlight) return
 
     const {ref} = drag
     const {style, scrollHeight} = ref!

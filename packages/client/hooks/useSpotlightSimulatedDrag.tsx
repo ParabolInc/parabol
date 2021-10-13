@@ -9,44 +9,45 @@ import {Times} from '../types/constEnums'
 const useSpotlightSimulatedDrag = (meetingId: string, teamId: string) => {
   const atmosphere = useAtmosphere()
 
-  const dragId = useRef<string>()
-  const reflectionId = useRef<string>()
-  const updateTimer = useRef(0)
+  const dragIdRef = useRef<string>()
+  const reflectionIdRef = useRef<string>()
+  const updateTimerRef = useRef(0)
 
   const onCloseSpotlight = useCallback(() => {
-    clearTimeout(updateTimer.current)
-    updateTimer.current = 0
+    clearTimeout(updateTimerRef.current)
+    updateTimerRef.current = 0
 
     const dropTargetType = null
     const dropTargetId = null
-    if (!reflectionId.current) return
+    if (!reflectionIdRef.current) return
 
     EndDraggingReflectionMutation(atmosphere, {
-      reflectionId: reflectionId.current,
+      reflectionId: reflectionIdRef.current,
       dropTargetType,
       dropTargetId,
-      dragId: dragId.current
+      dragId: dragIdRef.current
     })
-    dragId.current = undefined
-    reflectionId.current = undefined
+    dragIdRef.current = undefined
+    reflectionIdRef.current = undefined
   }, [])
 
-  const onOpenSpotlight = useCallback((reflId: string) => {
-    dragId.current = clientTempId()
-    reflectionId.current = reflId
+  const onOpenSpotlight = useCallback((reflectionId: string) => {
+    dragIdRef.current = clientTempId()
+    reflectionIdRef.current = reflectionId
     StartDraggingReflectionMutation(atmosphere, {
-      reflectionId: reflId,
-      dragId: dragId.current,
+      reflectionId,
+      dragId: dragIdRef.current,
       isSpotlight: true
     })
 
     // send regular updates so the remote end doesn't time out the drag
-    updateTimer.current = window.setInterval(() => {
+    updateTimerRef.current = window.setInterval(() => {
+      if (!dragIdRef.current || !reflectionIdRef.current) return
       UpdateDragLocationMutation(atmosphere, {
         input: {
-          id: dragId.current,
+          id: dragIdRef.current,
           meetingId,
-          sourceId: reflectionId.current,
+          sourceId: reflectionIdRef.current,
           teamId,
           isSpotlight: true
         }
