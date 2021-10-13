@@ -3,16 +3,17 @@ import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getNextSortOrder from '~/utils/getNextSortOrder'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
+type ColumnCounts = {
+  [index: number]: number
+}
+
 const getEmptiestColumnIdx = (
   similarReflectionGroups: RecordProxy[],
-  maxSpotlightColumns?: number
+  spotlightColumnsCount?: number
 ) => {
-  type ColumnCounts = {
-    [index: number]: number
-  }
   const columnCounts = {} as ColumnCounts
-  if (maxSpotlightColumns) {
-    const columnsArr = [...Array(maxSpotlightColumns).keys()]
+  if (spotlightColumnsCount) {
+    const columnsArr = [...Array(spotlightColumnsCount).keys()]
     columnsArr.forEach((column) => (columnCounts[column] = 0))
   }
   for (const group of similarReflectionGroups) {

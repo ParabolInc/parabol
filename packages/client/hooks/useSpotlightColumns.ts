@@ -31,7 +31,7 @@ const useSpotlightColumns = (columnsRef: RefObject<HTMLDivElement>, groupsCount:
           : maxPossibleColumns
       commitLocalUpdate(atmosphere, (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
-        viewer?.setValue(columnsCount, 'maxSpotlightColumns')
+        viewer?.setValue(columnsCount, 'spotlightColumnsCount')
       })
       const newColumns = [...Array(columnsCount).keys()]
       setColumns(newColumns)
