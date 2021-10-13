@@ -33,3 +33,12 @@ export const fadeUp = keyframes`
 	  transform: translateY(0);
 	}
 `
+
+export const makeVisible = keyframes`
+  0% {
+    visibility: hidden;
+  }
+	100% {
+    visibility: visible;
+	}
+`
