@@ -50,11 +50,9 @@ const SpotlightRoot = (props: Props) => {
   return (
     <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
       <SpotlightSearchBar closeSpotlight={closeSpotlight} meetingId={meetingId} spotlightSearch={spotlightSearch} />
-      <Suspense fallback={''}>
           {queryRef && (
             <SpotlightResultsRoot flipRef={flipRef} queryRef={queryRef}/>
           )}
-      </Suspense>
     </ModalContainer>
   )
 }

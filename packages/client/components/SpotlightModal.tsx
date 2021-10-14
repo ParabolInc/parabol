@@ -1,25 +1,18 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useRef} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {commitLocalUpdate} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE, fadeUp} from '../styles/animation'
+import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
-import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
-import Icon from './Icon'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import MenuItemLabel from './MenuItemLabel'
-import PlainButton from './PlainButton/PlainButton'
-import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
-import SpotlightGroups from './SpotlightGroups'
+import {Breakpoint, ZIndex} from '../types/constEnums'
+import spotlightResultsRootQuery, {
+  SpotlightResultsRootQuery
+} from '../__generated__/SpotlightResultsRootQuery.graphql'
+import SpotlightResultsRoot from './SpotlightResultsRoot'
+import SpotlightSearchBar from './SpotlightSearchBar'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import SpotlightSourceReflectionCard from './SpotlightSourceReflectionCard'
+import {SpotlightSourceReflectionCard_meeting$key} from '../__generated__/SpotlightSourceReflectionCard_meeting.graphql'
 
-const SELECTED_HEIGHT_PERC = 33.3
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
   background: '#FFFF',
@@ -34,218 +27,39 @@ const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: isDesktop ? '80vw' : '90vw',
   zIndex: ZIndex.DIALOG
 }))
-
-const SelectedReflectionSection = styled('div')({
-  alignItems: 'flex-start',
-  background: PALETTE.SLATE_100,
-  borderRadius: '8px 8px 0px 0px',
-  display: 'flex',
-  flexWrap: 'wrap',
-  height: `${SELECTED_HEIGHT_PERC}%`,
-  justifyContent: 'center',
-  padding: 16,
-  position: 'relative',
-  width: '100%'
-})
-
-const SimilarGroups = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: `${SELECTED_HEIGHT_PERC * 2}%`,
-  padding: 16
-})
-
-const Title = styled('div')({
-  color: PALETTE.SLATE_800,
-  fontSize: 16,
-  fontWeight: 600,
-  textAlign: 'center'
-})
-
-const TopRow = styled('div')({
-  width: `calc(100% - 48px)`, // 48px accounts for icon size
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
-
-const ReflectionWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
-  top: `calc(${SELECTED_HEIGHT_PERC / 2}% - ${ElementHeight.REFLECTION_CARD / 2}px)`,
-  left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
-})
-
-const SearchInput = styled('input')({
-  appearance: 'none',
-  border: `1px solid ${PALETTE.SKY_500}`,
-  borderRadius: 4,
-  boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`,
-  color: PALETTE.SLATE_700,
-  display: 'block',
-  fontSize: 14,
-  lineHeight: '24px',
-  outline: 'none',
-  padding: '6px 0 6px 39px',
-  width: '100%',
-  '::placeholder': {
-    color: PALETTE.SLATE_600
-  }
-})
-
-const SearchItem = styled(MenuItemLabel)({
-  overflow: 'visible',
-  padding: 0,
-  position: 'absolute',
-  bottom: -16,
-  width: ElementWidth.REFLECTION_CARD
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  top: 8
-})
-
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
-})
-
-const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  position: 'absolute',
-  right: 16
-})
-
-const CloseIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  fontSize: ICON_SIZE.MD24,
-  '&:hover,:focus': {
-    color: PALETTE.SLATE_800
-  }
-})
-
 interface Props {
   closeSpotlight: () => void
+  meetingId: string
   flipRef: (instance: HTMLDivElement) => void
-  queryRef: PreloadedQuery<SpotlightModalQuery>
-}
-
-const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: string | null) => {
-  commitLocalUpdate(atmosphere, (store) => {
-    const meeting = store.get(meetingId)
-    if (!meeting) return
-    meeting.setValue(value, 'spotlightSearch')
-  })
+  spotlightReflectionId?: string
+  spotlightSearch: string
+  meeting: SpotlightSourceReflectionCard_meeting$key
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, flipRef, queryRef} = props
-  const data = usePreloadedQuery<SpotlightModalQuery>(
-    graphql`
-      query SpotlightModalQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
-        viewer {
-          ...SpotlightGroups_viewer
-          meeting(meetingId: $meetingId) {
-            ... on RetrospectiveMeeting {
-              ...DraggableReflectionCard_meeting
-              ...SpotlightGroups_meeting
-              id
-              teamId
-              spotlightSearch
-              localPhase {
-                phaseType
-              }
-              localStage {
-                isComplete
-                phaseType
-              }
-              phases {
-                phaseType
-                stages {
-                  isComplete
-                  phaseType
-                }
-              }
-              spotlightReflection {
-                id
-                ...DraggableReflectionCard_reflection
-              }
-            }
-          }
-        }
-      }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
-  )
-
-  const {viewer} = data
-  const atmosphere = useAtmosphere()
-  const {meeting} = viewer
+  const {closeSpotlight, meetingId, flipRef, spotlightReflectionId, spotlightSearch, meeting} = props
+  const reflectionIdRef = useRef('')
+  const nextReflectionId = spotlightReflectionId ?? ''
+  if (nextReflectionId) {
+    reflectionIdRef.current = nextReflectionId
+  }
+  const queryRef = useQueryLoaderNow<SpotlightResultsRootQuery>(spotlightResultsRootQuery, {
+    reflectionId: reflectionIdRef.current,
+    searchQuery: spotlightSearch,
+    meetingId
+  })
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const phaseRef = useRef(null)
-  if (!meeting) return null
-  const {spotlightReflection} = meeting
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape' && !e.currentTarget.value) {
-      closeSpotlight()
-    }
-  }
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSpotlightSearch(atmosphere, meeting!.id!, e.currentTarget.value)
-  }
-  if (!meeting) return null
   return (
-    <>
-      <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
-        <SelectedReflectionSection>
-          <TopRow>
-            <Title>Find cards with similar reflections</Title>
-            <StyledCloseButton onClick={closeSpotlight}>
-              <CloseIcon>close</CloseIcon>
-            </StyledCloseButton>
-          </TopRow>
-          <SearchItem>
-            <StyledMenuItemIcon>
-              <SearchIcon>search</SearchIcon>
-            </StyledMenuItemIcon>
-            <SearchInput
-              onKeyDown={onKeyDown}
-              autoFocus
-              autoComplete='off'
-              name='search'
-              placeholder='Or search for keywords...'
-              type='text'
-              onChange={onChange}
-              value={meeting.spotlightSearch ?? ""}
-            />
-          </SearchItem>
-        </SelectedReflectionSection>
-        <SimilarGroups>
-          <Suspense fallback={''}>
-            <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
-          </Suspense>
-        </SimilarGroups>
-      </ModalContainer>
-      <ReflectionWrapper ref={flipRef}>
-        {spotlightReflection && (
-          <DraggableReflectionCard
-            isDraggable
-            reflection={spotlightReflection}
-            meeting={meeting}
-            staticReflections={null}
-          />
-        )}
-      </ReflectionWrapper>
-    </>
+    <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
+      <SpotlightSearchBar closeSpotlight={closeSpotlight} meetingId={meetingId} spotlightSearch={spotlightSearch} />
+      <Suspense fallback={''}>
+          {queryRef && (
+            <SpotlightResultsRoot queryRef={queryRef}/>
+          )}
+      </Suspense>
+      <SpotlightSourceReflectionCard meeting={meeting} flipRef={flipRef} />
+    </ModalContainer>
   )
 }
-
 export default SpotlightModal

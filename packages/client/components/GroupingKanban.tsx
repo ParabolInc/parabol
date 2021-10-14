@@ -15,7 +15,7 @@ import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
-import SpotlightRoot from './SpotlightRoot'
+import SpotlightModal from './SpotlightModal'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -132,12 +132,13 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightRoot
+        <SpotlightModal
           closeSpotlight={closeSpotlight}
           meetingId={meetingId}
           flipRef={flipRef}
           spotlightReflectionId={spotlightReflection?.id}
           spotlightSearch={spotlightSearch ?? ""}
+          meeting={meeting}
         />
       )}
     </PortalProvider>
@@ -148,6 +149,7 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
+      ...SpotlightSourceReflectionCard_meeting
       id
       spotlightSearch
       phases {
