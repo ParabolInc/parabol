@@ -1,30 +1,33 @@
-import getRethink from '../../../../database/rethinkDriver'
+import getPg from '../../../../postgres/getPg'
 
-type DomainFilterField = 'createdAt' | 'lastSeenAt'
+const domainFilterFields = ['createdAt', 'lastSeenAt'] as const
+type DomainFilterField = typeof domainFilterFields[number]
+
 const authCountByDomain = async (
   after: Date | null | undefined,
-  isActive: boolean | null | undefined,
+  countOnlyActive: boolean | null | undefined,
   filterField: DomainFilterField
 ) => {
-  const r = await getRethink()
-  const activeFilter = isActive ? {inactive: false} : {}
-  const afterFilter = after ? (row) => row(filterField).ge(after) : {}
+  // This function is only used internally, but that might change
+  if (!domainFilterFields.includes(filterField)) throw new Error('Possible SQL injection')
 
-  return r
-    .table('User')
-    .filter(activeFilter)
-    .filter(afterFilter)
-    .merge((user) => ({
-      domain: user('email')
-        .split('@')(1)
-        .default(null)
-    }))
-    .group('domain')
-    .count()
-    .ungroup()
-    .map((row) => ({domain: row('group'), total: row('reduction')}))
-    .orderBy(r.desc('total'))
-    .run() as Promise<{domain: string; total: number}[]>
+  const pg = getPg()
+
+  const count = after
+    ? await pg.query(
+        `SELECT count(*) as total, split_part(email, '@', 2) as "domain" from "User"
+         WHERE (NOT $1 OR inactive = FALSE)
+         AND "${filterField}" >= $2
+         GROUP BY split_part(email, '@', 2)`,
+        [countOnlyActive ?? false, after]
+      )
+    : await pg.query(
+        `SELECT count(*) as total, split_part(email, '@', 2) as "domain" from "User"
+         WHERE (NOT $1 OR inactive = FALSE)
+         GROUP BY split_part(email, '@', 2)`,
+        [countOnlyActive ?? false]
+      )
+  return count.rows as {domain: string; total: number}[]
 }
 
 export default authCountByDomain

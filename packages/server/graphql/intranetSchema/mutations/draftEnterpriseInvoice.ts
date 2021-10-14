@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
-import User from '../../../database/types/User'
+import IUser from '../../../postgres/types/IUser'
 import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
@@ -112,7 +112,7 @@ export default {
     }
 
     // RESOLUTION
-    let user: User | null
+    let user: IUser | null
     try {
       user = await getBillingLeaderUser(email, orgId, dataLoader)
     } catch (e) {

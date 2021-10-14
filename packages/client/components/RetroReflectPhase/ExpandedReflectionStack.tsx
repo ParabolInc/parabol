@@ -74,6 +74,7 @@ interface Props {
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   reflectionGroupId?: string
   openSpotlight?: OpenSpotlight
+  isBehindSpotlight?: boolean
 }
 
 const ExpandedReflectionStack = (props: Props) => {
@@ -88,7 +89,8 @@ const ExpandedReflectionStack = (props: Props) => {
     reflections,
     reflectionGroupId,
     meeting,
-    openSpotlight
+    openSpotlight,
+    isBehindSpotlight
   } = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
@@ -106,6 +108,7 @@ const ExpandedReflectionStack = (props: Props) => {
     }
   }, [])
   if (!phaseBBox) return null
+
   const closeOnEdge = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) closePortal()
   }
@@ -113,7 +116,7 @@ const ExpandedReflectionStack = (props: Props) => {
     <PortalBlock>
       <PhaseArea phaseBBox={phaseBBox!}>
         <Scrim onClick={closePortal} />
-        <ModalArea {...{[DragAttribute.DROPPABLE]: reflectionGroupId}}>
+        <ModalArea {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}>
           {header}
           <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
             {reflections.map((reflection, idx) => {

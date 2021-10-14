@@ -5,7 +5,39 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 6.30.0 2021-Sept-30
+## 6.32.0 2021-Oct-13
+
+### Fixed
+
+- Replace codeblock with zero width space (#5511)
+
+### Added
+
+- Spotlight null query case (#5376)
+- Convert remaining User reads to PG (#5408)
+
+## 6.31.0 2021-Oct-06
+
+### Fixed
+
+- 200 noImplicitAny errors (#5403)
+
+### Added
+
+- Team Management Right Drawer (#5351)
+
+### Removed
+
+- PgPostDeployMigrations from backupOrg (#5482)
+- SFU/Cypress packages (#5464)
+
+## 6.30.1 2021-Sep-30
+
+### Hotfix
+
+- Turn on GitHub Label in prod
+
+## 6.30.0 2021-Sep-30
 
 ### Added
 

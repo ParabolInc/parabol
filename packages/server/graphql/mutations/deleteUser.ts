@@ -3,7 +3,7 @@ import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import softDeleteUser from './helpers/softDeleteUser'
-import getUsersById from '../../postgres/queries/getUsersById'
+import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {
@@ -38,11 +38,7 @@ export default {
     const su = isSuperUser(authToken)
     const viewerId = getUserId(authToken)
 
-    const user = userId
-      ? (await getUsersById([userId]))?.[0]
-      : email
-      ? await getUserByEmail(email)
-      : null
+    const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
     if (!su) {
       if (!user || userId !== viewerId) {
         return {error: {message: 'Cannot delete someone else'}}
