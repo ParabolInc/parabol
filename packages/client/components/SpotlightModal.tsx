@@ -42,17 +42,18 @@ const ModalContainer = styled('div')<{modalHeight: number}>(({modalHeight}) => (
   }
 }))
 
-const SelectedReflectionSection = styled('div')({
-  alignItems: 'flex-start',
+const SourceSection = styled('div')({
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
   flexWrap: 'wrap',
   height: `${SPOTLIGHT_TOP_SECTION_HEIGHT}px`,
-  justifyContent: 'center',
+  justifyContent: 'space-between',
   padding: 16,
   position: 'relative',
-  width: '100%'
+  width: '100%',
+  flexDirection: 'column',
+  alignItems: 'center'
 })
 
 const Title = styled('div')({
@@ -63,17 +64,24 @@ const Title = styled('div')({
 })
 
 const TopRow = styled('div')({
-  width: `calc(100% - 48px)`, // 48px accounts for icon size
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center'
 })
 
+// const FixedContainer = styled('div')({
+//   border: '2px solid green',
+//   width: '100vw',
+//   position: 'fixed',
+//   // position: 'absolute',
+//   display: 'flex',
+//   justifyContent: 'center'
+// })
+
 const SourceWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
   visibility: 'visible',
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT_LOCAL
+  display: 'flex',
+  justifyContent: 'center'
 })
 
 const SearchInput = styled('input')({
@@ -93,11 +101,17 @@ const SearchInput = styled('input')({
   }
 })
 
-const SearchItem = styled(MenuItemLabel)({
+const SearchWrapper = styled('div')({
+  position: 'relative',
+  width: ElementWidth.REFLECTION_CARD
+})
+
+const Search = styled(MenuItemLabel)({
   overflow: 'visible',
   padding: 0,
+  flex: 0,
   position: 'absolute',
-  bottom: -16,
+  bottom: -32,
   width: ElementWidth.REFLECTION_CARD
 })
 
@@ -174,10 +188,8 @@ const SpotlightModal = (props: Props) => {
   )
   const {viewer} = data
   const {meeting} = viewer
-  // const sourceRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef(null)
   const columnsRef = useRef(null)
-  // const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
   const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
   const columnsRefHeight = useGetRefHeight(columnsRef, 0, phaseRef)
   const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
@@ -194,7 +206,7 @@ const SpotlightModal = (props: Props) => {
   }
   return (
     <ModalContainer ref={phaseRef} modalHeight={modalHeight}>
-      <SelectedReflectionSection>
+      <SourceSection>
         <TopRow>
           <Title>Find cards with similar reflections</Title>
           <StyledCloseButton onClick={closeSpotlight}>
@@ -211,20 +223,22 @@ const SpotlightModal = (props: Props) => {
             />
           )}
         </SourceWrapper>
-        <SearchItem>
-          <StyledMenuItemIcon>
-            <SearchIcon>search</SearchIcon>
-          </StyledMenuItemIcon>
-          <SearchInput
-            onKeyDown={onKeyDown}
-            autoFocus
-            autoComplete='off'
-            name='search'
-            placeholder='Or search for keywords...'
-            type='text'
-          />
-        </SearchItem>
-      </SelectedReflectionSection>
+        <SearchWrapper>
+          <Search>
+            <StyledMenuItemIcon>
+              <SearchIcon>search</SearchIcon>
+            </StyledMenuItemIcon>
+            <SearchInput
+              onKeyDown={onKeyDown}
+              autoFocus
+              autoComplete='off'
+              name='search'
+              placeholder='Or search for keywords...'
+              type='text'
+            />
+          </Search>
+        </SearchWrapper>
+      </SourceSection>
       <Suspense fallback={''}>
         <SpotlightGroups
           meeting={meeting}
