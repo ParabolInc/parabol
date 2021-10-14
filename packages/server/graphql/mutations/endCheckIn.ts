@@ -279,7 +279,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType),
+      isKill: phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType),
       updatedTaskIds,
       removedTaskIds,
       timelineEventId
