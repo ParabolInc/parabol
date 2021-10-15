@@ -1,23 +1,21 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense, useRef} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DECELERATE, makeVisible} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
-import {SpotlightModalQuery} from '../__generated__/SpotlightModalQuery.graphql'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
-import SpotlightGroups from './SpotlightGroups'
+import ResultsRoot from './ResultsRoot'
 import useGetRefHeight from '../hooks/useGetRefHeight'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import useBreakpoint from '~/hooks/useBreakpoint'
+import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
@@ -31,13 +29,14 @@ const ModalContainer = styled('div')<{modalHeight: number}>(({modalHeight}) => (
   flexWrap: 'wrap',
   justifyContent: 'center',
   overflow: 'hidden',
-  height: '85vh',
+  height: '100%',
+  // maxHeight: '85vh',
   width: '90vw',
   visibility: 'hidden',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
     maxHeight: '90vh',
-    height: modalHeight,
+    // height: modalHeight,
     width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
 }))
@@ -68,15 +67,6 @@ const TopRow = styled('div')({
   justifyContent: 'center',
   alignItems: 'center'
 })
-
-// const FixedContainer = styled('div')({
-//   border: '2px solid green',
-//   width: '100vw',
-//   position: 'fixed',
-//   // position: 'absolute',
-//   display: 'flex',
-//   justifyContent: 'center'
-// })
 
 const SourceWrapper = styled('div')({
   visibility: 'visible',
@@ -144,60 +134,22 @@ const CloseIcon = styled(Icon)({
 interface Props {
   closeSpotlight: () => void
   flipRef: (instance: HTMLDivElement) => void
-  queryRef: PreloadedQuery<SpotlightModalQuery>
+  meeting: GroupingKanban_meeting
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, flipRef, queryRef} = props
-  const data = usePreloadedQuery<SpotlightModalQuery>(
-    graphql`
-      query SpotlightModalQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
-        viewer {
-          ...SpotlightGroups_viewer
-          meeting(meetingId: $meetingId) {
-            ... on RetrospectiveMeeting {
-              ...DraggableReflectionCard_meeting
-              ...SpotlightGroups_meeting
-              id
-              teamId
-              localPhase {
-                phaseType
-              }
-              localStage {
-                isComplete
-                phaseType
-              }
-              phases {
-                phaseType
-                stages {
-                  isComplete
-                  phaseType
-                }
-              }
-              spotlightReflection {
-                id
-                ...DraggableReflectionCard_reflection
-              }
-            }
-          }
-        }
-      }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
-  )
-  const {viewer} = data
-  const {meeting} = viewer
+  const {closeSpotlight, flipRef, meeting} = props
   const phaseRef = useRef(null)
   const columnsRef = useRef(null)
   const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
   const columnsRefHeight = useGetRefHeight(columnsRef, 0, phaseRef)
   const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const groupsPadding = isDesktop ? 64 : 54
+  const groupsPadding = isDesktop ? 64 : 56
   const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + groupsPadding
   const modalHeight = SPOTLIGHT_TOP_SECTION_HEIGHT + groupsHeight
   if (!meeting) return null
-  const {spotlightReflection} = meeting
+  const {id: meetingId, spotlightReflection} = meeting
+  const spotlightReflectionId = spotlightReflection?.id
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
@@ -240,11 +192,11 @@ const SpotlightModal = (props: Props) => {
         </SearchWrapper>
       </SourceSection>
       <Suspense fallback={''}>
-        <SpotlightGroups
-          meeting={meeting}
+        <ResultsRoot
           columnsRef={columnsRef}
+          meetingId={meetingId}
           phaseRef={phaseRef}
-          viewer={viewer}
+          spotlightReflectionId={spotlightReflectionId}
         />
       </Suspense>
     </ModalContainer>
