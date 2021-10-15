@@ -1,12 +1,13 @@
 import areEqual from 'fbjs/lib/areEqual'
 import {useEffect, useRef} from 'react'
-import {PreloadableConcreteRequest, useQueryLoader} from 'react-relay'
+import {PreloadableConcreteRequest, PreloadFetchPolicy, useQueryLoader} from 'react-relay'
 import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
 
 const useQueryLoaderNow = <TQuery extends OperationType>(
   preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
-  variables: VariablesOf<TQuery> = {}
+  variables: VariablesOf<TQuery> = {},
+  fetchPolicy?: PreloadFetchPolicy
 ) => {
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
   const varRef = useRef(variables)
@@ -22,7 +23,7 @@ const useQueryLoaderNow = <TQuery extends OperationType>(
   // refetch when reconnected to server
   useEffect(() => {
     const refresh = () => {
-      loadQuery(varRef.current, {fetchPolicy: 'network-only'})
+      loadQuery(variables || {}, {fetchPolicy: fetchPolicy || 'store-or-network'})
     }
     atmosphere.retries.add(refresh)
     return () => {

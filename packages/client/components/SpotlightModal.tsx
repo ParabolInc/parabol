@@ -47,7 +47,7 @@ const SpotlightModal = (props: Props) => {
     reflectionId: reflectionIdRef.current,
     searchQuery: spotlightSearch,
     meetingId
-  })
+  }, 'network-only')
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
   const phaseRef = useRef(null)
   return (
