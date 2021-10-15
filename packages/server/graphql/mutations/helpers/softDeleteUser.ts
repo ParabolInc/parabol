@@ -5,11 +5,10 @@ import {USER_REASON_REMOVED_LIMIT} from '../../../postgres/constants'
 import updateUser from '../../../postgres/queries/updateUser'
 import segmentIo from '../../../utils/segmentIo'
 import db from '../../../db'
-import User from '../../../database/types/User'
 import {DataLoaderWorker} from '../../graphql'
-import {IGetUsersByIdResult} from '../../../postgres/queries/getUsersById'
 import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
 import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
+import IUser from '../../../postgres/types/IUser'
 
 const removeGitHubAuths = async (userId: string, teamIds: string[]) => {
   const promises: Promise<void>[] = []
@@ -28,10 +27,10 @@ const removeAtlassianAuths = async (userId: string, teamIds: string[]) => {
 }
 
 const softDeleteUser = async (
-  user: IGetUsersByIdResult | User,
+  user: IUser,
   dataLoader: DataLoaderWorker,
   reason?: string,
-  dontRemoveUser: boolean = false
+  dontRemoveUser = false
 ) => {
   const {id: userIdToDelete, tms} = user
   removeAtlassianAuths(userIdToDelete, tms)

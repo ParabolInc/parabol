@@ -12,7 +12,7 @@ import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import removeUserFromMeetingStages from '../../mutations/helpers/removeUserFromMeetingStages'
 import removeAgendaItemResolver from '../../mutations/helpers/removeAgendaItem'
 import EstimateStage from '../../../database/types/EstimateStage'
-import getUsersById from '../../../postgres/queries/getUsersById'
+import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const hardDeleteUser = {
@@ -51,7 +51,7 @@ const hardDeleteUser = {
     const pg = getPg()
 
     const user = userId
-      ? (await getUsersById([userId]))?.[0]
+      ? (await getUserById(userId))?.[0]
       : email
       ? await getUserByEmail(email)
       : null
