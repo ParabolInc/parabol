@@ -9,7 +9,7 @@ import {ElementWidth, Spotlight} from '../types/constEnums'
 import Atmosphere from '../Atmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import React from 'react'
+import React, {useRef} from 'react'
 
 const SelectedReflectionSection = styled('div')({
   alignItems: 'flex-start',
@@ -112,6 +112,14 @@ const SpotlightSearchBar = (props: Props) => {
     setSpotlightSearch(atmosphere, meetingId, e.currentTarget.value)
   }
 
+  const inputRef = useRef<HTMLInputElement>(null)
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && inputRef.current) {
+      e.stopPropagation()
+      inputRef.current.blur()
+    }
+  }
+
   return (
       <SelectedReflectionSection>
         <TopRow>
@@ -131,6 +139,8 @@ const SpotlightSearchBar = (props: Props) => {
             placeholder='Or search for keywords...'
             type='text'
             onChange={onChange}
+            onKeyDown={onKeyDown}
+            ref={inputRef}
             value={spotlightSearch ?? ""}
           />
         </SearchItem>
