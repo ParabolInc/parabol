@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useMemo, useRef} from 'react'
+import React, {RefObject, Suspense, useRef} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
@@ -145,11 +145,11 @@ interface Props {
 const SpotlightModal = (props: Props) => {
   const {closeSpotlight, flipRef, meeting, sourceRef} = props
   const modalRef = useRef<HTMLDivElement>(null)
-  const columnsRef = useRef<HTMLDivElement>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
   const srcDestinationRef = useRef<HTMLDivElement>(null)
   const offsetTop = srcDestinationRef.current?.offsetTop
   const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
-  const areResultsRendered = useMemo(() => !!columnsRef.current?.clientHeight, [columnsRef.current])
+  const areResultsRendered = !!resultsRef.current?.clientHeight
   const modalRefHeight = useGetRefHeight(modalRef, 0, modalRef)
   const modalHeight = areResultsRendered ? modalRefHeight : null
   if (!meeting) return null
@@ -190,7 +190,7 @@ const SpotlightModal = (props: Props) => {
         </SourceSection>
         <Suspense fallback={''}>
           <ResultsRoot
-            columnsRef={columnsRef}
+            resultsRef={resultsRef}
             meetingId={meetingId}
             phaseRef={modalRef}
             spotlightReflectionId={spotlightReflectionId}

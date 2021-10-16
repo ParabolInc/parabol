@@ -4,12 +4,11 @@ import React, {RefObject} from 'react'
 import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import useSpotlightColumns from '../hooks/useSpotlightColumns'
-import useSortGroupsIntoColumns from '../hooks/useSortGroupsIntoColumns'
 import {Breakpoint, ElementWidth} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
+import useGroupMatrix from '../hooks/useGroupMatrix'
 
 const SimilarGroups = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`,
@@ -42,13 +41,13 @@ const Column = styled('div')({
 })
 
 interface Props {
-  columnsRef: RefObject<HTMLDivElement>
+  resultsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   queryRef: PreloadedQuery<SpotlightGroupsQuery>
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {columnsRef, phaseRef, queryRef} = props
+  const {resultsRef, phaseRef, queryRef} = props
   const data = usePreloadedQuery<SpotlightGroupsQuery>(
     graphql`
       query SpotlightGroupsQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
@@ -93,25 +92,23 @@ const SpotlightGroups = (props: Props) => {
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
   const groupsCount = similarReflectionGroups.length
-  const columns = useSpotlightColumns(columnsRef, groupsCount)
-  useSortGroupsIntoColumns(similarReflectionGroups, columns)
+  const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef)
   const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   if (!groupsCount) return <SpotlightGroupsEmptyState />
   return (
     <SimilarGroups isDesktop={isDesktop}>
       <Scrollbar>
-        <ColumnsWrapper ref={columnsRef}>
-          {columns?.map((columnIdx) => (
-            <Column key={columnIdx}>
-              {similarReflectionGroups.map((reflectionGroup) => {
-                if (reflectionGroup.spotlightColumnIdx !== columnIdx) return null
+        <ColumnsWrapper ref={resultsRef}>
+          {groupMatrix?.map((row) => (
+            <Column key={`${row[0].id}-${row[0].spotlightColumnIdx}`}>
+              {row.map((group) => {
                 return (
                   <ReflectionGroup
-                    key={reflectionGroup.id}
+                    key={group.id}
                     meeting={meeting!}
                     phaseRef={phaseRef}
-                    reflectionGroup={reflectionGroup}
+                    reflectionGroup={group}
                   />
                 )
               })}
