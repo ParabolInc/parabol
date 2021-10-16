@@ -3,31 +3,15 @@ import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getNextSortOrder from '~/utils/getNextSortOrder'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
-type ColumnCounts = {
-  [index: number]: number
-}
-
-const getEmptiestColumnIdx = (
-  similarReflectionGroups: RecordProxy[],
-  spotlightColumnsCount?: number
-) => {
-  const columnCounts = {} as ColumnCounts
-  if (spotlightColumnsCount) {
-    const columnsArr = [...Array(spotlightColumnsCount).keys()]
-    columnsArr.forEach((column) => (columnCounts[column] = 0))
-  }
-  for (const group of similarReflectionGroups) {
-    const spotlightColumnIdx = group.getValue('spotlightColumnIdx') as number
-    if (spotlightColumnIdx === undefined) continue
-    if (columnCounts[spotlightColumnIdx] !== undefined) {
-      columnCounts[spotlightColumnIdx] += 1
-    } else {
-      columnCounts[spotlightColumnIdx] = 1
-    }
-  }
-  const columnLengths = Object.values(columnCounts)
-  const emptiestColumn = Math.min(...columnLengths)
-  return columnLengths.indexOf(emptiestColumn)
+const getEmptiestColumnIdx = (refGroups: RecordProxy[]) => {
+  const counts: number[] = refGroups.reduce((arr: number[], group: RecordProxy) => {
+    const val = group.getValue('spotlightColumnIdx') as number
+    arr[val] = arr[val] || 0
+    arr[val]++
+    return arr
+  }, [])
+  const minVal = Math.min(...counts)
+  return counts.indexOf(minVal)
 }
 
 // if a remote user groups/ungroups a result, a reflectionGroupId is created or removed
@@ -73,8 +57,7 @@ const handleUpdateSpotlightResults = (
     }))
     const nextSortOrder = getNextSortOrder(sortOrders)
     reflectionGroup.setValue(nextSortOrder, 'sortOrder')
-    const maxSpotlightColumns = viewer.getValue('maxSpotlightColumns') as number
-    const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups, maxSpotlightColumns)
+    const emptiestColumnIdx = getEmptiestColumnIdx(similarReflectionGroups)
     reflectionGroup.setValue(emptiestColumnIdx, 'spotlightColumnIdx')
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
