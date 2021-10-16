@@ -3,6 +3,8 @@ import {DBType} from '../database/rethinkDriver'
 import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
+import * as githubLoaders from './githubLoaders'
+import * as integrationAuthLoaders from './integrationAuthLoaders'
 import fkLoader from './fkLoader'
 import * as foreignLoaderMakers from './foreignLoaderMakers'
 import LoaderMakerForeign from './LoaderMakerForeign'
@@ -17,8 +19,10 @@ interface LoaderDict {
 const loaderMakers = {
   ...primaryLoaderMakers,
   ...foreignLoaderMakers,
-  ...customLoaderMakers,
   ...atlassianLoaders,
+  ...customLoaderMakers,
+  ...githubLoaders,
+  ...integrationAuthLoaders,
   ...pollLoaders
 } as const
 

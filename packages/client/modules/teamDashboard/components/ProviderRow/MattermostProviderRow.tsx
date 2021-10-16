@@ -92,6 +92,9 @@ const MattermostProviderRow = (props: Props) => {
           integrations {
             mattermost {
               isActive
+              activeProvider {
+                id
+              }
             }
           }
         }
@@ -106,8 +109,11 @@ const MattermostProviderRow = (props: Props) => {
   const {mattermost} = integrations
   const [isConnectClicked, setConnectClicked] = useState(false)
   const isActive = mattermost?.isActive
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, originRef, menuPortal, menuProps, terminatePortal} = useMenu(
+    MenuPosition.UPPER_RIGHT
+  )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+
   return (
     <ExtraProviderCard>
       <CardTop>
@@ -129,6 +135,8 @@ const MattermostProviderRow = (props: Props) => {
                 menuProps={menuProps}
                 mutationProps={mutationProps}
                 teamId={teamId}
+                providerId={mattermost!.activeProvider!.id}
+                terminatePortal={terminatePortal}
               />
             )}
           </ListAndMenu>

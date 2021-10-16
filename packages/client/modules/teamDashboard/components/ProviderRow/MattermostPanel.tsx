@@ -8,7 +8,6 @@ import BasicInput from '../../../../components/InputField/BasicInput'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import AddMattermostAuthMutation from '../../../../mutations/AddMattermostAuthMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Legitity from '../../../../validation/Legitity'
 import {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
@@ -17,6 +16,10 @@ import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import linkify from '~/utils/linkify'
 import useTooltip from '~/hooks/useTooltip'
 import {MenuPosition} from '~/hooks/useCoords'
+import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
+import {AddIntegrationProviderInputT} from 'parabol-server/graphql/types/AddIntegrationProviderInput'
+import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
+import {IntegrationProviderTokenInputT} from 'parabol-server/graphql/types/AddIntegrationTokenInput'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key
@@ -65,26 +68,36 @@ const MattermostPanel = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment MattermostPanel_viewer on User {
+        preferredName
+        email
         teamMember(teamId: $teamId) {
           integrations {
             mattermost {
-              isActive
-              webhookUrl
+              activeProvider {
+                id
+                serverBaseUri
+              }
             }
+          }
+          team {
+            orgId
           }
         }
       }
     `,
     viewerRef
   )
-  const {teamMember} = viewer
-  const {integrations} = teamMember!
-  const {mattermost} = integrations
+  const {teamMember, preferredName, email} = viewer
+  const {
+    integrations: {mattermost}
+  } = teamMember!
+  const activeProvider = mattermost?.activeProvider
+  const {orgId} = teamMember!.team!
   const atmosphere = useAtmosphere()
 
   const {validateField, setDirtyField, onChange, fields} = useForm({
     webhookUrl: {
-      getDefault: () => mattermost?.webhookUrl || '',
+      getDefault: () => activeProvider?.serverBaseUri || '',
       validate: (rawInput: string) => {
         return new Legitity(rawInput).test((maybeUrl) => {
           if (!maybeUrl) return 'No link provided'
@@ -115,7 +128,31 @@ const MattermostPanel = (props: Props) => {
     if (updateDisabled(error, webhookUrl)) return
     setDirtyField()
     submitMutation()
-    AddMattermostAuthMutation(atmosphere, {webhookUrl, teamId}, {onError, onCompleted})
+    const provider: AddIntegrationProviderInputT = {
+      providerType: 'mattermost',
+      providerScope: 'team',
+      providerTokenType: 'webhook',
+      name: `Mattermost webhook for ${preferredName ? preferredName : email}`,
+      serverBaseUri: webhookUrl,
+      orgId,
+      teamId
+    }
+    const token: IntegrationProviderTokenInputT = {}
+    if (mattermost?.activeProvider) {
+      UpdateIntegrationProviderMutation(
+        atmosphere,
+        {
+          provider: {
+            id: mattermost.activeProvider.id,
+            ...provider
+          },
+          teamId
+        },
+        {onError, onCompleted}
+      )
+    } else {
+      AddIntegrationProviderMutation(atmosphere, {provider, token, teamId}, {onError, onCompleted})
+    }
   }
 
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(

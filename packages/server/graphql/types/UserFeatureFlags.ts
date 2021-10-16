@@ -5,15 +5,15 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
   name: 'UserFeatureFlags',
   description: 'The user account profile',
   fields: () => ({
-    jira: {
+    gitlab: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if jira is allowed',
-      resolve: ({jira}) => !!jira
+      resolve: ({gitlab}) => !!gitlab
     },
-    poker: {
+    video: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if jira is allowed',
-      resolve: ({poker}) => !!poker
+      description: 'true if the user has access to retro meeting video',
+      resolve: ({video}) => !!video
     }
   })
 })

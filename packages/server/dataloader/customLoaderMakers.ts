@@ -11,19 +11,7 @@ import {
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
-import getGitHubAuthByUserIdTeamId, {
-  GitHubAuth
-} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
-import getGitHubDimensionFieldMaps, {
-  GitHubDimensionFieldMap
-} from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
-import getMattermostAuthByUserIdTeamId, {
-  GetMattermostAuthByUserIdTeamIdResult
-} from '../postgres/queries/getMattermostAuthByUserIdTeamId'
-import getMattermostBestAuthByUserIdTeamId, {
-  GetMattermostBestAuthByUserIdTeamIdResult
-} from '../postgres/queries/getMattermostBestAuthByUserIdTeamId'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
@@ -37,6 +25,21 @@ import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
 
+export interface MeetingSettingsKey {
+  teamId: string
+  meetingType: MeetingTypeEnum
+}
+
+export interface MeetingTemplateKey {
+  teamId: string
+  meetingType: MeetingTypeEnum
+}
+
+export interface ReactablesKey {
+  id: string
+  type: ReactableEnum
+}
+
 export interface UserTasksKey {
   first: number
   after: number | string
@@ -46,21 +49,6 @@ export interface UserTasksKey {
   includeUnassigned: boolean
   statusFilters?: TaskStatusEnum[]
   filterQuery?: string
-}
-
-export interface ReactablesKey {
-  id: string
-  type: ReactableEnum
-}
-
-export interface MeetingSettingsKey {
-  teamId: string
-  meetingType: MeetingTypeEnum
-}
-
-export interface MeetingTemplateKey {
-  teamId: string
-  meetingType: MeetingTypeEnum
 }
 
 const reactableLoaders = [
@@ -290,85 +278,6 @@ export const discussions = (parent: RethinkDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const githubAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId}) => getGitHubAuthByUserIdTeamId(userId, teamId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
-    }
-  )
-}
-
-export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
-  return new DataLoader<
-    {teamId: string; dimensionName: string; nameWithOwner: string},
-    GitHubDimensionFieldMap | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, nameWithOwner}) =>
-          getGitHubDimensionFieldMaps(teamId, dimensionName, nameWithOwner)
-        )
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
-        `${teamId}:${dimensionName}:${nameWithOwner}`
-    }
-  )
-}
-
-export const mattermostAuthByUserIdTeamId = (parent: RethinkDataLoader) => {
-  return new DataLoader<
-    {userId: string; teamId: string},
-    GetMattermostAuthByUserIdTeamIdResult | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => getMattermostAuthByUserIdTeamId(userId, teamId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
-    }
-  )
-}
-
-export const mattermostBestAuthByUserIdTeamId = (parent: RethinkDataLoader) => {
-  return new DataLoader<
-    {userId: string; teamId: string},
-    GetMattermostBestAuthByUserIdTeamIdResult | null | undefined,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => getMattermostBestAuthByUserIdTeamId(userId, teamId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
     }
   )
 }

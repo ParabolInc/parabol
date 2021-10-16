@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {GQLContext} from '../graphql'
-import GraphQLURLType from './GraphQLURLType'
+import IntegrationProvider from './IntegrationProvider'
 
 const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'MattermostIntegration',
@@ -9,11 +9,12 @@ const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     isActive: {
       description: 'true if the auth is updated & ready to use for all features, else false',
-      type: new GraphQLNonNull(GraphQLBoolean)
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({activeProvider}) => !!activeProvider
     },
-    webhookUrl: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'the Mattermost server to integrate against'
+    activeProvider: {
+      description: 'The active Integration Provider details to be used to access Mattermost',
+      type: IntegrationProvider
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

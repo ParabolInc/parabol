@@ -20,12 +20,13 @@ module.exports = {
     __dirname: false
   },
   entry: {
-    updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')],
     createMigration: [DOTENV, path.join(TOOLBOX_SRC, 'migrate-create.ts')],
+    getClientActionVars: [DOTENV, path.join(TOOLBOX_SRC, 'getClientActionVars.ts')],
+    pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')],
     postDeploy: [DOTENV, path.join(TOOLBOX_SRC, 'postDeploy.ts')],
-    softenDurability: [DOTENV, path.join(TOOLBOX_SRC, 'softenDurability.ts')],
     renameDB: [DOTENV, path.join(TOOLBOX_SRC, 'renameDB.ts')],
-    pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')]
+    softenDurability: [DOTENV, path.join(TOOLBOX_SRC, 'softenDurability.ts')],
+    updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')]
   },
   output: {
     filename: '[name].js',

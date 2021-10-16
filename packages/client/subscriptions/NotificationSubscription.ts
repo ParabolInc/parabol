@@ -107,7 +107,8 @@ const subscription = graphql`
         user {
           id
           featureFlags {
-            jira
+            gitlab
+            video
           }
         }
       }

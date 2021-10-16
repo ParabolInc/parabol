@@ -2,6 +2,8 @@ import {mergeSchemas} from '@graphql-tools/merge'
 import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import githubSchema from '../utils/githubSchema.graphql'
+import nestGitLabEndpoint from './nestedSchema/nestGitLabEndpoint'
+import gitlabSchema from './nestedSchema/GitLab/gitlabSchema.graphql'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
@@ -26,8 +28,25 @@ const {schema: withGitHubSchema, githubRequest} = nestGitHubEndpoint({
   schemaIDL: githubSchema
 })
 
-const withLinkedGitHubSchema = mergeSchemas({
-  schemas: [withGitHubSchema],
+const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
+  parentSchema: parabolSchema,
+  parentType: 'GitLabIntegration',
+  fieldName: 'api',
+  resolveEndpointContext: ({accessToken, activeProvider}) => {
+    const context = {
+      accessToken,
+      baseUri: activeProvider.serverBaseUri,
+      headers: {Accept: 'application/json'}
+    }
+    console.log(`context: ${context}`)
+    return context
+  },
+  prefix: '_xGitLab',
+  schemaIDL: gitlabSchema
+})
+
+const withNestedSchema = mergeSchemas({
+  schemas: [withGitHubSchema, withGitLabSchema],
   typeDefs: `
     type _xGitHubIssue implements TaskIntegration
   `
@@ -35,8 +54,10 @@ const withLinkedGitHubSchema = mergeSchemas({
 
 export {githubRequest}
 export type GitHubRequest = typeof githubRequest
-;(withLinkedGitHubSchema as any).githubRequest = githubRequest
-export type RootSchema = GraphQLSchema & {
-  githubRequest: GitHubRequest
-}
-export default withLinkedGitHubSchema
+;(withNestedSchema as any).githubRequest = githubRequest
+
+export {gitlabRequest}
+export type GitLabRequest = typeof gitlabRequest
+;(withNestedSchema as any).gitlabRequest = gitlabRequest
+
+export default withNestedSchema

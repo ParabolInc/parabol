@@ -1,9 +1,16 @@
 import fs from 'fs'
 import path from 'path'
+import dotenv from 'dotenv'
+import dotenvExpand from 'dotenv-expand'
+import getPg from '../../packages/server/postgres/getPg'
 import getRethink from '../../packages/server/database/rethinkDriver'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 import getRedis from '../../packages/server/utils/getRedis'
 import sendToSentry from '../../packages/server/utils/sendToSentry'
+import makeGlobalIntegrationProvidersFromEnv from '../../packages/server/utils/makeGlobalIntegrationProvidersFromEnv'
+import upsertGlobalIntegrationProvider from '../../packages/server/postgres/queries/upsertGlobalIntegrationProvider'
+import upsertMattermostAuth from '../../packages/server/postgres/queries/upsertMattermostAuth'
+import plural from 'parabol-client/utils/plural'
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -33,7 +40,7 @@ const flushSocketConnections = async () => {
     })
     redis.multi(writes).exec()
   })
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     onlineTeamsStream.on('end', () => {
       resolve()
     })
@@ -62,12 +69,34 @@ const storePersistedQueries = async () => {
   console.log(`Added ${res.inserted} records to the queryMap`)
 }
 
+const upsertGlobalIntegrationProvidersFromEnv = async () => {
+  let providers = []
+  await Promise.all(
+    makeGlobalIntegrationProvidersFromEnv().map((provider) => {
+      providers.push(provider.providerType)
+      return upsertGlobalIntegrationProvider(provider)
+    })
+  )
+  console.log(
+    `Upserted ${providers.length} global integration ${plural(providers.length, 'provider')}` +
+      (providers.length ? `: ${providers.join(', ')}` : '')
+  )
+}
+
 const postDeploy = async () => {
+  const envPath = path.join(PROJECT_ROOT, '.env')
+  const myEnv = dotenv.config({path: envPath})
+  dotenvExpand(myEnv)
+
   try {
     const r = await getRethink()
     await flushSocketConnections()
     await storePersistedQueries()
     await r.getPoolMaster().drain()
+
+    const pg = getPg()
+    await upsertGlobalIntegrationProvidersFromEnv()
+    await pg.end()
   } catch (e) {
     console.log('Post deploy error', e)
   }

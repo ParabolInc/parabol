@@ -6,25 +6,13 @@ import {brotliCompressSync} from 'zlib'
 import acceptsBrotli from './acceptsBrotli'
 import PROD from './PROD'
 import dehydrate from './utils/dehydrate'
-
-export const getClientKeys = () => {
-  return {
-    atlassian: process.env.ATLASSIAN_CLIENT_ID,
-    github: process.env.GITHUB_CLIENT_ID,
-    google: process.env.GOOGLE_OAUTH_CLIENT_ID,
-    segment: process.env.SEGMENT_WRITE_KEY,
-    sentry: process.env.SENTRY_DSN,
-    slack: process.env.SLACK_CLIENT_ID,
-    stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-    prblIn: process.env.INVITATION_SHORTLINK
-  }
-}
+import getClientActionVars from '../../scripts/toolboxSrc/getClientActionVars'
 
 let minifiedHTML: string
 let brotliHTML: Buffer
 const getRaw = () => {
   if (!minifiedHTML) {
-    const clientIds = getClientKeys()
+    const clientIds = getClientActionVars()
     const PROJECT_ROOT = path.join(__dirname, '../')
     const htmlPath = PROD ? './build/index.html' : './template.html'
     const html = fs.readFileSync(path.join(PROJECT_ROOT, htmlPath), 'utf8')
