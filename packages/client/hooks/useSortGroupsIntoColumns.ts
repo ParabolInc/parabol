@@ -1,8 +1,6 @@
-import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import {useLayoutEffect} from 'react'
-// import {SpotlightGroups_viewer} from '~/__generated__/SpotlightGroups_viewer.graphql'
 
 const useSortGroupsIntoColumns = (
   similarReflectionGroups: any, // SpotlightGroupsQuery['response']['viewer']['meeting']

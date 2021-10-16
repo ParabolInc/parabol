@@ -8,11 +8,9 @@ import useSpotlightColumns from '../hooks/useSpotlightColumns'
 import useSortGroupsIntoColumns from '../hooks/useSortGroupsIntoColumns'
 import {Breakpoint, ElementWidth} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 
 const SimilarGroups = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`,
   width: '100%',
   display: 'flex',
   padding: `${isDesktop ? '40px' : '32px'} 0px 24px`

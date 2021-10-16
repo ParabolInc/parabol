@@ -42,9 +42,9 @@ const GroupingKanban = (props: Props) => {
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
-  const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
+  const sourceRef = useRef<HTMLDivElement | null>(null)
   const [flipRef, flipReverse] = useFlip({
-    firstRef: spotlightReflectionRef
+    firstRef: sourceRef
   })
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
@@ -52,7 +52,7 @@ const GroupingKanban = (props: Props) => {
   const closeSpotlight = () => {
     closePortal()
     flipReverse()
-    spotlightReflectionRef.current = null
+    sourceRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -93,7 +93,7 @@ const GroupingKanban = (props: Props) => {
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
   const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
-    spotlightReflectionRef.current = reflectionRef.current
+    sourceRef.current = reflectionRef.current
     openPortal()
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
@@ -131,7 +131,12 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightModal closeSpotlight={closeSpotlight} flipRef={flipRef} meeting={meeting} />
+        <SpotlightModal
+          closeSpotlight={closeSpotlight}
+          flipRef={flipRef}
+          meeting={meeting}
+          sourceRef={sourceRef}
+        />
       )}
     </PortalProvider>
   )

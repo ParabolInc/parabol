@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
-import React, {Suspense, useRef} from 'react'
+import React, {RefObject, Suspense, useMemo, useRef} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {DECELERATE, makeVisible} from '../styles/animation'
+import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -12,31 +12,30 @@ import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
 import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import ResultsRoot from './ResultsRoot'
-import useGetRefHeight from '../hooks/useGetRefHeight'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
-import useBreakpoint from '~/hooks/useBreakpoint'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
+import useGetRefHeight from '../hooks/useGetRefHeight'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
 
-const ModalContainer = styled('div')<{modalHeight: number}>(({modalHeight}) => ({
-  animation: `${makeVisible.toString()} 300ms ${DECELERATE} 300ms forwards`,
-  background: `${PALETTE.WHITE}`,
+const ModalContainer = styled('div')<{areResultsRendered: boolean}>(({areResultsRendered}) => ({
+  animation: areResultsRendered
+    ? `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`
+    : undefined,
+  backgroundColor: `${PALETTE.WHITE}`,
   borderRadius: 8,
   boxShadow: Elevation.Z8,
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
   overflow: 'hidden',
-  height: '100%',
-  // maxHeight: '85vh',
+  opacity: 0,
+  maxHeight: '90vh',
   width: '90vw',
-  visibility: 'hidden',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
     maxHeight: '90vh',
-    // height: modalHeight,
     width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
 }))
@@ -45,7 +44,6 @@ const SourceSection = styled('div')({
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
-  flexWrap: 'wrap',
   height: `${SPOTLIGHT_TOP_SECTION_HEIGHT}px`,
   justifyContent: 'space-between',
   padding: 16,
@@ -68,11 +66,16 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceWrapper = styled('div')({
-  visibility: 'visible',
-  display: 'flex',
-  justifyContent: 'center'
-})
+const SourceDestination = styled('div')<{sourceHeight: number}>(({sourceHeight}) => ({
+  height: sourceHeight
+}))
+
+const SourceWrapper = styled('div')<{offsetTop?: number}>(({offsetTop}) => ({
+  position: 'absolute',
+  top: offsetTop,
+  left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
+  zIndex: ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
+}))
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -135,18 +138,17 @@ interface Props {
   closeSpotlight: () => void
   flipRef: (instance: HTMLDivElement) => void
   meeting: GroupingKanban_meeting
+  sourceRef: RefObject<HTMLDivElement>
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, flipRef, meeting} = props
-  const phaseRef = useRef(null)
-  const columnsRef = useRef(null)
-  const minColumnsHeight = (ElementHeight.REFLECTION_CARD + ElementHeight.MEETING_CARD_MARGIN) * 4
-  const columnsRefHeight = useGetRefHeight(columnsRef, 0, phaseRef)
-  const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const groupsPadding = isDesktop ? 64 : 56
-  const groupsHeight = Math.max(minColumnsHeight, columnsRefHeight) + groupsPadding
-  const modalHeight = SPOTLIGHT_TOP_SECTION_HEIGHT + groupsHeight
+  const {closeSpotlight, flipRef, meeting, sourceRef} = props
+  const phaseRef = useRef<HTMLDivElement>(null)
+  const columnsRef = useRef<HTMLDivElement>(null)
+  const srcDestinationRef = useRef<HTMLDivElement>(null)
+  const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
+  const areResultsRendered = useMemo(() => !!columnsRef.current?.clientHeight, [columnsRef.current])
+  const offsetTop = srcDestinationRef.current?.offsetTop
   if (!meeting) return null
   const {id: meetingId, spotlightReflection} = meeting
   const spotlightReflectionId = spotlightReflection?.id
@@ -157,15 +159,43 @@ const SpotlightModal = (props: Props) => {
     }
   }
   return (
-    <ModalContainer ref={phaseRef} modalHeight={modalHeight}>
-      <SourceSection>
-        <TopRow>
-          <Title>Find cards with similar reflections</Title>
-          <StyledCloseButton onClick={closeSpotlight}>
-            <CloseIcon>close</CloseIcon>
-          </StyledCloseButton>
-        </TopRow>
-        <SourceWrapper ref={flipRef}>
+    <>
+      <ModalContainer ref={phaseRef} areResultsRendered={areResultsRendered}>
+        <SourceSection>
+          <TopRow>
+            <Title>Find cards with similar reflections</Title>
+            <StyledCloseButton onClick={closeSpotlight}>
+              <CloseIcon>close</CloseIcon>
+            </StyledCloseButton>
+          </TopRow>
+          <SourceDestination sourceHeight={sourceHeight} ref={srcDestinationRef} />
+          <SearchWrapper>
+            <Search>
+              <StyledMenuItemIcon>
+                <SearchIcon>search</SearchIcon>
+              </StyledMenuItemIcon>
+              <SearchInput
+                onKeyDown={onKeyDown}
+                autoFocus
+                autoComplete='off'
+                name='search'
+                placeholder='Or search for keywords...'
+                type='text'
+              />
+            </Search>
+          </SearchWrapper>
+        </SourceSection>
+        <Suspense fallback={''}>
+          <ResultsRoot
+            columnsRef={columnsRef}
+            meetingId={meetingId}
+            phaseRef={phaseRef}
+            spotlightReflectionId={spotlightReflectionId}
+          />
+        </Suspense>
+      </ModalContainer>
+      {areResultsRendered && (
+        <SourceWrapper ref={flipRef} offsetTop={offsetTop}>
           {spotlightReflection && (
             <DraggableReflectionCard
               isDraggable
@@ -175,31 +205,8 @@ const SpotlightModal = (props: Props) => {
             />
           )}
         </SourceWrapper>
-        <SearchWrapper>
-          <Search>
-            <StyledMenuItemIcon>
-              <SearchIcon>search</SearchIcon>
-            </StyledMenuItemIcon>
-            <SearchInput
-              onKeyDown={onKeyDown}
-              autoFocus
-              autoComplete='off'
-              name='search'
-              placeholder='Or search for keywords...'
-              type='text'
-            />
-          </Search>
-        </SearchWrapper>
-      </SourceSection>
-      <Suspense fallback={''}>
-        <ResultsRoot
-          columnsRef={columnsRef}
-          meetingId={meetingId}
-          phaseRef={phaseRef}
-          spotlightReflectionId={spotlightReflectionId}
-        />
-      </Suspense>
-    </ModalContainer>
+      )}
+    </>
   )
 }
 
