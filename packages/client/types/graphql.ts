@@ -49584,7 +49584,7 @@ export interface ITeamMemberIntegrations {
   id: string;
 
   /**
-   * All things associated with an atlassian integration for a team member
+   * All things associated with an Atlassian integration for a team member
    */
   atlassian: IAtlassianIntegration | null;
 
@@ -49594,7 +49594,12 @@ export interface ITeamMemberIntegrations {
   github: IGitHubIntegration | null;
 
   /**
-   * All things associated with a slack integration for a team member
+   * All things associated with a Mattermost integration for a team member
+   */
+  mattermost: IMattermostIntegration | null;
+
+  /**
+   * All things associated with a Slack integration for a team member
    */
   slack: ISlackIntegration | null;
 }
@@ -49987,6 +49992,38 @@ export interface IGitHubSearchQuery {
    * the time the search query was last used. Used for sorting
    */
   lastUsedAt: any;
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IMattermostIntegration {
+  __typename: 'MattermostIntegration';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is updated & ready to use for all features, else false
+   */
+  isActive: boolean;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The id of the user that integrated Slack
+   */
+  userId: string;
 }
 
 /**

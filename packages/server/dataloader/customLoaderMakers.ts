@@ -18,6 +18,9 @@ import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
+import getMattermostAuthByUserIdTeamId, {
+  GetMattermostAuthByUserIdTeamIdResult
+} from '../postgres/queries/getMattermostAuthByUserIdTeamId'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
@@ -323,6 +326,26 @@ export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
         `${teamId}:${dimensionName}:${nameWithOwner}`
+    }
+  )
+}
+
+export const mattermostAuth = (parent: RethinkDataLoader) => {
+  return new DataLoader<
+    {teamId: string; userId: string},
+    GetMattermostAuthByUserIdTeamIdResult | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, userId}) => getMattermostAuthByUserIdTeamId(userId, teamId))
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
     }
   )
 }

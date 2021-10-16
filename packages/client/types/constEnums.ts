@@ -249,6 +249,8 @@ export const enum Providers {
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
+  MATTERMOST_NAME = 'Mattermost',
+  MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }
