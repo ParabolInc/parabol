@@ -12,7 +12,8 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {startSlackMeeting} from './helpers/notifySlack'
+import {startSlackMeeting} from './helpers/notifications/notifySlack'
+import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
@@ -112,6 +113,7 @@ export default {
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)

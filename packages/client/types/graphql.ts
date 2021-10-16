@@ -50001,17 +50001,17 @@ export interface IMattermostIntegration {
   __typename: 'MattermostIntegration';
 
   /**
-   * shortid
-   */
-  id: string;
-
-  /**
    * true if the auth is updated & ready to use for all features, else false
    */
   isActive: boolean;
 
   /**
-   * *The team that the token is linked to
+   * the Mattermost server to integrate against
+   */
+  webhookUrl: any;
+
+  /**
+   * The team that the token is linked to
    */
   teamId: string;
 
@@ -55211,6 +55211,7 @@ export interface IMutation {
    * Add a comment to a discussion
    */
   addComment: AddCommentPayload;
+  addMattermostAuth: IAddMattermostAuthPayload;
 
   /**
    * Add a new poker template with a default dimension created
@@ -55561,6 +55562,11 @@ export interface IMutation {
   removePokerTemplateScaleValue: IRemovePokerTemplateScaleValuePayload;
 
   /**
+   * Disconnect a team member from Slack
+   */
+  removeMattermostAuth: IRemoveMattermostAuthPayload;
+
+  /**
    * Remove a reflection
    */
   removeReflection: IRemoveReflectionPayload | null;
@@ -55841,6 +55847,18 @@ export interface IAddCommentOnMutationArguments {
    * A partial new comment
    */
   comment: IAddCommentInput;
+}
+
+export interface IAddMattermostAuthOnMutationArguments {
+  /**
+   * the url of the Mattermost server the token is good for
+   */
+  webhookUrl: any;
+
+  /**
+   * the teamId, when combined with the viewer's userId, used to upsert the credentials
+   */
+  teamId: string;
 }
 
 export interface IAddPokerTemplateOnMutationArguments {
@@ -56457,6 +56475,13 @@ export interface IRemovePokerTemplateScaleOnMutationArguments {
 export interface IRemovePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
   label: string;
+}
+
+export interface IRemoveMattermostAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from Mattermost
+   */
+  teamId: string;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -57103,6 +57128,21 @@ export interface IAddCommentInput {
   discussionId: string;
   threadSortOrder: number;
   threadParentId?: string | null;
+}
+
+export interface IAddMattermostAuthPayload {
+  __typename: 'AddMattermostAuthPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The newly created MattermostIntegration object
+   */
+  MattermostIntegration: IMattermostIntegration | null;
+
+  /**
+   * The user who updated MattermostIntegration object
+   */
+  user: IUser | null;
 }
 
 export interface IAddPokerTemplatePayload {
@@ -58470,6 +58510,17 @@ export interface IRemovePokerTemplateScaleValuePayload {
   scale: ITemplateScale | null;
 }
 
+export interface IRemoveMattermostAuthPayload {
+  __typename: 'RemoveMattermostAuthPayload';
+  error: IStandardMutationError | null;
+  teamId: string | null;
+
+  /**
+   * The user with updated mattermostAuth
+   */
+  user: IUser | null;
+}
+
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload';
   error: IStandardMutationError | null;
@@ -59802,6 +59853,7 @@ export type TeamSubscriptionPayload =
   | IAddAgendaItemPayload
   | IAddAtlassianAuthPayload
   | IAddGitHubAuthPayload
+  | IAddMattermostAuthPayload
   | IAddSlackAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
@@ -59840,6 +59892,7 @@ export type TeamSubscriptionPayload =
   | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
+  | IRemoveMattermostAuthPayload
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
   | IRemovePokerTemplatePayload

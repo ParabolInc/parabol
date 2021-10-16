@@ -3,6 +3,7 @@ import AcceptTeamInvitationPayload from './AcceptTeamInvitationPayload'
 import AddAgendaItemPayload from './AddAgendaItemPayload'
 import AddAtlassianAuthPayload from './AddAtlassianAuthPayload'
 import AddGitHubAuthPayload from './AddGitHubAuthPayload'
+import AddMattermostAuthPayload from './AddMattermostAuthPayload'
 import AddPokerTemplateDimensionPayload from './AddPokerTemplateDimensionPayload'
 import AddPokerTemplatePayload from './AddPokerTemplatePayload'
 import AddPokerTemplateScalePayload from './AddPokerTemplateScalePayload'
@@ -38,6 +39,7 @@ import RemovePokerTemplateScalePayload from './RemovePokerTemplateScalePayload'
 import RemovePokerTemplateScaleValuePayload from './RemovePokerTemplateScaleValuePayload'
 import RemoveReflectTemplatePayload from './RemoveReflectTemplatePayload'
 import RemoveReflectTemplatePromptPayload from './RemoveReflectTemplatePromptPayload'
+import RemoveMattermostAuthPayload from './RemoveMattermostAuthPayload'
 import RemoveSlackAuthPayload from './RemoveSlackAuthPayload'
 import RemoveTeamMemberPayload from './RemoveTeamMemberPayload'
 import {RenameMeetingSuccess} from './RenameMeetingPayload'
@@ -70,6 +72,7 @@ const types = [
   AddAgendaItemPayload,
   AddAtlassianAuthPayload,
   AddGitHubAuthPayload,
+  AddMattermostAuthPayload,
   AddSlackAuthPayload,
   AddTeamPayload,
   ArchiveTeamPayload,
@@ -108,6 +111,7 @@ const types = [
   ReflectTemplatePromptUpdateGroupColorPayload,
   RemoveAtlassianAuthPayload,
   RemoveGitHubAuthPayload,
+  RemoveMattermostAuthPayload,
   RemoveSlackAuthPayload,
   RemoveReflectTemplatePayload,
   RemovePokerTemplatePayload,

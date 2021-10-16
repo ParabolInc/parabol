@@ -1,5 +1,5 @@
 import {MattermostProviderRow_viewer} from '../../../../__generated__/MattermostProviderRow_viewer.graphql'
-import React from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -15,8 +15,11 @@ import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import MattermostPanel from './MattermostPanel'
+import MattermostProviderLogo from '../../../../components/MattermostProviderLogo'
+import MattermostSVG from '../../../../components/MattermostSVG'
+import MattermostConfigMenu from './MattermostConfigMenu'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -81,23 +84,19 @@ const ExtraProviderCard = styled(ProviderCard)({
 
 const MattermostProviderRow = (props: Props) => {
   const {viewer, teamId} = props
-  const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
+  const [isConnectClicked, setConnectClicked] = useState(false)
   const isActive = mattermost?.isActive
-  const openOAuth = () => {
-    // SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
-  }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <ExtraProviderCard>
       <CardTop>
-        {/* <SlackProviderLogo /> */}
-        <div>TK MatterMostProviderLogo</div>
+        <MattermostProviderLogo />
         <RowInfo>
           <ProviderName>{Providers.MATTERMOST_NAME}</ProviderName>
           <RowInfoCopy>{Providers.MATTERMOST_DESC}</RowInfoCopy>
@@ -105,35 +104,40 @@ const MattermostProviderRow = (props: Props) => {
         {isActive ? (
           <ListAndMenu>
             <MattermostLogin title='Mattermost'>
-              {/* <SlackSVG /> */}
-              <div>TK Slack SVG</div>
+              <MattermostSVG />
             </MattermostLogin>
             <MenuButton onClick={togglePortal} ref={originRef}>
               <StyledIcon>more_vert</StyledIcon>
             </MenuButton>
-            {/*menuPortal(
-              <SlackConfigMenu
+            {menuPortal(
+              <MattermostConfigMenu
                 menuProps={menuProps}
                 mutationProps={mutationProps}
                 teamId={teamId}
               />
-            )*/}
+            )}
           </ListAndMenu>
         ) : (
           <ProviderActions>
-            <StyledButton onClick={openOAuth} palette='warm' waiting={submitting}>
-              {isDesktop ? 'Connect' : <Icon>add</Icon>}
+            <StyledButton
+              onClick={() => setConnectClicked(!isConnectClicked)}
+              palette='warm'
+              waiting={submitting}
+            >
+              {!isConnectClicked && (isDesktop ? 'Connect' : <Icon>add</Icon>)}
+              {isConnectClicked && (isDesktop ? 'Cancel' : <Icon>close</Icon>)}
             </StyledButton>
           </ProviderActions>
         )}
       </CardTop>
-      {/* {isActive && <SlackNotificationList teamId={teamId} viewer={viewer} />} */}
+      {(isActive || isConnectClicked) && <MattermostPanel teamId={teamId} viewer={viewer} />}
     </ExtraProviderCard>
   )
 }
 
 graphql`
   fragment MattermostProviderRowViewer on User {
+    ...MattermostPanel_viewer
     teamMember(teamId: $teamId) {
       integrations {
         mattermost {

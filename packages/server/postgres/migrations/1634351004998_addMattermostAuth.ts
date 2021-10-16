@@ -6,13 +6,13 @@ export async function up() {
   await client.connect()
   await client.query(`
   CREATE TABLE IF NOT EXISTS "MattermostAuth" (
-    "accessToken" VARCHAR(40) NOT NULL,
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "isActive" BOOLEAN DEFAULT TRUE NOT NULL,
+    "webhookUrl" VARCHAR(2083) NOT NULL,
     "userId" VARCHAR(100) NOT NULL,
     "teamId" VARCHAR(100) NOT NULL,
-    PRIMARY KEY ("userId", "teamId")
+    PRIMARY KEY ("teamId")
   );
 `)
   await client.end()

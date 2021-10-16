@@ -37,9 +37,9 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     mattermost: {
       type: MattermostIntegration,
       description: 'All things associated with a Mattermost integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        return dataLoader.get('mattermostAuth').load({teamId, userId})
+        return dataLoader.get('mattermostAuthByTeamId').load(teamId)
       }
     },
     slack: {
