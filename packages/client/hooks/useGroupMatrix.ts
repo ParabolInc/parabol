@@ -35,13 +35,17 @@ const useGroupMatrix = (refGroups: Groups, resultsRef: RefObject<HTMLDivElement>
   const createMatrix = () => {
     if (groupMatrix?.length) return
     commitLocalUpdate(atmosphere, (store) => {
-      const columnCount = getColumnsCount()
-      if (!columnCount) return
+      const columnsCount = getColumnsCount()
+      if (!columnsCount) return
+      commitLocalUpdate(atmosphere, (store) => {
+        const viewer = store.getRoot().getLinkedRecord('viewer')
+        viewer?.setValue(columnsCount, 'maxSpotlightColumns')
+      })
       const matrix = [] as Groups[]
       refGroups.forEach((group, idx) => {
         const reflectionGroup = store.get(group.id)
         if (!reflectionGroup) return
-        const columnIdx = idx % columnCount
+        const columnIdx = idx % columnsCount
         // set columnIdx so newly added groups can calc the emptiest column
         reflectionGroup?.setValue(columnIdx, 'spotlightColumnIdx')
         const columnGroups = matrix[columnIdx]
@@ -75,8 +79,10 @@ const useGroupMatrix = (refGroups: Groups, resultsRef: RefObject<HTMLDivElement>
       )
       setGroupMatrix(newMatrix)
     } else if (removedGroupId) {
-      // group added to another Spotlight group. remove the old group
-      const newMatrix = groupMatrix.map((row) => row.filter((group) => group.id !== removedGroupId))
+      // group added to another Spotlight group. remove the old group & remove column if empty
+      const newMatrix = groupMatrix
+        .map((row) => row.filter((group) => group.id !== removedGroupId))
+        .filter(({length}) => length)
       setGroupMatrix(newMatrix)
     }
   }

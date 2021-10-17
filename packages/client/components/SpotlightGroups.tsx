@@ -91,11 +91,10 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
-  const groupsCount = similarReflectionGroups.length
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef)
   const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
-  if (!groupsCount) return <SpotlightGroupsEmptyState />
+  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
   return (
     <SimilarGroups isDesktop={isDesktop}>
       <Scrollbar>

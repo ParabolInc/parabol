@@ -5,7 +5,7 @@ import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
@@ -147,10 +147,10 @@ const SpotlightModal = (props: Props) => {
   const modalRef = useRef<HTMLDivElement>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
   const srcDestinationRef = useRef<HTMLDivElement>(null)
-  const offsetTop = srcDestinationRef.current?.offsetTop
-  const sourceHeight = useGetRefHeight(sourceRef, ElementHeight.REFLECTION_CARD)
+  const offsetTop = useGetRefHeight(srcDestinationRef, 'offsetTop')
+  const sourceHeight = useGetRefHeight(sourceRef)
+  const modalRefHeight = useGetRefHeight(modalRef)
   const areResultsRendered = !!resultsRef.current?.clientHeight
-  const modalRefHeight = useGetRefHeight(modalRef, 0, modalRef)
   const modalHeight = areResultsRendered ? modalRefHeight : null
   if (!meeting) return null
   const {id: meetingId, spotlightReflection} = meeting
