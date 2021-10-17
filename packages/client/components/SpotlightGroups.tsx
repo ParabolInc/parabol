@@ -54,7 +54,6 @@ const SpotlightGroups = (props: Props) => {
         viewer {
           similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
             id
-            spotlightColumnIdx
             ...ReflectionGroup_reflectionGroup
           }
           meeting(meetingId: $meetingId) {
@@ -91,7 +90,8 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
-  const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef)
+  const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
+  console.log('🚀  ~ groupMatrix', groupMatrix)
   const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
@@ -100,7 +100,7 @@ const SpotlightGroups = (props: Props) => {
       <Scrollbar>
         <ColumnsWrapper ref={resultsRef}>
           {groupMatrix?.map((row) => (
-            <Column key={`${row[0].id}-${row[0].spotlightColumnIdx}`}>
+            <Column key={`${row[0].id}-${row[0].id}`}>
               {row.map((group) => {
                 return (
                   <ReflectionGroup
