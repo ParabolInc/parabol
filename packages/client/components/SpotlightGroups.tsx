@@ -1,23 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject} from 'react'
-import {SpotlightGroups_meeting$key} from '~/__generated__/SpotlightGroups_meeting.graphql'
-import {SpotlightGroups_viewer$key} from '~/__generated__/SpotlightGroups_viewer.graphql'
 import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
-import {useFragment} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import useSpotlightColumns from '../hooks/useSpotlightColumns'
-import useSortGroupsIntoColumns from '../hooks/useSortGroupsIntoColumns'
-import {Breakpoint, ElementWidth} from '~/types/constEnums'
-import useBreakpoint from '~/hooks/useBreakpoint'
+import {ElementWidth} from '~/types/constEnums'
+import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
+import useGroupMatrix from '../hooks/useGroupMatrix'
 import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 
-const SimilarGroups = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`,
+const SimilarGroups = styled('div')({
   width: '100%',
-  display: 'flex',
-  padding: `${isDesktop ? '40px' : '30px'} 0px 24px 0px`
-}))
+  padding: '40px 0px 24px',
+  height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`
+})
 
 const Scrollbar = styled('div')({
   display: 'flex',
@@ -29,7 +25,6 @@ const Scrollbar = styled('div')({
 
 const ColumnsWrapper = styled('div')({
   display: 'flex',
-  height: 'fit-content',
   justifyContent: 'center',
   width: '100%'
 })
@@ -43,60 +38,74 @@ const Column = styled('div')({
 })
 
 interface Props {
-  meeting: SpotlightGroups_meeting$key | null
-  columnsRef: RefObject<HTMLDivElement>
+  resultsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
-  viewer: SpotlightGroups_viewer$key
+  queryRef: PreloadedQuery<SpotlightGroupsQuery>
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {columnsRef, phaseRef} = props
-  const userData = useFragment(
+  const {resultsRef, phaseRef, queryRef} = props
+  const data = usePreloadedQuery<SpotlightGroupsQuery>(
     graphql`
-      fragment SpotlightGroups_viewer on User {
-        similarReflectionGroups(reflectionGroupId: $reflectionGroupId, searchQuery: $searchQuery) {
-          id
-          spotlightColumnIdx
-          ...ReflectionGroup_reflectionGroup
-        }
-        meeting(meetingId: $meetingId) {
-          ...SpotlightGroups_meeting
+      query SpotlightGroupsQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
+        viewer {
+          similarReflectionGroups(
+            reflectionGroupId: $reflectionGroupId
+            searchQuery: $searchQuery
+          ) {
+            id
+            ...ReflectionGroup_reflectionGroup
+          }
+          meeting(meetingId: $meetingId) {
+            ... on RetrospectiveMeeting {
+              ...DraggableReflectionCard_meeting
+              ...ReflectionGroup_meeting
+              id
+              teamId
+              localPhase {
+                phaseType
+              }
+              localStage {
+                isComplete
+                phaseType
+              }
+              phases {
+                phaseType
+                stages {
+                  isComplete
+                  phaseType
+                }
+              }
+              spotlightGroup {
+                id
+                ...ReflectionGroup_reflectionGroup
+              }
+            }
+          }
         }
       }
     `,
-    props.viewer
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
   )
-  const meetingData = useFragment(
-    graphql`
-      fragment SpotlightGroups_meeting on RetrospectiveMeeting {
-        ...ReflectionGroup_meeting
-      }
-    `,
-    props.meeting
-  )
-  const {similarReflectionGroups} = userData
-  const groupsCount = similarReflectionGroups.length
-  const columns = useSpotlightColumns(columnsRef, groupsCount)
-  useSortGroupsIntoColumns(similarReflectionGroups, columns)
-  const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const {viewer} = data
+  const {meeting, similarReflectionGroups} = viewer
+  const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
 
-  if (!groupsCount || !meetingData) {
-    return <SpotlightGroupsEmptyState />
-  }
+  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
   return (
-    <SimilarGroups isDesktop={isDesktop}>
+    <SimilarGroups>
       <Scrollbar>
-        <ColumnsWrapper ref={columnsRef}>
-          {columns?.map((columnIdx) => (
-            <Column key={columnIdx}>
-              {similarReflectionGroups.map((reflectionGroup) => {
-                if (reflectionGroup.spotlightColumnIdx !== columnIdx) return null
+        <ColumnsWrapper ref={resultsRef}>
+          {groupMatrix?.map((row) => (
+            <Column key={`${row[0].id}-${row[0].id}`}>
+              {row.map((group) => {
                 return (
                   <ReflectionGroup
-                    key={reflectionGroup.id}
-                    meeting={meetingData}
+                    key={group.id}
+                    meeting={meeting!}
                     phaseRef={phaseRef}
-                    reflectionGroup={reflectionGroup}
+                    reflectionGroup={group}
                   />
                 )
               })}

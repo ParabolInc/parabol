@@ -1,15 +1,14 @@
-import React from 'react'
+import React, {RefObject} from 'react'
 import styled from '@emotion/styled'
 import purpleLines from '../styles/theme/images/purpleLines.svg'
 import {PALETTE} from '../styles/paletteV3'
-import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 
 const EmptyState = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
   flexWrap: 'wrap',
-  height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`
+  height: 320
 })
 
 const MessageWrapper = styled('div')({
@@ -44,9 +43,14 @@ const Content = styled('div')({
   alignItems: 'center'
 })
 
-const SpotlightGroupsEmptyState = () => {
+interface Props {
+  resultsRef: RefObject<HTMLDivElement>
+}
+
+const SpotlightGroupsEmptyState = (props: Props) => {
+  const {resultsRef} = props
   return (
-    <EmptyState>
+    <EmptyState ref={resultsRef}>
       <Emoji>😔</Emoji>
       <Content>
         <Img src={purpleLines} />
