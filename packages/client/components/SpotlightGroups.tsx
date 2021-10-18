@@ -91,7 +91,6 @@ const SpotlightGroups = (props: Props) => {
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
-  console.log('🚀  ~ groupMatrix', groupMatrix)
   const isDesktop = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />

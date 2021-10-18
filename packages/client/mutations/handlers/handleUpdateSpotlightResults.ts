@@ -29,9 +29,10 @@ const handleUpdateSpotlightResults = (
     oldReflections?.length === 1 && oldReflections[0].getValue('id') === reflectionId
   const reflectionGroupId = reflectionGroup.getValue('id')
   const groupsIds = similarReflectionGroups.map((group) => group.getValue('id'))
-  const isNewGroupInSpotlight = groupsIds.includes(reflectionGroupId)
-  // added to a group in the spotlight. remove old reflection group
-  if (isOldGroupEmpty && isNewGroupInSpotlight) {
+  const isInSpotlight = groupsIds.includes(reflectionGroupId)
+  const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
+  // added to another group. Remove old reflection group
+  if (isOldGroupEmpty) {
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
@@ -39,24 +40,8 @@ const handleUpdateSpotlightResults = (
       }
     })
   }
-  // added to a group that doesn't exist in the Spotlight. remove old group & add new one
-  else if (isOldGroupEmpty && !isNewGroupInSpotlight) {
-    safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
-      storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
-        searchQuery: '' // TODO: add search query
-      }
-    })
-    // reflectionGroup.setValue(oldSortOrder, 'sortOrder')
-    addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
-      storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
-        searchQuery: '' // TODO: add search query
-      }
-    })
-  }
-  // ungrouping in the Spotlight created a new group
-  else if (reflectionsCount === 1) {
+  // ungrouping created a new group or added to a group in the kanban
+  else if ((reflectionsCount === 1 && wasInSpotlight) || (isOldGroupEmpty && !isInSpotlight)) {
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
