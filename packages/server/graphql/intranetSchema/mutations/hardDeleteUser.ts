@@ -94,6 +94,7 @@ const hardDeleteUser = {
       currentAgendaItemIds,
       retroReflectionIds,
       swapFacilitatorUpdates,
+      swapCreatedByUserUpdates,
       discussions
     ] = await Promise.all([
       r
@@ -128,6 +129,22 @@ const hardDeleteUser = {
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter((row) => row('facilitatorUserId').eq(r(userIdToDelete)))
+        .merge((meeting) => ({
+          otherTeamMember: r
+            .table('TeamMember')
+            .getAll(meeting('teamId'), {index: 'teamId'})
+            .filter((row) => row('userId').ne(r(userIdToDelete)))
+            .nth(0)
+            .getField('userId')
+            .default(null)
+        }))
+        .filter(r.row.hasFields('otherTeamMember'))
+        .pluck('id', 'otherTeamMember')
+        .run(),
+      r
+        .table('NewMeeting')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter((row) => row('createdBy').eq(r(userIdToDelete)))
         .merge((meeting) => ({
           otherTeamMember: r
             .table('TeamMember')
@@ -253,6 +270,14 @@ const hardDeleteUser = {
           .get(update('id'))
           .update({
             facilitatorUserId: (update('otherTeamMember') as unknown) as string
+          })
+      ),
+      swapCreatedByUser: r(swapCreatedByUserUpdates).forEach((update) =>
+        r
+          .table('NewMeeting')
+          .get(update('id'))
+          .update({
+            createdBy: (update('otherTeamMember') as unknown) as string
           })
       )
     }).run()
