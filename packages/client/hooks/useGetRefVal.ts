@@ -1,12 +1,11 @@
 import {RefObject, useLayoutEffect, useState} from 'react'
 import useResizeObserver from './useResizeObserver'
 
-const useGetRefVal = (ref: RefObject<HTMLDivElement>, value?) => {
-  const [height, setHeight] = useState(0)
-
+const useGetRefVal = <T extends keyof HTMLDivElement>(ref: RefObject<HTMLDivElement>, key: T) => {
+  const [height, setHeight] = useState<null | HTMLDivElement[T]>(null)
   const getVal = () => {
     const {current: el} = ref
-    const height = el?.[value || 'clientHeight']
+    const height = el?.[key]
     if (!height) return
     setHeight(height)
   }

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useRef} from 'react'
+import React, {Suspense, useRef} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DECELERATE, fadeUp} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth, ZIndex} from '../types/constEnums'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
@@ -14,7 +14,7 @@ import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import ResultsRoot from './ResultsRoot'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
-import useGetRefHeight from '../hooks/useGetRefHeight'
+import useGetRefVal from '../hooks/useGetRefVal'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
@@ -33,10 +33,9 @@ const Modal = styled('div')<{height: number | null}>(({height}) => ({
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
-    // if results are remotely ungrouped, SpotlightGroups increases in height
-    // to prevent the modal from changing height, use initial modal height
+    // if results are remotely ungrouped, SpotlightGroups increases in height.
+    // to prevent the modal height from changing, use initial modal height
     height: height || '100%',
-    maxHeight: '90vh',
     width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
 }))
@@ -45,7 +44,7 @@ const SourceSection = styled('div')({
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
-  height: `${SPOTLIGHT_TOP_SECTION_HEIGHT}px`,
+  height: SPOTLIGHT_TOP_SECTION_HEIGHT,
   justifyContent: 'space-between',
   padding: 16,
   position: 'relative',
@@ -67,13 +66,16 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceDestination = styled('div')<{sourceHeight: number}>(({sourceHeight}) => ({
-  height: sourceHeight
-}))
+const SourceDestination = styled('div')({
+  height: ElementHeight.REFLECTION_CARD_MAX
+})
 
-const SourceWrapper = styled('div')<{offsetTop?: number}>(({offsetTop}) => ({
+const SourceWrapper = styled('div')<{offsetTop: number | null}>(({offsetTop}) => ({
   position: 'absolute',
-  top: offsetTop,
+  display: 'flex',
+  alignItems: 'center',
+  height: ElementHeight.REFLECTION_CARD_MAX,
+  top: offsetTop || undefined,
   left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
 }))
@@ -139,17 +141,15 @@ interface Props {
   closeSpotlight: () => void
   flipRef: (instance: HTMLDivElement) => void
   meeting: GroupingKanban_meeting
-  sourceRef: RefObject<HTMLDivElement>
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, flipRef, meeting, sourceRef} = props
+  const {closeSpotlight, flipRef, meeting} = props
   const modalRef = useRef<HTMLDivElement>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
   const srcDestinationRef = useRef<HTMLDivElement>(null)
-  const offsetTop = useGetRefHeight(srcDestinationRef, 'offsetTop')
-  const sourceHeight = useGetRefHeight(sourceRef)
-  const modalRefHeight = useGetRefHeight(modalRef)
+  const offsetTop = useGetRefVal(srcDestinationRef, 'offsetTop')
+  const modalRefHeight = useGetRefVal(modalRef, 'clientHeight')
   const areResultsRendered = !!resultsRef.current?.clientHeight
   const modalHeight = areResultsRendered ? modalRefHeight : null
   if (!meeting) return null
@@ -171,7 +171,7 @@ const SpotlightModal = (props: Props) => {
               <CloseIcon>close</CloseIcon>
             </StyledCloseButton>
           </TopRow>
-          <SourceDestination sourceHeight={sourceHeight} ref={srcDestinationRef} />
+          <SourceDestination ref={srcDestinationRef} />
           <SearchWrapper>
             <Search>
               <StyledMenuItemIcon>
