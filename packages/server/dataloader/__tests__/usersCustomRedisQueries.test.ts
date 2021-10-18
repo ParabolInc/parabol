@@ -28,7 +28,7 @@ test('Result is mapped to correct id', async () => {
     })
   )
 
-  console.log(actualUsers.length)
+  console.log('Ran with #users:', actualUsers.length)
 
   expect(actualUsers).toEqual(expectedUsers)
 })
