@@ -11,7 +11,6 @@ import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 
 const SimilarGroups = styled('div')({
   width: '100%',
-  display: 'flex',
   padding: '40px 0px 24px',
   height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`
 })
@@ -26,7 +25,6 @@ const Scrollbar = styled('div')({
 
 const ColumnsWrapper = styled('div')({
   display: 'flex',
-  height: 'fit-content',
   justifyContent: 'center',
   width: '100%'
 })
@@ -91,7 +89,7 @@ const SpotlightGroups = (props: Props) => {
   const {meeting, similarReflectionGroups} = viewer
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
 
-  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
+  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
   return (
     <SimilarGroups>
       <Scrollbar>
