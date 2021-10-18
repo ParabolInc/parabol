@@ -29,13 +29,14 @@ const Modal = styled('div')<{height: number | null}>(({height}) => ({
   justifyContent: 'center',
   overflow: 'hidden',
   opacity: 0,
-  maxHeight: '90vh',
+  height: '90vh',
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
     // if results are remotely ungrouped, SpotlightGroups increases in height.
     // to prevent the modal height from changing, use initial modal height
     height: height || '100%',
+    maxHeight: '90vh',
     width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
 }))
