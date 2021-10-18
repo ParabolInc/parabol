@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {createFragmentContainer, useLazyLoadQuery} from 'react-relay'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCardLocalQuery} from '../../__generated__/DraggableReflectionCardLocalQuery.graphql'
@@ -79,6 +79,7 @@ const DraggableReflectionCard = (props: Props) => {
     swipeColumn,
     dataCy
   } = props
+
   const {id: meetingId, teamId, localStage, spotlightGroup} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing, reflectionGroupId, remoteDrag} = reflection
@@ -124,13 +125,22 @@ const DraggableReflectionCard = (props: Props) => {
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
+
+  // if spotlight was just opened and card is in the middle of dropping we let it drop into original position
+  const [isFinishingRemoteDrag, setIsFinishingDragging] = useState(
+    () => isDropping && isSpotlightOpen && !!remoteDrag
+  )
+  // if we card was finishing remote drag and it was dropped into the original position, don't do anything
+  useEffect(() => {
+    if (isFinishingRemoteDrag && !isDropping) {
+      setIsFinishingDragging(false)
+    }
+  }, [isFinishingRemoteDrag, isDropping])
+
   return (
     <DragWrapper
       ref={(c) => {
-        // if there's a remote drag going on, spotlight is open, and the card is dropping,
-        // don't set the reference to prevent changing the position
-        const isDroppingRemoteCardWhenSpotlightOpened = isSpotlightOpen && remoteDrag && isDropping
-        if (isDroppingRemoteCardWhenSpotlightOpened) {
+        if (isFinishingRemoteDrag) {
           return
         }
         // if the spotlight is closed, this card is the single source of truth
