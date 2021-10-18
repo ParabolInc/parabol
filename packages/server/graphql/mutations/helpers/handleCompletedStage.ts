@@ -37,10 +37,9 @@ const handleCompletedRetrospectiveStage = async (
           .run()
       ])
 
-      const {reflectionGroupMapping} = groupReflections(
-        reflections.slice(),
-        AUTO_GROUPING_THRESHOLD
-      )
+      const {reflectionGroupMapping} = groupReflections(reflections.slice(), {
+        groupingThreshold: AUTO_GROUPING_THRESHOLD
+      })
 
       const sortedReflectionGroups = reflectionGroups.slice().sort((groupA, groupB) => {
         const newGroupIdA = reflectionGroupMapping[groupA.id]

@@ -1,22 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useState} from 'react'
+import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
+import useFlip from '../hooks/useFlip'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
+import useModal from '../hooks/useModal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
-import useModal from '../hooks/useModal'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {useRef} from 'react'
-import useFlip from '../hooks/useFlip'
 import SpotlightRoot from './SpotlightRoot'
 
 interface Props {
@@ -40,7 +39,7 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, teamId, reflectionGroups, phases} = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases, spotlightReflection} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -64,7 +63,8 @@ const GroupingKanban = (props: Props) => {
     onCloseSpotlight()
   }
   const {closePortal, openPortal, modalPortal} = useModal({
-    onClose: closeSpotlight
+    onClose: closeSpotlight,
+    id: 'spotlight'
   })
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
@@ -135,7 +135,12 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightRoot closeSpotlight={closeSpotlight} meeting={meeting} flipRef={flipRef} />
+        <SpotlightRoot
+          closeSpotlight={closeSpotlight}
+          meetingId={meetingId}
+          flipRef={flipRef}
+          spotlightReflectionId={spotlightReflection?.id}
+        />
       )}
     </PortalProvider>
   )
@@ -145,7 +150,6 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
-      ...SpotlightRoot_meeting
       id
       teamId
       phases {
@@ -165,6 +169,9 @@ export default createFragmentContainer(GroupingKanban, {
           isViewerDragging
           isEditing
         }
+      }
+      spotlightReflection {
+        id
       }
     }
   `

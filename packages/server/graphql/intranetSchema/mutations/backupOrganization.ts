@@ -50,9 +50,6 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
     await client.query(`CREATE SCHEMA "orgBackup";`)
     await client.query(`CREATE TABLE "orgBackup"."PgMigrations" AS (SELECT * FROM "PgMigrations");`)
     await client.query(
-      `CREATE TABLE "orgBackup"."PgPostDeployMigrations" AS (SELECT * FROM "PgPostDeployMigrations");`
-    )
-    await client.query(
       `CREATE TABLE "orgBackup"."OrganizationUserAudit" AS (SELECT * FROM "OrganizationUserAudit" WHERE "orgId" = ANY ($1));`,
       [orgIds]
     )

@@ -1,19 +1,19 @@
-import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {RefObject, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useEffect, useRef} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useEditorState from '../../hooks/useEditorState'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
-import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
-import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
-import graphql from 'babel-plugin-relay/macro'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
-import getBBox from '../RetroReflectPhase/getBBox'
-import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
-import useEditorState from '../../hooks/useEditorState'
 import {keyframes} from '@emotion/core'
+import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
+import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
+import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
+import getBBox from '../RetroReflectPhase/getBBox'
+import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 
 const circleAnimation = (transform?: string) => keyframes`
   0%{
@@ -53,14 +53,8 @@ const HeaderModal = styled('div')({
   left: 0,
   top: 0,
   pointerEvents: 'none',
-  width: ElementWidth.REFLECTION_CARD,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+  width: ElementWidth.REFLECTION_CARD
 })
-
-interface Props {
-  style: React.CSSProperties
-  reflection: RemoteReflection_reflection
-}
 
 const windowDims = {
   innerWidth: window.innerWidth,
@@ -136,9 +130,15 @@ const getStyle = (
   style: React.CSSProperties
 ) => {
   if (isSpotlight) return {transform: style.transform}
-  if (isDropping || !remoteDrag?.clientX) return {newStyle: style}
+  if (isDropping || !remoteDrag?.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
-  return {newStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
+  const {zIndex} = style
+  return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
+}
+
+interface Props {
+  style: React.CSSProperties
+  reflection: RemoteReflection_reflection
 }
 
 const RemoteReflection = (props: Props) => {
@@ -162,18 +162,17 @@ const RemoteReflection = (props: Props) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
-
   if (!remoteDrag) return null
   const {dragUserId, dragUserName, isSpotlight} = remoteDrag
 
-  const {newStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
+  const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
 
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
       <RemoteReflectionModal
         ref={ref}
-        style={newStyle}
+        style={nextStyle}
         isDropping={isDropping}
         isSpotlight={isSpotlight}
         transform={transform}
@@ -203,6 +202,7 @@ export default createFragmentContainer(RemoteReflection, {
       id
       content
       isDropping
+      reflectionGroupId
       remoteDrag {
         dragUserId
         dragUserName

@@ -53,6 +53,7 @@ test('Draft enterprise invoice payload', async () => {
                 node {
                   id
                   user {
+                    id
                     email
                   }
                 }
@@ -72,17 +73,24 @@ test('Draft enterprise invoice payload', async () => {
 
   expect(invoice).toMatchObject({
     data: {
-      draftEnterpriseInvoice: null
-      // stripe id is invalid
-      /*
-      {
+      draftEnterpriseInvoice: {
         error: null,
         organization: {
           id: orgId,
-
+          organizationUsers: {
+            edges: [
+              {
+                node: {
+                  user: {
+                    id: userId,
+                    email
+                  }
+                }
+              }
+            ]
+          }
         }
       }
-      */
     }
   })
 })
