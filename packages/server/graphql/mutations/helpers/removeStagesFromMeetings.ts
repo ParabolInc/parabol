@@ -10,7 +10,7 @@ const removeStagesFromMeetings = async (
   filterFn: (stage: any) => boolean,
   teamId: string,
   dataLoader: DataLoaderWorker,
-  includeCompletedMeetings: boolean = false
+  includeCompletedMeetings = false
 ) => {
   const now = new Date()
   const r = await getRethink()
@@ -25,7 +25,7 @@ const removeStagesFromMeetings = async (
       const {id: meetingId, phases} = meeting
       phases.forEach((phase) => {
         // do this inside the loop since it's mutative
-        const {facilitatorStageId} = meeting
+        let {facilitatorStageId} = meeting
         const {stages} = phase
         for (let i = stages.length - 1; i >= 0; i--) {
           const stage = stages[i]
@@ -41,6 +41,7 @@ const removeStagesFromMeetings = async (
               nextStage.startAt = now
               nextStage.viewCount = nextStage.viewCount ? nextStage.viewCount + 1 : 1
               nextStage.isNavigable = true
+              facilitatorStageId = nextStage.id
             }
             const stageIdx = stages.indexOf(stage)
             stages.splice(stageIdx, 1)
