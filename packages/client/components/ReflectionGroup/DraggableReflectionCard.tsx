@@ -127,20 +127,20 @@ const DraggableReflectionCard = (props: Props) => {
   const handleDrag = isDragPhase ? onMouseDown : undefined
 
   // if spotlight was just opened and card is in the middle of dropping we let it drop into original position
-  const [isFinishingRemoteDrag, setIsFinishingDragging] = useState(
+  const [isFinishingRemoteDragging, setIsFinishingRemoteDragging] = useState(
     () => isDropping && isSpotlightOpen && !!remoteDrag
   )
   // if the card was finishing remote drag and it was dropped into the original position, let it behave normally
   useEffect(() => {
-    if (isFinishingRemoteDrag && !isDropping) {
-      setIsFinishingDragging(false)
+    if (isFinishingRemoteDragging && !isDropping) {
+      setIsFinishingRemoteDragging(false)
     }
-  }, [isFinishingRemoteDrag, isDropping])
+  }, [isFinishingRemoteDragging, isDropping])
 
   return (
     <DragWrapper
       ref={(c) => {
-        if (isFinishingRemoteDrag) {
+        if (isFinishingRemoteDragging) {
           return
         }
         // if the spotlight is closed, this card is the single source of truth
