@@ -130,7 +130,7 @@ const DraggableReflectionCard = (props: Props) => {
   const [isFinishingRemoteDrag, setIsFinishingDragging] = useState(
     () => isDropping && isSpotlightOpen && !!remoteDrag
   )
-  // if we card was finishing remote drag and it was dropped into the original position, don't do anything
+  // if the card was finishing remote drag and it was dropped into the original position, let it behave normally
   useEffect(() => {
     if (isFinishingRemoteDrag && !isDropping) {
       setIsFinishingDragging(false)
