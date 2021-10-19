@@ -62,7 +62,9 @@ const Task = new GraphQLObjectType<any, GQLContext>({
         if (integration?.service === 'jira') {
           const {accessUserId, cloudId, issueKey} = integration
           // this dataloader has the side effect of guaranteeing fresh estimates
-          await dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+          await dataLoader
+            .get('jiraIssue')
+            .load({teamId, userId: accessUserId, cloudId, issueKey, taskId})
         }
         return dataLoader.get('latestTaskEstimates').load(taskId)
       }
@@ -76,13 +78,15 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     integration: {
       type: TaskIntegration,
       description: 'The reference to the single source of truth for this task',
-      resolve: async ({integration, teamId}: DBTask, _args, context, info) => {
+      resolve: async ({integration, teamId, id: taskId}: DBTask, _args, context, info) => {
         const {dataLoader} = context
         if (!integration) return null
         const {accessUserId} = integration
         if (integration.service === 'jira') {
           const {cloudId, issueKey} = integration
-          return dataLoader.get('jiraIssue').load({teamId, userId: accessUserId, cloudId, issueKey})
+          return dataLoader
+            .get('jiraIssue')
+            .load({teamId, userId: accessUserId, cloudId, issueKey, taskId})
         } else if (integration.service === 'github') {
           const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
           if (!githubAuth) return null

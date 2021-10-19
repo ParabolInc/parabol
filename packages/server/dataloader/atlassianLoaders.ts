@@ -127,7 +127,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
           // update our records
           await Promise.all(
             estimates.map((estimate) => {
-              const {jiraFieldId, label, discussionId, dimensionName, taskId, userId} = estimate
+              const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
               const freshEstimate = String(fields[jiraFieldId])
               if (freshEstimate === label) return undefined
               // mutate current dataloader
@@ -138,7 +138,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
                 discussionId,
                 jiraFieldId,
                 label: freshEstimate,
-                name: dimensionName,
+                name,
                 meetingId: null,
                 stageId: null,
                 taskId,
