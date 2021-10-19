@@ -87,7 +87,7 @@ const ReflectionGroup = (props: Props) => {
   const isSpotlightSource = !!sourceReflectionIds?.length
   const visibleReflections = isSpotlightSource
     ? reflections.filter(({id}) => sourceReflectionIds?.includes(id))
-    : reflections
+    : reflections.slice()
   const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight

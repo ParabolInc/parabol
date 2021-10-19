@@ -39,18 +39,18 @@ const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
 })
 
-const SearchIcon = styled(IconLabel)({
+const SpotlightIcon = styled(IconLabel)({
   color: PALETTE.SLATE_700
 })
 
-const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) => ({
+const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotlight}) => ({
   bottom: 2,
   color: PALETTE.SLATE_700,
   cursor: 'pointer',
   opacity: 1,
   position: 'absolute',
   right: 2,
-  visibility: showSearch ? 'visible' : 'hidden',
+  visibility: showSpotlight ? 'visible' : 'hidden',
   zIndex: ZIndex.TOOLTIP,
   ':hover': {
     backgroundColor: PALETTE.SLATE_200
@@ -240,12 +240,11 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const showSpotlight = !__PRODUCTION__
-  const showSearch =
+  const showSpotlight =
+    !__PRODUCTION__ && // TODO: remove this line to share Spotlight with the world
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&
-    showSpotlight &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
   return (
@@ -282,14 +281,14 @@ const ReflectionCard = (props: Props) => {
       )}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-      <SearchButton
+      <SpotlightButton
         onClick={handleClickSpotlight}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
-        showSearch={showSearch}
+        showSpotlight={showSpotlight}
       >
-        <SearchIcon ref={tooltipRef} icon='search' />
-      </SearchButton>
+        <SpotlightIcon ref={tooltipRef} icon='search' />
+      </SpotlightButton>
       {tooltipPortal('Find similar')}
     </ReflectionCardRoot>
   )
