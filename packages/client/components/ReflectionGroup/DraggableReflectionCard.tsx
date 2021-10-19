@@ -105,10 +105,12 @@ const DraggableReflectionCard = (props: Props) => {
   )
   const {viewer} = spotlightSearchResults
   const {similarReflectionGroups} = viewer
-  const reflectionGroupIdsInSpotlight = similarReflectionGroups
+  const isSpotlightSource = spotlightGroupId === reflectionGroupId
+  const resultGroupIdsInSpotlight = similarReflectionGroups
     ? similarReflectionGroups.map((group) => group.id)
     : []
-  const isReflectionGroupIdInSpotlight = reflectionGroupIdsInSpotlight.includes(reflectionGroupId)
+  const isReflectionGroupIdInSpotlight =
+    resultGroupIdsInSpotlight.includes(reflectionGroupId) || isSpotlightSource
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,
     drag,
@@ -126,8 +128,8 @@ const DraggableReflectionCard = (props: Props) => {
     <DragWrapper
       ref={(c) => {
         // if the spotlight is closed, this card is the single source of truth
-        // Else, if it is not in the spotlight search results
-        // Else, if this is the instance in the search results
+        // Else, if it is not in the spotlight source or search results
+        // Else, if this is the instance in the source or search results
         const isPriorityCard = !isSpotlightOpen || !isReflectionGroupIdInSpotlight || isInSpotlight
         if (isPriorityCard) {
           drag.ref = c
