@@ -66,7 +66,7 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
-  spotlightReflectionIds?: string[] | null
+  sourceReflectionIds?: string[] | null
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -77,16 +77,16 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroup,
     swipeColumn,
     dataCy,
-    spotlightReflectionIds
+    sourceReflectionIds
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
-  const isSpotlightSource = !!spotlightReflectionIds?.length
+  const isSpotlightSource = !!sourceReflectionIds?.length
   const visibleReflections = isSpotlightSource
-    ? reflections.filter(({id}) => spotlightReflectionIds?.includes(id))
+    ? reflections.filter(({id}) => sourceReflectionIds?.includes(id))
     : reflections
   const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = !openSpotlight

@@ -157,12 +157,23 @@ const SpotlightModal = (props: Props) => {
   const {id: meetingId, spotlightGroup} = meeting
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
+  const sourceReflectionIdsRef = useRef<string[] | null>(null)
 
   useEffect(() => {
-    const sourceGroupIds = sourceReflections?.map(({reflectionGroupId}) => reflectionGroupId)
-    if (!sourceGroupIds || !spotlightGroupId) return
+    if (!spotlightGroup) return
+    const firstReflectionId = sourceReflections && sourceReflections[0]?.id
     let timeout: number | undefined
-    if (!sourceGroupIds?.includes(spotlightGroupId)) {
+    const {current: ids} = sourceReflectionIdsRef
+    if (!ids && firstReflectionId) {
+      // when Spotlight opens, only show the last reflection in the source group
+      sourceReflectionIdsRef.current = [firstReflectionId]
+    }
+    // TODO: uncomment for groups -> source issue
+    // else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
+    // if results are dragged onto the source, add result reflections to source group
+    //   spotlightReflectionIds.current = [...ids, firstReflectionId]
+    // }
+    else if (!firstReflectionId || !ids?.includes(firstReflectionId)) {
       timeout = window.setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
@@ -218,6 +229,7 @@ const SpotlightModal = (props: Props) => {
               phaseRef={phaseRef}
               reflectionGroup={spotlightGroup}
               meeting={meeting}
+              sourceReflectionIds={sourceReflectionIdsRef.current}
             />
           )}
         </SourceWrapper>

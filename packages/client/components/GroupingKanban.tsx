@@ -170,7 +170,7 @@ export default createFragmentContainer(GroupingKanban, {
         ...ReflectionGroup_reflectionGroup
         id
         reflections {
-          reflectionGroupId
+          id
         }
       }
     }
