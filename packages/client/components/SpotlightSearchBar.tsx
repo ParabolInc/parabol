@@ -3,13 +3,13 @@ import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import PlainButton from './PlainButton/PlainButton'
 import Icon from './Icon'
 import {ElementWidth, Spotlight} from '../types/constEnums'
 import Atmosphere from '../Atmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import React, {useRef} from 'react'
+import SpotlightSearchTopBar from './SpotlightSearchTopBar'
 
 const SelectedReflectionSection = styled('div')({
   alignItems: 'flex-start',
@@ -22,20 +22,6 @@ const SelectedReflectionSection = styled('div')({
   padding: 16,
   position: 'relative',
   width: '100%'
-})
-
-const Title = styled('div')({
-  color: PALETTE.SLATE_800,
-  fontSize: 16,
-  fontWeight: 600,
-  textAlign: 'center'
-})
-
-const TopRow = styled('div')({
-  width: `calc(100% - 48px)`, // 48px accounts for icon size
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
 })
 
 const SearchItem = styled(MenuItemLabel)({
@@ -56,22 +42,6 @@ const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD24
 })
-
-const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  position: 'absolute',
-  right: 16
-})
-
-const CloseIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  fontSize: ICON_SIZE.MD24,
-  '&:hover,:focus': {
-    color: PALETTE.SLATE_800
-  }
-})
-
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -122,12 +92,7 @@ const SpotlightSearchBar = (props: Props) => {
 
   return (
       <SelectedReflectionSection>
-        <TopRow>
-          <Title>Find cards with similar reflections</Title>
-          <StyledCloseButton onClick={closeSpotlight}>
-            <CloseIcon>close</CloseIcon>
-          </StyledCloseButton>
-        </TopRow>
+        <SpotlightSearchTopBar closeSpotlight={closeSpotlight} />
         <SearchItem>
           <StyledMenuItemIcon>
             <SearchIcon>search</SearchIcon>
