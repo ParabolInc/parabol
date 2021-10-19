@@ -33,7 +33,6 @@ const makeDragState = () => ({
   wasDropping: false,
   targets: [] as TargetBBox[],
   prevTargetId: '',
-  spotlightGroupId: null as null | string,
   isBroadcasting: false,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
@@ -87,7 +86,6 @@ const DraggableReflectionCard = (props: Props) => {
   const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  drag.spotlightGroupId = spotlightGroup?.id || null
   const spotlightSearchResults = useLazyLoadQuery<DraggableReflectionCardLocalQuery>(
     graphql`
       query DraggableReflectionCardLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {

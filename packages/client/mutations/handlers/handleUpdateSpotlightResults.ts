@@ -30,7 +30,8 @@ const handleUpdateSpotlightResults = (
   const reflectionGroupId = reflectionGroup.getValue('id')
   const groupsIds = similarReflectionGroups.map((group) => group.getValue('id'))
   const isInSpotlight = groupsIds.includes(reflectionGroupId)
-  const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
+  const wasInSpotlight =
+    groupsIds.includes(oldReflectionGroupId) || spotlightGroupId === oldReflectionGroupId
   // added to another group. Remove old reflection group
   if (isOldGroupEmpty) {
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {

@@ -91,6 +91,10 @@ const ReflectionGroup = (props: Props) => {
   const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
+  const isDraggingSource = spotlightGroup?.reflections.find(
+    ({isViewerDragging}) => isViewerDragging
+  )
+  const disableDrop = (isSpotlightOpen && !isDraggingSource) || isBehindSpotlight
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -182,7 +186,7 @@ const ReflectionGroup = (props: Props) => {
         />
       )}
       <Group
-        {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
+        {...(disableDrop ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         data-cy={dataCy}
@@ -245,6 +249,9 @@ export default createFragmentContainer(ReflectionGroup, {
       isViewerDragInProgress
       spotlightGroup {
         id
+        reflections {
+          isViewerDragging
+        }
       }
     }
   `,
