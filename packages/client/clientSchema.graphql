@@ -57,7 +57,6 @@ extend type User {
   clientClockOffset: Int
   dashSearch: String
   pageName: String
-  maxSpotlightColumns: Int
 }
 
 extend type Task {
@@ -67,7 +66,6 @@ extend type Task {
 extend type RetroReflectionGroup {
   isExpanded: Boolean
   subColumnIdx: Int
-  spotlightColumnIdx: Int
 }
 
 extend type RetroReflection {

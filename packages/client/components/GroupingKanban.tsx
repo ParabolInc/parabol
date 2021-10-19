@@ -15,7 +15,7 @@ import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
-import SpotlightRoot from './SpotlightRoot'
+import SpotlightModal from './SpotlightModal'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -38,13 +38,13 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases, spotlightGroup} = meeting
+  const {id: meetingId, reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
-  const spotlightGroupRef = useRef<HTMLDivElement | null>(null)
+  const sourceRef = useRef<HTMLDivElement | null>(null)
   const [flipRef, flipReverse] = useFlip({
-    firstRef: spotlightGroupRef
+    firstRef: sourceRef
   })
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
@@ -52,7 +52,7 @@ const GroupingKanban = (props: Props) => {
   const closeSpotlight = () => {
     closePortal()
     flipReverse()
-    spotlightGroupRef.current = null
+    sourceRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -93,7 +93,7 @@ const GroupingKanban = (props: Props) => {
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
   const openSpotlight = (reflectionGroupId: string, reflectionRef: RefObject<HTMLDivElement>) => {
-    spotlightGroupRef.current = reflectionRef.current
+    sourceRef.current = reflectionRef.current
     openPortal()
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get<GroupingKanban_meeting>(meetingId)
@@ -131,11 +131,11 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightRoot
+        <SpotlightModal
           closeSpotlight={closeSpotlight}
-          meetingId={meetingId}
           flipRef={flipRef}
-          spotlightGroupId={spotlightGroup?.id}
+          meeting={meeting}
+          phaseRef={phaseRef}
         />
       )}
     </PortalProvider>
@@ -146,6 +146,7 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
+      ...ReflectionGroup_meeting
       id
       phases {
         ... on ReflectPhase {
@@ -166,7 +167,11 @@ export default createFragmentContainer(GroupingKanban, {
         }
       }
       spotlightGroup {
+        ...ReflectionGroup_reflectionGroup
         id
+        reflections {
+          id
+        }
       }
     }
   `
