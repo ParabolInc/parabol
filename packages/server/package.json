@@ -143,8 +143,5 @@
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v19.3.0"
-  },
-  "resolutions": {
-    "minipass": "2.7.0"
   }
 }
