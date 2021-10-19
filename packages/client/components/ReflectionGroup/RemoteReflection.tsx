@@ -17,13 +17,15 @@ import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 
 const circleAnimation = (transform?: string) => keyframes`
   0%{
-    transform:rotate(0deg)
+    transform:translate(5px)
+              rotate(0deg)
               translate(-5px)
               rotate(0deg)
               ${transform ?? ''}
   }
   100%{
-    transform:rotate(360deg)
+    transform:translate(5px)
+              rotate(360deg)
               translate(-5px)
               rotate(-360deg)
               ${transform ?? ''}
@@ -44,7 +46,8 @@ const RemoteReflectionModal = styled('div')<{
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
   }ms ${BezierCurve.DECELERATE}`,
   transform,
-  animation: isSpotlight ? `${circleAnimation(transform)} 3s ease infinite;` : undefined,
+  animation:
+    isSpotlight && !isDropping ? `${circleAnimation(transform)} 3s ease infinite;` : undefined,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
@@ -129,7 +132,7 @@ const getStyle = (
   isSpotlight: boolean,
   style: React.CSSProperties
 ) => {
-  if (isSpotlight) return {transform: style.transform}
+  if (isSpotlight && !isDropping) return {transform: style.transform}
   if (isDropping || !remoteDrag?.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
   const {zIndex} = style
