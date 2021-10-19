@@ -50,9 +50,13 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
             const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken} = manager
+            const {accessToken, refreshToken: newRefreshToken} = manager
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
+
+            if (newRefreshToken) {
+              atlassianAuth.refreshToken = newRefreshToken
+            }
 
             await upsertAtlassianAuth(atlassianAuth)
           }
