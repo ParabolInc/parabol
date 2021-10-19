@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useFlip from '../hooks/useFlip'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -39,33 +38,36 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, teamId, reflectionGroups, phases, spotlightReflection} = meeting
+  const {id: meetingId, reflectionGroups, phases, spotlightReflection} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
-  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meetingId, teamId)
+  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting)
   const [flipRef, flipReverse] = useFlip({
     firstRef: spotlightReflectionRef
   })
   const [callbackRef, columnsRef] = useCallbackRef()
-  const atmosphere = useAtmosphere()
   useHideBodyScroll()
   const closeSpotlight = () => {
-    closePortal()
-    flipReverse()
-    spotlightReflectionRef.current = null
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      if (!meeting) return
-      meeting.setValue(null, 'spotlightReflection')
-    })
     onCloseSpotlight()
   }
   const {closePortal, openPortal, modalPortal} = useModal({
     onClose: closeSpotlight,
     id: 'spotlight'
   })
+
+  // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
+  React.useEffect(() => {
+    if (spotlightReflection) {
+      openPortal()
+    } else {
+      closePortal()
+      flipReverse()
+      spotlightReflectionRef.current = null
+    }
+  }, [!spotlightReflection])
+
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -97,13 +99,6 @@ const GroupingKanban = (props: Props) => {
 
   const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     spotlightReflectionRef.current = reflectionRef.current
-    openPortal()
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      const reflection = store.get(reflectionId)
-      if (!reflection || !meeting) return
-      meeting.setLinkedRecord(reflection, 'spotlightReflection')
-    })
     onOpenSpotlight(reflectionId)
   }
 
