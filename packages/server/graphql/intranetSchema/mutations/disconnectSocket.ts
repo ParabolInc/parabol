@@ -22,7 +22,7 @@ export default {
 
     // RESOLUTION
     const user = await db.read('User', userId)
-    const {tms} = user
+    const tms = user?.tms ?? []
     const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
     const parsedUserPresence = userPresence.map((socket) => JSON.parse(socket)) as UserPresence[]
     const disconnectingSocket = parsedUserPresence.find((socket) => socket.socketId === socketId)

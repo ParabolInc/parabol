@@ -120,7 +120,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
 
   const newUsers = await db.readMany('User', newToOrgUserIds)
 
-  const inactiveUserIds = newUsers.filter((user) => user.inactive).map(({id}) => id)
+  const inactiveUserIds = newUsers.filter((user) => user && user.inactive).map((user) => user!.id)
   inactiveUserIds.map((newInactiveUserId) => {
     return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
   })
