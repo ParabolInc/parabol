@@ -14,6 +14,8 @@ import removeAgendaItemResolver from '../../mutations/helpers/removeAgendaItem'
 import EstimateStage from '../../../database/types/EstimateStage'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import blacklistJWT from '../../../utils/blacklistJWT'
+import {toEpochSeconds} from '../../../utils/epochTime'
 
 const hardDeleteUser = {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -303,6 +305,7 @@ const hardDeleteUser = {
     // User needs to be deleted after Poll
     await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])
 
+    await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))
     return {}
   }
 }
