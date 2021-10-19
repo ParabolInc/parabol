@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useRef} from 'react'
+import React, {RefObject, Suspense} from 'react'
 import {Spotlight} from '../types/constEnums'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SpotlightGroups from './SpotlightGroups'
@@ -19,10 +19,11 @@ const SimilarGroups = styled('div')({
 
 interface Props {
   queryRef: PreloadedQuery<SpotlightResultsRootQuery>
+  phaseRef: RefObject<HTMLDivElement>
 }
 
 const SpotlightResultsRoot = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef, phaseRef} = props
   const data = usePreloadedQuery<SpotlightResultsRootQuery>(
     graphql`
       query SpotlightResultsRootQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
@@ -42,19 +43,16 @@ const SpotlightResultsRoot = (props: Props) => {
 
   const {viewer} = data
   const {meeting} = viewer
-  const phaseRef = useRef(null)
 
   if (!meeting) return null
   return (
-    <>
-      <SimilarGroups>
-        <Suspense
-          fallback={<LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />}
-        >
-          <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
-        </Suspense>
-      </SimilarGroups>
-    </>
+    <SimilarGroups>
+      <Suspense
+        fallback={<LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />}
+      >
+        <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
+      </Suspense>
+    </SimilarGroups>
   )
 }
 

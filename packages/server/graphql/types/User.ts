@@ -460,14 +460,14 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           return standardError(new Error('Not on team'), {userId})
         }
 
-        if (searchQuery && searchQuery.trim() !== '') {
+        if (searchQuery.trim() !== '') {
           const matchedReflections = reflections.filter(({plaintextContent}) =>
             plaintextContent.toLowerCase().match(searchQuery.toLowerCase())
           )
           const relatedReflections = matchedReflections.filter(({id}) => id != reflectionId)
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
-          ].slice(0, 10)
+          ].slice(0, MAX_RESULT_GROUP_SIZE)
           return r
             .table('RetroReflectionGroup')
             .getAll(r.args(Array.from(relatedGroupIds)), {index: 'id'})

@@ -55,7 +55,7 @@ const SpotlightModal = (props: Props) => {
       <SpotlightSearchBar closeSpotlight={closeSpotlight} meetingId={meetingId} spotlightSearch={spotlightSearch} />
       <Suspense fallback={''}>
           {queryRef && (
-            <SpotlightResultsRoot queryRef={queryRef}/>
+            <SpotlightResultsRoot queryRef={queryRef} phaseRef={phaseRef} />
           )}
       </Suspense>
       <SpotlightSourceReflectionCard meeting={meeting} flipRef={flipRef} />
