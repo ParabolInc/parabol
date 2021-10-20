@@ -19,8 +19,10 @@ import useGetRefVal from '../hooks/useGetRefVal'
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
 
-const Modal = styled('div')<{height: number | null}>(({height}) => ({
-  animation: height ? `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards` : undefined,
+const Modal = styled('div')<{isLoadingResults: boolean}>(({isLoadingResults}) => ({
+  animation: isLoadingResults
+    ? undefined
+    : `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
   backgroundColor: `${PALETTE.WHITE}`,
   borderRadius: 8,
   boxShadow: Elevation.Z8,
@@ -33,9 +35,7 @@ const Modal = styled('div')<{height: number | null}>(({height}) => ({
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
-    // if results are remotely ungrouped, SpotlightGroups increases in height.
-    // to prevent the modal height from changing, use initial modal height
-    height: height || '100%',
+    height: '100%',
     maxHeight: '90vh',
     width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
@@ -150,10 +150,7 @@ const SpotlightModal = (props: Props) => {
   const resultsRef = useRef<HTMLDivElement>(null)
   const srcDestinationRef = useRef<HTMLDivElement>(null)
   const offsetTop = useGetRefVal(srcDestinationRef, 'offsetTop')
-  const modalRefHeight = useGetRefVal(modalRef, 'clientHeight')
-  const areResultsRendered = !!resultsRef.current?.clientHeight
-  const modalHeight = areResultsRendered ? modalRefHeight : null
-  if (!meeting) return null
+  const isLoadingResults = !resultsRef.current?.clientHeight
   const {id: meetingId, spotlightReflection} = meeting
   const spotlightReflectionId = spotlightReflection?.id
 
@@ -164,7 +161,7 @@ const SpotlightModal = (props: Props) => {
   }
   return (
     <>
-      <Modal ref={modalRef} height={modalHeight}>
+      <Modal isLoadingResults={isLoadingResults}>
         <SourceSection>
           <TopRow>
             <Title>Find cards with similar reflections</Title>
@@ -198,7 +195,7 @@ const SpotlightModal = (props: Props) => {
           />
         </Suspense>
       </Modal>
-      {areResultsRendered && (
+      {!isLoadingResults && (
         <SourceWrapper ref={flipRef} offsetTop={offsetTop}>
           {spotlightReflection && (
             <DraggableReflectionCard
