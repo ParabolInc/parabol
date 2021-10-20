@@ -26,7 +26,6 @@ distributed organization. We publish our company's [history and business metrics
 | Client Cache           | [Relay](https://facebook.github.io/relay/)                     |
 | UI Framework           | [React](https://facebook.github.io/react/)                     |
 | Styling                | [Emotion](https://emotion.sh/)                                 |
-| Integration Testing    | [Cypress](https://cypress.io)                                  |
 
 ## Setup
 
@@ -48,9 +47,7 @@ $ yarn db:start
 $ yarn dev
 ```
 
-
 By default, the app will run at: http://localhost:3000/
-
 
 If `yarn db:start` failed and `localhost:5050` isn't working, a docker
 container, volume or image may be corrupted and need to be pruned.

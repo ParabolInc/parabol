@@ -1,4 +1,3 @@
-
 const MeetingMemberId = {
   join: (meetingId: string, userId: string) => `${userId}::${meetingId}`,
   split: (id: string) => {

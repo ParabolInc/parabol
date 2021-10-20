@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "esModuleInterop": true,
+    // "noImplicitAny": true,
     "baseUrl": "../",
     "paths": {
       "server/*": [
@@ -19,7 +20,9 @@
       "dom"
     ],
     "types": [
-      "node"
+      "node",
+      "jest",
+      "jest-extended"
     ],
   },
   "exclude": [

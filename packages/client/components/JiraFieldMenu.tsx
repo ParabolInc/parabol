@@ -17,10 +17,11 @@ interface Props {
   viewer: JiraFieldMenu_viewer | null
   error: Error | null
   stage: JiraFieldMenu_stage
+  submitScore(): void
 }
 
 const JiraFieldMenu = (props: Props) => {
-  const {menuProps, viewer, stage} = props
+  const {menuProps, viewer, stage, submitScore} = props
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
   const {meetingId, dimensionRef, serviceField, task} = stage
@@ -55,13 +56,22 @@ const JiraFieldMenu = (props: Props) => {
   }
 
   const handleClick = (fieldName: string) => () => {
-    UpdateJiraDimensionFieldMutation(atmosphere, {
-      dimensionName,
-      fieldName,
-      meetingId,
-      cloudId,
-      projectKey
-    })
+    UpdateJiraDimensionFieldMutation(
+      atmosphere,
+      {
+        dimensionName,
+        fieldName,
+        meetingId,
+        cloudId,
+        projectKey
+      },
+      {
+        onCompleted: submitScore,
+        onError: () => {
+          /* noop */
+        }
+      }
+    )
     closePortal()
   }
   return (

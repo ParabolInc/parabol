@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {DiscriminateProxy} from '../types/generics'
-import {SimpleMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {GitHubFieldMenu_stage} from '../__generated__/GitHubFieldMenu_stage.graphql'
 import {UpdateGitHubDimensionFieldMutation as TUpdateGitHubDimensionFieldMutation} from '../__generated__/UpdateGitHubDimensionFieldMutation.graphql'
@@ -46,9 +46,10 @@ const mutation = graphql`
   }
 `
 
-const UpdateGitHubDimensionFieldMutation: SimpleMutation<TUpdateGitHubDimensionFieldMutation> = (
+const UpdateGitHubDimensionFieldMutation: StandardMutation<TUpdateGitHubDimensionFieldMutation> = (
   atmosphere,
-  variables
+  variables,
+  {onCompleted, onError}
 ) => {
   return commitMutation<TUpdateGitHubDimensionFieldMutation>(atmosphere, {
     mutation,
@@ -67,6 +68,7 @@ const UpdateGitHubDimensionFieldMutation: SimpleMutation<TUpdateGitHubDimensionF
         if (dimensionRefName !== dimensionName) return
         const task = stage.getLinkedRecord('task')
         const _integration = task.getLinkedRecord('integration')
+        if (_integration.getType() !== '_xGitHubIssue') return
         const integration = _integration as DiscriminateProxy<typeof _integration, '_xGitHubIssue'>
         const repository = integration.getLinkedRecord('repository')
         if (repository.getValue('nameWithOwner') !== nameWithOwner) return
@@ -76,7 +78,9 @@ const UpdateGitHubDimensionFieldMutation: SimpleMutation<TUpdateGitHubDimensionF
         })
         stage.setLinkedRecord(nextServiceField, 'serviceField')
       })
-    }
+    },
+    onCompleted,
+    onError
   })
 }
 

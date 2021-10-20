@@ -1,21 +1,30 @@
-import getRethink from '../../../../database/rethinkDriver'
+import getPg from '../../../../postgres/getPg'
 
-type FilterField = 'createdAt' | 'lastSeenAt'
+const filterFields = ['createdAt', 'lastSeenAt'] as const
+type FilterField = typeof filterFields[number]
 
 const authCount = async (
   after: Date | null | undefined,
-  isActive: boolean | null | undefined,
+  countOnlyActive: boolean | null | undefined,
   filterField: FilterField
 ) => {
-  const r = await getRethink()
-  const activeFilter = isActive ? {inactive: false} : {}
-  const afterFilter = after ? (row) => row(filterField).ge(after) : {}
-  return r
-    .table('User')
-    .filter(afterFilter)
-    .filter(activeFilter)
-    .count()
-    .run()
+  // This function is only used internally, but that might change
+  if (!filterFields.includes(filterField)) throw new Error('Possible SQL injection')
+
+  const pg = getPg()
+
+  const count = after
+    ? await pg.query(
+        `SELECT count(*) FROM "User"
+         WHERE (NOT $1 OR inactive = FALSE)
+         AND "${filterField}" >= $2`,
+        [countOnlyActive ?? false, after]
+      )
+    : await pg.query('SELECT count(*) FROM "User" WHERE (NOT $1 OR inactive = FALSE)', [
+        countOnlyActive ?? false
+      ])
+
+  return count.rows[0].count as number
 }
 
 export default authCount

@@ -2,8 +2,11 @@
 // this allows redis to cache the results of arbitrarily complex rethinkdb queries
 
 import ms from 'ms'
+import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import getRethink from '../database/rethinkDriver'
+import IUser from '../postgres/types/IUser'
 
+// All results must be mapped to their ids!
 const customRedisQueries = {
   endTimesByTemplateId: async (templateIds: string[]) => {
     const r = await getRethink()
@@ -56,6 +59,10 @@ const customRedisQueries = {
     )
 
     return starterScales
+  },
+  User: async (ids: string[]) => {
+    const users = await getUsersByIds(ids)
+    return ids.map((id) => users.find((user) => user.id === id)) as IUser[]
   }
 } as const
 

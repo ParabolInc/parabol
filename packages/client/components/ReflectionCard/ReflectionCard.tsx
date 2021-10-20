@@ -33,6 +33,7 @@ import {Breakpoint, ZIndex} from '../../types/constEnums'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
+import isDemoRoute from '~/utils/isDemoRoute'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -71,11 +72,9 @@ const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
   phaseType: NewMeetingPhaseTypeEnum,
   stackCount: number | undefined,
-  phases: any | null,
-  inSpotlight: boolean
+  phases: any | null
 ) => {
   const {isViewerCreator, isEditing, id} = reflection
-  if (inSpotlight) return true
   if (phases && isPhaseComplete('group', phases)) return true
   if (!isViewerCreator || isTempId(id)) return true
   if (phaseType === 'reflect') return stackCount && stackCount > 1
@@ -90,7 +89,8 @@ const ReflectionCard = (props: Props) => {
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
   const spotlightReflectionId = meeting?.spotlightReflection?.id
-  const inSpotlight = reflectionId === spotlightReflectionId
+  const isSpotlighSource = reflectionId === spotlightReflectionId
+  const isSpotlightOpen = !!spotlightReflectionId
   const atmosphere = useAtmosphere()
   const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
@@ -190,13 +190,7 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = getReadOnly(
-    reflection,
-    phaseType as NewMeetingPhaseTypeEnum,
-    stackCount,
-    phases,
-    inSpotlight
-  )
+  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
   const onToggleReactji = (emojiId: string) => {
@@ -230,12 +224,13 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const showSpotlight = false
+  const showSpotlight = !__PRODUCTION__
   const showSearch =
     phaseType === 'group' &&
-    !inSpotlight &&
+    !isSpotlightOpen &&
     !isComplete &&
     showSpotlight &&
+    !isDemoRoute() &&
     (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
@@ -243,7 +238,7 @@ const ReflectionCard = (props: Props) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       ref={reflectionRef}
-      selectedForSpotlight={!!openSpotlight && inSpotlight}
+      selectedForSpotlight={!!openSpotlight && isSpotlighSource}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper

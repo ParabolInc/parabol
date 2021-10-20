@@ -23,14 +23,11 @@ export const enum BezierCurve {
 
 export const enum Breakpoint {
   INVOICE = 512,
-  INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 1024,
-  MEETING_FACILITATOR_BAR = 480,
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
-  WIDER_SCREEN = 1600,
   VOTE_PHASE = 800,
   FUZZY_TABLET = 700,
   BIG_DISPLAY = 1900
@@ -88,6 +85,8 @@ export const enum Duration {
 export const enum ElementWidth {
   CONTROL_BAR_BUTTON = 90,
   CONTROL_BAR_PADDING = 8,
+  DASHBOARD_AVATAR = 28,
+  DASHBOARD_AVATAR_OVERLAPPED = 20,
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6,
@@ -100,6 +99,7 @@ export const enum ElementWidth {
 }
 
 export const enum ElementHeight {
+  DASHBOARD_AVATAR = 28,
   MEETING_CARD_AVATARS = 32,
   REFLECTION_CARD = 44,
   REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
@@ -391,9 +391,9 @@ export const enum ZIndex {
   SIDEBAR = 16,
   SIDE_SHEET = 8,
   SNACKBAR = 24 /* snackbar is kind of dialog */,
-  SPOTLIGHT_MODAL = 25, // above the tooltip
   REFLECTION_IN_FLIGHT = 8,
-  REFLECTION_IN_FLIGHT_LOCAL = 26, // keep it above the dialog
+  REFLECTION_IN_FLIGHT_LOCAL = 28, // keep it above the dialog
+  REFLECTION_IN_FLIGHT_SPOTLIGHT = 26,
   TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
 }
 

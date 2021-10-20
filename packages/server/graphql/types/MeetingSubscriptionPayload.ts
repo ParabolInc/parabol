@@ -16,7 +16,6 @@ import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
 import {PokerResetDimensionSuccess} from './PokerResetDimensionPayload'
 import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
-import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
 import ResetRetroMeetingToGroupStagePayload from './ResetRetroMeetingToGroupStagePayload'
@@ -69,7 +68,6 @@ const types = [
   PokerRevealVotesSuccess,
   PokerResetDimensionSuccess,
   PokerAnnounceDeckHoverSuccess,
-  PokerSetFinalScoreSuccess,
   JoinMeetingSuccess,
   SetPokerSpectateSuccess,
   SetTaskEstimateSuccess
