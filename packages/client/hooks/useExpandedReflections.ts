@@ -1,7 +1,7 @@
 import useFlip from './useFlip'
 import {ElementWidth, Times} from '../types/constEnums'
 import useFlipDeal from './useFlipDeal'
-import usePortal, {PortalStatus} from './usePortal'
+import usePortal, {PortalId, PortalStatus} from './usePortal'
 import {MutableRefObject, RefObject, useEffect} from 'react'
 
 const shrinkGroupOnExpand = (groupEl: HTMLDivElement) => {
@@ -18,7 +18,8 @@ const useExpandedReflections = (
   groupRef: MutableRefObject<any>,
   stackRef: RefObject<HTMLDivElement>,
   count: number,
-  headerRef?: RefObject<HTMLDivElement>
+  headerRef?: RefObject<HTMLDivElement>,
+  portalParentId?: PortalId
 ) => {
   const offsetLeft = ElementWidth.REFLECTION_CARD_PADDING * 2
   const offsetTop = ElementWidth.REFLECTION_CARD_PADDING * 2
@@ -37,6 +38,8 @@ const useExpandedReflections = (
   const [modalHeaderRef, headerReverse] = useFlip({firstRef: headerRef, isGroup})
   const [setItemsRef, itemsReverse] = useFlipDeal(count)
   const {terminatePortal, openPortal, portal, portalStatus, setPortalStatus} = usePortal({
+    parentId: portalParentId,
+    id: 'expandedReflectionGroup',
     noClose: true
   })
   const collapse = () => {
