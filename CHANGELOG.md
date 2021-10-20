@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.33.0 2021-Oct-20
+
+### Fixed
+
+- Map users to corresponding id (#5524)
+
+### Added
+
+- Support Jira rotating refresh tokens (#5505)
+- Fix parabol estimates synced with jira (#5530)
+
 ## 6.32.0 2021-Oct-13
 
 ### Fixed
