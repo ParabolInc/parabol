@@ -63,11 +63,11 @@ export default {
       .run()
     const {
       autoGroupThreshold,
-      groupedReflections,
+      groupedReflectionsRes,
       groups,
       removedReflectionGroupIds,
       nextThresh
-    } = groupReflections(reflections, groupingThreshold)
+    } = groupReflections(reflections, {groupingThreshold})
     await r({
       inactivatedGroups: r
         .table('RetroReflectionGroup')
@@ -83,7 +83,7 @@ export default {
             updatedAt: now
           } as any)
       ),
-      reflections: r(groupedReflections).forEach((reflection) => {
+      reflections: r(groupedReflectionsRes).forEach((reflection) => {
         return r
           .table('RetroReflection')
           .get(reflection('id'))
@@ -104,7 +104,7 @@ export default {
     }).run()
 
     const reflectionGroupIds = groups.map(({id}) => id)
-    const reflectionIds = groupedReflections.map(({id}) => id)
+    const reflectionIds = groupedReflectionsRes.map(({reflectionId}) => reflectionId)
     const data = {meetingId, reflectionGroupIds, reflectionIds, removedReflectionGroupIds}
     publish(SubscriptionChannel.MEETING, meetingId, 'AutoGroupReflectionsPayload', data, subOptions)
     return data

@@ -114,7 +114,6 @@ export default class LocalCache<T extends keyof CacheType> {
     return this
   }
   async read<T extends keyof CacheType>(table: T, id: string) {
-    // return 42 as any as CacheType[T]
     if (this.hasReadDispatched) {
       this.hasReadDispatched = false
       this.fetches = []

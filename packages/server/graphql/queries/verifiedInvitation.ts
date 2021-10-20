@@ -5,7 +5,7 @@ import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import User from '../../database/types/User'
+import IUser from '../../postgres/types/IUser'
 import db from '../../db'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
@@ -16,7 +16,7 @@ import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 
 const resolveMx = promisify(dns.resolveMx, dns)
 
-const getIsGoogleProvider = async (user: User | null, email: string) => {
+const getIsGoogleProvider = async (user: IUser | null, email: string) => {
   const identities = user?.identities
   if (identities) {
     return !!identities.find((identity) => identity.type === AuthIdentityTypeEnum.GOOGLE)

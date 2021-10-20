@@ -14,6 +14,7 @@ import {fromEpochSeconds} from '../../utils/epochTime'
 import StripeManager from '../../utils/StripeManager'
 import {InvoiceStatusEnum} from '../../database/types/Invoice'
 import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
+import {getUsersByIds} from '../../postgres/queries/getUsersByIds'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -340,18 +341,17 @@ export default async function generateInvoice(
   }
   const paidAt = status === 'PAID' ? now : undefined
 
-  const {organization, billingLeaderEmails} = await r({
+  const {organization, billingLeaderIds} = await r({
     organization: (r.table('Organization').get(orgId) as unknown) as Organization,
-    billingLeaderEmails: (r
+    billingLeaderIds: (r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null, role: 'BILLING_LEADER'})
-      .coerceTo('array')('userId')
-      .do((userIds) => {
-        return r.table('User').getAll(r.args(userIds), {index: 'id'})('email')
-      })
-      .coerceTo('array') as unknown) as string[]
+      .coerceTo('array')('userId') as unknown) as string[]
   }).run()
+
+  const billingLeaders = await getUsersByIds(billingLeaderIds)
+  const billingLeaderEmails = billingLeaders.map((user) => user.email)
 
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null
 
