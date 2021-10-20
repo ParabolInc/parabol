@@ -23,7 +23,17 @@ const publishInternalGQL = async (options: Options) => {
   } catch (e) {
     const viewerId = getUserId(authToken)
     const error = e instanceof Error ? e : new Error('GQL executor failed to publish')
-    sendToSentry(error, {userId: viewerId})
+    if (error.message === 'TIMEOUT') {
+      sendToSentry(new Error('GQL executor took too long to respond'), {
+        userId: getUserId(authToken),
+        tags: {
+          authToken: JSON.stringify(authToken),
+          query: query || ''
+        }
+      })
+    } else {
+      sendToSentry(error, {userId: viewerId})
+    }
     return undefined
   }
 }
