@@ -1,15 +1,6 @@
+import {FixedLengthArray} from 'parabol-client/types/generics'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../../appOrigin'
-
-type Grow<T, A extends Array<T>> = ((x: T, ...xs: A) => void) extends (...a: infer X) => void
-  ? X
-  : never
-type GrowToSize<T, A extends Array<T>, N extends number> = {
-  0: A
-  1: GrowToSize<T, Grow<T, A>, N>
-}[A['length'] extends N ? 0 : 1]
-
-export type FixedLengthArray<T, N extends number> = GrowToSize<T, [], N>
 
 export interface ButtonSpec {
   label: string

@@ -91,7 +91,6 @@ const MattermostConfigConnection = (props: Props) => {
 
   const onBlur = (e: React.FocusEvent<HTMLInputElement>) => setDirtyField(e.target.name)
 
-  // does not show disabled when submitting because the temporary disabled mouse icon is ugly
   return (
     <MattermostPanelStyles>
       <ConnectionGroup>

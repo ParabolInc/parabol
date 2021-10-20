@@ -14,8 +14,6 @@ import SlackServerManager from '../../../utils/SlackServerManager'
 import appOrigin from '../../../appOrigin'
 import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
 
-// TODO:
-
 const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
   const r = await getRethink()
   const {slackNotification, slackAuth} = await r({
@@ -46,19 +44,14 @@ const processMeetingStageTimeLimits = async (
   // if slack, send slack
   // if mattermost, send mattermost
   // if no integrated notification services, send an in-app notification
-  console.log('starting job')
   const {meetingId} = job
-  console.log(`got meetingId ${meetingId}`)
   const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as Meeting
   const {teamId, facilitatorUserId} = meeting
-  console.log(`got teamId ${teamId}`)
-  console.log(`got facilitator ${facilitatorUserId}`)
   const {slackNotification, slackAuth} = await getSlackNotificationAndAuth(
     teamId,
     facilitatorUserId
   )
   const mattermostAuth = await dataLoader.get('mattermostAuthByTeamId').load(teamId)
-  console.log(`got mattermostAuth ${JSON.stringify(mattermostAuth)}`)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
   let sendViaSlack = false
@@ -71,8 +64,6 @@ const processMeetingStageTimeLimits = async (
     const res = await manager.postMessage(slackNotification.channelId, slackText)
     if (!res.ok) sendViaSlack = false
   }
-  console.log(`sendViaSlack ${sendViaSlack}`)
-  console.log(`sendViaMattermost ${sendViaMattermost}`)
 
   if (sendViaMattermost) {
     const res = notifyMattermostTimeLimitEnd(meetingId, teamId, dataLoader)
