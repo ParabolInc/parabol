@@ -3,23 +3,6 @@ import AtlassianManager, {RateLimitError} from 'parabol-client/utils/AtlassianMa
 import ms from 'ms'
 import jsonEqual from 'parabol-client/utils/jsonEqual'
 
-const mockFreshIssue = {
-  expand: 'renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations',
-  id: '10133',
-  self:
-    'https://api.atlassian.com/ex/jira/b8999f88-721c-49c7-aa0e-d60eeffc1eb6/rest/api/3/issue/10133',
-  key: 'DEV3-98',
-  renderedFields: {summary: null, description: '<p>​</p>'},
-  fields: {
-    summary: 'issue was edited and lazily fetched',
-    description: {version: 1, type: 'doc', content: []},
-    descriptionHTML: '<p>​</p>',
-    cloudId: 'b8999f88-721c-49c7-aa0e-d60eeffc1eb6',
-    issueKey: 'DEV3-98',
-    id: 'b8999f88-721c-49c7-aa0e-d60eeffc1eb6:DEV3-98'
-  }
-} as any
-
 const ISSUE_TTL_MS = ms('2d')
 const DEFAULT_RETRY_AFTER_SEC = 5
 
@@ -102,10 +85,10 @@ const lazilyGetIssueAndMaybePush = async (
     }
   } else {
     if (process.env.TEST_JIRA_FRESH_ISSUE_UPDATES_CACHE) {
-      mockFreshIssue.id = freshIssue.id
-      freshIssue = mockFreshIssue
+      freshIssue.fields.summary = 'issue was edited and lazily fetched'
     }
-    if (!jsonEqual(cachedIssue, freshIssue)) {
+    const issuesAreEqual = jsonEqual(cachedIssue, freshIssue)
+    if (!issuesAreEqual) {
       const redis = getRedis()
       const key = `jira:${cloudId}:${issueKey}:${JSON.stringify(extraFieldIds)}`
       await redis.set(key, JSON.stringify(freshIssue), 'PX', ISSUE_TTL_MS)
