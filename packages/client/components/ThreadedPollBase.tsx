@@ -77,7 +77,6 @@ interface Props {
   allowedThreadables: DiscussionThreadables[]
   poll: ThreadedPollBase_poll$key
   discussion: ThreadedPollBase_discussion$key
-  dataCy: string
 }
 
 const ThreadedPollBase = (props: Props) => {

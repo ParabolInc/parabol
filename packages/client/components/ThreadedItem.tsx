@@ -57,7 +57,6 @@ export const ThreadedItem = (props: Props) => {
     return (
       <ThreadedPollBase
         allowedThreadables={allowedThreadables}
-        dataCy={`poll`}
         poll={threadable}
         discussion={discussion}
       />
