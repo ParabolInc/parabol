@@ -39,7 +39,7 @@ interface Props {
   closeSpotlight: () => void
 }
 
-const SpotlightSearchTopBar = (prop: Props) => {
+const SpotlightTopBar = (prop: Props) => {
   const {closeSpotlight} = prop
   return (
     <TopRow>
@@ -51,4 +51,4 @@ const SpotlightSearchTopBar = (prop: Props) => {
   )
 }
 
-export default SpotlightSearchTopBar
+export default SpotlightTopBar

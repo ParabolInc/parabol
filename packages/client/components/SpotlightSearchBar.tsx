@@ -9,7 +9,7 @@ import Atmosphere from '../Atmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import React, {useRef} from 'react'
-import SpotlightSearchTopBar from './SpotlightSearchTopBar'
+import SpotlightTopBar from './SpotlightTopBar'
 
 const SelectedReflectionSection = styled('div')({
   alignItems: 'flex-start',
@@ -92,7 +92,7 @@ const SpotlightSearchBar = (props: Props) => {
 
   return (
       <SelectedReflectionSection>
-        <SpotlightSearchTopBar closeSpotlight={closeSpotlight} />
+        <SpotlightTopBar closeSpotlight={closeSpotlight} />
         <SearchItem>
           <StyledMenuItemIcon>
             <SearchIcon>search</SearchIcon>
