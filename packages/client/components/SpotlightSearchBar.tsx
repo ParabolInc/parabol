@@ -4,25 +4,11 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
-import {ElementWidth, Spotlight} from '../types/constEnums'
+import {ElementWidth} from '../types/constEnums'
 import Atmosphere from '../Atmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import React, {useRef} from 'react'
-import SpotlightTopBar from './SpotlightTopBar'
-
-const SelectedReflectionSection = styled('div')({
-  alignItems: 'flex-start',
-  background: PALETTE.SLATE_100,
-  borderRadius: '8px 8px 0px 0px',
-  display: 'flex',
-  flexWrap: 'wrap',
-  height: `${Spotlight.SELECTED_HEIGHT_PERC}%`,
-  justifyContent: 'center',
-  padding: 16,
-  position: 'relative',
-  width: '100%'
-})
 
 const SearchItem = styled(MenuItemLabel)({
   overflow: 'visible',
@@ -69,13 +55,12 @@ const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: st
 }
 
 interface Props {
-  closeSpotlight: () => void
   meetingId: string
   spotlightSearch: string
 }
 
 const SpotlightSearchBar = (props: Props) => {
-  const {closeSpotlight, meetingId, spotlightSearch} = props
+  const {meetingId, spotlightSearch} = props
   const atmosphere = useAtmosphere()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,25 +76,22 @@ const SpotlightSearchBar = (props: Props) => {
   }
 
   return (
-      <SelectedReflectionSection>
-        <SpotlightTopBar closeSpotlight={closeSpotlight} />
-        <SearchItem>
-          <StyledMenuItemIcon>
-            <SearchIcon>search</SearchIcon>
-          </StyledMenuItemIcon>
-          <SearchInput
-            autoFocus
-            autoComplete='off'
-            name='search'
-            placeholder='Or search for keywords...'
-            type='text'
-            onChange={onChange}
-            onKeyDown={onKeyDown}
-            ref={inputRef}
-            value={spotlightSearch ?? ""}
-          />
-        </SearchItem>
-      </SelectedReflectionSection>
+    <SearchItem>
+      <StyledMenuItemIcon>
+        <SearchIcon>search</SearchIcon>
+      </StyledMenuItemIcon>
+      <SearchInput
+        autoFocus
+        autoComplete='off'
+        name='search'
+        placeholder='Or search for keywords...'
+        type='text'
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        ref={inputRef}
+        value={spotlightSearch ?? ""}
+      />
+    </SearchItem>
   )
 }
 
