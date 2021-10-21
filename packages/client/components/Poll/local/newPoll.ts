@@ -30,10 +30,10 @@ export const createLocalPoll = (
       return
     }
 
-    const dataID = clientTempId('poll')
+    const pollId = clientTempId('poll')
     const now = new Date().toJSON()
-    const newPollRecord = store.create(dataID, 'Poll')
-    newPollRecord.setValue(dataID, 'id')
+    const newPollRecord = store.create(pollId, 'Poll')
+    newPollRecord.setValue(pollId, 'id')
     newPollRecord.setValue(now, 'createdAt')
     newPollRecord.setValue(now, 'updatedAt')
     newPollRecord.setValue(viewerId, 'createdById')
@@ -41,9 +41,7 @@ export const createLocalPoll = (
     newPollRecord.setValue(threadSortOrder, 'threadSortOrder')
     newPollRecord.setLinkedRecord(user, 'createdByUser')
     newPollRecord.setLinkedRecords(
-      Array.from({length: LocalPollOptionsNumber}).map((_, index) =>
-        createEmptyPollOption(store, index + 1)
-      ),
+      Array.from({length: LocalPollOptionsNumber}).map(() => createEmptyPollOption(pollId, store)),
       'options'
     )
 
@@ -71,7 +69,7 @@ export const updateLocalPollOption = (atmosphere: Atmosphere, id: string, title:
     pollOption.setValue(title, 'title')
   })
 
-export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string, index: number) =>
+export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string) =>
   commitLocalUpdate(atmosphere, (store) => {
     const poll = store.get(pollId)
     if (!poll) {
@@ -80,22 +78,17 @@ export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string, index
     }
 
     const pollOptions = poll.getLinkedRecords('options') || []
-    const pollOption = createEmptyPollOption(store, index, true)
+    const pollOption = createEmptyPollOption(pollId, store)
     poll.setLinkedRecords([...pollOptions, pollOption], 'options')
     poll.setValue(new Date().toJSON(), 'updatedAt')
   })
 
-const createEmptyPollOption = (
-  store: RecordSourceProxy,
-  index: number,
-  shouldAutoFocus = false
-) => {
+const createEmptyPollOption = (pollId: string, store: RecordSourceProxy) => {
   const dataID = clientTempId('poll')
   const newPollOption = store.create(dataID, 'PollOption')
   newPollOption.setValue(dataID, 'id')
   newPollOption.setValue('', 'title')
-  newPollOption.setValue(`Add a choice ${index} ${index > 2 ? '(optional)' : ''}...`, 'placeholder')
-  newPollOption.setValue(shouldAutoFocus, 'shouldAutoFocus')
+  newPollOption.setValue(pollId, 'pollId')
 
   return newPollOption
 }

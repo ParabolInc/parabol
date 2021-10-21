@@ -1,8 +1,9 @@
-import React, {Ref, useEffect, useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
-import {usePollContext} from './PollContext'
 import {PALETTE} from '../../styles/paletteV3'
 import {Polls, PollsAriaLabels} from '../../types/constEnums'
+import {updateLocalPollOption} from './local/newPoll'
+import useAtmosphere from '../../hooks/useAtmosphere'
 
 interface Props {
   id: string
@@ -45,13 +46,13 @@ const Counter = styled('div')<{
   color: isMax ? PALETTE.TOMATO_500 : PALETTE.SLATE_600
 }))
 
-const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+const PollOptionInput = (props: Props) => {
   const {id, value, placeholder, shouldAutoFocus} = props
-  const {updatePollOption} = usePollContext()
+  const atmosphere = useAtmosphere()
   const pollInputRef = useRef<HTMLInputElement>(null)
   const [isCounterVisible, setIsCounterVisible] = React.useState(false)
   const handlePollOptionUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updatePollOption(id, event.target.value)
+    updateLocalPollOption(atmosphere, id, event.target.value)
   }
   const inputValue = value ?? ''
   const hasReachedMaxValue = inputValue.length >= Polls.MAX_OPTION_TITLE_LENGTH
@@ -69,7 +70,7 @@ const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>
   }, [shouldAutoFocus])
 
   return (
-    <PollOptionInputRoot ref={ref}>
+    <PollOptionInputRoot>
       <Input
         ref={pollInputRef}
         aria-label={PollsAriaLabels.POLL_OPTION_EDITOR}
@@ -86,6 +87,6 @@ const PollOptionInput = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>
       </Counter>
     </PollOptionInputRoot>
   )
-})
+}
 
 export default PollOptionInput

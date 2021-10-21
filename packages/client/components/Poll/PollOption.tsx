@@ -1,14 +1,17 @@
-import React, {Ref} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
-import {usePollContext} from './PollContext'
+import {PollOption_option$key} from '../../__generated__/PollOption_option.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import PollOptionInput from './PollOptionInput'
+import {useFragment} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {getPollState} from './PollState'
 
 interface Props {
-  id: string
-  title: string
-  placeholder: string | null
-  shouldAutoFocus: boolean | null
+  option: PollOption_option$key
+  onOptionSelected: (optionId: string) => void
+  shouldAutoFocus: boolean
+  placeholder: string
 }
 
 const PollOptionRoot = styled('div')({
@@ -26,9 +29,21 @@ const PollOptionTitle = styled('div')({
   alignItems: 'center'
 })
 
-const PollOption = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {id, title, placeholder, shouldAutoFocus} = props
-  const {onPollOptionSelected, pollState} = usePollContext()
+const PollOption = (props: Props) => {
+  const {option: optionRef, onOptionSelected, shouldAutoFocus, placeholder} = props
+  const pollOption = useFragment(
+    graphql`
+      fragment PollOption_option on PollOption {
+        pollId
+        id
+        title
+      }
+    `,
+    optionRef
+  )
+
+  const pollState = getPollState(pollOption.pollId)
+  const {id, title} = pollOption
 
   const renderPollOption = () => {
     if (pollState === 'creating') {
@@ -42,10 +57,10 @@ const PollOption = React.forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
       )
     }
 
-    return <PollOptionTitle onClick={() => onPollOptionSelected(id)}>{title}</PollOptionTitle>
+    return <PollOptionTitle onClick={() => onOptionSelected(id)}>{title}</PollOptionTitle>
   }
 
-  return <PollOptionRoot ref={ref}>{renderPollOption()}</PollOptionRoot>
-})
+  return <PollOptionRoot>{renderPollOption()}</PollOptionRoot>
+}
 
 export default PollOption

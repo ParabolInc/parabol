@@ -1,8 +1,13 @@
-import React, {Ref} from 'react'
+import React from 'react'
+import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import {usePollContext} from './PollContext'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import {PollsAriaLabels} from '~/types/constEnums'
+import {Polls, PollsAriaLabels} from '~/types/constEnums'
+import {updateLocalPoll} from './local/newPoll'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {getPollState} from './PollState'
+import {PollTitle_poll$key} from '../../__generated__/PollTitle_poll.graphql'
 
 const PollTitleHeader = styled('div')({
   padding: `10px 12px 0px 12px`,
@@ -20,30 +25,42 @@ const PollTitleInput = styled('input')({
   }
 })
 
-const PollTitle = React.forwardRef((_, ref: Ref<any>) => {
-  const {pollState, poll, updatePoll, onPollFocused, onPollBlurred} = usePollContext()
+interface Props {
+  poll: PollTitle_poll$key
+}
+
+const PollTitle = (props: Props) => {
+  const {poll: pollRef} = props
+  const poll = useFragment(
+    graphql`
+      fragment PollTitle_poll on Poll {
+        id
+        title
+      }
+    `,
+    pollRef
+  )
+  const pollState = getPollState(poll.id)
+  const atmosphere = useAtmosphere()
 
   if (pollState === 'creating') {
     const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      updatePoll(poll.id, event.target.value)
+      updateLocalPoll(atmosphere, poll.id, event.target.value)
     }
 
     return (
       <PollTitleInput
-        ref={ref}
         aria-label={PollsAriaLabels.POLL_TITLE_EDITOR}
-        data-cy='poll-title-input'
         autoFocus
         value={poll.title}
+        maxLength={Polls.MAX_TITLE_LENGTH}
         placeholder='Ask a question...'
         onChange={handleTitleChange}
-        onFocus={onPollFocused}
-        onBlur={onPollBlurred}
       />
     )
   }
 
-  return <PollTitleHeader ref={ref}>{poll.title}</PollTitleHeader>
-})
+  return <PollTitleHeader>{poll.title}</PollTitleHeader>
+}
 
 export default PollTitle

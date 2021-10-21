@@ -3,9 +3,9 @@ import {commitMutation} from 'react-relay'
 import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {CreatePollMutation as TCreatePollMutation} from '../__generated__/CreatePollMutation.graphql'
 import {CreatePollMutation_meeting} from '~/__generated__/CreatePollMutation_meeting.graphql'
-import {Poll_poll} from '~/__generated__/Poll_poll.graphql'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {ThreadedPollBase_poll} from '../__generated__/ThreadedPollBase_poll.graphql'
 
 graphql`
   fragment CreatePollMutation_meeting on CreatePollSuccess {
@@ -53,7 +53,7 @@ export const createPollMeetingUpdater: SharedUpdater<CreatePollMutation_meeting>
 }
 
 interface Handlers extends LocalHandlers {
-  localPoll: Poll_poll
+  localPoll: ThreadedPollBase_poll
 }
 
 const CreatePollMutation: StandardMutation<TCreatePollMutation, Handlers> = (
