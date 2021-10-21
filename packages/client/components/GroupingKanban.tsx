@@ -3,6 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
+// import EndDraggingReflectionMutation from '~/mutations/EndDraggingReflectionMutation'
+// import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
+import clientTempId from '~/utils/relay/clientTempId'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -38,6 +41,8 @@ export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
   const {id: meetingId, reflectionGroups, phases} = meeting
+  // const {id: meetingId, reflectionGroups, phases, spotlightReflection} = meeting
+  // const spotlightReflectionId = spotlightReflection?.id
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -45,8 +50,19 @@ const GroupingKanban = (props: Props) => {
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
+  const tempIdRef = useRef<null | string>(null)
+  if (tempIdRef.current === null) {
+    tempIdRef.current = clientTempId()
+  }
+
   const closeSpotlight = () => {
     closePortal()
+    // EndDraggingReflectionMutation(atmosphere, {
+    //   reflectionId: spotlightReflectionId!,
+    //   dropTargetType: null,
+    //   dropTargetId: null,
+    //   dragId: tempIdRef.current
+    // })
     sourceRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
@@ -96,6 +112,8 @@ const GroupingKanban = (props: Props) => {
       if (!reflection || !meeting) return
       meeting.setLinkedRecord(reflection, 'spotlightReflection')
     })
+    if (!tempIdRef.current) return
+    // StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: tempIdRef.current})
   }
 
   if (!phaseRef.current) return null

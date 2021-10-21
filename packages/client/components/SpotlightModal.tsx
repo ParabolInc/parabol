@@ -159,11 +159,11 @@ const SpotlightModal = (props: Props) => {
   let clone: HTMLDivElement
   requestAnimationFrame(() => {
     if (srcDestinationRef.current && spotlightReflectionId && sourceRef.current) {
-      const startBbox = sourceRef.current.getBoundingClientRect()
+      const sourceBbox = sourceRef.current.getBoundingClientRect()
       const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
       clone = cloneReflection(sourceRef.current, spotlightReflectionId)
       const {style} = clone
-      const {left: startLeft, top: startTop} = startBbox
+      const {left: startLeft, top: startTop} = sourceBbox
       const {left: endLeft, top: endTop} = destinationBbox
       style.left = `${startLeft}px`
       style.top = `${startTop}px`
@@ -197,6 +197,7 @@ const SpotlightModal = (props: Props) => {
             <CloseIcon>close</CloseIcon>
           </StyledCloseButton>
         </TopRow>
+        {/* wait for results to render to know the height of the modal */}
         {!isLoadingResults && (
           <SourceWrapper ref={srcDestinationRef} isLoadingResults={isLoadingResults}>
             {spotlightReflection && (
