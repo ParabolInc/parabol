@@ -257,6 +257,7 @@ const SpotlightModal = (props: Props) => {
             <ReflectionGroup
               phaseRef={phaseRef}
               reflectionGroup={spotlightGroup}
+              expandedReflectionGroupPortalParentId={'spotlight'}
               meeting={meeting}
               spotlightReflectionIds={spotlightReflectionIds.current}
             />
