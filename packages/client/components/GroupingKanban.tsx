@@ -6,7 +6,6 @@ import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
-import useFlip from '../hooks/useFlip'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useModal from '../hooks/useModal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
@@ -43,15 +42,11 @@ const GroupingKanban = (props: Props) => {
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const sourceRef = useRef<HTMLDivElement | null>(null)
-  const [flipRef, flipReverse] = useFlip({
-    firstRef: sourceRef
-  })
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
   const closeSpotlight = () => {
     closePortal()
-    flipReverse()
     sourceRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
@@ -131,7 +126,7 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightModal closeSpotlight={closeSpotlight} flipRef={flipRef} meeting={meeting} />
+        <SpotlightModal closeSpotlight={closeSpotlight} sourceRef={sourceRef} meeting={meeting} />
       )}
     </PortalProvider>
   )

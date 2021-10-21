@@ -11,8 +11,10 @@ const ReflectionCardRoot = styled('div')<{selectedForSpotlight?: boolean}>(
     // display was 'inline-block' which causes layout issues (TA)
     display: 'block',
     maxWidth: '100%',
-    opacity: selectedForSpotlight ? 0 : 1,
+    opacity: 1,
+    // opacity: selectedForSpotlight ? 0 : 1,
     position: 'relative',
+    // transition: 'all 300ms ease-in',
     transition: `box-shadow 2000ms ${DECELERATE} ${
       selectedForSpotlight ? `,opacity 200ms ${DECELERATE}` : ''
     }`,
