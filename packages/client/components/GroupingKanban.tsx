@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -58,7 +58,7 @@ const GroupingKanban = (props: Props) => {
   })
 
   // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
-  React.useEffect(() => {
+  useEffect(() => {
     if (spotlightReflection) {
       openPortal()
     } else {
