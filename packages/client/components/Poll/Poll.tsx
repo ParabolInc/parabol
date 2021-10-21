@@ -2,7 +2,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {ThreadedPollWrapper_poll$key} from '~/__generated__/ThreadedPollWrapper_poll.graphql'
+import {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
 
 import {cardShadow, Elevation} from '~/styles/elevation'
 import ThreadedItemWrapper from '../ThreadedItemWrapper'
@@ -39,14 +39,14 @@ const PollCard = styled('div')<{
 
 interface Props {
   children: React.ReactNode
-  poll: ThreadedPollWrapper_poll$key
+  poll: Poll_poll$key
 }
 
-const ThreadedPollWrapper = (props: Props) => {
+const Poll = (props: Props) => {
   const {poll: pollRef, children} = props
   const poll = useFragment(
     graphql`
-      fragment ThreadedPollWrapper_poll on Poll {
+      fragment Poll_poll on Poll {
         id
         createdByUser {
           id
@@ -78,4 +78,4 @@ const ThreadedPollWrapper = (props: Props) => {
   )
 }
 
-export default ThreadedPollWrapper
+export default Poll

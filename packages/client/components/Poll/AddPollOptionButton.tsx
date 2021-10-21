@@ -41,7 +41,6 @@ export const AddPollOptionButton = (props: Props) => {
   return (
     <StyledPlainButton
       aria-label={PollsAriaLabels.POLL_ADD_OPTION}
-      data-cy='poll-option-add'
       onClick={onClick}
       disabled={disabled}
     >

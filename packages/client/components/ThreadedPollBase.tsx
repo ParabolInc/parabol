@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import {ThreadedPollBase_poll$key} from '~/__generated__/ThreadedPollBase_poll.graphql'
 import {ThreadedPollBase_discussion$key} from '~/__generated__/ThreadedPollBase_discussion.graphql'
 import {DiscussionThreadables} from './DiscussionThreadList'
-import ThreadedPollWrapper from './Poll/ThreadedPollWrapper'
+import Poll from './Poll/Poll'
 import PollTitle from './Poll/PollTitle'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {addLocalPollOption} from './Poll/local/newPoll'
@@ -16,8 +16,10 @@ import PollOption from './Poll/PollOption'
 import PlainButton from './PlainButton/PlainButton'
 import {PALETTE} from '../styles/paletteV3'
 import {AddPollOptionButton} from './Poll/AddPollOptionButton'
+import EditablePollTitle from './Poll/EditablePollTitle'
+import EditablePollOption from './Poll/EditablePollOption'
 
-const PollOptionsRoot = styled('div')({
+const PollOptions = styled('div')({
   fontSize: '14px',
   padding: `12px 12px 0px 12px`,
   display: 'flex',
@@ -25,7 +27,7 @@ const PollOptionsRoot = styled('div')({
   gap: '8px'
 })
 
-const PollActionsRoot = styled('div')({
+const PollActions = styled('div')({
   width: '100%',
   padding: `0px 12px 12px 12px`,
   display: 'flex',
@@ -83,13 +85,15 @@ const ThreadedPollBase = (props: Props) => {
   const poll = useFragment(
     graphql`
       fragment ThreadedPollBase_poll on Poll {
-        ...ThreadedPollWrapper_poll
+        ...Poll_poll
+        ...EditablePollTitle_poll
         ...PollTitle_poll
         id
         title
         updatedAt
         threadSortOrder
         options {
+          ...EditablePollOption_option
           ...PollOption_option
           id
           title
@@ -132,8 +136,7 @@ const ThreadedPollBase = (props: Props) => {
   }
   const {id, title, options} = poll
   const pollState = getPollState(id)
-  const isTitleValid =
-    title.length >= Polls.MIN_TITLE_LENGTH && title?.length <= Polls.MAX_TITLE_LENGTH
+  const isTitleValid = title.length >= Polls.MIN_TITLE_LENGTH
   const hasAtLeastTwoValidOptions =
     options.filter(({title}) => title.length >= Polls.MIN_OPTION_TITLE_LENGTH).length > 1
   const isEveryOptionValid =
@@ -141,56 +144,67 @@ const ThreadedPollBase = (props: Props) => {
     options.length <= Polls.MAX_OPTIONS &&
     hasAtLeastTwoValidOptions
   const canCreatePoll = pollState === 'creating' && isTitleValid && isEveryOptionValid
-  const renderPollActions = () => {
+  const submitVote = () => {
+    //TODO: fire submit vote mutation
+  }
+  const renderPoll = () => {
     if (pollState === 'creating') {
       return (
-        <StartPollWrapper>
-          {poll.options.length < Polls.MAX_OPTIONS && (
-            <AddPollOptionButton onClick={addPollOption} />
-          )}
-          <StartPollButton
-            aria-label={PollsAriaLabels.POLL_START}
-            onClick={createPoll}
-            disabled={!canCreatePoll}
-          >
-            Start
-          </StartPollButton>
-        </StartPollWrapper>
+        <>
+          <EditablePollTitle poll={poll} />
+          <PollOptions>
+            {poll.options.map((option, index) => {
+              const isLastOption = index === poll.options.length - 1
+              const isOptional = index > 1
+
+              return (
+                <EditablePollOption
+                  key={option.id}
+                  shouldAutoFocus={isOptional && isLastOption}
+                  placeholder={`Add a choice ${index + 1} ${isOptional ? '(optional)' : ''}...`}
+                  option={option}
+                />
+              )
+            })}
+          </PollOptions>
+          <PollActions>
+            <StartPollWrapper>
+              {poll.options.length < Polls.MAX_OPTIONS && (
+                <AddPollOptionButton onClick={addPollOption} />
+              )}
+              <StartPollButton
+                aria-label={PollsAriaLabels.POLL_START}
+                onClick={createPoll}
+                disabled={!canCreatePoll}
+              >
+                Start
+              </StartPollButton>
+            </StartPollWrapper>
+          </PollActions>
+        </>
       )
     }
 
-    if (selectedOptionId) {
-      return (
-        <SubmitVoteButton aria-label={PollsAriaLabels.POLL_SUBMIT_VOTE}>
-          Submit and view results
-        </SubmitVoteButton>
-      )
-    }
-    return null
+    return (
+      <>
+        <PollTitle poll={poll} />
+        <PollOptions>
+          {poll.options.map((option) => {
+            return <PollOption key={option.id} onSelected={setSelectedOptionId} option={option} />
+          })}
+        </PollOptions>
+        <PollActions>
+          {selectedOptionId && (
+            <SubmitVoteButton aria-label={PollsAriaLabels.POLL_SUBMIT_VOTE} onClick={submitVote}>
+              Submit and view results
+            </SubmitVoteButton>
+          )}
+        </PollActions>
+      </>
+    )
   }
 
-  return (
-    <ThreadedPollWrapper poll={poll}>
-      <PollTitle poll={poll} />
-      <PollOptionsRoot>
-        {poll.options.map((option, index) => {
-          const isLastOption = index === poll.options.length - 1
-          const isOptional = index > 1
-
-          return (
-            <PollOption
-              key={option.id}
-              shouldAutoFocus={isOptional && isLastOption}
-              placeholder={`Add a choice ${index + 1} ${isOptional ? '(optional)' : ''}...`}
-              onOptionSelected={setSelectedOptionId}
-              option={option}
-            />
-          )
-        })}
-      </PollOptionsRoot>
-      <PollActionsRoot>{renderPollActions()}</PollActionsRoot>
-    </ThreadedPollWrapper>
-  )
+  return <Poll poll={poll}>{renderPoll()}</Poll>
 }
 
 export default ThreadedPollBase

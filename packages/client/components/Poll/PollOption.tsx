@@ -2,21 +2,13 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {PollOption_option$key} from '../../__generated__/PollOption_option.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import PollOptionInput from './PollOptionInput'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {getPollState} from './PollState'
 
 interface Props {
   option: PollOption_option$key
-  onOptionSelected: (optionId: string) => void
-  shouldAutoFocus: boolean
-  placeholder: string
+  onSelected: (optionId: string) => void
 }
-
-const PollOptionRoot = styled('div')({
-  width: '100%'
-})
 
 const PollOptionTitle = styled('div')({
   width: '100%',
@@ -30,7 +22,7 @@ const PollOptionTitle = styled('div')({
 })
 
 const PollOption = (props: Props) => {
-  const {option: optionRef, onOptionSelected, shouldAutoFocus, placeholder} = props
+  const {option: optionRef, onSelected} = props
   const pollOption = useFragment(
     graphql`
       fragment PollOption_option on PollOption {
@@ -42,25 +34,8 @@ const PollOption = (props: Props) => {
     optionRef
   )
 
-  const pollState = getPollState(pollOption.pollId)
   const {id, title} = pollOption
-
-  const renderPollOption = () => {
-    if (pollState === 'creating') {
-      return (
-        <PollOptionInput
-          id={id}
-          placeholder={placeholder}
-          value={title}
-          shouldAutoFocus={shouldAutoFocus}
-        />
-      )
-    }
-
-    return <PollOptionTitle onClick={() => onOptionSelected(id)}>{title}</PollOptionTitle>
-  }
-
-  return <PollOptionRoot>{renderPollOption()}</PollOptionRoot>
+  return <PollOptionTitle onClick={() => onSelected(id)}>{title}</PollOptionTitle>
 }
 
 export default PollOption
