@@ -26,7 +26,6 @@ const PollOption = (props: Props) => {
   const pollOption = useFragment(
     graphql`
       fragment PollOption_option on PollOption {
-        pollId
         id
         title
       }

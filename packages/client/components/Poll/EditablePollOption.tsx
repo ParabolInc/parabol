@@ -1,8 +1,46 @@
 import React from 'react'
 import {EditablePollOption_option$key} from '../../__generated__/EditablePollOption_option.graphql'
-import PollOptionInput from './PollOptionInput'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {updateLocalPollOption} from './local/newPoll'
+import {Polls, PollsAriaLabels} from '../../types/constEnums'
+import styled from '@emotion/styled'
+import {PALETTE} from '../../styles/paletteV3'
+
+const PollOptionInputRoot = styled('div')({
+  position: 'relative',
+  width: '100%',
+  height: '36px',
+  display: 'flex',
+  alignItems: 'center'
+})
+
+const Input = styled('input')({
+  width: '100%',
+  padding: `8px 12px`,
+  fontSize: '14px',
+  color: PALETTE.SLATE_900,
+  borderRadius: '7px',
+  border: `1.5px solid ${PALETTE.SLATE_400}`,
+  ':hover, :focus, :active': {
+    outline: `none`,
+    border: `1.5px solid ${PALETTE.SKY_500}`
+  }
+})
+
+const Counter = styled('div')<{
+  isVisible: boolean
+  isMax: boolean
+}>(({isVisible, isMax}) => ({
+  display: isVisible ? 'block' : 'none',
+  position: 'absolute',
+  top: '0',
+  right: '0',
+  margin: '2px 6px',
+  fontSize: '10px',
+  color: isMax ? PALETTE.TOMATO_500 : PALETTE.SLATE_600
+}))
 
 interface Props {
   option: EditablePollOption_option$key
@@ -15,7 +53,6 @@ const EditablePollOption = (props: Props) => {
   const pollOption = useFragment(
     graphql`
       fragment EditablePollOption_option on PollOption {
-        pollId
         id
         title
       }
@@ -24,14 +61,34 @@ const EditablePollOption = (props: Props) => {
   )
 
   const {id, title} = pollOption
+  const atmosphere = useAtmosphere()
+  const [isCounterVisible, setIsCounterVisible] = React.useState(false)
+  const handlePollOptionUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateLocalPollOption(atmosphere, id, event.target.value)
+  }
+  const showCounter = () => {
+    setIsCounterVisible(true)
+  }
+  const hideCounter = () => {
+    setIsCounterVisible(false)
+  }
 
   return (
-    <PollOptionInput
-      id={id}
-      placeholder={placeholder}
-      value={title}
-      shouldAutoFocus={shouldAutoFocus}
-    />
+    <PollOptionInputRoot>
+      <Input
+        aria-label={PollsAriaLabels.POLL_OPTION_EDITOR}
+        placeholder={placeholder}
+        value={title}
+        onChange={handlePollOptionUpdate}
+        maxLength={Polls.MAX_OPTION_TITLE_LENGTH}
+        onFocus={showCounter}
+        onBlur={hideCounter}
+        autoFocus={shouldAutoFocus}
+      />
+      <Counter isVisible={isCounterVisible} isMax={title.length >= Polls.MAX_OPTION_TITLE_LENGTH}>
+        {title.length}/{Polls.MAX_OPTION_TITLE_LENGTH}
+      </Counter>
+    </PollOptionInputRoot>
   )
 }
 
