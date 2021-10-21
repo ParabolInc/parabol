@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.33.1 2021-Oct-21
+
+### Fixed
+
+- Increase PM2 max memory to 8GB per service
+
 ## 6.33.0 2021-Oct-20
 
 ### Fixed
