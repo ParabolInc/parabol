@@ -21,10 +21,12 @@ const PollTitleInput = styled('input')({
 
 interface Props {
   poll: EditablePollTitle_poll$key
+  onFocus: () => void
+  onBlur: () => void
 }
 
 const EditablePollTitle = (props: Props) => {
-  const {poll: pollRef} = props
+  const {poll: pollRef, onFocus, onBlur} = props
   const poll = useFragment(
     graphql`
       fragment EditablePollTitle_poll on Poll {
@@ -47,6 +49,8 @@ const EditablePollTitle = (props: Props) => {
       maxLength={Polls.MAX_TITLE_LENGTH}
       placeholder='Ask a question...'
       onChange={handleTitleChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
     />
   )
 }

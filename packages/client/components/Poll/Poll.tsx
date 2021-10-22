@@ -40,10 +40,11 @@ const PollCard = styled('div')<{
 interface Props {
   children: React.ReactNode
   poll: Poll_poll$key
+  isFocused: boolean
 }
 
 const Poll = (props: Props) => {
-  const {poll: pollRef, children} = props
+  const {poll: pollRef, children, isFocused} = props
   const poll = useFragment(
     graphql`
       fragment Poll_poll on Poll {
@@ -72,7 +73,7 @@ const Poll = (props: Props) => {
           title={preferredName}
           subTitle={isNewPoll ? 'is creating a Poll...' : 'added a Poll'}
         />
-        <PollCard isFocused={isNewPoll}>{children}</PollCard>
+        <PollCard isFocused={isFocused}>{children}</PollCard>
       </BodyCol>
     </ThreadedItemWrapper>
   )

@@ -111,6 +111,7 @@ const ThreadedPollBase = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
+  const [isTitleFocused, setIsTitleFocused] = useState(false)
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
   const addPollOption = () => {
     addLocalPollOption(atmosphere, poll.id)
@@ -150,7 +151,11 @@ const ThreadedPollBase = (props: Props) => {
     if (pollState === 'creating') {
       return (
         <>
-          <EditablePollTitle poll={poll} />
+          <EditablePollTitle
+            poll={poll}
+            onFocus={() => setIsTitleFocused(true)}
+            onBlur={() => setIsTitleFocused(false)}
+          />
           <PollOptions>
             {poll.options.map((option, index) => {
               const isLastOption = index === poll.options.length - 1
@@ -203,7 +208,11 @@ const ThreadedPollBase = (props: Props) => {
     )
   }
 
-  return <Poll poll={poll}>{renderPoll()}</Poll>
+  return (
+    <Poll isFocused={isTitleFocused} poll={poll}>
+      {renderPoll()}
+    </Poll>
+  )
 }
 
 export default ThreadedPollBase
