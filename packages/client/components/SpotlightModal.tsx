@@ -158,7 +158,7 @@ const SpotlightModal = (props: Props) => {
       const {style} = clone
       const {left: startLeft, top: startTop} = sourceBbox
       const {left: endLeft, top: endTop} = destinationBbox
-      const roundedEndTop = Math.round(endTop) // fractional top throw off
+      const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
       style.left = `${startLeft}px`
       style.top = `${startTop}px`
       style.borderRadius = `4px`
@@ -167,7 +167,7 @@ const SpotlightModal = (props: Props) => {
       style.overflow = `hidden`
       setTimeout(() => {
         style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-        style.transition = `all 300ms ${BezierCurve.DECELERATE}`
+        style.transition = `all ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
       }, 0)
     }
   })
