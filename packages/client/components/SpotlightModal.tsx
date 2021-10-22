@@ -68,14 +68,7 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceWrapper = styled('div')<{isLoadingResults: boolean}>(({isLoadingResults}) => ({
-  animation: isLoadingResults
-    ? undefined
-    : `${fadeInOpacity.toString()} 0ms ${DECELERATE} ${
-        Times.SPOTLIGHT_MODAL_TOTAL_DURATION
-      }ms forwards`,
-  opacity: 0
-}))
+const SourceWrapper = styled('div')()
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -165,12 +158,12 @@ const SpotlightModal = (props: Props) => {
       const {style} = clone
       const {left: startLeft, top: startTop} = sourceBbox
       const {left: endLeft, top: endTop} = destinationBbox
+      const roundedEndTop = Math.round(endTop) // fractional top throw off
       style.left = `${startLeft}px`
       style.top = `${startTop}px`
       style.borderRadius = `4px`
-      style.boxShadow = Elevation.CARD_SHADOW
-      clone.style.opacity = '1'
-      const roundedEndTop = Math.round(endTop) // fractional top throws off position
+      style.boxShadow = 'none'
+      style.opacity = '1'
       style.overflow = `hidden`
       setTimeout(() => {
         style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
@@ -200,7 +193,7 @@ const SpotlightModal = (props: Props) => {
         </TopRow>
         {/* wait for results to render to know the height of the modal */}
         {!isLoadingResults && (
-          <SourceWrapper ref={srcDestinationRef} isLoadingResults={isLoadingResults}>
+          <SourceWrapper ref={srcDestinationRef}>
             {spotlightReflection && (
               <DraggableReflectionCard
                 isDraggable
