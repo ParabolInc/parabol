@@ -14,7 +14,6 @@ import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import ResultsRoot from './ResultsRoot'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
-import cloneReflection from '~/utils/retroGroup/cloneReflection'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
@@ -156,12 +155,13 @@ const SpotlightModal = (props: Props) => {
     }
   }
 
-  let clone: HTMLDivElement
+  let clone: HTMLElement | null | undefined
   requestAnimationFrame(() => {
     if (srcDestinationRef.current && spotlightReflectionId && sourceRef.current) {
       const sourceBbox = sourceRef.current.getBoundingClientRect()
       const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
-      clone = cloneReflection(sourceRef.current, spotlightReflectionId)
+      clone = document.getElementById(`clone-${spotlightReflectionId}`)
+      if (!clone) return
       const {style} = clone
       const {left: startLeft, top: startTop} = sourceBbox
       const {left: endLeft, top: endTop} = destinationBbox
@@ -169,6 +169,7 @@ const SpotlightModal = (props: Props) => {
       style.top = `${startTop}px`
       style.borderRadius = `4px`
       style.boxShadow = Elevation.CARD_SHADOW
+      clone.style.opacity = '1'
       const roundedEndTop = Math.round(endTop) // fractional top throws off position
       style.overflow = `hidden`
       setTimeout(() => {
