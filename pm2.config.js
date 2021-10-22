@@ -14,7 +14,8 @@ module.exports = {
     {
       name: 'GQL Executor',
       script: 'dist/gqlExecutor.js',
-      instances: 1,
+      instances: 2,
+      increment_var: 'SERVER_ID',
       autorestart: true,
       watch: false,
       max_memory_restart: '8192M',

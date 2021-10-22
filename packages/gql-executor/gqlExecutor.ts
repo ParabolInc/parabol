@@ -1,27 +1,51 @@
-import "./tracer"
-import '../server/initSentry'
 import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/types/constEnums'
+import '../server/initSentry'
+import RedisStream from './RedisStream'
+import './tracer'
+import PROD from '../server/PROD'
+import executeGraphQL, {GQLRequest} from '../server/graphql/executeGraphQL'
 
-const {REDIS_URL} = process.env
-const publisher = new Redis(REDIS_URL)
-const subscriber = new Redis(REDIS_URL)
-
+const {REDIS_URL, SERVER_ID} = process.env
 interface PubSubPromiseMessage {
   jobId: string
-  request: Record<string, unknown>
+  request: GQLRequest
 }
 
-const onMessage = async (_channel: string, message: string) => {
-  const {jobId, request} = JSON.parse(message) as PubSubPromiseMessage
-  const executeGraphQL = require('../server/graphql/executeGraphQL').default
-  const response = await executeGraphQL(request)
-  publisher.publish(
-    ServerChannel.GQL_EXECUTOR_RESPONSE,
-    JSON.stringify({response, jobId})
+const run = async (id = SERVER_ID) => {
+  const redis = new Redis(REDIS_URL)
+  try {
+    await redis.xgroup(
+      'CREATE',
+      ServerChannel.GQL_EXECUTOR_STREAM,
+      ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
+      '$',
+      'MKSTREAM'
+    )
+  } catch (e) {
+    // stream already exists
+  }
+
+  const incomingStream = new RedisStream(
+    ServerChannel.GQL_EXECUTOR_STREAM,
+    ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
+    id
   )
+  console.log(`\n💧💧💧 Ready for GraphQL Execution: ${id} 💧💧💧`)
+
+  for await (const message of incomingStream) {
+    const {jobId, request} = JSON.parse(message) as PubSubPromiseMessage
+    const response = await executeGraphQL(request)
+    redis.publish(ServerChannel.GQL_EXECUTOR_RESPONSE, JSON.stringify({response, jobId}))
+  }
 }
 
-subscriber.on('message', onMessage)
-subscriber.subscribe(ServerChannel.GQL_EXECUTOR_REQUEST)
-console.log(`\n💧💧💧 Ready for GraphQL Execution 💧💧💧`)
+run()
+
+// test a cluster in development
+const NUM_EXECUTORS = 2
+if (!PROD && NUM_EXECUTORS > 1) {
+  for (let i = 1; i < NUM_EXECUTORS; i++) {
+    run(String(Number(SERVER_ID) + i))
+  }
+}

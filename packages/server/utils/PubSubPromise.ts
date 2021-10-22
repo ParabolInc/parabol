@@ -14,11 +14,11 @@ export default class PubSubPromise<Request, Response> {
   publisher = new Redis(REDIS_URL)
   subscriber = new Redis(REDIS_URL)
   subChannel: string
-  pubChannel: string
+  stream: string
   jobCounter = 0
 
-  constructor(pubChannel: string, subChannel: string) {
-    this.pubChannel = pubChannel
+  constructor(stream: string, subChannel: string) {
+    this.stream = stream
     this.subChannel = subChannel
   }
   onMessage = (_channel: string, message: string) => {
@@ -50,7 +50,8 @@ export default class PubSubPromise<Request, Response> {
       }
       this.jobs[jobId] = {resolve, timeoutId}
       const message = JSON.stringify({jobId, request})
-      this.publisher.publish(this.pubChannel, message)
+      // cap the stream to slightly more than 1000 entries.
+      this.publisher.xadd(this.stream, 'MAXLEN', '~', 1000, '*', 'msg', message)
     })
   }
 }
