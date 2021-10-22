@@ -15,12 +15,12 @@ const authCount = async (
 
   const count = after
     ? await pg.query(
-        `SELECT count(*) FROM "User"
+        `SELECT count(*)::float FROM "User"
          WHERE (NOT $1 OR inactive = FALSE)
          AND "${filterField}" >= $2`,
         [countOnlyActive ?? false, after]
       )
-    : await pg.query('SELECT count(*) FROM "User" WHERE (NOT $1 OR inactive = FALSE)', [
+    : await pg.query('SELECT count(*)::float FROM "User" WHERE (NOT $1 OR inactive = FALSE)', [
         countOnlyActive ?? false
       ])
 

@@ -38,7 +38,7 @@ const filterCounts = (domainCount: DomainCount[]) =>
 const addAllTimeTotals = async (domainCount: DomainCount[]): Promise<DomainCountWithAllTime[]> => {
   const pg = getPg()
   const allTimeCount = await pg.query(
-    `SELECT count(*) as "allTimeTotal", split_part(email, '@', 2) as domain from "User"
+    `SELECT count(*)::float as "allTimeTotal", split_part(email, '@', 2) as domain from "User"
      WHERE split_part(email, '@', 2) = ANY($1::text[])
      GROUP BY split_part(email, '@', 2)`,
     [domainCount.map((count) => count.domain)]
