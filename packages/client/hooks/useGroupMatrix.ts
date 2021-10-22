@@ -37,8 +37,7 @@ const useGroupMatrix = (
   const getEmptiestColumnIdx = () => {
     // columnsCount differs from groupMatrix columns if all groups in column 0 are grouped into column 1
     const columnsCount = getColumnsCount()
-    // TypeScript bug thinks column is an unused value. Use _column temporarily
-    const initColumns = Array.from([...Array(columnsCount).keys()], (_column) => (_column = 0))
+    const initColumns = Array.from([...Array(columnsCount).keys()].fill(0))
     const counts: number[] = groupMatrix!.reduce((arr: number[], row, idx) => {
       arr[idx] = row.length
       return arr
