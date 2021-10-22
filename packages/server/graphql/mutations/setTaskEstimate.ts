@@ -157,6 +157,7 @@ const setTaskEstimate = {
       stageId,
       taskId,
       userId: viewerId
+      // pattern
     })
 
     const data = {meetingId, stageId, taskId}

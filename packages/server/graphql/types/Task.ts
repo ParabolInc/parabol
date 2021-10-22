@@ -11,6 +11,8 @@ import DBTask from '../../database/types/Task'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import {GitHubRequest} from '../rootSchema'
+import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import removeGitHubLabels from '../mutations/helpers/removeGitHubLabels'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -88,10 +90,12 @@ const Task = new GraphQLObjectType<any, GQLContext>({
             .get('jiraIssue')
             .load({teamId, userId: accessUserId, cloudId, issueKey, taskId})
         } else if (integration.service === 'github') {
-          const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
+          const [githubAuth, estimates] = await Promise.all([
+            dataLoader.get('githubAuth').load({userId: accessUserId, teamId}),
+            taskId ? dataLoader.get('latestTaskEstimates').load(taskId) : []
+          ])
+
           if (!githubAuth) return null
-          const {accessToken} = githubAuth
-          const endpointContext = {accessToken}
           const {nameWithOwner, issueNumber} = integration
           const {repoOwner, repoName} = GitHubRepoId.split(nameWithOwner)
           const query = `
@@ -105,12 +109,109 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           const githubRequest = (info.schema as any).githubRequest as GitHubRequest
           const {data, errors} = await githubRequest({
             query,
-            endpointContext,
+            endpointContext: {
+              accessToken: githubAuth.accessToken
+            },
             batchRef: context,
             info
           })
+
+          const labels = data.labels.nodes
+
           if (errors) {
             console.log(errors)
+          } else if (estimates.length) {
+            // use current active dimension template to determine if
+            const dimensions = await dataLoader.get('githubDimensionFieldMaps').loadMany(
+              estimates.map((estimate) => {
+                return {dimensionName: estimate.name, nameWithOwner, teamId}
+              })
+            )
+
+            await Promise.all(
+              estimates.map((estimate) => {
+                const dimension = dimensions.find((d) => d.dimensionName === estimate.name)
+
+                const {labelTemplate} = dimension
+                const templateRegExp = new RegExp(`^${labelTemplate.replace('{{#}}', '(.+?)')}$`)
+
+                const matchedLabels: {label: string; value: string; id: string}[] = []
+                labels.forEach((label) => {
+                  const match = label.name.match(templateRegExp)
+                  if (match && match[1] != null) {
+                    matchedLabels.push({
+                      id: label.id,
+                      label: label.name,
+                      value: match[1]
+                    })
+                  }
+                })
+
+                if (matchedLabels.length === 1) {
+                  const matchedLabel = matchedLabels[0]
+                  const freshEstimate = matchedLabel.value
+
+                  if (freshEstimate === estimate.label) {
+                    return undefined
+                  }
+
+                  return insertTaskEstimate({
+                    changeSource: 'external',
+                    // keep the link to the discussion alive, if possible
+                    discussionId: estimate.discussionId,
+                    jiraFieldId: undefined,
+                    label: freshEstimate,
+                    name: estimate.name,
+                    meetingId: null,
+                    stageId: null,
+                    taskId,
+                    userId: accessUserId,
+                    githubLabelName: matchedLabel.label
+                  })
+                } else if (matchedLabels.length > 1) {
+                  // The issue has or more labels for the same dimension
+                  const differentLabels = matchedLabels.filter(
+                    (matchedLabel) => matchedLabel.value !== estimate.label
+                  )
+
+                  // Pick any estimate that different from current one
+                  const labelToAdd = differentLabels[0]
+                  const labelsToRemove = matchedLabels.filter((l) => l.id !== labelToAdd.id)
+                  const labelIdsToRemove = labelsToRemove.map((l) => l.id)
+
+                  return (async () => {
+                    // Remove other labels first to avoid infinity loop
+                    const removeLabelsRes = await removeGitHubLabels(
+                      githubAuth,
+                      context,
+                      info,
+                      data.id,
+                      labelIdsToRemove
+                    )
+
+                    if (removeLabelsRes instanceof Error) {
+                      return undefined
+                    }
+
+                    return insertTaskEstimate({
+                      changeSource: 'external',
+                      // keep the link to the discussion alive, if possible
+                      discussionId: estimate.discussionId,
+                      jiraFieldId: undefined,
+                      label: labelToAdd.value,
+                      name: estimate.name,
+                      meetingId: null,
+                      stageId: null,
+                      taskId,
+                      userId: accessUserId,
+                      githubLabelName: labelToAdd.label
+                    })
+                  })()
+                } else {
+                  return undefined
+                }
+              })
+            )
           }
           return data
         }
