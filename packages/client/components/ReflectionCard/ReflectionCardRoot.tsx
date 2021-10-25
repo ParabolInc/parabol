@@ -10,7 +10,6 @@ const ReflectionCardRoot = styled('div')({
   // display was 'inline-block' which causes layout issues (TA)
   display: 'block',
   maxWidth: '100%',
-  opacity: 1,
   position: 'relative',
   transition: `box-shadow 2000ms ${DECELERATE}`,
   width: ElementWidth.REFLECTION_CARD

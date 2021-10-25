@@ -28,16 +28,15 @@ const Modal = styled('div')<{isLoadingResults: boolean}>(({isLoadingResults}) =>
   borderRadius: 8,
   boxShadow: Elevation.Z8,
   display: 'flex',
-  flexWrap: 'wrap',
   justifyContent: 'center',
   opacity: 0,
-  overflow: 'hidden',
+  flexDirection: 'column',
   height: '90vh',
+  maxHeight: '90vh',
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
     height: '100%',
-    maxHeight: '90vh',
     width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
 }))
@@ -46,7 +45,7 @@ const SourceSection = styled('div')({
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
-  height: SPOTLIGHT_TOP_SECTION_HEIGHT,
+  minHeight: SPOTLIGHT_TOP_SECTION_HEIGHT,
   justifyContent: 'space-between',
   padding: 16,
   position: 'relative',

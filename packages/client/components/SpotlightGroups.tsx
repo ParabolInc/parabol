@@ -90,7 +90,7 @@ const SpotlightGroups = (props: Props) => {
   if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
   return (
     <SimilarGroups>
-      <Scrollbar ref={resultsRef} height={scrollHeight}>
+      <Scrollbar height={scrollHeight} ref={resultsRef}>
         {groupMatrix?.map((row) => (
           <Column key={`${row[0].id}-${row[0].id}`}>
             {row.map((group) => {
