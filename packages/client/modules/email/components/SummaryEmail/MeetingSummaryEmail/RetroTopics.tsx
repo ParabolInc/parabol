@@ -89,7 +89,7 @@ const RetroTopics = (props: Props) => {
           const {reflections, title} = reflectionGroup
           const grid = useEmailItemGrid(reflections, 3)
           return (
-            <>
+            <React.Fragment key={reflectionGroup.id}>
               <tr>
                 <td align='center' style={{paddingTop: 20}}>
                   <AnchorIfEmail href={meetingUrl} isDemo={isDemo} isEmail={isEmail} style={stageThemeHeading}>
@@ -104,7 +104,7 @@ const RetroTopics = (props: Props) => {
                   ))}
                 </td>
               </tr>
-            </>
+            </React.Fragment>
           )
         }
       )}
