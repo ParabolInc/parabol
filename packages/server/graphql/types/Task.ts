@@ -103,6 +103,14 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                   repository(owner: "${repoOwner}", name: "${repoName}") {
                     issue(number: ${issueNumber}) {
                       ...info
+                    }
+                  }
+                }`
+          const labelsQuery = `
+                {
+                  repository(owner: "${repoOwner}", name: "${repoName}") {
+                    issue(number: ${issueNumber}) {
+                      id
                       labels(first: 100) {
                         nodes {
                           id
@@ -113,19 +121,31 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                   }
                 }`
           const githubRequest = (info.schema as any).githubRequest as GitHubRequest
-          const {data, errors} = await githubRequest({
-            query,
-            endpointContext: {
-              accessToken: githubAuth.accessToken
-            },
-            batchRef: context,
-            info
-          })
 
-          const labels = data.labels.nodes
+          const [{data, errors}, {data: labelsData, errors: labelErrors}] = await Promise.all([
+            githubRequest({
+              query,
+              endpointContext: {
+                accessToken: githubAuth.accessToken
+              },
+              batchRef: context,
+              info
+            }),
+            githubRequest({
+              query: labelsQuery,
+              endpointContext: {
+                accessToken: githubAuth.accessToken
+              },
+              batchRef: context,
+              info
+            })
+          ])
 
-          if (errors) {
+          const labels = labelsData.repository.issue.labels.nodes
+
+          if (errors || labelErrors) {
             console.log(errors)
+            console.log(labelErrors)
           } else if (estimates.length) {
             const dimensions = await dataLoader.get('githubDimensionFieldMaps').loadMany(
               estimates.map((estimate) => {
@@ -190,7 +210,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                       githubAuth,
                       context,
                       info,
-                      data.id,
+                      labelsData.repository.issue.id,
                       labelIdsToRemove
                     )
 
