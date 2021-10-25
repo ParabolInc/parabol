@@ -121,7 +121,6 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           if (errors) {
             console.log(errors)
           } else if (estimates.length) {
-            // use current active dimension template to determine if
             const dimensions = await dataLoader.get('githubDimensionFieldMaps').loadMany(
               estimates.map((estimate) => {
                 return {dimensionName: estimate.name, nameWithOwner, teamId}
