@@ -33,3 +33,12 @@ export const fadeUp = keyframes`
 	  transform: translateY(0);
 	}
 `
+
+export const fadeInOpacity = keyframes`
+  0% {
+    opacity: 0;
+  }
+	100% {
+    opacity: 1;
+	}
+`

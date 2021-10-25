@@ -104,7 +104,7 @@ const GroupingKanbanColumn = (props: Props) => {
     swipeColumn
   } = props
   const {question, id: promptId, groupColor} = prompt
-  const {id: meetingId, endedAt, localStage} = meeting
+  const {id: meetingId, endedAt, localStage, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -169,7 +169,9 @@ const GroupingKanbanColumn = (props: Props) => {
               isWidthExpanded={isWidthExpanded}
               key={`${promptId}-${subColumnIdx}`}
               ref={subColumnIdx === 0 ? columnBodyRef : undefined}
-              {...{[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`}}
+              {...(spotlightReflectionId
+                ? null
+                : {[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`})}
             >
               {filteredReflectionGroups
                 .filter((group) => (isWidthExpanded ? group.subColumnIdx === subColumnIdx : true))
@@ -210,6 +212,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
           phaseType
         }
       }
+      spotlightReflectionId
     }
   `,
   reflectionGroups: graphql`

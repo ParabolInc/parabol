@@ -234,14 +234,13 @@ const ReflectionCard = (props: Props) => {
 
   const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    const el = reflectionRef.current
-    if (openSpotlight && el) {
-      openSpotlight(reflectionGroupId, reflectionRef)
+    if (openSpotlight && reflectionRef.current) {
+      openSpotlight(reflectionId, reflectionRef)
     }
   }
 
   const showSpotlight =
-    !__PRODUCTION__ && // TODO: remove this line to share Spotlight with the world
+    !__PRODUCTION__ &&
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&
@@ -253,7 +252,6 @@ const ReflectionCard = (props: Props) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       ref={reflectionRef}
-      selectedForSpotlight={!!openSpotlight && isSpotlightSource}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper

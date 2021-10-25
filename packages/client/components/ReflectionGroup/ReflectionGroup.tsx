@@ -80,7 +80,7 @@ const ReflectionGroup = (props: Props) => {
     sourceReflectionIds
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage, spotlightGroup} = meeting
+  const {localPhase, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
@@ -97,7 +97,9 @@ const ReflectionGroup = (props: Props) => {
   const staticReflections = useMemo(() => {
     return visibleReflections.filter(
       (reflection) =>
-        !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping)
+        (isSpotlightOpen && reflection.id !== spotlightReflectionId) ||
+        isSpotlightSource ||
+        (!reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping))
     )
   }, [visibleReflections])
   const stackRef = useRef<HTMLDivElement>(null)
