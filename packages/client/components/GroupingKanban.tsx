@@ -151,7 +151,12 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightModal closeSpotlight={closeSpotlight} sourceRef={sourceRef} meeting={meeting} />
+        <SpotlightModal
+          closeSpotlight={closeSpotlight}
+          sourceRef={sourceRef}
+          meeting={meeting}
+          phaseRef={phaseRef}
+        />
       )}
     </PortalProvider>
   )

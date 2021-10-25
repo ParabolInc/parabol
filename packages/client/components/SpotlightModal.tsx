@@ -130,11 +130,11 @@ interface Props {
   closeSpotlight: () => void
   meeting: GroupingKanban_meeting
   sourceRef: RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement>
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, sourceRef} = props
-  const modalRef = useRef<HTMLDivElement>(null)
+  const {closeSpotlight, meeting, sourceRef, phaseRef} = props
   const resultsRef = useRef<HTMLDivElement>(null)
   const srcDestinationRef = useRef<HTMLDivElement | null>(null)
   const isLoadingResults = !resultsRef.current?.clientHeight
@@ -223,7 +223,7 @@ const SpotlightModal = (props: Props) => {
         <ResultsRoot
           resultsRef={resultsRef}
           meetingId={meetingId}
-          phaseRef={modalRef}
+          phaseRef={phaseRef}
           spotlightReflectionId={spotlightReflectionId}
         />
       </Suspense>
