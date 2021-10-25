@@ -168,7 +168,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                     githubLabelName: matchedLabel.label
                   })
                 } else if (matchedLabels.length > 1) {
-                  // The issue has or more labels for the same dimension
+                  // The issue has more than one label for the same dimension
                   const differentLabels = matchedLabels.filter(
                     (matchedLabel) => matchedLabel.value !== estimate.label
                   )
