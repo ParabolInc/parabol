@@ -85,13 +85,6 @@ const PokerEstimateHeaderCardGitHub = (props: Props) => {
         title
         bodyHTML
         url
-        id
-        labels(first: 100) {
-          nodes {
-            id
-            name
-          }
-        }
       }
     `,
     issueRef

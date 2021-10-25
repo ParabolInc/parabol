@@ -103,6 +103,12 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                   repository(owner: "${repoOwner}", name: "${repoName}") {
                     issue(number: ${issueNumber}) {
                       ...info
+                      labels(first: 100) {
+                        nodes {
+                          id
+                          name
+                        }
+                      }
                     }
                   }
                 }`
