@@ -12,6 +12,9 @@ declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
 declare const __STATIC_IMAGES__: string
 declare const __SOCKET_PORT__: string
+declare const __DD_APPLICATIONID__: string
+declare const __DD_CLIENTTOKEN__: string
+declare const __DD_SERVICE__: string
 interface Window {
   __ACTION__: any
 }

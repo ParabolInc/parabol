@@ -130,7 +130,10 @@ module.exports = ({isDeploy, isStats}) => ({
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify(
         (process.env.PROTOO_LISTEN_PORT || 4444) - 1
       ),
-      __STATIC_IMAGES__: JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
+      __STATIC_IMAGES__: JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`),
+      __DD_APPLICATIONID__: JSON.stringify(process.env.DD_APPLICATIONID),
+      __DD_CLIENTTOKEN__: JSON.stringify(process.env.DD_CLIENTTOKEN),
+      __DD_SERVICE__: JSON.stringify(process.env.DD_SERVICE)
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[contenthash].js.map',

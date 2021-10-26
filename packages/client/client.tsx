@@ -1,3 +1,4 @@
+import { datadogRum } from '@datadog/browser-rum'
 import React from 'react'
 import {render} from 'react-dom'
 import Root from './Root'
@@ -10,6 +11,19 @@ if (__PRODUCTION__ && 'serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch(console.error)
   })
 }
+
+datadogRum.init({
+  applicationId: `${__DD_APPLICATIONID__}`,
+  clientToken: `${__DD_CLIENTTOKEN__}`,
+  site: 'datadoghq.com',
+  service:`${__DD_SERVICE__}`,
+  version: `${__APP_VERSION__}`,
+  sampleRate: 100,
+  trackInteractions: true,
+  defaultPrivacyLevel: 'allow'
+});
+
+datadogRum.startSessionReplayRecording();
 
 // window.addEventListener('beforeinstallprompt', (e) => {
 //   // Stash the event so it can be triggered later.
