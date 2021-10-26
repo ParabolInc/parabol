@@ -9,6 +9,7 @@ import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../typ
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import {keyframes} from '@emotion/core'
+import {RemoteReflection_meeting} from '../../__generated__/RemoteReflection_meeting.graphql'
 import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
@@ -142,11 +143,13 @@ const getStyle = (
 interface Props {
   style: React.CSSProperties
   reflection: RemoteReflection_reflection
+  meeting: RemoteReflection_meeting
 }
 
 const RemoteReflection = (props: Props) => {
-  const {reflection, style} = props
+  const {meeting, reflection, style} = props
   const {id: reflectionId, content, isDropping} = reflection
+  const {meetingMembers} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection['remoteDrag']
   >
@@ -170,6 +173,18 @@ const RemoteReflection = (props: Props) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
+
+  useEffect(() => {
+    if (!remoteDrag || !meeting) return
+    const remoteDragUser = meetingMembers.find((user) => user.userId === remoteDrag.dragUserId)
+    if (!remoteDragUser || !remoteDragUser.user.isConnected) {
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)!
+        reflection.setValue(true, 'isDropping')
+      })
+    }
+  }, [remoteDrag, meetingMembers])
+
   if (!remoteDrag) return null
   const {dragUserId, dragUserName, isSpotlight} = remoteDrag
 
@@ -222,6 +237,17 @@ export default createFragmentContainer(RemoteReflection, {
         targetId
         targetOffsetX
         targetOffsetY
+      }
+    }
+  `,
+  meeting: graphql`
+    fragment RemoteReflection_meeting on RetrospectiveMeeting {
+      id
+      meetingMembers {
+        userId
+        user {
+          isConnected
+        }
       }
     }
   `
