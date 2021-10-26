@@ -12,10 +12,6 @@ export const CreatePollSuccess = new GraphQLObjectType<any, GQLContext>({
       description: 'Poll id in a format of `poll:idGeneratedByDatabase`',
       resolve: ({pollId}) => PollId.join(pollId)
     },
-    meetingId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'The id of the meeting where the poll was added'
-    },
     poll: {
       type: GraphQLNonNull(Poll),
       description: 'the poll just created',

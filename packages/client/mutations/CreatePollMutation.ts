@@ -9,7 +9,6 @@ import {ThreadedPollBase_poll} from '../__generated__/ThreadedPollBase_poll.grap
 
 graphql`
   fragment CreatePollMutation_meeting on CreatePollSuccess {
-    meetingId
     poll {
       ...ThreadedItem_threadable
       discussionId

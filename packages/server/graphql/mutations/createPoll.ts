@@ -107,7 +107,7 @@ const createPoll = {
     }
     const [{pollId}] = insertPollResult
 
-    const data = {pollId, meetingId}
+    const data = {pollId}
     segmentIo.track({
       userId: viewerId,
       event: 'Poll added',
