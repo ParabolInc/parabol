@@ -5,7 +5,7 @@ import getDiscussionThreadConn from '../../../mutations/connections/getDiscussio
 import safePutNodeInConn from '../../../mutations/handlers/safePutNodeInConn'
 import createProxyRecord from '../../../utils/relay/createProxyRecord'
 
-const LocalPollOptionsNumber = 2
+const NEW_POLL_OPTIONS_COUNT = 2
 
 export const isLocalPoll = (threadable: {id: string}) =>
   threadable.id.startsWith('poll') && threadable.id.endsWith('tmp')
@@ -43,7 +43,7 @@ export const createLocalPoll = (
     })
       .setLinkedRecord(user, 'createdByUser')
       .setLinkedRecords(
-        Array.from({length: LocalPollOptionsNumber}).map(() =>
+        Array.from({length: NEW_POLL_OPTIONS_COUNT}).map(() =>
           createEmptyPollOption(pollId, store)
         ),
         'options'
