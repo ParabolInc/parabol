@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent, useEffect, useRef} from 'react'
+import React, {FormEvent} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useForm from '~/hooks/useForm'
 import FlatButton from '../../../../components/FlatButton'
@@ -80,14 +80,6 @@ const MattermostConfigConnection = (props: Props) => {
     }
   })
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (fields.webhookUrl.value == '') {
-      inputRef.current?.focus()
-    }
-  }, [fields])
-
   const {
     submitting,
     onError,
@@ -134,7 +126,6 @@ const MattermostConfigConnection = (props: Props) => {
             onBlur={handleBlur}
             name='webhookUrl'
             placeholder='http://my.mattermost.com:8065/hooks/abc123'
-            ref={inputRef}
           />
           <StyledButton size='medium'>Update</StyledButton>
         </Row>
