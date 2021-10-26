@@ -39,12 +39,12 @@ const PollCard = styled('div')<{
 
 interface Props {
   children: React.ReactNode
-  poll: Poll_poll$key
+  pollRef: Poll_poll$key
   isFocused: boolean
 }
 
 const Poll = (props: Props) => {
-  const {poll: pollRef, children, isFocused} = props
+  const {pollRef, children, isFocused} = props
   const poll = useFragment(
     graphql`
       fragment Poll_poll on Poll {

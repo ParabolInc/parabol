@@ -20,13 +20,13 @@ const PollTitleInput = styled('input')({
 })
 
 interface Props {
-  poll: EditablePollTitle_poll$key
+  pollRef: EditablePollTitle_poll$key
   onFocus: () => void
   onBlur: () => void
 }
 
 const EditablePollTitle = (props: Props) => {
-  const {poll: pollRef, onFocus, onBlur} = props
+  const {pollRef, onFocus, onBlur} = props
   const poll = useFragment(
     graphql`
       fragment EditablePollTitle_poll on Poll {

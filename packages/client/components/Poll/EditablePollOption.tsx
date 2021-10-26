@@ -43,13 +43,13 @@ const Counter = styled('div')<{
 }))
 
 interface Props {
-  option: EditablePollOption_option$key
+  optionRef: EditablePollOption_option$key
   shouldAutoFocus: boolean
   placeholder: string
 }
 
 const EditablePollOption = (props: Props) => {
-  const {option: optionRef, shouldAutoFocus, placeholder} = props
+  const {optionRef, shouldAutoFocus, placeholder} = props
   const pollOption = useFragment(
     graphql`
       fragment EditablePollOption_option on PollOption {

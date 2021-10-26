@@ -5,11 +5,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import {useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 
-interface Props {
-  option: PollOption_option$key
-  onSelected: (optionId: string) => void
-}
-
 const PollOptionTitle = styled('div')({
   width: '100%',
   height: '36px',
@@ -21,8 +16,13 @@ const PollOptionTitle = styled('div')({
   alignItems: 'center'
 })
 
+interface Props {
+  optionRef: PollOption_option$key
+  onSelected: (optionId: string) => void
+}
+
 const PollOption = (props: Props) => {
-  const {option: optionRef, onSelected} = props
+  const {optionRef, onSelected} = props
   const pollOption = useFragment(
     graphql`
       fragment PollOption_option on PollOption {

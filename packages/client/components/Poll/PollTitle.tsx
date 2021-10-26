@@ -10,11 +10,11 @@ const PollTitleHeader = styled('div')({
 })
 
 interface Props {
-  poll: PollTitle_poll$key
+  pollRef: PollTitle_poll$key
 }
 
 const PollTitle = (props: Props) => {
-  const {poll: pollRef} = props
+  const {pollRef} = props
   const poll = useFragment(
     graphql`
       fragment PollTitle_poll on Poll {

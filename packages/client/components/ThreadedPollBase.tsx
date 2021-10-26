@@ -75,12 +75,12 @@ const StartPollWrapper = styled('div')({
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
-  poll: ThreadedPollBase_poll$key
-  discussion: ThreadedPollBase_discussion$key
+  pollRef: ThreadedPollBase_poll$key
+  discussionRef: ThreadedPollBase_discussion$key
 }
 
 const ThreadedPollBase = (props: Props) => {
-  const {poll: pollRef, discussion: discussionRef} = props
+  const {pollRef, discussionRef} = props
   const poll = useFragment(
     graphql`
       fragment ThreadedPollBase_poll on Poll {
@@ -152,7 +152,7 @@ const ThreadedPollBase = (props: Props) => {
       return (
         <>
           <EditablePollTitle
-            poll={poll}
+            pollRef={poll}
             onFocus={() => setIsTitleFocused(true)}
             onBlur={() => setIsTitleFocused(false)}
           />
@@ -166,7 +166,7 @@ const ThreadedPollBase = (props: Props) => {
                   key={option.id}
                   shouldAutoFocus={isOptional && isLastOption}
                   placeholder={`Add a choice ${index + 1} ${isOptional ? '(optional)' : ''}...`}
-                  option={option}
+                  optionRef={option}
                 />
               )
             })}
@@ -191,10 +191,12 @@ const ThreadedPollBase = (props: Props) => {
 
     return (
       <>
-        <PollTitle poll={poll} />
+        <PollTitle pollRef={poll} />
         <PollOptions>
           {poll.options.map((option) => {
-            return <PollOption key={option.id} onSelected={setSelectedOptionId} option={option} />
+            return (
+              <PollOption key={option.id} onSelected={setSelectedOptionId} optionRef={option} />
+            )
           })}
         </PollOptions>
         <PollActions>
@@ -209,7 +211,7 @@ const ThreadedPollBase = (props: Props) => {
   }
 
   return (
-    <Poll isFocused={isTitleFocused} poll={poll}>
+    <Poll isFocused={isTitleFocused} pollRef={poll}>
       {renderPoll()}
     </Poll>
   )
