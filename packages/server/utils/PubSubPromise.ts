@@ -1,4 +1,5 @@
 import Redis from 'ioredis'
+import ms from 'ms'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
@@ -12,6 +13,7 @@ const {SERVER_ID, REDIS_URL} = process.env
 
 interface BaseRequest {
   serverChannel?: string
+  isAdHoc?: boolean
 }
 
 export default class PubSubPromise<Request extends BaseRequest, Response> {
@@ -45,10 +47,12 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
     return new Promise<Response>((resolve, reject) => {
       const nextJob = numToBase64(this.jobCounter++)
       const jobId = `${SERVER_ID}:${nextJob}`
+      const {isAdHoc} = request
+      const timeout = isAdHoc ? ms('1m') : MAX_TIMEOUT
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
         reject(new Error('TIMEOUT'))
-      }, MAX_TIMEOUT)
+      }, timeout)
       const previousJob = this.jobs[jobId]
       if (previousJob) {
         sendToSentry(new Error('REDIS JOB ALREADY EXISTS'), {tags: {jobId}})
