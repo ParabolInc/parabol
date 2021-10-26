@@ -3,6 +3,7 @@ import clientTempId from '../../../utils/relay/clientTempId'
 import Atmosphere from '../../../Atmosphere'
 import getDiscussionThreadConn from '../../../mutations/connections/getDiscussionThreadConn'
 import safePutNodeInConn from '../../../mutations/handlers/safePutNodeInConn'
+import createProxyRecord from '../../../utils/relay/createProxyRecord'
 
 const LocalPollOptionsNumber = 2
 
@@ -32,18 +33,21 @@ export const createLocalPoll = (
 
     const pollId = clientTempId('poll')
     const now = new Date().toJSON()
-    const newPollRecord = store.create(pollId, 'Poll')
-    newPollRecord.setValue(pollId, 'id')
-    newPollRecord.setValue(now, 'createdAt')
-    newPollRecord.setValue(now, 'updatedAt')
-    newPollRecord.setValue(viewerId, 'createdById')
-    newPollRecord.setValue('', 'title')
-    newPollRecord.setValue(threadSortOrder, 'threadSortOrder')
-    newPollRecord.setLinkedRecord(user, 'createdByUser')
-    newPollRecord.setLinkedRecords(
-      Array.from({length: LocalPollOptionsNumber}).map(() => createEmptyPollOption(pollId, store)),
-      'options'
-    )
+    const newPollRecord = createProxyRecord(store, 'Poll', {
+      id: pollId,
+      createdAt: now,
+      updatedAt: now,
+      createdById: viewerId,
+      title: '',
+      threadSortOrder
+    })
+      .setLinkedRecord(user, 'createdByUser')
+      .setLinkedRecords(
+        Array.from({length: LocalPollOptionsNumber}).map(() =>
+          createEmptyPollOption(pollId, store)
+        ),
+        'options'
+      )
 
     const threadConn = getDiscussionThreadConn(store, discussionId)
     safePutNodeInConn(threadConn, newPollRecord, store, 'threadSortOrder', true)
@@ -84,11 +88,9 @@ export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string) =>
   })
 
 const createEmptyPollOption = (pollId: string, store: RecordSourceProxy) => {
-  const dataID = clientTempId('poll')
-  const newPollOption = store.create(dataID, 'PollOption')
-  newPollOption.setValue(dataID, 'id')
-  newPollOption.setValue('', 'title')
-  newPollOption.setValue(pollId, 'pollId')
-
-  return newPollOption
+  return createProxyRecord(store, 'PollOption', {
+    id: clientTempId('poll'),
+    title: '',
+    pollId
+  })
 }
