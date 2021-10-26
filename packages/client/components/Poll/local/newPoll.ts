@@ -16,14 +16,6 @@ export const createLocalPoll = (
   threadSortOrder: number
 ) =>
   commitLocalUpdate(atmosphere, (store) => {
-    const discussion = store
-      .getRoot()
-      .getLinkedRecord('viewer')
-      ?.getLinkedRecord('discussion', {id: discussionId})
-    if (!discussion) {
-      console.warn('Discussion not found, could not create a poll!')
-      return
-    }
     const {viewerId} = atmosphere
     const user = store.get(viewerId)
     if (!user) {
