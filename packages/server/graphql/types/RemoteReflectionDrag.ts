@@ -7,7 +7,6 @@ import {
   GraphQLString
 } from 'graphql'
 import {GQLContext} from '../graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const RemoteReflectionDrag = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoteReflectionDrag',
@@ -30,10 +29,6 @@ const RemoteReflectionDrag = new GraphQLObjectType<any, GQLContext>({
     },
     isSpotlight: {
       type: GraphQLBoolean
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'Used to have a changing field for updating spotlight'
     },
     clientHeight: {
       type: GraphQLFloat

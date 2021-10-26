@@ -1,6 +1,7 @@
 import {getRequest} from 'relay-runtime'
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
+import {UpdateDragLocationMutationVariables} from '../__generated__/UpdateDragLocationMutation.graphql'
 
 graphql`
   fragment UpdateDragLocationMutation_meeting on UpdateDragLocationPayload {
@@ -14,8 +15,6 @@ graphql`
       targetId
       targetOffsetX
       targetOffsetY
-      isSpotlight
-      updatedAt
     }
   }
 `
@@ -25,24 +24,9 @@ const mutation = graphql`
   }
 `
 
-interface UpdateDragLocationInput {
-  id: string
-  clientHeight?: number
-  clientWidth?: number
-  meetingId: string
-  sourceId: string
-  targetId?: string
-  teamId: string
-  targetOffsetX?: number
-  targetOffsetY?: number
-  clientX?: number
-  clientY?: number
-  isSpotlight?: boolean
-}
-
 const UpdateDragLocationMutation = (
   atmosphere: Atmosphere,
-  variables: {input: UpdateDragLocationInput}
+  variables: UpdateDragLocationMutationVariables
 ) => {
   const request = getRequest(mutation).params
   atmosphere.handleFetchPromise(request, variables)

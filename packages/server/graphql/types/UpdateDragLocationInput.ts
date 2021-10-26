@@ -1,10 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInputObjectType,
-  GraphQLNonNull
-} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql'
 
 const UpdateDragLocationInput = new GraphQLInputObjectType({
   name: 'UpdateDragLocationInput',
@@ -13,12 +7,10 @@ const UpdateDragLocationInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID)
     },
     clientHeight: {
-      type: GraphQLFloat,
-      description: 'Required unless isSpotlight=true'
+      type: new GraphQLNonNull(GraphQLFloat)
     },
     clientWidth: {
-      type: GraphQLFloat,
-      description: 'Required unless isSpotlight=true'
+      type: new GraphQLNonNull(GraphQLFloat)
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -50,10 +42,6 @@ const UpdateDragLocationInput = new GraphQLInputObjectType({
     clientY: {
       type: GraphQLFloat,
       description: 'the top of the source, relative to the client window'
-    },
-    isSpotlight: {
-      type: GraphQLBoolean,
-      description: 'Is this update indicating an open Spotlight modal?'
     }
   })
 })

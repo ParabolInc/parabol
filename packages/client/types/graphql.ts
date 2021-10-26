@@ -57842,11 +57842,6 @@ export interface IRemoteReflectionDrag {
    */
   dragUserName: string | null;
   isSpotlight: boolean | null;
-
-  /**
-   * Used to have a changing field for updating spotlight
-   */
-  updatedAt: any | null;
   clientHeight: number | null;
   clientWidth: number | null;
 
@@ -58820,16 +58815,8 @@ export interface IUpdateNewCheckInQuestionPayload {
 
 export interface IUpdateDragLocationInput {
   id: string;
-
-  /**
-   * Required unless isSpotlight=true
-   */
-  clientHeight?: number | null;
-
-  /**
-   * Required unless isSpotlight=true
-   */
-  clientWidth?: number | null;
+  clientHeight: number;
+  clientWidth: number;
   meetingId: string;
 
   /**
@@ -58866,11 +58853,6 @@ export interface IUpdateDragLocationInput {
    * the top of the source, relative to the client window
    */
   clientY?: number | null;
-
-  /**
-   * Is this update indicating an open Spotlight modal?
-   */
-  isSpotlight?: boolean | null;
 }
 
 /**

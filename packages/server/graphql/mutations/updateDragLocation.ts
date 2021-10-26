@@ -14,24 +14,12 @@ const updateDragLocation = {
     }
   },
   async resolve(_source, {input}, {authToken, dataLoader, socketId: mutatorId}) {
-    if (
-      !input.isSpotlight &&
-      (input.clientHeight === undefined || input.clientWidth === undefined)
-    ) {
-      throw new Error('clientHeight and clientWidth are required when isSpotlight is not true')
-    }
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const {teamId, meetingId, ...inputData} = input
     const viewerId = getUserId(authToken)
     if (viewerId && authToken.tms.includes(teamId)) {
-      const data = {
-        remoteDrag: {
-          ...inputData,
-          updatedAt: new Date()
-        },
-        userId: viewerId
-      }
+      const data = {remoteDrag: inputData, userId: viewerId}
       publish(SubscriptionChannel.MEETING, meetingId, 'UpdateDragLocationPayload', data, subOptions)
     }
   }

@@ -1,10 +1,8 @@
 import {useCallback, useEffect, useRef} from 'react'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
-import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
 import clientTempId from '../utils/relay/clientTempId'
 import useAtmosphere from './useAtmosphere'
-import {Times} from '../types/constEnums'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {commitLocalUpdate} from 'react-relay'
 
@@ -74,20 +72,6 @@ const useSpotlightSimulatedDrag = (meeting: GroupingKanban_meeting) => {
         const meetingProxy = store.get(meetingId)
         reflection && meetingProxy?.setLinkedRecord(reflection, 'spotlightReflection')
       })
-
-      // send regular updates so the remote end doesn't time out the drag
-      updateTimerRef.current = window.setInterval(() => {
-        if (!dragIdRef.current || !reflectionIdRef.current) return
-        UpdateDragLocationMutation(atmosphere, {
-          input: {
-            id: dragIdRef.current,
-            meetingId,
-            sourceId: reflectionIdRef.current,
-            teamId: meeting.teamId,
-            isSpotlight: true
-          }
-        })
-      }, Times.REFLECTION_STALE_LIMIT / 2)
     },
     [meetingId]
   )

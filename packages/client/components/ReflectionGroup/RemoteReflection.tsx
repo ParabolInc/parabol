@@ -155,12 +155,17 @@ const RemoteReflection = (props: Props) => {
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    timeoutRef.current = window.setTimeout(() => {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)!
-        reflection.setValue(true, 'isDropping')
-      })
-    }, Times.REFLECTION_STALE_LIMIT)
+    timeoutRef.current = window.setTimeout(
+      () => {
+        commitLocalUpdate(atmosphere, (store) => {
+          const reflection = store.get(reflectionId)!
+          reflection.setValue(true, 'isDropping')
+        })
+      },
+      remoteDrag?.isSpotlight
+        ? Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT
+        : Times.REFLECTION_DRAG_STALE_TIMEOUT
+    )
     return () => {
       window.clearTimeout(timeoutRef.current)
     }
@@ -210,7 +215,6 @@ export default createFragmentContainer(RemoteReflection, {
         dragUserId
         dragUserName
         isSpotlight
-        updatedAt
         clientHeight
         clientWidth
         clientX
