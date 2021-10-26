@@ -4,7 +4,6 @@
 import ms from 'ms'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import getRethink from '../database/rethinkDriver'
-import IUser from '../postgres/types/IUser'
 
 // All results must be mapped to their ids!
 const customRedisQueries = {
@@ -62,7 +61,7 @@ const customRedisQueries = {
   },
   User: async (ids: string[]) => {
     const users = await getUsersByIds(ids)
-    return ids.map((id) => users.find((user) => user.id === id)) as IUser[]
+    return ids.map((id) => users.find((user) => user.id === id))
   }
 } as const
 

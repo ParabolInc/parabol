@@ -42,7 +42,7 @@ export default {
         })
         .run() as unknown) as Organization[]
     ])
-    if (user.inactive) {
+    if (!user || user.inactive) {
       return standardError(new Error('User already inactivated'), {userId: viewerId})
     }
 

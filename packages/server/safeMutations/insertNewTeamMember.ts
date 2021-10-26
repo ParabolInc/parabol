@@ -20,6 +20,9 @@ const insertNewTeamMember = async (userId: string, teamId: string) => {
       .get(teamMemberId)
       .run()
   ])
+  if (!user) {
+    throw new Error('User does not exist')
+  }
   if (existingTeamMember) {
     existingTeamMember.isNotRemoved = true
     existingTeamMember.updatedAt = now

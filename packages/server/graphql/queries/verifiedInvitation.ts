@@ -69,6 +69,15 @@ export default {
       const meetingType = bestMeeting?.meetingType ?? null
       const meetingId = bestMeeting?.id ?? null
       const meetingName = bestMeeting?.name ?? null
+
+      // if the inviter is not in our system anymore, their invites should be expired, too
+      if (!inviter) {
+        return {
+          errorType: InvitationTokenError.EXPIRED,
+          teamName: team.name
+        }
+      }
+
       if (acceptedAt) {
         return {
           errorType: InvitationTokenError.ALREADY_ACCEPTED,

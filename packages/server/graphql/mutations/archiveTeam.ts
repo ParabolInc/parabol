@@ -57,11 +57,11 @@ export default {
     }).run()
 
     const notifications = users
-      .map(({id}) => id)
-      .filter((userId) => userId !== viewerId)
+      .map((user) => user?.id)
+      .filter((userId) => userId !== undefined && userId !== viewerId)
       .map(
         (notifiedUserId) =>
-          new NotificationTeamArchived({userId: notifiedUserId, teamId, archivorUserId: viewerId})
+          new NotificationTeamArchived({userId: notifiedUserId!, teamId, archivorUserId: viewerId})
       )
 
     if (notifications.length) {
@@ -80,6 +80,7 @@ export default {
     publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)
 
     users.forEach((user) => {
+      if (!user) return
       const {id, tms} = user
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
