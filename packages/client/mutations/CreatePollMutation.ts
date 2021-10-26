@@ -65,24 +65,17 @@ const CreatePollMutation: StandardMutation<TCreatePollMutation, Handlers> = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('createPoll')
-      if (!payload) {
-        console.warn('No poll object created')
-        return
-      }
+      if (!payload) return
+
       const newlyCreatedPoll = payload.getLinkedRecord('poll')
       const existingPoll = store.get(localPoll.id)
-      if (!existingPoll) {
-        console.warn(`Could not find poll with id: ${localPoll.id}, skipping update!`)
-        return
-      }
+      if (!existingPoll) return
+
       const newlyCreatedPollId = newlyCreatedPoll.getValue('id')
       existingPoll.setValue(newlyCreatedPollId, 'id')
-
       const newPollOptions = newlyCreatedPoll.getLinkedRecords('options')
-      if (!newPollOptions) {
-        console.warn(`Could not find poll options for poll id: ${localPoll.id}, skipping update!`)
-        return
-      }
+      if (!newPollOptions) return
+
       existingPoll.setLinkedRecords(newPollOptions, 'options')
     },
     onCompleted,

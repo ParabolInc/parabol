@@ -18,10 +18,7 @@ export const createLocalPoll = (
   commitLocalUpdate(atmosphere, (store) => {
     const {viewerId} = atmosphere
     const user = store.get(viewerId)
-    if (!user) {
-      console.warn('Viewer is null, could not create a poll!')
-      return
-    }
+    if (!user) return
 
     const pollId = clientTempId('poll')
     const now = new Date().toJSON()
@@ -48,30 +45,23 @@ export const createLocalPoll = (
 export const updateLocalPoll = (atmosphere: Atmosphere, id: string, title: string) =>
   commitLocalUpdate(atmosphere, (store) => {
     const poll = store.get(id)
-    if (!poll) {
-      console.warn(`Could not find poll with id: ${id}, skipping update!`)
-      return
-    }
+    if (!poll) return
+
     poll.setValue(title, 'title')
   })
 
 export const updateLocalPollOption = (atmosphere: Atmosphere, id: string, title: string) =>
   commitLocalUpdate(atmosphere, (store) => {
     const pollOption = store.get(id)
-    if (!pollOption) {
-      console.warn(`Could not find poll option with id: ${id}, skipping update!`)
-      return
-    }
+    if (!pollOption) return
+
     pollOption.setValue(title, 'title')
   })
 
 export const addLocalPollOption = (atmosphere: Atmosphere, pollId: string) =>
   commitLocalUpdate(atmosphere, (store) => {
     const poll = store.get(pollId)
-    if (!poll) {
-      console.warn(`Could not find poll with id: ${pollId}, will not create a new poll option!`)
-      return
-    }
+    if (!poll) return
 
     const pollOptions = poll.getLinkedRecords('options') || []
     const pollOption = createEmptyPollOption(pollId, store)
