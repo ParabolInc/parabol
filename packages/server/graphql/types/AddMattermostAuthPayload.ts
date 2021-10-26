@@ -1,15 +1,12 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
 import MattermostIntegration from './MattermostIntegration'
+import makeMutationPayload from './makeMutationPayload'
 import User from './User'
 import {GQLContext} from '../graphql'
 
-const AddMattermostAuthPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'AddMattermostAuthPayload',
+export const AddMattermostAuthSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'AddMattermostAuthSuccess',
   fields: () => ({
-    error: {
-      type: StandardMutationError
-    },
     MattermostIntegration: {
       type: MattermostIntegration,
       description: 'The newly created MattermostIntegration object',
@@ -26,5 +23,10 @@ const AddMattermostAuthPayload = new GraphQLObjectType<any, GQLContext>({
     }
   })
 })
+
+const AddMattermostAuthPayload = makeMutationPayload(
+  'AddMattermostAuthPayload',
+  AddMattermostAuthSuccess
+)
 
 export default AddMattermostAuthPayload

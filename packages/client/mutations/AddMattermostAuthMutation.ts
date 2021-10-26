@@ -4,7 +4,7 @@ import {StandardMutation} from '../types/relayMutations'
 import {AddMattermostAuthMutation as TAddMattermostAuthMutation} from '../__generated__/AddMattermostAuthMutation.graphql'
 
 graphql`
-  fragment AddMattermostAuthMutation_team on AddMattermostAuthPayload {
+  fragment AddMattermostAuthMutation_team on AddMattermostAuthSuccess {
     user {
       ...MattermostPanel_viewer
     }
@@ -14,8 +14,10 @@ graphql`
 const mutation = graphql`
   mutation AddMattermostAuthMutation($webhookUrl: URL!, $teamId: ID!) {
     addMattermostAuth(webhookUrl: $webhookUrl, teamId: $teamId) {
-      error {
-        message
+      ... on ErrorPayload {
+        error {
+          message
+        }
       }
       ...AddMattermostAuthMutation_team @relay(mask: false)
     }

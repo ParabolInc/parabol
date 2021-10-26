@@ -1,6 +1,7 @@
 import {FixedLengthArray} from 'parabol-client/types/generics'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../../appOrigin'
+import {PALETTE} from '~/styles/paletteV3'
 
 export interface ButtonSpec {
   label: string
@@ -38,7 +39,7 @@ export const makeFieldsAttachment = (
     author_icon: makeAppURL(appOrigin, `static/images/brand/mark-color%403x.png`),
     author_name: 'Parabol',
     author_link: 'https://parabol.co/',
-    color: '#A06BD6'
+    color: PALETTE.GRAPE_500
   }
   return {
     ...defaultHeader,

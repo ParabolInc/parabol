@@ -6,6 +6,12 @@ import fetch from 'node-fetch'
 // Mattermost integration. We might want to do this if we decide to use Mattermost's
 // upcoming "App" framework
 
+export interface MattermostApiResponse {
+  ok: boolean
+  status: number
+  error: string | undefined
+}
+
 abstract class MattermostManager {
   webhookUrl: string
   abstract fetch
@@ -15,19 +21,23 @@ abstract class MattermostManager {
     this.webhookUrl = webhookUrl
   }
 
-  private async post(payload: any): Promise<number> {
+  private async post(payload: any): Promise<MattermostApiResponse> {
     const res = await fetch(this.webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json' as const,
-        Accept: 'application/json' as const
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
       },
       body: JSON.stringify(payload)
     })
-    return res.status
+    return {
+      ok: res.ok,
+      status: res.status,
+      error: !res.ok ? (await res.json())?.message : undefined
+    }
   }
 
-  async postMessage(textOrAttachmentsArray: string | Array<object>, notificationText?: string) {
+  async postMessage(textOrAttachmentsArray: string | unknown[], notificationText?: string) {
     const prop =
       typeof textOrAttachmentsArray === 'string'
         ? 'text'

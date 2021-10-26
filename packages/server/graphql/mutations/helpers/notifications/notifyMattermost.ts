@@ -30,11 +30,11 @@ const notifyMattermost = async (
   webhookUrl: string,
   userId: string,
   teamId: string,
-  textOrAttachmentsArray: string | Array<object>,
+  textOrAttachmentsArray: string | unknown[],
   notificationText?: string
 ) => {
   const manager = new MattermostServerManager(webhookUrl)
-  const status = await manager.postMessage(textOrAttachmentsArray, notificationText)
+  const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   segmentIo.track({
     userId,
     event: 'Mattermost notification sent',
@@ -43,10 +43,34 @@ const notifyMattermost = async (
       notificationEvent: event
     }
   })
-  const result = status == 200
-  if (!result) sendToSentry(new Error(`Mattermost Notification Error: ${webhookUrl}`))
+  if (!result.ok) sendToSentry(new Error(`Mattermost Notification Error: ${webhookUrl}`))
 
   return result
+}
+
+export const notifyWebhookConfigUpdated = async (
+  webhookUrl: string,
+  userId: string,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const {name: teamName} = await dataLoader.get('teams').load(teamId)
+  const message = `Integration webhook configuration updated for team \`${teamName}\``
+
+  const attachments = [
+    makeFieldsAttachment(
+      [
+        {
+          short: false,
+          value: message
+        }
+      ],
+      {
+        fallback: message
+      }
+    )
+  ]
+  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
 }
 
 export const startMattermostMeeting = async (
@@ -94,9 +118,7 @@ export const startMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingStart', webhookUrl, userId, teamId, attachments).catch(
-    console.log
-  )
+  return await notifyMattermost('meetingStart', webhookUrl, userId, teamId, attachments)
 }
 
 const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {

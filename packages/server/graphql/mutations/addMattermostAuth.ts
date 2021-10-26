@@ -8,6 +8,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import GraphQLURLType from '../types/GraphQLURLType'
 import AddMattermostAuthPayload from '../types/AddMattermostAuthPayload'
+import {notifyWebhookConfigUpdated} from './helpers/notifications/notifyMattermost'
 
 export default {
   name: 'AddSlackAuth',
@@ -37,23 +38,16 @@ export default {
       return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
     }
 
+    // VALIDATION
+    const result = await notifyWebhookConfigUpdated(webhookUrl, viewerId, teamId, dataLoader)
+    if (!result.ok) {
+      return standardError(
+        new Error(`Mattermost reports error (${result.status}): ${result.error}`),
+        {userId: viewerId}
+      )
+    }
+
     // RESOLUTION
-    // const manager = await SlackServerManager.init(code)
-    // const {response} = manager
-    // const slackUserId = response.authed_user.id
-    // const defaultChannelId = response.incoming_webhook.channel_id
-    // const [joinConvoRes, userInfoRes] = await Promise.all([
-    //   manager.joinConversation(defaultChannelId),
-    //   manager.getUserInfo(slackUserId)
-    // ])
-    // if (!userInfoRes.ok) {
-    //   return standardError(new Error(userInfoRes.error), {userId: viewerId})
-    // }
-
-    // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
-    // Using the slackUserId sends a DM to the user from @Parabol
-    //const teamChannelId = joinConvoRes.ok ? joinConvoRes.channel.id : slackUserId
-
     await upsertMattermostAuth({
       webhookUrl,
       userId: viewerId,

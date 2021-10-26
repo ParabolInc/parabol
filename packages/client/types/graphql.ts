@@ -55211,7 +55211,7 @@ export interface IMutation {
    * Add a comment to a discussion
    */
   addComment: AddCommentPayload;
-  addMattermostAuth: IAddMattermostAuthPayload;
+  addMattermostAuth: AddMattermostAuthPayload;
 
   /**
    * Add a new poker template with a default dimension created
@@ -57130,9 +57130,15 @@ export interface IAddCommentInput {
   threadParentId?: string | null;
 }
 
-export interface IAddMattermostAuthPayload {
-  __typename: 'AddMattermostAuthPayload';
-  error: IStandardMutationError | null;
+/**
+ * Return object for AddMattermostAuthPayload
+ */
+export type AddMattermostAuthPayload =
+  | IErrorPayload
+  | IAddMattermostAuthSuccess;
+
+export interface IAddMattermostAuthSuccess {
+  __typename: 'AddMattermostAuthSuccess';
 
   /**
    * The newly created MattermostIntegration object
@@ -59853,7 +59859,7 @@ export type TeamSubscriptionPayload =
   | IAddAgendaItemPayload
   | IAddAtlassianAuthPayload
   | IAddGitHubAuthPayload
-  | IAddMattermostAuthPayload
+  | IAddMattermostAuthSuccess
   | IAddSlackAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload

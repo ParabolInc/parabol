@@ -3,7 +3,7 @@ import AcceptTeamInvitationPayload from './AcceptTeamInvitationPayload'
 import AddAgendaItemPayload from './AddAgendaItemPayload'
 import AddAtlassianAuthPayload from './AddAtlassianAuthPayload'
 import AddGitHubAuthPayload from './AddGitHubAuthPayload'
-import AddMattermostAuthPayload from './AddMattermostAuthPayload'
+import {AddMattermostAuthSuccess} from './AddMattermostAuthPayload'
 import AddPokerTemplateDimensionPayload from './AddPokerTemplateDimensionPayload'
 import AddPokerTemplatePayload from './AddPokerTemplatePayload'
 import AddPokerTemplateScalePayload from './AddPokerTemplateScalePayload'
@@ -72,7 +72,7 @@ const types = [
   AddAgendaItemPayload,
   AddAtlassianAuthPayload,
   AddGitHubAuthPayload,
-  AddMattermostAuthPayload,
+  AddMattermostAuthSuccess,
   AddSlackAuthPayload,
   AddTeamPayload,
   ArchiveTeamPayload,
