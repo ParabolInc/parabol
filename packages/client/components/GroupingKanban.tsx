@@ -60,9 +60,10 @@ const GroupingKanban = (props: Props) => {
     if (clone && document.body.contains(clone)) {
       document.body.removeChild(clone)
     }
+    if (!tempIdRef.current || !spotlightReflectionId) return
     closePortal()
     EndDraggingReflectionMutation(atmosphere, {
-      reflectionId: spotlightReflectionId!,
+      reflectionId: spotlightReflectionId,
       dropTargetType: null,
       dropTargetId: null,
       dragId: tempIdRef.current

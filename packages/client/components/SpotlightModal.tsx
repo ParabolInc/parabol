@@ -137,7 +137,7 @@ const SpotlightModal = (props: Props) => {
   const {closeSpotlight, meeting, sourceRef, phaseRef} = props
   const resultsRef = useRef<HTMLDivElement>(null)
   const srcDestinationRef = useRef<HTMLDivElement | null>(null)
-  const animatedSourceRef = useRef(false)
+  const isAnimated = useRef(false)
   const isLoadingResults = !resultsRef.current?.clientHeight
   const {id: meetingId, spotlightReflection} = meeting
   const spotlightReflectionId = spotlightReflection?.id
@@ -154,7 +154,7 @@ const SpotlightModal = (props: Props) => {
       srcDestinationRef.current &&
       spotlightReflectionId &&
       sourceRef.current &&
-      !animatedSourceRef.current
+      !isAnimated.current
     ) {
       const sourceBbox = sourceRef.current.getBoundingClientRect()
       const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
@@ -174,7 +174,7 @@ const SpotlightModal = (props: Props) => {
         style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
         style.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
       }, 0)
-      animatedSourceRef.current = true
+      isAnimated.current = true
     }
   })
 
