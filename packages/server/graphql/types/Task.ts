@@ -22,6 +22,7 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
+import sendToSentry from '../../utils/sendToSentry'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -144,8 +145,16 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           const labels = labelsData.repository.issue.labels.nodes
 
           if (errors || labelErrors) {
-            console.log(errors)
-            console.log(labelErrors)
+            if (errors) {
+              console.error(errors)
+              sendToSentry(new Error(errors[0].message), {
+                userId: accessUserId
+              })
+            }
+            if (labelErrors) {
+              console.error(labelErrors)
+              sendToSentry(new Error(labelErrors[0].message), {userId: accessUserId})
+            }
           } else if (estimates.length) {
             const dimensions = await dataLoader.get('githubDimensionFieldMaps').loadMany(
               estimates.map((estimate) => {
