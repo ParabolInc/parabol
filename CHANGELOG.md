@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.34.0 2021-Oct-27
+
+### Fixed
+
+- Fix pg query count datatype (#5562)
+- Fix/users type from dataloader (#5538)
+
+### Added
+
+- Better logging for timeout in publishInternalGQL (#5552)
+
 ## 6.33.1 2021-Oct-21
 
 ### Fixed
