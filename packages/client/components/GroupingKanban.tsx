@@ -56,6 +56,10 @@ const GroupingKanban = (props: Props) => {
   }
 
   const closeSpotlight = () => {
+    const clone = document.getElementById(`clone-${spotlightReflectionId}`)
+    if (clone) {
+      document.body.removeChild(clone)
+    }
     closePortal()
     EndDraggingReflectionMutation(atmosphere, {
       reflectionId: spotlightReflectionId!,

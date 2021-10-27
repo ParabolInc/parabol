@@ -137,6 +137,7 @@ const SpotlightModal = (props: Props) => {
   const {closeSpotlight, meeting, sourceRef, phaseRef} = props
   const resultsRef = useRef<HTMLDivElement>(null)
   const srcDestinationRef = useRef<HTMLDivElement | null>(null)
+  const animatedSourceRef = useRef(false)
   const isLoadingResults = !resultsRef.current?.clientHeight
   const {id: meetingId, spotlightReflection} = meeting
   const spotlightReflectionId = spotlightReflection?.id
@@ -149,7 +150,12 @@ const SpotlightModal = (props: Props) => {
 
   let clone: HTMLElement | null | undefined
   requestAnimationFrame(() => {
-    if (srcDestinationRef.current && spotlightReflectionId && sourceRef.current) {
+    if (
+      srcDestinationRef.current &&
+      spotlightReflectionId &&
+      sourceRef.current &&
+      !animatedSourceRef.current
+    ) {
       const sourceBbox = sourceRef.current.getBoundingClientRect()
       const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
       clone = document.getElementById(`clone-${spotlightReflectionId}`)
@@ -166,8 +172,9 @@ const SpotlightModal = (props: Props) => {
       style.overflow = `hidden`
       setTimeout(() => {
         style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-        style.transition = `all ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
+        style.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
       }, 0)
+      animatedSourceRef.current = true
     }
   })
 
