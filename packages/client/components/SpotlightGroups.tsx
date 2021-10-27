@@ -7,23 +7,23 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {ElementHeight, ElementWidth} from '~/types/constEnums'
 import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 import useGroupMatrix from '../hooks/useGroupMatrix'
-import useGetRefVal from '~/hooks/useGetRefVal'
+import useResultsHeight from '~/hooks/useResultsHeight'
 
 const SimilarGroups = styled('div')({
   padding: '40px 0px 24px',
   height: '100%',
-  width: '100%'
+  width: '100%',
+  overflow: 'hidden'
 })
 
-const Scrollbar = styled('div')<{height: number | null}>(({height}) => ({
+const Scrollbar = styled('div')<{height: number | string}>(({height}) => ({
   display: 'flex',
   justifyContent: 'center',
   overflow: 'auto',
   width: '100%',
-  // if results are remotely ungrouped, SpotlightGroups increases in height.
-  // to prevent the modal height from changing, use initial groups height
-  height: height || '100%',
-  minHeight: height ? ElementHeight.REFLECTION_CARD * 4 : undefined
+  height,
+  // wait for height to be calculated before setting the minHeight
+  minHeight: height === '100%' ? undefined : ElementHeight.REFLECTION_CARD * 4
 }))
 
 const Column = styled('div')({
@@ -88,12 +88,12 @@ const SpotlightGroups = (props: Props) => {
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
-  const scrollHeight = useGetRefVal(resultsRef, 'clientHeight')
+  const scrollHeight = useResultsHeight(resultsRef)
 
   if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
   return (
     <SimilarGroups>
-      <Scrollbar ref={resultsRef} height={scrollHeight}>
+      <Scrollbar height={scrollHeight} ref={resultsRef}>
         {groupMatrix?.map((row) => (
           <Column key={`${row[0].id}-${row[0].id}`}>
             {row.map((group) => {
