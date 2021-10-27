@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import React, {RefObject, Suspense, useEffect, useLayoutEffect, useRef} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DECELERATE, fadeInOpacity} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
@@ -75,7 +75,7 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceWrapper = styled('div')({})
+const Source = styled('div')({})
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -151,6 +151,7 @@ const SpotlightModal = (props: Props) => {
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
   const sourceReflectionIdsRef = useRef<string[] | null>(null)
+  const isAnimatedRef = useRef(false) // change name
 
   useEffect(() => {
     if (!spotlightGroup) return
@@ -166,7 +167,6 @@ const SpotlightModal = (props: Props) => {
     if (!ids && firstReflectionId) {
       // when Spotlight opens, only show the last reflection in the source group
       sourceReflectionIdsRef.current = [firstReflectionId]
-      console.log('first if')
     }
     // TODO: uncomment for groups -> source issue
     // else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
@@ -190,29 +190,37 @@ const SpotlightModal = (props: Props) => {
   }
 
   let clone: HTMLElement | null | undefined
-  requestAnimationFrame(() => {
-    if (srcDestinationRef.current && spotlightGroupId && sourceRef.current) {
-      const sourceBbox = sourceRef.current.getBoundingClientRect()
-      const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
-      clone = document.getElementById(`clone-${spotlightReflectionId}`)
-      if (!clone) return
-      const {style} = clone
-      const {left: startLeft, top: startTop} = sourceBbox
-      const {left: endLeft, top: endTop} = destinationBbox
-      const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
-      style.left = `${startLeft}px`
-      style.top = `${startTop}px`
-      style.borderRadius = `4px`
-      style.boxShadow = 'none'
-      style.opacity = '1'
-      style.overflow = `hidden`
-      style.paddingTop = '6px'
-      setTimeout(() => {
-        style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-        style.transition = `all ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
-      }, 0)
-      srcDestinationRef.current = null
-    }
+  useLayoutEffect(() => {
+    requestAnimationFrame(() => {
+      if (
+        srcDestinationRef.current &&
+        spotlightGroupId &&
+        sourceRef.current &&
+        spotlightReflectionId &&
+        !isAnimatedRef.current
+      ) {
+        const sourceBbox = sourceRef.current.getBoundingClientRect()
+        const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
+        clone = document.getElementById(`clone-${spotlightReflectionId}`)
+        if (!clone) return
+        const {style} = clone
+        const {left: startLeft, top: startTop} = sourceBbox
+        const {left: endLeft, top: endTop} = destinationBbox
+        const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
+        style.left = `${startLeft}px`
+        style.top = `${startTop}px`
+        style.borderRadius = `4px`
+        style.boxShadow = 'none'
+        style.opacity = '1'
+        style.overflow = `hidden`
+        style.paddingTop = '6px'
+        setTimeout(() => {
+          style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
+          style.transition = `all ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
+        }, 0)
+        isAnimatedRef.current = true
+      }
+    })
   })
 
   useEffect(() => {
@@ -222,14 +230,14 @@ const SpotlightModal = (props: Props) => {
         document.body.removeChild(clone)
       }
     }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
-    return () => clearTimeout(timeout)
+    return () => {
+      clearTimeout(timeout)
+      const testaclone = document.getElementById(`clone-${spotlightReflectionId}`)
+      if (testaclone) {
+        document.body.removeChild(testaclone)
+      }
+    }
   }, [isLoadingResults])
-
-  // console.log('🚀  ~ sourceReflectionIdsRef', {
-  //   spotlightGroup,
-  //   sourceReflectionIdsRef,
-  //   spotlightReflectionId
-  // })
 
   return (
     <Modal isLoadingResults={isLoadingResults}>
@@ -242,7 +250,7 @@ const SpotlightModal = (props: Props) => {
         </TopRow>
         {/* wait for results to render to know the height of the modal */}
         {!isLoadingResults && (
-          <SourceWrapper ref={srcDestinationRef}>
+          <Source ref={srcDestinationRef}>
             {spotlightGroup && (
               <ReflectionGroup
                 phaseRef={phaseRef}
@@ -251,7 +259,7 @@ const SpotlightModal = (props: Props) => {
                 sourceReflectionIds={sourceReflectionIdsRef.current}
               />
             )}
-          </SourceWrapper>
+          </Source>
         )}
         <SearchWrapper>
           <Search>

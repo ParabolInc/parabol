@@ -40,8 +40,9 @@ const ReflectionWrapper = styled('div')<{
   staticIdx: number
   isDropping: boolean | null
   groupCount: number
-}>(({staticIdx, isDropping, groupCount}): any => {
-  const isHidden = staticIdx === -1 || isDropping
+  isHiddenSource: boolean
+}>(({staticIdx, isDropping, groupCount, isHiddenSource}): any => {
+  const isHidden = staticIdx === -1 || isDropping || isHiddenSource
   const multiple = Math.min(staticIdx, 2)
   const scaleX =
     (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
@@ -80,7 +81,7 @@ const ReflectionGroup = (props: Props) => {
     sourceReflectionIds
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage, spotlightGroup, spotlightReflectionId} = meeting
+  const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
@@ -91,15 +92,14 @@ const ReflectionGroup = (props: Props) => {
   const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
+  const isSourceReflection = spotlightGroup?.id === reflectionGroupId
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
     return visibleReflections.filter(
       (reflection) =>
-        (isSpotlightOpen && reflection.id !== spotlightReflectionId) ||
-        isSpotlightSource ||
-        (!reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping))
+        !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping)
     )
   }, [visibleReflections])
   const stackRef = useRef<HTMLDivElement>(null)
@@ -203,6 +203,7 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
+            const isHiddenSource = isSourceReflection && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
@@ -210,6 +211,7 @@ const ReflectionGroup = (props: Props) => {
                 groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
+                isHiddenSource={isHiddenSource}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}

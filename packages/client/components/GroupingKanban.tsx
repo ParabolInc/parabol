@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
+import useMutationProps from '~/hooks/useMutationProps'
 import EndDraggingReflectionMutation from '~/mutations/EndDraggingReflectionMutation'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import clientTempId from '~/utils/relay/clientTempId'
@@ -49,6 +50,7 @@ const GroupingKanban = (props: Props) => {
   const sourceRef = useRef<HTMLDivElement | null>(null)
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
   useHideBodyScroll()
   const tempIdRef = useRef<null | string>(null)
   if (tempIdRef.current === null) {
@@ -125,7 +127,21 @@ const GroupingKanban = (props: Props) => {
       meeting.setValue(reflectionId, 'spotlightReflectionId')
     })
     if (!tempIdRef.current) return
-    StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: tempIdRef.current})
+    const handleCompleted = () => {
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)
+        reflection?.setValue(false, 'isViewerDragging')
+      })
+      onCompleted()
+    }
+    StartDraggingReflectionMutation(
+      atmosphere,
+      {
+        reflectionId,
+        dragId: tempIdRef.current
+      },
+      {onError, onCompleted: handleCompleted}
+    )
   }
 
   if (!phaseRef.current) return null
