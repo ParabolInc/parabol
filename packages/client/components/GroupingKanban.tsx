@@ -50,16 +50,20 @@ const GroupingKanban = (props: Props) => {
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
-  const tempIdRef = useRef<null | string>(null)
-  if (tempIdRef.current === null) {
+  const tempIdRef = useRef<null | string | undefined>()
+  if (tempIdRef.current === undefined) {
     tempIdRef.current = clientTempId()
   }
 
   const closeSpotlight = () => {
     closePortal()
-    if (!tempIdRef.current) return
+    const clone = document.getElementById(`clone-${spotlightReflectionId}`)
+    if (clone && document.body.contains(clone)) {
+      document.body.removeChild(clone)
+    }
+    if (!tempIdRef.current || !spotlightReflectionId) return
     EndDraggingReflectionMutation(atmosphere, {
-      reflectionId: spotlightReflectionId!,
+      reflectionId: spotlightReflectionId,
       dropTargetType: null,
       dropTargetId: null,
       dragId: tempIdRef.current

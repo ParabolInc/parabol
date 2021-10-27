@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useEffect, useLayoutEffect, useRef} from 'react'
+import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {DECELERATE, fadeInOpacity} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
@@ -157,31 +157,22 @@ const SpotlightModal = (props: Props) => {
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
   const sourceReflectionIdsRef = useRef<string[] | null>(null)
-  const isAnimatedRef = useRef(false) // change name
+  const isAnimated = useRef(false)
 
   useEffect(() => {
     if (!spotlightGroup) return
-    const firstReflectionId = sourceReflections && sourceReflections[0]?.id
     let timeout: number | undefined
-    const {current: ids} = sourceReflectionIdsRef
-    // const sourceReflectionIds = sourceReflections.map((reflection) => reflection.id)
-    // if (!sourceReflectionIdsRef.current && firstReflectionId) {
-    //   // when Spotlight opens, only show the last reflection in the source group
-    //   sourceReflectionIdsRef.current = [firstReflectionId]
-    //   console.log('first if')
-    // }
-    if (!ids && firstReflectionId) {
-      // when Spotlight opens, only show the last reflection in the source group
-      sourceReflectionIdsRef.current = [firstReflectionId]
+    const sourceReflectionIds = sourceReflections?.map((reflection) => reflection.id)
+    if (!sourceReflectionIdsRef.current && spotlightReflectionId) {
+      // when opening Spotlight, if group has several reflections, only show the selected reflection
+      sourceReflectionIdsRef.current = [spotlightReflectionId]
     }
     // TODO: uncomment for groups -> source issue
     // else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
     // if results are dragged onto the source, add result reflections to source group
-    //   spotlightReflectionIds.current = [...ids, firstReflectionId]
+    // sourceReflectionIdsRef.current = [...ids, firstReflectionId]
     // }
-    // else if (!sourceReflectionIdsRef.current?.includes(firstReflectionId)) {
-    // else if (!spotlightReflectionId || !sourceReflectionIds.includes(spotlightReflectionId)) {
-    else if (!firstReflectionId || !ids?.includes(firstReflectionId)) {
+    else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
       timeout = window.setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
@@ -196,53 +187,44 @@ const SpotlightModal = (props: Props) => {
   }
 
   let clone: HTMLElement | null | undefined
-  useLayoutEffect(() => {
-    requestAnimationFrame(() => {
-      if (
-        srcDestinationRef.current &&
-        spotlightGroupId &&
-        sourceRef.current &&
-        spotlightReflectionId &&
-        !isAnimatedRef.current
-      ) {
-        const sourceBbox = sourceRef.current.getBoundingClientRect()
-        const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
-        clone = document.getElementById(`clone-${spotlightReflectionId}`)
-        if (!clone) return
-        const {style} = clone
-        const {left: startLeft, top: startTop} = sourceBbox
-        const {left: endLeft, top: endTop} = destinationBbox
-        const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
-        style.left = `${startLeft}px`
-        style.top = `${startTop}px`
-        style.borderRadius = `4px`
-        style.boxShadow = 'none'
-        style.opacity = '1'
-        style.overflow = `hidden`
-        style.paddingTop = '6px'
-        setTimeout(() => {
-          style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-          style.transition = `all ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
-        }, 0)
-        isAnimatedRef.current = true
-      }
-    })
+  requestAnimationFrame(() => {
+    if (
+      srcDestinationRef.current &&
+      sourceRef.current &&
+      spotlightReflectionId &&
+      !isAnimated.current
+    ) {
+      const sourceBbox = sourceRef.current.getBoundingClientRect()
+      const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
+      clone = document.getElementById(`clone-${spotlightReflectionId}`)
+      if (!clone) return
+      const {style} = clone
+      const {left: startLeft, top: startTop} = sourceBbox
+      const {left: endLeft, top: endTop} = destinationBbox
+      const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
+      style.left = `${startLeft}px`
+      style.top = `${startTop}px`
+      style.borderRadius = `4px`
+      style.boxShadow = 'none'
+      style.opacity = '1'
+      style.overflow = `hidden`
+      style.paddingTop = '6px'
+      setTimeout(() => {
+        style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
+        style.transition = `all ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
+      }, 0)
+      isAnimated.current = true
+    }
   })
 
   useEffect(() => {
     if (isLoadingResults) return
     const timeout = setTimeout(() => {
-      if (clone) {
+      if (clone && document.body.contains(clone)) {
         document.body.removeChild(clone)
       }
     }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
-    return () => {
-      clearTimeout(timeout)
-      const testaclone = document.getElementById(`clone-${spotlightReflectionId}`)
-      if (testaclone) {
-        document.body.removeChild(testaclone)
-      }
-    }
+    return () => clearTimeout(timeout)
   }, [isLoadingResults])
 
   return (
