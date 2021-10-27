@@ -56559,6 +56559,7 @@ export interface ISignUpWithPasswordOnMutationArguments {
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
   dragId: string;
+  isSpotlight?: boolean | null;
 }
 
 export interface IStartCheckInOnMutationArguments {

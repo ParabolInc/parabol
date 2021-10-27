@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
-import useMutationProps from '~/hooks/useMutationProps'
 import EndDraggingReflectionMutation from '~/mutations/EndDraggingReflectionMutation'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import clientTempId from '~/utils/relay/clientTempId'
@@ -50,7 +49,6 @@ const GroupingKanban = (props: Props) => {
   const sourceRef = useRef<HTMLDivElement | null>(null)
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
   useHideBodyScroll()
   const tempIdRef = useRef<null | string>(null)
   if (tempIdRef.current === null) {
@@ -59,6 +57,7 @@ const GroupingKanban = (props: Props) => {
 
   const closeSpotlight = () => {
     closePortal()
+    if (!tempIdRef.current) return
     EndDraggingReflectionMutation(atmosphere, {
       reflectionId: spotlightReflectionId!,
       dropTargetType: null,
@@ -73,8 +72,6 @@ const GroupingKanban = (props: Props) => {
       if (!reflection || !meeting) return
       meeting.setValue(null, 'spotlightGroup')
       meeting.setValue(null, 'spotlightReflectionId')
-      // isDropping so that the source is added back to its original position in kanban
-      reflection.setValue(true, 'isDropping')
     })
   }
   const {closePortal, openPortal, modalPortal} = useModal({
@@ -113,7 +110,6 @@ const GroupingKanban = (props: Props) => {
   const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     sourceRef.current = reflectionRef.current
     const clone = cloneReflection(sourceRef.current!, reflectionId)
-    // clone before element is altered by StartDraggingReflectionMutation
     // opacity 0 until the position is determined
     clone.style.opacity = '0'
     openPortal()
@@ -127,21 +123,11 @@ const GroupingKanban = (props: Props) => {
       meeting.setValue(reflectionId, 'spotlightReflectionId')
     })
     if (!tempIdRef.current) return
-    const handleCompleted = () => {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)
-        reflection?.setValue(false, 'isViewerDragging')
-      })
-      onCompleted()
-    }
-    StartDraggingReflectionMutation(
-      atmosphere,
-      {
-        reflectionId,
-        dragId: tempIdRef.current
-      },
-      {onError, onCompleted: handleCompleted}
-    )
+    StartDraggingReflectionMutation(atmosphere, {
+      reflectionId,
+      dragId: tempIdRef.current,
+      isSpotlight: true
+    })
   }
 
   if (!phaseRef.current) return null

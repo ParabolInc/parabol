@@ -25,8 +25,16 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartDraggingReflectionMutation($reflectionId: ID!, $dragId: ID!) {
-    startDraggingReflection(reflectionId: $reflectionId, dragId: $dragId) {
+  mutation StartDraggingReflectionMutation(
+    $reflectionId: ID!
+    $dragId: ID!
+    $isSpotlight: Boolean
+  ) {
+    startDraggingReflection(
+      reflectionId: $reflectionId
+      dragId: $dragId
+      isSpotlight: $isSpotlight
+    ) {
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
     }
   }
@@ -109,6 +117,7 @@ const StartDraggingReflectionMutation = (
     onCompleted,
     updater: (store) => {
       const {viewerId} = atmosphere
+      const {isSpotlight} = variables
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
       const reflectionId = payload.getValue('reflectionId')!
@@ -120,13 +129,17 @@ const StartDraggingReflectionMutation = (
         const remoteDragUserId = remoteDrag.getValue('dragUserId')!
         if (remoteDragUserId <= viewerId) return
       }
-      reflection.setValue(true, 'isViewerDragging')
+      if (!isSpotlight) {
+        reflection.setValue(true, 'isViewerDragging')
+      }
     },
     optimisticUpdater: (store) => {
-      const {reflectionId} = variables
+      const {reflectionId, isSpotlight} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-      reflection.setValue(true, 'isViewerDragging')
+      if (!isSpotlight) {
+        reflection.setValue(true, 'isViewerDragging')
+      }
     }
   })
 }
