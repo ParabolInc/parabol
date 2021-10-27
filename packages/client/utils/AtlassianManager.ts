@@ -144,7 +144,7 @@ type JiraPageOfChangelogs = any
 type JiraVersionedRepresentations = any
 type JiraIncludedFields = any
 
-interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
+export interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
   expand: string
   id: string
   self: string
@@ -320,8 +320,8 @@ export default abstract class AtlassianManager {
     const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
 
     if (res.status === 429) {
-      const retryAfter = res.headers.get('Retry-After') // value is in sec
-      return new RateLimitError('error', {retryAfter})
+      const retryAfterSeconds = res.headers.get('Retry-After')
+      return new RateLimitError('error', {retryAfterSeconds})
     }
 
     if ('message' in json) {

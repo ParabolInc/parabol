@@ -1,17 +1,27 @@
 import getRedis from '../getRedis'
-import AtlassianManager, {RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import AtlassianManager, {
+  RateLimitError,
+  JiraIssueBean
+} from 'parabol-client/utils/AtlassianManager'
 import ms from 'ms'
 import jsonEqual from 'parabol-client/utils/jsonEqual'
 
 const ISSUE_TTL_MS = ms('2d')
 const DEFAULT_RETRY_AFTER_SEC = 5
+const MAX_RETRY_AFTER_SEC = 30
+const MAX_RETRIES = 4
+
+const applyBackoff = (retries, seconds) => Math.pow(2, retries) * seconds
+const addJitter = (seconds) => seconds + (Math.random() * (1.3 - 0.7) + 0.7)
 
 export const getIssue = async (
   manager: AtlassianManager,
   cloudId: string,
   issueKey: string,
-  onSuccess: any /* cb invoked when we do lazy async request */,
-  onError: any /* error invoked when we do lazy async request */,
+  onSuccess: (
+    issue: JiraIssueBean<{description: string; summary: string}, {description: string}>
+  ) => void /* cb invoked when we do lazy async request */,
+  onError: (e: Error) => void /* error invoked when we do lazy async request */,
   extraFieldIds: string[] = []
 ) => {
   const key = `jira:${cloudId}:${issueKey}:${JSON.stringify(extraFieldIds)}`
@@ -54,20 +64,23 @@ const lazilyGetIssueAndMaybePush = async (
   onSuccess: any,
   onError: any,
   extraFieldIds: string[] = [],
-  retries = 1
+  retryCount = 0
 ) => {
   let freshIssue = await manager.getIssue(cloudId, issueKey, extraFieldIds)
 
   if (
-    (retries > 0 && process.env.TEST_JIRA_ISSUE_RATE_LIMITED) ||
-    (retries <= 0 && !process.env.TEST_JIRA_RETRY_SUCCESS)
+    (retryCount === 0 && process.env.TEST_JIRA_ISSUE_RATE_LIMITED) ||
+    (retryCount > 0 && !process.env.TEST_JIRA_RETRY_SUCCESS)
   ) {
-    freshIssue = new RateLimitError('error', {retryAfter: 3})
+    freshIssue = new RateLimitError('error', {retryAfterSeconds: 3})
   }
 
   if (freshIssue instanceof Error) {
-    if (freshIssue instanceof RateLimitError && retries > 0) {
-      const retryAfter = freshIssue.infoParams.retryAfter ?? DEFAULT_RETRY_AFTER_SEC
+    if (freshIssue instanceof RateLimitError && retryCount < MAX_RETRIES) {
+      let retryAfterSeconds = freshIssue.infoParams.retryAfterSeconds ?? DEFAULT_RETRY_AFTER_SEC
+      retryAfterSeconds = applyBackoff(retryCount, retryAfterSeconds)
+      retryAfterSeconds = addJitter(retryAfterSeconds)
+      retryAfterSeconds = Math.min(retryAfterSeconds, MAX_RETRY_AFTER_SEC)
       setTimeout(() => {
         lazilyGetIssueAndMaybePush(
           cachedIssue,
@@ -77,9 +90,9 @@ const lazilyGetIssueAndMaybePush = async (
           onSuccess,
           onError,
           extraFieldIds,
-          retries - 1
+          retryCount + 1
         )
-      }, retryAfter * 1000)
+      }, retryAfterSeconds * 1000)
     } else {
       onError(freshIssue)
     }
