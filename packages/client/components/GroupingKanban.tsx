@@ -41,8 +41,7 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases, spotlightGroup, spotlightReflectionId} = meeting
-  const spotlightGroupId = spotlightGroup?.id
+  const {id: meetingId, reflectionGroups, phases, spotlightReflectionId} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -50,18 +49,18 @@ const GroupingKanban = (props: Props) => {
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
-  const tempIdRef = useRef<null | string | undefined>()
-  if (tempIdRef.current === undefined) {
+  const tempIdRef = useRef<null | string>(null)
+  if (tempIdRef.current === null) {
     tempIdRef.current = clientTempId()
   }
 
   const closeSpotlight = () => {
-    closePortal()
     const clone = document.getElementById(`clone-${spotlightReflectionId}`)
     if (clone && document.body.contains(clone)) {
       document.body.removeChild(clone)
     }
     if (!tempIdRef.current || !spotlightReflectionId) return
+    closePortal()
     EndDraggingReflectionMutation(atmosphere, {
       reflectionId: spotlightReflectionId,
       dropTargetType: null,
@@ -72,8 +71,7 @@ const GroupingKanban = (props: Props) => {
     sourceRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
-      const reflection = store.get(spotlightGroupId!)
-      if (!reflection || !meeting) return
+      if (!meeting) return
       meeting.setValue(null, 'spotlightGroup')
       meeting.setValue(null, 'spotlightReflectionId')
     })

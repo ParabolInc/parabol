@@ -41,7 +41,7 @@ const handleUpdateSpotlightResults = (
     })
   }
   // ungrouping created a new group or added to a group in the kanban
-  else if ((reflectionsCount === 1 && wasInSpotlight) || (isOldGroupEmpty && !isInSpotlight)) {
+  if ((reflectionsCount === 1 && wasInSpotlight) || (isOldGroupEmpty && !isInSpotlight)) {
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionGroupId: spotlightGroupId,
