@@ -186,12 +186,7 @@ const SpotlightModal = (props: Props) => {
 
   let clone: HTMLElement | null | undefined
   requestAnimationFrame(() => {
-    if (
-      srcDestinationRef.current &&
-      sourceRef.current &&
-      spotlightReflectionId &&
-      !isAnimated.current
-    ) {
+    if (srcDestinationRef.current && sourceRef.current && !isAnimated.current) {
       const sourceBbox = sourceRef.current.getBoundingClientRect()
       const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
       clone = document.getElementById(`clone-${spotlightReflectionId}`)
