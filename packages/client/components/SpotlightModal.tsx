@@ -75,6 +75,12 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
+const SourceWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  height: '100%'
+})
+
 const Source = styled('div')({})
 
 const SearchInput = styled('input')({
@@ -248,19 +254,21 @@ const SpotlightModal = (props: Props) => {
             <CloseIcon>close</CloseIcon>
           </StyledCloseButton>
         </TopRow>
-        {/* wait for results to render to know the height of the modal */}
-        {!isLoadingResults && (
-          <Source ref={srcDestinationRef}>
-            {spotlightGroup && (
-              <ReflectionGroup
-                phaseRef={phaseRef}
-                reflectionGroup={spotlightGroup}
-                meeting={meeting}
-                sourceReflectionIds={sourceReflectionIdsRef.current}
-              />
-            )}
-          </Source>
-        )}
+        <SourceWrapper>
+          {/* wait for results to render to know the height of the modal */}
+          {!isLoadingResults && (
+            <Source ref={srcDestinationRef}>
+              {spotlightGroup && (
+                <ReflectionGroup
+                  phaseRef={phaseRef}
+                  reflectionGroup={spotlightGroup}
+                  meeting={meeting}
+                  sourceReflectionIds={sourceReflectionIdsRef.current}
+                />
+              )}
+            </Source>
+          )}
+        </SourceWrapper>
         <SearchWrapper>
           <Search>
             <StyledMenuItemIcon>
