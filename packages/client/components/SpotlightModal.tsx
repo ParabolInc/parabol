@@ -181,7 +181,7 @@ const SpotlightModal = (props: Props) => {
   useEffect(() => {
     if (isLoadingResults) return
     const timeout = setTimeout(() => {
-      if (clone) {
+      if (clone && document.body.contains(clone)) {
         document.body.removeChild(clone)
       }
     }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)

@@ -57,7 +57,7 @@ const GroupingKanban = (props: Props) => {
 
   const closeSpotlight = () => {
     const clone = document.getElementById(`clone-${spotlightReflectionId}`)
-    if (clone) {
+    if (clone && document.body.contains(clone)) {
       document.body.removeChild(clone)
     }
     closePortal()
