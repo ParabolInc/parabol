@@ -3,6 +3,7 @@ import {GQLContext} from '../graphql'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import PollOption from './PollOption'
+import User from './User'
 import PollId from '../../../client/shared/gqlIds/PollId'
 
 const Poll = new GraphQLObjectType<any, GQLContext>({
@@ -12,6 +13,13 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
   isTypeOf: ({title}) => !!title,
   fields: () => ({
     ...(threadableFields() as any),
+    createdByUser: {
+      type: GraphQLNonNull(User),
+      description: 'The user that created the item',
+      resolve: ({createdById}, _args, {dataLoader}: GQLContext) => {
+        return dataLoader.get('users').load(createdById)
+      }
+    },
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'Poll id in a format of `poll:idGeneratedByDatabase`',

@@ -423,5 +423,15 @@ export const enum Polls {
   MAX_OPTIONS = 4,
   MIN_OPTIONS = 2,
   MAX_TITLE_LENGTH = 100,
-  MIN_TITLE_LENGTH = 2
+  MIN_TITLE_LENGTH = 2,
+  MIN_OPTION_TITLE_LENGTH = 1,
+  MAX_OPTION_TITLE_LENGTH = 30
+}
+
+export const enum PollsAriaLabels {
+  POLL_TITLE_EDITOR = 'Poll Editor',
+  POLL_OPTION_EDITOR = 'Poll Option Editor',
+  POLL_SUBMIT_VOTE = 'Submit poll vote',
+  POLL_START = 'Start a poll',
+  POLL_ADD_OPTION = 'Add a poll option'
 }

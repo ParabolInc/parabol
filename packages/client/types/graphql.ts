@@ -59357,7 +59357,7 @@ export interface IPoll {
   /**
    * The user that created the item
    */
-  createdByUser: IUser | null;
+  createdByUser: IUser;
 
   /**
    * the replies to this threadable item
@@ -59496,6 +59496,7 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 
 export type MeetingSubscriptionPayload =
   | IAddCommentSuccess
+  | ICreatePollSuccess
   | IAddReactjiToReflectionSuccess
   | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload
