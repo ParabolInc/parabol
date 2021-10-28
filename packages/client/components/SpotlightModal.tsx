@@ -9,6 +9,7 @@ import {
   BezierCurve,
   Breakpoint,
   DragAttribute,
+  ElementHeight,
   ElementWidth,
   Times,
   ZIndex
@@ -77,10 +78,13 @@ const TopRow = styled('div')({
 const SourceWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  height: '100%'
+  height: '100%',
+  flexGrow: 1
 })
 
-const Source = styled('div')({})
+const Source = styled('div')({
+  minHeight: ElementHeight.REFLECTION_CARD
+})
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -162,7 +166,9 @@ const SpotlightModal = (props: Props) => {
     if (!spotlightGroup) return
     let timeout: number | undefined
     const sourceReflectionIds = sourceReflections?.map((reflection) => reflection.id)
-    if (!sourceReflectionIdsRef.current && spotlightReflectionId) {
+    const {current: srcIds} = sourceReflectionIdsRef
+    const topOfSrcGroupReflectionId = sourceReflectionIds?.at(0)
+    if (!srcIds && spotlightReflectionId) {
       // when opening Spotlight, if group has several reflections, only show the selected reflection
       sourceReflectionIdsRef.current = [spotlightReflectionId]
     }
@@ -175,14 +181,14 @@ const SpotlightModal = (props: Props) => {
       timeout = window.setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
+    } else if (
+      srcIds?.includes(spotlightReflectionId) &&
+      topOfSrcGroupReflectionId &&
+      topOfSrcGroupReflectionId !== spotlightReflectionId
+    ) {
+      // a group was added to the source
+      sourceReflectionIdsRef.current = [...srcIds, topOfSrcGroupReflectionId]
     }
-    // else if (
-    //   sourceReflectionsIds.includes(initSrcId) &&
-    //   topOfSrcGroupReflectionId !== initSrcId
-    // ) {
-    //   // a group was added to the source
-    //   sourceReflectionIdsRef.current = [...srcIds, topOfSrcGroupReflectionId]
-    // }
     return () => clearTimeout(timeout)
   }, [sourceReflections])
 

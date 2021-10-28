@@ -95,11 +95,11 @@ const ReflectionGroup = (props: Props) => {
   const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
+  const isSourceGroup = spotlightGroup?.id === reflectionGroupId
   const isDraggingSource = spotlightGroup?.reflections.find(
     ({isViewerDragging}) => isViewerDragging
   )
-  const disableDrop = (isSpotlightOpen && !isDraggingSource) || isBehindSpotlight
-  const isSourceReflection = spotlightGroup?.id === reflectionGroupId
+  const disableDrop = (isSpotlightOpen && !isDraggingSource && !isSourceGroup) || isBehindSpotlight
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -216,7 +216,7 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
-            const isHiddenSource = isSourceReflection && isBehindSpotlight
+            const isHiddenSource = isSourceGroup && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
