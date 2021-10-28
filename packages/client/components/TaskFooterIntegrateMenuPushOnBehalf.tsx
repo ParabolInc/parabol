@@ -9,25 +9,20 @@ interface Props {
   preferredName: string
 }
 
-const NarrowMenu = styled(Menu)({
-  width: 250
-})
-
 const Label = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 14,
   fontStyle: 'italic',
-  padding: 8,
-  textAlign: 'center'
+  padding: 8
 })
 
-const TaskFooterIntegrateMenuNoIntegrations = (props: Props) => {
+const TaskFooterIntegrateMenuPushOnBehalf = (props: Props) => {
   const {preferredName, menuProps} = props
   return (
-    <NarrowMenu ariaLabel={'No providers available'} {...menuProps}>
-      <Label>Neither you nor {preferredName} have any integrations for this team.</Label>
-    </NarrowMenu>
+    <Menu ariaLabel={'Push on behalf of the assignee'} {...menuProps}>
+      <Label>Push as {preferredName}</Label>
+    </Menu>
   )
 }
 
-export default TaskFooterIntegrateMenuNoIntegrations
+export default TaskFooterIntegrateMenuPushOnBehalf
