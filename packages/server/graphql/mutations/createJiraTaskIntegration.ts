@@ -10,6 +10,8 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateJiraTaskIntegrationPayload from '../types/CreateJiraTaskIntegrationPayload'
 import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 
 type CreateJiraTaskIntegrationMutationVariables = {
   cloudId: string
@@ -70,9 +72,10 @@ export default {
       )
     }
 
-    const [viewerAuth, assigneeAuth] = await Promise.all([
+    const [viewerAuth, assigneeAuth, team] = await Promise.all([
       dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId}),
-      dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+      dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
+      dataLoader.get('teams').load(teamId)
     ])
     const auth = assigneeAuth ?? viewerAuth
     if (!auth) {
@@ -98,10 +101,17 @@ export default {
 
     // RESOLUTION
     const accessUserId = assigneeAuth ? userId : viewerId
+    const {name: teamName} = team
 
+    const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
       viewerId !== userId
-        ? makeCreateJiraTaskComment(viewer.preferredName, assignee.preferredName)
+        ? makeCreateJiraTaskComment(
+            viewer.preferredName,
+            assignee.preferredName,
+            teamName,
+            teamDashboardUrl
+          )
         : undefined
 
     const res = await createJiraTask(
