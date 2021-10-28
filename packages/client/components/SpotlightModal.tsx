@@ -9,6 +9,7 @@ import {
   BezierCurve,
   Breakpoint,
   DragAttribute,
+  ElementHeight,
   ElementWidth,
   Times,
   ZIndex
@@ -77,10 +78,13 @@ const TopRow = styled('div')({
 const SourceWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  height: '100%'
+  height: '100%',
+  flexGrow: 1
 })
 
-const Source = styled('div')({})
+const Source = styled('div')({
+  minHeight: ElementHeight.REFLECTION_CARD
+})
 
 const SearchInput = styled('input')({
   appearance: 'none',
