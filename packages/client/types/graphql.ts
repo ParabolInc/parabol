@@ -56559,6 +56559,7 @@ export interface ISignUpWithPasswordOnMutationArguments {
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
   dragId: string;
+  isSpotlight?: boolean | null;
 }
 
 export interface IStartCheckInOnMutationArguments {
@@ -57840,6 +57841,7 @@ export interface IRemoteReflectionDrag {
    * The name of the dragUser
    */
   dragUserName: string | null;
+  isSpotlight: boolean | null;
   clientHeight: number | null;
   clientWidth: number | null;
 
