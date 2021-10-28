@@ -51274,11 +51274,6 @@ export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
-   * true if the user has access to retro meeting video
-   */
-  video: boolean;
-
-  /**
    * true if jira is allowed
    */
   jira: boolean;
@@ -57182,7 +57177,6 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  video = 'video',
   jira = 'jira',
   poker = 'poker'
 }
