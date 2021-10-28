@@ -157,37 +157,30 @@ const SpotlightModal = (props: Props) => {
   const isLoadingResults = !resultsRef.current?.clientHeight
   const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
-  // const sourceReflectionsIds = sourceReflections?.map(({id}) => id)
   const spotlightGroupId = spotlightGroup?.id
-  const sourceReflectionIdsRef = useRef<string[] | null>(null)
+  const prevSrcReflectionIdsRef = useRef<string[] | null>(null)
   const isAnimated = useRef(false)
 
   useEffect(() => {
     if (!spotlightGroup) return
     let timeout: number | undefined
-    const sourceReflectionIds = sourceReflections?.map((reflection) => reflection.id)
-    const {current: srcIds} = sourceReflectionIdsRef
-    const topOfSrcGroupReflectionId = sourceReflectionIds?.at(0)
-    if (!srcIds && spotlightReflectionId) {
+    const sourceReflectionIds = sourceReflections?.map(({id}) => id)
+    const {current: prevSrcIds} = prevSrcReflectionIdsRef
+    const topOfSrcGroupReflectionId = sourceReflectionIds && sourceReflectionIds[0]
+    if (!prevSrcIds && spotlightReflectionId) {
       // when opening Spotlight, if group has several reflections, only show the selected reflection
-      sourceReflectionIdsRef.current = [spotlightReflectionId]
-    }
-    // TODO: uncomment for groups -> source issue
-    // else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
-    // if results are dragged onto the source, add result reflections to source group
-    // sourceReflectionIdsRef.current = [...ids, firstReflectionId]
-    // }
-    else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
+      prevSrcReflectionIdsRef.current = [spotlightReflectionId]
+    } else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
       timeout = window.setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
     } else if (
-      srcIds?.includes(spotlightReflectionId) &&
+      prevSrcIds?.includes(spotlightReflectionId) &&
       topOfSrcGroupReflectionId &&
-      topOfSrcGroupReflectionId !== spotlightReflectionId
+      !prevSrcIds?.includes(topOfSrcGroupReflectionId)
     ) {
-      // a group was added to the source
-      sourceReflectionIdsRef.current = [...srcIds, topOfSrcGroupReflectionId]
+      // a result group was added to the source
+      prevSrcReflectionIdsRef.current = [...prevSrcIds, topOfSrcGroupReflectionId]
     }
     return () => clearTimeout(timeout)
   }, [sourceReflections])
@@ -252,7 +245,7 @@ const SpotlightModal = (props: Props) => {
                   phaseRef={phaseRef}
                   reflectionGroup={spotlightGroup}
                   meeting={meeting}
-                  sourceReflectionIds={sourceReflectionIdsRef.current}
+                  sourceReflectionIds={prevSrcReflectionIdsRef.current}
                 />
               )}
             </Source>
