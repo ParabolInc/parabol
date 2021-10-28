@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -15,6 +15,9 @@ export default {
     },
     dragId: {
       type: new GraphQLNonNull(GraphQLID)
+    },
+    isSpotlight: {
+      type: GraphQLBoolean
     }
   },
   async resolve(_source, {dragId, reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {

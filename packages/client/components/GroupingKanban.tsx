@@ -3,10 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
+import EndDraggingReflectionMutation from '~/mutations/EndDraggingReflectionMutation'
+import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
+import clientTempId from '~/utils/relay/clientTempId'
+import cloneReflection from '~/utils/retroGroup/cloneReflection'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
-import useFlip from '../hooks/useFlip'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useModal from '../hooks/useModal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
@@ -37,25 +40,39 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases} = meeting
+  const {id: meetingId, reflectionGroups, phases, spotlightReflectionId} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const sourceRef = useRef<HTMLDivElement | null>(null)
-  const [flipRef, flipReverse] = useFlip({
-    firstRef: sourceRef
-  })
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
+  const tempIdRef = useRef<null | string>(null)
+  if (tempIdRef.current === null) {
+    tempIdRef.current = clientTempId()
+  }
+
   const closeSpotlight = () => {
+    const clone = document.getElementById(`clone-${spotlightReflectionId}`)
+    if (clone && document.body.contains(clone)) {
+      document.body.removeChild(clone)
+    }
+    if (!tempIdRef.current || !spotlightReflectionId) return
     closePortal()
-    flipReverse()
+    EndDraggingReflectionMutation(atmosphere, {
+      reflectionId: spotlightReflectionId,
+      dropTargetType: null,
+      dropTargetId: null,
+      dragId: tempIdRef.current
+    })
+    tempIdRef.current = null
     sourceRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
       meeting.setValue(null, 'spotlightGroup')
+      meeting.setValue(null, 'spotlightReflectionId')
     })
   }
   const {closePortal, openPortal, modalPortal} = useModal({
@@ -91,14 +108,26 @@ const GroupingKanban = (props: Props) => {
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
-  const openSpotlight = (reflectionGroupId: string, reflectionRef: RefObject<HTMLDivElement>) => {
+  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     sourceRef.current = reflectionRef.current
+    const clone = cloneReflection(sourceRef.current!, reflectionId)
+    // opacity 0 until the position is determined
+    clone.style.opacity = '0'
     openPortal()
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get<GroupingKanban_meeting>(meetingId)
+      const reflection = store.get(reflectionId)
+      const reflectionGroupId = reflection?.getValue('reflectionGroupId') as string
       const reflectionGroup = store.get(reflectionGroupId)
       if (!meeting || !reflectionGroup) return
       meeting.setLinkedRecord(reflectionGroup, 'spotlightGroup')
+      meeting.setValue(reflectionId, 'spotlightReflectionId')
+    })
+    if (!tempIdRef.current) return
+    StartDraggingReflectionMutation(atmosphere, {
+      reflectionId,
+      dragId: tempIdRef.current,
+      isSpotlight: true
     })
   }
 
@@ -132,9 +161,9 @@ const GroupingKanban = (props: Props) => {
       {modalPortal(
         <SpotlightModal
           closeSpotlight={closeSpotlight}
-          flipRef={flipRef}
-          meeting={meeting}
           phaseRef={phaseRef}
+          sourceRef={sourceRef}
+          meeting={meeting}
         />
       )}
     </PortalProvider>
@@ -165,6 +194,7 @@ export default createFragmentContainer(GroupingKanban, {
           isEditing
         }
       }
+      spotlightReflectionId
       spotlightGroup {
         ...ReflectionGroup_reflectionGroup
         id

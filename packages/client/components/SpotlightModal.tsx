@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {DECELERATE, fadeUp} from '../styles/animation'
+import {DECELERATE, fadeInOpacity} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {
+  BezierCurve,
   Breakpoint,
   DragAttribute,
-  ElementHeight,
   ElementWidth,
   Times,
   ZIndex
@@ -21,29 +21,29 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import ResultsRoot from './ResultsRoot'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
-import useGetRefVal from '../hooks/useGetRefVal'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
 
-const Modal = styled('div')<{height: number | null}>(({height}) => ({
-  animation: height ? `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards` : undefined,
+const Modal = styled('div')<{isLoadingResults: boolean}>(({isLoadingResults}) => ({
+  animation: isLoadingResults
+    ? undefined
+    : `${fadeInOpacity.toString()} ${Times.SPOTLIGHT_MODAL_DURATION}ms ${DECELERATE} ${
+        Times.SPOTLIGHT_MODAL_DELAY
+      }ms forwards`,
   backgroundColor: `${PALETTE.WHITE}`,
   borderRadius: 8,
   boxShadow: Elevation.Z8,
   display: 'flex',
-  flexWrap: 'wrap',
   justifyContent: 'center',
-  overflow: 'hidden',
   opacity: 0,
+  flexDirection: 'column',
   height: '90vh',
+  maxHeight: '90vh',
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
-    // if results are remotely ungrouped, SpotlightGroups increases in height.
-    // to prevent the modal height from changing, use initial modal height
-    height: height || '100%',
-    maxHeight: '90vh',
+    height: '100%',
     width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
   }
 }))
@@ -52,7 +52,7 @@ const SourceSection = styled('div')({
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
-  height: SPOTLIGHT_TOP_SECTION_HEIGHT,
+  minHeight: SPOTLIGHT_TOP_SECTION_HEIGHT,
   justifyContent: 'space-between',
   padding: 16,
   position: 'relative',
@@ -74,19 +74,13 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceDestination = styled('div')({
-  height: ElementHeight.REFLECTION_CARD_MAX
-})
-
-const SourceWrapper = styled('div')<{offsetTop: number | null}>(({offsetTop}) => ({
-  position: 'absolute',
+const SourceWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  height: ElementHeight.REFLECTION_CARD_MAX,
-  top: offsetTop || undefined,
-  left: `calc(50% - ${ElementWidth.REFLECTION_CARD / 2}px)`,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
-}))
+  height: '100%'
+})
+
+const Source = styled('div')({})
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -147,51 +141,48 @@ const CloseIcon = styled(Icon)({
 
 interface Props {
   closeSpotlight: () => void
-  flipRef: (instance: HTMLDivElement) => void
   meeting: GroupingKanban_meeting
+  sourceRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, flipRef, meeting, phaseRef} = props
-  const modalRef = useRef<HTMLDivElement>(null)
+  const {closeSpotlight, meeting, sourceRef, phaseRef} = props
   const resultsRef = useRef<HTMLDivElement>(null)
-  const srcDestinationRef = useRef<HTMLDivElement>(null)
-  const offsetTop = useGetRefVal(srcDestinationRef, 'offsetTop')
-  const modalRefHeight = useGetRefVal(modalRef, 'clientHeight')
-  const areResultsRendered = !!resultsRef.current?.clientHeight
-  const modalHeight = areResultsRendered ? modalRefHeight : null
-  const {id: meetingId, spotlightGroup} = meeting
+  const srcDestinationRef = useRef<HTMLDivElement | null>(null)
+  const isLoadingResults = !resultsRef.current?.clientHeight
+  const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
-  const sourceReflectionsIds = sourceReflections?.map(({id}) => id)
+  // const sourceReflectionsIds = sourceReflections?.map(({id}) => id)
   const spotlightGroupId = spotlightGroup?.id
   const sourceReflectionIdsRef = useRef<string[] | null>(null)
-  const initSrcReflectionIdRef = useRef<string | null>(null)
-  const topOfSrcGroupReflectionId = spotlightGroup?.reflections[0]?.id
+  const isAnimated = useRef(false)
 
   useEffect(() => {
     if (!spotlightGroup) return
     let timeout: number | undefined
-    const {current: srcIds} = sourceReflectionIdsRef
-    const {current: initSrcId} = initSrcReflectionIdRef
-    if (!srcIds && topOfSrcGroupReflectionId && !initSrcId) {
-      // when Spotlight opens, only show the top reflection in the source group
-      sourceReflectionIdsRef.current = [topOfSrcGroupReflectionId]
-      initSrcReflectionIdRef.current = topOfSrcGroupReflectionId
+    const sourceReflectionIds = sourceReflections?.map((reflection) => reflection.id)
+    if (!sourceReflectionIdsRef.current && spotlightReflectionId) {
+      // when opening Spotlight, if group has several reflections, only show the selected reflection
+      sourceReflectionIdsRef.current = [spotlightReflectionId]
     }
-    if (!initSrcId || !srcIds) return
-    if (!topOfSrcGroupReflectionId || !sourceReflectionsIds?.includes(initSrcId)) {
-      // the source was dropped on a result group
+    // TODO: uncomment for groups -> source issue
+    // else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
+    // if results are dragged onto the source, add result reflections to source group
+    // sourceReflectionIdsRef.current = [...ids, firstReflectionId]
+    // }
+    else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
       timeout = window.setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
-    } else if (
-      sourceReflectionsIds.includes(initSrcId) &&
-      topOfSrcGroupReflectionId !== initSrcId
-    ) {
-      // a group was added to the source
-      sourceReflectionIdsRef.current = [...srcIds, topOfSrcGroupReflectionId]
     }
+    // else if (
+    //   sourceReflectionsIds.includes(initSrcId) &&
+    //   topOfSrcGroupReflectionId !== initSrcId
+    // ) {
+    //   // a group was added to the source
+    //   sourceReflectionIdsRef.current = [...srcIds, topOfSrcGroupReflectionId]
+    // }
     return () => clearTimeout(timeout)
   }, [sourceReflections])
 
@@ -200,60 +191,92 @@ const SpotlightModal = (props: Props) => {
       closeSpotlight()
     }
   }
+
+  let clone: HTMLElement | null | undefined
+  requestAnimationFrame(() => {
+    if (srcDestinationRef.current && sourceRef.current && !isAnimated.current) {
+      const sourceBbox = sourceRef.current.getBoundingClientRect()
+      const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
+      clone = document.getElementById(`clone-${spotlightReflectionId}`)
+      if (!clone) return
+      const {style} = clone
+      const {left: startLeft, top: startTop} = sourceBbox
+      const {left: endLeft, top: endTop} = destinationBbox
+      const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
+      style.left = `${startLeft}px`
+      style.top = `${startTop}px`
+      style.borderRadius = `4px`
+      style.boxShadow = 'none'
+      style.opacity = '1'
+      style.overflow = `hidden`
+      style.paddingTop = '6px'
+      setTimeout(() => {
+        style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
+        style.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
+      }, 0)
+      isAnimated.current = true
+    }
+  })
+
+  useEffect(() => {
+    if (isLoadingResults) return
+    const timeout = setTimeout(() => {
+      if (clone && document.body.contains(clone)) {
+        document.body.removeChild(clone)
+      }
+    }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
+    return () => clearTimeout(timeout)
+  }, [isLoadingResults])
+
   return (
-    <>
-      <Modal ref={modalRef} height={modalHeight}>
-        <SourceSection>
-          <TopRow>
-            <Title>Find cards with similar reflections</Title>
-            <StyledCloseButton onClick={closeSpotlight}>
-              <CloseIcon>close</CloseIcon>
-            </StyledCloseButton>
-          </TopRow>
-          <SourceDestination ref={srcDestinationRef} />
-          <SearchWrapper>
-            <Search>
-              <StyledMenuItemIcon>
-                <SearchIcon>search</SearchIcon>
-              </StyledMenuItemIcon>
-              <SearchInput
-                onKeyDown={onKeyDown}
-                autoFocus
-                autoComplete='off'
-                name='search'
-                placeholder='Or search for keywords...'
-                type='text'
-              />
-            </Search>
-          </SearchWrapper>
-        </SourceSection>
-        <Suspense fallback={''}>
-          <ResultsRoot
-            resultsRef={resultsRef}
-            meetingId={meetingId}
-            phaseRef={phaseRef}
-            spotlightGroupId={spotlightGroupId}
-          />
-        </Suspense>
-      </Modal>
-      {areResultsRendered && (
-        <SourceWrapper
-          ref={flipRef}
-          offsetTop={offsetTop}
-          {...{[DragAttribute.DROPPABLE]: spotlightGroupId}}
-        >
-          {spotlightGroup && (
-            <ReflectionGroup
-              phaseRef={phaseRef}
-              reflectionGroup={spotlightGroup}
-              expandedReflectionGroupPortalParentId={'spotlight'}
-              meeting={meeting}
-              sourceReflectionIds={sourceReflectionIdsRef.current}
-            />
+    <Modal isLoadingResults={isLoadingResults}>
+      <SourceSection {...{[DragAttribute.DROPZONE]: spotlightReflectionId}}>
+        <TopRow>
+          <Title>Find cards with similar reflections</Title>
+          <StyledCloseButton onClick={closeSpotlight}>
+            <CloseIcon>close</CloseIcon>
+          </StyledCloseButton>
+        </TopRow>
+        <SourceWrapper>
+          {/* wait for results to render to know the height of the modal */}
+          {!isLoadingResults && (
+            <Source ref={srcDestinationRef}>
+              {spotlightGroup && (
+                <ReflectionGroup
+                  phaseRef={phaseRef}
+                  reflectionGroup={spotlightGroup}
+                  meeting={meeting}
+                  sourceReflectionIds={sourceReflectionIdsRef.current}
+                />
+              )}
+            </Source>
           )}
         </SourceWrapper>
-      )}
-    </>
+        <SearchWrapper>
+          <Search>
+            <StyledMenuItemIcon>
+              <SearchIcon>search</SearchIcon>
+            </StyledMenuItemIcon>
+            <SearchInput
+              onKeyDown={onKeyDown}
+              autoFocus
+              autoComplete='off'
+              name='search'
+              placeholder='Or search for keywords...'
+              type='text'
+            />
+          </Search>
+        </SearchWrapper>
+      </SourceSection>
+      <Suspense fallback={''}>
+        <ResultsRoot
+          resultsRef={resultsRef}
+          meetingId={meetingId}
+          phaseRef={phaseRef}
+          spotlightGroupId={spotlightGroupId}
+        />
+      </Suspense>
+    </Modal>
   )
 }
 

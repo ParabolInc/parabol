@@ -41,8 +41,9 @@ const ReflectionWrapper = styled('div')<{
   staticIdx: number
   isDropping: boolean | null
   groupCount: number
-}>(({staticIdx, isDropping, groupCount}): any => {
-  const isHidden = staticIdx === -1 || isDropping
+  isHiddenSource: boolean
+}>(({staticIdx, isDropping, groupCount, isHiddenSource}): any => {
+  const isHidden = staticIdx === -1 || isDropping || isHiddenSource
   const multiple = Math.min(staticIdx, 2)
   const scaleX =
     (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
@@ -98,6 +99,7 @@ const ReflectionGroup = (props: Props) => {
     ({isViewerDragging}) => isViewerDragging
   )
   const disableDrop = (isSpotlightOpen && !isDraggingSource) || isBehindSpotlight
+  const isSourceReflection = spotlightGroup?.id === reflectionGroupId
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -214,6 +216,7 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
+            const isHiddenSource = isSourceReflection && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
@@ -221,6 +224,7 @@ const ReflectionGroup = (props: Props) => {
                 groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
+                isHiddenSource={isHiddenSource}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}
