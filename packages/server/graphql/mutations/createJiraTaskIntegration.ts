@@ -9,6 +9,7 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateJiraTaskIntegrationPayload from '../types/CreateJiraTaskIntegrationPayload'
+import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
 
 type CreateJiraTaskIntegrationMutationVariables = {
   cloudId: string
@@ -69,15 +70,47 @@ export default {
       )
     }
 
-    const viewerAuth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
-    if (!viewerAuth) {
-      return standardError(new Error('The assignee does not have access to Jira'), {
+    const [viewerAuth, assigneeAuth] = await Promise.all([
+      dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId}),
+      dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+    ])
+    const auth = assigneeAuth ?? viewerAuth
+    if (!auth) {
+      return standardError(new Error('Neither the you nor the assignee have access to Jira'), {
         userId: viewerId
+      })
+    }
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const viewer = teamMembers.find(({userId}) => userId === viewerId)
+    const assignee = teamMembers.find((user) => user.userId === userId)
+
+    if (!viewer || !assignee) {
+      return standardError(new Error('Not part of the team'), {
+        userId: viewerId,
+        tags: {
+          userId,
+          viewerId,
+          teamId,
+          taskId
+        }
       })
     }
 
     // RESOLUTION
-    const res = await createJiraTask(rawContentStr, cloudId, projectKey, viewerAuth)
+    const accessUserId = assigneeAuth ? userId : viewerId
+
+    const createdBySomeoneElseComment =
+      viewerId !== userId
+        ? makeCreateJiraTaskComment(viewer.preferredName, assignee.preferredName)
+        : undefined
+
+    const res = await createJiraTask(
+      rawContentStr,
+      cloudId,
+      projectKey,
+      auth,
+      createdBySomeoneElseComment
+    )
     if (res.error) {
       return {error: {message: res.error.message}}
     }
@@ -88,7 +121,7 @@ export default {
       .update({
         integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          accessUserId: viewerId,
+          accessUserId,
           service: 'jira',
           cloudId,
           issueKey
@@ -96,7 +129,7 @@ export default {
         updatedAt: now
       })
       .run()
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
       publish(

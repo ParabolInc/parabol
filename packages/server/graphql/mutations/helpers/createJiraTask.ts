@@ -1,13 +1,14 @@
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import convertContentStateToADF from './convertContentStateToADF'
+import convertContentStateToADF, {Doc} from '../../../utils/convertContentStateToADF'
 
 const createJiraTask = async (
   rawContent: string,
   cloudId: string,
   projectKey: string,
-  atlassianAuth: AtlassianAuth
+  atlassianAuth: AtlassianAuth,
+  comment?: Doc
 ) => {
   const {title: summary, contentState} = splitDraftContent(rawContent)
   const description = convertContentStateToADF(contentState)
@@ -37,6 +38,11 @@ const createJiraTask = async (
   const res = await manager.createIssue(cloudId, projectKey, payload)
   if (res instanceof Error) return {error: res}
   const {key: issueKey} = res
+
+  if (comment) {
+    await manager.addComment(cloudId, issueKey, comment)
+  }
+
   return {issueKey}
 }
 
