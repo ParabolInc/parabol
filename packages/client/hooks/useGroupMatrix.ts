@@ -3,68 +3,53 @@ import {RefObject, useEffect, useState} from 'react'
 import {ElementWidth} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
+import useInitialRender from './useInitialRender'
 
-type Groups = SpotlightGroupsQueryResponse['viewer']['similarReflectionGroups']
+type Group = SpotlightGroupsQueryResponse['viewer']['similarReflectionGroups'][0]
 
 const useGroupMatrix = (
-  refGroups: Groups,
+  resultsGroups: readonly Group[],
   resultsRef: RefObject<HTMLDivElement>,
   phaseRef: RefObject<HTMLDivElement>
 ) => {
-  const [groupMatrix, setGroupMatrix] = useState<Groups[]>()
-  const [prevColumnsCount, setPrevColumnsCount] = useState<null | number>(null)
+  const isInit = useInitialRender()
 
   const getColumnsCount = () => {
     const {current: el} = resultsRef
     const width = el?.clientWidth
     if (!width) return null
-    const groupsCount = refGroups.length
-    if (groupsCount <= 2) return 1
-    const minColumns = 1
-    const minGroupsPerColumn = 2
-    const maxColumnsInRef = Math.floor(width / ElementWidth.MEETING_CARD_WITH_MARGIN)
-    const maxPossibleColumns = Math.max(
-      Math.min(maxColumnsInRef, MAX_SPOTLIGHT_COLUMNS),
-      minColumns
-    )
-    const groupsInSmallestColumn = Math.floor(groupsCount / maxPossibleColumns)
-    // if there's just 1/2 groups in a column, reduce the no. of columns
-    return groupsInSmallestColumn < minGroupsPerColumn && maxPossibleColumns !== minColumns
-      ? maxPossibleColumns - 1
-      : maxPossibleColumns
+    let colCount = 1
+    const getNextWidth = (count: number) =>
+      ElementWidth.MEETING_CARD * count + ElementWidth.MEETING_CARD_MARGIN * (count - 1)
+    while (getNextWidth(colCount + 1) < width && colCount + 1 <= MAX_SPOTLIGHT_COLUMNS) {
+      colCount++
+    }
+    return colCount
   }
 
-  const getEmptiestColumnIdx = () => {
-    // columnsCount differs from groupMatrix columns if all groups in column 0 are grouped into column 1
+  const initMatrix = () => {
     const columnsCount = getColumnsCount()
-    const initColumns = Array.from([...Array(columnsCount).keys()].fill(0))
-    const counts: number[] = groupMatrix!.reduce((arr: number[], row, idx) => {
-      arr[idx] = row.length
-      return arr
-    }, initColumns)
+    if (columnsCount === null) return []
+    const matrix = Array.from(new Array(columnsCount), () => []) as Group[][]
+    resultsGroups.forEach((group, idx) => {
+      const columnIdx = idx % columnsCount
+      matrix[columnIdx].push(group)
+    })
+    return matrix
+  }
+
+  const [groupMatrix, setGroupMatrix] = useState(initMatrix)
+
+  const getEmptiestColumnIdx = () => {
+    const counts = groupMatrix.map((row) => row.length)
     const minVal = Math.min(...counts)
     return counts.indexOf(minVal)
   }
 
-  const createMatrix = () => {
-    const columnsCount = getColumnsCount()
-    if (!columnsCount || columnsCount === prevColumnsCount) return
-    setPrevColumnsCount(columnsCount)
-    const matrix = [] as Groups[]
-    refGroups.forEach((group, idx) => {
-      const columnIdx = idx % columnsCount
-      const columnGroups = matrix[columnIdx]
-      if (columnGroups) matrix.splice(columnIdx, 1, [...columnGroups, group])
-      else matrix.splice(columnIdx, 0, [group])
-    })
-    setGroupMatrix(matrix)
-  }
-
   const updateMatrix = () => {
-    if (!groupMatrix?.length) return
     const matrixGroupsIds = groupMatrix.flatMap((row) => row.map(({id}) => id))
-    const newGroup = refGroups.find((group) => !matrixGroupsIds.includes(group.id))
-    const refGroupsIds = refGroups.map(({id}) => id)
+    const newGroup = resultsGroups.find((group) => !matrixGroupsIds.includes(group.id))
+    const refGroupsIds = resultsGroups.map(({id}) => id)
     const removedGroupId = matrixGroupsIds.find((id) => !refGroupsIds.includes(id))
     if (newGroup && removedGroupId) {
       // added to kanban group. Remove old Spotlight group and add kanban group in place
@@ -91,10 +76,13 @@ const useGroupMatrix = (
   }
 
   useEffect(() => {
-    if (!groupMatrix?.length) createMatrix()
-    else updateMatrix()
-  }, [resultsRef.current, refGroups])
+    if (isInit) return
+    updateMatrix()
+  }, [resultsGroups])
 
+  const createMatrix = () => {
+    setGroupMatrix(initMatrix())
+  }
   useResizeObserver(createMatrix, phaseRef)
 
   return groupMatrix

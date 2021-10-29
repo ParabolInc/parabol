@@ -50,25 +50,23 @@ const GroupingKanban = (props: Props) => {
   const [callbackRef, columnsRef] = useCallbackRef()
   const atmosphere = useAtmosphere()
   useHideBodyScroll()
-  const tempIdRef = useRef<null | string>(null)
-  if (tempIdRef.current === null) {
-    tempIdRef.current = clientTempId()
-  }
+  const dragIdRef = useRef<null | string>(null)
 
   const closeSpotlight = () => {
     const clone = document.getElementById(`clone-${spotlightReflectionId}`)
     if (clone && document.body.contains(clone)) {
       document.body.removeChild(clone)
     }
-    if (!tempIdRef.current || !spotlightReflectionId) return
+    if (!dragIdRef.current || !spotlightReflectionId) return
     closePortal()
     EndDraggingReflectionMutation(atmosphere, {
       reflectionId: spotlightReflectionId,
       dropTargetType: null,
       dropTargetId: null,
-      dragId: tempIdRef.current
+      dragId: dragIdRef.current
     })
     sourceRef.current = null
+    dragIdRef.current = null
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       const reflection = store.get(spotlightReflectionId!)
@@ -124,8 +122,8 @@ const GroupingKanban = (props: Props) => {
       if (!reflection || !meeting) return
       meeting.setLinkedRecord(reflection, 'spotlightReflection')
     })
-    if (!tempIdRef.current) return
-    StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: tempIdRef.current})
+    dragIdRef.current = clientTempId()
+    StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: dragIdRef.current})
   }
 
   if (!phaseRef.current) return null
