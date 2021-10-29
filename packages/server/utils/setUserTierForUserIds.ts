@@ -68,12 +68,13 @@ const setUserTierForUserIds = async (userIds: string[]) => {
   await Promise.all(userIds.map((userId) => db.clear('User', userId)))
   const users = await db.readMany('User', userIds)
   users.forEach((user) => {
-    segmentIo.identify({
-      userId: user.id,
-      traits: {
-        highestTier: user.tier
-      }
-    })
+    user &&
+      segmentIo.identify({
+        userId: user.id,
+        traits: {
+          highestTier: user.tier
+        }
+      })
   })
 }
 
