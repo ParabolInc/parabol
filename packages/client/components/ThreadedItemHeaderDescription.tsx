@@ -28,7 +28,7 @@ const HeaderResult = styled('div')({
 })
 
 interface Props {
-  children: ReactNode
+  children?: ReactNode
   title: string
   subTitle: string
 }

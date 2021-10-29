@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useEditorState from '~/hooks/useEditorState'
@@ -17,6 +17,7 @@ import {PokerEstimateHeaderCardParabol_task} from '../__generated__/PokerEstimat
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import TaskEditor from './TaskEditor/TaskEditor'
+
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
@@ -71,16 +72,10 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {task} = props
   const {id: taskId, content} = task
   const atmosphere = useAtmosphere()
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(true)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  useEffect(
-    () => () => {
-      setIsExpanded(false)
-    },
-    [taskId]
-  )
   const {useTaskChild} = useTaskChildFocus(taskId)
 
   const {teamId} = task
@@ -111,6 +106,9 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     }
     UpdateTaskMutation(atmosphere, {updatedTask, area: 'meeting'}, {})
   }
+  const toggleExpand = () => {
+    setIsExpanded((isExpanded) => !isExpanded)
+  }
 
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
@@ -129,7 +127,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
         </Content>
         <CardIcons>
           <CardButton>
-            <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
+            <IconLabel icon='unfold_more' onClick={toggleExpand} />
           </CardButton>
         </CardIcons>
       </HeaderCard>
