@@ -83,8 +83,8 @@ const createGitHubTask = async (
     return {error: new Error('GitHub create issue failed')}
   }
 
-  const {number: issueNumber} = issue
-  return {issueNumber}
+  const {number: issueNumber, id: issueId} = issue
+  return {issueNumber, issueId}
 }
 
 export default createGitHubTask
