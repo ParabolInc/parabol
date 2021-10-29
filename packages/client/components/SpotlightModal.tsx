@@ -129,15 +129,13 @@ const CloseIcon = styled(Icon)({
 interface Props {
   closeSpotlight: () => void
   meeting: GroupingKanban_meeting
-  sourceRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
+  srcDestinationRef: RefObject<HTMLDivElement>
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, sourceRef, phaseRef} = props
+  const {closeSpotlight, meeting, phaseRef, srcDestinationRef} = props
   const resultsRef = useRef<HTMLDivElement>(null)
-  const srcDestinationRef = useRef<HTMLDivElement | null>(null)
-  const isAnimated = useRef(false)
   const isLoadingResults = !resultsRef.current?.clientHeight
   const {id: meetingId, spotlightReflection} = meeting
   const spotlightReflectionId = spotlightReflection?.id
@@ -148,38 +146,9 @@ const SpotlightModal = (props: Props) => {
     }
   }
 
-  let clone: HTMLElement | null | undefined
-  requestAnimationFrame(() => {
-    if (
-      srcDestinationRef.current &&
-      spotlightReflectionId &&
-      sourceRef.current &&
-      !isAnimated.current
-    ) {
-      const sourceBbox = sourceRef.current.getBoundingClientRect()
-      const destinationBbox = srcDestinationRef.current.getBoundingClientRect()
-      clone = document.getElementById(`clone-${spotlightReflectionId}`)
-      if (!clone) return
-      const {style} = clone
-      const {left: startLeft, top: startTop} = sourceBbox
-      const {left: endLeft, top: endTop} = destinationBbox
-      const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
-      style.left = `${startLeft}px`
-      style.top = `${startTop}px`
-      style.borderRadius = `4px`
-      style.boxShadow = 'none'
-      style.opacity = '1'
-      style.overflow = `hidden`
-      setTimeout(() => {
-        style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-        style.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
-      }, 0)
-      isAnimated.current = true
-    }
-  })
-
   useEffect(() => {
     if (isLoadingResults) return
+    const clone = document.getElementById(`clone-${spotlightReflectionId}`)
     const timeout = setTimeout(() => {
       if (clone && document.body.contains(clone)) {
         document.body.removeChild(clone)
