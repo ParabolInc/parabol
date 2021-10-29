@@ -6,7 +6,7 @@ import {Threshold} from '~/types/constEnums'
 
 const updateOAuthRefreshTokens = {
   type: GraphQLInt,
-  description: `Forces refresh of Atlassian auth auth/refresh tokens`,
+  description: `Updates Atlassian OAuth tokens that haven't been updated for more than 14 days`,
   args: {},
   resolve: async (_source, {}, {authToken, dataLoader}: GQLContext) => {
     //AUTH
