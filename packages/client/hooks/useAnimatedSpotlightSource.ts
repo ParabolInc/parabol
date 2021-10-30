@@ -8,7 +8,7 @@ import {PortalStatus} from '~/hooks/usePortal'
 import {MutableRefObject, useLayoutEffect, useRef} from 'react'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 
-const useAnimateSpotlightSource = (
+const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,
   reflectionId: string | undefined,
   dragIdRef: MutableRefObject<string | undefined>
@@ -63,4 +63,4 @@ const useAnimateSpotlightSource = (
   return {sourceRef, sourceCloneRef}
 }
 
-export default useAnimateSpotlightSource
+export default useAnimatedSpotlightSource

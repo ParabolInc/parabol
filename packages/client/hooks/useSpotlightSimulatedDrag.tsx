@@ -74,7 +74,7 @@ const useSpotlightSimulatedDrag = (
     [meetingId]
   )
 
-  return {onOpenSpotlight, onCloseSpotlight, dragIdRef}
+  return {onOpenSpotlight, onCloseSpotlight}
 }
 
 export default useSpotlightSimulatedDrag

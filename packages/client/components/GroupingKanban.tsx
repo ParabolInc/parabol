@@ -7,7 +7,7 @@ import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.gra
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
-import useAnimateSpotlightSource from '../hooks/useAnimateSpotlightSource'
+import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useModal from '../hooks/useModal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
@@ -50,7 +50,7 @@ const GroupingKanban = (props: Props) => {
     onClose: onCloseSpotlight,
     id: 'spotlight'
   })
-  const {sourceRef, sourceCloneRef} = useAnimateSpotlightSource(
+  const {sourceRef, sourceCloneRef} = useAnimatedSpotlightSource(
     portalStatus,
     spotlightReflection?.id,
     dragIdRef

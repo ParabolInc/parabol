@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useEffect, useLayoutEffect, useRef, useState} from 'react'
+import React, {RefObject, Suspense, useEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
@@ -26,7 +26,6 @@ const Modal = styled('div')<{hideModal: boolean}>(({hideModal}) => ({
   flexDirection: 'column',
   height: '90vh',
   justifyContent: 'center',
-  maxHeight: '90vh',
   // We animate the source and then fade in the modal behind it. Source animation needs to know its
   // final position in the modal so render the modal with opacity 0 until source animation is complete.
   opacity: hideModal ? 0 : 1,
@@ -145,7 +144,7 @@ const SpotlightModal = (props: Props) => {
     }
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (portalStatus !== PortalStatus.Entered) return
     const timeout = setTimeout(() => {
       setHideModal(false)
