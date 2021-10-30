@@ -7,6 +7,7 @@ import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.gra
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
+import useAnimateSpotlightSource from '../hooks/useAnimateSpotlightSource'
 import useModal from '../hooks/useModal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
@@ -41,20 +42,18 @@ const GroupingKanban = (props: Props) => {
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
-  const sourceRef = useRef<HTMLDivElement | null>(null)
   const [callbackRef, columnsRef] = useCallbackRef()
   useHideBodyScroll()
-
-  const closeSpotlight = () => onCloseSpotlight()
-
+  const dragIdRef = useRef<string>()
+  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
   const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
-    onClose: closeSpotlight,
+    onClose: onCloseSpotlight,
     id: 'spotlight'
   })
-  const {onOpenSpotlight, onCloseSpotlight, srcDestinationRef} = useSpotlightSimulatedDrag(
-    meeting,
-    sourceRef,
-    portalStatus
+  const {sourceRef, sourceCloneRef} = useAnimateSpotlightSource(
+    portalStatus,
+    spotlightReflection?.id,
+    dragIdRef
   )
 
   // Close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
@@ -63,9 +62,14 @@ const GroupingKanban = (props: Props) => {
       openPortal()
     } else {
       closePortal()
-      sourceRef.current = null
+      sourceCloneRef.current = null
     }
   }, [!spotlightReflection])
+
+  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
+    sourceCloneRef.current = reflectionRef.current
+    onOpenSpotlight(reflectionId)
+  }
 
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
@@ -96,25 +100,6 @@ const GroupingKanban = (props: Props) => {
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
-  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
-    // sourceRef.current = reflectionRef.current
-    // const clone = cloneReflection(sourceRef.current!, reflectionId)
-    // // clone before element is altered by StartDraggingReflectionMutation
-    // // opacity 0 until the position is determined
-    // clone.style.opacity = '0'
-    // openPortal()
-    // commitLocalUpdate(atmosphere, (store) => {
-    //   const meeting = store.get(meetingId)
-    //   const reflection = store.get(reflectionId)
-    //   if (!reflection || !meeting) return
-    //   meeting.setLinkedRecord(reflection, 'spotlightReflection')
-    // })
-    // dragIdRef.current = clientTempId()
-    // StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: dragIdRef.current})
-    sourceRef.current = reflectionRef.current
-    onOpenSpotlight(reflectionId)
-  }
-
   if (!phaseRef.current) return null
   return (
     <PortalProvider>
@@ -144,9 +129,9 @@ const GroupingKanban = (props: Props) => {
       </ColumnsBlock>
       {modalPortal(
         <SpotlightModal
-          closeSpotlight={closeSpotlight}
+          closeSpotlight={onCloseSpotlight}
           meeting={meeting}
-          srcDestinationRef={srcDestinationRef}
+          sourceRef={sourceRef}
           portalStatus={portalStatus}
         />
       )}

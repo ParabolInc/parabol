@@ -127,12 +127,12 @@ const CloseIcon = styled(Icon)({
 interface Props {
   closeSpotlight: () => void
   meeting: GroupingKanban_meeting
-  srcDestinationRef: RefObject<HTMLDivElement>
+  sourceRef: RefObject<HTMLDivElement>
   portalStatus: number
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, srcDestinationRef, portalStatus} = props
+  const {closeSpotlight, meeting, sourceRef, portalStatus} = props
   const resultsRef = useRef<HTMLDivElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
@@ -162,7 +162,7 @@ const SpotlightModal = (props: Props) => {
             <CloseIcon>close</CloseIcon>
           </StyledCloseButton>
         </TopRow>
-        <SourceWrapper ref={srcDestinationRef}>
+        <SourceWrapper ref={sourceRef}>
           {spotlightReflection && (
             <DraggableReflectionCard
               isDraggable
