@@ -28,7 +28,7 @@ const useModal = (options: Options = {}) => {
     noClose ? undefined : closePortal,
     background
   )
-  return {togglePortal, modalPortal, closePortal, loadingDelay, openPortal}
+  return {togglePortal, modalPortal, closePortal, loadingDelay, openPortal, portalStatus}
 }
 
 export default useModal

@@ -1,11 +1,17 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import React, {RefObject, Suspense, useEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {DECELERATE, fadeInOpacity} from '../styles/animation'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {BezierCurve, Breakpoint, ElementWidth, Times, ZIndex} from '../types/constEnums'
+import {
+  BezierCurve,
+  Breakpoint,
+  ElementHeight,
+  ElementWidth,
+  Times,
+  ZIndex
+} from '../types/constEnums'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
@@ -14,25 +20,24 @@ import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
 import ResultsRoot from './ResultsRoot'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
+import {PortalStatus} from '~/hooks/usePortal'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
 
-const Modal = styled('div')<{isLoadingResults: boolean}>(({isLoadingResults}) => ({
-  animation: isLoadingResults
-    ? undefined
-    : `${fadeInOpacity.toString()} ${Times.SPOTLIGHT_MODAL_DURATION}ms ${DECELERATE} ${
-        Times.SPOTLIGHT_MODAL_DELAY
-      }ms forwards`,
+const Modal = styled('div')<{hideModal: boolean}>(({hideModal}) => ({
   backgroundColor: `${PALETTE.WHITE}`,
   borderRadius: 8,
   boxShadow: Elevation.Z8,
   display: 'flex',
-  justifyContent: 'center',
-  opacity: 0,
   flexDirection: 'column',
   height: '90vh',
+  justifyContent: 'center',
   maxHeight: '90vh',
+  // We animate the source and then fade in the modal behind it. Source animation needs to know its
+  // final position in the modal so render the modal with opacity 0 until source animation is complete.
+  opacity: hideModal ? 0 : 1,
+  transition: `opacity ${Times.SPOTLIGHT_MODAL_DURATION}ms ${BezierCurve.DECELERATE}`,
   width: '90vw',
   zIndex: ZIndex.DIALOG,
   [desktopBreakpoint]: {
@@ -67,7 +72,9 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceWrapper = styled('div')()
+const SourceWrapper = styled('div')({
+  minHeight: ElementHeight.REFLECTION_CARD
+})
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -131,12 +138,13 @@ interface Props {
   meeting: GroupingKanban_meeting
   phaseRef: RefObject<HTMLDivElement>
   srcDestinationRef: RefObject<HTMLDivElement>
+  portalStatus: number
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, phaseRef, srcDestinationRef} = props
+  const {closeSpotlight, meeting, phaseRef, srcDestinationRef, portalStatus} = props
   const resultsRef = useRef<HTMLDivElement>(null)
-  const isLoadingResults = !resultsRef.current?.clientHeight
+  const [hideModal, setHideModal] = useState(true)
   const {id: meetingId, spotlightReflection} = meeting
   const spotlightReflectionId = spotlightReflection?.id
 
@@ -147,18 +155,24 @@ const SpotlightModal = (props: Props) => {
   }
 
   useEffect(() => {
-    if (isLoadingResults) return
+    if (portalStatus !== PortalStatus.Entered) return
+    const delayModalAnimTimeout = setTimeout(() => {
+      setHideModal(false)
+    }, Times.SPOTLIGHT_MODAL_DELAY)
     const clone = document.getElementById(`clone-${spotlightReflectionId}`)
-    const timeout = setTimeout(() => {
+    const removeCloneTimeout = setTimeout(() => {
       if (clone && document.body.contains(clone)) {
         document.body.removeChild(clone)
       }
     }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
-    return () => clearTimeout(timeout)
-  }, [isLoadingResults])
+    return () => {
+      clearTimeout(removeCloneTimeout)
+      clearTimeout(delayModalAnimTimeout)
+    }
+  }, [portalStatus])
 
   return (
-    <Modal isLoadingResults={isLoadingResults}>
+    <Modal hideModal={hideModal}>
       <SourceSection>
         <TopRow>
           <Title>Find cards with similar reflections</Title>
@@ -166,19 +180,16 @@ const SpotlightModal = (props: Props) => {
             <CloseIcon>close</CloseIcon>
           </StyledCloseButton>
         </TopRow>
-        {/* wait for results to render to know the height of the modal */}
-        {!isLoadingResults && (
-          <SourceWrapper ref={srcDestinationRef}>
-            {spotlightReflection && (
-              <DraggableReflectionCard
-                isDraggable
-                reflection={spotlightReflection}
-                meeting={meeting}
-                staticReflections={null}
-              />
-            )}
-          </SourceWrapper>
-        )}
+        <SourceWrapper ref={srcDestinationRef}>
+          {spotlightReflection && (
+            <DraggableReflectionCard
+              isDraggable
+              reflection={spotlightReflection}
+              meeting={meeting}
+              staticReflections={null}
+            />
+          )}
+        </SourceWrapper>
         <SearchWrapper>
           <Search>
             <StyledMenuItemIcon>

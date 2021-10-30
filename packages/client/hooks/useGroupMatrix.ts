@@ -1,5 +1,5 @@
 import {SpotlightGroupsQueryResponse} from './../__generated__/SpotlightGroupsQuery.graphql'
-import {RefObject, useEffect, useState} from 'react'
+import {RefObject, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {ElementWidth} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
@@ -27,7 +27,7 @@ const useGroupMatrix = (
     return colCount
   }
 
-  const initMatrix = () => {
+  const initMatrix = (): Group[][] => {
     const columnsCount = getColumnsCount()
     if (columnsCount === null) return []
     const matrix = Array.from(new Array(columnsCount), () => []) as Group[][]
@@ -38,54 +38,65 @@ const useGroupMatrix = (
     return matrix
   }
 
-  const [groupMatrix, setGroupMatrix] = useState(initMatrix)
+  // const [groupMatrix, setGroupMatrix] = useState(initMatrix)
+  const initialMatrix = initMatrix()
+  const groupMatrix = useRef<Group[][]>(initialMatrix)
+  // const groupMatrixRef = useRef(initMatrix)
 
   const getEmptiestColumnIdx = () => {
-    const counts = groupMatrix.map((row) => row.length)
+    const counts = groupMatrix.current.map((row) => row.length)
     const minVal = Math.min(...counts)
     return counts.indexOf(minVal)
   }
 
   const updateMatrix = () => {
-    const matrixGroupsIds = groupMatrix.flatMap((row) => row.map(({id}) => id))
+    const matrixGroupsIds = groupMatrix.current.flatMap((row) => row.map(({id}) => id))
     const newGroup = resultsGroups.find((group) => !matrixGroupsIds.includes(group.id))
     const refGroupsIds = resultsGroups.map(({id}) => id)
     const removedGroupId = matrixGroupsIds.find((id) => !refGroupsIds.includes(id))
     if (newGroup && removedGroupId) {
       // added to kanban group. Remove old Spotlight group and add kanban group in place
-      const newMatrix = groupMatrix.map((row) =>
+      const newMatrix = groupMatrix.current.map((row) =>
         row.map((group) => (group.id === removedGroupId ? newGroup : group))
       )
-      setGroupMatrix(newMatrix)
+      groupMatrix.current = newMatrix
+      // setGroupMatrix(newMatrix)
     } else if (newGroup) {
       // ungrouping added a new group
       const emptiestColumnIdx = getEmptiestColumnIdx()
-      const matrixColumns = groupMatrix.length - 1
+      const matrixColumns = groupMatrix.current.length - 1
       const newMatrix =
         emptiestColumnIdx > matrixColumns
-          ? [...groupMatrix, [newGroup]]
-          : groupMatrix.map((row, idx) => (idx === emptiestColumnIdx ? [...row, newGroup] : row))
-      setGroupMatrix(newMatrix)
+          ? [...groupMatrix.current, [newGroup]]
+          : groupMatrix.current.map((row, idx) =>
+              idx === emptiestColumnIdx ? [...row, newGroup] : row
+            )
+      // setGroupMatrix(newMatrix)
+      groupMatrix.current = newMatrix
     } else if (removedGroupId) {
       // group added to another Spotlight group. Remove the old group & remove column if empty
-      const newMatrix = groupMatrix
+      const newMatrix = groupMatrix.current
         .map((row) => row.filter((group) => group.id !== removedGroupId))
         .filter(({length}) => length)
-      setGroupMatrix(newMatrix)
+      // setGroupMatrix(newMatrix)
+      groupMatrix.current = newMatrix
     }
   }
 
-  useEffect(() => {
+  // useEffect(() => {
+  useLayoutEffect(() => {
     if (isInit) return
     updateMatrix()
   }, [resultsGroups])
 
   const createMatrix = () => {
-    setGroupMatrix(initMatrix())
+    // setGroupMatrix(initMatrix())
+    const newMatrix = initMatrix()
+    groupMatrix.current = newMatrix
   }
   useResizeObserver(createMatrix, phaseRef)
 
-  return groupMatrix
+  return groupMatrix.current
 }
 
 export default useGroupMatrix

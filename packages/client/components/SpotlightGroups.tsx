@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject} from 'react'
-import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {ElementHeight, ElementWidth} from '~/types/constEnums'
 import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 import useGroupMatrix from '../hooks/useGroupMatrix'
 import useResultsHeight from '~/hooks/useResultsHeight'
+import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
 
 const SimilarGroups = styled('div')({
   padding: '40px 0px 24px',
@@ -22,8 +22,7 @@ const Scrollbar = styled('div')<{height: number | string}>(({height}) => ({
   overflow: 'auto',
   width: '100%',
   height,
-  // wait for height to be calculated before setting the minHeight
-  minHeight: height === '100%' ? undefined : ElementHeight.REFLECTION_CARD * 4
+  minHeight: ElementHeight.REFLECTION_CARD * 4
 }))
 
 const Column = styled('div')({
@@ -91,7 +90,7 @@ const SpotlightGroups = (props: Props) => {
   return (
     <SimilarGroups>
       <Scrollbar height={scrollHeight} ref={resultsRef}>
-        {groupMatrix?.map((row) => (
+        {groupMatrix.map((row) => (
           <Column key={`${row[0].id}`}>
             {row.map((group) => {
               return (

@@ -1,18 +1,18 @@
 import {RefObject, useCallback, useEffect, useRef} from 'react'
-import graphql from 'babel-plugin-relay/macro'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import useAtmosphere from './useAtmosphere'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
-import {commitLocalUpdate, useLazyLoadQuery} from 'react-relay'
-import {DraggableReflectionCardLocalQuery} from '~/__generated__/DraggableReflectionCardLocalQuery.graphql'
+import {commitLocalUpdate} from 'react-relay'
 import {BezierCurve, Times} from '~/types/constEnums'
 import cloneReflection from '~/utils/retroGroup/cloneReflection'
 import clientTempId from '~/utils/relay/clientTempId'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
+import {PortalStatus} from './usePortal'
 
 const useSpotlightSimulatedDrag = (
   meeting: GroupingKanban_meeting,
-  sourceRef: RefObject<HTMLDivElement>
+  sourceRef: RefObject<HTMLDivElement>,
+  portalStatus: number
 ) => {
   const atmosphere = useAtmosphere()
 
@@ -22,61 +22,41 @@ const useSpotlightSimulatedDrag = (
   const srcDestinationRef = useRef<HTMLDivElement | null>(null)
   const isAnimated = useRef(false)
   const {id: meetingId, spotlightReflection} = meeting
-  const spotlightReflectionId = spotlightReflection?.id
 
-  const spotlightSearchResults = useLazyLoadQuery<DraggableReflectionCardLocalQuery>(
-    graphql`
-      query DraggableReflectionCardLocalQuery($reflectionId: ID!, $searchQuery: String!) {
-        viewer {
-          similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
-            id
-          }
-        }
-      }
-    `,
-    // TODO: add search query
-    {reflectionId: spotlightReflectionId || '', searchQuery: ''},
-    {fetchPolicy: 'store-only'}
-  )
-  const {viewer} = spotlightSearchResults
-  const {similarReflectionGroups} = viewer
-  const hasResults = !!similarReflectionGroups
-
+  const destinationBbox = srcDestinationRef?.current?.getBoundingClientRect()
   useEffect(() => {
-    const destinationBbox = srcDestinationRef?.current?.getBoundingClientRect()
+    if (!destinationBbox) return
     const {current: reflectionId} = reflectionIdRef
-    if (!destinationBbox || !reflectionId) return
-    const sourceBbox = sourceRef?.current?.getBoundingClientRect()
-    if (!sourceBbox || !spotlightReflectionId || isAnimated.current) return
-    requestAnimationFrame(() => {
-      const clone = cloneReflection(sourceRef.current!, spotlightReflectionId)
-      const {style} = clone
-      const {left: startLeft, top: startTop, height} = sourceBbox
-      const {left: endLeft, top: endTop} = destinationBbox
-      const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
-      style.left = `${startLeft}px`
-      style.top = `${startTop}px`
-      style.borderRadius = `4px`
-      style.boxShadow = 'none'
-      style.minHeight = `${height}px`
-      style.height = `${height}px`
-      style.opacity = '1'
-      style.overflow = `hidden`
-      setTimeout(() => {
-        style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-        style.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
-      }, 0)
-      isAnimated.current = true
-    })
+    const {current: source} = sourceRef
+    if (!source || !reflectionId || isAnimated.current || portalStatus !== PortalStatus.Entered)
+      return
+    const sourceBbox = source.getBoundingClientRect()
+    const clone = cloneReflection(source, reflectionId)
+    const {style} = clone
+    const {left: startLeft, top: startTop, height} = sourceBbox
+    const {left: endLeft, top: endTop} = destinationBbox
+    const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
+    style.left = `${startLeft}px`
+    style.top = `${startTop}px`
+    style.borderRadius = `4px`
+    style.boxShadow = 'none'
+    style.minHeight = `${height}px`
+    style.height = `${height}px`
+    style.opacity = '1'
+    style.overflow = `hidden`
     setTimeout(() => {
-      dragIdRef.current = clientTempId()
-      StartDraggingReflectionMutation(atmosphere, {
-        reflectionId,
-        dragId: dragIdRef.current,
-        isSpotlight: true
-      })
-    }, Times.SPOTLIGHT_MODAL_DURATION)
-  })
+      style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
+      style.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
+    }, 0)
+    isAnimated.current = true
+    dragIdRef.current = clientTempId()
+    if (!reflectionId) return
+    StartDraggingReflectionMutation(atmosphere, {
+      reflectionId,
+      dragId: dragIdRef.current,
+      isSpotlight: true
+    })
+  }, [portalStatus])
 
   // handle the case when someone steals the reflection
   useEffect(() => {
