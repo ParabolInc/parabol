@@ -1,4 +1,4 @@
-import {RefObject, useCallback, useEffect, useRef} from 'react'
+import {RefObject, useCallback, useEffect, useLayoutEffect, useRef} from 'react'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import useAtmosphere from './useAtmosphere'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -8,6 +8,7 @@ import cloneReflection from '~/utils/retroGroup/cloneReflection'
 import clientTempId from '~/utils/relay/clientTempId'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import {PortalStatus} from './usePortal'
+import {Elevation} from '~/styles/elevation'
 
 const useSpotlightSimulatedDrag = (
   meeting: GroupingKanban_meeting,
@@ -20,35 +21,46 @@ const useSpotlightSimulatedDrag = (
   const reflectionIdRef = useRef<string>()
   const updateTimerRef = useRef(0)
   const srcDestinationRef = useRef<HTMLDivElement | null>(null)
-  const isAnimated = useRef(false)
   const {id: meetingId, spotlightReflection} = meeting
 
-  const destinationBbox = srcDestinationRef?.current?.getBoundingClientRect()
-  useEffect(() => {
-    if (!destinationBbox) return
+  useLayoutEffect(() => {
+    const {current: srcDestination} = srcDestinationRef
     const {current: reflectionId} = reflectionIdRef
     const {current: source} = sourceRef
-    if (!source || !reflectionId || isAnimated.current || portalStatus !== PortalStatus.Entered)
+    // wait for the portal to enter to get the source's destination bbox
+    if (
+      portalStatus !== PortalStatus.Entered ||
+      !source ||
+      !reflectionId ||
+      !srcDestination ||
+      dragIdRef.current
+    ) {
       return
+    }
+    const destinationBbox = srcDestination.getBoundingClientRect()
     const sourceBbox = source.getBoundingClientRect()
+    const {style: destinationStyle} = srcDestination
+    destinationStyle.opacity = '0' // hide destination source while cloning
     const clone = cloneReflection(source, reflectionId)
-    const {style} = clone
-    const {left: startLeft, top: startTop, height} = sourceBbox
+    const {style: cloneStyle} = clone
+    const {left: startLeft, top: startTop} = sourceBbox
     const {left: endLeft, top: endTop} = destinationBbox
     const roundedEndTop = Math.round(endTop) // fractional top pixel throws off calc
-    style.left = `${startLeft}px`
-    style.top = `${startTop}px`
-    style.borderRadius = `4px`
-    style.boxShadow = 'none'
-    style.minHeight = `${height}px`
-    style.height = `${height}px`
-    style.opacity = '1'
-    style.overflow = `hidden`
-    setTimeout(() => {
-      style.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-      style.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
+    cloneStyle.left = `${startLeft}px`
+    cloneStyle.top = `${startTop}px`
+    cloneStyle.borderRadius = `4px`
+    cloneStyle.boxShadow = `${Elevation.CARD_SHADOW}`
+    cloneStyle.overflow = `hidden`
+    const transitionTimeout = setTimeout(() => {
+      cloneStyle.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
+      cloneStyle.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
     }, 0)
-    isAnimated.current = true
+    const removeCloneTimeout = setTimeout(() => {
+      if (clone && document.body.contains(clone)) {
+        document.body.removeChild(clone)
+        destinationStyle.opacity = '1' // show destination src once clone is removed
+      }
+    }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
     dragIdRef.current = clientTempId()
     if (!reflectionId) return
     StartDraggingReflectionMutation(atmosphere, {
@@ -56,6 +68,10 @@ const useSpotlightSimulatedDrag = (
       dragId: dragIdRef.current,
       isSpotlight: true
     })
+    return () => {
+      clearTimeout(transitionTimeout)
+      clearTimeout(removeCloneTimeout)
+    }
   }, [portalStatus])
 
   // handle the case when someone steals the reflection
@@ -80,12 +96,10 @@ const useSpotlightSimulatedDrag = (
   const onCloseSpotlight = useCallback(() => {
     clearTimeout(updateTimerRef.current)
     updateTimerRef.current = 0
-
     const clone = document.getElementById(`clone-${reflectionIdRef.current}`)
     if (clone && document.body.contains(clone)) {
       document.body.removeChild(clone)
     }
-
     // Only send the enddragging mutation when we didn't send it before,
     // but always null the spotlight reflection to close the dialog
     const reflectionId = reflectionIdRef.current
@@ -96,7 +110,6 @@ const useSpotlightSimulatedDrag = (
         dropTargetId: null,
         dragId: dragIdRef.current
       })
-
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       meetingProxy?.setValue(null, 'spotlightReflection')
@@ -106,24 +119,11 @@ const useSpotlightSimulatedDrag = (
     })
     dragIdRef.current = undefined
     reflectionIdRef.current = undefined
-    isAnimated.current = false
   }, [meetingId])
 
   const onOpenSpotlight = useCallback(
     (reflectionId: string) => {
-      // dragIdRef.current = clientTempId()
       reflectionIdRef.current = reflectionId
-      // StartDraggingReflectionMutation(atmosphere, {
-      //   reflectionId,
-      //   dragId: dragIdRef.current,
-      //   isSpotlight: true
-      // })
-      // const bbox = reflectionRef?.current?.getBoundingClientRect()
-      // console.log('🚀  ~ sourceBbox', {sourceBbox, curr: reflectionRef.current})
-      // if (!sourceBbox && bbox) {
-      //   setSourceBbox(bbox)
-      // }
-      // cloneReflection(reflectionRef.current, reflectionId)
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)
         const meetingProxy = store.get(meetingId)

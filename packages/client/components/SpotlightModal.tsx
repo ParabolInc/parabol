@@ -1,17 +1,10 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useEffect, useRef, useState} from 'react'
+import React, {RefObject, Suspense, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {
-  BezierCurve,
-  Breakpoint,
-  ElementHeight,
-  ElementWidth,
-  Times,
-  ZIndex
-} from '../types/constEnums'
+import {BezierCurve, Breakpoint, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
@@ -72,9 +65,7 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceWrapper = styled('div')({
-  minHeight: ElementHeight.REFLECTION_CARD
-})
+const SourceWrapper = styled('div')()
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -86,7 +77,7 @@ const SearchInput = styled('input')({
   fontSize: 14,
   lineHeight: '24px',
   outline: 'none',
-  padding: '6px 0 6px 39px',
+  padding: '6px 0 6px 40px',
   width: '100%',
   '::placeholder': {
     color: PALETTE.SLATE_600
@@ -136,14 +127,14 @@ const CloseIcon = styled(Icon)({
 interface Props {
   closeSpotlight: () => void
   meeting: GroupingKanban_meeting
-  phaseRef: RefObject<HTMLDivElement>
   srcDestinationRef: RefObject<HTMLDivElement>
   portalStatus: number
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, phaseRef, srcDestinationRef, portalStatus} = props
+  const {closeSpotlight, meeting, srcDestinationRef, portalStatus} = props
   const resultsRef = useRef<HTMLDivElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
   const {id: meetingId, spotlightReflection} = meeting
   const spotlightReflectionId = spotlightReflection?.id
@@ -154,25 +145,16 @@ const SpotlightModal = (props: Props) => {
     }
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (portalStatus !== PortalStatus.Entered) return
-    const delayModalAnimTimeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       setHideModal(false)
     }, Times.SPOTLIGHT_MODAL_DELAY)
-    const clone = document.getElementById(`clone-${spotlightReflectionId}`)
-    const removeCloneTimeout = setTimeout(() => {
-      if (clone && document.body.contains(clone)) {
-        document.body.removeChild(clone)
-      }
-    }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
-    return () => {
-      clearTimeout(removeCloneTimeout)
-      clearTimeout(delayModalAnimTimeout)
-    }
+    return () => clearTimeout(timeout)
   }, [portalStatus])
 
   return (
-    <Modal hideModal={hideModal}>
+    <Modal hideModal={hideModal} ref={modalRef}>
       <SourceSection>
         <TopRow>
           <Title>Find cards with similar reflections</Title>
@@ -210,7 +192,7 @@ const SpotlightModal = (props: Props) => {
         <ResultsRoot
           resultsRef={resultsRef}
           meetingId={meetingId}
-          phaseRef={phaseRef}
+          phaseRef={modalRef}
           spotlightReflectionId={spotlightReflectionId}
         />
       </Suspense>

@@ -3,10 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
-import EndDraggingReflectionMutation from '~/mutations/EndDraggingReflectionMutation'
-import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
-import clientTempId from '~/utils/relay/clientTempId'
-import cloneReflection from '~/utils/retroGroup/cloneReflection'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -41,45 +37,16 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases, spotlightReflection} = meeting
-  const spotlightReflectionId = spotlightReflection?.id
+  const {reflectionGroups, phases, spotlightReflection} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const sourceRef = useRef<HTMLDivElement | null>(null)
-  // const {onOpenSpotlight, onCloseSpotlight, srcDestinationRef} = useSpotlightSimulatedDrag(
-  //   meeting,
-  //   sourceRef
-  // )
   const [callbackRef, columnsRef] = useCallbackRef()
   useHideBodyScroll()
-  const dragIdRef = useRef<null | string>(null)
 
-  const closeSpotlight = () => {
-    // const clone = document.getElementById(`clone-${spotlightReflectionId}`)
-    // if (clone && document.body.contains(clone)) {
-    //   document.body.removeChild(clone)
-    // }
-    // if (!dragIdRef.current || !spotlightReflectionId) return
-    // closePortal()
-    // EndDraggingReflectionMutation(atmosphere, {
-    //   reflectionId: spotlightReflectionId,
-    //   dropTargetType: null,
-    //   dropTargetId: null,
-    //   dragId: dragIdRef.current
-    // })
-    // sourceRef.current = null
-    // dragIdRef.current = null
-    // commitLocalUpdate(atmosphere, (store) => {
-    //   const meeting = store.get(meetingId)
-    //   const reflection = store.get(spotlightReflectionId!)
-    //   if (!reflection || !meeting) return
-    //   meeting.setValue(null, 'spotlightReflection')
-    //   // isDropping so that the source is added back to its original position in kanban
-    //   reflection.setValue(true, 'isDropping')
-    // })
-    onCloseSpotlight()
-  }
+  const closeSpotlight = () => onCloseSpotlight()
+
   const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
     onClose: closeSpotlight,
     id: 'spotlight'
@@ -90,17 +57,14 @@ const GroupingKanban = (props: Props) => {
     portalStatus
   )
 
-  // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
+  // Close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
   useEffect(() => {
-    // if (spotlightReflection) {
-    //   openPortal()
-    // } else {
-    if (!spotlightReflection) {
+    if (spotlightReflection) {
+      openPortal()
+    } else {
       closePortal()
-      // flipReverse()
       sourceRef.current = null
     }
-    // }
   }, [!spotlightReflection])
 
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
@@ -148,7 +112,6 @@ const GroupingKanban = (props: Props) => {
     // dragIdRef.current = clientTempId()
     // StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: dragIdRef.current})
     sourceRef.current = reflectionRef.current
-    openPortal()
     onOpenSpotlight(reflectionId)
   }
 
@@ -183,7 +146,6 @@ const GroupingKanban = (props: Props) => {
         <SpotlightModal
           closeSpotlight={closeSpotlight}
           meeting={meeting}
-          phaseRef={phaseRef}
           srcDestinationRef={srcDestinationRef}
           portalStatus={portalStatus}
         />
@@ -197,7 +159,6 @@ export default createFragmentContainer(GroupingKanban, {
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
       ...DraggableReflectionCard_meeting
-      id
       teamId
       phases {
         ... on ReflectPhase {
