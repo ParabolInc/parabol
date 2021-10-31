@@ -23,6 +23,7 @@ import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import sendToSentry from '../../utils/sendToSentry'
+import errorFilter from '../errorFilter'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -93,7 +94,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
         } else if (integration.service === 'github') {
           const [githubAuth, estimates] = await Promise.all([
             dataLoader.get('githubAuth').load({userId: accessUserId, teamId}),
-            taskId ? dataLoader.get('latestTaskEstimates').load(taskId) : []
+            dataLoader.get('latestTaskEstimates').load(taskId)
           ])
 
           if (!githubAuth) return null
@@ -156,15 +157,18 @@ const Task = new GraphQLObjectType<any, GQLContext>({
               sendToSentry(new Error(labelErrors[0].message), {userId: accessUserId})
             }
           } else if (estimates.length) {
-            const dimensions = await dataLoader.get('githubDimensionFieldMaps').loadMany(
-              estimates.map((estimate) => {
-                return {dimensionName: estimate.name, nameWithOwner, teamId}
-              })
-            )
+            const dimensionFieldMaps = await dataLoader
+              .get('githubDimensionFieldMaps')
+              .loadMany(
+                estimates.map((estimate) => {
+                  return {dimensionName: estimate.name, nameWithOwner, teamId}
+                })
+              )
+              .filter(errorFilter)
 
             await Promise.all(
               estimates.map((estimate) => {
-                const dimension = dimensions.find((d) => d.dimensionName === estimate.name)
+                const dimension = dimensionFieldMaps.find((d) => d.dimensionName === estimate.name)
 
                 const {labelTemplate} = dimension
                 const templateRegExp = new RegExp(`^${labelTemplate.replace('{{#}}', '(.+?)')}$`)

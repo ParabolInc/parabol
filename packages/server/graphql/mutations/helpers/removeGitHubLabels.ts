@@ -27,9 +27,7 @@ const removeGitHubLabels = async (
       labelIds: labelIdsToRemove
     }
   })
-  if (removeLabelsError) return removeLabelsError
-
-  return null
+  return removeLabelsError
 }
 
 export default removeGitHubLabels
