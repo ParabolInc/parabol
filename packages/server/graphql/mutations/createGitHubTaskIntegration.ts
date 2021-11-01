@@ -80,7 +80,7 @@ export default {
     const auth = assigneeAuth ?? viewerAuth
     if (!auth) {
       return standardError(
-        new Error(`Assignment failed! Neither you nor the assignee does not have access to GitHub`),
+        new Error(`Assignment failed! Neither you nor the assignee has access to GitHub`),
         {userId: viewerId}
       )
     }

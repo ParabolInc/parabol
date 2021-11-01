@@ -88,9 +88,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   }
 
   const label =
-    !teamMember || isViewerAssignee
-      ? undefined
-      : `Neither you nor ${preferredName} have any integrations for this team.`
+    teamMember && !isViewerAssignee
+      ? `Neither you nor ${preferredName} has any integrations for this team.`
+      : undefined
 
   return (
     <TaskFooterIntegrateMenuSignup

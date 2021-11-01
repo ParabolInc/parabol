@@ -79,7 +79,7 @@ export default {
     ])
     const auth = assigneeAuth ?? viewerAuth
     if (!auth) {
-      return standardError(new Error('Neither the you nor the assignee have access to Jira'), {
+      return standardError(new Error('Neither you nor the assignee has access to Jira'), {
         userId: viewerId
       })
     }
