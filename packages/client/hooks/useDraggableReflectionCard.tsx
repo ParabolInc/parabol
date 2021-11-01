@@ -1,5 +1,6 @@
 import React, {useContext, useEffect} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
@@ -18,7 +19,6 @@ import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
 import handleDrop from '../utils/retroGroup/handleDrop'
 import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
 import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
-import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 
@@ -44,7 +44,7 @@ const useRemoteDrag = (
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
-          style={isClose ? style : {transform: style.transform}}
+          style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
           reflection={reflection}
         />
       )
@@ -81,7 +81,6 @@ const useLocalDrag = (
 ) => {
   const {remoteDrag, isDropping, id: reflectionId, isViewerDragging} = reflection
   const atmosphere = useAtmosphere()
-
   // handle drag end
   useEffect(() => {
     if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag) {
@@ -320,7 +319,8 @@ const usePlaceholder = (
 ) => {
   useEffect(() => {
     const {ref} = drag
-    const {style, scrollHeight} = ref!
+    if (!ref) return
+    const {style, scrollHeight} = ref
     if (staticIdx === -1) {
       // the card has been picked up
       if (staticReflectionCount > 0) return

@@ -112,7 +112,7 @@ export default {
     }
 
     // RESOLUTION
-    let user: IUser | null
+    let user: IUser | undefined
     try {
       user = await getBillingLeaderUser(email, orgId, dataLoader)
     } catch (e) {

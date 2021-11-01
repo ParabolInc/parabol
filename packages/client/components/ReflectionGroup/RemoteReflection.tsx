@@ -1,19 +1,22 @@
-import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {RefObject, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
-import {Elevation} from '../../styles/elevation'
-import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
-import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
-import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useEffect, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
-import getBBox from '../RetroReflectPhase/getBBox'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useEditorState from '../../hooks/useEditorState'
+import {Elevation} from '../../styles/elevation'
+import {BezierCurve, DragAttribute, ElementWidth, Times} from '../../types/constEnums'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
-import useEditorState from '../../hooks/useEditorState'
-const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isDropping}) => ({
+import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
+import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
+import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
+import getBBox from '../RetroReflectPhase/getBBox'
+import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
+
+const RemoteReflectionModal = styled('div')<{
+  isDropping?: boolean | null
+}>(({isDropping}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -21,8 +24,7 @@ const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isD
   pointerEvents: 'none',
   transition: `all ${
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
-  }ms ${BezierCurve.DECELERATE}`,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+  }ms ${BezierCurve.DECELERATE}`
 }))
 
 const HeaderModal = styled('div')({
@@ -30,14 +32,8 @@ const HeaderModal = styled('div')({
   left: 0,
   top: 0,
   pointerEvents: 'none',
-  width: ElementWidth.REFLECTION_CARD,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+  width: ElementWidth.REFLECTION_CARD
 })
-
-interface Props {
-  style: React.CSSProperties
-  reflection: RemoteReflection_reflection
-}
 
 const windowDims = {
   innerWidth: window.innerWidth,
@@ -103,11 +99,17 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
 const getInlineStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
-  style: React.CSSProperties
+  style: React.CSSProperties,
 ) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
-  return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
+  const {zIndex} = style
+  return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
+}
+
+interface Props {
+  style: React.CSSProperties
+  reflection: RemoteReflection_reflection
 }
 
 const RemoteReflection = (props: Props) => {
@@ -131,10 +133,10 @@ const RemoteReflection = (props: Props) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
-
   if (!remoteDrag) return null
   const {dragUserId, dragUserName} = remoteDrag
-  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
+
+  const {nextStyle, minTop} = getInlineStyle(remoteDrag, isDropping, style)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
@@ -164,6 +166,7 @@ export default createFragmentContainer(RemoteReflection, {
       id
       content
       isDropping
+      reflectionGroupId
       remoteDrag {
         dragUserId
         dragUserName
