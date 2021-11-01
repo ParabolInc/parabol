@@ -29,6 +29,7 @@ interface Props {
   placeholder: string
   suggestedIntegrations: TaskFooterIntegrateMenuList_suggestedIntegrations
   task: TaskFooterIntegrateMenuList_task
+  label?: string
 }
 
 const SearchIcon = styled(Icon)({
@@ -59,6 +60,13 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
+const Label = styled('div')({
+  color: PALETTE.SLATE_600,
+  fontSize: 14,
+  fontStyle: 'italic',
+  padding: 8
+})
+
 const getValue = (
   item: NonNullable<TaskFooterIntegrateMenuList_suggestedIntegrations['items']>[0]
 ) => {
@@ -69,7 +77,7 @@ const getValue = (
 }
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {mutationProps, menuProps, placeholder, suggestedIntegrations, task} = props
+  const {mutationProps, menuProps, placeholder, suggestedIntegrations, task, label} = props
   const {hasMore} = suggestedIntegrations
   const items = suggestedIntegrations.items || []
   const {id: taskId, teamId, userId} = task
@@ -99,6 +107,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       {...menuProps}
       resetActiveOnChanges={[allItems]}
     >
+      {label && <Label>{label}</Label>}
       <SearchItem key='search'>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>

@@ -6,9 +6,6 @@ import {MenuMutationProps} from '../hooks/useMutationProps'
 import {TaskFooterIntegrateMenu_task} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
 import {TaskFooterIntegrateMenu_viewer} from '../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
-import TaskFooterIntegrateMenuNoIntegrations from './TaskFooterIntegrateMenuNoIntegrations '
-import TaskFooterIntegrateMenuPushAsYou from './TaskFooterIntegrateMenuPushAsYou'
-import TaskFooterIntegrateMenuPushOnBehalf from './TaskFooterIntegrateMenuPushOnBehalf'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
 interface Props {
@@ -57,20 +54,16 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       isAssigneeIntegrated.hasGitHub,
       isAssigneeIntegrated.hasAtlassian
     )
+    const label = isViewerAssignee ? undefined : `Push as ${preferredName}`
     return (
       <>
-        {!isViewerAssignee && (
-          <TaskFooterIntegrateMenuPushOnBehalf
-            menuProps={menuProps}
-            preferredName={preferredName}
-          />
-        )}
         <TaskFooterIntegrateMenuList
           menuProps={menuProps}
           mutationProps={mutationProps}
           placeholder={placeholder}
           suggestedIntegrations={suggestedIntegrations}
           task={task}
+          label={label}
         />
       </>
     )
@@ -82,35 +75,30 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     )
     return (
       <>
-        <TaskFooterIntegrateMenuPushAsYou menuProps={menuProps} />
         <TaskFooterIntegrateMenuList
           menuProps={menuProps}
           mutationProps={mutationProps}
           placeholder={placeholder}
           suggestedIntegrations={suggestedIntegrations}
           task={task}
+          label={'Push with your credentials'}
         />
       </>
     )
   }
-  if (isViewerAssignee) {
-    return (
-      <TaskFooterIntegrateMenuSignup
-        menuProps={menuProps}
-        mutationProps={mutationProps}
-        teamId={teamId}
-      />
-    )
-  }
+
+  const label =
+    !teamMember || isViewerAssignee
+      ? undefined
+      : `Neither you nor ${preferredName} have any integrations for this team.`
+
   return (
-    <>
-      <TaskFooterIntegrateMenuNoIntegrations menuProps={menuProps} preferredName={preferredName} />
-      <TaskFooterIntegrateMenuSignup
-        menuProps={menuProps}
-        mutationProps={mutationProps}
-        teamId={teamId}
-      />
-    </>
+    <TaskFooterIntegrateMenuSignup
+      menuProps={menuProps}
+      mutationProps={mutationProps}
+      teamId={teamId}
+      label={label}
+    />
   )
 }
 
