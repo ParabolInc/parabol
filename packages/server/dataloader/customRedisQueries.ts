@@ -5,6 +5,7 @@ import ms from 'ms'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import getRethink from '../database/rethinkDriver'
 
+// All results must be mapped to their ids!
 const customRedisQueries = {
   endTimesByTemplateId: async (templateIds: string[]) => {
     const r = await getRethink()
@@ -59,7 +60,8 @@ const customRedisQueries = {
     return starterScales
   },
   User: async (ids: string[]) => {
-    return getUsersByIds(ids)
+    const users = await getUsersByIds(ids)
+    return ids.map((id) => users.find((user) => user.id === id))
   }
 } as const
 

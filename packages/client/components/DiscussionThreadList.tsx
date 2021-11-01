@@ -123,6 +123,9 @@ export default createFragmentContainer(DiscussionThreadList, {
   threadables: graphql`
     fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
       ...ThreadedItem_threadable
+      ... on Poll {
+        updatedAt
+      }
       id
     }
   `

@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useFlip from '../hooks/useFlip'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
+import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
 import useModal from '../hooks/useModal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
@@ -16,6 +16,7 @@ import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import SpotlightModal from './SpotlightModal'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -38,17 +39,18 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases} = meeting
+  const {id: meetingId, reflectionGroups, phases, spotlightReflection} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
+  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting)
   const [flipRef, flipReverse] = useFlip({
     firstRef: spotlightReflectionRef
   })
   const [callbackRef, columnsRef] = useCallbackRef()
-  const atmosphere = useAtmosphere()
   useHideBodyScroll()
+  const atmosphere = useAtmosphere()
   const closeSpotlight = () => {
     closePortal()
     flipReverse()
@@ -59,11 +61,24 @@ const GroupingKanban = (props: Props) => {
       meeting.setValue(null, 'spotlightReflection')
       meeting.setValue(null, 'spotlightSearchQuery')
     })
+    onCloseSpotlight()
   }
   const {closePortal, openPortal, modalPortal} = useModal({
     onClose: closeSpotlight,
     id: 'spotlight'
   })
+
+  // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
+  useEffect(() => {
+    if (spotlightReflection) {
+      openPortal()
+    } else {
+      closePortal()
+      flipReverse()
+      spotlightReflectionRef.current = null
+    }
+  }, [!spotlightReflection])
+
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -95,13 +110,7 @@ const GroupingKanban = (props: Props) => {
 
   const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     spotlightReflectionRef.current = reflectionRef.current
-    openPortal()
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      const reflection = store.get(reflectionId)
-      if (!reflection || !meeting) return
-      meeting.setLinkedRecord(reflection, 'spotlightReflection')
-    })
+    onOpenSpotlight(reflectionId)
   }
 
   if (!phaseRef.current) return null
@@ -149,6 +158,7 @@ export default createFragmentContainer(GroupingKanban, {
       ...SpotlightSourceReflectionCard_meeting
       id
       spotlightSearchQuery
+      teamId
       phases {
         ... on ReflectPhase {
           phaseType

@@ -12,6 +12,6 @@
     "segmentFns/*",
     "utils/*",
     "server.dev.ts",
-    "__tests__/*"
+    "**/__tests__/*"
   ]
 }

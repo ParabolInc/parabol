@@ -51274,11 +51274,6 @@ export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
-   * true if the user has access to retro meeting video
-   */
-  video: boolean;
-
-  /**
    * true if jira is allowed
    */
   jira: boolean;
@@ -56559,6 +56554,7 @@ export interface ISignUpWithPasswordOnMutationArguments {
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
   dragId: string;
+  isSpotlight?: boolean | null;
 }
 
 export interface IStartCheckInOnMutationArguments {
@@ -57181,7 +57177,6 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  video = 'video',
   jira = 'jira',
   poker = 'poker'
 }
@@ -57840,6 +57835,7 @@ export interface IRemoteReflectionDrag {
    * The name of the dragUser
    */
   dragUserName: string | null;
+  isSpotlight: boolean | null;
   clientHeight: number | null;
   clientWidth: number | null;
 
@@ -59357,7 +59353,7 @@ export interface IPoll {
   /**
    * The user that created the item
    */
-  createdByUser: IUser | null;
+  createdByUser: IUser;
 
   /**
    * the replies to this threadable item
@@ -59496,6 +59492,7 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 
 export type MeetingSubscriptionPayload =
   | IAddCommentSuccess
+  | ICreatePollSuccess
   | IAddReactjiToReflectionSuccess
   | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload
