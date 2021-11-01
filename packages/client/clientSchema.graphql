@@ -33,7 +33,7 @@ extend type RetrospectiveMeeting {
   localStage: NewMeetingStage!
   showSidebar: Boolean!
   spotlightReflection: RetroReflection
-  spotlightSearch: String
+  spotlightSearchQuery: String
 }
 
 extend type Team {

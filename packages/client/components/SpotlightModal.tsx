@@ -12,8 +12,8 @@ import SpotlightTopBar from './SpotlightTopBar'
 import SpotlightSearchBar from './SpotlightSearchBar'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import SpotlightSourceReflectionCard from './SpotlightSourceReflectionCard'
-import {SpotlightSourceReflectionCard_meeting$key} from '../__generated__/SpotlightSourceReflectionCard_meeting.graphql'
 import {PALETTE} from '../styles/paletteV3'
+import {GroupingKanban_meeting$data} from '../__generated__/GroupingKanban_meeting.graphql'
 
 const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
@@ -44,23 +44,22 @@ const SelectedReflectionSection = styled('div')({
 })
 interface Props {
   closeSpotlight: () => void
-  meetingId: string
   flipRef: (instance: HTMLDivElement) => void
-  spotlightReflectionId?: string
-  spotlightSearch: string
-  meeting: SpotlightSourceReflectionCard_meeting$key
+  meeting: GroupingKanban_meeting$data
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meetingId, flipRef, spotlightReflectionId, spotlightSearch, meeting} = props
-  const reflectionIdRef = useRef('')
-  const nextReflectionId = spotlightReflectionId ?? ''
-  if (nextReflectionId) {
-    reflectionIdRef.current = nextReflectionId
+  const {closeSpotlight, flipRef, meeting} = props
+  const {id: meetingId, spotlightReflection} = meeting
+  const spotlightReflectionId = spotlightReflection?.id
+  if (!spotlightReflectionId) {
+    return null
   }
+  const spotlightSearchQuery = meeting.spotlightSearchQuery ?? ""
+
   const queryRef = useQueryLoaderNow<SpotlightResultsRootQuery>(spotlightResultsRootQuery, {
-    reflectionId: reflectionIdRef.current,
-    searchQuery: spotlightSearch,
+    reflectionId: spotlightReflectionId,
+    searchQuery: spotlightSearchQuery,
     meetingId
   }, 'network-only')
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
@@ -69,7 +68,7 @@ const SpotlightModal = (props: Props) => {
     <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
       <SelectedReflectionSection>
         <SpotlightTopBar closeSpotlight={closeSpotlight} />
-        <SpotlightSearchBar meetingId={meetingId} spotlightSearch={spotlightSearch} />
+        <SpotlightSearchBar meetingId={meetingId} spotlightSearchQuery={spotlightSearchQuery} />
       </SelectedReflectionSection>
       <Suspense fallback={''}>
         {queryRef && (

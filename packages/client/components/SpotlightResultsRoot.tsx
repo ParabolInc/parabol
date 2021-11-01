@@ -30,9 +30,7 @@ const SpotlightResultsRoot = (props: Props) => {
         viewer {
           ...SpotlightGroups_viewer
           meeting(meetingId: $meetingId) {
-            ... on RetrospectiveMeeting {
-              ...SpotlightGroups_meeting
-            }
+            ...SpotlightGroups_meeting
           }
         }
       }
@@ -42,9 +40,8 @@ const SpotlightResultsRoot = (props: Props) => {
   )
 
   const {viewer} = data
-  const {meeting} = viewer
+  const meeting = viewer.meeting!
 
-  if (!meeting) return null
   return (
     <SimilarGroups>
       <Suspense

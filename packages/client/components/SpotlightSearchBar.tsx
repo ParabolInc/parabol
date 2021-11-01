@@ -50,17 +50,17 @@ const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: st
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    meeting.setValue(value, 'spotlightSearch')
+    meeting.setValue(value, 'spotlightSearchQuery')
   })
 }
 
 interface Props {
   meetingId: string
-  spotlightSearch: string
+  spotlightSearchQuery: string
 }
 
 const SpotlightSearchBar = (props: Props) => {
-  const {meetingId, spotlightSearch} = props
+  const {meetingId, spotlightSearchQuery} = props
   const atmosphere = useAtmosphere()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +71,7 @@ const SpotlightSearchBar = (props: Props) => {
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape' && inputRef.current) {
       e.stopPropagation()
+      e.preventDefault()
       inputRef.current.blur()
     }
   }
@@ -85,11 +86,12 @@ const SpotlightSearchBar = (props: Props) => {
         autoComplete='off'
         name='search'
         placeholder='Or search for keywords...'
+        spellCheck={true}
         type='text'
         onChange={onChange}
         onKeyDown={onKeyDown}
         ref={inputRef}
-        value={spotlightSearch ?? ""}
+        value={spotlightSearchQuery ?? ""}
       />
     </SearchItem>
   )

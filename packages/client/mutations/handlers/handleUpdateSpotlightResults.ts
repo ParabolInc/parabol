@@ -21,7 +21,7 @@ const handleUpdateSpotlightResults = (
   if (!viewer || !spotlightReflectionId) return
   const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
     reflectionId: spotlightReflectionId,
-    searchQuery: meeting.getValue('spotlightSearch')
+    searchQuery: meeting.getValue('spotlightSearchQuery')
   })
   console.log('Add searchQuery')
   if (!similarReflectionGroups) return
@@ -35,7 +35,7 @@ const handleUpdateSpotlightResults = (
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
-        searchQuery: meeting.getValue('spotlightSearch')
+        searchQuery: meeting.getValue('spotlightSearchQuery')
       }
     })
   }
@@ -49,7 +49,7 @@ const handleUpdateSpotlightResults = (
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionId: spotlightReflectionId,
-        searchQuery: meeting.getValue('spotlightSearch')
+        searchQuery: meeting.getValue('spotlightSearchQuery')
       }
     })
   }

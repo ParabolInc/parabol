@@ -439,7 +439,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description: 'Only return reflection groups that match the search query'
         }
       },
-      resolve: async ({id: userId}, {reflectionId, searchQuery}, {dataLoader}) => {
+      resolve: async ({id: userId}, {reflectionId, searchQuery: rawSearchQuery}, {dataLoader}) => {
+        console.log(`reflectionId = ${reflectionId}; rawSearchQuery = ${rawSearchQuery}`)
+        const searchQuery = rawSearchQuery.toLowerCase().trim()
         const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
         if (!retroReflection) {
           return standardError(new Error('Invalid reflection id'), {userId})
@@ -460,9 +462,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           return standardError(new Error('Not on team'), {userId})
         }
 
-        if (searchQuery.trim() !== '') {
+        if (searchQuery !== '') {
           const matchedReflections = reflections.filter(({plaintextContent}) =>
-            plaintextContent.toLowerCase().match(searchQuery.toLowerCase())
+            plaintextContent.toLowerCase().includes(searchQuery.toLowerCase())
           )
           const relatedReflections = matchedReflections.filter(({id}) => id != reflectionId)
           const relatedGroupIds = [
@@ -470,7 +472,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           ].slice(0, MAX_RESULT_GROUP_SIZE)
           return r
             .table('RetroReflectionGroup')
-            .getAll(r.args(Array.from(relatedGroupIds)), {index: 'id'})
+            .getAll(r.args(relatedGroupIds))
             .run()
         }
 
