@@ -126,6 +126,9 @@ export default createFragmentContainer(TaskFooterTeamAssigneeMenu, {
       team {
         id
       }
+      integration {
+        __typename
+      }
     }
   `
 })
