@@ -1,10 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {AddCommentMutationVariables} from '../../types/githubTypes'
-import {AddCommentMutation} from '../../types/githubTypes'
 import GitHubIssueId from '../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
-import addComment from '../../utils/githubQueries/addComment.graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -13,7 +10,6 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateGitHubTaskIntegrationPayload from '../types/CreateGitHubTaskIntegrationPayload'
 import createGitHubTask from './helpers/createGitHubTask'
-import getGitHubRequest from '../../utils/getGitHubRequest'
 import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
@@ -106,34 +102,31 @@ export default {
 
     // RESOLUTION
     const accessUserId = assigneeAuth && userId ? userId : viewerId
+    const {name: teamName} = team
+    const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
+    const createdBySomeoneElseComment =
+      userId && userId !== viewerId
+        ? makeCreateGitHubTaskComment(
+            viewer.preferredName,
+            assignee.preferredName,
+            teamName,
+            teamDashboardUrl
+          )
+        : undefined
 
-    const res = await createGitHubTask(rawContentStr, repoOwner, repoName, auth, context, info)
+    const res = await createGitHubTask(
+      rawContentStr,
+      repoOwner,
+      repoName,
+      auth,
+      context,
+      info,
+      createdBySomeoneElseComment
+    )
     if (res.error) {
       return {error: {message: res.error.message}}
     }
-    const {issueNumber, issueId} = res
-
-    if (userId && userId !== viewerId) {
-      const {name: teamName} = team
-      const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
-      const comment = makeCreateGitHubTaskComment(
-        viewer.preferredName,
-        assignee.preferredName,
-        teamName,
-        teamDashboardUrl
-      )
-      const {accessToken} = auth
-      const githubRequest = getGitHubRequest(info, context, {
-        accessToken,
-        headers: {Accept: 'application/vnd.github.bane-preview+json'}
-      })
-      await githubRequest<AddCommentMutation, AddCommentMutationVariables>(addComment, {
-        input: {
-          body: comment,
-          subjectId: issueId
-        }
-      })
-    }
+    const {issueNumber} = res
 
     await r
       .table('Task')
