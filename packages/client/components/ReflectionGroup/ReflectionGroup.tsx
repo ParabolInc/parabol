@@ -41,9 +41,9 @@ const ReflectionWrapper = styled('div')<{
   staticIdx: number
   isDropping: boolean | null
   groupCount: number
-  isHiddenSource: boolean
-}>(({staticIdx, isDropping, groupCount, isHiddenSource}): any => {
-  const isHidden = staticIdx === -1 || isDropping || isHiddenSource
+  isHiddenSpotlightSource: boolean
+}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource}): any => {
+  const isHidden = staticIdx === -1 || isDropping || isHiddenSpotlightSource
   const multiple = Math.max(0, Math.min(staticIdx, 2))
   const scaleX =
     (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
@@ -87,9 +87,11 @@ const ReflectionGroup = (props: Props) => {
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const isSpotlightSource = !!sourceReflectionIds?.length
-  const visibleReflections = isSpotlightSource
-    ? reflections.filter(({id}) => sourceReflectionIds?.includes(id))
-    : reflections.slice()
+  const visibleReflections = useMemo(() => {
+    return isSpotlightSource
+      ? reflections.filter(({id}) => sourceReflectionIds?.includes(id))
+      : reflections.slice()
+  }, [reflections])
   const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
@@ -210,7 +212,7 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
-            const isHiddenSource = isSourceGroup && isBehindSpotlight
+            const isHiddenSpotlightSource = isSourceGroup && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
@@ -218,7 +220,7 @@ const ReflectionGroup = (props: Props) => {
                 groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
-                isHiddenSource={isHiddenSource}
+                isHiddenSpotlightSource={isHiddenSpotlightSource}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}

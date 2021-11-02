@@ -73,7 +73,6 @@ const TopRow = styled('div')({
 
 const Source = styled('div')({
   minHeight: ElementHeight.REFLECTION_CARD,
-  // border: '2px solid red',
   display: 'flex',
   alignContent: 'center',
   alignItems: 'center'
@@ -104,7 +103,7 @@ const Search = styled(MenuItemLabel)({
   overflow: 'visible',
   padding: 0,
   position: 'absolute',
-  bottom: -32,
+  bottom: -ElementHeight.REFLECTION_CARD / 2,
   height: ElementHeight.REFLECTION_CARD,
   width: ElementWidth.REFLECTION_CARD
 })
