@@ -1,4 +1,3 @@
-import {FixedLengthArray} from 'parabol-client/types/generics'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../../appOrigin'
 import {PALETTE} from '~/styles/paletteV3'
@@ -55,10 +54,5 @@ export const makeHackedFieldButtonValue = (spec: ButtonSpec): string => `
 |:-----------------------------:|
 ||`
 
-export const makeHackedButtonPairFields = (
-  buttonSpecPair: FixedLengthArray<ButtonSpec, 2>
-): FixedLengthArray<Field, 2> =>
-  buttonSpecPair.map((i) => ({
-    short: true,
-    value: makeHackedFieldButtonValue(i)
-  })) as [Field, Field]
+export const makeHackedButtonPairFields = (button1: ButtonSpec, button2: ButtonSpec) =>
+  [button1, button2].map((i) => ({short: true, value: makeHackedFieldButtonValue(i)} as Field))

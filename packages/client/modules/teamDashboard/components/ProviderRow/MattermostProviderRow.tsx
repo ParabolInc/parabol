@@ -1,7 +1,7 @@
-import {MattermostProviderRow_viewer} from '../../../../__generated__/MattermostProviderRow_viewer.graphql'
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
+import {MattermostProviderRow_viewer$key} from '~/__generated__/MattermostProviderRow_viewer.graphql'
 import graphql from 'babel-plugin-relay/macro'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
@@ -34,7 +34,7 @@ const StyledButton = styled(FlatButton)({
 
 interface Props {
   teamId: string
-  viewer: MattermostProviderRow_viewer
+  viewerRef: MattermostProviderRow_viewer$key
 }
 
 const MenuButton = styled(FlatButton)({
@@ -83,7 +83,15 @@ const ExtraProviderCard = styled(ProviderCard)({
 })
 
 const MattermostProviderRow = (props: Props) => {
-  const {viewer, teamId} = props
+  const {viewerRef, teamId} = props
+  const viewer = useFragment(
+    graphql`
+      fragment MattermostProviderRow_viewer on User {
+        ...MattermostProviderRowViewer @relay(mask: false)
+      }
+    `,
+    viewerRef
+  )
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
@@ -130,7 +138,7 @@ const MattermostProviderRow = (props: Props) => {
           </ProviderActions>
         )}
       </CardTop>
-      {(isActive || isConnectClicked) && <MattermostPanel teamId={teamId} viewer={viewer} />}
+      {(isActive || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
     </ExtraProviderCard>
   )
 }
@@ -148,10 +156,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(MattermostProviderRow, {
-  viewer: graphql`
-    fragment MattermostProviderRow_viewer on User {
-      ...MattermostProviderRowViewer @relay(mask: false)
-    }
-  `
-})
+export default MattermostProviderRow

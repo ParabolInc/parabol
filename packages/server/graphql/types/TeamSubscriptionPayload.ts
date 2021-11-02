@@ -39,7 +39,7 @@ import RemovePokerTemplateScalePayload from './RemovePokerTemplateScalePayload'
 import RemovePokerTemplateScaleValuePayload from './RemovePokerTemplateScaleValuePayload'
 import RemoveReflectTemplatePayload from './RemoveReflectTemplatePayload'
 import RemoveReflectTemplatePromptPayload from './RemoveReflectTemplatePromptPayload'
-import RemoveMattermostAuthPayload from './RemoveMattermostAuthPayload'
+import {RemoveMattermostAuthSuccess} from './RemoveMattermostAuthPayload'
 import RemoveSlackAuthPayload from './RemoveSlackAuthPayload'
 import RemoveTeamMemberPayload from './RemoveTeamMemberPayload'
 import {RenameMeetingSuccess} from './RenameMeetingPayload'
@@ -111,7 +111,7 @@ const types = [
   ReflectTemplatePromptUpdateGroupColorPayload,
   RemoveAtlassianAuthPayload,
   RemoveGitHubAuthPayload,
-  RemoveMattermostAuthPayload,
+  RemoveMattermostAuthSuccess,
   RemoveSlackAuthPayload,
   RemoveReflectTemplatePayload,
   RemovePokerTemplatePayload,

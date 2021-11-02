@@ -25,7 +25,7 @@ const ProviderList = (props: Props) => {
     <StyledWrapper>
       <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
       <GitHubProviderRow teamId={teamId} viewer={viewer} />
-      <MattermostProviderRow teamId={teamId} viewer={viewer} />
+      <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
     </StyledWrapper>
   )

@@ -86,13 +86,3 @@ export type Unproxy<T> = T extends RecordProxy<infer U> ? U : T
 
 // Can remove when this gets merged: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55847
 export type DiscriminateProxy<T, U> = RecordProxy<Extract<Unproxy<T>, {__typename: U}>>
-
-type Grow<T, A extends Array<T>> = ((x: T, ...xs: A) => void) extends (...a: infer X) => void
-  ? X
-  : never
-type GrowToSize<T, A extends Array<T>, N extends number> = {
-  0: A
-  1: GrowToSize<T, Grow<T, A>, N>
-}[A['length'] extends N ? 0 : 1]
-
-export type FixedLengthArray<T, N extends number> = GrowToSize<T, [], N>

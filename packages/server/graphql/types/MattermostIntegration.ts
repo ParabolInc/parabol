@@ -25,7 +25,7 @@ const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     userId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the user that integrated Slack'
+      description: 'The id of the user that integrated Mattermost'
     }
   })
 })

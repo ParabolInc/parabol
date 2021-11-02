@@ -11,7 +11,7 @@ import AddMattermostAuthPayload from '../types/AddMattermostAuthPayload'
 import {notifyWebhookConfigUpdated} from './helpers/notifications/notifyMattermost'
 
 export default {
-  name: 'AddSlackAuth',
+  name: 'AddMattermostAuth',
   type: new GraphQLNonNull(AddMattermostAuthPayload),
   args: {
     webhookUrl: {
@@ -40,12 +40,7 @@ export default {
 
     // VALIDATION
     const result = await notifyWebhookConfigUpdated(webhookUrl, viewerId, teamId, dataLoader)
-    if (!result.ok) {
-      return standardError(
-        new Error(`Mattermost reports error (${result.status}): ${result.error}`),
-        {userId: viewerId}
-      )
-    }
+    if (result instanceof Error) return standardError(result, {userId: viewerId})
 
     // RESOLUTION
     await upsertMattermostAuth({

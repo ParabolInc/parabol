@@ -1,10 +1,10 @@
-import {RemoveMattermostAuthMutation as TRemoveMattermostAuthMutation} from '../__generated__/RemoveMattermostAuthMutation.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {StandardMutation} from '../types/relayMutations'
+import {RemoveMattermostAuthMutation as TRemoveMattermostAuthMutation} from '../__generated__/RemoveMattermostAuthMutation.graphql'
 
 graphql`
-  fragment RemoveMattermostAuthMutation_team on RemoveMattermostAuthPayload {
+  fragment RemoveMattermostAuthMutation_team on RemoveMattermostAuthSuccess {
     user {
       ...MattermostProviderRowViewer @relay(mask: false)
     }
@@ -14,8 +14,10 @@ graphql`
 const mutation = graphql`
   mutation RemoveMattermostAuthMutation($teamId: ID!) {
     removeMattermostAuth(teamId: $teamId) {
-      error {
-        message
+      ... on ErrorPayload {
+        error {
+          message
+        }
       }
       ...RemoveMattermostAuthMutation_team @relay(mask: false)
     }
@@ -30,8 +32,8 @@ const RemoveMattermostAuthMutation: StandardMutation<TRemoveMattermostAuthMutati
   return commitMutation<TRemoveMattermostAuthMutation>(atmosphere, {
     mutation,
     variables,
-    onError,
-    onCompleted
+    onCompleted,
+    onError
   })
 }
 

@@ -1,7 +1,7 @@
 import {GraphQLInt, GraphQLNonNull} from 'graphql'
+import {DataLoaderWorker, GQLContext} from '../../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import Meeting from '../../../database/types/Meeting'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import ScheduledJob from '../../../database/types/ScheduledJob'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
@@ -35,7 +35,7 @@ const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
 
 const processMeetingStageTimeLimits = async (
   job: ScheduledJobMeetingStageTimeLimit,
-  {dataLoader}
+  {dataLoader}: {dataLoader: DataLoaderWorker}
 ) => {
   // get the meeting
   // get the facilitator
@@ -45,45 +45,40 @@ const processMeetingStageTimeLimits = async (
   // if mattermost, send mattermost
   // if no integrated notification services, send an in-app notification
   const {meetingId} = job
-  const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as Meeting
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {teamId, facilitatorUserId} = meeting
-  const {slackNotification, slackAuth} = await getSlackNotificationAndAuth(
-    teamId,
-    facilitatorUserId
-  )
-  const mattermostAuth = await dataLoader.get('mattermostAuthByTeamId').load(teamId)
+  const [{slackNotification, slackAuth}, {mattermostAuth}] = await Promise.all([
+    getSlackNotificationAndAuth(teamId, facilitatorUserId),
+    dataLoader.get('mattermostAuthByTeamId').load(teamId)
+  ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
-  let sendViaSlack = false
-  let sendViaMattermost = mattermostAuth?.isActive
+  const sendViaMattermost = mattermostAuth?.isActive
 
   if (slackAuth?.botAccessToken && slackNotification?.channelId) {
-    sendViaSlack = true
     const manager = new SlackServerManager(slackAuth.botAccessToken)
     const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
     const res = await manager.postMessage(slackNotification.channelId, slackText)
-    if (!res.ok) sendViaSlack = false
+    if (res.ok && !sendViaMattermost) return
   }
 
   if (sendViaMattermost) {
-    const res = notifyMattermostTimeLimitEnd(meetingId, teamId, dataLoader)
-    if (!res) sendViaMattermost = false
+    const res = await notifyMattermostTimeLimitEnd(meetingId, teamId, dataLoader)
+    if (!(res instanceof Error)) return
   }
 
-  if (!sendViaSlack && !sendViaMattermost) {
-    const notification = new NotificationMeetingStageTimeLimitEnd({
-      meetingId,
-      userId: facilitatorUserId
-    })
-    const r = await getRethink()
-    await r
-      .table('Notification')
-      .insert(notification)
-      .run()
-    publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId, 'MeetingStageTimeLimitPayload', {
-      notification
-    })
-  }
+  const notification = new NotificationMeetingStageTimeLimitEnd({
+    meetingId,
+    userId: facilitatorUserId
+  })
+  const r = await getRethink()
+  await r
+    .table('Notification')
+    .insert(notification)
+    .run()
+  publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId, 'MeetingStageTimeLimitPayload', {
+    notification
+  })
 }
 
 const jobProcessors = {
@@ -100,7 +95,7 @@ const processJob = async (job: ScheduledJob, {dataLoader}) => {
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
   const processor = jobProcessors[job.type]
-  processor(job as any, {dataLoader}).catch(console.log)
+  processor(job as Parameters<typeof processor>[0], {dataLoader}).catch(console.log)
 }
 
 const runScheduledJobs = {
@@ -116,7 +111,7 @@ const runScheduledJobs = {
     //   description: 'filter jobs by their type'
     // }
   },
-  resolve: async (_source, {seconds}, {authToken, dataLoader}) => {
+  resolve: async (_source, {seconds}, {authToken, dataLoader}: GQLContext) => {
     const r = await getRethink()
     const now = new Date()
     // AUTH

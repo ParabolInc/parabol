@@ -1,25 +1,28 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import User from './User'
 import {GQLContext} from '../graphql'
+import makeMutationPayload from './makeMutationPayload'
 
-const RemoveMattermostAuthPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'RemoveMattermostAuthPayload',
+export const RemoveMattermostAuthSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'RemoveMattermostAuthSuccess',
   fields: () => ({
-    error: {
-      type: StandardMutationError
-    },
     teamId: {
-      type: GraphQLID
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The team with updated mattermost auth'
     },
     user: {
-      type: User,
-      description: 'The user with updated mattermostAuth',
+      type: new GraphQLNonNull(User),
+      description: 'The user with updated mattermost auth',
       resolve: ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     }
   })
 })
+
+const RemoveMattermostAuthPayload = makeMutationPayload(
+  'RemoveMattermostAuthPayload',
+  RemoveMattermostAuthSuccess
+)
 
 export default RemoveMattermostAuthPayload

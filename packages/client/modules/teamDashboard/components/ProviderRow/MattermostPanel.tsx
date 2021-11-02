@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useForm from '~/hooks/useForm'
 import FlatButton from '../../../../components/FlatButton'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -11,7 +11,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddMattermostAuthMutation from '../../../../mutations/AddMattermostAuthMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import Legitity from '../../../../validation/Legitity'
-import {MattermostPanel_viewer} from '../../../../__generated__/MattermostPanel_viewer.graphql'
+import {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
 import {Layout} from '../../../../types/constEnums'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import linkify from '~/utils/linkify'
@@ -19,7 +19,7 @@ import useTooltip from '~/hooks/useTooltip'
 import {MenuPosition} from '~/hooks/useCoords'
 
 interface Props {
-  viewer: MattermostPanel_viewer
+  viewerRef: MattermostPanel_viewer$key
   teamId: string
 }
 
@@ -60,8 +60,23 @@ const StyledButton = styled(FlatButton)({
   marginRight: '16px'
 })
 
-const MattermostConfigConnection = (props: Props) => {
-  const {teamId, viewer} = props
+const MattermostPanel = (props: Props) => {
+  const {teamId, viewerRef} = props
+  const viewer = useFragment(
+    graphql`
+      fragment MattermostPanel_viewer on User {
+        teamMember(teamId: $teamId) {
+          integrations {
+            mattermost {
+              isActive
+              webhookUrl
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
@@ -97,7 +112,7 @@ const MattermostConfigConnection = (props: Props) => {
     if (webhookUrlErr) return
     // corner case: let them re-upsert the same webhook url when reverting to a
     //              previous value
-    if (mattermost?.webhookUrl == webhookUrl && !mutationError) return
+    if (mattermost?.webhookUrl === webhookUrl && !mutationError) return
     setDirtyField()
     submitMutation()
     AddMattermostAuthMutation(atmosphere, {webhookUrl, teamId}, {onError, onCompleted})
@@ -106,7 +121,6 @@ const MattermostConfigConnection = (props: Props) => {
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_LEFT
   )
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => setDirtyField(e.target.name)
 
   return (
     <MattermostPanelStyles>
@@ -115,7 +129,7 @@ const MattermostConfigConnection = (props: Props) => {
       </ConnectionGroup>
       <form onSubmit={onSubmit}>
         <Row>
-          <Label onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+          <Label onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
             Mattermost Webhook
           </Label>
           {tooltipPortal('Configure in Mattermost: Main Menu > Integrations > Incoming Webhook')}
@@ -123,9 +137,8 @@ const MattermostConfigConnection = (props: Props) => {
             value={fields.webhookUrl.value}
             error=''
             onChange={onChange}
-            onBlur={handleBlur}
             name='webhookUrl'
-            placeholder='http://my.mattermost.com:8065/hooks/abc123'
+            placeholder='https://my.mattermost.com:8065/hooks/abc123'
           />
           <StyledButton size='medium'>Update</StyledButton>
         </Row>
@@ -136,17 +149,4 @@ const MattermostConfigConnection = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(MattermostConfigConnection, {
-  viewer: graphql`
-    fragment MattermostPanel_viewer on User {
-      teamMember(teamId: $teamId) {
-        integrations {
-          mattermost {
-            isActive
-            webhookUrl
-          }
-        }
-      }
-    }
-  `
-})
+export default MattermostPanel

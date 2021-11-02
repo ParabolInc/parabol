@@ -6,10 +6,13 @@ import fetch from 'node-fetch'
 // Mattermost integration. We might want to do this if we decide to use Mattermost's
 // upcoming "App" framework
 
+const MAX_REQUEST_TIME = 5000
+
 export interface MattermostApiResponse {
   ok: boolean
   status: number
-  error: string | undefined
+  message?: string
+  error?: string
 }
 
 abstract class MattermostManager {
@@ -21,8 +24,24 @@ abstract class MattermostManager {
     this.webhookUrl = webhookUrl
   }
 
-  private async post(payload: any): Promise<MattermostApiResponse> {
-    const res = await fetch(this.webhookUrl, {
+  private fetchWithTimeout = async (url: string, options: RequestInit) => {
+    const controller = new AbortController()
+    const {signal} = controller
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, MAX_REQUEST_TIME)
+    try {
+      const res = await this.fetch(url, {...options, signal})
+      clearTimeout(timeout)
+      return res
+    } catch (e) {
+      clearTimeout(timeout)
+      return new Error('Mattermost is not responding')
+    }
+  }
+
+  private async post(payload: any) {
+    const res = await this.fetchWithTimeout(this.webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,11 +49,16 @@ abstract class MattermostManager {
       },
       body: JSON.stringify(payload)
     })
-    return {
-      ok: res.ok,
-      status: res.status,
-      error: !res.ok ? (await res.json())?.message : undefined
+    if (res instanceof Error) return res
+    // Mattermost returns text if all was ok, JSON error otherwise
+    if (!res.ok) {
+      const message = (await res.json())?.message
+      return new Error(`Mattermost API error${message ? `: ${message}` : ''}`)
     }
+    return {
+      ok: true,
+      status: res.status
+    } as MattermostApiResponse
   }
 
   async postMessage(textOrAttachmentsArray: string | unknown[], notificationText?: string) {
@@ -44,7 +68,7 @@ abstract class MattermostManager {
         : Array.isArray(textOrAttachmentsArray)
         ? 'attachments'
         : null
-    if (!prop) throw new Error('Invalid matterMost message')
+    if (!prop) throw new Error('Invalid mattermost message')
     const defaultPayload = {
       [prop]: textOrAttachmentsArray
     }

@@ -50021,7 +50021,7 @@ export interface IMattermostIntegration {
   updatedAt: any;
 
   /**
-   * The id of the user that integrated Slack
+   * The id of the user that integrated Mattermost
    */
   userId: string;
 }
@@ -55564,7 +55564,7 @@ export interface IMutation {
   /**
    * Disconnect a team member from Slack
    */
-  removeMattermostAuth: IRemoveMattermostAuthPayload;
+  removeMattermostAuth: RemoveMattermostAuthPayload;
 
   /**
    * Remove a reflection
@@ -57141,14 +57141,14 @@ export interface IAddMattermostAuthSuccess {
   __typename: 'AddMattermostAuthSuccess';
 
   /**
-   * The newly created MattermostIntegration object
+   * The newly created mattermost integration object
    */
-  MattermostIntegration: IMattermostIntegration | null;
+  mattermostIntegration: IMattermostIntegration;
 
   /**
-   * The user who updated MattermostIntegration object
+   * The user who updated mattermost integration object
    */
-  user: IUser | null;
+  user: IUser;
 }
 
 export interface IAddPokerTemplatePayload {
@@ -58516,15 +58516,25 @@ export interface IRemovePokerTemplateScaleValuePayload {
   scale: ITemplateScale | null;
 }
 
-export interface IRemoveMattermostAuthPayload {
-  __typename: 'RemoveMattermostAuthPayload';
-  error: IStandardMutationError | null;
-  teamId: string | null;
+/**
+ * Return object for RemoveMattermostAuthPayload
+ */
+export type RemoveMattermostAuthPayload =
+  | IErrorPayload
+  | IRemoveMattermostAuthSuccess;
+
+export interface IRemoveMattermostAuthSuccess {
+  __typename: 'RemoveMattermostAuthSuccess';
 
   /**
-   * The user with updated mattermostAuth
+   * The team with updated mattermost auth
    */
-  user: IUser | null;
+  teamId: string;
+
+  /**
+   * The user with updated mattermost auth
+   */
+  user: IUser;
 }
 
 export interface IRemoveReflectionPayload {
@@ -59898,7 +59908,7 @@ export type TeamSubscriptionPayload =
   | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
-  | IRemoveMattermostAuthPayload
+  | IRemoveMattermostAuthSuccess
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
   | IRemovePokerTemplatePayload

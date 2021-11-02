@@ -1,7 +1,9 @@
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../../appOrigin'
-import MattermostServerManager from '../../../../utils/MattermostServerManager'
+import MattermostServerManager, {
+  MattermostApiResponse
+} from '../../../../utils/MattermostServerManager'
 import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
@@ -20,6 +22,11 @@ import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 
+const okResponse: MattermostApiResponse = {
+  ok: true,
+  status: 0
+}
+
 const getWebhookForTeamId = async (dataLoader: DataLoaderWorker, teamId: string) => {
   const mattermost = await dataLoader.get('mattermostAuthByTeamId').load(teamId)
   return mattermost?.webhookUrl
@@ -34,16 +41,23 @@ const notifyMattermost = async (
   notificationText?: string
 ) => {
   const manager = new MattermostServerManager(webhookUrl)
-  const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
-  segmentIo.track({
-    userId,
-    event: 'Mattermost notification sent',
-    properties: {
-      teamId,
-      notificationEvent: event
-    }
-  })
-  if (!result.ok) sendToSentry(new Error(`Mattermost Notification Error: ${webhookUrl}`))
+  const result = await manager
+    .postMessage(textOrAttachmentsArray, notificationText)
+    .catch((err) => new Error(`Mattermost error: ${err.message}`))
+  if (result instanceof Error) {
+    sendToSentry(result, {userId, tags: {teamId, event, webhookUrl}})
+    return result
+  }
+  if (result.ok) {
+    segmentIo.track({
+      userId,
+      event: 'Mattermost notification sent',
+      properties: {
+        teamId,
+        notificationEvent: event
+      }
+    })
+  }
 
   return result
 }
@@ -79,7 +93,7 @@ export const startMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
-  if (!webhookUrl) return
+  if (!webhookUrl) return okResponse
 
   const searchParams = {
     utm_source: 'mattermost meeting start',
@@ -141,17 +155,17 @@ const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | M
   switch (meeting.meetingType) {
     case 'retrospective':
       const retroUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/1`)
-      return makeHackedButtonPairFields([makeDiscussionButton(retroUrl), summaryButton])
+      return makeHackedButtonPairFields(makeDiscussionButton(retroUrl), summaryButton)
     case 'action':
       const checkInUrl = makeAppURL(appOrigin, `meet/${meetingId}/checkin/1`)
-      return makeHackedButtonPairFields([makeDiscussionButton(checkInUrl), summaryButton])
+      return makeHackedButtonPairFields(makeDiscussionButton(checkInUrl), summaryButton)
     case 'poker':
       const pokerUrl = makeAppURL(appOrigin, `meet/${meetingId}/estimate/1`)
       const estimateButton = {
         label: 'See estimates',
         link: pokerUrl
       }
-      return makeHackedButtonPairFields([estimateButton, summaryButton])
+      return makeHackedButtonPairFields(estimateButton, summaryButton)
     default:
       throw new Error('Invalid meeting type')
   }
@@ -163,7 +177,7 @@ export const endMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
-  if (!webhookUrl) return
+  if (!webhookUrl) return okResponse
   const [team, meeting] = await Promise.all([
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
@@ -198,9 +212,7 @@ export const endMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments).catch(
-    console.log
-  )
+  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
 }
 
 export const notifyMattermostTimeLimitStart = async (
@@ -210,7 +222,7 @@ export const notifyMattermostTimeLimitStart = async (
   dataLoader: DataLoaderWorker
 ) => {
   const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
-  if (!webhookUrl) return
+  if (!webhookUrl) return okResponse
 
   const [team, meeting] = await Promise.all([
     dataLoader.get('teams').load(teamId),
@@ -273,7 +285,7 @@ export const notifyMattermostTimeLimitStart = async (
     userId,
     teamId,
     attachments
-  ).catch(console.log)
+  )
 }
 
 export const notifyMattermostTimeLimitEnd = async (
@@ -282,7 +294,7 @@ export const notifyMattermostTimeLimitEnd = async (
   dataLoader: DataLoaderWorker
 ) => {
   const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
-  if (!webhookUrl) return
+  if (!webhookUrl) return okResponse
 
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {facilitatorUserId: userId} = meeting
@@ -296,5 +308,5 @@ export const notifyMattermostTimeLimitEnd = async (
     teamId,
     userId,
     messageText
-  ).catch(console.log)
+  )
 }
