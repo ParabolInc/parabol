@@ -132,7 +132,6 @@ interface Props {
 
 const SpotlightModal = (props: Props) => {
   const {closeSpotlight, meeting, sourceRef, portalStatus} = props
-  const resultsRef = useRef<HTMLDivElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
   const {id: meetingId, spotlightReflection} = meeting
@@ -189,7 +188,6 @@ const SpotlightModal = (props: Props) => {
       </SourceSection>
       <Suspense fallback={''}>
         <ResultsRoot
-          resultsRef={resultsRef}
           meetingId={meetingId}
           phaseRef={modalRef}
           spotlightReflectionId={spotlightReflectionId}

@@ -144,6 +144,7 @@ export default createFragmentContainer(GroupingKanban, {
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
       ...DraggableReflectionCard_meeting
+      id
       teamId
       phases {
         ... on ReflectPhase {

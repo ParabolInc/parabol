@@ -7,13 +7,12 @@ import SpotlightGroups from './SpotlightGroups'
 
 interface Props {
   spotlightReflectionId?: string
-  resultsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   meetingId: string
 }
 
 const ResultsRoot = (props: Props) => {
-  const {meetingId, spotlightReflectionId, resultsRef, phaseRef} = props
+  const {meetingId, spotlightReflectionId, phaseRef} = props
   const searchQuery = '' // TODO: implement searchQuery
   const reflectionIdRef = useRef('')
   const nextReflectionId = spotlightReflectionId ?? ''
@@ -31,9 +30,7 @@ const ResultsRoot = (props: Props) => {
   )
   return (
     <Suspense fallback={''}>
-      {queryRef && (
-        <SpotlightGroups resultsRef={resultsRef} phaseRef={phaseRef} queryRef={queryRef} />
-      )}
+      {queryRef && <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />}
     </Suspense>
   )
 }

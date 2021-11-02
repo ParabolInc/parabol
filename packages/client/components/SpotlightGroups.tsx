@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject} from 'react'
+import React, {RefObject, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {ElementHeight, ElementWidth} from '~/types/constEnums'
@@ -34,13 +34,12 @@ const Column = styled('div')({
 })
 
 interface Props {
-  resultsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   queryRef: PreloadedQuery<SpotlightGroupsQuery>
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {resultsRef, phaseRef, queryRef} = props
+  const {phaseRef, queryRef} = props
   const data = usePreloadedQuery<SpotlightGroupsQuery>(
     graphql`
       query SpotlightGroupsQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
@@ -83,6 +82,7 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
+  const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
   const scrollHeight = useResultsHeight(resultsRef)
 
