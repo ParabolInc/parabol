@@ -20,12 +20,12 @@ const useAnimatedSpotlightSource = (
   useLayoutEffect(() => {
     const {current: source} = sourceRef
     const {current: sourceClone} = sourceCloneRef
-    // wait for the portal to enter to get the source's bbox
+    // wait for the modal to enter to get the source's bbox
     if (portalStatus !== PortalStatus.Entered || !sourceClone || !reflectionId || !source) return
     const sourceBbox = source.getBoundingClientRect()
     const sourceCloneBbox = sourceClone.getBoundingClientRect()
     const {style: sourceStyle} = source
-    sourceStyle.opacity = '0' // hide source while cloning
+    sourceStyle.opacity = '0' // hide source while animating sourceClone into modal
     const clone = cloneReflection(sourceClone, reflectionId)
     const {style: cloneStyle} = clone
     const {left: startLeft, top: startTop} = sourceCloneBbox
@@ -38,15 +38,8 @@ const useAnimatedSpotlightSource = (
     cloneStyle.overflow = `hidden`
     const transitionTimeout = setTimeout(() => {
       cloneStyle.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
-      cloneStyle.transition = `transform ${Times.SPOTLIGHT_MODAL_DELAY}ms ${BezierCurve.DECELERATE}`
+      cloneStyle.transition = `transform ${Times.SPOTLIGHT_SOURCE_DURATION}ms ${BezierCurve.DECELERATE}`
     }, 0)
-    const removeCloneTimeout = setTimeout(() => {
-      if (clone && document.body.contains(clone)) {
-        document.body.removeChild(clone)
-        sourceStyle.opacity = '1' // show source once clone is removed
-      }
-    }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
-    if (!reflectionId) return
     dragIdRef.current = clientTempId()
     // execute mutation after cloning as the mutation will cause reflection height to change
     StartDraggingReflectionMutation(atmosphere, {
@@ -54,6 +47,14 @@ const useAnimatedSpotlightSource = (
       dragId: dragIdRef.current,
       isSpotlight: true
     })
+    const removeCloneTimeout = setTimeout(() => {
+      if (clone && document.body.contains(clone)) {
+        document.body.removeChild(clone)
+        sourceStyle.opacity = '1' // show source once clone is removed
+      }
+      // Wait for source & modal to animate. Removing clone before modal animation
+      // is complete causes flickering as the source opacity is still transitioning.
+    }, Times.SPOTLIGHT_SOURCE_DURATION + Times.SPOTLIGHT_MODAL_DURATION)
     return () => {
       clearTimeout(transitionTimeout)
       clearTimeout(removeCloneTimeout)

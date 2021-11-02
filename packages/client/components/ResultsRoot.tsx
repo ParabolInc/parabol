@@ -26,6 +26,7 @@ const ResultsRoot = (props: Props) => {
       searchQuery,
       meetingId
     },
+    // Results could be grouped or ungrouped since modal was last opened with identical variables
     'network-only'
   )
   return (

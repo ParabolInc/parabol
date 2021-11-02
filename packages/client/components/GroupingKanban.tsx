@@ -56,7 +56,7 @@ const GroupingKanban = (props: Props) => {
     dragIdRef
   )
 
-  // Close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
+  // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
   useEffect(() => {
     if (spotlightReflection) {
       openPortal()

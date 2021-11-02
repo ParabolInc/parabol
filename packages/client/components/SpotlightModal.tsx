@@ -146,7 +146,7 @@ const SpotlightModal = (props: Props) => {
     if (portalStatus !== PortalStatus.Entered) return
     const timeout = setTimeout(() => {
       setHideModal(false)
-    }, Times.SPOTLIGHT_MODAL_DELAY)
+    }, Times.SPOTLIGHT_SOURCE_DURATION)
     return () => clearTimeout(timeout)
   }, [portalStatus])
 

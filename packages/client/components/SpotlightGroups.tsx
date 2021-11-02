@@ -86,22 +86,22 @@ const SpotlightGroups = (props: Props) => {
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
   const scrollHeight = useResultsHeight(resultsRef)
 
-  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
+  if (!similarReflectionGroups.length || !groupMatrix.length) {
+    return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
+  }
   return (
     <SimilarGroups>
       <Scrollbar height={scrollHeight} ref={resultsRef}>
         {groupMatrix.map((row) => (
           <Column key={`row-${row[0].id}`}>
-            {row.map((group) => {
-              return (
-                <ReflectionGroup
-                  key={group.id}
-                  meeting={meeting!}
-                  phaseRef={phaseRef}
-                  reflectionGroup={group}
-                />
-              )
-            })}
+            {row.map((group) => (
+              <ReflectionGroup
+                key={group.id}
+                meeting={meeting!}
+                phaseRef={phaseRef}
+                reflectionGroup={group}
+              />
+            ))}
           </Column>
         ))}
       </Scrollbar>

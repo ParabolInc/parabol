@@ -42,9 +42,9 @@ const useGroupMatrix = (
 
   const getEmptiestColumnIdx = () => {
     const columnsCount = getColumnsCount()
-    // If there's 2 columns that both have 1 group, the group in column 2 is grouped into column 1,
-    // the column with the min length in groupMatrix will be column 1. initColumns inits each possible
-    // column as 0 which ensures that the empty column 2 is returned as the emptiest column.
+    // Use initColumns to get emptiest column vs emptiest column with a group in it.
+    // For example, column 1 & column 2 both contain 1 group, group in column 2 is
+    // grouped into column 1, column with min len in groupMatrix is column 1.
     const initColumns = Array.from([...Array(columnsCount).keys()].fill(0))
     const counts: number[] = groupMatrix.reduce((arr: number[], row, idx) => {
       arr[idx] = row.length
@@ -70,7 +70,7 @@ const useGroupMatrix = (
       const emptiestColumnIdx = getEmptiestColumnIdx()
       const matrixColumns = groupMatrix.length - 1
       const newMatrix =
-        emptiestColumnIdx > matrixColumns
+        emptiestColumnIdx > matrixColumns // add to empty column
           ? [...groupMatrix, [newGroup]]
           : groupMatrix.map((row, idx) => (idx === emptiestColumnIdx ? [...row, newGroup] : row))
       setGroupMatrix(newMatrix)
