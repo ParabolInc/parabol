@@ -33,6 +33,7 @@ const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionC
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
+  // paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(1),
   transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
 }))
 
@@ -43,7 +44,7 @@ const ReflectionWrapper = styled('div')<{
   isHiddenSource: boolean
 }>(({staticIdx, isDropping, groupCount, isHiddenSource}): any => {
   const isHidden = staticIdx === -1 || isDropping || isHiddenSource
-  const multiple = Math.min(staticIdx, 2)
+  const multiple = Math.max(0, Math.min(staticIdx, 2))
   const scaleX =
     (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
     ElementWidth.REFLECTION_CARD
@@ -92,7 +93,7 @@ const ReflectionGroup = (props: Props) => {
   const isSpotlightOpen = !!spotlightGroup?.id
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
-  const isSourceReflection = spotlightGroup?.id === reflectionGroupId
+  const isSourceGroup = spotlightGroup?.id === reflectionGroupId
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -146,6 +147,9 @@ const ReflectionGroup = (props: Props) => {
       expand()
     }
   }
+  if (isSourceGroup) {
+    console.log('padd', getCardStackPadding(staticReflections.length))
+  }
 
   useEffect(() => {
     return () => {
@@ -156,6 +160,9 @@ const ReflectionGroup = (props: Props) => {
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
     !isSpotlightSource
+  if (isSourceGroup) {
+    console.log('sourcey', {vis: visibleReflections.length, staticLen: staticReflections.length})
+  }
   return (
     <>
       {portal(
@@ -203,7 +210,7 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
-            const isHiddenSource = isSourceReflection && isBehindSpotlight
+            const isHiddenSource = isSourceGroup && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}

@@ -50,9 +50,13 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
             const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken} = manager
+            const {accessToken, refreshToken: newRefreshToken} = manager
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
+
+            if (newRefreshToken) {
+              atlassianAuth.refreshToken = newRefreshToken
+            }
 
             await upsertAtlassianAuth(atlassianAuth)
           }
@@ -127,7 +131,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
           // update our records
           await Promise.all(
             estimates.map((estimate) => {
-              const {jiraFieldId, label, discussionId, dimensionName, taskId, userId} = estimate
+              const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
               const freshEstimate = String(fields[jiraFieldId])
               if (freshEstimate === label) return undefined
               // mutate current dataloader
@@ -138,7 +142,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
                 discussionId,
                 jiraFieldId,
                 label: freshEstimate,
-                name: dimensionName,
+                name,
                 meetingId: null,
                 stageId: null,
                 taskId,

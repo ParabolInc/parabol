@@ -112,6 +112,7 @@ const DraggableReflectionCard = (props: Props) => {
   const isReflectionGroupIdInSpotlight =
     resultGroupIdsInSpotlight.includes(reflectionGroupId) || isSpotlightSource
   const {onMouseDown} = useDraggableReflectionCard(
+    meeting,
     reflection,
     drag,
     staticIdx,
@@ -171,6 +172,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
       remoteDrag {
         dragUserId
         dragUserName
+        isSpotlight
         targetId
       }
     }
@@ -178,6 +180,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
   meeting: graphql`
     fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
+      ...RemoteReflection_meeting
       id
       teamId
       localStage {

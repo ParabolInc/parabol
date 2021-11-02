@@ -6,19 +6,12 @@ import useResizeObserver from './useResizeObserver'
 const useResultsHeight = (resultsRef: RefObject<HTMLDivElement>) => {
   const [height, setHeight] = useState<number | string>('100%')
 
-  const getHeight = () => {
-    const {current: el} = resultsRef
-    const height = el?.clientHeight
-    if (!height) return
-    return height
-  }
-
   useLayoutEffect(() => {
-    const newHeight = getHeight()
+    const newHeight = resultsRef.current?.clientHeight
     if (newHeight && height !== newHeight) {
       setHeight(newHeight)
     }
-  }, [resultsRef.current, height])
+  }, [height])
 
   useResizeObserver(() => {
     // when resized, set height to 100% so that useLayoutEffect can calc the new height

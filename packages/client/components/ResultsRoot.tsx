@@ -7,13 +7,12 @@ import SpotlightGroups from './SpotlightGroups'
 
 interface Props {
   spotlightGroupId?: string
-  resultsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   meetingId: string
 }
 
 const ResultsRoot = (props: Props) => {
-  const {meetingId, spotlightGroupId, resultsRef, phaseRef} = props
+  const {meetingId, spotlightGroupId, phaseRef} = props
   const searchQuery = '' // TODO: implement searchQuery
   const groupIdRef = useRef('')
   const nextGroupId = spotlightGroupId ?? ''
@@ -27,13 +26,12 @@ const ResultsRoot = (props: Props) => {
       searchQuery,
       meetingId
     },
+    // Results could be grouped or ungrouped since modal was last opened with identical variables
     'network-only'
   )
   return (
     <Suspense fallback={''}>
-      {queryRef && (
-        <SpotlightGroups resultsRef={resultsRef} phaseRef={phaseRef} queryRef={queryRef} />
-      )}
+      {queryRef && <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />}
     </Suspense>
   )
 }

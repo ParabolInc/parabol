@@ -35,6 +35,9 @@ export default {
 
     // RESOLUTION
     const user = await db.read('User', userId)
+    if (!user) {
+      throw new Error('User does not exist')
+    }
     const {inactive, lastSeenAt, tms} = user
 
     // no need to wait for this, it's just for billing

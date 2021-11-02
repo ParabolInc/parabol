@@ -20,6 +20,7 @@ graphql`
       id
       dragUserId
       dragUserName
+      isSpotlight
     }
   }
 `
@@ -83,6 +84,9 @@ export const startDraggingReflectionMeetingUpdater: SharedUpdater<StartDraggingR
       reflection.setValue(false, 'isViewerDragging')
       reflection.setValue(false, 'isDropping')
       reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
+      // cancel spotlight, too
+      const meeting = meetingId !== null ? store.get(meetingId) : null
+      meeting?.setValue(null, 'spotlightReflection')
     } else {
       // viewer wins
       return
