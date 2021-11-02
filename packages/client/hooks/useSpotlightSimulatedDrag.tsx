@@ -42,18 +42,18 @@ const useSpotlightSimulatedDrag = (
     // Only send the enddragging mutation when we didn't send it before,
     // but always null the spotlight reflection to close the dialog
     const reflectionId = reflectionIdRef.current
-    reflectionId &&
-      EndDraggingReflectionMutation(atmosphere, {
-        reflectionId,
-        dropTargetType: null,
-        dropTargetId: null,
-        dragId: dragIdRef.current
-      })
+    if (!reflectionId) return
+    EndDraggingReflectionMutation(atmosphere, {
+      reflectionId,
+      dropTargetType: null,
+      dropTargetId: null,
+      dragId: dragIdRef.current
+    })
 
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       meetingProxy?.setValue(null, 'spotlightReflection')
-      const reflection = store.get(reflectionIdRef.current!)
+      const reflection = store.get(reflectionId)
       // set isDropping to true so that the source is added back to its original position in kanban
       reflection?.setValue(true, 'isDropping')
     })

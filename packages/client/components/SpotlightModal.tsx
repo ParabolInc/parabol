@@ -91,7 +91,6 @@ const SearchWrapper = styled('div')({
 const Search = styled(MenuItemLabel)({
   overflow: 'visible',
   padding: 0,
-  flex: 0,
   position: 'absolute',
   bottom: -32,
   width: ElementWidth.REFLECTION_CARD

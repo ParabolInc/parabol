@@ -46,8 +46,14 @@ const GroupingKanban = (props: Props) => {
   useHideBodyScroll()
   const dragIdRef = useRef<string>()
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
+
+  const closeSpotlight = () => {
+    sourceCloneRef.current = null
+    onCloseSpotlight()
+  }
+
   const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
-    onClose: onCloseSpotlight,
+    onClose: closeSpotlight,
     id: 'spotlight'
   })
   const {sourceRef, sourceCloneRef} = useAnimatedSpotlightSource(
@@ -62,7 +68,6 @@ const GroupingKanban = (props: Props) => {
       openPortal()
     } else {
       closePortal()
-      sourceCloneRef.current = null
     }
   }, [!spotlightReflection])
 

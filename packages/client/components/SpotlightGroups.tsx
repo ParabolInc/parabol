@@ -86,9 +86,7 @@ const SpotlightGroups = (props: Props) => {
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
   const scrollHeight = useResultsHeight(resultsRef)
 
-  if (!similarReflectionGroups.length || !groupMatrix.length) {
-    return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
-  }
+  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
   return (
     <SimilarGroups>
       <Scrollbar height={scrollHeight} ref={resultsRef}>
