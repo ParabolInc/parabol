@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useEffect, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
@@ -135,7 +135,6 @@ const SpotlightModal = (props: Props) => {
   const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
   const {id: meetingId, spotlightReflection} = meeting
-  const spotlightReflectionId = spotlightReflection?.id
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
@@ -186,13 +185,11 @@ const SpotlightModal = (props: Props) => {
           </Search>
         </SearchWrapper>
       </SourceSection>
-      <Suspense fallback={''}>
-        <ResultsRoot
-          meetingId={meetingId}
-          phaseRef={modalRef}
-          spotlightReflectionId={spotlightReflectionId}
-        />
-      </Suspense>
+      <ResultsRoot
+        meetingId={meetingId}
+        phaseRef={modalRef}
+        spotlightReflectionId={spotlightReflection?.id}
+      />
     </Modal>
   )
 }

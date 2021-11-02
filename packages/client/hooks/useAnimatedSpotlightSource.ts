@@ -46,8 +46,8 @@ const useAnimatedSpotlightSource = (
         sourceStyle.opacity = '1' // show source once clone is removed
       }
     }, Times.SPOTLIGHT_MODAL_TOTAL_DURATION)
-    dragIdRef.current = clientTempId()
     if (!reflectionId) return
+    dragIdRef.current = clientTempId()
     // execute mutation after cloning as the mutation will cause reflection height to change
     StartDraggingReflectionMutation(atmosphere, {
       reflectionId,

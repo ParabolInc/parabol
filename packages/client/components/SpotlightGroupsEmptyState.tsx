@@ -8,7 +8,8 @@ const EmptyState = styled('div')({
   justifyContent: 'center',
   alignContent: 'center',
   flexWrap: 'wrap',
-  height: 320
+  minHeight: 320,
+  height: '100%'
 })
 
 const MessageWrapper = styled('div')({
