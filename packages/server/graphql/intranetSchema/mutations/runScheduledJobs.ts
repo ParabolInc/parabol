@@ -49,7 +49,7 @@ const processMeetingStageTimeLimits = async (
   const {teamId, facilitatorUserId} = meeting
   const [{slackNotification, slackAuth}, {mattermostAuth}] = await Promise.all([
     getSlackNotificationAndAuth(teamId, facilitatorUserId),
-    dataLoader.get('mattermostAuthByTeamId').load(teamId)
+    dataLoader.get('mattermostBestAuthByUserIdTeamId').load({userId: facilitatorUserId, teamId})
   ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 

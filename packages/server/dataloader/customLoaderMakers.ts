@@ -18,9 +18,12 @@ import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
-import getMattermostAuthByTeamId, {
-  GetMattermostAuthByTeamIdResult
-} from '../postgres/queries/getMattermostAuthByTeamId'
+import getMattermostAuthByUserIdTeamId, {
+  GetMattermostAuthByUserIdTeamIdResult
+} from '../postgres/queries/getMattermostAuthByUserIdTeamId'
+import getMattermostBestAuthByUserIdTeamId, {
+  GetMattermostBestAuthByUserIdTeamIdResult
+} from '../postgres/queries/getMattermostBestAuthByUserIdTeamId'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
@@ -330,18 +333,42 @@ export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
   )
 }
 
-export const mattermostAuthByTeamId = (parent: RethinkDataLoader) => {
-  return new DataLoader<string, GetMattermostAuthByTeamIdResult | null, string>(
+export const mattermostAuthByUserIdTeamId = (parent: RethinkDataLoader) => {
+  return new DataLoader<
+    {userId: string; teamId: string},
+    GetMattermostAuthByUserIdTeamIdResult | null,
+    string
+  >(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async (teamId) => getMattermostAuthByTeamId(teamId))
+        keys.map(async ({userId, teamId}) => getMattermostAuthByUserIdTeamId(userId, teamId))
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
       return vals
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (teamId) => `${teamId}`
+      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
+    }
+  )
+}
+
+export const mattermostBestAuthByUserIdTeamId = (parent: RethinkDataLoader) => {
+  return new DataLoader<
+    {userId: string; teamId: string},
+    GetMattermostBestAuthByUserIdTeamIdResult | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => getMattermostBestAuthByUserIdTeamId(userId, teamId))
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
     }
   )
 }

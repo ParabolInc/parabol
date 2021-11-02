@@ -19,7 +19,7 @@ export interface IUpsertMattermostAuthQueryQuery {
   result: IUpsertMattermostAuthQueryResult;
 }
 
-const upsertMattermostAuthQueryIR: any = {"name":"upsertMattermostAuthQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":44,"b":47,"line":3,"col":8},"used":[{"a":173,"b":176,"line":10,"col":8}]},"transform":{"type":"pick_tuple","keys":["webhookUrl","userId","teamId"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO \"MattermostAuth\" (\n    \"webhookUrl\",\n    \"userId\",\n    \"teamId\"\n  )\nVALUES :auth ON CONFLICT (\"teamId\") DO\nUPDATE\nSET (\n    \"isActive\",\n    \"updatedAt\",\n    \"webhookUrl\",\n    \"teamId\",\n    \"userId\"\n  ) = (\n    TRUE,\n    CURRENT_TIMESTAMP,\n    EXCLUDED.\"webhookUrl\",\n    EXCLUDED.\"teamId\",\n    EXCLUDED.\"userId\"\n  )","loc":{"a":85,"b":410,"line":5,"col":0}}};
+const upsertMattermostAuthQueryIR: any = {"name":"upsertMattermostAuthQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":44,"b":47,"line":3,"col":8},"used":[{"a":173,"b":176,"line":10,"col":8}]},"transform":{"type":"pick_tuple","keys":["webhookUrl","userId","teamId"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO \"MattermostAuth\" (\n    \"webhookUrl\",\n    \"userId\",\n    \"teamId\"\n  )\nVALUES :auth ON CONFLICT (\"userId\", \"teamId\") DO\nUPDATE\nSET (\n    \"isActive\",\n    \"updatedAt\",\n    \"webhookUrl\",\n    \"teamId\",\n    \"userId\"\n  ) = (\n    TRUE,\n    CURRENT_TIMESTAMP,\n    EXCLUDED.\"webhookUrl\",\n    EXCLUDED.\"teamId\",\n    EXCLUDED.\"userId\"\n  )","loc":{"a":85,"b":420,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -29,7 +29,7 @@ const upsertMattermostAuthQueryIR: any = {"name":"upsertMattermostAuthQuery","pa
  *     "userId",
  *     "teamId"
  *   )
- * VALUES :auth ON CONFLICT ("teamId") DO
+ * VALUES :auth ON CONFLICT ("userId", "teamId") DO
  * UPDATE
  * SET (
  *     "isActive",

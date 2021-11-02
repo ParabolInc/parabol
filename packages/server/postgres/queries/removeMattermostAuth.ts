@@ -1,7 +1,7 @@
 import getPg from '../getPg'
 import {removeMattermostAuthQuery} from './generated/removeMattermostAuthQuery'
 
-const removeAtlassianAuth = async (teamId: string) => {
-  await removeMattermostAuthQuery.run({teamId}, getPg())
+const removeMattermostAuth = async (userId: string, teamId: string) => {
+  await removeMattermostAuthQuery.run({userId, teamId}, getPg())
 }
-export default removeAtlassianAuth
+export default removeMattermostAuth

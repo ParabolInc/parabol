@@ -27,8 +27,12 @@ const okResponse: MattermostApiResponse = {
   status: 0
 }
 
-const getWebhookForTeamId = async (dataLoader: DataLoaderWorker, teamId: string) => {
-  const mattermost = await dataLoader.get('mattermostAuthByTeamId').load(teamId)
+const getWebhookForUserIdTeamId = async (
+  userId: string,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const mattermost = await dataLoader.get('mattermostBestAuthByUserIdTeamId').load({userId, teamId})
   return mattermost?.webhookUrl
 }
 
@@ -92,7 +96,8 @@ export const startMattermostMeeting = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const webhookUrl = await getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader)
   if (!webhookUrl) return okResponse
 
   const searchParams = {
@@ -101,10 +106,7 @@ export const startMattermostMeeting = async (
     utm_campaign: 'invitations'
   }
   const options = {searchParams}
-  const [team, meeting] = await Promise.all([
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('newMeetings').load(meetingId)
-  ])
+  const team = await dataLoader.get('teams').load(teamId)
   const {facilitatorUserId: userId} = meeting
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const attachments = [
@@ -176,12 +178,10 @@ export const endMattermostMeeting = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const webhookUrl = await getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader)
   if (!webhookUrl) return okResponse
-  const [team, meeting] = await Promise.all([
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('newMeetings').load(meetingId)
-  ])
+  const team = await dataLoader.get('teams').load(teamId)
   const {facilitatorUserId: userId} = meeting
   const summaryText = getSummaryText(meeting)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
@@ -221,13 +221,11 @@ export const notifyMattermostTimeLimitStart = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const webhookUrl = await getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader)
   if (!webhookUrl) return okResponse
 
-  const [team, meeting] = await Promise.all([
-    dataLoader.get('teams').load(teamId),
-    dataLoader.get('newMeetings').load(meetingId)
-  ])
+  const team = await dataLoader.get('teams').load(teamId)
   const {name: meetingName, phases, facilitatorStageId, facilitatorUserId: userId} = meeting
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)
@@ -293,11 +291,10 @@ export const notifyMattermostTimeLimitEnd = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const webhookUrl = await getWebhookForTeamId(dataLoader, teamId)
-  if (!webhookUrl) return okResponse
-
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {facilitatorUserId: userId} = meeting
+  const webhookUrl = await getWebhookForUserIdTeamId(userId, teamId, dataLoader)
+  if (!webhookUrl) return okResponse
 
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`

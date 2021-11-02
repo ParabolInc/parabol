@@ -10,8 +10,8 @@ export const AddMattermostAuthSuccess = new GraphQLObjectType<any, GQLContext>({
     mattermostIntegration: {
       type: new GraphQLNonNull(MattermostIntegration),
       description: 'The newly created mattermost integration object',
-      resolve: async ({teamId}, _args, {dataLoader}: GQLContext) => {
-        return dataLoader.get('mattermostAuthByTeamId').load(teamId)
+      resolve: async ({userId, teamId}, _args, {dataLoader}: GQLContext) => {
+        return dataLoader.get('mattermostAuthByUserIdTeamId').load({userId, teamId})
       }
     },
     user: {

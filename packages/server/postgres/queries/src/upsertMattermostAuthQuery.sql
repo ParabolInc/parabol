@@ -7,7 +7,7 @@ INSERT INTO "MattermostAuth" (
     "userId",
     "teamId"
   )
-VALUES :auth ON CONFLICT ("teamId") DO
+VALUES :auth ON CONFLICT ("userId", "teamId") DO
 UPDATE
 SET (
     "isActive",
