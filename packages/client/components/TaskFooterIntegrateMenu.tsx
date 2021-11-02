@@ -54,7 +54,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       isAssigneeIntegrated.hasGitHub,
       isAssigneeIntegrated.hasAtlassian
     )
-    const label = isViewerAssignee ? undefined : `Push as ${preferredName}`
+    const label = isViewerAssignee ? undefined : `Push as ${preferredName}.`
     return (
       <>
         <TaskFooterIntegrateMenuList
@@ -73,6 +73,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       isViewerIntegrated.hasGitHub,
       isViewerIntegrated.hasAtlassian
     )
+    const label = 'Push with your credentials.'
     return (
       <>
         <TaskFooterIntegrateMenuList
@@ -81,7 +82,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
           placeholder={placeholder}
           suggestedIntegrations={suggestedIntegrations}
           task={task}
-          label={'Push with your credentials'}
+          label={label}
         />
       </>
     )

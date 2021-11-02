@@ -7,6 +7,7 @@ import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV3'
+import MenuItemHR from './MenuItemHR'
 
 interface Props {
   menuProps: MenuProps
@@ -22,8 +23,7 @@ const NarrowMenu = styled(Menu)({
 const Label = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 14,
-  fontStyle: 'italic',
-  padding: 8
+  padding: '8px 16px 0'
 })
 
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
@@ -32,7 +32,12 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
   return (
     <NarrowMenu ariaLabel={'Integrate with a Service'} {...menuProps}>
-      {label && <Label>{label}</Label>}
+      {label && (
+        <>
+          <Label>{label}</Label>
+          <MenuItemHR />
+        </>
+      )}
       <AddToGitHubMenuItem mutationProps={mutationProps} teamId={teamId} />
       <AddToJiraMenuItem mutationProps={mutationProps} teamId={teamId} />
     </NarrowMenu>

@@ -18,6 +18,7 @@ import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
+import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
 import MenuSearch from './MenuSearch'
 import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
@@ -63,8 +64,7 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
 const Label = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 14,
-  fontStyle: 'italic',
-  padding: 8
+  padding: '8px 8px 0'
 })
 
 const getValue = (
@@ -107,7 +107,12 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       {...menuProps}
       resetActiveOnChanges={[allItems]}
     >
-      {label && <Label>{label}</Label>}
+      {label && (
+        <>
+          <Label>{label}</Label>
+          <MenuItemHR />
+        </>
+      )}
       <SearchItem key='search'>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
