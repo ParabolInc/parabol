@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import generateUID from '../../generateUID'
 import updateGitHubSearchQueries from '../../postgres/queries/updateGitHubSearchQueries'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -64,7 +65,11 @@ const persistGitHubSearchQuery = {
       }
     } else {
       if (!isRemove) {
-        const newQuery = {lastUsedAt: new Date(), queryString: normalizedQueryString}
+        const newQuery = {
+          lastUsedAt: new Date(),
+          queryString: normalizedQueryString,
+          id: generateUID()
+        }
         // MUTATIVE
         githubSearchQueries.unshift(newQuery)
         githubSearchQueries.slice(0, MAX_QUERIES)

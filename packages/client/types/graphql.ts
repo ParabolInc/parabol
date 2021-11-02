@@ -55778,11 +55778,6 @@ export interface IMutation {
    */
   updateGitHubDimensionField: UpdateGitHubDimensionFieldPayload;
   createPoll: CreatePollPayload;
-
-  /**
-   * Add a persisted github query string to a team
-   */
-  persistGitHubQuery: PersistGitHubQueryPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -56940,23 +56935,6 @@ export interface ICreatePollOnMutationArguments {
    * The new poll including title and poll options
    */
   newPoll: ICreatePollInput;
-}
-
-export interface IPersistGitHubQueryOnMutationArguments {
-  /**
-   * the team with the settings we add the query to
-   */
-  teamId: string;
-
-  /**
-   * the search query to persist (or remove, if isRemove is true)
-   */
-  input: string;
-
-  /**
-   * if true, remove the input from the list of persisted queries
-   */
-  isRemove?: boolean | null;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -59503,22 +59481,6 @@ export interface IPollOptionInput {
   title: string;
 }
 
-/**
- * Return object for PersistGitHubQueryPayload
- */
-export type PersistGitHubQueryPayload =
-  | IErrorPayload
-  | IPersistGitHubQuerySuccess;
-
-export interface IPersistGitHubQuerySuccess {
-  __typename: 'PersistGitHubQuerySuccess';
-
-  /**
-   * The updated GitHub Auth
-   */
-  githubIntegration: IGitHubIntegration | null;
-}
-
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -59609,8 +59571,7 @@ export type NotificationSubscriptionPayload =
   | IPersistJiraSearchQuerySuccess
   | IUser
   | IAuthTokenPayload
-  | IPersistGitHubSearchQuerySuccess
-  | IPersistGitHubQuerySuccess;
+  | IPersistGitHubSearchQuerySuccess;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';

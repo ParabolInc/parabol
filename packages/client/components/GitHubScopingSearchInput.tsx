@@ -46,6 +46,14 @@ interface Props {
   meetingRef: GitHubScopingSearchInput_meeting$key
 }
 
+graphql`
+  fragment GitHubScopingSearchInputGitHubIntegration on GitHubIntegration {
+    githubSearchQueries {
+      queryString
+    }
+  }
+`
+
 const GitHubScopingSearchInput = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
@@ -59,9 +67,7 @@ const GitHubScopingSearchInput = (props: Props) => {
           teamMember {
             integrations {
               github {
-                githubSearchQueries {
-                  queryString
-                }
+                ...GitHubScopingSearchInputGitHubIntegration @relay(mask: false)
               }
             }
           }
@@ -76,7 +82,7 @@ const GitHubScopingSearchInput = (props: Props) => {
   const {github} = integrations
   const {githubSearchQueries} = github!
   const defaultInput =
-    githubSearchQueries[0]?.queryString ?? SprintPokerDefaults.GITHUB_DEFAULT_QUERY
+    githubSearchQueries?.[0]?.queryString ?? SprintPokerDefaults.GITHUB_DEFAULT_QUERY
   const {queryString} = githubSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
