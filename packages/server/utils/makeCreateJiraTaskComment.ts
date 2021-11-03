@@ -55,7 +55,7 @@ const makeCreateJiraTaskComment = (
             {
               type: 'link',
               attrs: {
-                href: ExternalLinks.GETTING_STARTED_CHECK_INS
+                href: ExternalLinks.INTEGRATIONS_JIRA
               }
             },
             {

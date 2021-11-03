@@ -10,6 +10,6 @@ const makeCreateGitHubTaskComment = (
   `Created by ${creator} for ${assignee}
   See the dashboard of [${teamName}](${teamDashboardUrl})
 
-  *Powered by [Parabol](${ExternalLinks.INTEGRATIONS_JIRA})*`
+  *Powered by [Parabol](${ExternalLinks.INTEGRATIONS_GITHUB})*`
 
 export default makeCreateGitHubTaskComment
