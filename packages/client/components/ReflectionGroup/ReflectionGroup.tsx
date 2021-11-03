@@ -68,7 +68,7 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
-  sourceReflectionIds?: string[] | null
+  hiddenReflectionIds?: string[] | null
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -79,23 +79,22 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroup,
     swipeColumn,
     dataCy,
-    sourceReflectionIds
+    hiddenReflectionIds
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
-  const isSpotlightSource = !!sourceReflectionIds?.length
-  const visibleReflections = useMemo(() => {
-    return isSpotlightSource
-      ? reflections.filter(({id}) => sourceReflectionIds?.includes(id))
-      : reflections.slice()
-  }, [reflections])
+  const isSpotlightSrcGroup = spotlightGroup?.id === reflectionGroupId
   const isSpotlightOpen = !!spotlightGroup?.id
+  const visibleReflections = useMemo(() => {
+    return isSpotlightSrcGroup
+      ? reflections.filter(({id}) => !hiddenReflectionIds?.includes(id))
+      : reflections.slice()
+  }, [reflections, hiddenReflectionIds])
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
-  const isSourceGroup = spotlightGroup?.id === reflectionGroupId
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -149,9 +148,6 @@ const ReflectionGroup = (props: Props) => {
       expand()
     }
   }
-  if (isSourceGroup) {
-    console.log('padd', getCardStackPadding(staticReflections.length))
-  }
 
   useEffect(() => {
     return () => {
@@ -161,10 +157,7 @@ const ReflectionGroup = (props: Props) => {
 
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
-    !isSpotlightSource
-  if (isSourceGroup) {
-    console.log('sourcey', {vis: visibleReflections.length, staticLen: staticReflections.length})
-  }
+    !isSpotlightSrcGroup
   return (
     <>
       {portal(
@@ -212,7 +205,7 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
-            const isHiddenSpotlightSource = isSourceGroup && isBehindSpotlight
+            const isHiddenSpotlightSource = isSpotlightSrcGroup && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}

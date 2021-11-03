@@ -148,22 +148,18 @@ const SpotlightModal = (props: Props) => {
   const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
-  const sourceReflectionIdsRef = useRef<string[] | null>(null)
+  const hiddenReflectionIdsRef = useRef<string[] | null>(null)
 
   useEffect(() => {
     if (!spotlightGroup) return
     let timeout: number | undefined
-    const sourceReflectionIds = sourceReflections?.map((reflection) => reflection.id)
-    if (!sourceReflectionIdsRef.current && spotlightReflectionId) {
-      // when opening Spotlight, if group has several reflections, only show the selected reflection
-      sourceReflectionIdsRef.current = [spotlightReflectionId]
-    }
-    // TODO: uncomment for groups -> source issue
-    // else if (firstReflectionId && secondReflectionId && ids?.includes(secondReflectionId)) {
-    // if results are dragged onto the source, add result reflections to source group
-    // sourceReflectionIdsRef.current = [...ids, firstReflectionId]
-    // }
-    else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
+    const sourceReflectionIds = sourceReflections?.map(({id}) => id)
+    const {current: hiddenIds} = hiddenReflectionIdsRef
+    if (hiddenIds === null) {
+      // if Spotlight group initially contains several reflections, only show reflection at the top of the stack
+      hiddenReflectionIdsRef.current =
+        sourceReflections?.filter(({id}) => id !== spotlightReflectionId).map(({id}) => id) || []
+    } else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
       timeout = window.setTimeout(() => {
         closeSpotlight()
       }, Times.REFLECTION_DROP_DURATION)
@@ -200,7 +196,7 @@ const SpotlightModal = (props: Props) => {
               phaseRef={modalRef}
               reflectionGroup={spotlightGroup}
               meeting={meeting}
-              sourceReflectionIds={sourceReflectionIdsRef.current}
+              hiddenReflectionIds={hiddenReflectionIdsRef.current}
             />
           )}
         </Source>
