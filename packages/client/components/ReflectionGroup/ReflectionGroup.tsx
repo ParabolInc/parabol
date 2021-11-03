@@ -101,18 +101,19 @@ const ReflectionGroup = (props: Props) => {
   }, [reflections, reflectionIdsToHide])
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
+  const isRemoteSpotlightSrc = useMemo(
+    () => !!visibleReflections.find(({remoteDrag}) => remoteDrag?.isSpotlight),
+    [visibleReflections]
+  )
   const isDroppable = useMemo(() => {
     const isSourceGroup = spotlightGroup?.id === reflectionGroupId
     const isDraggingSource = !!spotlightGroup?.reflections.find(
       ({isViewerDragging}) => isViewerDragging
     )
-    const isAnimatingSpotlightReflection = !!visibleReflections.find(
-      ({remoteDrag}) => remoteDrag?.isSpotlight
-    )
     return isSpotlightOpen
       ? isDraggingSource || isSourceGroup // prevent grouping results into results
-      : !isAnimatingSpotlightReflection // prevent dropping onto animating source
-  }, [spotlightGroup, visibleReflections])
+      : !isRemoteSpotlightSrc // prevent dropping onto animating remote source
+  }, [spotlightGroup, isRemoteSpotlightSrc])
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -181,7 +182,8 @@ const ReflectionGroup = (props: Props) => {
 
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
-    !isSpotlightSrcGroup
+    !isSpotlightSrcGroup &&
+    !isRemoteSpotlightSrc
   return (
     <>
       {portal(
