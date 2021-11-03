@@ -5,17 +5,11 @@ import getRethink from '../../../database/rethinkDriver'
 import getPg from '../../../postgres/getPg'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
 import DeleteUserPayload from '../../types/DeleteUserPayload'
-import removeStagesFromMeetings from '../../mutations/helpers/removeStagesFromMeetings'
-import CheckInStage from '../../../database/types/CheckInStage'
-import UpdatesStage from '../../../database/types/UpdatesStage'
-import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
-import removeUserFromMeetingStages from '../../mutations/helpers/removeUserFromMeetingStages'
-import removeAgendaItemResolver from '../../mutations/helpers/removeAgendaItem'
-import EstimateStage from '../../../database/types/EstimateStage'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 
 const hardDeleteUser = {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -52,77 +46,42 @@ const hardDeleteUser = {
     const r = await getRethink()
     const pg = getPg()
 
-    const user = userId
-      ? (await getUserById(userId))?.[0]
-      : email
-      ? await getUserByEmail(email)
-      : null
+    const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
     if (!user) {
       return {error: {message: 'User not found'}}
     }
     const userIdToDelete = user.id
 
-    // get team ids, org ids, and meetingIds
-    const [teamMemberIds, orgUsers, meetingIds] = await Promise.all([
+    // get team ids and meetingIds
+    const [teamMemberIds, meetingIds] = await Promise.all([
       r
         .table('TeamMember')
         .getAll(userIdToDelete, {index: 'userId'})
         .getField('id')
         .coerceTo('array')
-        .distinct()
         .run(),
-      dataLoader.get('organizationUsersByUserId').load(userIdToDelete),
       r
         .table('MeetingMember')
         .getAll(userIdToDelete, {index: 'userId'})
         .getField('meetingId')
         .coerceTo('array')
-        .distinct()
         .run()
     ])
-    const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
-
-    const teamIds: string[] = []
-    for (const teamMemberId of teamMemberIds) {
-      const teamId = teamMemberId.split('::')[1]
-      if (teamId) {
-        teamIds.push(teamId)
-      }
-    }
+    const teamIds = teamMemberIds.map((id) => TeamMemberId.split(id).teamId)
 
     // need to fetch these upfront
     const [
-      pastAgendaItemIds,
-      currentAgendaItemIds,
       retroReflectionIds,
       swapFacilitatorUpdates,
       swapCreatedByUserUpdates,
       discussions
     ] = await Promise.all([
-      r
-        .table('AgendaItem')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => r(teamMemberIds).contains(row('teamMemberId')))
-        .filter((row) => row('isActive').eq(false))
-        .getField('id')
-        .coerceTo('array')
-        .distinct()
-        .run(),
-      r
-        .table('AgendaItem')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => r(teamMemberIds).contains(row('teamMemberId')))
-        .filter((row) => row('isActive').eq(true))
-        .getField('id')
-        .coerceTo('array')
-        .distinct()
-        .run(),
       (r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .eqJoin('id', r.table('RetroReflection'), {index: 'meetingId'})
         .zip() as any)
-        .filter((row) => row('creatorId').eq(r(userIdToDelete)))
+        .filter((row) => row('creatorId').eq(userIdToDelete))
         .getField('id')
         .coerceTo('array')
         .distinct()
@@ -130,12 +89,12 @@ const hardDeleteUser = {
       r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('facilitatorUserId').eq(r(userIdToDelete)))
+        .filter((row) => row('facilitatorUserId').eq(userIdToDelete))
         .merge((meeting) => ({
           otherTeamMember: r
             .table('TeamMember')
             .getAll(meeting('teamId'), {index: 'teamId'})
-            .filter((row) => row('userId').ne(r(userIdToDelete)))
+            .filter((row) => row('userId').ne(userIdToDelete))
             .nth(0)
             .getField('userId')
             .default(null)
@@ -146,12 +105,12 @@ const hardDeleteUser = {
       r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('createdBy').eq(r(userIdToDelete)))
+        .filter((row) => row('createdBy').eq(userIdToDelete))
         .merge((meeting) => ({
           otherTeamMember: r
             .table('TeamMember')
             .getAll(meeting('teamId'), {index: 'teamId'})
-            .filter((row) => row('userId').ne(r(userIdToDelete)))
+            .filter((row) => row('userId').ne(userIdToDelete))
             .nth(0)
             .getField('userId')
             .default(null)
@@ -161,34 +120,10 @@ const hardDeleteUser = {
         .run(),
       pg.query(`SELECT "id" FROM "Discussion" WHERE "teamId" = ANY ($1);`, [teamIds])
     ])
-    const discussionIds = discussions.rows.map(({id}) => id)
+    const teamDiscussionIds = discussions.rows.map(({id}) => id)
 
-    // soft delete first for side effects, then completely remove user dependent stages
-    await softDeleteUser(user, dataLoader, reason, true)
-
-    for (const teamMemberId of teamMemberIds) {
-      const teamId = teamMemberId.split('::')[1]
-      const filterFn = (stage: CheckInStage | UpdatesStage | EstimateStage) =>
-        (stage as CheckInStage | UpdatesStage).teamMemberId === teamMemberId ||
-        (stage as EstimateStage).creatorUserId === userIdToDelete
-      await removeStagesFromMeetings(filterFn, teamId, dataLoader, true)
-      await removeUserFromMeetingStages(userIdToDelete, teamId, dataLoader, true)
-    }
-    for (const agendaItemId of currentAgendaItemIds) {
-      // calling this for publish side effect
-      await removeAgendaItemResolver(
-        undefined,
-        {agendaItemId},
-        {authToken, dataLoader, socketId: undefined}
-      )
-    }
-    for (const agendaItemId of pastAgendaItemIds) {
-      // id is of format 'teamId::randomId'
-      const [teamId] = agendaItemId.split('::')
-      const filterFn = (stage: AgendaItemsStage) => stage.agendaItemId === agendaItemId
-      await removeStagesFromMeetings(filterFn, teamId, dataLoader, true)
-    }
-    const agendaItemIds = pastAgendaItemIds.concat(currentAgendaItemIds)
+    // soft delete first for side effects
+    await softDeleteUser(userIdToDelete, dataLoader, reason)
 
     // all other writes
     await r({
@@ -227,7 +162,7 @@ const hardDeleteUser = {
       createdTasks: r
         .table('Task')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('createdBy').eq(r(userIdToDelete)))
+        .filter((row) => row('createdBy').eq(userIdToDelete))
         .delete(),
       timelineEvent: r
         .table('TimelineEvent')
@@ -237,7 +172,8 @@ const hardDeleteUser = {
         .delete(),
       agendaItem: r
         .table('AgendaItem')
-        .getAll(r.args(agendaItemIds), {index: 'id'})
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter((row) => r(teamMemberIds).contains(row('teamMemberId')))
         .delete(),
       pushInvitation: r
         .table('PushInvitation')
@@ -254,17 +190,17 @@ const hardDeleteUser = {
       invitedByTeamInvitation: r
         .table('TeamInvitation')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('invitedBy').eq(r(userIdToDelete)))
+        .filter((row) => row('invitedBy').eq(userIdToDelete))
         .update({invitedBy: ''}),
       createdByTeamInvitations: r
         .table('TeamInvitation')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('acceptedBy').eq(r(userIdToDelete)))
+        .filter((row) => row('acceptedBy').eq(userIdToDelete))
         .update({acceptedBy: ''}),
       comment: r
         .table('Comment')
-        .getAll(r.args(discussionIds), {index: 'discussionId'})
-        .filter((row) => row('createdBy').eq(r(userIdToDelete)))
+        .getAll(r.args(teamDiscussionIds), {index: 'discussionId'})
+        .filter((row) => row('createdBy').eq(userIdToDelete))
         .update({createdBy: ''}), // becomes anonymous in UI
       swapFacilitator: r(swapFacilitatorUpdates).forEach((update) =>
         r
@@ -289,20 +225,15 @@ const hardDeleteUser = {
       pg.query(`DELETE FROM "AtlassianAuth" WHERE "userId" = $1`, [userIdToDelete]),
       pg.query(`DELETE FROM "GitHubAuth" WHERE "userId" = $1`, [userIdToDelete]),
       pg.query(
-        `DELETE FROM "OrganizationUserAudit" WHERE "orgId" = ANY($1::varchar[]) AND "userId" = $2`,
-        [orgIds, userIdToDelete]
-      ),
-      pg.query(
         `DELETE FROM "TaskEstimate" WHERE "meetingId" = ANY($1::varchar[]) AND "userId" = $2`,
         [meetingIds, userIdToDelete]
       ),
       pg.query(
         `DELETE FROM "Poll" WHERE "discussionId" = ANY($1::varchar[]) AND "createdById" = $2`,
-        [discussionIds, userIdToDelete]
-      ),
-      pg.query(`DELETE FROM "StripeQuantityMismatchLogging" WHERE "userId" = $1`, [userIdToDelete])
+        [teamDiscussionIds, userIdToDelete]
+      )
     ])
-    // User needs to be deleted after Poll
+    // User needs to be deleted after children
     await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])
 
     await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))

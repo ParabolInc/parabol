@@ -1,5 +1,4 @@
 import EstimateStage from '../../../database/types/EstimateStage'
-import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -11,16 +10,14 @@ import {DataLoaderWorker} from '../../graphql'
 const removeUserFromMeetingStages = async (
   userId: string,
   teamId: string,
-  dataLoader: DataLoaderWorker,
-  includeCompletedMeetings: boolean = false
+  dataLoader: DataLoaderWorker
 ) => {
   const now = new Date()
   const r = await getRethink()
-  let meetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-  if (includeCompletedMeetings) {
-    const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
-    meetings = meetings.concat(completedMeetings)
-  }
+  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
+  const meetings = activeMeetings.concat(completedMeetings)
+
   await Promise.all(
     meetings.map((meeting) => {
       const {id: meetingId, phases} = meeting
@@ -30,15 +27,13 @@ const removeUserFromMeetingStages = async (
         const {stages} = phase
         for (let i = 0; i < stages.length; i++) {
           const stage = stages[i]
-          const {readyToAdvance} = stage as GenericMeetingStage | EstimateStage
-          const scores = (stage as EstimateStage).scores
-          if (readyToAdvance) {
-            const userIdIdx = readyToAdvance.indexOf(userId)
-            if (userIdIdx !== -1) {
-              readyToAdvance.splice(userIdIdx, 1)
-              isChanged = true
-            }
+          const {readyToAdvance} = stage
+          const userIdIdx = readyToAdvance.indexOf(userId)
+          if (userIdIdx !== -1) {
+            readyToAdvance.splice(userIdIdx, 1)
+            isChanged = true
           }
+          const scores = (stage as EstimateStage).scores
           if (scores) {
             const userIdIdx = scores.map(({userId}) => userId).indexOf(userId)
             if (userIdIdx !== -1) {

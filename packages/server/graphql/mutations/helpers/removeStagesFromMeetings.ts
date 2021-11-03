@@ -9,16 +9,13 @@ import {DataLoaderWorker} from '../../graphql'
 const removeStagesFromMeetings = async (
   filterFn: (stage: any) => boolean,
   teamId: string,
-  dataLoader: DataLoaderWorker,
-  includeCompletedMeetings = false
+  dataLoader: DataLoaderWorker
 ) => {
   const now = new Date()
   const r = await getRethink()
-  let meetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-  if (includeCompletedMeetings) {
-    const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
-    meetings = meetings.concat(completedMeetings)
-  }
+  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
+  const meetings = activeMeetings.concat(completedMeetings)
 
   await Promise.all(
     meetings.map((meeting) => {

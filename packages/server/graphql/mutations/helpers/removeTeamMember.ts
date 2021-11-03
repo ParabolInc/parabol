@@ -13,6 +13,7 @@ import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import removeSlackAuths from './removeSlackAuths'
+import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 
 interface Options {
   evictorUserId?: string
@@ -137,11 +138,20 @@ const removeTeamMember = async (
 
   const archivedTasks = await archiveTasksForDB(integratedTasksToArchive)
   const archivedTaskIds = archivedTasks.map(({id}) => id)
+  const agendaItemIds = await r
+    .table('AgendaItem')
+    .getAll(teamId, {index: 'teamId'})
+    .filter((row) => row('teamMemberId').eq(teamMemberId))
+    .getField('id')
+    .coerceTo('array')
+    .distinct()
+    .run()
 
   // if a new meeting was currently running, remove them from it
-  const filterFn = (stage: CheckInStage | UpdatesStage | EstimateStage) =>
+  const filterFn = (stage: CheckInStage | UpdatesStage | EstimateStage | AgendaItemsStage) =>
     (stage as CheckInStage | UpdatesStage).teamMemberId === teamMemberId ||
-    (stage as EstimateStage).creatorUserId === userId
+    (stage as EstimateStage).creatorUserId === userId ||
+    agendaItemIds.includes((stage as AgendaItemsStage).agendaItemId)
   removeSlackAuths(userId, teamId)
   await removeStagesFromMeetings(filterFn, teamId, dataLoader)
   await removeUserFromMeetingStages(userId, teamId, dataLoader)

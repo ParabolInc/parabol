@@ -2,9 +2,26 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
-import softDeleteUser from './helpers/softDeleteUser'
+import softDeleteUserResolver from './helpers/softDeleteUser'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import db from '../../db'
+import getDeletedEmail from '../../utils/getDeletedEmail'
+import updateUser from '../../postgres/queries/updateUser'
+import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const markUserSoftDeleted = async (userIdToDelete, validReason) => {
+  const update = {
+    isRemoved: true,
+    email: getDeletedEmail(userIdToDelete),
+    reasonRemoved: validReason,
+    updatedAt: new Date()
+  }
+  await db.write('User', userIdToDelete, update)
+  await updateUser(update, userIdToDelete)
+}
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -37,8 +54,9 @@ export default {
     }
     const su = isSuperUser(authToken)
     const viewerId = getUserId(authToken)
-
     const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
+    const validReason = reason?.trim().slice(0, USER_REASON_REMOVED_LIMIT) || 'No reason provided'
+
     if (!su) {
       if (!user || userId !== viewerId) {
         return {error: {message: 'Cannot delete someone else'}}
@@ -46,7 +64,14 @@ export default {
     } else if (!user) {
       return {error: {message: 'User not found'}}
     }
-    await softDeleteUser(user, dataLoader, reason)
+    const {id: userIdToDelete} = user
+
+    await softDeleteUserResolver(userIdToDelete, dataLoader, validReason)
+
+    // do this after 30 seconds so any segment API calls can still get the email
+    await delay(30000)
+    await markUserSoftDeleted(userIdToDelete, validReason)
+
     return {}
   }
 }
