@@ -101,11 +101,13 @@ const ReflectionGroup = (props: Props) => {
   }, [reflections, reflectionIdsToHide])
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
-  const isSourceGroup = spotlightGroup?.id === reflectionGroupId
-  const isDraggingSource = spotlightGroup?.reflections.find(
-    ({isViewerDragging}) => isViewerDragging
-  )
-  const disableDrop = isSpotlightOpen && !isDraggingSource && !isSourceGroup // prevent grouping results into results
+  const isDroppable = useMemo(() => {
+    const isSourceGroup = spotlightGroup?.id === reflectionGroupId
+    const isDraggingSource = !!spotlightGroup?.reflections.find(
+      ({isViewerDragging}) => isViewerDragging
+    )
+    return isSpotlightOpen ? isDraggingSource || isSourceGroup : true // prevent grouping results into results
+  }, [spotlightGroup])
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -203,7 +205,7 @@ const ReflectionGroup = (props: Props) => {
         />
       )}
       <Group
-        {...(disableDrop ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
+        {...(isDroppable ? {[DragAttribute.DROPPABLE]: reflectionGroupId} : null)}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         isSpotlightSource={isSpotlightSrcGroup && !isBehindSpotlight}
