@@ -157,14 +157,13 @@ const Task = new GraphQLObjectType<any, GQLContext>({
               sendToSentry(new Error(labelErrors[0].message), {userId: accessUserId})
             }
           } else if (estimates.length) {
-            const dimensionFieldMaps = await dataLoader
-              .get('githubDimensionFieldMaps')
-              .loadMany(
+            const dimensionFieldMaps = (
+              await dataLoader.get('githubDimensionFieldMaps').loadMany(
                 estimates.map((estimate) => {
                   return {dimensionName: estimate.name, nameWithOwner, teamId}
                 })
               )
-              .filter(errorFilter)
+            ).filter(errorFilter)
 
             await Promise.all(
               estimates.map((estimate) => {
