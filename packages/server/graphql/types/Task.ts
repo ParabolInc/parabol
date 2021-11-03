@@ -133,17 +133,17 @@ const Task = new GraphQLObjectType<any, GQLContext>({
               batchRef: context,
               info
             }),
-            githubRequest({
-              query: labelsQuery,
-              endpointContext: {
-                accessToken: githubAuth.accessToken
-              },
-              batchRef: context,
-              info
-            })
+            estimates.length > 0
+              ? githubRequest({
+                  query: labelsQuery,
+                  endpointContext: {
+                    accessToken: githubAuth.accessToken
+                  },
+                  batchRef: context,
+                  info
+                })
+              : {data: null, errors: null}
           ])
-
-          const labels = labelsData.repository.issue.labels.nodes
 
           if (errors || labelErrors) {
             if (errors) {
@@ -157,6 +157,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
               sendToSentry(new Error(labelErrors[0].message), {userId: accessUserId})
             }
           } else if (estimates.length) {
+            const labels = labelsData.repository.issue.labels.nodes
             const dimensionFieldMaps = (
               await dataLoader.get('githubDimensionFieldMaps').loadMany(
                 estimates.map((estimate) => {
