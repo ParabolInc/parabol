@@ -244,7 +244,7 @@ const ReflectionGroup = (props: Props) => {
                   dataCy={`${dataCy}-card-${staticIdx}`}
                   key={reflection.id}
                   staticIdx={staticIdx}
-                  isClipped={staticIdx !== 0}
+                  isClipped={staticIdx > 0}
                   isDraggable={staticIdx === 0}
                   meeting={meeting}
                   openSpotlight={openSpotlight}
