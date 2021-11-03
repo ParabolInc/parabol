@@ -28,13 +28,17 @@ export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
 
-const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
-  height: 'max-content',
-  position: 'relative',
-  paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
-  paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
-}))
+const Group = styled('div')<{staticReflectionCount: number; isSpotlightSource: boolean}>(
+  ({staticReflectionCount, isSpotlightSource}) => ({
+    height: 'max-content',
+    position: 'relative',
+    paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
+    paddingBottom: isSpotlightSource
+      ? ElementWidth.REFLECTION_CARD_PADDING
+      : ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
+    transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+  })
+)
 
 const ReflectionWrapper = styled('div')<{
   staticIdx: number
@@ -97,7 +101,6 @@ const ReflectionGroup = (props: Props) => {
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  const initSpotlightSrcStaticCount = 1
   const staticReflections = useMemo(() => {
     return visibleReflections.filter(
       (reflection) =>
@@ -188,11 +191,8 @@ const ReflectionGroup = (props: Props) => {
       <Group
         {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
         ref={groupRef}
-        staticReflectionCount={
-          isSpotlightSrcGroup && isInSpotlight
-            ? initSpotlightSrcStaticCount
-            : staticReflections.length
-        }
+        staticReflectionCount={staticReflections.length}
+        isSpotlightSource={isSpotlightSrcGroup && !isBehindSpotlight}
         data-cy={dataCy}
       >
         {showHeader && (
