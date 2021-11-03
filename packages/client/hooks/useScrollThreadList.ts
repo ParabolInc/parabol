@@ -5,7 +5,7 @@ const useScrollThreadList = (
   threadables: readonly any[],
   editorRef: RefObject<HTMLTextAreaElement>,
   wrapperRef: RefObject<HTMLDivElement>,
-  preferredNames: string[] | null,
+  preferredNames: string[] | null
 ) => {
   const isInit = useInitialRender()
   // if we're at or near the bottom of the scroll container
@@ -33,7 +33,7 @@ const useScrollThreadList = (
     // wrapper height, i.e. closed video in poker meeting, go to the bottom
     if (
       document.activeElement === edEl ||
-      scrollTop + clientHeight > oldScrollHeightRef.current - 20 
+      scrollTop + clientHeight > oldScrollHeightRef.current - 20
     ) {
       setTimeout(() => {
         if (el.scrollTo) {

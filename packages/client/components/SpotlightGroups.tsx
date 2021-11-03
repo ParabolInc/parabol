@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject} from 'react'
-import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
+import React, {RefObject, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {ElementHeight, ElementWidth} from '~/types/constEnums'
 import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 import useGroupMatrix from '../hooks/useGroupMatrix'
 import useResultsHeight from '~/hooks/useResultsHeight'
+import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
 
 const SimilarGroups = styled('div')({
   padding: '40px 0px 24px',
@@ -22,8 +22,7 @@ const Scrollbar = styled('div')<{height: number | string}>(({height}) => ({
   overflow: 'auto',
   width: '100%',
   height,
-  // wait for height to be calculated before setting the minHeight
-  minHeight: height === '100%' ? undefined : ElementHeight.REFLECTION_CARD * 4
+  minHeight: ElementHeight.REFLECTION_CARD * 4
 }))
 
 const Column = styled('div')({
@@ -35,13 +34,12 @@ const Column = styled('div')({
 })
 
 interface Props {
-  resultsRef: RefObject<HTMLDivElement>
   phaseRef: RefObject<HTMLDivElement>
   queryRef: PreloadedQuery<SpotlightGroupsQuery>
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {resultsRef, phaseRef, queryRef} = props
+  const {phaseRef, queryRef} = props
   const data = usePreloadedQuery<SpotlightGroupsQuery>(
     graphql`
       query SpotlightGroupsQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
@@ -87,25 +85,24 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
+  const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
   const scrollHeight = useResultsHeight(resultsRef)
 
-  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState resultsRef={resultsRef} />
+  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
   return (
     <SimilarGroups>
       <Scrollbar height={scrollHeight} ref={resultsRef}>
-        {groupMatrix?.map((row) => (
-          <Column key={`${row[0].id}-${row[0].id}`}>
-            {row.map((group) => {
-              return (
-                <ReflectionGroup
-                  key={group.id}
-                  meeting={meeting!}
-                  phaseRef={phaseRef}
-                  reflectionGroup={group}
-                />
-              )
-            })}
+        {groupMatrix.map((row) => (
+          <Column key={`row-${row[0].id}`}>
+            {row.map((group) => (
+              <ReflectionGroup
+                key={group.id}
+                meeting={meeting!}
+                phaseRef={phaseRef}
+                reflectionGroup={group}
+              />
+            ))}
           </Column>
         ))}
       </Scrollbar>

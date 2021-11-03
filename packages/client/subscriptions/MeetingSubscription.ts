@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
+import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {
   MeetingSubscription as TMeetingSubscription,
@@ -35,6 +36,7 @@ const subscription = graphql`
       ...VoteForPokerStoryMutation_meeting @relay(mask: false)
       ...AddReactjiToReactableMutation_meeting @relay(mask: false)
       ...AddCommentMutation_meeting @relay(mask: false)
+      ...CreatePollMutation_meeting @relay(mask: false)
       ...CreateReflectionMutation_meeting @relay(mask: false)
       ...DeleteCommentMutation_meeting @relay(mask: false)
       ...DragDiscussionTopicMutation_meeting @relay(mask: false)
@@ -66,6 +68,7 @@ const onNextHandlers = {
 }
 
 const updateHandlers = {
+  CreatePollSuccess: createPollMeetingUpdater,
   AddCommentSuccess: addCommentMeetingUpdater,
   CreateReflectionPayload: createReflectionMeetingUpdater,
   DeleteCommentSuccess: deleteCommentMeetingUpdater,

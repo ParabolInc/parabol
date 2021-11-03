@@ -20,7 +20,15 @@ export default {
       type: GraphQLBoolean
     }
   },
-  async resolve(_source, {dragId, reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source,
+    {
+      dragId,
+      reflectionId,
+      isSpotlight
+    }: {dragId: string; reflectionId: string; isSpotlight?: boolean},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -49,7 +57,8 @@ export default {
       reflectionId,
       remoteDrag: {
         id: dragId,
-        dragUserId: viewerId
+        dragUserId: viewerId,
+        isSpotlight
       }
     }
     publish(

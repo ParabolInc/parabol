@@ -81,7 +81,7 @@ const DraggableReflectionCard = (props: Props) => {
   const {id: meetingId, teamId, localStage, spotlightGroup} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing, reflectionGroupId, remoteDrag} = reflection
-  const spotlightGroupId = spotlightGroup?.id ?? null
+  const spotlightGroupId = spotlightGroup?.id
   const isSpotlightOpen = !!spotlightGroupId
   const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
@@ -106,12 +106,13 @@ const DraggableReflectionCard = (props: Props) => {
   const {viewer} = spotlightSearchResults
   const {similarReflectionGroups} = viewer
   const resultGroupIdsInSpotlight = similarReflectionGroups
-    ? similarReflectionGroups.map((group) => group.id)
+    ? similarReflectionGroups.map(({id}) => id)
     : []
   const isReflectionGroupIdInSpotlight = [...resultGroupIdsInSpotlight, spotlightGroupId].includes(
     reflectionGroupId
   )
   const {onMouseDown} = useDraggableReflectionCard(
+    meeting,
     reflection,
     drag,
     staticIdx,
@@ -172,6 +173,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
       remoteDrag {
         dragUserId
         dragUserName
+        isSpotlight
         targetId
       }
     }
@@ -179,6 +181,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
   meeting: graphql`
     fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
+      ...RemoteReflection_meeting
       id
       teamId
       localStage {

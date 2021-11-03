@@ -2,7 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {
-  NewMeetingPhaseTypeEnum, RetroMeeting_meeting$key
+  NewMeetingPhaseTypeEnum,
+  RetroMeeting_meeting$key
 } from '~/__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMeeting from '../hooks/useMeeting'
@@ -64,24 +65,12 @@ const RetroMeeting = (props: Props) => {
             id
           }
         }
-        viewerMeetingMember {
-          user {
-            featureFlags {
-              video
-            }
-          }
-        }
       }
     `,
     meetingRef
   )
   const {
     toggleSidebar,
-    room,
-    peers,
-    producers,
-    consumers,
-    mediaRoom,
     handleGotoNext,
     gotoStageId,
     safeRoute,
@@ -90,8 +79,7 @@ const RetroMeeting = (props: Props) => {
   } = useMeeting(meeting)
   const atmosphere = useAtmosphere()
   if (!safeRoute) return null
-  const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
-  const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
+  const {id: meetingId, showSidebar, localPhase} = meeting
   const localPhaseType = localPhase?.phaseType
   const Phase = phaseLookup[localPhaseType]
 
@@ -114,17 +102,7 @@ const RetroMeeting = (props: Props) => {
         <Phase
           meeting={meeting}
           toggleSidebar={toggleSidebar}
-          avatarGroup={
-            <NewMeetingAvatarGroup
-              allowVideo={allowVideo}
-              room={room}
-              peers={peers}
-              producers={producers}
-              consumers={consumers}
-              mediaRoom={mediaRoom}
-              meeting={meeting}
-            />
-          }
+          avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
         />
       </Suspense>
       <MeetingControlBar

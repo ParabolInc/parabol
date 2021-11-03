@@ -108,7 +108,6 @@ const subscription = graphql`
           id
           featureFlags {
             jira
-            video
           }
         }
       }

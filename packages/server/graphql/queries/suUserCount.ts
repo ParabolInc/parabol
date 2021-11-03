@@ -20,7 +20,7 @@ export default {
     // RESOLUTION
     const pg = getPg()
     const result = await pg.query(
-      'SELECT count(*) FROM "User" WHERE inactive = FALSE AND tier = $1',
+      'SELECT count(*)::float FROM "User" WHERE inactive = FALSE AND tier = $1',
       [tier]
     )
     return result.rows[0].count

@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import Poll from './../types/Poll'
-import PollId from 'parabol-client/shared/gqlIds/PollId'
+import PollId from '../../../client/shared/gqlIds/PollId'
 
 export const CreatePollSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'CreatePollSuccess',
