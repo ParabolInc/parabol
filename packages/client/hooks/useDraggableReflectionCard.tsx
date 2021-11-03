@@ -37,17 +37,38 @@ const useRemotelyDraggedCard = (
 ) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
+  const [lastStyle, setLastStyle] = React.useState({})
   const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
     if (!drag.ref || timeRemaining <= 0) return
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
+      const targetId = remoteDrag?.targetId
       // performance only
-      const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight, timeRemaining)
+      const style = getDroppingStyles(
+        drag.ref,
+        bbox,
+        windowDims.clientHeight,
+        timeRemaining,
+        targetId,
+        isClose,
+        lastStyle
+      )
+
+      setLastStyle(style)
+
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
-          style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
+          style={
+            isClose
+              ? style
+              : {
+                  transform: style.transform,
+                  zIndex: style.zIndex,
+                  animation: style.animation
+                }
+          }
           reflection={reflection}
           meeting={meeting}
         />

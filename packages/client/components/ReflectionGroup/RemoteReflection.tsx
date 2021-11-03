@@ -37,7 +37,8 @@ const RemoteReflectionModal = styled('div')<{
   isDropping?: boolean | null
   transform?: string
   isSpotlight?: boolean
-}>(({isDropping, transform, isSpotlight}) => ({
+  styleProps?: React.CSSProperties
+}>(({isDropping, transform, isSpotlight, styleProps}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -49,7 +50,8 @@ const RemoteReflectionModal = styled('div')<{
   transform,
   animation:
     isSpotlight && !isDropping ? `${circleAnimation(transform)} 3s ease infinite;` : undefined,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+  zIndex: ZIndex.REFLECTION_IN_FLIGHT,
+  ...styleProps
 }))
 
 const HeaderModal = styled('div')({
@@ -136,8 +138,15 @@ const getStyle = (
   if (isSpotlight && !isDropping) return {transform: style.transform}
   if (isDropping || !remoteDrag?.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
-  const {zIndex} = style
-  return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
+  const {zIndex, animation} = style
+  return {
+    nextStyle: {
+      transform: `translate(${left}px,${top}px)`,
+      zIndex,
+      animation
+    },
+    minTop
+  }
 }
 
 interface Props {
@@ -195,7 +204,7 @@ const RemoteReflection = (props: Props) => {
     <>
       <RemoteReflectionModal
         ref={ref}
-        style={nextStyle}
+        styleProps={nextStyle}
         isDropping={isDropping}
         isSpotlight={isSpotlight}
         transform={transform}

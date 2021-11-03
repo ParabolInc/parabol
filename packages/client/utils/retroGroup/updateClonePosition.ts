@@ -1,6 +1,33 @@
+import {keyframes} from '@emotion/core'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, Times, ZIndex} from '../../types/constEnums'
 import getDeCasteljau from '../getDeCasteljau'
+
+const reflectionSpotlightFadeIn = keyframes`
+  0% {
+    opacity: 0.1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+  100% {
+    opacity: 1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+`
+
+const reflectionSpotlightFadeOut = keyframes`
+  0% {
+    opacity: 1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+  99% {
+    opacity: 0.1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+  100% {
+    opacity: 1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT};
+  }
+`
 
 export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
   if (top >= 0) return top
@@ -25,22 +52,49 @@ const getTransition = (isClipped: boolean, timeRemaining: number) => {
 }
 
 export const getDroppingStyles = (
-  targetEl: HTMLDivElement,
+  element: HTMLDivElement,
   bbox: ClientRect,
   maxTop: number,
-  timeRemaining: number
+  timeRemaining: number,
+  targetId?: string | null,
+  isClose?: boolean,
+  lastStyle?: React.CSSProperties
 ) => {
   const spotlightEl = document.getElementById('spotlight')
-  const showAboveSpotlight = spotlightEl ? spotlightEl.contains(targetEl) : false
+  const isTargetInSpotlight = targetId
+    ? spotlightEl && document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`)
+    : false
+  const isBelongsToSpotlight = spotlightEl && spotlightEl.contains(element)
+  const showAboveSpotlight = isBelongsToSpotlight || isTargetInSpotlight
   const {top, left} = bbox
-  const minTop = getMinTop(top, targetEl)
+  const minTop = getMinTop(top, element)
   const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
   const isClipped = clippedTop !== top
+
+  const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s linear 0s forwards`
+  const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s linear 0s forwards`
+  let animation: string | undefined = undefined
+
+  if (spotlightEl && !isBelongsToSpotlight && lastStyle) {
+    if (isTargetInSpotlight && !isClose) {
+      animation = fadeInAnimation
+    }
+
+    const isCurrentlyBehindSpotlight =
+      lastStyle.zIndex === ZIndex.REFLECTION_IN_FLIGHT || lastStyle.zIndex == null
+    if (!isCurrentlyBehindSpotlight && (!showAboveSpotlight || isClose)) {
+      animation = fadeOutAnimation
+    }
+  }
+
   return {
     transform: `translate(${left}px,${clippedTop}px)`,
     transition: getTransition(isClipped, timeRemaining),
     opacity: isClipped ? 0 : 1,
-    zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
+    zIndex: showAboveSpotlight
+      ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
+      : ZIndex.REFLECTION_IN_FLIGHT,
+    animation
   }
 }
 
