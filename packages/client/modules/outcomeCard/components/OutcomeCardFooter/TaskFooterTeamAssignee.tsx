@@ -59,7 +59,9 @@ const TaskFooterTeamAssignee = (props: Props) => {
   const {canAssign, task, useTaskChild} = props
   const {team} = task
   const {name: teamName} = team
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
+    id: 'taskFooterTeamAssigneeMenu'
+  })
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )

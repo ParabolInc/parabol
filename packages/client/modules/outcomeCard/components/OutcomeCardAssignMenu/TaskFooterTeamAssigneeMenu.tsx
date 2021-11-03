@@ -1,6 +1,6 @@
 import {TaskFooterTeamAssigneeMenu_task} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
 import {TaskFooterTeamAssigneeMenu_viewer} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_viewer.graphql'
-import React, {useMemo} from 'react'
+import React, {useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
@@ -12,8 +12,10 @@ import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
-import GitHubClientManager from '~/utils/GitHubClientManager'
-import AtlassianClientManager from '~/utils/AtlassianClientManager'
+import useModal from '~/hooks/useModal'
+import TaskFooterTeamAssigneeAddGitHubDialog from './TaskFooterTeamAssigneeAddGitHubDialog'
+import TaskFooterTeamAssigneeAddJiraDialog from './TaskFooterTeamAssigneeAddJiraDialog'
+import useEventCallback from '~/hooks/useEventCallback'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery($teamId: ID!) {
@@ -65,9 +67,34 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
-  const oauthMutationProps = useMutationProps()
+
+  const onDialogClose = useEventCallback(() => {
+    menuProps.closePortal()
+  })
+  const {modalPortal, openPortal, closePortal} = useModal({
+    onClose: onDialogClose,
+    id: 'taskFooterTeamAssigneeAddGitHub',
+    parentId: 'taskFooterTeamAssigneeMenu'
+  })
+  const [newTeam, setNewTeam] = useState({id: '', name: ''})
+
+  const handleIntegrationAdded = () => {
+    closePortal()
+    if (!newTeam.id) return
+
+    submitMutation()
+    ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id}, {onError, onCompleted})
+    setNewTeam({id: '', name: ''})
+    menuProps.closePortal()
+  }
+  const handleClose = () => {
+    closePortal()
+    menuProps.closePortal()
+  }
+
   const handleTaskUpdate = (newTeam) => async () => {
     if (!submitting && teamId !== newTeam.id) {
+      setNewTeam(newTeam)
       if (isGitHubTask || isJiraTask) {
         const result = await atmosphere.fetchQuery<
           TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery
@@ -76,19 +103,14 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         })
         const {github, atlassian} = result?.viewer?.teamMember?.integrations ?? {}
 
-        if (isGitHubTask && !github?.isActive) {
-          // TODO show dialog explaining
-          GitHubClientManager.openOAuth(atmosphere, newTeam.id, oauthMutationProps)
-          return
-        }
-        if (isJiraTask && !atlassian?.isActive) {
-          // TODO show dialog explaining
-          AtlassianClientManager.openOAuth(atmosphere, newTeam.id, oauthMutationProps)
+        if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
+          openPortal()
           return
         }
       }
       submitMutation()
       ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id}, {onError, onCompleted})
+      menuProps.closePortal()
     }
   }
 
@@ -100,8 +122,34 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     >
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
       {assignableTeams.map((team) => {
-        return <MenuItem key={team.id} label={team.name} onClick={handleTaskUpdate(team)} />
+        return (
+          <MenuItem
+            key={team.id}
+            label={team.name}
+            onClick={handleTaskUpdate(team)}
+            noCloseOnClick
+          />
+        )
       })}
+      {modalPortal(
+        isGitHubTask ? (
+          <TaskFooterTeamAssigneeAddGitHubDialog
+            onClose={handleClose}
+            onIntegrationAdded={handleIntegrationAdded}
+            teamId={newTeam.id}
+            teamName={newTeam.name}
+          />
+        ) : isJiraTask ? (
+          <TaskFooterTeamAssigneeAddJiraDialog
+            onClose={handleClose}
+            onIntegrationAdded={handleIntegrationAdded}
+            teamId={newTeam.id}
+            teamName={newTeam.name}
+          />
+        ) : (
+          undefined
+        )
+      )}
     </Menu>
   )
 }
