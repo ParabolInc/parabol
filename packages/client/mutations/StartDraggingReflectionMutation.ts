@@ -134,6 +134,7 @@ const StartDraggingReflectionMutation = (
         if (remoteDragUserId <= viewerId) return
       }
       if (!isSpotlight) {
+        // remoteDrag tells subscribers it's in Spotlight; isViewerDragging is false so viewer can drag source
         reflection.setValue(true, 'isViewerDragging')
       }
     },

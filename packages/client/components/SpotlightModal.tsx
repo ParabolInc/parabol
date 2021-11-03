@@ -72,10 +72,7 @@ const TopRow = styled('div')({
 })
 
 const Source = styled('div')({
-  minHeight: ElementHeight.REFLECTION_CARD,
-  display: 'flex',
-  alignContent: 'center',
-  alignItems: 'center'
+  minHeight: ElementHeight.REFLECTION_CARD
 })
 
 const SearchInput = styled('input')({
@@ -104,7 +101,6 @@ const Search = styled(MenuItemLabel)({
   padding: 0,
   position: 'absolute',
   bottom: -ElementHeight.REFLECTION_CARD / 2,
-  height: ElementHeight.REFLECTION_CARD,
   width: ElementWidth.REFLECTION_CARD
 })
 
