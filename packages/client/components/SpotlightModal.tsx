@@ -148,16 +148,15 @@ const SpotlightModal = (props: Props) => {
   const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
-  const hiddenReflectionIdsRef = useRef<string[] | null>(null)
+  const reflectionIdsToHideRef = useRef<string[] | null>(null)
 
   useEffect(() => {
     if (!spotlightGroup) return
     let timeout: number | undefined
     const sourceReflectionIds = sourceReflections?.map(({id}) => id)
-    const {current: hiddenIds} = hiddenReflectionIdsRef
-    if (hiddenIds === null) {
+    if (reflectionIdsToHideRef.current === null) {
       // if Spotlight group initially contains several reflections, only show reflection at the top of the stack
-      hiddenReflectionIdsRef.current =
+      reflectionIdsToHideRef.current =
         sourceReflections?.filter(({id}) => id !== spotlightReflectionId).map(({id}) => id) || []
     } else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
       timeout = window.setTimeout(() => {
@@ -196,7 +195,7 @@ const SpotlightModal = (props: Props) => {
               phaseRef={modalRef}
               reflectionGroup={spotlightGroup}
               meeting={meeting}
-              hiddenReflectionIds={hiddenReflectionIdsRef.current}
+              reflectionIdsToHide={reflectionIdsToHideRef.current}
             />
           )}
         </Source>

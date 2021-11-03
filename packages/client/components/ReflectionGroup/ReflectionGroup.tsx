@@ -33,7 +33,6 @@ const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionC
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  // paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(1),
   transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
 }))
 
@@ -68,7 +67,7 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
-  hiddenReflectionIds?: string[] | null
+  reflectionIdsToHide?: string[] | null
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -79,7 +78,7 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroup,
     swipeColumn,
     dataCy,
-    hiddenReflectionIds
+    reflectionIdsToHide
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage, spotlightGroup} = meeting
@@ -90,9 +89,9 @@ const ReflectionGroup = (props: Props) => {
   const isSpotlightOpen = !!spotlightGroup?.id
   const visibleReflections = useMemo(() => {
     return isSpotlightSrcGroup
-      ? reflections.filter(({id}) => !hiddenReflectionIds?.includes(id))
+      ? reflections.filter(({id}) => !reflectionIdsToHide?.includes(id))
       : reflections.slice()
-  }, [reflections, hiddenReflectionIds])
+  }, [reflections, reflectionIdsToHide])
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const titleInputRef = useRef(null)
@@ -188,7 +187,7 @@ const ReflectionGroup = (props: Props) => {
       <Group
         {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
         ref={groupRef}
-        staticReflectionCount={staticReflections.length}
+        staticReflectionCount={isSpotlightSrcGroup && isInSpotlight ? 1 : staticReflections.length}
         data-cy={dataCy}
       >
         {showHeader && (

@@ -36,13 +36,7 @@ const useAnimatedSpotlightSource = (
     cloneStyle.borderRadius = `4px`
     cloneStyle.boxShadow = `${Elevation.CARD_SHADOW}`
     cloneStyle.overflow = `hidden`
-    // cloneStyle.border = `2px solid yellow`
     cloneStyle.paddingTop = `6px` // reflectionGroup wrapper adds 6px paddingTop
-    // cloneStyle.paddingBottom = `6px` // reflectionGroup wrapper adds 6px paddingTop
-    // cloneStyle.marginTop = `6px` // reflectionGroup wrapper adds 6px marginTop
-    // cloneStyle.marginBottom = `6px` // reflectionGroup wrapper adds 6px paddingTop
-    // cloneStyle.paddingBottom = `18px` // reflectionGroup wrapper adds 6px paddingTop
-    // cloneStyle.marginTop = `6px` // reflectionGroup wrapper adds 6px paddingTop
     const transitionTimeout = setTimeout(() => {
       cloneStyle.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
       cloneStyle.transition = `transform ${Times.SPOTLIGHT_SOURCE_DURATION}ms ${BezierCurve.DECELERATE}`
