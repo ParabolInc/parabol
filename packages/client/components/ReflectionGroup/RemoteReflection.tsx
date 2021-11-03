@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import React, {RefObject, useEffect, useMemo, useRef} from 'react'
+import {commitLocalUpdate, createFragmentContainer, useLazyLoadQuery} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEditorState from '../../hooks/useEditorState'
 import {Elevation} from '../../styles/elevation'
@@ -15,6 +15,7 @@ import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import getBBox from '../RetroReflectPhase/getBBox'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
+import {RemoteReflectionLocalQuery} from '../../__generated__/RemoteReflectionLocalQuery.graphql'
 
 const circleAnimation = (transform?: string) => keyframes`
   0%{
@@ -34,10 +35,11 @@ const circleAnimation = (transform?: string) => keyframes`
 `
 
 const RemoteReflectionModal = styled('div')<{
+  isInViewerSpotlightResults: boolean
   isDropping?: boolean | null
   transform?: string
   isSpotlight?: boolean
-}>(({isDropping, transform, isSpotlight}) => ({
+}>(({isInViewerSpotlightResults, isDropping, transform, isSpotlight}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -49,7 +51,9 @@ const RemoteReflectionModal = styled('div')<{
   transform,
   animation:
     isSpotlight && !isDropping ? `${circleAnimation(transform)} 3s ease infinite;` : undefined,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+  zIndex: isInViewerSpotlightResults
+    ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
+    : ZIndex.REFLECTION_IN_FLIGHT
 }))
 
 const HeaderModal = styled('div')({
@@ -148,8 +152,8 @@ interface Props {
 
 const RemoteReflection = (props: Props) => {
   const {meeting, reflection, style} = props
-  const {id: reflectionId, content, isDropping} = reflection
-  const {meetingMembers} = meeting
+  const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
+  const {meetingMembers, spotlightGroup} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection['remoteDrag']
   >
@@ -157,6 +161,30 @@ const RemoteReflection = (props: Props) => {
   const [editorState] = useEditorState(content)
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
+  const spotlightSearchResults = useLazyLoadQuery<RemoteReflectionLocalQuery>(
+    graphql`
+      query RemoteReflectionLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
+        viewer {
+          similarReflectionGroups(
+            reflectionGroupId: $reflectionGroupId
+            searchQuery: $searchQuery
+          ) {
+            id
+          }
+        }
+      }
+    `,
+    // TODO: add search query
+    {reflectionGroupId: spotlightGroup?.id || '', searchQuery: ''},
+    {fetchPolicy: 'store-only'}
+  )
+  const isInViewerSpotlightResults = useMemo(() => {
+    const {viewer} = spotlightSearchResults
+    const {similarReflectionGroups} = viewer
+    if (!similarReflectionGroups) return false
+    return !!similarReflectionGroups.find((group) => group.id === reflectionGroupId)
+  }, [spotlightSearchResults])
+
   useEffect(() => {
     timeoutRef.current = window.setTimeout(
       () => {
@@ -198,6 +226,7 @@ const RemoteReflection = (props: Props) => {
         style={nextStyle}
         isDropping={isDropping}
         isSpotlight={isSpotlight}
+        isInViewerSpotlightResults={isInViewerSpotlightResults}
         transform={transform}
       >
         <ReflectionCardRoot>
@@ -248,6 +277,9 @@ export default createFragmentContainer(RemoteReflection, {
         user {
           isConnected
         }
+      }
+      spotlightGroup {
+        id
       }
     }
   `
