@@ -71,9 +71,9 @@ const addMissingJiraField = {
     if (!auth) {
       return {error: {message: 'User no longer has access to Atlassian'}}
     }
-    const {accessToken} = auth
+    const {accessToken, refreshToken} = auth
     const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
-    const manager = new AtlassianServerManager(accessToken)
+    const manager = new AtlassianServerManager(accessToken, refreshToken)
     const team = await dataLoader.get('teams').load(teamId)
     const jiraDimensionFields = team.jiraDimensionFields || []
     const dimensionField = jiraDimensionFields.find(

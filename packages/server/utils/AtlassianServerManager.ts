@@ -66,9 +66,9 @@ class AtlassianServerManager extends AtlassianManager {
     return new AtlassianServerManager(accessToken, refreshToken)
   }
 
-  refreshToken?: string
+  refreshToken: string
 
-  constructor(accessToken: string, refreshToken?: string) {
+  constructor(accessToken: string, refreshToken: string) {
     super(accessToken)
     this.refreshToken = refreshToken
   }

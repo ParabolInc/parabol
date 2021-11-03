@@ -12,8 +12,8 @@ const createJiraTask = async (
   const {title: summary, contentState} = splitDraftContent(rawContent)
   const description = convertContentStateToADF(contentState)
 
-  const {accessToken, accountId} = atlassianAuth
-  const manager = new AtlassianServerManager(accessToken)
+  const {accessToken, refreshToken, accountId} = atlassianAuth
+  const manager = new AtlassianServerManager(accessToken, refreshToken)
 
   const issueMetaRes = await manager.getCreateMeta(cloudId, [projectKey])
   if (issueMetaRes instanceof Error) return {error: issueMetaRes}

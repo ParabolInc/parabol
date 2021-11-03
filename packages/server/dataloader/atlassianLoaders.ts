@@ -35,15 +35,10 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
-
-          if (!atlassianAuth?.refreshToken) {
-            // Not always an error! For suggested integrations, this won't exist.
-            // sendToSentry(new Error('No atlassian access token exists for team member'), {
-            //   userId,
-            //   tags: {teamId}
-            // })
+          if (!atlassianAuth) {
             return null
           }
+
           const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
@@ -63,8 +58,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           return atlassianAuth
         })
       )
-      const res = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return res
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
@@ -80,8 +74,8 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
         keys.map(async ({userId, teamId, cloudId, projectKey}) => {
           const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
           if (!auth) return null
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
+          const {accessToken, refreshToken} = auth
+          const manager = new AtlassianServerManager(accessToken, refreshToken)
           const projectRes = await manager.getProject(cloudId, projectKey)
           if (projectRes instanceof Error) {
             sendToSentry(projectRes, {userId, tags: {teamId, projectKey}})
@@ -109,8 +103,8 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
             taskId ? parent.get('latestTaskEstimates').load(taskId) : []
           ])
           if (!auth) return null
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
+          const {accessToken, refreshToken} = auth
+          const manager = new AtlassianServerManager(accessToken, refreshToken)
           const estimateFieldIds = estimates
             .map((estimate) => estimate.jiraFieldId)
             .filter(isNotNull)
@@ -178,8 +172,8 @@ export const atlassianCloudNameLookup = (parent: RethinkDataLoader) => {
         keys.map(async ({teamId, userId}) => {
           const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
           if (!auth) return {}
-          const {accessToken} = auth
-          const manager = new AtlassianServerManager(accessToken)
+          const {accessToken, refreshToken} = auth
+          const manager = new AtlassianServerManager(accessToken, refreshToken)
           const result = await manager.getCloudNameLookup()
           if (result instanceof Error) {
             sendToSentry(result, {userId, tags: {teamId}})
