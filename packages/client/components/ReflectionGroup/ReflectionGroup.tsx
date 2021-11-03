@@ -105,7 +105,7 @@ const ReflectionGroup = (props: Props) => {
   const isDraggingSource = spotlightGroup?.reflections.find(
     ({isViewerDragging}) => isViewerDragging
   )
-  const disableDrop = (isSpotlightOpen && !isDraggingSource && !isSourceGroup) || isBehindSpotlight
+  const disableDrop = isSpotlightOpen && !isDraggingSource && !isSourceGroup // prevent grouping results into results
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
