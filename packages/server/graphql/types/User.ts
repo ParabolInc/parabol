@@ -470,15 +470,15 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             maxGroupSize: reflectionsCount,
             maxReductionPercent: MAX_REDUCTION_PERCENTAGE
           })
-          const spotlightGroup = groupedReflectionsRes.find(
+          const spotlightGroupedReflection = groupedReflectionsRes.find(
             (group) => group.reflectionId === reflectionId
           )
-          if (!spotlightGroup) break
+          if (!spotlightGroupedReflection) break
           for (const groupedReflectionRes of groupedReflectionsRes) {
             const {reflectionGroupId, oldReflectionGroupId} = groupedReflectionRes
             if (
-              reflectionGroupId === spotlightGroup.reflectionGroupId &&
-              oldReflectionGroupId !== spotlightGroup.oldReflectionGroupId
+              reflectionGroupId === spotlightGroupedReflection.reflectionGroupId &&
+              oldReflectionGroupId !== spotlightGroupedReflection.oldReflectionGroupId
             ) {
               nextResultGroupIds.add(oldReflectionGroupId)
             }

@@ -5,9 +5,9 @@ import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
-import useFlip from '../hooks/useFlip'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
+import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useModal from '../hooks/useModal'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
@@ -15,7 +15,7 @@ import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
-import SpotlightRoot from './SpotlightRoot'
+import SpotlightModal from './SpotlightModal'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -38,24 +38,29 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases, spotlightReflection} = meeting
+  const {reflectionGroups, phases, spotlightReflection} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
-  const spotlightReflectionRef = useRef<HTMLDivElement | null>(null)
-  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting)
-  const [flipRef, flipReverse] = useFlip({
-    firstRef: spotlightReflectionRef
-  })
   const [callbackRef, columnsRef] = useCallbackRef()
   useHideBodyScroll()
+  const dragIdRef = useRef<string>()
+  const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
+
   const closeSpotlight = () => {
+    sourceCloneRef.current = null
     onCloseSpotlight()
   }
-  const {closePortal, openPortal, modalPortal} = useModal({
+
+  const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
     onClose: closeSpotlight,
     id: 'spotlight'
   })
+  const {sourceRef, sourceCloneRef} = useAnimatedSpotlightSource(
+    portalStatus,
+    spotlightReflection?.id,
+    dragIdRef
+  )
 
   // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
   useEffect(() => {
@@ -63,10 +68,13 @@ const GroupingKanban = (props: Props) => {
       openPortal()
     } else {
       closePortal()
-      flipReverse()
-      spotlightReflectionRef.current = null
     }
   }, [!spotlightReflection])
+
+  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
+    sourceCloneRef.current = reflectionRef.current
+    onOpenSpotlight(reflectionId)
+  }
 
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
@@ -97,11 +105,6 @@ const GroupingKanban = (props: Props) => {
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
-  const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
-    spotlightReflectionRef.current = reflectionRef.current
-    onOpenSpotlight(reflectionId)
-  }
-
   if (!phaseRef.current) return null
   return (
     <PortalProvider>
@@ -130,11 +133,11 @@ const GroupingKanban = (props: Props) => {
         </ColumnWrapper>
       </ColumnsBlock>
       {modalPortal(
-        <SpotlightRoot
-          closeSpotlight={closeSpotlight}
-          meetingId={meetingId}
-          flipRef={flipRef}
-          spotlightReflectionId={spotlightReflection?.id}
+        <SpotlightModal
+          closeSpotlight={onCloseSpotlight}
+          meeting={meeting}
+          sourceRef={sourceRef}
+          portalStatus={portalStatus}
         />
       )}
     </PortalProvider>
@@ -145,6 +148,7 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
+      ...DraggableReflectionCard_meeting
       id
       teamId
       phases {
@@ -167,6 +171,7 @@ export default createFragmentContainer(GroupingKanban, {
       }
       spotlightReflection {
         id
+        ...DraggableReflectionCard_reflection
       }
     }
   `
