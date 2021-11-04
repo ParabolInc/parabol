@@ -1,11 +1,11 @@
-import "./tracer"
+import './tracer'
 import '../server/initSentry'
 import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 
 const {REDIS_URL} = process.env
-const publisher = new Redis(REDIS_URL)
-const subscriber = new Redis(REDIS_URL)
+const publisher = new Redis(REDIS_URL, {connectionName: 'gql_pub'})
+const subscriber = new Redis(REDIS_URL, {connectionName: 'gql_sub'})
 
 interface PubSubPromiseMessage {
   jobId: string
@@ -16,10 +16,7 @@ const onMessage = async (_channel: string, message: string) => {
   const {jobId, request} = JSON.parse(message) as PubSubPromiseMessage
   const executeGraphQL = require('../server/graphql/executeGraphQL').default
   const response = await executeGraphQL(request)
-  publisher.publish(
-    ServerChannel.GQL_EXECUTOR_RESPONSE,
-    JSON.stringify({response, jobId})
-  )
+  publisher.publish(ServerChannel.GQL_EXECUTOR_RESPONSE, JSON.stringify({response, jobId}))
 }
 
 subscriber.on('message', onMessage)

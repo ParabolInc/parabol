@@ -11,8 +11,8 @@ interface Job {
 const {SERVER_ID, REDIS_URL} = process.env
 export default class PubSubPromise<Request, Response> {
   jobs = {} as {[jobId: string]: Job}
-  publisher = new Redis(REDIS_URL)
-  subscriber = new Redis(REDIS_URL)
+  publisher = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_pub'})
+  subscriber = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_sub'})
   subChannel: string
   pubChannel: string
   jobCounter = 0

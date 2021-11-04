@@ -35,23 +35,22 @@ module.exports = {
     historyApiFallback: true,
     stats: 'minimal',
     port: PORT,
-    proxy: {
-      '/graphql': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/intranet-graphql': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/sse': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/sse-ping': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/jira-attachments': {
+    proxy: [
+      'sse',
+      'sse-ping',
+      'jira-attachments',
+      'stripe',
+      'webhooks',
+      'graphql',
+      'intranet-graphql',
+      // important terminating / so saml-redirect doesn't get targeted, too
+      'saml/'
+    ].reduce((obj, name) => {
+      obj[`/${name}`] = {
         target: `http://localhost:${SOCKET_PORT}`
       }
-    }
+      return obj
+    }, {})
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
