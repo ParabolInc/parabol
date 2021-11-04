@@ -12,4 +12,6 @@ const TaskStatusEnum = new GraphQLEnumType({
   }
 })
 
+export type TaskStatusEnumType = typeof ACTIVE | typeof STUCK | typeof DONE | typeof FUTURE
+
 export default TaskStatusEnum

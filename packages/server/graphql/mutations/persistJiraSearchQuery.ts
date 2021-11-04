@@ -4,7 +4,7 @@ import JiraSearchQuery from '../../database/types/JiraSearchQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
-import JiraSearchQueryInput from '../types/JiraSearchQueryInput'
+import JiraSearchQueryInput, {JiraSearchQueryType} from '../types/JiraSearchQueryInput'
 import PersistJiraSearchQueryPayload from '../types/PersistJiraSearchQueryPayload'
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 
@@ -22,8 +22,8 @@ const persistJiraSearchQuery = {
     }
   },
   resolve: async (
-    _source,
-    {teamId, input},
+    _source: unknown,
+    {teamId, input}: {teamId: string; input: JiraSearchQueryType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
@@ -43,7 +43,7 @@ const persistJiraSearchQuery = {
     // MUTATIVE
     atlassianAuth.jiraSearchQueries = atlassianAuth.jiraSearchQueries || []
     const {queryString, isJQL, projectKeyFilters, isRemove} = input
-    projectKeyFilters.sort()
+    projectKeyFilters?.sort()
     const {jiraSearchQueries} = atlassianAuth
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
     const searchQueryStrings = jiraSearchQueries.map(({queryString, projectKeyFilters}) =>
@@ -71,7 +71,7 @@ const persistJiraSearchQuery = {
       const newQuery = new JiraSearchQuery({
         queryString,
         isJQL,
-        projectKeyFilters
+        projectKeyFilters: projectKeyFilters ?? undefined
       })
       // MUTATIVE
       jiraSearchQueries.unshift(newQuery)

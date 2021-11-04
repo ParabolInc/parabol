@@ -13,4 +13,10 @@ const UpdatedTeamInput = new GraphQLInputObjectType({
   })
 })
 
+export type UpdatedTeamInputType = {
+  id?: string | null
+  name?: string | null
+  picture?: string | null
+}
+
 export default UpdatedTeamInput

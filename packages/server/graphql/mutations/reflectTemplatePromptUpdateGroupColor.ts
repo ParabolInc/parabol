@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import ReflectTemplatePromptUpdateGroupColorPayload from '../types/ReflectTemplatePromptUpdateGroupColorPayload'
 
 const reflectTemplatePromptUpdateGroupColor = {
@@ -17,7 +18,11 @@ const reflectTemplatePromptUpdateGroupColor = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {promptId, groupColor}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {promptId, groupColor}: {promptId: string; groupColor: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

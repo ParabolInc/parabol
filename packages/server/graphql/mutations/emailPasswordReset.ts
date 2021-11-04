@@ -30,7 +30,7 @@ const emailPasswordReset = {
     }
   },
   resolve: rateLimit({perMinute: 5, perHour: 50})(
-    async (_source, {email: denormEmail}: {email: string}, {ip}: GQLContext) => {
+    async (_source: unknown, {email: denormEmail}: {email: string}, {ip}: GQLContext) => {
       const email = denormEmail.toLowerCase().trim()
       const r = await getRethink()
 

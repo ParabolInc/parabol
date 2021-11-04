@@ -7,6 +7,7 @@ import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   type: PromoteToTeamLeadPayload,
@@ -17,7 +18,11 @@ export default {
       description: 'the new team member that will be the leader'
     }
   },
-  async resolve(_source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {teamMemberId}: {teamMemberId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

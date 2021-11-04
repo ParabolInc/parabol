@@ -12,10 +12,11 @@ import publish from '../../../utils/publish'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import fetch from 'node-fetch'
 import updateUser from '../../../postgres/queries/updateUser'
+import {UpdateUserProfileInputType} from '../../types/UpdateUserProfileInput'
 
 const updateUserProfile = async (
-  _source,
-  {updatedUser},
+  _source: unknown,
+  {updatedUser}: {updatedUser: UpdateUserProfileInputType},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
