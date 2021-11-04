@@ -11,6 +11,8 @@ import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 
+const generateDeletedUserId = () => `deletedUser-${Date.now()}`
+
 const hardDeleteUser = {
   type: GraphQLNonNull(DeleteUserPayload),
   description: 'hard deletes a user and all its associated objects',
@@ -71,11 +73,22 @@ const hardDeleteUser = {
 
     // need to fetch these upfront
     const [
+      onePersonMeetingIds,
       retroReflectionIds,
       swapFacilitatorUpdates,
       swapCreatedByUserUpdates,
       discussions
     ] = await Promise.all([
+      (r
+        .table('MeetingMember')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
+        .group('meetingId') as any)
+        .count()
+        .ungroup()
+        .filter((row) => row('reduction').le(1))
+        .map((row) => row('group'))
+        .coerceTo('array')
+        .run(),
       (r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
@@ -124,6 +137,8 @@ const hardDeleteUser = {
 
     // soft delete first for side effects
     await softDeleteUser(userIdToDelete, dataLoader, reason)
+
+    const tombstoneId = generateDeletedUserId()
 
     // all other writes
     await r({
@@ -182,7 +197,7 @@ const hardDeleteUser = {
       retroReflection: r
         .table('RetroReflection')
         .getAll(r.args(retroReflectionIds), {index: 'id'})
-        .update({creatorId: ''}),
+        .update({creatorId: tombstoneId}),
       slackNotification: r
         .table('SlackNotification')
         .getAll(userIdToDelete, {index: 'userId'})
@@ -201,7 +216,14 @@ const hardDeleteUser = {
         .table('Comment')
         .getAll(r.args(teamDiscussionIds), {index: 'discussionId'})
         .filter((row) => row('createdBy').eq(userIdToDelete))
-        .update({createdBy: ''}), // becomes anonymous in UI
+        .update({
+          createdBy: tombstoneId,
+          isAnonymous: true
+        }),
+      onePersonMeetings: r
+        .table('NewMeeting')
+        .getAll(r.args(onePersonMeetingIds), {index: 'id'})
+        .delete(),
       swapFacilitator: r(swapFacilitatorUpdates).forEach((update) =>
         r
           .table('NewMeeting')
