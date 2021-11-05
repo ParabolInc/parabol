@@ -31,7 +31,7 @@ export default {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {slackChannelId, slackNotificationEvents, teamId}: SetSlackNotificationMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {

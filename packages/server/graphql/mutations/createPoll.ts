@@ -32,7 +32,7 @@ const createPoll = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {newPoll}: CreatePollInputVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {

@@ -34,7 +34,15 @@ const loginWithGoogle = {
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
-    async (_source, {code, invitationToken, segmentId}, context: GQLContext) => {
+    async (
+      _source: unknown,
+      {
+        code,
+        invitationToken,
+        segmentId
+      }: {code: string; segmentId?: string | null; invitationToken?: string | null},
+      context: GQLContext
+    ) => {
       // VALIDATION
       const manager = await GoogleServerManager.init(code)
       const {id} = manager

@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import MoveReflectTemplatePromptPayload from '../types/MoveReflectTemplatePromptPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const moveReflectTemplate = {
   description: 'Move a reflect template',
@@ -17,7 +18,11 @@ const moveReflectTemplate = {
       type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve(_source, {promptId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {promptId, sortOrder}: {promptId: string; sortOrder: number},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

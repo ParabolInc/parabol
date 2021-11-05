@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import ReflectTemplatePromptUpdateDescriptionPayload from '../types/ReflectTemplatePromptUpdateDescriptionPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const reflectTemplatePromptUpdateDescription = {
   description: 'Update the description of a reflection prompt',
@@ -17,7 +18,11 @@ const reflectTemplatePromptUpdateDescription = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {promptId, description}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {promptId, description}: {promptId: string; description: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

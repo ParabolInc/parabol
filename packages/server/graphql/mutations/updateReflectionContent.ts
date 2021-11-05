@@ -28,8 +28,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {reflectionId, content},
+    _source: unknown,
+    {reflectionId, content}: {reflectionId: string; content: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()

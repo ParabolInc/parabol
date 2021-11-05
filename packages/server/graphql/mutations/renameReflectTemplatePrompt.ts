@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RenameReflectTemplatePromptPayload from '../types/RenameReflectTemplatePromptPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const renameReflectTemplatePrompt = {
   description: 'Rename a reflect template prompt',
@@ -17,7 +18,11 @@ const renameReflectTemplatePrompt = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {promptId, question}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {promptId, question}: {promptId: string; question: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

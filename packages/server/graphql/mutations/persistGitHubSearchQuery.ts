@@ -25,8 +25,12 @@ const persistGitHubSearchQuery = {
     }
   },
   resolve: async (
-    _source,
-    {teamId, queryString, isRemove},
+    _source: unknown,
+    {
+      teamId,
+      queryString,
+      isRemove
+    }: {teamId: string; queryString: string; isRemove?: boolean | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

@@ -10,7 +10,7 @@ import InvalidateSessionsPayload from '../types/InvalidateSessionsPayload'
 const invalidateSessions = {
   type: new GraphQLNonNull(InvalidateSessionsPayload),
   description: 'Invalidate all sessions by blacklisting all JWTs issued before now',
-  resolve: async (_source, _args, {authToken, socketId}: GQLContext) => {
+  resolve: async (_source: unknown, _args: unknown, {authToken, socketId}: GQLContext) => {
     const viewerId = getUserId(authToken)
 
     if (!viewerId) {

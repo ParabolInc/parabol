@@ -4,8 +4,14 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import updateOrgValidation from '../helpers/updateOrgValidation'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {UpdateOrgInputType} from '../../types/UpdateOrgInput'
+import {GQLContext} from '../../graphql'
 
-const updateOrg = async (_source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) => {
+const updateOrg = async (
+  _source: unknown,
+  {updatedOrg}: {updatedOrg: UpdateOrgInputType},
+  {authToken, dataLoader, socketId: mutatorId}: GQLContext
+) => {
   const r = await getRethink()
   const now = new Date()
   const operationId = dataLoader.share()

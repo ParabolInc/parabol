@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import DismissSuggestedActionPayload from '../types/DismissSuggestedActionPayload'
 
 export default {
@@ -13,7 +14,11 @@ export default {
       description: 'The id of the suggested action to dismiss'
     }
   },
-  resolve: async (_source, {suggestedActionId}, {authToken, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {suggestedActionId}: {suggestedActionId: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     const r = await getRethink()
     const now = new Date()
     const viewerId = getUserId(authToken)

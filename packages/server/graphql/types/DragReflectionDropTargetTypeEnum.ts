@@ -9,4 +9,5 @@ const DragReflectionDropTargetTypeEnum = new GraphQLEnumType({
   }
 })
 
+export type DragReflectionDropTargetTypeEnumType = 'REFLECTION_GRID' | 'REFLECTION_GROUP'
 export default DragReflectionDropTargetTypeEnum
