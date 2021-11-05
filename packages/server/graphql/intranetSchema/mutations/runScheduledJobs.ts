@@ -3,7 +3,6 @@ import {DataLoaderWorker, GQLContext} from '../../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
-import ScheduledJob from '../../../database/types/ScheduledJob'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification from '../../../database/types/SlackNotification'
@@ -13,6 +12,7 @@ import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import appOrigin from '../../../appOrigin'
 import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
+import {ValueOf} from '../../../../client/types/generics'
 
 const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
   const r = await getRethink()
@@ -85,7 +85,9 @@ const jobProcessors = {
   MEETING_STAGE_TIME_LIMIT_END: processMeetingStageTimeLimits
 }
 
-const processJob = async (job: ScheduledJob, {dataLoader}) => {
+export type ScheduledJobUnion = Parameters<ValueOf<typeof jobProcessors>>[0]
+
+const processJob = async (job: ScheduledJobUnion, {dataLoader}) => {
   const r = await getRethink()
   const res = await r
     .table('ScheduledJob')
@@ -95,7 +97,7 @@ const processJob = async (job: ScheduledJob, {dataLoader}) => {
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
   const processor = jobProcessors[job.type]
-  processor(job as Parameters<typeof processor>[0], {dataLoader}).catch(console.log)
+  processor(job, {dataLoader}).catch(console.log)
 }
 
 const runScheduledJobs = {
