@@ -101,6 +101,7 @@ const SpotlightGroups = (props: Props) => {
                 meeting={meeting!}
                 phaseRef={phaseRef}
                 reflectionGroup={group}
+                expandedReflectionGroupPortalParentId='spotlight'
               />
             ))}
           </Column>

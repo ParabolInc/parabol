@@ -35,7 +35,6 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 export type SwipeColumn = (offset: number) => void
-
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
   const {reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
@@ -46,12 +45,10 @@ const GroupingKanban = (props: Props) => {
   useHideBodyScroll()
   const dragIdRef = useRef<string>()
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
-
   const closeSpotlight = () => {
     sourceCloneRef.current = null
     onCloseSpotlight()
   }
-
   const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
     onClose: closeSpotlight,
     id: 'spotlight'

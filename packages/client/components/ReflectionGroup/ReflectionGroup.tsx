@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -71,6 +72,7 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
+  expandedReflectionGroupPortalParentId?: PortalId
   reflectionIdsToHide?: string[] | null
 }
 
@@ -82,6 +84,7 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroup,
     swipeColumn,
     dataCy,
+    expandedReflectionGroupPortalParentId,
     reflectionIdsToHide
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
@@ -98,6 +101,13 @@ const ReflectionGroup = (props: Props) => {
   }, [reflections, reflectionIdsToHide])
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
+  const isDroppable = useMemo(() => {
+    const isSourceGroup = spotlightGroup?.id === reflectionGroupId
+    const isDraggingSource = !!spotlightGroup?.reflections.find(
+      ({isViewerDragging}) => isViewerDragging
+    )
+    return isSpotlightOpen ? isDraggingSource || isSourceGroup : true // prevent grouping results into results
+  }, [spotlightGroup])
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -117,7 +127,13 @@ const ReflectionGroup = (props: Props) => {
     portalStatus,
     collapse,
     expand
-  } = useExpandedReflections(groupRef, stackRef, visibleReflections.length, headerRef)
+  } = useExpandedReflections(
+    groupRef,
+    stackRef,
+    visibleReflections.length,
+    headerRef,
+    expandedReflectionGroupPortalParentId
+  )
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === 'group' && !isComplete
@@ -189,7 +205,7 @@ const ReflectionGroup = (props: Props) => {
         />
       )}
       <Group
-        {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
+        {...(isDroppable ? {[DragAttribute.DROPPABLE]: reflectionGroupId} : null)}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         isSpotlightSource={isSpotlightSrcGroup && !isBehindSpotlight}
@@ -255,6 +271,9 @@ export default createFragmentContainer(ReflectionGroup, {
       isViewerDragInProgress
       spotlightGroup {
         id
+        reflections {
+          isViewerDragging
+        }
       }
     }
   `,

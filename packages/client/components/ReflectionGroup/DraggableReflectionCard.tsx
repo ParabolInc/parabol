@@ -80,7 +80,7 @@ const DraggableReflectionCard = (props: Props) => {
   } = props
   const {id: meetingId, teamId, localStage, spotlightGroup} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing, reflectionGroupId} = reflection
+  const {isDropping, isEditing, reflectionGroupId, remoteDrag} = reflection
   const spotlightGroupId = spotlightGroup?.id
   const isSpotlightOpen = !!spotlightGroupId
   const isInSpotlight = !openSpotlight
@@ -129,9 +129,10 @@ const DraggableReflectionCard = (props: Props) => {
     <DragWrapper
       ref={(c) => {
         // if the spotlight is closed, this card is the single source of truth
-        // Else, if it is not in the spotlight source or search results
+        // Else, if it's a remote drag that is not in the spotlight
         // Else, if this is the instance in the source or search results
-        const isPriorityCard = !isSpotlightOpen || !isReflectionGroupIdInSpotlight || isInSpotlight
+        const isPriorityCard =
+          !isSpotlightOpen || (!isReflectionGroupIdInSpotlight && remoteDrag) || isInSpotlight
         if (isPriorityCard) {
           drag.ref = c
         }
