@@ -72,46 +72,31 @@ export default {
     }
 
     const {content: rawContentStr, meetingId} = task
-    const [viewerAuth, assigneeAuth, team] = await Promise.all([
+    const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
       dataLoader.get('githubAuth').load({teamId, userId: viewerId}),
       userId && dataLoader.get('githubAuth').load({teamId, userId}),
-      dataLoader.get('teams').load(teamId)
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
-    const auth = assigneeAuth ?? viewerAuth
+    const auth = viewerAuth ?? assigneeAuth
     if (!auth) {
       return standardError(
         new Error(`Assignment failed! Neither you nor the assignee has access to GitHub`),
         {userId: viewerId}
       )
     }
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    const viewer = teamMembers.find(({userId}) => userId === viewerId)
-    const assignee = userId && teamMembers.find((user) => user.userId === userId)
-
-    if (!viewer || (userId && !assignee)) {
-      return standardError(new Error('Not part of the team'), {
-        userId: viewerId,
-        tags: {
-          userId: userId ?? '',
-          viewerId,
-          teamId,
-          taskId
-        }
-      })
-    }
+    // using teamMembers to get the preferredName as we need the members for the notification part anyways
+    const {preferredName: viewerName} = teamMembers.find(({userId}) => userId === viewerId)
+    const {preferredName: assigneeName} =
+      (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     // RESOLUTION
-    const accessUserId = assigneeAuth && userId ? userId : viewerId
+    const accessUserId = viewerAuth ? viewerId : userId
     const {name: teamName} = team
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
       userId && userId !== viewerId
-        ? makeCreateGitHubTaskComment(
-            viewer.preferredName,
-            assignee.preferredName,
-            teamName,
-            teamDashboardUrl
-          )
+        ? makeCreateGitHubTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
         : undefined
 
     const res = await createGitHubTask(
@@ -134,7 +119,7 @@ export default {
       .update({
         integrationHash: GitHubIssueId.join(nameWithOwner, issueNumber),
         integration: {
-          accessUserId,
+          accessUserId: accessUserId!,
           service: 'github',
           issueNumber,
           nameWithOwner

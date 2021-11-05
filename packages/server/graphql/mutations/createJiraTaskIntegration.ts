@@ -59,11 +59,6 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    if (!userId) {
-      // we should probably remove this constraint in the future
-      return {error: {message: 'Task must have assignee before it can be integrated with Jira'}}
-    }
-
     // VALIDATION
     if (task.integration) {
       return standardError(
@@ -72,46 +67,32 @@ export default {
       )
     }
 
-    const [viewerAuth, assigneeAuth, team] = await Promise.all([
+    const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
       dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId}),
-      dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
-      dataLoader.get('teams').load(teamId)
+      userId && dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
-    const auth = assigneeAuth ?? viewerAuth
+    const auth = viewerAuth ?? assigneeAuth
     if (!auth) {
       return standardError(new Error('Neither you nor the assignee has access to Jira'), {
         userId: viewerId
       })
     }
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    const viewer = teamMembers.find(({userId}) => userId === viewerId)
-    const assignee = teamMembers.find((user) => user.userId === userId)
 
-    if (!viewer || !assignee) {
-      return standardError(new Error('Not part of the team'), {
-        userId: viewerId,
-        tags: {
-          userId,
-          viewerId,
-          teamId,
-          taskId
-        }
-      })
-    }
+    // using teamMembers to get the preferredName as we need the members for the notification part anyways
+    const {preferredName: viewerName} = teamMembers.find(({userId}) => userId === viewerId)
+    const {preferredName: assigneeName} =
+      (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     // RESOLUTION
-    const accessUserId = assigneeAuth ? userId : viewerId
+    const accessUserId = viewerAuth ? viewerId : userId
     const {name: teamName} = team
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
       viewerId !== userId
-        ? makeCreateJiraTaskComment(
-            viewer.preferredName,
-            assignee.preferredName,
-            teamName,
-            teamDashboardUrl
-          )
+        ? makeCreateJiraTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
         : undefined
 
     const res = await createJiraTask(
@@ -131,7 +112,7 @@ export default {
       .update({
         integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          accessUserId,
+          accessUserId: accessUserId!,
           service: 'jira',
           cloudId,
           issueKey

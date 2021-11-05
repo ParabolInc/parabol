@@ -22,7 +22,7 @@ const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
   return `Search ${names.join(' & ')}`
 }
 
-type Integrations = NonNullable<TaskFooterIntegrateMenu_viewer['membership']>['integrations']
+type Integrations = NonNullable<TaskFooterIntegrateMenu_viewer['viewerTeamMember']>['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
   const {atlassian, github} = integrations
@@ -38,36 +38,24 @@ const isIntegrated = (integrations: Integrations) => {
 
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {menuProps, mutationProps, task, viewer} = props
-  const {id: viewerId, membership, teamMember} = viewer
+  const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
   // not 100% sure how this could be, maybe if we manually deleted a user?
   // https://github.com/ParabolInc/parabol/issues/2980
-  if (!teamMember || !membership) return null
-  const {integrations: viewerIntegrations, suggestedIntegrations} = membership
-  const {integrations: assigneeIntegrations, preferredName} = teamMember
+  if (!assigneeTeamMember || !viewerTeamMember) return null
+  const {
+    integrations: viewerIntegrations,
+    suggestedIntegrations: viewerSuggestedIntegrations
+  } = viewerTeamMember
+  const {
+    integrations: assigneeIntegrations,
+    suggestedIntegrations: assigneeSuggestedIntegrations,
+    preferredName: assigneeName
+  } = assigneeTeamMember
   const {teamId, userId} = task
   const isViewerAssignee = viewerId === userId
-  const isAssigneeIntegrated = isIntegrated(assigneeIntegrations)
   const isViewerIntegrated = isIntegrated(viewerIntegrations)
+  const isAssigneeIntegrated = isIntegrated(assigneeIntegrations)
 
-  if (isAssigneeIntegrated) {
-    const placeholder = makePlaceholder(
-      isAssigneeIntegrated.hasGitHub,
-      isAssigneeIntegrated.hasAtlassian
-    )
-    const label = isViewerAssignee ? undefined : `Push as ${preferredName}.`
-    return (
-      <>
-        <TaskFooterIntegrateMenuList
-          menuProps={menuProps}
-          mutationProps={mutationProps}
-          placeholder={placeholder}
-          suggestedIntegrations={suggestedIntegrations}
-          task={task}
-          label={label}
-        />
-      </>
-    )
-  }
   if (isViewerIntegrated) {
     const placeholder = makePlaceholder(
       isViewerIntegrated.hasGitHub,
@@ -80,7 +68,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
           menuProps={menuProps}
           mutationProps={mutationProps}
           placeholder={placeholder}
-          suggestedIntegrations={suggestedIntegrations}
+          suggestedIntegrations={viewerSuggestedIntegrations}
           task={task}
           label={label}
         />
@@ -88,10 +76,29 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     )
   }
 
+  if (isAssigneeIntegrated) {
+    const placeholder = makePlaceholder(
+      isAssigneeIntegrated.hasGitHub,
+      isAssigneeIntegrated.hasAtlassian
+    )
+    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}.`
+    return (
+      <>
+        <TaskFooterIntegrateMenuList
+          menuProps={menuProps}
+          mutationProps={mutationProps}
+          placeholder={placeholder}
+          suggestedIntegrations={assigneeSuggestedIntegrations}
+          task={task}
+          label={label}
+        />
+      </>
+    )
+  }
   const label =
-    teamMember && !isViewerAssignee
-      ? `Neither you nor ${preferredName} has any integrations for this team.`
-      : undefined
+    assigneeTeamMember && !isViewerAssignee
+      ? `Neither you nor ${assigneeName} has any integrations for this team.`
+      : "You don't have any integrations for this team yet."
 
   return (
     <TaskFooterIntegrateMenuSignup
@@ -123,31 +130,30 @@ graphql`
   }
 `
 
+graphql`
+  fragment TaskFooterIntegrateMenuTeamMemberIntegrations on TeamMember {
+    integrations {
+      atlassian {
+        ...TaskFooterIntegrateMenuViewerAtlassianIntegration @relay(mask: false)
+      }
+      github {
+        ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
+      }
+    }
+    ...TaskFooterIntegrateMenuViewerSuggestedIntegrations @relay(mask: false)
+  }
+`
+
 export default createFragmentContainer(TaskFooterIntegrateMenu, {
   viewer: graphql`
     fragment TaskFooterIntegrateMenu_viewer on User {
       id
-      teamMember(userId: $userId, teamId: $teamId) {
+      assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
         preferredName
-        integrations {
-          atlassian {
-            ...TaskFooterIntegrateMenuViewerAtlassianIntegration @relay(mask: false)
-          }
-          github {
-            ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
-          }
-        }
+        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
       }
-      membership: teamMember(userId: null, teamId: $teamId) {
-        integrations {
-          atlassian {
-            ...TaskFooterIntegrateMenuViewerAtlassianIntegration @relay(mask: false)
-          }
-          github {
-            ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
-          }
-        }
-        ...TaskFooterIntegrateMenuViewerSuggestedIntegrations @relay(mask: false)
+      viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
+        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
       }
     }
   `,

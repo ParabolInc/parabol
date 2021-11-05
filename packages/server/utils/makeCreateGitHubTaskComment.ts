@@ -1,15 +1,18 @@
 import {ExternalLinks} from '../../client/types/constEnums'
 
-// wrap anything that looks like an issue in ticks so it doesn't turn into a link to that issue
 const makeCreateGitHubTaskComment = (
   creator: string,
   assignee: string,
   teamName: string,
   teamDashboardUrl: string
-) =>
-  `Created by ${creator} for ${assignee}
+) => {
+  const sanitizedCreator = creator.replace(/#(\d+)/g, '#​\u200b$1')
+  const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#​\u200b$1')
+
+  return `Created by ${sanitizedCreator} for ${sanitizedAssignee}
   See the dashboard of [${teamName}](${teamDashboardUrl})
 
   *Powered by [Parabol](${ExternalLinks.INTEGRATIONS_GITHUB})*`
+}
 
 export default makeCreateGitHubTaskComment
