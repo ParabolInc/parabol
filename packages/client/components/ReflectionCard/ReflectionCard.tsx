@@ -39,18 +39,18 @@ const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
 })
 
-const SearchIcon = styled(IconLabel)({
+const SpotlightIcon = styled(IconLabel)({
   color: PALETTE.SLATE_700
 })
 
-const SearchButton = styled(CardButton)<{showSearch: boolean}>(({showSearch}) => ({
+const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotlight}) => ({
   bottom: 2,
   color: PALETTE.SLATE_700,
   cursor: 'pointer',
   opacity: 1,
   position: 'absolute',
   right: 2,
-  visibility: showSearch ? 'visible' : 'hidden',
+  visibility: showSpotlight ? 'visible' : 'hidden',
   zIndex: ZIndex.TOOLTIP,
   ':hover': {
     backgroundColor: PALETTE.SLATE_200
@@ -89,7 +89,6 @@ const ReflectionCard = (props: Props) => {
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
   const spotlightReflectionId = meeting?.spotlightReflection?.id
-  const isSpotlighSource = reflectionId === spotlightReflectionId
   const isSpotlightOpen = !!spotlightReflectionId
   const atmosphere = useAtmosphere()
   const reflectionRef = useRef<HTMLDivElement>(null)
@@ -224,12 +223,11 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const showSpotlight = !__PRODUCTION__
-  const showSearch =
+  const showSpotlight =
+    !__PRODUCTION__ &&
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&
-    showSpotlight &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
   return (
@@ -238,7 +236,6 @@ const ReflectionCard = (props: Props) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       ref={reflectionRef}
-      selectedForSpotlight={!!openSpotlight && isSpotlighSource}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
@@ -266,14 +263,14 @@ const ReflectionCard = (props: Props) => {
       )}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-      <SearchButton
+      <SpotlightButton
         onClick={handleClickSpotlight}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
-        showSearch={showSearch}
+        showSpotlight={showSpotlight}
       >
-        <SearchIcon ref={tooltipRef} icon='search' />
-      </SearchButton>
+        <SpotlightIcon ref={tooltipRef} icon='search' />
+      </SpotlightButton>
       {tooltipPortal('Find similar')}
     </ReflectionCardRoot>
   )

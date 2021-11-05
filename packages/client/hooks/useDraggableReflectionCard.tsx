@@ -1,5 +1,6 @@
 import React, {useContext, useEffect} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
@@ -27,7 +28,9 @@ const windowDims = {
   clientWidth: window.innerWidth
 }
 
-const useRemoteDrag = (
+// Adds the remotely dragged card substitute, does not hide the local card or collapse anything
+const useRemotelyDraggedCard = (
+  meeting: DraggableReflectionCard_meeting,
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number
@@ -46,6 +49,7 @@ const useRemoteDrag = (
         <RemoteReflection
           style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
           reflection={reflection}
+          meeting={meeting}
         />
       )
     }
@@ -311,13 +315,19 @@ const useDragAndDrop = (
   return {onMouseDown, onMouseMove, onMouseUp}
 }
 
-const usePlaceholder = (
+// Collapse the position of the card in the list if necessary
+const useCollapsePlaceholder = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
   staticReflectionCount: number
 ) => {
   useEffect(() => {
+    // do not collapse if remote opened spotlight
+    const {remoteDrag} = reflection
+    const isSpotlight = remoteDrag?.isSpotlight
+    if (isSpotlight) return
+
     const {ref} = drag
     if (!ref) return
     const {style, scrollHeight} = ref
@@ -352,6 +362,7 @@ const usePlaceholder = (
 }
 
 const useDraggableReflectionCard = (
+  meeting: DraggableReflectionCard_meeting,
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
@@ -360,9 +371,9 @@ const useDraggableReflectionCard = (
   staticReflectionCount: number,
   swipeColumn?: SwipeColumn
 ) => {
-  useRemoteDrag(reflection, drag, staticIdx)
+  useRemotelyDraggedCard(meeting, reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
-  usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
+  useCollapsePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
   const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(
     drag,
     reflection,

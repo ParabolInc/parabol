@@ -41,24 +41,14 @@ export interface ActionMeetingPhaseProps {
 
 const ActionMeeting = (props: Props) => {
   const {meeting} = props
-  const {localPhase, showSidebar, viewerMeetingMember} = meeting
-  const {
-    toggleSidebar,
-    room,
-    peers,
-    producers,
-    consumers,
-    mediaRoom,
-    handleGotoNext,
-    gotoStageId,
-    safeRoute,
-    handleMenuClick
-  } = useMeeting(meeting)
+  const {localPhase, showSidebar} = meeting
+  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} = useMeeting(
+    meeting
+  )
   useEffect(() => {
     Object.values(phaseLookup).forEach((lazy) => lazy.preload())
   }, [])
   if (!safeRoute) return null
-  const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = (localPhase && localPhase.phaseType) || 'lobby'
   const Phase = phaseLookup[localPhaseType]
   return (
@@ -76,17 +66,7 @@ const ActionMeeting = (props: Props) => {
           <Phase
             meeting={meeting}
             toggleSidebar={toggleSidebar}
-            avatarGroup={
-              <NewMeetingAvatarGroup
-                allowVideo={allowVideo}
-                room={room}
-                peers={peers}
-                producers={producers}
-                consumers={consumers}
-                mediaRoom={mediaRoom}
-                meeting={meeting}
-              />
-            }
+            avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
           />
         </Suspense>
       </MeetingArea>
@@ -120,13 +100,6 @@ export default createFragmentContainer(ActionMeeting, {
         phaseType
       }
       showSidebar
-      viewerMeetingMember {
-        user {
-          featureFlags {
-            video
-          }
-        }
-      }
     }
   `
 })

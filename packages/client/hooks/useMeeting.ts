@@ -13,7 +13,6 @@ import useGotoNextHotkey from './useGotoNextHotkey'
 import useGotoPrevHotkey from './useGotoPrevHotkey'
 import useGotoStageId from './useGotoStageId'
 import useHandleMenuClick from './useHandleMenuClick'
-import useMediaRoom from './useMediaRoom'
 import useMeetingLocalState from './useMeetingLocalState'
 import useMobileSidebarDefaultClosed from './useMobileSidebarDefaultClosed'
 import useToggleSidebar from './useToggleSidebar'
@@ -54,7 +53,6 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
   const toggleSidebar = useToggleSidebar(meetingId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, meetingId)
-  const {room, peers, consumers, producers, mediaRoom} = useMediaRoom(meetingId, teamId)
   useAutoCheckIn(meeting)
   return {
     demoPortal,
@@ -62,11 +60,6 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
     gotoStageId,
     safeRoute,
     toggleSidebar,
-    room,
-    peers,
-    consumers,
-    producers,
-    mediaRoom,
     isDesktop,
     handleMenuClick
   }

@@ -78,9 +78,9 @@ interface Props {
 }
 const PokerEstimateHeaderCardJira = (props: Props) => {
   const {issue} = props
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded)
+    setIsExpanded((isExpanded) => !isExpanded)
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {issueKey, summary, descriptionHTML, url} = issue

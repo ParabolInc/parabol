@@ -42,7 +42,7 @@ const ReflectionWrapper = styled('div')<{
   groupCount: number
 }>(({staticIdx, isDropping, groupCount}): any => {
   const isHidden = staticIdx === -1 || isDropping
-  const multiple = Math.min(staticIdx, 2)
+  const multiple = Math.max(0, Math.min(staticIdx, 2))
   const scaleX =
     (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
     ElementWidth.REFLECTION_CARD

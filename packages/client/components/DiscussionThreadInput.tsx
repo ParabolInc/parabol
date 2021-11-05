@@ -28,6 +28,7 @@ import {DiscussionThreadables} from './DiscussionThreadList'
 import SendCommentButton from './SendCommentButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import {createLocalPoll} from './Poll/local/newPoll'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   display: 'flex',
@@ -79,6 +80,7 @@ interface Props {
   setReplyMention?: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
+  isCreatingPoll?: boolean
 }
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
@@ -92,7 +94,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     replyMention,
     setReplyMention,
     dataCy,
-    viewer
+    viewer,
+    isCreatingPoll
   } = props
   const {picture} = viewer
   const isReply = !!props.isReply
@@ -102,14 +105,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
-  const [canCreateTask, setCanCreateTask] = useState(true)
+  const [isCreatingTask, setIsCreatingTask] = useState(false)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
-  // Quick & Dirty Feature Flag
-  const allowPolls = false
-  // const allowPolls = allowedThreadables.includes('poll')
+  const allowPolls = !__PRODUCTION__ // TODO: change to "allowedThreadables.includes('poll')" once feature is done
   useInitialLocalState(discussionId, 'isAnonymousComment', false)
   useInitialLocalState(discussionId, 'replyingToCommentId', '')
   useBeforeUnload(() => {
@@ -235,12 +236,14 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     CreateTaskMutation(atmosphere, {newTask}, {})
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const addPoll = () => {}
+  const addPoll = () => {
+    const threadSortOrder = getMaxSortOrder() + SORT_STEP + dndNoise()
+    createLocalPoll(atmosphere, discussionId, threadSortOrder)
+  }
 
   useEffect(() => {
     const focusListener = () => {
-      setCanCreateTask(!isViewerTypingInTask())
+      setIsCreatingTask(isViewerTypingInTask())
     }
 
     document.addEventListener('blur', focusListener, true)
@@ -252,6 +255,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   }, [])
 
   const isActionsContainerVisible = allowTasks || allowPolls
+  const isActionsContainerDisabled = isCreatingTask || isCreatingPoll
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
@@ -280,10 +284,18 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       {isActionsContainerVisible && (
         <ActionsContainer>
           {allowTasks && (
-            <AddTaskButton dataCy={`${dataCy}-task`} onClick={addTask} disabled={!canCreateTask} />
+            <AddTaskButton
+              dataCy={`${dataCy}-task`}
+              onClick={addTask}
+              disabled={isActionsContainerDisabled}
+            />
           )}
           {allowPolls && (
-            <AddPollButton dataCy={`${dataCy}-poll`} onClick={addPoll} disabled={!canCreateTask} />
+            <AddPollButton
+              dataCy={`${dataCy}-poll`}
+              onClick={addPoll}
+              disabled={isActionsContainerDisabled}
+            />
           )}
         </ActionsContainer>
       )}
