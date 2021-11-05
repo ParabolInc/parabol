@@ -30,8 +30,8 @@ const ButtonGroup = styled('div')({
 })
 
 const StyledTip = styled('p')({
-  fontSize: 13,
-  lineHeight: '16px',
+  fontSize: 14,
+  lineHeight: '20px',
   margin: 0,
   padding: '0 0 16px'
 })
@@ -84,7 +84,7 @@ const TaskFooterTeamAssigneeAddGitHubDialog = (props: Props) => {
       <DialogContent>
         <div>
           <StyledTip>
-            You do not have GitHub configured for {teamName}, do you want to add it now?
+            You don't have GitHub configured for {teamName}. Do you want to add it now?
           </StyledTip>
 
           {error && (
