@@ -8,6 +8,7 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import ResetRetroMeetingToGroupStagePayload from '../types/ResetRetroMeetingToGroupStagePayload'
 import {primePhases} from './helpers/createNewMeetingPhases'
 
@@ -19,7 +20,11 @@ const resetRetroMeetingToGroupStage = {
       type: GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {meetingId}, {authToken, socketId: mutatorId, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {meetingId}: {meetingId: string},
+    {authToken, socketId: mutatorId, dataLoader}: GQLContext
+  ) => {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

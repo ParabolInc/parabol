@@ -30,7 +30,11 @@ const resetPassword = {
     }
   },
   resolve: rateLimit({perMinute: 10, perHour: 100})(
-    async (_source, {token, newPassword}, context: GQLContext) => {
+    async (
+      _source: unknown,
+      {token, newPassword}: {token: string; newPassword: string},
+      context: GQLContext
+    ) => {
       const r = await getRethink()
       const resetRequest = (await r
         .table('PasswordResetRequest')

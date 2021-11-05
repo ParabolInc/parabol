@@ -16,4 +16,10 @@ const UpdateOrgInput = new GraphQLInputObjectType({
   })
 })
 
+export type UpdateOrgInputType = {
+  id: string
+  name?: string | null
+  picture?: string | null
+}
+
 export default UpdateOrgInput

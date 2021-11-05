@@ -36,7 +36,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {
       meetingId,
       scheduledEndTime: newScheduledEndTime,

@@ -46,4 +46,18 @@ const UpdateDragLocationInput = new GraphQLInputObjectType({
   })
 })
 
+export type UpdateDragLocationInputType = {
+  id: string
+  clientHeight: number
+  clientWidth: number
+  meetingId: string
+  sourceId: string
+  targetId?: string | null
+  teamId: string
+  targetOffsetX?: number | null
+  targetOffsetY?: number | null
+  clientX?: number | null
+  clientY?: number | null
+}
+
 export default UpdateDragLocationInput

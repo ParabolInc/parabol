@@ -7,6 +7,7 @@ import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
 
 export default {
@@ -27,9 +28,9 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {orgId, userId, role}: {orgId: string; userId: string; role: OrgUserRole},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {orgId, userId, role}: {orgId: string; userId: string; role?: OrgUserRole | null},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()

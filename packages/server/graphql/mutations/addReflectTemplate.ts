@@ -7,6 +7,7 @@ import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
@@ -22,7 +23,11 @@ const addReflectTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {parentTemplateId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {parentTemplateId, teamId}: {parentTemplateId?: string | null; teamId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -78,8 +83,8 @@ const addReflectTemplate = {
         parentTemplateId
       })
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(parentTemplate.id)
-      const activePrompts = prompts.filter(({removedAt}) => !removedAt)
-      const newTemplatePrompts = activePrompts.map((prompt) => {
+      const activePrompts = prompts.filter(({removedAt}: RetrospectivePrompt) => !removedAt)
+      const newTemplatePrompts = activePrompts.map((prompt: RetrospectivePrompt) => {
         return new RetrospectivePrompt({
           ...prompt,
           teamId,

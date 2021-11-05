@@ -11,6 +11,8 @@ import getPg from '../../postgres/getPg'
 import catchAndLog from '../../postgres/utils/catchAndLog'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
+import {GQLContext} from '../graphql'
+import {RDatum} from '../../database/stricterR'
 
 export default {
   type: GraphQLNonNull(AddFeatureFlagPayload),
@@ -31,9 +33,9 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {emails, domain, flag}: {emails: string[] | null; domain: string | null; flag: string},
-    {authToken, dataLoader}
+    {authToken, dataLoader}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId}
@@ -57,7 +59,7 @@ export default {
       return {error: {message: 'No users found matching the email or domain'}}
     }
 
-    const reqlUpdater = (user) => ({
+    const reqlUpdater = (user: RDatum<IUser | undefined>) => ({
       featureFlags: user('featureFlags')
         .default([])
         .append(flag)

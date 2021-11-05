@@ -30,10 +30,10 @@ export const VOTE = 'vote'
 export const DISCUSS = 'discuss'
 
 /* Columns */
-export const ACTIVE = 'active'
-export const STUCK = 'stuck'
-export const DONE = 'done'
-export const FUTURE = 'future'
+export const ACTIVE = 'active' as const
+export const STUCK = 'stuck' as const
+export const DONE = 'done' as const
+export const FUTURE = 'future' as const
 export const columnArray = [FUTURE, STUCK, ACTIVE, DONE] as TaskStatusEnum[]
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE] as TaskStatusEnum[]
 

@@ -56284,7 +56284,7 @@ export interface IPayLaterOnMutationArguments {
 
 export interface IPersistJiraSearchQueryOnMutationArguments {
   /**
-   * the team witht the settings we add the query to
+   * the team with the settings we add the query to
    */
   teamId: string;
 

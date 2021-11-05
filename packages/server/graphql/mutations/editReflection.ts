@@ -4,6 +4,7 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import EditReflectionPayload from '../types/EditReflectionPayload'
 
 export default {
@@ -22,9 +23,9 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {isEditing, meetingId, promptId},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {isEditing, meetingId, promptId}: {isEditing: boolean; meetingId: string; promptId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
