@@ -48,6 +48,7 @@ graphql`
       id
       dragUserId
       dragUserName
+      isSpotlight
     }
   }
 `
