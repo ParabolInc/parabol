@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RenamePokerTemplateScalePayload from '../types/RenamePokerTemplateScalePayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const renamePokerTemplateScale = {
   description: 'Rename a poker template scale',
@@ -17,12 +18,19 @@ const renamePokerTemplateScale = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {scaleId, name}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {scaleId, name}: {scaleId: string; name: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const scale = await r
+      .table('TemplateScale')
+      .get(scaleId)
+      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -41,7 +49,11 @@ const renamePokerTemplateScale = {
     const allScales = await r
       .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
-      .filter((row) => row('removedAt').default(null).eq(null))
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .eq(null)
+      )
       .run()
     if (allScales.find((scale) => scale.name === normalizedName)) {
       return standardError(new Error('Duplicate name scale'), {userId: viewerId})

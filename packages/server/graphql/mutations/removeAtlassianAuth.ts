@@ -6,6 +6,7 @@ import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getAtlassianAuthByUserIdTeamId from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import removeAtlassianAuth from '../../postgres/queries/removeAtlassianAuth'
+import {GQLContext} from '../graphql'
 
 export default {
   name: 'RemoveAtlassianAuth',
@@ -17,7 +18,11 @@ export default {
       description: 'the teamId to disconnect from the token'
     }
   },
-  resolve: async (_source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {teamId}: {teamId: string},
+    {authToken, socketId: mutatorId, dataLoader}: GQLContext
+  ) => {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)

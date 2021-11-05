@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import MovePokerTemplateDimensionPayload from '../types/MovePokerTemplateDimensionPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const movePokerTemplateDimension = {
   description: 'Move a template dimension',
@@ -17,7 +18,11 @@ const movePokerTemplateDimension = {
       type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve(_source, {dimensionId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {dimensionId, sortOrder}: {dimensionId: string; sortOrder: number},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

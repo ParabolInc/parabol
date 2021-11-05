@@ -5,8 +5,8 @@ import {
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
-import TaskServiceEnum from './TaskServiceEnum'
-import TaskStatusEnum from './TaskStatusEnum'
+import TaskServiceEnum, {TaskServiceEnumType} from './TaskServiceEnum'
+import TaskStatusEnum, {TaskStatusEnumType} from './TaskStatusEnum'
 
 const CreateTaskIntegrationInput = new GraphQLInputObjectType({
   name: 'CreateTaskIntegrationInput',
@@ -66,5 +66,24 @@ const CreateTaskInput = new GraphQLInputObjectType({
     }
   })
 })
+
+export type CreateTaskIntegrationInputType = {
+  service: TaskServiceEnumType
+  serviceProjectHash: string
+}
+
+export type CreateTaskInputType = {
+  content?: string | null
+  plaintextContent?: string | null
+  meetingId?: string | null
+  discussionId?: string | null
+  threadSortOrder?: number | null
+  threadParentId?: string | null
+  sortOrder?: number | null
+  status: TaskStatusEnumType
+  teamId: string
+  userId?: string | null
+  integration?: CreateTaskIntegrationInputType | null
+}
 
 export default CreateTaskInput

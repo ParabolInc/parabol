@@ -5,7 +5,7 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import NotificationStatusEnum from '../types/NotificationStatusEnum'
+import NotificationStatusEnum, {NotificationStatusEnumType} from '../types/NotificationStatusEnum'
 import SetNotificationStatusPayload from '../types/SetNotificationStatusPayload'
 
 export default {
@@ -21,8 +21,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {notificationId, status},
+    _source: unknown,
+    {notificationId, status}: {notificationId: string; status: NotificationStatusEnumType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()

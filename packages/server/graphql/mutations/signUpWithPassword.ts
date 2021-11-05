@@ -40,7 +40,7 @@ const signUpWithPassword = {
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
-    async (_source, args: SignUpWithPasswordMutationVariables, context: GQLContext) => {
+    async (_source: unknown, args: SignUpWithPasswordMutationVariables, context: GQLContext) => {
       const {invitationToken, password, segmentId} = args
       const denormEmail = args.email
       const email = denormEmail.toLowerCase().trim()

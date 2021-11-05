@@ -25,8 +25,8 @@ const flagReadyToAdvance = {
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId, isReady},
+    _source: unknown,
+    {meetingId, stageId, isReady}: {meetingId: string; stageId: string; isReady: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

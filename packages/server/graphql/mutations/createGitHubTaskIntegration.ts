@@ -7,7 +7,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import {GQLContext, GQLResolveInfo} from '../graphql'
 import CreateGitHubTaskIntegrationPayload from '../types/CreateGitHubTaskIntegrationPayload'
 import createGitHubTask from './helpers/createGitHubTask'
 
@@ -32,7 +32,7 @@ export default {
     _source: any,
     {nameWithOwner, taskId}: CreateGitHubTaskIntegrationMutationVariables,
     context: GQLContext,
-    info
+    info: GQLResolveInfo
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const r = await getRethink()

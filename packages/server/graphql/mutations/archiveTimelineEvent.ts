@@ -20,8 +20,8 @@ const archiveTimelineEvent = {
     }
   },
   resolve: async (
-    _source,
-    {timelineEventId},
+    _source: unknown,
+    {timelineEventId}: {timelineEventId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

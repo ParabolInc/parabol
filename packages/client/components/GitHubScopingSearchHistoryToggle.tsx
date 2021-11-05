@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {GitHubScopingSearchHistoryToggle_meeting} from '../__generated__/GitHubScopingSearchHistoryToggle_meeting.graphql'
-// import GitHubScopingSearchHistoryMenu from './GitHubScopingSearchHistoryMenu'
+import {GitHubScopingSearchHistoryToggle_meeting$key} from '../__generated__/GitHubScopingSearchHistoryToggle_meeting.graphql'
+import GitHubScopingSearchHistoryMenu from './GitHubScopingSearchHistoryMenu'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -29,47 +29,47 @@ const Toggle = styled(PlainButton)({
   paddingRight: 8
 })
 interface Props {
-  meeting: GitHubScopingSearchHistoryToggle_meeting
+  meetingRef: GitHubScopingSearchHistoryToggle_meeting$key
 }
 
 const GitHubScopingSearchHistoryToggle = (props: Props) => {
-  const {meeting} = props
-  // const {id: meetingId, viewerMeetingMember} = meeting
-  const {viewerMeetingMember} = meeting
-  // const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
-  const {togglePortal, originRef} = useMenu(MenuPosition.UPPER_LEFT, {
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment GitHubScopingSearchHistoryToggle_meeting on PokerMeeting {
+        id
+        teamId
+        viewerMeetingMember {
+          teamMember {
+            ...GitHubScopingSearchHistoryMenu_teamMember
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+  const {id: meetingId, viewerMeetingMember} = meeting!
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
     loadingWidth: 200,
     noClose: true
   })
   if (!viewerMeetingMember) return null
-  // const {teamMember} = viewerMeetingMember
+  const {teamMember} = viewerMeetingMember
   return (
     <>
       <Toggle onClick={togglePortal} ref={originRef}>
         <SearchIcon>search</SearchIcon>
         <DropdownIcon>expand_more</DropdownIcon>
       </Toggle>
-      {/* {menuPortal(
+      {menuPortal(
         <GitHubScopingSearchHistoryMenu
           meetingId={meetingId}
           menuProps={menuProps}
-          teamMember={teamMember}
+          teamMemberRef={teamMember}
         />
-      )} */}
+      )}
     </>
   )
 }
 
-export default createFragmentContainer(GitHubScopingSearchHistoryToggle, {
-  meeting: graphql`
-    fragment GitHubScopingSearchHistoryToggle_meeting on PokerMeeting {
-      id
-      teamId
-      viewerMeetingMember {
-        teamMember {
-          ...GitHubScopingSearchHistoryMenu_teamMember
-        }
-      }
-    }
-  `
-})
+export default GitHubScopingSearchHistoryToggle

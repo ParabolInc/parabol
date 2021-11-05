@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemovePokerTemplateDimensionPayload from '../types/RemovePokerTemplateDimensionPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const removePokerTemplateDimension = {
   description: 'Remove a dimension from a template',
@@ -14,7 +15,11 @@ const removePokerTemplateDimension = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {dimensionId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {dimensionId}: {dimensionId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

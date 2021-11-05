@@ -21,8 +21,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {orgId, stripeToken},
+    _source: unknown,
+    {orgId, stripeToken}: {orgId: string; stripeToken: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const operationId = dataLoader.share()

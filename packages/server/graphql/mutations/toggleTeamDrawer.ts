@@ -21,7 +21,7 @@ const toggleTeamDrawer = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {teamId, teamDrawerType}: {teamId: string; teamDrawerType: TeamDrawer | null},
     {authToken}: GQLContext
   ) => {

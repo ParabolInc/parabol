@@ -24,8 +24,8 @@ const pokerResetDimension = {
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId},
+    _source: unknown,
+    {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

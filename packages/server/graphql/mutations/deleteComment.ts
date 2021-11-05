@@ -24,7 +24,7 @@ const deleteComment = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {commentId, meetingId}: DeleteCommentMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {

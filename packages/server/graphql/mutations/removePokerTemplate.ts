@@ -7,6 +7,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemovePokerTemplatePayload from '../types/RemovePokerTemplatePayload'
+import {GQLContext} from '../graphql'
 
 const removePokerTemplate = {
   description: 'Remove a poker meeting template',
@@ -16,7 +17,11 @@ const removePokerTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {templateId}: {templateId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
