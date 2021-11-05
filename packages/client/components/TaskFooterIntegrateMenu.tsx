@@ -1,18 +1,21 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import {TaskFooterIntegrateMenu_task} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
-import {TaskFooterIntegrateMenu_viewer} from '../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
+import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
+import {
+  TaskFooterIntegrateMenu_viewer,
+  TaskFooterIntegrateMenu_viewer$key
+} from '../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
 
 interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
-  task: TaskFooterIntegrateMenu_task
-  viewer: TaskFooterIntegrateMenu_viewer
+  task: TaskFooterIntegrateMenu_task$key
+  viewer: TaskFooterIntegrateMenu_viewer$key
 }
 
 const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
@@ -37,7 +40,34 @@ const isIntegrated = (integrations: Integrations) => {
 }
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {menuProps, mutationProps, task, viewer} = props
+  const {menuProps, mutationProps, task: taskRef, viewer: viewerRef} = props
+
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterIntegrateMenu_task on Task {
+        ...TaskFooterIntegrateMenuList_task
+        teamId
+        userId
+      }
+    `,
+    taskRef
+  )
+  const viewer = useFragment(
+    graphql`
+      fragment TaskFooterIntegrateMenu_viewer on User {
+        id
+        assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
+          preferredName
+          ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
+        }
+        viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
+          ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
+        }
+      }
+    `,
+    viewerRef
+  )
+
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
   // not 100% sure how this could be, maybe if we manually deleted a user?
   // https://github.com/ParabolInc/parabol/issues/2980
@@ -144,24 +174,4 @@ graphql`
   }
 `
 
-export default createFragmentContainer(TaskFooterIntegrateMenu, {
-  viewer: graphql`
-    fragment TaskFooterIntegrateMenu_viewer on User {
-      id
-      assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
-        preferredName
-        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
-      }
-      viewerTeamMember: teamMember(userId: null, teamId: $teamId) {
-        ...TaskFooterIntegrateMenuTeamMemberIntegrations @relay(mask: false)
-      }
-    }
-  `,
-  task: graphql`
-    fragment TaskFooterIntegrateMenu_task on Task {
-      ...TaskFooterIntegrateMenuList_task
-      teamId
-      userId
-    }
-  `
-})
+export default TaskFooterIntegrateMenu
