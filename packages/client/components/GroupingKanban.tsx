@@ -38,7 +38,7 @@ export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {reflectionGroups, phases, spotlightReflection} = meeting
+  const {reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -58,18 +58,18 @@ const GroupingKanban = (props: Props) => {
   })
   const {sourceRef, sourceCloneRef} = useAnimatedSpotlightSource(
     portalStatus,
-    spotlightReflection?.id,
+    spotlightReflectionId,
     dragIdRef
   )
 
   // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
   useEffect(() => {
-    if (spotlightReflection) {
+    if (spotlightGroup) {
       openPortal()
     } else {
       closePortal()
     }
-  }, [!spotlightReflection])
+  }, [!spotlightGroup])
 
   const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     sourceCloneRef.current = reflectionRef.current
@@ -148,7 +148,7 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
-      ...DraggableReflectionCard_meeting
+      ...ReflectionGroup_meeting
       id
       teamId
       phases {
@@ -169,9 +169,13 @@ export default createFragmentContainer(GroupingKanban, {
           isEditing
         }
       }
-      spotlightReflection {
+      spotlightReflectionId
+      spotlightGroup {
+        ...ReflectionGroup_reflectionGroup
         id
-        ...DraggableReflectionCard_reflection
+        reflections {
+          id
+        }
       }
     }
   `

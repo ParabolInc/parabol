@@ -11,11 +11,11 @@ const useSpotlightSimulatedDrag = (
   const atmosphere = useAtmosphere()
   const reflectionIdRef = useRef<string>()
   const updateTimerRef = useRef(0)
-  const {id: meetingId, spotlightReflection} = meeting
+  const {id: meetingId, spotlightGroup} = meeting
 
   // handle the case when someone steals the reflection
   useEffect(() => {
-    if (reflectionIdRef.current && !spotlightReflection) {
+    if (reflectionIdRef.current && !spotlightGroup) {
       const reflectionId = reflectionIdRef.current
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)
@@ -30,7 +30,7 @@ const useSpotlightSimulatedDrag = (
         }
       })
     }
-  }, [!spotlightReflection])
+  }, [!spotlightGroup])
 
   const onCloseSpotlight = useCallback(() => {
     clearTimeout(updateTimerRef.current)
@@ -52,7 +52,8 @@ const useSpotlightSimulatedDrag = (
 
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
-      meetingProxy?.setValue(null, 'spotlightReflection')
+      meetingProxy?.setValue(null, 'spotlightGroup')
+      meetingProxy?.setValue(null, 'spotlightReflectionId')
       const reflection = store.get(reflectionId)
       // set isDropping to true so that the source is added back to its original position in kanban
       reflection?.setValue(true, 'isDropping')
@@ -66,9 +67,11 @@ const useSpotlightSimulatedDrag = (
       reflectionIdRef.current = reflectionId
 
       commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)
+        const reflectionGroupId = store.get(reflectionId)?.getValue('reflectionGroupId') as string
+        const reflectionGroup = reflectionGroupId && store.get(reflectionGroupId)
         const meetingProxy = store.get(meetingId)
-        reflection && meetingProxy?.setLinkedRecord(reflection, 'spotlightReflection')
+        reflectionGroup && meetingProxy?.setLinkedRecord(reflectionGroup, 'spotlightGroup')
+        meetingProxy?.setValue(reflectionId, 'spotlightReflectionId')
       })
     },
     [meetingId]

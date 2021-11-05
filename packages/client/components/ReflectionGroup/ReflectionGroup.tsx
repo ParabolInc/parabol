@@ -28,20 +28,25 @@ export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
 
-const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
-  height: 'max-content',
-  position: 'relative',
-  paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
-  paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
-}))
+const Group = styled('div')<{staticReflectionCount: number; isSpotlightSource: boolean}>(
+  ({staticReflectionCount, isSpotlightSource}) => ({
+    height: 'max-content',
+    position: 'relative',
+    paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
+    paddingBottom: isSpotlightSource
+      ? ElementWidth.REFLECTION_CARD_PADDING
+      : ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
+    transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+  })
+)
 
 const ReflectionWrapper = styled('div')<{
   staticIdx: number
   isDropping: boolean | null
   groupCount: number
-}>(({staticIdx, isDropping, groupCount}): any => {
-  const isHidden = staticIdx === -1 || isDropping
+  isHiddenSpotlightSource: boolean
+}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource}): any => {
+  const isHidden = staticIdx === -1 || isDropping || isHiddenSpotlightSource
   const multiple = Math.max(0, Math.min(staticIdx, 2))
   const scaleX =
     (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
@@ -66,27 +71,42 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
+  reflectionIdsToHide?: string[] | null
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, openSpotlight, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
+  const {
+    meeting,
+    openSpotlight,
+    phaseRef,
+    reflectionGroup,
+    swipeColumn,
+    dataCy,
+    reflectionIdsToHide
+  } = props
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage, spotlightReflection} = meeting
+  const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
-  const isSpotlightOpen = !!spotlightReflection?.id
+  const isSpotlightSrcGroup = spotlightGroup?.id === reflectionGroupId
+  const isSpotlightOpen = !!spotlightGroup?.id
+  const visibleReflections = useMemo(() => {
+    return isSpotlightSrcGroup
+      ? reflections.filter(({id}) => !reflectionIdsToHide?.includes(id))
+      : reflections.slice()
+  }, [reflections, reflectionIdsToHide])
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
-    return reflections.filter(
+    return visibleReflections.filter(
       (reflection) =>
         !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping)
     )
-  }, [reflections])
+  }, [visibleReflections])
   const stackRef = useRef<HTMLDivElement>(null)
   const {
     setItemsRef,
@@ -97,7 +117,7 @@ const ReflectionGroup = (props: Props) => {
     portalStatus,
     collapse,
     expand
-  } = useExpandedReflections(groupRef, stackRef, reflections.length, headerRef)
+  } = useExpandedReflections(groupRef, stackRef, visibleReflections.length, headerRef)
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === 'group' && !isComplete
@@ -123,7 +143,7 @@ const ReflectionGroup = (props: Props) => {
     if (isEditing) return
     const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
     if (wasDrag) return
-    if (reflections.length === 1) {
+    if (visibleReflections.length === 1) {
       if (!isDragPhase) return
       setIsEditing(true)
       document.addEventListener('click', watchForClick)
@@ -139,7 +159,8 @@ const ReflectionGroup = (props: Props) => {
   }, [])
 
   const showHeader =
-    phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
+    (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
+    !isSpotlightSrcGroup
   return (
     <>
       {portal(
@@ -156,7 +177,7 @@ const ReflectionGroup = (props: Props) => {
           }
           phaseRef={phaseRef}
           staticReflections={staticReflections}
-          reflections={reflections}
+          reflections={visibleReflections}
           scrollRef={scrollRef}
           bgRef={bgRef}
           setItemsRef={setItemsRef}
@@ -171,6 +192,7 @@ const ReflectionGroup = (props: Props) => {
         {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
+        isSpotlightSource={isSpotlightSrcGroup && !isBehindSpotlight}
         data-cy={dataCy}
       >
         {showHeader && (
@@ -184,16 +206,18 @@ const ReflectionGroup = (props: Props) => {
           />
         )}
         <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
-          {reflections.map((reflection) => {
+          {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
+            const isHiddenSpotlightSource = isSpotlightSrcGroup && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
                 key={reflectionId}
-                groupCount={reflections.length}
+                groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
+                isHiddenSpotlightSource={isHiddenSpotlightSource}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}
@@ -229,7 +253,7 @@ export default createFragmentContainer(ReflectionGroup, {
         isComplete
       }
       isViewerDragInProgress
-      spotlightReflection {
+      spotlightGroup {
         id
       }
     }

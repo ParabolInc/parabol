@@ -1,6 +1,6 @@
 import useAtmosphere from '~/hooks/useAtmosphere'
 import clientTempId from '~/utils/relay/clientTempId'
-import {BezierCurve} from '~/types/constEnums'
+import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import {Times} from 'parabol-client/types/constEnums'
 import {Elevation} from '~/styles/elevation'
 import cloneReflection from '~/utils/retroGroup/cloneReflection'
@@ -10,7 +10,7 @@ import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflection
 
 const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,
-  reflectionId: string | undefined,
+  reflectionId: string | null,
   dragIdRef: MutableRefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()
@@ -36,6 +36,7 @@ const useAnimatedSpotlightSource = (
     cloneStyle.borderRadius = `4px`
     cloneStyle.boxShadow = `${Elevation.CARD_SHADOW}`
     cloneStyle.overflow = `hidden`
+    cloneStyle.paddingTop = `${ElementWidth.REFLECTION_CARD_PADDING}px`
     const transitionTimeout = setTimeout(() => {
       cloneStyle.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
       cloneStyle.transition = `transform ${Times.SPOTLIGHT_SOURCE_DURATION}ms ${BezierCurve.DECELERATE}`

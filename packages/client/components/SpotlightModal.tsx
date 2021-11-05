@@ -4,12 +4,19 @@ import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {BezierCurve, Breakpoint, ElementWidth, Times, ZIndex} from '../types/constEnums'
+import {
+  BezierCurve,
+  Breakpoint,
+  ElementHeight,
+  ElementWidth,
+  Times,
+  ZIndex
+} from '../types/constEnums'
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import PlainButton from './PlainButton/PlainButton'
-import DraggableReflectionCard from './ReflectionGroup/DraggableReflectionCard'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import ResultsRoot from './ResultsRoot'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -64,7 +71,9 @@ const TopRow = styled('div')({
   alignItems: 'center'
 })
 
-const SourceWrapper = styled('div')()
+const Source = styled('div')({
+  minHeight: ElementHeight.REFLECTION_CARD
+})
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -84,7 +93,6 @@ const SearchInput = styled('input')({
 })
 
 const SearchWrapper = styled('div')({
-  position: 'relative',
   width: ElementWidth.REFLECTION_CARD
 })
 
@@ -92,7 +100,7 @@ const Search = styled(MenuItemLabel)({
   overflow: 'visible',
   padding: 0,
   position: 'absolute',
-  bottom: -32,
+  bottom: -ElementHeight.REFLECTION_CARD / 2,
   width: ElementWidth.REFLECTION_CARD
 })
 
@@ -133,7 +141,26 @@ const SpotlightModal = (props: Props) => {
   const {closeSpotlight, meeting, sourceRef, portalStatus} = props
   const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
-  const {id: meetingId, spotlightReflection} = meeting
+  const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
+  const sourceReflections = spotlightGroup?.reflections
+  const spotlightGroupId = spotlightGroup?.id
+  const reflectionIdsToHideRef = useRef<string[] | null>(null)
+
+  useEffect(() => {
+    if (!spotlightGroup) return
+    let timeout: number | undefined
+    const sourceReflectionIds = sourceReflections?.map(({id}) => id)
+    if (reflectionIdsToHideRef.current === null) {
+      // if Spotlight group initially contains several reflections, only show reflection at the top of the stack
+      reflectionIdsToHideRef.current =
+        sourceReflections?.filter(({id}) => id !== spotlightReflectionId).map(({id}) => id) || []
+    } else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
+      timeout = window.setTimeout(() => {
+        closeSpotlight()
+      }, Times.REFLECTION_DROP_DURATION)
+    }
+    return () => clearTimeout(timeout)
+  }, [sourceReflections])
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape' && !e.currentTarget.value) {
@@ -158,16 +185,16 @@ const SpotlightModal = (props: Props) => {
             <CloseIcon>close</CloseIcon>
           </StyledCloseButton>
         </TopRow>
-        <SourceWrapper ref={sourceRef}>
-          {spotlightReflection && (
-            <DraggableReflectionCard
-              isDraggable
-              reflection={spotlightReflection}
+        <Source ref={sourceRef}>
+          {spotlightGroup && (
+            <ReflectionGroup
+              phaseRef={modalRef}
+              reflectionGroup={spotlightGroup}
               meeting={meeting}
-              staticReflections={null}
+              reflectionIdsToHide={reflectionIdsToHideRef.current}
             />
           )}
-        </SourceWrapper>
+        </Source>
         <SearchWrapper>
           <Search>
             <StyledMenuItemIcon>
@@ -184,11 +211,7 @@ const SpotlightModal = (props: Props) => {
           </Search>
         </SearchWrapper>
       </SourceSection>
-      <ResultsRoot
-        meetingId={meetingId}
-        phaseRef={modalRef}
-        spotlightReflectionId={spotlightReflection?.id}
-      />
+      <ResultsRoot meetingId={meetingId} phaseRef={modalRef} spotlightGroupId={spotlightGroupId} />
     </Modal>
   )
 }
