@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',
@@ -21,13 +22,13 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {
       dragId,
       reflectionId,
       isSpotlight
-    }: {dragId: string; reflectionId: string; isSpotlight?: boolean},
-    {authToken, dataLoader, socketId: mutatorId}
+    }: {dragId: string; reflectionId: string; isSpotlight?: boolean | null},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}

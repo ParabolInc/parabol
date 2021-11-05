@@ -13,12 +13,29 @@ export const enum PortalStatus {
   Exited // initial state
 }
 
+export type PortalId =
+  | 'spotlight'
+  | 'expandedReflectionGroup'
+  | 'phaseItemEditor'
+  | 'snackbar'
+  | 'githubFieldMenu'
+  | 'editGitHubLabel'
+  | 'templateModal'
+  | 'scaleDropdown'
+  | 'sharingScopeDropdown'
+  | 'StageTimerModal'
+  | 'StageTimerEndTimePicker'
+  | 'StageTimerStartTimePicker'
+  | 'StageTimerMinutePicker'
+  | 'taskFooterTeamAssigneeAddGitHub'
+  | 'taskFooterTeamAssigneeMenu'
+
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void
   onClose?: () => void
-  id?: string
+  id?: PortalId
   // if you nest portals, this should be the id of the parent portal
-  parentId?: string
+  parentId?: PortalId
   // allow body to scroll while modal is open
   allowScroll?: boolean
   // ignore click, tap, and ESC handlers

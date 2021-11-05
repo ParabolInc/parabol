@@ -45,7 +45,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {updatedTask}: UpdateTaskMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {

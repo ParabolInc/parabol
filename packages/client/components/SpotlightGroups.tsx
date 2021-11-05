@@ -42,9 +42,12 @@ const SpotlightGroups = (props: Props) => {
   const {phaseRef, queryRef} = props
   const data = usePreloadedQuery<SpotlightGroupsQuery>(
     graphql`
-      query SpotlightGroupsQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
+      query SpotlightGroupsQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
         viewer {
-          similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
+          similarReflectionGroups(
+            reflectionGroupId: $reflectionGroupId
+            searchQuery: $searchQuery
+          ) {
             id
             ...ReflectionGroup_reflectionGroup
           }
@@ -68,9 +71,9 @@ const SpotlightGroups = (props: Props) => {
                   phaseType
                 }
               }
-              spotlightReflection {
+              spotlightGroup {
                 id
-                ...DraggableReflectionCard_reflection
+                ...ReflectionGroup_reflectionGroup
               }
             }
           }
@@ -98,6 +101,7 @@ const SpotlightGroups = (props: Props) => {
                 meeting={meeting!}
                 phaseRef={phaseRef}
                 reflectionGroup={group}
+                expandedReflectionGroupPortalParentId='spotlight'
               />
             ))}
           </Column>

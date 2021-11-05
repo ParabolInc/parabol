@@ -121,6 +121,7 @@ const StartDraggingReflectionMutation = (
     onCompleted,
     updater: (store) => {
       const {viewerId} = atmosphere
+      const {isSpotlight} = variables
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
       const reflectionId = payload.getValue('reflectionId')!
@@ -132,14 +133,18 @@ const StartDraggingReflectionMutation = (
         const remoteDragUserId = remoteDrag.getValue('dragUserId')!
         if (remoteDragUserId <= viewerId) return
       }
-
-      reflection.setValue(true, 'isViewerDragging')
+      if (!isSpotlight) {
+        // remoteDrag tells subscribers it's in Spotlight; isViewerDragging is false so viewer can drag source
+        reflection.setValue(true, 'isViewerDragging')
+      }
     },
     optimisticUpdater: (store) => {
-      const {reflectionId} = variables
+      const {reflectionId, isSpotlight} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-      reflection.setValue(true, 'isViewerDragging')
+      if (!isSpotlight) {
+        reflection.setValue(true, 'isViewerDragging')
+      }
     }
   })
 }

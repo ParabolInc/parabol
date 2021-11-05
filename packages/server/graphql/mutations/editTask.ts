@@ -20,8 +20,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {taskId, isEditing},
+    _source: unknown,
+    {taskId, isEditing}: {taskId: string; isEditing: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const operationId = dataLoader.share()

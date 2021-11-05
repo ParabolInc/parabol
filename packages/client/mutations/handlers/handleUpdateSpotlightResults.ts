@@ -12,12 +12,12 @@ const handleUpdateSpotlightResults = (
   const meeting = store.get(meetingId)
   // reflectionGroup is null if there's no target type
   if (!meeting || !reflectionGroup) return
-  const spotlightReflection = meeting?.getLinkedRecord('spotlightReflection')
-  const spotlightReflectionId = spotlightReflection?.getValue('id')
+  const spotlightGroup = meeting?.getLinkedRecord('spotlightGroup')
+  const spotlightGroupId = spotlightGroup?.getValue('id')
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  if (!viewer || !spotlightReflectionId) return
+  if (!viewer || !spotlightGroupId) return
   const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
-    reflectionId: spotlightReflectionId,
+    reflectionGroupId: spotlightGroupId,
     searchQuery: '' // TODO: add search query
   })
   if (!similarReflectionGroups) return
@@ -28,14 +28,16 @@ const handleUpdateSpotlightResults = (
   const isOldGroupEmpty =
     oldReflections?.length === 1 && oldReflections[0].getValue('id') === reflectionId
   const reflectionGroupId = reflectionGroup.getValue('id')
-  const groupsIds = similarReflectionGroups.map((group) => group.getValue('id'))
+  const groupsIds = similarReflectionGroups
+    .map((group) => group.getValue('id'))
+    .concat(reflectionGroupId)
   const isInSpotlight = groupsIds.includes(reflectionGroupId)
   const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
   // added to another group. Remove old reflection group
   if (isOldGroupEmpty) {
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
+        reflectionGroupId: spotlightGroupId,
         searchQuery: '' // TODO: add search query
       }
     })
@@ -44,7 +46,7 @@ const handleUpdateSpotlightResults = (
   if ((reflectionsCount === 1 && wasInSpotlight) || (isOldGroupEmpty && !isInSpotlight)) {
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
+        reflectionGroupId: spotlightGroupId,
         searchQuery: '' // TODO: add search query
       }
     })

@@ -33,7 +33,7 @@ export default {
     }
   },
   resolve: async (
-    _source: Record<string, unknown>,
+    _source: unknown,
     {cloudId, projectKey, taskId}: CreateJiraTaskIntegrationMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {

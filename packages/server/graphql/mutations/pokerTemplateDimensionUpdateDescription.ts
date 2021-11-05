@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import PokerTemplateDimensionUpdateDescriptionPayload from '../types/PokerTemplateDimensionUpdateDescriptionPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const pokerTemplateDimensionUpdateDescription = {
   description: 'Update the description of a poker template dimension',
@@ -17,7 +18,11 @@ const pokerTemplateDimensionUpdateDescription = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {dimensionId, description}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {dimensionId, description}: {dimensionId: string; description: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

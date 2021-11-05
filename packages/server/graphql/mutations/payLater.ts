@@ -23,8 +23,8 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {meetingId},
+    _source: unknown,
+    {meetingId}: {meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

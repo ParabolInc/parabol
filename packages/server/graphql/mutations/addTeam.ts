@@ -12,7 +12,7 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
-import NewTeamInput from '../types/NewTeamInput'
+import NewTeamInput /*, {NewTeamInputType}*/ from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import {TierEnum} from '../../database/types/Invoice'
@@ -29,7 +29,12 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
-    async (_source, args, {authToken, dataLoader, socketId: mutatorId}: GQLContext) => {
+    async (
+      _source: unknown,
+      // FIXME GraphQL type does not match assumed type in the resolver
+      args, //: {newTeam: NewTeamInputType},
+      {authToken, dataLoader, socketId: mutatorId}: GQLContext
+    ) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 

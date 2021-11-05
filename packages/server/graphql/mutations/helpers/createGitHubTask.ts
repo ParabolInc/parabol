@@ -1,7 +1,7 @@
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLResolveInfo} from 'graphql'
 import splitDraftContent from '../../../../client/utils/draftjs/splitDraftContent'
-import {GetGitHubAuthByUserIdTeamIdResult} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {GitHubAuth} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {
   CreateIssueMutation,
   CreateIssueMutationVariables,
@@ -17,7 +17,7 @@ const createGitHubTask = async (
   rawContent: string,
   repoOwner: string,
   repoName: string,
-  githubAuth: GetGitHubAuthByUserIdTeamIdResult,
+  githubAuth: GitHubAuth,
   context: GQLContext,
   info: GraphQLResolveInfo
 ) => {

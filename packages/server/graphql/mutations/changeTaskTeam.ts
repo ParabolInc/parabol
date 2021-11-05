@@ -6,6 +6,7 @@ import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
 
 export default {
@@ -21,7 +22,11 @@ export default {
       description: 'The new team to assign the task to'
     }
   },
-  async resolve(_source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {taskId, teamId}: {taskId: string; teamId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

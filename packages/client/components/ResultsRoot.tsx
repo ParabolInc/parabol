@@ -6,23 +6,23 @@ import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import SpotlightGroups from './SpotlightGroups'
 
 interface Props {
-  spotlightReflectionId?: string
+  spotlightGroupId?: string
   phaseRef: RefObject<HTMLDivElement>
   meetingId: string
 }
 
 const ResultsRoot = (props: Props) => {
-  const {meetingId, spotlightReflectionId, phaseRef} = props
+  const {meetingId, spotlightGroupId, phaseRef} = props
   const searchQuery = '' // TODO: implement searchQuery
-  const reflectionIdRef = useRef('')
-  const nextReflectionId = spotlightReflectionId ?? ''
-  if (nextReflectionId) {
-    reflectionIdRef.current = nextReflectionId
+  const groupIdRef = useRef('')
+  const nextGroupId = spotlightGroupId ?? ''
+  if (nextGroupId) {
+    groupIdRef.current = nextGroupId
   }
   const queryRef = useQueryLoaderNow<SpotlightGroupsQuery>(
     spotlightGroupsQuery,
     {
-      reflectionId: reflectionIdRef.current,
+      reflectionGroupId: groupIdRef.current,
       searchQuery,
       meetingId
     },

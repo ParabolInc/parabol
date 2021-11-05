@@ -27,7 +27,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {

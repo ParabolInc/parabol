@@ -4,13 +4,16 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import AddTemplateScaleInput from '../types/AddTemplateScaleInput'
+import AddTemplateScaleInput, {AddTemplateScaleInputType} from '../types/AddTemplateScaleInput'
 import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
 import {
   validateColorValue,
   validateScaleLabel,
   validateScaleLabelValueUniqueness
 } from './helpers/validateScaleValue'
+import {GQLContext} from '../graphql'
+import {RDatum} from '../../database/stricterR'
+import TemplateScale from '../../database/types/TemplateScale'
 
 const addPokerTemplateScaleValue = {
   description: 'Add a new scale value for a scale in a poker template',
@@ -23,7 +26,11 @@ const addPokerTemplateScaleValue = {
       type: new GraphQLNonNull(AddTemplateScaleInput)
     }
   },
-  async resolve(_source, {scaleId, scaleValue}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {scaleId, scaleValue}: {scaleId: string; scaleValue: AddTemplateScaleInputType},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -55,7 +62,7 @@ const addPokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .update(
-        (row) => ({
+        (row: RDatum<TemplateScale>) => ({
           // Append at the end of the sub-array (minus ? and Pass)
           values: row('values').insertAt(
             row('values')

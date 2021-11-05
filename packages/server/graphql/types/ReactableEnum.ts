@@ -9,4 +9,6 @@ const ReactableEnum = new GraphQLEnumType({
   }
 })
 
+export type ReactableEnumType = 'COMMENT' | 'REFLECTION'
+
 export default ReactableEnum

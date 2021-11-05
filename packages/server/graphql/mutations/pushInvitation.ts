@@ -31,8 +31,8 @@ export default {
     perHour: 20
   })(
     async (
-      _source,
-      {meetingId, teamId},
+      _source: unknown,
+      {meetingId, teamId}: {meetingId?: string | null; teamId: string},
       {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
       const r = await getRethink()

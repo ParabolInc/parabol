@@ -22,8 +22,8 @@ const renameMeeting = {
     }
   },
   resolve: async (
-    _source,
-    {name, meetingId},
+    _source: unknown,
+    {name, meetingId}: {name: string; meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

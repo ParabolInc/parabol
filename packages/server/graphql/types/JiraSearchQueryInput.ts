@@ -29,4 +29,11 @@ const JiraSearchQueryInput = new GraphQLInputObjectType({
   })
 })
 
+export type JiraSearchQueryType = {
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters?: string[]
+  isRemove?: boolean
+}
+
 export default JiraSearchQueryInput
