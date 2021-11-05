@@ -69,12 +69,13 @@ export default {
 
     const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
       dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId}),
-      userId && dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
+      userId ? dataLoader.get('freshAtlassianAuth').load({teamId, userId}) : null,
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
     const auth = viewerAuth ?? assigneeAuth
-    if (!auth) {
+    const accessUserId = viewerAuth ? viewerId : assigneeAuth ? userId : null
+    if (!accessUserId) {
       return standardError(new Error('Neither you nor the assignee has access to Jira'), {
         userId: viewerId
       })
@@ -86,7 +87,6 @@ export default {
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     // RESOLUTION
-    const accessUserId = viewerAuth ? viewerId : userId
     const {name: teamName} = team
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)

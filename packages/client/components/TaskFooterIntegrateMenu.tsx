@@ -125,10 +125,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       </>
     )
   }
-  const label =
-    assigneeTeamMember && !isViewerAssignee
-      ? `Neither you nor ${assigneeName} has any integrations for this team.`
-      : "You don't have any integrations for this team yet."
+  const label = isViewerAssignee
+    ? "You don't have any integrations for this team yet."
+    : `Neither you nor ${assigneeName} has any integrations for this team.`
 
   return (
     <TaskFooterIntegrateMenuSignup
