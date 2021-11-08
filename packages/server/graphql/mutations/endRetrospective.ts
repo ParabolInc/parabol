@@ -66,7 +66,7 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve(_source, {meetingId}, context: GQLContext) {
+  async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -173,7 +173,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: phase.phaseType !== DISCUSS,
+      isKill: phase && phase.phaseType !== DISCUSS,
       removedTaskIds,
       timelineEventId
     }

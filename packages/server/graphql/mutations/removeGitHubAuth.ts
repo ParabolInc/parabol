@@ -4,6 +4,7 @@ import removeGitHubAuthDB from '../../postgres/queries/removeGitHubAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import RemoveGitHubAuthPayload from '../types/RemoveGitHubAuthPayload'
 export default {
   name: 'RemoveGitHubAuth',
@@ -15,7 +16,11 @@ export default {
       description: 'the teamId to disconnect from the token'
     }
   },
-  resolve: async (_source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {teamId}: {teamId: string},
+    {authToken, socketId: mutatorId, dataLoader}: GQLContext
+  ) => {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)

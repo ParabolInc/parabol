@@ -6,6 +6,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RenameMeetingTemplatePayload from '../types/RenameMeetingTemplatePayload'
+import {GQLContext} from '../graphql'
 
 const renameMeetingTemplate = {
   description: 'Rename a meeting template',
@@ -18,7 +19,11 @@ const renameMeetingTemplate = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {templateId, name}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {templateId, name}: {templateId: string; name: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

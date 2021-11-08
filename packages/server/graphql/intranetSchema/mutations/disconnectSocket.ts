@@ -22,14 +22,15 @@ export default {
 
     // RESOLUTION
     const user = await db.read('User', userId)
-    const {tms} = user
+    const tms = user?.tms ?? []
     const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    const parsedUserPresence = userPresence.map((socket) => JSON.parse(socket)) as UserPresence[]
-    const disconnectingSocket = parsedUserPresence.find((socket) => socket.socketId === socketId)
+    const disconnectingSocket = userPresence.find(
+      (socket) => (JSON.parse(socket) as UserPresence).socketId === socketId
+    )
     if (!disconnectingSocket) {
       throw new Error('Called disconnect without a valid socket')
     }
-    await redis.lrem(`presence:${userId}`, 0, JSON.stringify(disconnectingSocket))
+    await redis.lrem(`presence:${userId}`, 0, disconnectingSocket)
 
     // If this is the last socket, tell everyone they're offline
     if (userPresence.length === 1) {

@@ -22,7 +22,12 @@ export default {
       description: 'the new due date. if not a valid date, it will unset the due date'
     }
   },
-  async resolve(_source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    // FIXME type mismatch, dueDate is Date | undefined
+    {taskId, dueDate}, //: {taskId: string; dueDate?: Date | null},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

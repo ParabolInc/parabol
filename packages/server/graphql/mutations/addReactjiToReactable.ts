@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import Comment from '../../database/types/Comment'
+import Reflection from '../../database/types/Reflection'
 import getRethink from '../../database/rethinkDriver'
 import {Reactable} from '../../database/types/Reactable'
 import {getUserId} from '../../utils/authorization'
@@ -10,7 +12,8 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddReactjiToReactablePayload from '../types/AddReactjiToReactablePayload'
 import getReactableType from '../types/getReactableType'
-import ReactableEnum from '../types/ReactableEnum'
+import ReactableEnum, {ReactableEnumType} from '../types/ReactableEnum'
+import {RDatum} from '../../database/stricterR'
 
 const tableLookup = {
   COMMENT: 'Comment',
@@ -43,8 +46,20 @@ const addReactjiToReactable = {
     }
   },
   resolve: async (
-    _source,
-    {reactableId, reactableType, reactji, isRemove, meetingId},
+    _source: unknown,
+    {
+      reactableId,
+      reactableType,
+      reactji,
+      isRemove,
+      meetingId
+    }: {
+      reactableId: string
+      reactableType: ReactableEnumType
+      reactji: string
+      isRemove?: boolean | null
+      meetingId: string
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -94,7 +109,7 @@ const addReactjiToReactable = {
       await r
         .table(dbTable)
         .get(reactableId)
-        .update((row) => ({
+        .update((row: RDatum<Comment | Reflection>) => ({
           reactjis: row('reactjis').difference([subDoc]),
           updatedAt: now
         }))
@@ -103,7 +118,7 @@ const addReactjiToReactable = {
       await r
         .table(dbTable)
         .get(reactableId)
-        .update((row) => ({
+        .update((row: RDatum<Comment | Reflection>) => ({
           reactjis: r.branch(
             row('reactjis').contains(subDoc),
             row('reactjis'),

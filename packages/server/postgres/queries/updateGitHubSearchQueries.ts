@@ -3,8 +3,13 @@ import {
   IUpdateGitHubSearchQueriesQueryParams,
   updateGitHubSearchQueriesQuery
 } from './generated/updateGitHubSearchQueriesQuery'
+import {GitHubSearchQuery} from './getGitHubAuthByUserIdTeamId'
 
-const updateGitHubSearchQueries = async (params: IUpdateGitHubSearchQueriesQueryParams) => {
-  await updateGitHubSearchQueriesQuery.run(params, getPg())
+interface UpdateParams extends Omit<IUpdateGitHubSearchQueriesQueryParams, 'githubSearchQueries'> {
+  githubSearchQueries: GitHubSearchQuery[]
+}
+
+const updateGitHubSearchQueries = async (params: UpdateParams) => {
+  return updateGitHubSearchQueriesQuery.run(params as any, getPg())
 }
 export default updateGitHubSearchQueries

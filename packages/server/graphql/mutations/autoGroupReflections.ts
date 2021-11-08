@@ -7,6 +7,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import AutoGroupReflectionsPayload from '../types/AutoGroupReflectionsPayload'
 
 export default {
@@ -23,9 +24,9 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {meetingId, groupingThreshold},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {meetingId, groupingThreshold}: {meetingId: string; groupingThreshold: number},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()

@@ -1,10 +1,11 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',
@@ -15,9 +16,20 @@ export default {
     },
     dragId: {
       type: new GraphQLNonNull(GraphQLID)
+    },
+    isSpotlight: {
+      type: GraphQLBoolean
     }
   },
-  async resolve(_source, {dragId, reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {
+      dragId,
+      reflectionId,
+      isSpotlight
+    }: {dragId: string; reflectionId: string; isSpotlight?: boolean | null},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -46,7 +58,8 @@ export default {
       reflectionId,
       remoteDrag: {
         id: dragId,
-        dragUserId: viewerId
+        dragUserId: viewerId,
+        isSpotlight
       }
     }
     publish(

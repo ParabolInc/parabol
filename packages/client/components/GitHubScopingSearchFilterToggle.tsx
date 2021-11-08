@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import lazyPreload from '../utils/lazyPreload'
-import {GitHubScopingSearchFilterToggle_meeting} from '../__generated__/GitHubScopingSearchFilterToggle_meeting.graphql'
+import {GitHubScopingSearchFilterToggle_meeting$key} from '../__generated__/GitHubScopingSearchFilterToggle_meeting.graphql'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -22,11 +22,21 @@ const GitHubScopingSearchFilterMenuRoot = lazyPreload(() =>
   )
 )
 interface Props {
-  meeting: GitHubScopingSearchFilterToggle_meeting
+  meetingRef: GitHubScopingSearchFilterToggle_meeting$key
 }
 
 const GitHubScopingSearchFilterToggle = (props: Props) => {
-  const {meeting} = props
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment GitHubScopingSearchFilterToggle_meeting on PokerMeeting {
+        ...GitHubScopingSearchFilterMenuRoot_meeting
+        id
+        teamId
+      }
+    `,
+    meetingRef
+  )
   const {teamId} = meeting
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     loadingWidth: 200,
@@ -40,7 +50,7 @@ const GitHubScopingSearchFilterToggle = (props: Props) => {
       {menuPortal(
         <GitHubScopingSearchFilterMenuRoot
           teamId={teamId}
-          meeting={meeting}
+          meetingRef={meeting}
           menuProps={menuProps}
         />
       )}
@@ -48,12 +58,4 @@ const GitHubScopingSearchFilterToggle = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(GitHubScopingSearchFilterToggle, {
-  meeting: graphql`
-    fragment GitHubScopingSearchFilterToggle_meeting on PokerMeeting {
-      ...GitHubScopingSearchFilterMenuRoot_meeting
-      id
-      teamId
-    }
-  `
-})
+export default GitHubScopingSearchFilterToggle

@@ -33,7 +33,6 @@ const makeDragState = () => ({
   wasDropping: false,
   targets: [] as TargetBBox[],
   prevTargetId: '',
-  spotlightGroupId: null as null | string,
   isBroadcasting: false,
   dropZoneEl: null as null | HTMLDivElement,
   // dropZoneId: '',
@@ -79,16 +78,14 @@ const DraggableReflectionCard = (props: Props) => {
     swipeColumn,
     dataCy
   } = props
-
   const {id: meetingId, teamId, localStage, spotlightGroup} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing, reflectionGroupId, remoteDrag} = reflection
-  const spotlightGroupId = spotlightGroup?.id ?? null
+  const spotlightGroupId = spotlightGroup?.id
   const isSpotlightOpen = !!spotlightGroupId
   const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  drag.spotlightGroupId = spotlightGroup?.id || null
   const spotlightSearchResults = useLazyLoadQuery<DraggableReflectionCardLocalQuery>(
     graphql`
       query DraggableReflectionCardLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
@@ -108,11 +105,14 @@ const DraggableReflectionCard = (props: Props) => {
   )
   const {viewer} = spotlightSearchResults
   const {similarReflectionGroups} = viewer
-  const reflectionGroupIdsInSpotlight = similarReflectionGroups
-    ? similarReflectionGroups.map((group) => group.id)
+  const resultGroupIdsInSpotlight = similarReflectionGroups
+    ? similarReflectionGroups.map(({id}) => id)
     : []
-  const isReflectionGroupIdInSpotlight = reflectionGroupIdsInSpotlight.includes(reflectionGroupId)
+  const isReflectionGroupIdInSpotlight = [...resultGroupIdsInSpotlight, spotlightGroupId].includes(
+    reflectionGroupId
+  )
   const {onMouseDown} = useDraggableReflectionCard(
+    meeting,
     reflection,
     drag,
     staticIdx,
@@ -144,9 +144,10 @@ const DraggableReflectionCard = (props: Props) => {
           return
         }
         // if the spotlight is closed, this card is the single source of truth
-        // Else, if it is not in the spotlight search results
-        // Else, if this is the instance in the search results
-        const isPriorityCard = !isSpotlightOpen || !isReflectionGroupIdInSpotlight || isInSpotlight
+        // Else, if it's a remote drag that is not in the spotlight
+        // Else, if this is the instance in the source or search results
+        const isPriorityCard =
+          !isSpotlightOpen || (!isReflectionGroupIdInSpotlight && remoteDrag) || isInSpotlight
         if (isPriorityCard) {
           drag.ref = c
         }
@@ -187,6 +188,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
       remoteDrag {
         dragUserId
         dragUserName
+        isSpotlight
         targetId
       }
     }
@@ -194,6 +196,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
   meeting: graphql`
     fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
+      ...RemoteReflection_meeting
       id
       teamId
       localStage {

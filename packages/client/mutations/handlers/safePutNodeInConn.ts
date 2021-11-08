@@ -1,11 +1,11 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordProxy, RecordSourceProxy} from 'relay-runtime'
 import getNodeById from '../../utils/relay/getNodeById'
 import {insertEdgeAfter} from '../../utils/relay/insertEdge'
 
 const safePutNodeInConn = (
   conn: RecordProxy | null | undefined,
   node: RecordProxy,
-  store: RecordSourceSelectorProxy,
+  store: RecordSourceProxy,
   sortValue = 'updatedAt',
   isAscending?: boolean
 ) => {

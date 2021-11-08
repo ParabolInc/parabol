@@ -6,6 +6,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getPhase from '../../utils/getPhase'
+import {GQLContext} from '../graphql'
 
 export default {
   description: 'Changes the priority of the discussion topics',
@@ -22,9 +23,9 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {meetingId, stageId, sortOrder},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {meetingId, stageId, sortOrder}: {meetingId: string; stageId: string; sortOrder: number},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()

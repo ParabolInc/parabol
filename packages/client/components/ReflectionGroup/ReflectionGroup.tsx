@@ -29,21 +29,26 @@ export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
 
-const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
-  height: 'max-content',
-  position: 'relative',
-  paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
-  paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
-}))
+const Group = styled('div')<{staticReflectionCount: number; isSpotlightSource: boolean}>(
+  ({staticReflectionCount, isSpotlightSource}) => ({
+    height: 'max-content',
+    position: 'relative',
+    paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
+    paddingBottom: isSpotlightSource
+      ? ElementWidth.REFLECTION_CARD_PADDING
+      : ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
+    transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+  })
+)
 
 const ReflectionWrapper = styled('div')<{
   staticIdx: number
   isDropping: boolean | null
   groupCount: number
-}>(({staticIdx, isDropping, groupCount}): any => {
-  const isHidden = staticIdx === -1 || isDropping
-  const multiple = Math.min(staticIdx, 2)
+  isHiddenSpotlightSource: boolean
+}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource}): any => {
+  const isHidden = staticIdx === -1 || isDropping || isHiddenSpotlightSource
+  const multiple = Math.max(0, Math.min(staticIdx, 2))
   const scaleX =
     (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
     ElementWidth.REFLECTION_CARD
@@ -67,8 +72,8 @@ interface Props {
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
-  spotlightReflectionIds?: string[] | null
   expandedReflectionGroupPortalParentId?: PortalId
+  reflectionIdsToHide?: string[] | null
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -79,21 +84,30 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroup,
     swipeColumn,
     dataCy,
-    spotlightReflectionIds,
-    expandedReflectionGroupPortalParentId
+    expandedReflectionGroupPortalParentId,
+    reflectionIdsToHide
   } = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
-  const isSpotlightSource = !!spotlightReflectionIds?.length
-  const visibleReflections = isSpotlightSource
-    ? reflections.filter(({id}) => spotlightReflectionIds?.includes(id))
-    : reflections
+  const isSpotlightSrcGroup = spotlightGroup?.id === reflectionGroupId
   const isSpotlightOpen = !!spotlightGroup?.id
+  const visibleReflections = useMemo(() => {
+    return isSpotlightSrcGroup
+      ? reflections.filter(({id}) => !reflectionIdsToHide?.includes(id))
+      : reflections.slice()
+  }, [reflections, reflectionIdsToHide])
   const isInSpotlight = !openSpotlight
   const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
+  const isDroppable = useMemo(() => {
+    const isSourceGroup = spotlightGroup?.id === reflectionGroupId
+    const isDraggingSource = !!spotlightGroup?.reflections.find(
+      ({isViewerDragging}) => isViewerDragging
+    )
+    return isSpotlightOpen ? isDraggingSource || isSourceGroup : true // prevent grouping results into results
+  }, [spotlightGroup])
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -162,7 +176,7 @@ const ReflectionGroup = (props: Props) => {
 
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
-    !isSpotlightSource
+    !isSpotlightSrcGroup
   return (
     <>
       {portal(
@@ -191,9 +205,10 @@ const ReflectionGroup = (props: Props) => {
         />
       )}
       <Group
-        {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
+        {...(isDroppable ? {[DragAttribute.DROPPABLE]: reflectionGroupId} : null)}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
+        isSpotlightSource={isSpotlightSrcGroup && !isBehindSpotlight}
         data-cy={dataCy}
       >
         {showHeader && (
@@ -210,6 +225,7 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
+            const isHiddenSpotlightSource = isSpotlightSrcGroup && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
@@ -217,6 +233,7 @@ const ReflectionGroup = (props: Props) => {
                 groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
+                isHiddenSpotlightSource={isHiddenSpotlightSource}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}
@@ -254,6 +271,9 @@ export default createFragmentContainer(ReflectionGroup, {
       isViewerDragInProgress
       spotlightGroup {
         id
+        reflections {
+          isViewerDragging
+        }
       }
     }
   `,

@@ -27,12 +27,12 @@ const createPoll = {
   type: GraphQLNonNull(CreatePollPayload),
   args: {
     newPoll: {
-      type: new GraphQLNonNull(CreatePollInput),
+      type: GraphQLNonNull(CreatePollInput),
       description: 'The new poll including title and poll options'
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {newPoll}: CreatePollInputVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -116,7 +116,7 @@ const createPoll = {
         teamId
       }
     })
-    publish(SubscriptionChannel.MEETING, meetingId, 'AddPollSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
     return data
   }
 }

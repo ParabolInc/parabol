@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.31.0",
+  "version": "6.35.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -23,6 +23,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@types/draft-js": "^0.10.24",
     "@types/json2csv": "^4.4.0",
+    "@types/jwt-decode": "^3.1.0",
     "@types/mousetrap": "^1.6.2",
     "@types/ms": "^0.7.30",
     "@types/react": "16.9.11",
@@ -54,7 +55,6 @@
   "dependencies": {
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
-    "@mattkrick/fast-rtc-swarm": "^0.4.1",
     "@mattkrick/graphql-trebuchet-client": "^2.1.0",
     "@mattkrick/sanitize-svg": "0.3.1",
     "@mattkrick/trebuchet-client": "^3.0.1",
@@ -77,12 +77,10 @@
     "jwt-decode": "^2.1.0",
     "linkify-it": "^2.0.3",
     "logrocket": "^1.0.15",
-    "mediasoup-client": "^3.6.21",
     "mousetrap": "^1.6.3",
     "ms": "^2.0.0",
     "oy-vey": "^0.11.0",
     "prop-types": "^15.5.10",
-    "protoo-client": "^4.0.4",
     "react": "^17.0.2",
     "react-beautiful-dnd": "13.0.0",
     "react-copy-to-clipboard": "^5.0.0",

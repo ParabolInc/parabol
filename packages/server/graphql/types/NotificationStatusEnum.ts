@@ -10,4 +10,6 @@ const NotificationStatusEnum = new GraphQLEnumType({
   }
 })
 
+export type NotificationStatusEnumType = 'UNREAD' | 'READ' | 'CLICKED'
+
 export default NotificationStatusEnum

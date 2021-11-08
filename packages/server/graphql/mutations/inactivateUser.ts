@@ -7,6 +7,7 @@ import db from '../../db'
 import {getUserId, isOrgLeaderOfUser} from '../../utils/authorization'
 import {toEpochSeconds} from '../../utils/epochTime'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import InactivateUserPayload from '../types/InactivateUserPayload'
 
 export default {
@@ -18,7 +19,7 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve(_source, {userId}, {authToken}) {
+  async resolve(_source: unknown, {userId}: {userId: string}, {authToken}: GQLContext) {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     // AUTH
@@ -42,7 +43,7 @@ export default {
         })
         .run() as unknown) as Organization[]
     ])
-    if (user.inactive) {
+    if (!user || user.inactive) {
       return standardError(new Error('User already inactivated'), {userId: viewerId})
     }
 

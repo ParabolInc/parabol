@@ -26,8 +26,8 @@ const pokerAnnounceDeckHover = {
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId, isHover},
+    _source: unknown,
+    {meetingId, stageId, isHover}: {meetingId: string; stageId: string; isHover: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

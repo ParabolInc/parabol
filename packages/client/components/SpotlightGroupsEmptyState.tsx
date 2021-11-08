@@ -2,14 +2,14 @@ import React from 'react'
 import styled from '@emotion/styled'
 import purpleLines from '../styles/theme/images/purpleLines.svg'
 import {PALETTE} from '../styles/paletteV3'
-import {SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 
 const EmptyState = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
   flexWrap: 'wrap',
-  height: `calc(100% - ${SPOTLIGHT_TOP_SECTION_HEIGHT}px)`
+  minHeight: 320,
+  height: '100%'
 })
 
 const MessageWrapper = styled('div')({
@@ -44,20 +44,18 @@ const Content = styled('div')({
   alignItems: 'center'
 })
 
-const SpotlightGroupsEmptyState = () => {
-  return (
-    <EmptyState>
-      <Emoji>😔</Emoji>
-      <Content>
-        <Img src={purpleLines} />
-        <MessageWrapper>
-          <Message>No reflections match this card.</Message>
-          <Message>Try searching for specific keywords.</Message>
-        </MessageWrapper>
-        <Img isFlipped src={purpleLines} />
-      </Content>
-    </EmptyState>
-  )
-}
+const SpotlightGroupsEmptyState = () => (
+  <EmptyState>
+    <Emoji>😔</Emoji>
+    <Content>
+      <Img src={purpleLines} />
+      <MessageWrapper>
+        <Message>No reflections match this card.</Message>
+        <Message>Try searching for specific keywords.</Message>
+      </MessageWrapper>
+      <Img isFlipped src={purpleLines} />
+    </Content>
+  </EmptyState>
+)
 
 export default SpotlightGroupsEmptyState

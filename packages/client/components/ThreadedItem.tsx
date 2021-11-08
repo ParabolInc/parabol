@@ -8,6 +8,7 @@ import {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
 import ThreadedRepliesList from './ThreadedRepliesList'
 import ThreadedTaskBase from './ThreadedTaskBase'
+import ThreadedPollBase from './ThreadedPollBase'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
@@ -52,6 +53,15 @@ export const ThreadedItem = (props: Props) => {
       </ThreadedTaskBase>
     )
   }
+  if (__typename === 'Poll') {
+    return (
+      <ThreadedPollBase
+        allowedThreadables={allowedThreadables}
+        pollRef={threadable}
+        discussionRef={discussion}
+      />
+    )
+  }
   return (
     <ThreadedCommentBase
       allowedThreadables={allowedThreadables}
@@ -79,6 +89,7 @@ export default createFragmentContainer(ThreadedItem, {
     fragment ThreadedItem_discussion on Discussion {
       ...ThreadedCommentBase_discussion
       ...ThreadedTaskBase_discussion
+      ...ThreadedPollBase_discussion
       ...ThreadedRepliesList_discussion
     }
   `,
@@ -86,6 +97,7 @@ export default createFragmentContainer(ThreadedItem, {
     fragment ThreadedItem_threadable on Threadable {
       ...ThreadedCommentBase_comment
       ...ThreadedTaskBase_task
+      ...ThreadedPollBase_poll
       __typename
       replies {
         ...ThreadedRepliesList_replies

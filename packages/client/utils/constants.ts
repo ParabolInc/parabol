@@ -30,10 +30,10 @@ export const VOTE = 'vote'
 export const DISCUSS = 'discuss'
 
 /* Columns */
-export const ACTIVE = 'active'
-export const STUCK = 'stuck'
-export const DONE = 'done'
-export const FUTURE = 'future'
+export const ACTIVE = 'active' as const
+export const STUCK = 'stuck' as const
+export const DONE = 'done' as const
+export const FUTURE = 'future' as const
 export const columnArray = [FUTURE, STUCK, ACTIVE, DONE] as TaskStatusEnum[]
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE] as TaskStatusEnum[]
 
@@ -149,4 +149,3 @@ export const MAX_REDUCTION_PERCENTAGE = 1
 export const MAX_RESULT_GROUP_SIZE = 10
 export const MAX_SPOTLIGHT_COLUMNS = 3
 export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
-export const SPOTLIGHT_GROUPS_PADDING = 60

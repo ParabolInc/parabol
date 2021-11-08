@@ -1,14 +1,17 @@
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLResolveInfo} from 'graphql'
 import splitDraftContent from '../../../../client/utils/draftjs/splitDraftContent'
-import {GetGitHubAuthByUserIdTeamIdResult} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {GitHubAuth} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {
+  AddCommentMutation,
+  AddCommentMutationVariables,
   CreateIssueMutation,
   CreateIssueMutationVariables,
   GetRepoInfoQuery,
   GetRepoInfoQueryVariables
 } from '../../../types/githubTypes'
 import createIssueMutation from '../../../utils/githubQueries/createIssue.graphql'
+import addComment from '../../../utils/githubQueries/addComment.graphql'
 import getRepoInfo from '../../../utils/githubQueries/getRepoInfo.graphql'
 import {GQLContext} from '../../graphql'
 import {GitHubRequest} from '../../rootSchema'
@@ -17,9 +20,10 @@ const createGitHubTask = async (
   rawContent: string,
   repoOwner: string,
   repoName: string,
-  githubAuth: GetGitHubAuthByUserIdTeamIdResult,
+  githubAuth: GitHubAuth,
   context: GQLContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
+  comment?: string
 ) => {
   const {accessToken, login} = githubAuth
   const {title, contentState} = splitDraftContent(rawContent)
@@ -83,7 +87,21 @@ const createGitHubTask = async (
     return {error: new Error('GitHub create issue failed')}
   }
 
-  const {number: issueNumber} = issue
+  const {number: issueNumber, id} = issue
+  if (comment) {
+    await githubRequest<AddCommentMutation, AddCommentMutationVariables>({
+      query: addComment,
+      variables: {
+        input: {
+          body: comment,
+          subjectId: id
+        }
+      },
+      info,
+      endpointContext,
+      batchRef: context
+    })
+  }
   return {issueNumber}
 }
 

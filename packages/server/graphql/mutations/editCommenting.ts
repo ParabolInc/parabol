@@ -21,8 +21,8 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {isCommenting, discussionId},
+    _source: unknown,
+    {isCommenting, discussionId}: {isCommenting: boolean; discussionId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

@@ -5,6 +5,66 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.35.0 2021-Nov-03
+
+### Added
+
+- User can now create a poll in discussion thread (but can't vote yet) (#5361)
+- Show remote spotlight activity (#5500)
+- Expand Poker task description by default in estimate phase (#5569)
+
+### Fixed
+
+- Fix the bug where reflections are missing if the reto meeting does not advance to discuss phase (#5568)
+- Fix an issue where updating estimates at Atlanssian Jira does not reflect it at Parabol side (#5566)
+- Fix a performance issue in disconnectSocket mutation (#5583)
+- Fix a migration issue where silent RethinkDB fails if stage has not taskId (#5571)
+
+## 6.34.0 2021-Oct-27
+
+### Fixed
+
+- Fix pg query count datatype (#5562)
+- Fix/users type from dataloader (#5538)
+
+### Added
+
+- Better logging for timeout in publishInternalGQL (#5552)
+
+## 6.33.1 2021-Oct-21
+
+### Fixed
+
+- Increase PM2 max memory to 8GB per service
+
+## 6.33.0 2021-Oct-20
+
+### Fixed
+
+- Map users to corresponding id (#5524)
+
+### Added
+
+- Support Jira rotating refresh tokens (#5505)
+- Fix parabol estimates synced with jira (#5530)
+
+## 6.32.0 2021-Oct-13
+
+### Fixed
+
+- Replace codeblock with zero width space (#5511)
+
+### Added
+
+- Spotlight null query case (#5376)
+- Convert remaining User reads to PG (#5408)
+
+## 6.31.2 2021-Oct-20
+
+### Fixed
+
+- Increase PM2 max memory to 8GB per service
+
 ## 6.31.1 2021-Oct-06
 
 ### Fixed

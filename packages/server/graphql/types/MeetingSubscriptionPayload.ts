@@ -33,9 +33,11 @@ import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
 import {SetTaskEstimateSuccess} from './SetTaskEstimatePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {CreatePollSuccess} from './CreatePollPayload'
 
 const types = [
   AddCommentSuccess,
+  CreatePollSuccess,
   AddReactjiToReflectionSuccess,
   AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
