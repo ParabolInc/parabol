@@ -2,16 +2,15 @@ import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import {JiraGetIssueRes, JiraProject} from 'parabol-client/utils/AtlassianManager'
-import getAtlassianAuthByUserIdTeamId, {
-  AtlassianAuth
-} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
-import upsertAtlassianAuth from '../postgres/queries/upsertAtlassianAuth'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import {isNotNull} from '../utils/predicates'
 import sendToSentry from '../utils/sendToSentry'
 import RethinkDataLoader from './RethinkDataLoader'
+import getAtlassianAuthByUserId from '../postgres/queries/getAtlassianAuthByUserId'
+import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -34,9 +33,11 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
-
-          if (!atlassianAuth?.refreshToken) {
+          const userAtlassianAuths = await getAtlassianAuthByUserId(userId)
+          const atlassianAuthToRefresh = userAtlassianAuths.find(
+            (atlassianAuth) => atlassianAuth.teamId === teamId
+          )
+          if (!atlassianAuthToRefresh?.refreshToken) {
             // Not always an error! For suggested integrations, this won't exist.
             // sendToSentry(new Error('No atlassian access token exists for team member'), {
             //   userId,
@@ -44,27 +45,41 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             // })
             return null
           }
-          const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
+          const {accessToken: existingAccessToken, refreshToken} = atlassianAuthToRefresh
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
             const manager = await AtlassianServerManager.refresh(refreshToken)
             const {accessToken, refreshToken: newRefreshToken} = manager
-            atlassianAuth.accessToken = accessToken
-            atlassianAuth.updatedAt = now
+            const updatedRefreshToken = newRefreshToken ?? atlassianAuthToRefresh.refreshToken
+            // if user integrated the same Jira account with using different teams we need to update them as well
+            // reference: https://github.com/ParabolInc/parabol/issues/5601
+            const updatedSameJiraAccountAtlassianAuths = userAtlassianAuths
+              .filter(
+                (auth) =>
+                  auth.teamId !== teamId && auth.accountId === atlassianAuthToRefresh.accountId
+              )
+              .map((auth) => ({
+                ...auth,
+                accessToken,
+                refreshToken: updatedRefreshToken
+              }))
 
-            if (newRefreshToken) {
-              atlassianAuth.refreshToken = newRefreshToken
-            }
-
-            await upsertAtlassianAuth(atlassianAuth)
+            await upsertAtlassianAuths([
+              {
+                ...atlassianAuthToRefresh,
+                accessToken,
+                refreshToken: updatedRefreshToken
+              },
+              ...updatedSameJiraAccountAtlassianAuths
+            ])
           }
-          return atlassianAuth
+
+          return atlassianAuthToRefresh
         })
       )
-      const res = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return res
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
