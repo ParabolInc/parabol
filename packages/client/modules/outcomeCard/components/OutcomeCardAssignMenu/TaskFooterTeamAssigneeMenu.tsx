@@ -45,6 +45,7 @@ interface Props {
 
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {menuProps, task, viewer} = props
+  const {closePortal: closeTeamAssigneeMenu} = menuProps
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)
   const {team, id: taskId, integration} = task
   const isGitHubTask = integration?.__typename === '_xGitHubIssue'
@@ -69,48 +70,52 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
 
   const onDialogClose = useEventCallback(() => {
-    menuProps.closePortal()
+    closeTeamAssigneeMenu()
   })
-  const {modalPortal, openPortal, closePortal} = useModal({
+  const {
+    modalPortal: addIntegrationModalPortal,
+    openPortal: openAddIntegrationPortal,
+    closePortal: closeAddIntegrationPortal
+  } = useModal({
     onClose: onDialogClose,
-    id: 'taskFooterTeamAssigneeAddGitHub',
+    id: 'taskFooterTeamAssigneeAddIntegration',
     parentId: 'taskFooterTeamAssigneeMenu'
   })
   const [newTeam, setNewTeam] = useState({id: '', name: ''})
 
   const handleIntegrationAdded = () => {
-    closePortal()
+    closeAddIntegrationPortal()
     if (!newTeam.id) return
 
     submitMutation()
     ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id}, {onError, onCompleted})
     setNewTeam({id: '', name: ''})
-    menuProps.closePortal()
+    closeTeamAssigneeMenu()
   }
   const handleClose = () => {
-    closePortal()
-    menuProps.closePortal()
+    closeAddIntegrationPortal()
+    closeTeamAssigneeMenu()
   }
 
-  const handleTaskUpdate = (newTeam) => async () => {
-    if (!submitting && teamId !== newTeam.id) {
-      setNewTeam(newTeam)
+  const handleTaskUpdate = (nextTeam: typeof newTeam) => async () => {
+    if (!submitting && teamId !== nextTeam.id) {
+      setNewTeam(nextTeam)
       if (isGitHubTask || isJiraTask) {
         const result = await atmosphere.fetchQuery<
           TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery
         >(query, {
-          teamId: newTeam.id
+          teamId: nextTeam.id
         })
         const {github, atlassian} = result?.viewer?.teamMember?.integrations ?? {}
 
         if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
-          openPortal()
+          openAddIntegrationPortal()
           return
         }
       }
       submitMutation()
-      ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id}, {onError, onCompleted})
-      menuProps.closePortal()
+      ChangeTaskTeamMutation(atmosphere, {taskId, teamId: nextTeam.id}, {onError, onCompleted})
+      closeTeamAssigneeMenu()
     }
   }
 
@@ -131,7 +136,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
           />
         )
       })}
-      {modalPortal(
+      {addIntegrationModalPortal(
         isGitHubTask ? (
           <TaskFooterTeamAssigneeAddGitHubDialog
             onClose={handleClose}

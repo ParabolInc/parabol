@@ -27,7 +27,7 @@ export type PortalId =
   | 'StageTimerEndTimePicker'
   | 'StageTimerStartTimePicker'
   | 'StageTimerMinutePicker'
-  | 'taskFooterTeamAssigneeAddGitHub'
+  | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
 
 export interface UsePortalOptions {

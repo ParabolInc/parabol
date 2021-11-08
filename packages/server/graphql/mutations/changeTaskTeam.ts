@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
+import Task from '../../database/types/Task'
 import getRethink from '../../database/rethinkDriver'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -86,7 +87,8 @@ export default {
           .table('Task')
           .getAll(task.integrationHash, {index: 'integrationHash'})
           .filter({teamId})
-          .delete({returnChanges: true}),
+          .delete({returnChanges: true})('changes')(0)('old_val')
+          .default(null),
       newTask: r
         .table('Task')
         .get(taskId)
@@ -109,10 +111,8 @@ export default {
         })
     }).run()
 
-    const deletedTasks = (deletedConflictingIntegrationTask as any)?.changes?.map(
-      ({old_val}) => old_val
-    )
-    deletedTasks?.forEach((task) => {
+    if (deletedConflictingIntegrationTask) {
+      const task = (deletedConflictingIntegrationTask as unknown) as Task
       const isPrivate = task.tags.includes('private')
       const data = {task}
       newTeamMembers.forEach(({userId}) => {
@@ -120,7 +120,7 @@ export default {
           publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
         }
       })
-    })
+    }
 
     const isPrivate = tags.includes('private')
     const data = {taskId}
