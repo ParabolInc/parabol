@@ -93,8 +93,7 @@ const ReflectionCard = (props: Props) => {
     isViewerCreator,
     meetingId,
     reactjis,
-    reflectionGroupId,
-    remoteDrag
+    reflectionGroupId
   } = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const isComplete = meeting?.localStage?.isComplete
@@ -102,7 +101,6 @@ const ReflectionCard = (props: Props) => {
   const spotlightGroupId = meeting?.spotlightGroup?.id
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
-  const isRemoteSpotlight = remoteDrag?.isSpotlight
   const atmosphere = useAtmosphere()
   const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
@@ -247,7 +245,6 @@ const ReflectionCard = (props: Props) => {
     !isSpotlightOpen &&
     !isComplete &&
     !isDemoRoute() &&
-    !isRemoteSpotlight &&
     (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
@@ -310,9 +307,6 @@ export default createFragmentContainer(ReflectionCard, {
         ...ReactjiSection_reactjis
         id
         isViewerReactji
-      }
-      remoteDrag {
-        isSpotlight
       }
       sortOrder
     }
