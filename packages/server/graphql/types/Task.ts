@@ -25,6 +25,8 @@ import sendToSentry from '../../utils/sendToSentry'
 import errorFilter from '../errorFilter'
 import interpolateGitHubLabelTemplate from 'parabol-client/shared/interpolateGitHubLabelTemplate'
 import getUniqueTaskEstimatesByDimensionName from '../../postgres/queries/getUniqueTaskEstimatesByDimensionName'
+import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
+import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -109,20 +111,6 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                     }
                   }
                 }`
-          const labelsQuery = `
-                {
-                  repository(owner: "${repoOwner}", name: "${repoName}") {
-                    issue(number: ${issueNumber}) {
-                      id
-                      labels(first: 100) {
-                        nodes {
-                          id
-                          name
-                        }
-                      }
-                    }
-                  }
-                }`
           const githubRequest = (info.schema as any).githubRequest as GitHubRequest
 
           const [{data, errors}, {data: labelsData, errors: labelErrors}] = await Promise.all([
@@ -135,8 +123,14 @@ const Task = new GraphQLObjectType<any, GQLContext>({
               info
             }),
             estimates.length > 0
-              ? githubRequest({
-                  query: labelsQuery,
+              ? githubRequest<GetIssueLabelsQuery, GetIssueLabelsQueryVariables>({
+                  query: getIssueLabels,
+                  variables: {
+                    first: 100,
+                    repoName,
+                    repoOwner,
+                    issueNumber
+                  },
                   endpointContext: {
                     accessToken: githubAuth.accessToken
                   },
