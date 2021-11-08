@@ -9,7 +9,7 @@ import AtlassianServerManager from '../utils/AtlassianServerManager'
 import {isNotNull} from '../utils/predicates'
 import sendToSentry from '../utils/sendToSentry'
 import RethinkDataLoader from './RethinkDataLoader'
-import getAtlassianAuthByUserId from '../postgres/queries/getAtlassianAuthByUserId'
+import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 
 type TeamUserKey = {teamId: string; userId: string}
@@ -33,7 +33,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const userAtlassianAuths = await getAtlassianAuthByUserId(userId)
+          const userAtlassianAuths = await getAtlassianAuthsByUserId(userId)
           const atlassianAuthToRefresh = userAtlassianAuths.find(
             (atlassianAuth) => atlassianAuth.teamId === teamId
           )

@@ -25,7 +25,7 @@ export interface IUpsertAtlassianAuthsQueryQuery {
   result: IUpsertAtlassianAuthsQueryResult;
 }
 
-const upsertAtlassianAuthsQueryIR: any = {"name":"upsertAtlassianAuthsQuery","params":[{"name":"auths","codeRefs":{"defined":{"a":44,"b":48,"line":3,"col":8},"used":[{"a":288,"b":292,"line":14,"col":8}]},"transform":{"type":"pick_array_spread","keys":["accessToken","refreshToken","cloudIds","scope","accountId","teamId","userId"]}}],"usedParamSet":{"auths":true},"statement":{"body":"INSERT INTO \"AtlassianAuth\" (\n    \"accessToken\",\n    \"refreshToken\",\n    \"cloudIds\",\n    \"scope\",\n    \"accountId\",\n    \"teamId\",\n    \"userId\"\n  )\nVALUES :auths ON CONFLICT (\"userId\", \"teamId\") DO\nUPDATE\nSET (\n    \"isActive\",\n    \"updatedAt\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"cloudIds\",\n    \"scope\",\n    \"accountId\",\n    \"teamId\",\n    \"userId\"\n  ) = (\n    EXCLUDED.\"isActive\",\n    EXCLUDED.\"updatedAt\",\n    EXCLUDED.\"accessToken\",\n    EXCLUDED.\"refreshToken\",\n    EXCLUDED.\"cloudIds\",\n    EXCLUDED.\"scope\",\n    EXCLUDED.\"accountId\",\n    EXCLUDED.\"teamId\",\n    EXCLUDED.\"userId\"\n  )","loc":{"a":134,"b":724,"line":5,"col":0}}};
+const upsertAtlassianAuthsQueryIR: any = {"name":"upsertAtlassianAuthsQuery","params":[{"name":"auths","codeRefs":{"defined":{"a":44,"b":48,"line":3,"col":8},"used":[{"a":288,"b":292,"line":14,"col":8}]},"transform":{"type":"pick_array_spread","keys":["accessToken","refreshToken","cloudIds","scope","accountId","teamId","userId"]}}],"usedParamSet":{"auths":true},"statement":{"body":"INSERT INTO \"AtlassianAuth\" (\n    \"accessToken\",\n    \"refreshToken\",\n    \"cloudIds\",\n    \"scope\",\n    \"accountId\",\n    \"teamId\",\n    \"userId\"\n  )\nVALUES :auths ON CONFLICT (\"userId\", \"teamId\") DO\nUPDATE\nSET (\n    \"isActive\",\n    \"updatedAt\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"cloudIds\",\n    \"scope\",\n    \"accountId\",\n    \"teamId\",\n    \"userId\"\n  ) = (\n    TRUE,\n    CURRENT_TIMESTAMP,\n    EXCLUDED.\"accessToken\",\n    EXCLUDED.\"refreshToken\",\n    EXCLUDED.\"cloudIds\",\n    EXCLUDED.\"scope\",\n    EXCLUDED.\"accountId\",\n    EXCLUDED.\"teamId\",\n    EXCLUDED.\"userId\"\n  )","loc":{"a":134,"b":706,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -52,8 +52,8 @@ const upsertAtlassianAuthsQueryIR: any = {"name":"upsertAtlassianAuthsQuery","pa
  *     "teamId",
  *     "userId"
  *   ) = (
- *     EXCLUDED."isActive",
- *     EXCLUDED."updatedAt",
+ *     TRUE,
+ *     CURRENT_TIMESTAMP,
  *     EXCLUDED."accessToken",
  *     EXCLUDED."refreshToken",
  *     EXCLUDED."cloudIds",
