@@ -12,7 +12,6 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import {GitHubRequest} from '../rootSchema'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
-import removeGitHubLabels from '../mutations/helpers/removeGitHubLabels'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -24,6 +23,8 @@ import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import sendToSentry from '../../utils/sendToSentry'
 import errorFilter from '../errorFilter'
+import interpolateGitHubLabelTemplate from 'parabol-client/shared/interpolateGitHubLabelTemplate'
+import getUniqueTaskEstimatesByDimensionName from '../../postgres/queries/getUniqueTaskEstimatesByDimensionName'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -168,86 +169,43 @@ const Task = new GraphQLObjectType<any, GQLContext>({
 
             await Promise.all(
               estimates.map((estimate) => {
-                const dimension = dimensionFieldMaps.find((d) => d.dimensionName === estimate.name)
+                const dimension = dimensionFieldMaps.find((d) => d.dimensionName === estimate.name)!
 
                 const {labelTemplate} = dimension
-                const templateRegExp = new RegExp(`^${labelTemplate.replace('{{#}}', '(.+?)')}$`)
+                const expectedLabel = interpolateGitHubLabelTemplate(labelTemplate, estimate.label)
+                const existingLabel = labels.find((label) => label.name === expectedLabel)
+                if (existingLabel) return
 
-                const matchedLabels: {label: string; value: string; id: string}[] = []
-                labels.forEach((label) => {
-                  const match = label.name.match(templateRegExp)
-                  if (match && match[1] != null) {
-                    matchedLabels.push({
-                      id: label.id,
-                      label: label.name,
-                      value: match[1]
-                    })
-                  }
-                })
-
-                if (matchedLabels.length === 1) {
-                  const matchedLabel = matchedLabels[0]
-                  const freshEstimate = matchedLabel.value
-
-                  if (freshEstimate === estimate.label) {
-                    return undefined
-                  }
-
-                  return insertTaskEstimate({
-                    changeSource: 'external',
-                    // keep the link to the discussion alive, if possible
-                    discussionId: estimate.discussionId,
-                    jiraFieldId: undefined,
-                    label: freshEstimate,
-                    name: estimate.name,
-                    meetingId: null,
-                    stageId: null,
-                    taskId,
-                    userId: accessUserId,
-                    githubLabelName: matchedLabel.label
-                  })
-                } else if (matchedLabels.length > 1) {
-                  // The issue has more than one label for the same dimension
-                  const differentLabels = matchedLabels.filter(
-                    (matchedLabel) => matchedLabel.value !== estimate.label
+                return (async () => {
+                  const previousEstimatesForDimension = await getUniqueTaskEstimatesByDimensionName(
+                    dimension.dimensionName,
+                    teamId,
+                    nameWithOwner
                   )
 
-                  // Pick any estimate that different from current one
-                  const labelToAdd = differentLabels[0]
-                  const labelsToRemove = matchedLabels.filter((l) => l.id !== labelToAdd.id)
-                  const labelIdsToRemove = labelsToRemove.map((l) => l.id)
+                  const githubLabelsNames = labels.map((label) => label.name)
+                  for (const previousEstimateForDimension of previousEstimatesForDimension) {
+                    const value = previousEstimateForDimension.label
 
-                  return (async () => {
-                    // Remove other labels first to avoid infinity loop
-                    const removeLabelsRes = await removeGitHubLabels(
-                      githubAuth,
-                      context,
-                      info,
-                      labelsData.repository.issue.id,
-                      labelIdsToRemove
-                    )
-
-                    if (removeLabelsRes instanceof Error) {
-                      return undefined
+                    const githubLabelName = interpolateGitHubLabelTemplate(labelTemplate, value)
+                    if (githubLabelsNames.includes(githubLabelName)) {
+                      return insertTaskEstimate({
+                        changeSource: 'external',
+                        // keep the link to the discussion alive, if possible
+                        discussionId: estimate.discussionId,
+                        jiraFieldId: undefined,
+                        label: value,
+                        name: estimate.name,
+                        meetingId: null,
+                        stageId: null,
+                        taskId,
+                        userId: accessUserId,
+                        githubLabelName
+                      })
                     }
-
-                    return insertTaskEstimate({
-                      changeSource: 'external',
-                      // keep the link to the discussion alive, if possible
-                      discussionId: estimate.discussionId,
-                      jiraFieldId: undefined,
-                      label: labelToAdd.value,
-                      name: estimate.name,
-                      meetingId: null,
-                      stageId: null,
-                      taskId,
-                      userId: accessUserId,
-                      githubLabelName: labelToAdd.label
-                    })
-                  })()
-                } else {
+                  }
                   return undefined
-                }
+                })()
               })
             )
           }
