@@ -30,7 +30,7 @@ const handleUpdateSpotlightResults = (
   const reflectionGroupId = reflectionGroup.getValue('id')
   const groupsIds = similarReflectionGroups
     .map((group) => group.getValue('id'))
-    .concat(reflectionGroupId)
+    .concat(spotlightGroupId)
   const isInSpotlight = groupsIds.includes(reflectionGroupId)
   const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
   // added to another group. Remove old reflection group
