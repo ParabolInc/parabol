@@ -58,9 +58,9 @@ const ReflectionWrapper = styled('div')<{
     bottom: 0,
     left: 0,
     outline: 0,
-    opacity: isHidden ? 0 : undefined,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
     transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
+    visibility: isHidden ? 'hidden' : undefined,
     zIndex: 3 - multiple
   }
 })
