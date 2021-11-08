@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {createFragmentContainer, useLazyLoadQuery} from 'react-relay'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCardLocalQuery} from '../../__generated__/DraggableReflectionCardLocalQuery.graphql'
@@ -125,9 +125,23 @@ const DraggableReflectionCard = (props: Props) => {
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
   const handleDrag = isDragPhase ? onMouseDown : undefined
+  // if spotlight was just opened and card is in the middle of dropping we let it drop into original position
+  const [isFinishingRemoteDragging, setIsFinishingRemoteDragging] = useState(
+    () => isDropping && isSpotlightOpen && !!remoteDrag
+  )
+  // if the card was finishing remote drag and it was dropped into the original position, let it behave normally
+  useEffect(() => {
+    if (isFinishingRemoteDragging && !isDropping) {
+      setIsFinishingRemoteDragging(false)
+    }
+  }, [isFinishingRemoteDragging, isDropping])
+
   return (
     <DragWrapper
       ref={(c) => {
+        if (isFinishingRemoteDragging) {
+          return
+        }
         // if the spotlight is closed, this card is the single source of truth
         // Else, if it's a remote drag that is not in the spotlight
         // Else, if this is the instance in the source or search results
