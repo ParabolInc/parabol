@@ -144,7 +144,7 @@ type JiraPageOfChangelogs = any
 type JiraVersionedRepresentations = any
 type JiraIncludedFields = any
 
-export interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
+interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
   expand: string
   id: string
   self: string
@@ -161,6 +161,11 @@ export interface JiraIssueBean<F = {description: any; summary: string}, R = unkn
   fieldsToInclude: JiraIncludedFields
   fields: F
 }
+
+export type JiraIssueRaw = JiraIssueBean<
+  {description: string; summary: string},
+  {description: string}
+>
 
 interface JiraAuthor {
   self: string
@@ -187,7 +192,10 @@ interface JiraAddCommentResponse {
   jsdPublic: true
 }
 
-export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
+export type JiraGetIssueRes = JiraIssueBean<
+  {description: string; summary: string},
+  {description: string}
+>
 
 interface JiraGQLFields {
   cloudId: string
@@ -272,13 +280,12 @@ export type JiraPermissionScope =
   | 'manage:jira-project'
 
 export class RateLimitError extends Error {
-  _infoParams: {[key: string]: any}
-  constructor(message, infoParams) {
+  retryAt: Date
+  name: 'RateLimitError' = 'RateLimitError'
+
+  constructor(message: string, retryAt: Date) {
     super(message)
-    this._infoParams = infoParams
-  }
-  get infoParams() {
-    return this._infoParams
+    this.retryAt = retryAt
   }
 }
 
@@ -320,8 +327,8 @@ export default abstract class AtlassianManager {
     const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
 
     if (res.status === 429) {
-      const retryAfterSeconds = res.headers.get('Retry-After')
-      return new RateLimitError('error', {retryAfterSeconds})
+      const retryAfterSeconds = res.headers.get('Retry-After') ?? '30'
+      return new RateLimitError('error', new Date(Date.now() + Number(retryAfterSeconds) * 1000))
     }
 
     if ('message' in json) {
@@ -558,9 +565,7 @@ export default abstract class AtlassianManager {
   async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
     const baseFields = ['summary', 'description']
     const reqFields = [...baseFields, ...extraFieldIds].join(',')
-    const issueRes = await this.get<
-      JiraIssueBean<{description: string; summary: string}, {description: string}>
-    >(
+    const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
     )
     if (issueRes instanceof Error) return issueRes

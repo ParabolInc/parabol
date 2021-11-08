@@ -1,111 +1,97 @@
 import getRedis from '../getRedis'
-import AtlassianManager, {
-  RateLimitError,
-  JiraIssueBean
-} from 'parabol-client/utils/AtlassianManager'
+import AtlassianManager, {RateLimitError, JiraIssueRaw} from 'parabol-client/utils/AtlassianManager'
 import ms from 'ms'
-import jsonEqual from 'parabol-client/utils/jsonEqual'
+import sleep from 'parabol-client/utils/sleep'
+import stringify from 'fast-json-stable-stringify'
 
 const ISSUE_TTL_MS = ms('2d')
-const DEFAULT_RETRY_AFTER_SEC = 5
-const MAX_RETRY_AFTER_SEC = 30
-const MAX_RETRIES = 4
 
-const applyBackoff = (retries, seconds) => Math.pow(2, retries) * seconds
-const addJitter = (seconds) => seconds + (Math.random() * (1.3 - 0.7) + 0.7)
+interface CacheHit {
+  resolve: undefined // i don't really like this naming. can we name it extNetwork resolve or something?
+  cachedIssue: string
+}
+
+interface CacheMiss {
+  resolve: (value: unknown) => void
+  cachedIssue: null
+}
+
+interface CacheInit {
+  resolve: undefined
+  cachedIssue: undefined
+}
+
+type ReturnValue = CacheInit | CacheMiss | CacheHit
+
+/*
+  what if we return a resolve, and whichever one returns first--
+  jira or redis, we call that resolve and return it??
+*/
 
 export const getIssue = async (
   manager: AtlassianManager,
   cloudId: string,
   issueKey: string,
-  onSuccess: (
-    issue: JiraIssueBean<{description: string; summary: string}, {description: string}>
-  ) => void /* cb invoked when we do lazy async request */,
-  onError: (e: Error) => void /* error invoked when we do lazy async request */,
+  pushUpdateToClient: (issue: JiraIssueRaw) => void /* cb invoked when we do lazy async request */,
   extraFieldIds: string[] = []
 ) => {
   const key = `jira:${cloudId}:${issueKey}:${JSON.stringify(extraFieldIds)}`
   const redis = getRedis()
-  let cachedIssue = await redis.get(key)
-  cachedIssue = cachedIssue ? JSON.parse(cachedIssue) : cachedIssue
-
-  if (!cachedIssue) {
-    const issueRes = await manager.getIssue(cloudId, issueKey, extraFieldIds)
-    if (issueRes instanceof Error) {
-      return issueRes
+  const returnValue = {resolve: undefined, cachedIssue: undefined} as ReturnValue
+  const cachedIssuePromise = redis.get(key)
+  manager.getIssue(cloudId, issueKey, extraFieldIds).then(async (res) => {
+    // await issueResPromise
+    if (res instanceof RateLimitError) {
+      // todo: test this path
+      // do rate limit handling things
+      const {retryAt} = res
+      const delay = Math.max(0, retryAt.getTime() - Date.now())
+      if (delay > ms('10s')) return res
+      await sleep(delay)
+      // i want to put max retry back in, bc i don't trust jira to send header
+      return getIssue(manager, cloudId, issueKey, pushUpdateToClient, extraFieldIds)
+    } else if (res instanceof Error) {
+      // todo: test this path
+      // return an error
+      return res
     }
-    await redis.set(key, JSON.stringify(issueRes), 'PX', ISSUE_TTL_MS)
-    const json = await redis.get(key)
-    return JSON.parse(json!)
-  } else {
-    lazilyGetIssueAndMaybePush(
-      cachedIssue,
-      manager,
-      cloudId,
-      issueKey,
-      onSuccess,
-      onError,
-      extraFieldIds
-    )
-    return cachedIssue
-  }
-}
 
-/*
- * get issue from jira async, compare and if different,
- * bust the cache and push via subscription
- * this doesn't return anything, only does side effect
- */
-const lazilyGetIssueAndMaybePush = async (
-  cachedIssue: any,
-  manager: AtlassianManager,
-  cloudId: string,
-  issueKey: string,
-  onSuccess: any,
-  onError: any,
-  extraFieldIds: string[] = [],
-  retryCount = 0
-) => {
-  let freshIssue = await manager.getIssue(cloudId, issueKey, extraFieldIds)
-
-  if (
-    (retryCount === 0 && process.env.TEST_JIRA_ISSUE_RATE_LIMITED) ||
-    (retryCount > 0 && !process.env.TEST_JIRA_RETRY_SUCCESS)
-  ) {
-    freshIssue = new RateLimitError('error', {retryAfterSeconds: 3})
-  }
-
-  if (freshIssue instanceof Error) {
-    if (freshIssue instanceof RateLimitError && retryCount < MAX_RETRIES) {
-      let retryAfterSeconds = freshIssue.infoParams.retryAfterSeconds ?? DEFAULT_RETRY_AFTER_SEC
-      retryAfterSeconds = applyBackoff(retryCount, retryAfterSeconds)
-      retryAfterSeconds = addJitter(retryAfterSeconds)
-      retryAfterSeconds = Math.min(retryAfterSeconds, MAX_RETRY_AFTER_SEC)
-      setTimeout(() => {
-        lazilyGetIssueAndMaybePush(
-          cachedIssue,
-          manager,
-          cloudId,
-          issueKey,
-          onSuccess,
-          onError,
-          extraFieldIds,
-          retryCount + 1
-        )
-      }, retryAfterSeconds * 1000)
+    if (returnValue.cachedIssue === undefined) {
+      console.log('return value cached issue is undefined')
+      // redis is guaranteed to have returned, this is a noop
+      // is it really tho? what happens if redis is unresponsive?
+    } else if (returnValue.cachedIssue === null) {
+      // tested this path
+      console.log('return value cached issue is null')
+      // the cache was empty when atlassian returned
+      const issueFromJira = stringify(res)
+      await redis.set(key, issueFromJira, 'PX', ISSUE_TTL_MS)
+      returnValue.resolve(res)
     } else {
-      onError(freshIssue)
+      // tested this path
+      console.log('theres a cached value in redis')
+      // there was a cached value in redis
+      res.fields.summary = 'updated fresher'
+      const issueFromJira = stringify(res)
+      if (issueFromJira !== returnValue.cachedIssue) {
+        console.log('got fresher value from jira')
+        // the value from jira is fresher than what we have in redis
+        // update redis & push an update via pubsub
+        redis.set(key, issueFromJira, 'PX', ISSUE_TTL_MS)
+        pushUpdateToClient(res)
+      }
+      // if they're equal, do nothing
     }
-  } else {
-    if (process.env.TEST_JIRA_FRESH_ISSUE_UPDATES_CACHE) {
-      freshIssue.fields.summary = 'issue was edited and lazily fetched'
-    }
-    const issuesAreEqual = jsonEqual(cachedIssue, freshIssue)
-    if (!issuesAreEqual) {
-      const redis = getRedis()
-      const key = `jira:${cloudId}:${issueKey}:${JSON.stringify(extraFieldIds)}`
-      await redis.set(key, JSON.stringify(freshIssue), 'PX', ISSUE_TTL_MS)
-      await onSuccess(freshIssue)
-    }
+  })
+  // we can simulate unresponsive redis by doing a long ass sleep
+  // returnValue.cachedIssue = await cachedIssuePromise
+  returnValue.cachedIssue = (await sleep(60000)) as null
+  if (returnValue.cachedIssue) {
+    console.log('returning cached issue', returnValue.cachedIssue, typeof returnValue.cachedIssue)
+    return JSON.parse(returnValue.cachedIssue)
   }
+  return new Promise((resolve) => {
+    // resolve only exists if there was no cached value
+    returnValue.resolve = resolve
+  })
 }

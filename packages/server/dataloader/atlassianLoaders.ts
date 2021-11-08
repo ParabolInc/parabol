@@ -119,7 +119,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
             .map((estimate) => estimate.jiraFieldId)
             .filter(isNotNull)
 
-          const gotIssueCb = async (issueRes: any) => {
+          const cacheImagesUpdateEstimates = async (issueRes: any) => {
             const {fields} = issueRes
             const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
               cloudId,
@@ -158,23 +158,22 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
           const logError = (e: Error) => {
             sendToSentry(e, {userId, tags: {cloudId, issueKey, teamId}})
           }
-          const gotIssueCbThenPublish = async (issue) => {
-            const res = await gotIssueCb(issue)
+          const publishUpdatedIssue = async (issue) => {
+            const res = await cacheImagesUpdateEstimates(issue)
             publish(SubscriptionChannel.TEAM, teamId, JiraIssue, res)
           }
           const issueRes = await getIssue(
             manager,
             cloudId,
             issueKey,
-            gotIssueCbThenPublish,
-            logError,
+            publishUpdatedIssue,
             estimateFieldIds
           )
           if (issueRes instanceof Error) {
             logError(issueRes)
             return null
           }
-          const res = await gotIssueCb(issueRes)
+          const res = await cacheImagesUpdateEstimates(issueRes)
           return res
         })
       )
