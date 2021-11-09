@@ -58,60 +58,56 @@ export default {
       })
     }
 
-    // The task might have been pushed by someone else for viewer (`userId !== accessUserId`).
-    // In that case we still try to use the viewer's target team authentication, but fall back to the
-    // accessUser's in case it is present for the target team.
-    const [sourceTeamAuth, targetTeamAuth, accessUsersTargetTeamAuth] =
-      task.integration?.service === 'jira'
-        ? await Promise.all([
-            dataLoader.get('freshAtlassianAuth').load({teamId: task.teamId, userId: viewerId}),
-            dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId}),
-            dataLoader
-              .get('freshAtlassianAuth')
-              .load({teamId, userId: task.integration.accessUserId})
-          ])
-        : task.integration?.service === 'github'
-        ? await Promise.all([
-            dataLoader.get('githubAuth').load({teamId: task.teamId, userId: viewerId}),
-            dataLoader.get('githubAuth').load({teamId, userId: viewerId}),
-            dataLoader.get('githubAuth').load({teamId, userId: task.integration.accessUserId})
-          ])
-        : [null, null]
-
-    if (task.integration && !targetTeamAuth && !sourceTeamAuth && !accessUsersTargetTeamAuth) {
-      return standardError(new Error('No valid integration found'), {
-        userId: viewerId
-      })
-    }
-
     // RESOLUTION
-    // Transfer integration to target team
-    let accessUserId: string | undefined
-    if (task.integration) {
-      if (sourceTeamAuth && !targetTeamAuth) {
-        if (task.integration.service === 'jira') {
-          await upsertAtlassianAuth({
-            ...sourceTeamAuth,
-            teamId
-          })
-          const data = {teamId, userId: viewerId}
-          publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
+
+    const {integration} = task
+    if (integration) {
+      // The task might have been pushed by someone else for viewer (`userId !== accessUserId`).
+      // In that case we still try to use the viewer's target team authentication, but fall back to the
+      // accessUser's in case it is present for the target team.
+      const authKeys = [
+        {teamId: task.teamId, userId: viewerId},
+        {teamId, userId: viewerId},
+        {teamId, userId: integration.accessUserId}
+      ]
+      const [sourceTeamAuth, targetTeamAuth, accessUsersTargetTeamAuth] =
+        task.integration?.service === 'jira'
+          ? await Promise.all(authKeys.map((key) => dataLoader.get('freshAtlassianAuth').load(key)))
+          : task.integration?.service === 'github'
+          ? await Promise.all(authKeys.map((key) => dataLoader.get('githubAuth').load(key)))
+          : authKeys.map(() => null)
+
+      if (!targetTeamAuth && !sourceTeamAuth && !accessUsersTargetTeamAuth) {
+        return standardError(new Error('No valid integration found'), {
+          userId: viewerId
+        })
+      }
+
+      // Transfer integration to target team
+      if (task.integration) {
+        if (sourceTeamAuth && !targetTeamAuth) {
+          if (task.integration.service === 'jira') {
+            await upsertAtlassianAuth({
+              ...sourceTeamAuth,
+              teamId
+            })
+            const data = {teamId, userId: viewerId}
+            publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
+          }
+          if (task.integration.service === 'github') {
+            await upsertGitHubAuth({
+              ...sourceTeamAuth,
+              teamId
+            })
+            const data = {teamId, userId: viewerId}
+            publish(SubscriptionChannel.TEAM, teamId, 'AddGitHubAuthPayload', data, subOptions)
+          }
+          integration.accessUserId = viewerId
+        } else if (targetTeamAuth) {
+          // in case the task was pushed by someone else before
+          integration.accessUserId = viewerId
         }
-        if (task.integration.service === 'github') {
-          await upsertGitHubAuth({
-            ...sourceTeamAuth,
-            teamId
-          })
-          const data = {teamId, userId: viewerId}
-          publish(SubscriptionChannel.TEAM, teamId, 'AddGitHubAuthPayload', data, subOptions)
-        }
-        accessUserId = viewerId
-      } else if (targetTeamAuth) {
-        // in case the task was pushed by someone else before
-        accessUserId = viewerId
-      } else {
-        // the task might also be integrated and the accessUser has the integration set up for the target team, do nothing in that case
-        accessUserId = task.integration.accessUserId
+        // else the task might also be integrated and the accessUser has the integration set up for the target team, do nothing in that case
       }
     }
 
@@ -134,10 +130,7 @@ export default {
       content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
       updatedAt: now,
       teamId,
-      integration: task.integration && {
-        ...task.integration,
-        accessUserId
-      }
+      integration
     }
 
     // If there is a task with the same integration hash in the new team, then delete it first.
