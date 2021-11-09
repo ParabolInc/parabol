@@ -6,7 +6,7 @@ import {RemoveMattermostAuthMutation as TRemoveMattermostAuthMutation} from '../
 graphql`
   fragment RemoveMattermostAuthMutation_team on RemoveMattermostAuthSuccess {
     user {
-      ...MattermostProviderRowViewer @relay(mask: false)
+      ...MattermostProviderRow_viewer @relay(mask: false)
     }
   }
 `

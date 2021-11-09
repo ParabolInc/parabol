@@ -103,16 +103,16 @@ const MattermostPanel = (props: Props) => {
     submitMutation
   } = useMutationProps()
 
-  const {error: fieldError} = fields.webhookUrl
+  const {error: fieldError, value: fieldValue} = fields.webhookUrl
+  // corner case: let them re-upsert the same webhook url when reverting to a
+  //              previous value
+  const updateDisabled = (error, value) =>
+    error || submitting || !value || (value === mattermost?.webhookUrl && !mutationError)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
-    if (submitting) return
-    const {error: webhookUrlErr, value: webhookUrl} = validateField('webhookUrl')
-    if (webhookUrlErr) return
-    // corner case: let them re-upsert the same webhook url when reverting to a
-    //              previous value
-    if (mattermost?.webhookUrl === webhookUrl && !mutationError) return
+    const {error, value: webhookUrl} = validateField('webhookUrl')
+    if (updateDisabled(error, webhookUrl)) return
     setDirtyField()
     submitMutation()
     AddMattermostAuthMutation(atmosphere, {webhookUrl, teamId}, {onError, onCompleted})
@@ -140,7 +140,9 @@ const MattermostPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='https://my.mattermost.com:8065/hooks/abc123'
           />
-          <StyledButton size='medium'>Update</StyledButton>
+          <StyledButton size='medium' disabled={updateDisabled(fieldError, fieldValue)}>
+            Update
+          </StyledButton>
         </Row>
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}

@@ -50,15 +50,16 @@ abstract class MattermostManager {
       body: JSON.stringify(payload)
     })
     if (res instanceof Error) return res
-    // Mattermost returns text if all was ok, JSON error otherwise
-    if (!res.ok) {
-      const message = (await res.json())?.message
-      return new Error(`Mattermost API error${message ? `: ${message}` : ''}`)
+    if (res.status !== 200) {
+      if (res.status === 400) {
+        // Bad request, Matter supplies a JSON error message
+        const {message: error} = await res.json()
+        return new Error(`${res.status}: ${error}`)
+      } else {
+        return new Error(`${res.status}: ${res.statusText}`)
+      }
     }
-    return {
-      ok: true,
-      status: res.status
-    } as MattermostApiResponse
+    return res
   }
 
   async postMessage(textOrAttachmentsArray: string | unknown[], notificationText?: string) {

@@ -87,7 +87,14 @@ const MattermostProviderRow = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment MattermostProviderRow_viewer on User {
-        ...MattermostProviderRowViewer @relay(mask: false)
+        ...MattermostPanel_viewer
+        teamMember(teamId: $teamId) {
+          integrations {
+            mattermost {
+              isActive
+            }
+          }
+        }
       }
     `,
     viewerRef
@@ -142,18 +149,5 @@ const MattermostProviderRow = (props: Props) => {
     </ExtraProviderCard>
   )
 }
-
-graphql`
-  fragment MattermostProviderRowViewer on User {
-    ...MattermostPanel_viewer
-    teamMember(teamId: $teamId) {
-      integrations {
-        mattermost {
-          isActive
-        }
-      }
-    }
-  }
-`
 
 export default MattermostProviderRow

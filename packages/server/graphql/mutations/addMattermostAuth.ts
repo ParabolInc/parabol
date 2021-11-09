@@ -39,7 +39,7 @@ export default {
     }
 
     // VALIDATION
-    const result = await notifyWebhookConfigUpdated(webhookUrl, viewerId, teamId, dataLoader)
+    const result = await notifyWebhookConfigUpdated(webhookUrl, viewerId, teamId)
     if (result instanceof Error) return standardError(result, {userId: viewerId})
 
     // RESOLUTION

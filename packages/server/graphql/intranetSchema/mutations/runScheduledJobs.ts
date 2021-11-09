@@ -47,13 +47,13 @@ const processMeetingStageTimeLimits = async (
   const {meetingId} = job
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {teamId, facilitatorUserId} = meeting
-  const [{slackNotification, slackAuth}, {mattermostAuth}] = await Promise.all([
+  const [{slackNotification, slackAuth}, mattermostAuth] = await Promise.all([
     getSlackNotificationAndAuth(teamId, facilitatorUserId),
     dataLoader.get('mattermostBestAuthByUserIdTeamId').load({userId: facilitatorUserId, teamId})
   ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
-  const sendViaMattermost = mattermostAuth?.isActive
+  const sendViaMattermost = !!mattermostAuth
 
   if (slackAuth?.botAccessToken && slackNotification?.channelId) {
     const manager = new SlackServerManager(slackAuth.botAccessToken)

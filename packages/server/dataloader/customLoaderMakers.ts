@@ -356,7 +356,7 @@ export const mattermostAuthByUserIdTeamId = (parent: RethinkDataLoader) => {
 export const mattermostBestAuthByUserIdTeamId = (parent: RethinkDataLoader) => {
   return new DataLoader<
     {userId: string; teamId: string},
-    GetMattermostBestAuthByUserIdTeamIdResult | null,
+    GetMattermostBestAuthByUserIdTeamIdResult | null | undefined,
     string
   >(
     async (keys) => {
