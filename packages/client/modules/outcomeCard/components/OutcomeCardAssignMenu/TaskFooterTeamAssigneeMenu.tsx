@@ -13,8 +13,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
 import useModal from '~/hooks/useModal'
-import TaskFooterTeamAssigneeAddGitHubDialog from './TaskFooterTeamAssigneeAddGitHubDialog'
-import TaskFooterTeamAssigneeAddJiraDialog from './TaskFooterTeamAssigneeAddJiraDialog'
+import TaskFooterTeamAssigneeAddIntegrationDialog from './TaskFooterTeamAssigneeAddIntegrationDialog'
 import useEventCallback from '~/hooks/useEventCallback'
 
 const query = graphql`
@@ -83,7 +82,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   })
   const [newTeam, setNewTeam] = useState({id: '', name: ''})
 
-  const handleIntegrationAdded = () => {
+  const handleAddIntegrationConfirmed = () => {
     closeAddIntegrationPortal()
     if (!newTeam.id) return
 
@@ -99,7 +98,6 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
 
   const handleTaskUpdate = (nextTeam: typeof newTeam) => async () => {
     if (!submitting && teamId !== nextTeam.id) {
-      setNewTeam(nextTeam)
       if (isGitHubTask || isJiraTask) {
         const result = await atmosphere.fetchQuery<
           TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery
@@ -109,6 +107,12 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         const {github, atlassian} = result?.viewer?.teamMember?.integrations ?? {}
 
         if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
+          // viewer is not integrated, now we have these options:
+          // 1) if user has integration in source team, then we will use that, but still ask
+          // 2) if accessUser is someone else and they have integration for target team, then we will use that without asking
+          // 3) else we need to ask the user to integrate with complete oauth flow
+          // For now ignore 2) and 3) and just assume it's 1) as that's the most common case.
+          setNewTeam(nextTeam)
           openAddIntegrationPortal()
           return
         }
@@ -137,22 +141,13 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         )
       })}
       {addIntegrationModalPortal(
-        isGitHubTask ? (
-          <TaskFooterTeamAssigneeAddGitHubDialog
+        (isGitHubTask || isJiraTask) && (
+          <TaskFooterTeamAssigneeAddIntegrationDialog
             onClose={handleClose}
-            onIntegrationAdded={handleIntegrationAdded}
-            teamId={newTeam.id}
+            onConfirm={handleAddIntegrationConfirmed}
+            serviceName={isGitHubTask ? 'GitHub' : 'Jira'}
             teamName={newTeam.name}
           />
-        ) : isJiraTask ? (
-          <TaskFooterTeamAssigneeAddJiraDialog
-            onClose={handleClose}
-            onIntegrationAdded={handleIntegrationAdded}
-            teamId={newTeam.id}
-            teamName={newTeam.name}
-          />
-        ) : (
-          undefined
         )
       )}
     </Menu>
