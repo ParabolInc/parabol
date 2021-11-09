@@ -3,6 +3,7 @@ import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import getAtlassianAuthsToUpdate from '../../../postgres/queries/getAtlassianAuthsToUpdate'
 import {Threshold} from '~/types/constEnums'
+import errorFilter from '../../errorFilter'
 
 const updateOAuthRefreshTokens = {
   type: GraphQLInt,
@@ -15,9 +16,9 @@ const updateOAuthRefreshTokens = {
     // RESOLUTION
     const olderThan14DaysThreshold = new Date(Date.now() - Threshold.OAUTH_REFRESH)
     const atlassianAuthsToUpdate = await getAtlassianAuthsToUpdate(olderThan14DaysThreshold)
-    const updatedAtlassianAuths = await dataLoader
-      .get('freshAtlassianAuth')
-      .loadMany(atlassianAuthsToUpdate)
+    const updatedAtlassianAuths = (
+      await dataLoader.get('freshAtlassianAuth').loadMany(atlassianAuthsToUpdate)
+    ).filter(errorFilter)
 
     return updatedAtlassianAuths.length
   }
