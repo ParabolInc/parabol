@@ -55240,7 +55240,7 @@ export interface IMutation {
   autoGroupReflections: IAutoGroupReflectionsPayload | null;
 
   /**
-   * Change the team a task is associated with
+   * Change the team a task is associated with. Also copy the viewers integration if necessary.
    */
   changeTaskTeam: IChangeTaskTeamPayload | null;
 
