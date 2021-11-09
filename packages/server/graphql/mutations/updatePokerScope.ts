@@ -39,7 +39,7 @@ const updatePokerScope = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {meetingId, updates}: {meetingId: string; updates: TUpdatePokerScopeItemInput[]},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {

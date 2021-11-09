@@ -7,6 +7,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimensionPayload'
+import {GQLContext} from '../graphql'
 
 const addPokerTemplateDimension = {
   description: 'Add a new dimension for the poker template',
@@ -16,7 +17,11 @@ const addPokerTemplateDimension = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {templateId}: {templateId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -37,7 +42,11 @@ const addPokerTemplateDimension = {
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
       .filter({templateId})
-      .filter((row) => row('removedAt').default(null).eq(null))
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .eq(null)
+      )
       .run()
     if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLATE_DIMENSIONS) {
       return standardError(new Error('Too many dimensions'), {userId: viewerId})
@@ -50,7 +59,11 @@ const addPokerTemplateDimension = {
     const availableScales = await r
       .table('TemplateScale')
       .filter({teamId})
-      .filter((row) => row('removedAt').default(null).eq(null))
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .eq(null)
+      )
       .orderBy(r.desc('updatedAt'))
       .run()
     const defaultScaleId =
@@ -67,7 +80,10 @@ const addPokerTemplateDimension = {
       templateId
     })
 
-    await r.table('TemplateDimension').insert(newDimension).run()
+    await r
+      .table('TemplateDimension')
+      .insert(newDimension)
+      .run()
 
     const dimensionId = newDimension.id
     const data = {dimensionId}

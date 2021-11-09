@@ -58,8 +58,20 @@ const updateJiraDimensionField = {
     }
   },
   resolve: async (
-    _source,
-    {dimensionName, fieldName, meetingId, cloudId, projectKey},
+    _source: unknown,
+    {
+      dimensionName,
+      fieldName,
+      meetingId,
+      cloudId,
+      projectKey
+    }: {
+      dimensionName: string
+      fieldName: string
+      cloudId: string
+      projectKey: string
+      meetingId: string
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

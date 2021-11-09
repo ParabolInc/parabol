@@ -7,7 +7,9 @@ const EmptyState = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
-  flexWrap: 'wrap'
+  flexWrap: 'wrap',
+  minHeight: 320,
+  height: '100%'
 })
 
 const MessageWrapper = styled('div')({
@@ -42,20 +44,18 @@ const Content = styled('div')({
   alignItems: 'center'
 })
 
-const SpotlightGroupsEmptyState = () => {
-  return (
-    <EmptyState>
-      <Emoji>😔</Emoji>
-      <Content>
-        <Img src={purpleLines} />
-        <MessageWrapper>
-          <Message>No reflections match this card.</Message>
-          <Message>Try searching for specific keywords.</Message>
-        </MessageWrapper>
-        <Img isFlipped src={purpleLines} />
-      </Content>
-    </EmptyState>
-  )
-}
+const SpotlightGroupsEmptyState = () => (
+  <EmptyState>
+    <Emoji>😔</Emoji>
+    <Content>
+      <Img src={purpleLines} />
+      <MessageWrapper>
+        <Message>No reflections match this card.</Message>
+        <Message>Try searching for specific keywords.</Message>
+      </MessageWrapper>
+      <Img isFlipped src={purpleLines} />
+    </Content>
+  </EmptyState>
+)
 
 export default SpotlightGroupsEmptyState

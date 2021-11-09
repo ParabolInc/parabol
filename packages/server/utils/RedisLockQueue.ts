@@ -23,7 +23,7 @@ export default class RedisLockQueue {
     this.waitTimeMs = 0
   }
 
-  private removeItem = async (item) => {
+  private removeItem = async (item: string) => {
     return this.redis.lrem(this.queueKey, 0, item)
   }
 

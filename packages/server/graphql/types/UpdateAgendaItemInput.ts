@@ -33,4 +33,12 @@ const UpdateAgendaItemInput = new GraphQLInputObjectType({
   })
 })
 
+export type UpdateAgendaItemInputType = {
+  id: string
+  content?: string | null
+  pinned?: boolean
+  isActive?: boolean | null
+  sortOrder?: number | null
+}
+
 export default UpdateAgendaItemInput

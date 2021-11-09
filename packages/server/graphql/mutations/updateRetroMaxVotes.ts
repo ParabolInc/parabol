@@ -28,8 +28,12 @@ const updateRetroMaxVotes = {
     }
   },
   resolve: async (
-    _source,
-    {totalVotes, maxVotesPerGroup, meetingId},
+    _source: unknown,
+    {
+      totalVotes,
+      maxVotesPerGroup,
+      meetingId
+    }: {totalVotes: number; maxVotesPerGroup: number; meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

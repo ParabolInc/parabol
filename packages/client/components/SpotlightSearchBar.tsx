@@ -4,17 +4,21 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
-import {ElementWidth} from '../types/constEnums'
+import {ElementHeight, ElementWidth} from '../types/constEnums'
 import Atmosphere from '../Atmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import React, {useRef} from 'react'
 
-const SearchItem = styled(MenuItemLabel)({
+const SearchWrapper = styled('div')({
+  width: ElementWidth.REFLECTION_CARD
+})
+
+const Search = styled(MenuItemLabel)({
   overflow: 'visible',
   padding: 0,
   position: 'absolute',
-  bottom: -16,
+  bottom: -ElementHeight.REFLECTION_CARD / 2,
   width: ElementWidth.REFLECTION_CARD
 })
 
@@ -39,7 +43,7 @@ const SearchInput = styled('input')({
   fontSize: 14,
   lineHeight: '24px',
   outline: 'none',
-  padding: '6px 0 6px 39px',
+  padding: '6px 0 6px 40px',
   width: '100%',
   '::placeholder': {
     color: PALETTE.SLATE_600
@@ -77,23 +81,25 @@ const SpotlightSearchBar = (props: Props) => {
   }
 
   return (
-    <SearchItem>
-      <StyledMenuItemIcon>
-        <SearchIcon>search</SearchIcon>
-      </StyledMenuItemIcon>
-      <SearchInput
-        autoFocus
-        autoComplete='off'
-        name='search'
-        placeholder='Or search for keywords...'
-        spellCheck={true}
-        type='text'
-        onChange={onChange}
-        onKeyDown={onKeyDown}
-        ref={inputRef}
-        value={spotlightSearchQuery ?? ""}
-      />
-    </SearchItem>
+    <SearchWrapper>
+      <Search>
+        <StyledMenuItemIcon>
+          <SearchIcon>search</SearchIcon>
+        </StyledMenuItemIcon>
+        <SearchInput
+          onKeyDown={onKeyDown}
+          autoFocus
+          autoComplete='off'
+          name='search'
+          placeholder='Or search for keywords...'
+          type='text'
+          spellCheck={true}
+          onChange={onChange}
+          ref={inputRef}
+          value={spotlightSearchQuery ?? ""}
+        />
+      </Search>
+    </SearchWrapper>
   )
 }
 

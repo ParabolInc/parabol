@@ -1,9 +1,7 @@
 import styled from '@emotion/styled'
-import React, {Suspense, useRef} from 'react'
-import {DECELERATE, fadeUp} from '../styles/animation'
-import useBreakpoint from '../hooks/useBreakpoint'
+import React, {RefObject, Suspense, useEffect, useRef, useState} from 'react'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
-import {Breakpoint, ZIndex, Spotlight} from '../types/constEnums'
 import spotlightResultsRootQuery, {
   SpotlightResultsRootQuery
 } from '../__generated__/SpotlightResultsRootQuery.graphql'
@@ -14,24 +12,41 @@ import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import SpotlightSourceReflectionCard from './SpotlightSourceReflectionCard'
 import {PALETTE} from '../styles/paletteV3'
 import {GroupingKanban_meeting$data} from '../__generated__/GroupingKanban_meeting.graphql'
+import {
+  BezierCurve,
+  Breakpoint,
+  ElementWidth,
+  Spotlight,
+  Times,
+  ZIndex
+} from '../types/constEnums'
+import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
+import {PortalStatus} from '~/hooks/usePortal'
 
-const ModalContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  animation: `${fadeUp.toString()} 300ms ${DECELERATE} 300ms forwards`,
-  background: '#FFFF',
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
+const MODAL_PADDING = 72
+
+const Modal = styled('div')<{hideModal: boolean}>(({hideModal}) => ({
+  backgroundColor: `${PALETTE.WHITE}`,
   borderRadius: 8,
   boxShadow: Elevation.Z8,
   display: 'flex',
-  flexWrap: 'wrap',
-  height: '80vh',
+  flexDirection: 'column',
+  height: '90vh',
   justifyContent: 'center',
-  opacity: 0,
-  overflow: 'hidden',
-  width: isDesktop ? '80vw' : '90vw',
-  zIndex: ZIndex.DIALOG
+  // We animate the source and then fade in the modal behind it. Source animation needs to know its
+  // final position in the modal so render the modal with opacity 0 until source animation is complete.
+  opacity: hideModal ? 0 : 1,
+  transition: `opacity ${Times.SPOTLIGHT_MODAL_DURATION}ms ${BezierCurve.DECELERATE}`,
+  width: '90vw',
+  zIndex: ZIndex.DIALOG,
+  [desktopBreakpoint]: {
+    height: '100%',
+    width: `${ElementWidth.REFLECTION_COLUMN * MAX_SPOTLIGHT_COLUMNS + MODAL_PADDING}px`
+  }
 }))
 
-const SelectedReflectionSection = styled('div')({
-  alignItems: 'flex-start',
+const SourceSection = styled('div')({
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
@@ -44,39 +59,68 @@ const SelectedReflectionSection = styled('div')({
 })
 interface Props {
   closeSpotlight: () => void
-  flipRef: (instance: HTMLDivElement) => void
   meeting: GroupingKanban_meeting$data
+  sourceRef: RefObject<HTMLDivElement>
+  portalStatus: number
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, flipRef, meeting} = props
-  const {id: meetingId, spotlightReflection} = meeting
-  const spotlightReflectionId = spotlightReflection?.id
+  const {closeSpotlight, meeting, sourceRef, portalStatus} = props
+  const modalRef = useRef<HTMLDivElement>(null)
+  const [hideModal, setHideModal] = useState(true)
+  const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
+  const sourceReflections = spotlightGroup?.reflections
+  const spotlightGroupId = spotlightGroup?.id
+  const reflectionIdsToHideRef = useRef<string[] | null>(null)
   if (!spotlightReflectionId) {
     return null
   }
   const spotlightSearchQuery = meeting.spotlightSearchQuery ?? ""
+
+
+  useEffect(() => {
+    if (!spotlightGroup) return
+    let timeout: number | undefined
+    const sourceReflectionIds = sourceReflections?.map(({id}) => id)
+    if (reflectionIdsToHideRef.current === null) {
+      // if Spotlight group initially contains several reflections, only show reflection at the top of the stack
+      reflectionIdsToHideRef.current =
+        sourceReflections?.filter(({id}) => id !== spotlightReflectionId).map(({id}) => id) || []
+    } else if (!spotlightReflectionId || !sourceReflectionIds?.includes(spotlightReflectionId)) {
+      timeout = window.setTimeout(() => {
+        closeSpotlight()
+      }, Times.REFLECTION_DROP_DURATION)
+    }
+    return () => clearTimeout(timeout)
+  }, [sourceReflections])
+
+  useEffect(() => {
+    if (portalStatus !== PortalStatus.Entered) return
+    const timeout = setTimeout(() => {
+      setHideModal(false)
+    }, Times.SPOTLIGHT_SOURCE_DURATION)
+    return () => clearTimeout(timeout)
+  }, [portalStatus])
+
 
   const queryRef = useQueryLoaderNow<SpotlightResultsRootQuery>(spotlightResultsRootQuery, {
     reflectionId: spotlightReflectionId,
     searchQuery: spotlightSearchQuery,
     meetingId
   }, 'network-only')
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
-  const phaseRef = useRef(null)
   return (
-    <ModalContainer isDesktop={isDesktop} ref={phaseRef}>
-      <SelectedReflectionSection>
+    <Modal hideModal={hideModal} ref={modalRef}>
+      <SourceSection>
         <SpotlightTopBar closeSpotlight={closeSpotlight} />
+        <SpotlightSourceReflectionCard meeting={meeting} ref={sourceRef} modalRef={modalRef} reflectionIdsToHideRef={reflectionIdsToHideRef} />
         <SpotlightSearchBar meetingId={meetingId} spotlightSearchQuery={spotlightSearchQuery} />
-      </SelectedReflectionSection>
+      </SourceSection>
       <Suspense fallback={''}>
         {queryRef && (
-          <SpotlightResultsRoot queryRef={queryRef} phaseRef={phaseRef} />
+          <SpotlightResultsRoot queryRef={queryRef} phaseRef={modalRef} />
         )}
       </Suspense>
-      <SpotlightSourceReflectionCard meeting={meeting} flipRef={flipRef} />
-    </ModalContainer>
+    </Modal>
   )
 }
 export default SpotlightModal

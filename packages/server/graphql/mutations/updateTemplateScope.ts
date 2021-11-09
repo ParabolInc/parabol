@@ -9,7 +9,7 @@ import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
-import SharingScopeEnum from '../types/SharingScopeEnum'
+import SharingScopeEnum, {SharingScopeEnumType} from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
 import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
@@ -28,8 +28,8 @@ const updateTemplateScope = {
     }
   },
   resolve: async (
-    _source,
-    {templateId, scope: newScope},
+    _source: unknown,
+    {templateId, scope: newScope}: {templateId: string; scope: SharingScopeEnumType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

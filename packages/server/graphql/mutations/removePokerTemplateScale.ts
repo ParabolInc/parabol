@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemovePokerTemplateScalePayload from '../types/RemovePokerTemplateScalePayload'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const removePokerTemplateScale = {
   description: 'Remove a scale from a template',
@@ -14,7 +15,11 @@ const removePokerTemplateScale = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {scaleId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {scaleId}: {scaleId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

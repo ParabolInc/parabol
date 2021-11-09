@@ -24,7 +24,7 @@ const setTaskEstimate = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {taskEstimate}: {taskEstimate: ITaskEstimateInput},
     context: GQLContext,
     info: GraphQLResolveInfo

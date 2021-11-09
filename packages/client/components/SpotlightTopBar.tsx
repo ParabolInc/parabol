@@ -29,7 +29,6 @@ const Title = styled('div')({
 })
 
 const TopRow = styled('div')({
-  width: `calc(100% - 48px)`, // 48px accounts for icon size
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center'

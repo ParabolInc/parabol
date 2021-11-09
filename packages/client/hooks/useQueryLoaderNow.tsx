@@ -17,7 +17,7 @@ const useQueryLoaderNow = <TQuery extends OperationType>(
   }
   // refetch when variables change
   useEffect(() => {
-    loadQuery(variables || {}, {fetchPolicy: 'store-or-network'})
+    loadQuery(variables || {}, {fetchPolicy: fetchPolicy || 'store-or-network'})
   }, [varRef.current])
 
   // refetch when reconnected to server

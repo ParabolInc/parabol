@@ -7,6 +7,7 @@ import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
 export default {
@@ -17,7 +18,11 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {teamId}: {teamId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

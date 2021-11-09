@@ -14,16 +14,24 @@ interface Text {
   marks?: Mark[]
 }
 
+type InlineNode =
+  | {
+      type: 'emoji' | 'hardBreak' | 'inlineCard' | 'mention'
+    }
+  | Text
+
+type Content = (Node | InlineNode)[]
+
 interface Node {
   type: string
   attrs?: Record<string, any>
-  content: (Node | Text)[]
+  content: Content
 }
 
-interface Doc {
+export interface Doc {
   version: 1
   type: 'doc'
-  content: Node[]
+  content: Content
 }
 
 class ContentStateToADFConverter {
