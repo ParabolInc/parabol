@@ -37,8 +37,8 @@ const RemoteReflectionModal = styled('div')<{
   isDropping?: boolean | null
   transform?: string
   isSpotlight?: boolean
-  styleProps?: React.CSSProperties
-}>(({isDropping, transform, isSpotlight, styleProps}) => ({
+  animation?: string
+}>(({isDropping, transform, isSpotlight, animation}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -48,10 +48,12 @@ const RemoteReflectionModal = styled('div')<{
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
   }ms ${BezierCurve.DECELERATE}`,
   transform,
-  animation:
-    isSpotlight && !isDropping ? `${circleAnimation(transform)} 3s ease infinite;` : undefined,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT,
-  ...styleProps
+  animation: animation
+    ? animation
+    : isSpotlight && !isDropping
+    ? `${circleAnimation(transform)} 3s ease infinite;`
+    : undefined,
+  zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
 const HeaderModal = styled('div')({
@@ -198,16 +200,18 @@ const RemoteReflection = (props: Props) => {
   const {dragUserId, dragUserName, isSpotlight} = remoteDrag
 
   const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
+  const {animation, ...remoteReflectionModalStyle} = nextStyle ?? {}
 
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
       <RemoteReflectionModal
         ref={ref}
-        styleProps={nextStyle}
+        style={remoteReflectionModalStyle}
         isDropping={isDropping}
         isSpotlight={isSpotlight}
         transform={transform}
+        animation={animation as string | undefined}
       >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
