@@ -16,11 +16,10 @@ import {
   BezierCurve,
   Breakpoint,
   ElementWidth,
-  Spotlight,
   Times,
   ZIndex
 } from '../types/constEnums'
-import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
+import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {PortalStatus} from '~/hooks/usePortal'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
@@ -50,12 +49,13 @@ const SourceSection = styled('div')({
   background: PALETTE.SLATE_100,
   borderRadius: '8px 8px 0px 0px',
   display: 'flex',
-  flexWrap: 'wrap',
-  height: `${Spotlight.SELECTED_HEIGHT_PERC}%`,
-  justifyContent: 'center',
+  minHeight: SPOTLIGHT_TOP_SECTION_HEIGHT,
+  justifyContent: 'space-between',
   padding: 16,
   position: 'relative',
-  width: '100%'
+  width: '100%',
+  flexDirection: 'column',
+  alignItems: 'center'
 })
 interface Props {
   closeSpotlight: () => void

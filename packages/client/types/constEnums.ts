@@ -439,7 +439,3 @@ export const enum PollsAriaLabels {
   POLL_START = 'Start a poll',
   POLL_ADD_OPTION = 'Add a poll option'
 }
-
-export const enum Spotlight {
-  SELECTED_HEIGHT_PERC = 33.3
-}
