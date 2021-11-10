@@ -64,8 +64,8 @@ export const getDroppingStyles = (
   const isTargetInSpotlight = targetId
     ? spotlightEl && document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`)
     : false
-  const isBelongsToSpotlight = spotlightEl && spotlightEl.contains(element)
-  const showAboveSpotlight = isBelongsToSpotlight || isTargetInSpotlight
+  const isInSpotlight = spotlightEl && spotlightEl.contains(element)
+  const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
   const {top, left} = bbox
   const minTop = getMinTop(top, element)
   const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
@@ -73,19 +73,17 @@ export const getDroppingStyles = (
 
   const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s linear 0s forwards`
   const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s linear 0s forwards`
-  let animation: string | undefined = undefined
 
-  if (spotlightEl && !isBelongsToSpotlight && lastStyle) {
-    if (isTargetInSpotlight && !isClose) {
-      animation = fadeInAnimation
-    }
-
-    const isCurrentlyBehindSpotlight =
-      lastStyle.zIndex === ZIndex.REFLECTION_IN_FLIGHT || lastStyle.zIndex == null
-    if (!isCurrentlyBehindSpotlight && (!showAboveSpotlight || isClose)) {
-      animation = fadeOutAnimation
-    }
-  }
+  const isCurrentlyBehindSpotlight =
+    lastStyle &&
+    (lastStyle.zIndex === ZIndex.REFLECTION_IN_FLIGHT || lastStyle.zIndex === undefined)
+  const isFadingIn = spotlightEl && !isInSpotlight && lastStyle && isTargetInSpotlight && !isClose
+  const isFadingOut =
+    spotlightEl &&
+    !isInSpotlight &&
+    lastStyle &&
+    !isCurrentlyBehindSpotlight &&
+    (!showAboveSpotlight || isClose)
 
   return {
     transform: `translate(${left}px,${clippedTop}px)`,
@@ -94,7 +92,7 @@ export const getDroppingStyles = (
     zIndex: showAboveSpotlight
       ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
       : ZIndex.REFLECTION_IN_FLIGHT,
-    animation
+    animation: isFadingIn ? fadeInAnimation : isFadingOut ? fadeOutAnimation : undefined
   }
 }
 
