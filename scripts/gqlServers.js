@@ -14,7 +14,6 @@ const gqlServers = async () => {
     })
   })
   require('../dev/web.js')
-  require('../dev/gqlExecutor.js')
 
   // test a cluster in development
   const executorPath = path.join(__dirname, '../dev/gqlExecutor.js')
@@ -22,9 +21,11 @@ const gqlServers = async () => {
   const {SERVER_ID, DEV_NUM_EXECUTORS} = process.env
   // allow 1 - 8 executors to run in dev
   const numExecutors = Math.min(Math.max(Number(DEV_NUM_EXECUTORS) || 1, 1), 8)
-  for (let i = 1; i < numExecutors; i++) {
-    const forkServerId = String(Number(SERVER_ID) + i)
+  for (let i = 0; i < numExecutors; i++) {
+    const forkServerId = String(Number(SERVER_ID) + i + 1)
     const env = {...process.env, SERVER_ID: forkServerId}
+    // fork all gql executors so they run in their own process
+    // so publishers (web.js) can't block consumers (gql executors)
     fork(executorPath, {env})
   }
 }
