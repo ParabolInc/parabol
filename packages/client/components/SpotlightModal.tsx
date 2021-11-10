@@ -71,6 +71,11 @@ const SpotlightModal = (props: Props) => {
   const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
+  const groupIdRef = useRef('')
+  const nextGroupId = spotlightGroupId ?? ''
+  if (nextGroupId) {
+    groupIdRef.current = nextGroupId
+  }
   const reflectionIdsToHideRef = useRef<string[] | null>(null)
   if (!spotlightReflectionId) {
     return null
@@ -104,7 +109,7 @@ const SpotlightModal = (props: Props) => {
 
 
   const queryRef = useQueryLoaderNow<SpotlightResultsRootQuery>(spotlightResultsRootQuery, {
-    reflectionId: spotlightReflectionId,
+    reflectionGroupId: groupIdRef.current,
     searchQuery: spotlightSearchQuery,
     meetingId
   }, 'network-only')
@@ -112,7 +117,7 @@ const SpotlightModal = (props: Props) => {
     <Modal hideModal={hideModal} ref={modalRef}>
       <SourceSection>
         <SpotlightTopBar closeSpotlight={closeSpotlight} />
-        <SpotlightSourceReflectionCard meeting={meeting} ref={sourceRef} modalRef={modalRef} reflectionIdsToHideRef={reflectionIdsToHideRef} />
+        <SpotlightSourceReflectionCard meeting={meeting} sourceRef={sourceRef} modalRef={modalRef} reflectionIdsToHideRef={reflectionIdsToHideRef} />
         <SpotlightSearchBar meetingId={meetingId} spotlightSearchQuery={spotlightSearchQuery} />
       </SourceSection>
       <Suspense fallback={''}>

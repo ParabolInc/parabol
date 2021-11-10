@@ -38,7 +38,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
+  const {id: meetingId, reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -51,7 +51,7 @@ const GroupingKanban = (props: Props) => {
     sourceCloneRef.current = null
     onCloseSpotlight()
     commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meeting.id)
+      const meeting = store.get(meetingId)
       if (!meeting) return
       meeting.setValue(null, 'spotlightReflection')
       meeting.setValue(null, 'spotlightSearchQuery')

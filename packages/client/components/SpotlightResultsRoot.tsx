@@ -26,7 +26,7 @@ const SpotlightResultsRoot = (props: Props) => {
   const {queryRef, phaseRef} = props
   const data = usePreloadedQuery<SpotlightResultsRootQuery>(
     graphql`
-      query SpotlightResultsRootQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
+      query SpotlightResultsRootQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
         viewer {
           ...SpotlightGroups_viewer
           meeting(meetingId: $meetingId) {

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React, {RefObject} from 'react'
 import {ElementHeight} from '../types/constEnums'
-import {GroupingKanbanColumn_meeting$data} from '../__generated__/GroupingKanbanColumn_meeting.graphql'
+import {GroupingKanban_meeting$data} from '../__generated__/GroupingKanban_meeting.graphql'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 
 const Source = styled('div')({
@@ -9,17 +9,17 @@ const Source = styled('div')({
 })
 
 interface Props {
-  meeting: GroupingKanbanColumn_meeting$data
-  ref: RefObject<HTMLDivElement>
+  meeting: GroupingKanban_meeting$data
+  sourceRef: RefObject<HTMLDivElement>
   modalRef: RefObject<HTMLDivElement>
   reflectionIdsToHideRef: RefObject<string[]>
 }
 
 const SpotlightSourceReflectionCard = (props: Props) => {
-  const {meeting, ref, modalRef, reflectionIdsToHideRef} = props
+  const {meeting, sourceRef, modalRef, reflectionIdsToHideRef} = props
 
   return (
-    <Source ref={ref}>
+    <Source ref={sourceRef}>
       {meeting.spotlightGroup && (
         <ReflectionGroup
           phaseRef={modalRef}
