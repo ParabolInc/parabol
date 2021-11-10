@@ -58,11 +58,11 @@ export const getDroppingStyles = (
   timeRemaining: number,
   targetId?: string | null,
   isClose?: boolean,
-  lastStyle?: React.CSSProperties
+  lastZIndex?: number
 ) => {
   const spotlightEl = document.getElementById('spotlight')
   const isTargetInSpotlight = targetId
-    ? spotlightEl && document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`)
+    ? !!(spotlightEl && document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`))
     : false
   const isInSpotlight = spotlightEl && spotlightEl.contains(element)
   const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
@@ -74,15 +74,24 @@ export const getDroppingStyles = (
   const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s linear 0s forwards`
   const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s linear 0s forwards`
 
-  const isCurrentlyBehindSpotlight =
-    lastStyle &&
-    (lastStyle.zIndex === ZIndex.REFLECTION_IN_FLIGHT || lastStyle.zIndex === undefined)
-  const isFadingIn = spotlightEl && !isInSpotlight && lastStyle && isTargetInSpotlight && !isClose
+  const notInSpotlightSuggestions = spotlightEl && !isInSpotlight
+  const isCurrentlyBehindSpotlight = lastZIndex !== ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
+  const isFadingIn =
+    // Spotlight is open and the element is not a part of the spotlight suggestions
+    notInSpotlightSuggestions &&
+    // Element is hovering any spotlight element
+    isTargetInSpotlight &&
+    // Element is not released and not returning to its place behind the spotlight
+    !isClose
+
   const isFadingOut =
-    spotlightEl &&
-    !isInSpotlight &&
-    lastStyle &&
+    // Spotlight is open and the element is not a part of the spotlight suggestions
+    notInSpotlightSuggestions &&
+    // The element is not behind the spotlight already
+    // make sense when the remote reflection first appears in the background
     !isCurrentlyBehindSpotlight &&
+    // Element is not hovering any spotlight element
+    // or element is released and moving back to its place behind the spotlight
     (!showAboveSpotlight || isClose)
 
   return {
