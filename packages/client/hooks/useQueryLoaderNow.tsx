@@ -23,7 +23,7 @@ const useQueryLoaderNow = <TQuery extends OperationType>(
   // refetch when reconnected to server
   useEffect(() => {
     const refresh = () => {
-      loadQuery(variables || {}, {fetchPolicy: fetchPolicy || 'store-or-network'})
+      loadQuery(varRef.current, {fetchPolicy: 'network-only'})
     }
     atmosphere.retries.add(refresh)
     return () => {

@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, Suspense} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import SpotlightGroups from './SpotlightGroups'
-import LoadingComponent from './LoadingComponent/LoadingComponent'
 import {
   SpotlightResultsRootQuery
 } from '../__generated__/SpotlightResultsRootQuery.graphql'
@@ -33,9 +32,7 @@ const SpotlightResultsRoot = (props: Props) => {
   const meeting = viewer.meeting!
 
   return (
-    <Suspense
-      fallback={<LoadingComponent height={24} width={24} showAfter={0} spinnerSize={24} />}
-    >
+    <Suspense fallback={''}>
       <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
     </Suspense>
   )

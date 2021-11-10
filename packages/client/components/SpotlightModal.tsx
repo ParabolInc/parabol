@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {RefObject, Suspense, useEffect, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
 import spotlightResultsRootQuery, {
@@ -120,11 +120,7 @@ const SpotlightModal = (props: Props) => {
         <SpotlightSourceReflectionCard meeting={meeting} sourceRef={sourceRef} modalRef={modalRef} reflectionIdsToHideRef={reflectionIdsToHideRef} />
         <SpotlightSearchBar meetingId={meetingId} spotlightSearchQuery={spotlightSearchQuery} />
       </SourceSection>
-      <Suspense fallback={''}>
-        {queryRef && (
-          <SpotlightResultsRoot queryRef={queryRef} phaseRef={modalRef} />
-        )}
-      </Suspense>
+      {queryRef && (<SpotlightResultsRoot queryRef={queryRef} phaseRef={modalRef} />)}
     </Modal>
   )
 }
