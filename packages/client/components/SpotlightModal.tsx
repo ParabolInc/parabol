@@ -77,11 +77,7 @@ const SpotlightModal = (props: Props) => {
     groupIdRef.current = nextGroupId
   }
   const reflectionIdsToHideRef = useRef<string[] | null>(null)
-  if (!spotlightReflectionId) {
-    return null
-  }
   const spotlightSearchQuery = meeting.spotlightSearchQuery ?? ""
-
 
   useEffect(() => {
     if (!spotlightGroup) return
@@ -106,7 +102,6 @@ const SpotlightModal = (props: Props) => {
     }, Times.SPOTLIGHT_SOURCE_DURATION)
     return () => clearTimeout(timeout)
   }, [portalStatus])
-
 
   const queryRef = useQueryLoaderNow<SpotlightResultsRootQuery>(spotlightResultsRootQuery, {
     reflectionGroupId: groupIdRef.current,
