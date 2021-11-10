@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
@@ -37,7 +37,7 @@ const useRemotelyDraggedCard = (
 ) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
-  const [lastStyle, setLastStyle] = React.useState({})
+  const [lastZIndex, setLastZIndex] = useState<number | undefined>()
   const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
     if (!drag.ref || timeRemaining <= 0) return
     const beforeFrame = Date.now()
@@ -52,10 +52,10 @@ const useRemotelyDraggedCard = (
         timeRemaining,
         targetId,
         isClose,
-        lastStyle
+        lastZIndex
       )
 
-      setLastStyle(style)
+      setLastZIndex(style.zIndex)
 
       setPortal(
         `clone-${reflection.id}`,
