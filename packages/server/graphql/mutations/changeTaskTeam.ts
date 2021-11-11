@@ -65,9 +65,10 @@ export default {
       // The task might have been pushed by someone else for viewer (`userId !== accessUserId`).
       // In that case we still try to use the viewer's target team authentication, but fall back to the
       // accessUser's in case it is present for the target team.
+      const targetTeamAuthKey = {teamId, userId: viewerId}
       const authKeys = [
         {teamId: task.teamId, userId: viewerId},
-        {teamId, userId: viewerId},
+        targetTeamAuthKey,
         {teamId, userId: integration.accessUserId}
       ]
       const [sourceTeamAuth, targetTeamAuth, accessUsersTargetTeamAuth] =
@@ -91,6 +92,8 @@ export default {
               ...sourceTeamAuth,
               teamId
             })
+            // dataLoader does not allow to refresh the value, so clear the updated one
+            dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
             const data = {teamId, userId: viewerId}
             publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
           }
@@ -99,6 +102,8 @@ export default {
               ...sourceTeamAuth,
               teamId
             })
+            // dataLoader does not allow to refresh the value, so clear the updated one
+            dataLoader.get('githubAuth').clear(targetTeamAuthKey)
             const data = {teamId, userId: viewerId}
             publish(SubscriptionChannel.TEAM, teamId, 'AddGitHubAuthPayload', data, subOptions)
           }
