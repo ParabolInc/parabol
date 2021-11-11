@@ -54,6 +54,7 @@ const useSpotlightSimulatedDrag = (
       const meetingProxy = store.get(meetingId)
       meetingProxy?.setValue(null, 'spotlightGroup')
       meetingProxy?.setValue(null, 'spotlightReflectionId')
+      meetingProxy?.setValue(null, 'spotlightSearchQuery')
       const reflection = store.get(reflectionId)
       // set isDropping to true so that the source is added back to its original position in kanban
       reflection?.setValue(true, 'isDropping')
