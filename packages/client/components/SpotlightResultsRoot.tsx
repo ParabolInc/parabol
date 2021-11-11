@@ -1,41 +1,37 @@
-import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, Suspense} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import React, {RefObject, useRef} from 'react'
+import spotlightGroupsQuery, {
+  SpotlightGroupsQuery
+} from '../__generated__/SpotlightGroupsQuery.graphql'
 import SpotlightGroups from './SpotlightGroups'
-import {
-  SpotlightResultsRootQuery
-} from '../__generated__/SpotlightResultsRootQuery.graphql'
+import useQueryLoaderNow from '~/hooks/useQueryLoaderNow'
 
 interface Props {
-  queryRef: PreloadedQuery<SpotlightResultsRootQuery>
+  spotlightGroupId?: string
   phaseRef: RefObject<HTMLDivElement>
+  meetingId: string
+  spotlightSearchQuery: string
 }
 
 const SpotlightResultsRoot = (props: Props) => {
-  const {queryRef, phaseRef} = props
-  const data = usePreloadedQuery<SpotlightResultsRootQuery>(
-    graphql`
-      query SpotlightResultsRootQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
-        viewer {
-          ...SpotlightGroups_viewer
-          meeting(meetingId: $meetingId) {
-            ...SpotlightGroups_meeting
-          }
-        }
-      }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+  const {meetingId, spotlightGroupId, phaseRef, spotlightSearchQuery} = props
+  const groupIdRef = useRef('')
+  const nextGroupId = spotlightGroupId ?? ''
+  if (nextGroupId) {
+    groupIdRef.current = nextGroupId
+  }
+  const variables = {
+    reflectionGroupId: groupIdRef.current,
+    searchQuery: spotlightSearchQuery,
+    meetingId
+  }
+  const queryRef = useQueryLoaderNow<SpotlightGroupsQuery>(
+    spotlightGroupsQuery,
+    variables,
+    undefined,
+    true
   )
 
-  const {viewer} = data
-  const meeting = viewer.meeting!
-
-  return (
-    <Suspense fallback={''}>
-      <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
-    </Suspense>
-  )
+  if (!queryRef) return null
+  return <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />
 }
-
 export default SpotlightResultsRoot

@@ -2,23 +2,13 @@ import styled from '@emotion/styled'
 import React, {RefObject, useEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
-import spotlightResultsRootQuery, {
-  SpotlightResultsRootQuery
-} from '../__generated__/SpotlightResultsRootQuery.graphql'
 import SpotlightResultsRoot from './SpotlightResultsRoot'
 import SpotlightTopBar from './SpotlightTopBar'
 import SpotlightSearchBar from './SpotlightSearchBar'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import SpotlightSourceReflectionCard from './SpotlightSourceReflectionCard'
+import SpotlightSourceGroup from './SpotlightSourceGroup'
 import {PALETTE} from '../styles/paletteV3'
 import {GroupingKanban_meeting$data} from '../__generated__/GroupingKanban_meeting.graphql'
-import {
-  BezierCurve,
-  Breakpoint,
-  ElementWidth,
-  Times,
-  ZIndex
-} from '../types/constEnums'
+import {BezierCurve, Breakpoint, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {PortalStatus} from '~/hooks/usePortal'
 
@@ -68,7 +58,7 @@ const SpotlightModal = (props: Props) => {
   const {closeSpotlight, meeting, sourceRef, portalStatus} = props
   const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
-  const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
+  const {id: meetingId, spotlightGroup, spotlightReflectionId, spotlightSearchQuery} = meeting
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
   const groupIdRef = useRef('')
@@ -77,7 +67,6 @@ const SpotlightModal = (props: Props) => {
     groupIdRef.current = nextGroupId
   }
   const reflectionIdsToHideRef = useRef<string[] | null>(null)
-  const spotlightSearchQuery = meeting.spotlightSearchQuery ?? ""
 
   useEffect(() => {
     if (!spotlightGroup) return
@@ -103,19 +92,27 @@ const SpotlightModal = (props: Props) => {
     return () => clearTimeout(timeout)
   }, [portalStatus])
 
-  const queryRef = useQueryLoaderNow<SpotlightResultsRootQuery>(spotlightResultsRootQuery, {
-    reflectionGroupId: groupIdRef.current,
-    searchQuery: spotlightSearchQuery,
-    meetingId
-  }, 'network-only')
   return (
     <Modal hideModal={hideModal} ref={modalRef}>
       <SourceSection>
         <SpotlightTopBar closeSpotlight={closeSpotlight} />
-        <SpotlightSourceReflectionCard meeting={meeting} sourceRef={sourceRef} modalRef={modalRef} reflectionIdsToHideRef={reflectionIdsToHideRef} />
-        <SpotlightSearchBar meetingId={meetingId} spotlightSearchQuery={spotlightSearchQuery} />
+        <SpotlightSourceGroup
+          meeting={meeting}
+          sourceRef={sourceRef}
+          modalRef={modalRef}
+          reflectionIdsToHideRef={reflectionIdsToHideRef}
+        />
+        <SpotlightSearchBar
+          meetingId={meetingId}
+          spotlightSearchQuery={spotlightSearchQuery || ''}
+        />
       </SourceSection>
-      {queryRef && (<SpotlightResultsRoot queryRef={queryRef} phaseRef={modalRef} />)}
+      <SpotlightResultsRoot
+        phaseRef={modalRef}
+        meetingId={meetingId}
+        spotlightGroupId={spotlightGroupId}
+        spotlightSearchQuery={spotlightSearchQuery || ''}
+      />
     </Modal>
   )
 }

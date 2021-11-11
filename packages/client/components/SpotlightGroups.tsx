@@ -1,14 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
-import {useFragment} from 'react-relay'
-import {SpotlightGroups_meeting$key} from '~/__generated__/SpotlightGroups_meeting.graphql'
-import {SpotlightGroups_viewer$key} from '~/__generated__/SpotlightGroups_viewer.graphql'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {ElementHeight, ElementWidth} from '~/types/constEnums'
 import useGroupMatrix from '../hooks/useGroupMatrix'
 import useResultsHeight from '~/hooks/useResultsHeight'
 import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
+import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 
 const SimilarGroups = styled('div')({
   padding: '40px 0px 24px',
@@ -35,36 +34,59 @@ const Column = styled('div')({
 })
 
 interface Props {
-  meeting: SpotlightGroups_meeting$key
   phaseRef: RefObject<HTMLDivElement>
-  viewer: SpotlightGroups_viewer$key
+  queryRef: PreloadedQuery<SpotlightGroupsQuery>
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {phaseRef} = props
-  const userData = useFragment(
+  const {phaseRef, queryRef} = props
+
+  const data = usePreloadedQuery<SpotlightGroupsQuery>(
     graphql`
-      fragment SpotlightGroups_viewer on User {
-        similarReflectionGroups(reflectionGroupId: $reflectionGroupId, searchQuery: $searchQuery) {
-          id
-          ...ReflectionGroup_reflectionGroup
-        }
-        meeting(meetingId: $meetingId) {
-          ...SpotlightGroups_meeting
+      query SpotlightGroupsQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
+        viewer {
+          similarReflectionGroups(
+            reflectionGroupId: $reflectionGroupId
+            searchQuery: $searchQuery
+          ) {
+            id
+            ...ReflectionGroup_reflectionGroup
+          }
+          meeting(meetingId: $meetingId) {
+            ... on RetrospectiveMeeting {
+              ...DraggableReflectionCard_meeting
+              ...ReflectionGroup_meeting
+              id
+              teamId
+              localPhase {
+                phaseType
+              }
+              localStage {
+                isComplete
+                phaseType
+              }
+              phases {
+                phaseType
+                stages {
+                  isComplete
+                  phaseType
+                }
+              }
+              spotlightGroup {
+                id
+                ...ReflectionGroup_reflectionGroup
+              }
+            }
+          }
         }
       }
     `,
-    props.viewer
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
   )
-  const meetingData = useFragment(
-    graphql`
-      fragment SpotlightGroups_meeting on RetrospectiveMeeting {
-        ...ReflectionGroup_meeting
-      }
-    `,
-    props.meeting
-  )
-  const {similarReflectionGroups} = userData
+  const {viewer} = data
+  const {meeting, similarReflectionGroups} = viewer
+
   const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
   const scrollHeight = useResultsHeight(resultsRef)
@@ -78,7 +100,7 @@ const SpotlightGroups = (props: Props) => {
             {row.map((group) => (
               <ReflectionGroup
                 key={group.id}
-                meeting={meetingData}
+                meeting={meeting!}
                 phaseRef={phaseRef}
                 reflectionGroup={group}
                 expandedReflectionGroupPortalParentId='spotlight'

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -16,7 +16,6 @@ import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import SpotlightModal from './SpotlightModal'
-import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -38,24 +37,17 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {id: meetingId, reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
+  const {reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const [callbackRef, columnsRef] = useCallbackRef()
   useHideBodyScroll()
-  const atmosphere = useAtmosphere()
   const dragIdRef = useRef<string>()
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
   const closeSpotlight = () => {
     sourceCloneRef.current = null
     onCloseSpotlight()
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      if (!meeting) return
-      meeting.setValue(null, 'spotlightReflection')
-      meeting.setValue(null, 'spotlightSearchQuery')
-    })
   }
   const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
     onClose: closeSpotlight,

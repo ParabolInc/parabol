@@ -15,15 +15,16 @@ interface Props {
   reflectionIdsToHideRef: RefObject<string[]>
 }
 
-const SpotlightSourceReflectionCard = (props: Props) => {
+const SpotlightSourceGroup = (props: Props) => {
   const {meeting, sourceRef, modalRef, reflectionIdsToHideRef} = props
+  const {spotlightGroup} = meeting
 
   return (
     <Source ref={sourceRef}>
-      {meeting.spotlightGroup && (
+      {spotlightGroup && (
         <ReflectionGroup
           phaseRef={modalRef}
-          reflectionGroup={meeting.spotlightGroup}
+          reflectionGroup={spotlightGroup}
           meeting={meeting}
           reflectionIdsToHide={reflectionIdsToHideRef.current}
         />
@@ -32,4 +33,4 @@ const SpotlightSourceReflectionCard = (props: Props) => {
   )
 }
 
-export default SpotlightSourceReflectionCard
+export default SpotlightSourceGroup
