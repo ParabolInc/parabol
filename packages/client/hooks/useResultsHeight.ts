@@ -7,7 +7,6 @@ const useResultsHeight = (resultsRef: RefObject<HTMLDivElement>) => {
   const [height, setHeight] = useState<number | string>('100%')
 
   useLayoutEffect(() => {
-    // don't adjust modal height while searching
     const newHeight = resultsRef.current?.clientHeight
     if (newHeight && height !== newHeight) {
       setHeight(newHeight)
