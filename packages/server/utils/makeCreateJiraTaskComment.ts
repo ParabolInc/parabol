@@ -1,45 +1,40 @@
-import {ExternalLinks} from '../../client/types/constEnums'
 import {Doc} from './convertContentStateToADF'
+import {ExternalLinks} from '../../client/types/constEnums'
 
-const makeScoreJiraComment = (
-  dimensionName: string,
-  finalScore: string,
-  meetingName: string,
-  discussionURL: string
+const makeCreateJiraTaskComment = (
+  creator: string,
+  assignee: string,
+  teamName: string,
+  teamDashboardUrl: string
 ): Doc => ({
-  version: 1,
-  type: 'doc',
+  version: 1 as const,
+  type: 'doc' as const,
   content: [
     {
       type: 'paragraph',
       content: [
         {
           type: 'text',
-          text: `${dimensionName}: ${finalScore}`,
-          marks: [
-            {
-              type: 'strong'
-            }
-          ]
+          text: `Created by ${creator} for ${assignee}`
         },
         {
           type: 'hardBreak'
         },
         {
           type: 'text',
-          text: 'See the discussion',
+          text: 'See the dashboard of '
+        },
+        {
+          type: 'text',
+          text: teamName,
           marks: [
             {
               type: 'link',
               attrs: {
-                href: discussionURL
+                href: teamDashboardUrl
               }
             }
           ]
-        },
-        {
-          type: 'text',
-          text: ` in ${meetingName}.`
         },
         {
           type: 'hardBreak'
@@ -60,7 +55,7 @@ const makeScoreJiraComment = (
             {
               type: 'link',
               attrs: {
-                href: ExternalLinks.GETTING_STARTED_SPRINT_POKER
+                href: ExternalLinks.INTEGRATIONS_JIRA
               }
             },
             {
@@ -73,4 +68,4 @@ const makeScoreJiraComment = (
   ]
 })
 
-export default makeScoreJiraComment
+export default makeCreateJiraTaskComment
