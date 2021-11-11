@@ -76,6 +76,7 @@ const SpotlightGroups = (props: Props) => {
                 id
                 ...ReflectionGroup_reflectionGroup
               }
+              spotlightSearchQuery
             }
           }
         }
@@ -86,10 +87,11 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
+  const spotlightSearchQuery = meeting?.spotlightSearchQuery
 
   const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
-  const scrollHeight = useResultsHeight(resultsRef)
+  const scrollHeight = useResultsHeight(resultsRef, spotlightSearchQuery || '')
 
   if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
   return (
