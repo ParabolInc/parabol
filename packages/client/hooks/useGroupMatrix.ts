@@ -1,11 +1,11 @@
-import {SpotlightGroups_viewer} from './../__generated__/SpotlightGroups_viewer.graphql'
+import {SpotlightGroupsQueryResponse} from './../__generated__/SpotlightGroupsQuery.graphql'
 import {RefObject, useEffect, useState} from 'react'
 import {ElementWidth} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
 import useInitialRender from './useInitialRender'
 
-type Group = SpotlightGroups_viewer['similarReflectionGroups'][0]
+type Group = SpotlightGroupsQueryResponse['viewer']['similarReflectionGroups'][0]
 
 const useGroupMatrix = (
   resultsGroups: readonly Group[],
@@ -19,9 +19,10 @@ const useGroupMatrix = (
     const width = el?.clientWidth
     if (!width) return null
     let colCount = 1
+    const currentMaxColumns = Math.min(resultsGroups.length, MAX_SPOTLIGHT_COLUMNS)
     const getNextWidth = (count: number) =>
       ElementWidth.MEETING_CARD * count + ElementWidth.MEETING_CARD_MARGIN * (count - 1)
-    while (getNextWidth(colCount + 1) < width && colCount + 1 <= MAX_SPOTLIGHT_COLUMNS) {
+    while (getNextWidth(colCount + 1) < width && colCount + 1 <= currentMaxColumns) {
       colCount++
     }
     return colCount

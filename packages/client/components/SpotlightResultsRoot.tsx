@@ -1,41 +1,38 @@
-import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, Suspense} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import React, {RefObject, Suspense, useRef} from 'react'
+import spotlightGroupsQuery, {
+  SpotlightGroupsQuery
+} from '../__generated__/SpotlightGroupsQuery.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import SpotlightGroups from './SpotlightGroups'
-import {
-  SpotlightResultsRootQuery
-} from '../__generated__/SpotlightResultsRootQuery.graphql'
 
 interface Props {
-  queryRef: PreloadedQuery<SpotlightResultsRootQuery>
+  spotlightGroupId?: string
   phaseRef: RefObject<HTMLDivElement>
+  meetingId: string
+  spotlightSearchQuery: string
 }
 
 const SpotlightResultsRoot = (props: Props) => {
-  const {queryRef, phaseRef} = props
-  const data = usePreloadedQuery<SpotlightResultsRootQuery>(
-    graphql`
-      query SpotlightResultsRootQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
-        viewer {
-          ...SpotlightGroups_viewer
-          meeting(meetingId: $meetingId) {
-            ...SpotlightGroups_meeting
-          }
-        }
-      }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+  const {meetingId, spotlightGroupId, phaseRef, spotlightSearchQuery} = props
+  const groupIdRef = useRef('')
+  const nextGroupId = spotlightGroupId ?? ''
+  if (nextGroupId) {
+    groupIdRef.current = nextGroupId
+  }
+  const queryRef = useQueryLoaderNow<SpotlightGroupsQuery>(
+    spotlightGroupsQuery,
+    {
+      reflectionGroupId: groupIdRef.current,
+      searchQuery: spotlightSearchQuery,
+      meetingId
+    },
+    // Results could be grouped or ungrouped since modal was last opened with identical variables
+    'network-only'
   )
-
-  const {viewer} = data
-  const meeting = viewer.meeting!
-
   return (
     <Suspense fallback={''}>
-      <SpotlightGroups meeting={meeting} phaseRef={phaseRef} viewer={viewer} />
+      {queryRef && <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />}
     </Suspense>
   )
 }
-
 export default SpotlightResultsRoot
