@@ -10,8 +10,7 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
-
-const generateDeletedUserId = () => `deletedUser-${Date.now()}`
+import getDeletedEmail from '../../../utils/getDeletedEmail'
 
 const hardDeleteUser = {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -92,6 +91,7 @@ const hardDeleteUser = {
       (r
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter((row) => row('meetingType').eq('retro'))
         .eqJoin('id', r.table('RetroReflection'), {index: 'meetingId'})
         .zip() as any)
         .filter((row) => row('creatorId').eq(userIdToDelete))
@@ -138,24 +138,16 @@ const hardDeleteUser = {
     // soft delete first for side effects
     await softDeleteUser(userIdToDelete, dataLoader, reason)
 
-    const tombstoneId = generateDeletedUserId()
+    const tombstoneId = getDeletedEmail(userIdToDelete)
 
     // all other writes
     await r({
-      user: r
-        .table('User')
-        .get(userIdToDelete)
-        .delete(),
       teamMember: r
         .table('TeamMember')
         .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       meetingMember: r
         .table('MeetingMember')
-        .getAll(userIdToDelete, {index: 'userId'})
-        .delete(),
-      atlassianAuth: r
-        .table('AtlassianAuth')
         .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
       notification: r
@@ -170,6 +162,8 @@ const hardDeleteUser = {
         .table('SuggestedAction')
         .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
+      // if `softDeleteUser` found other teammates and reassigned tasks to them,
+      // this will be a noop. else, this will remove their userId as written:
       assignedTasks: r
         .table('Task')
         .getAll(userIdToDelete, {index: 'userId'})
@@ -206,7 +200,7 @@ const hardDeleteUser = {
         .table('TeamInvitation')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter((row) => row('invitedBy').eq(userIdToDelete))
-        .update({invitedBy: ''}),
+        .delete(),
       createdByTeamInvitations: r
         .table('TeamInvitation')
         .getAll(r.args(teamIds), {index: 'teamId'})

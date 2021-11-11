@@ -9,8 +9,7 @@ import db from '../../db'
 import getDeletedEmail from '../../utils/getDeletedEmail'
 import updateUser from '../../postgres/queries/updateUser'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+import sleep from 'parabol-client/utils/sleep'
 
 const markUserSoftDeleted = async (userIdToDelete, validReason) => {
   const update = {
@@ -69,7 +68,7 @@ export default {
     await softDeleteUserResolver(userIdToDelete, dataLoader, validReason)
 
     // do this after 30 seconds so any segment API calls can still get the email
-    await delay(30000)
+    await sleep(30000)
     await markUserSoftDeleted(userIdToDelete, validReason)
 
     return {}

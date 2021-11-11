@@ -143,8 +143,6 @@ const removeTeamMember = async (
     .getAll(teamId, {index: 'teamId'})
     .filter((row) => row('teamMemberId').eq(teamMemberId))
     .getField('id')
-    .coerceTo('array')
-    .distinct()
     .run()
 
   // if a new meeting was currently running, remove them from it

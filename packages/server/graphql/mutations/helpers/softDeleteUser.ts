@@ -6,6 +6,7 @@ import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
 import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
 import getRethink from '../../../database/rethinkDriver'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
+import parabolFetch from '../../parabolFetch'
 
 const removeGitHubAuths = async (userId: string, teamIds: string[]) =>
   Promise.all(teamIds.map((teamId) => removeGitHubAuth(userId, teamId)))
@@ -33,17 +34,31 @@ const softDeleteUser = async (
     .run()
   const teamIds = teamMemberIds.map((id) => TeamMemberId.split(id).teamId)
 
-  await Promise.all([
+  const [parabolPayload] = await Promise.all([
+    parabolFetch(
+      `
+      query AccountRemoved($userId: ID!) {
+        user(userId: $userId) {
+          email
+          isRemoved
+          company {
+            userCount
+            activeUserCount
+          }
+        }
+      }`,
+      {userId: userIdToDelete}
+    ),
     removeAtlassianAuths(userIdToDelete, teamIds),
     removeGitHubAuths(userIdToDelete, teamIds),
     removeSlackAuths(userIdToDelete, teamIds, true)
   ])
-
   segmentIo.track({
     userId: userIdToDelete,
     event: 'Account Removed',
     properties: {
-      reason: validReason
+      reason: validReason,
+      parabolPayload
     }
   })
 }

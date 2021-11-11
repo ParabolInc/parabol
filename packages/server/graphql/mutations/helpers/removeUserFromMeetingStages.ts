@@ -1,4 +1,3 @@
-import EstimateStage from '../../../database/types/EstimateStage'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -14,8 +13,10 @@ const removeUserFromMeetingStages = async (
 ) => {
   const now = new Date()
   const r = await getRethink()
-  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-  const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
+  const [activeMeetings, completedMeetings] = await Promise.all([
+    dataLoader.get('activeMeetingsByTeamId').load(teamId),
+    dataLoader.get('completedMeetingsByTeamId').load(teamId)
+  ])
   const meetings = activeMeetings.concat(completedMeetings)
 
   await Promise.all(
@@ -33,11 +34,10 @@ const removeUserFromMeetingStages = async (
             readyToAdvance.splice(userIdIdx, 1)
             isChanged = true
           }
-          const scores = (stage as EstimateStage).scores
-          if (scores) {
-            const userIdIdx = scores.map(({userId}) => userId).indexOf(userId)
+          if (stage.phaseType === 'ESTIMATE') {
+            const userIdIdx = stage.scores.map(({userId}) => userId).indexOf(userId)
             if (userIdIdx !== -1) {
-              scores.splice(userIdIdx, 1)
+              stage.scores.splice(userIdIdx, 1)
               isChanged = true
             }
           }

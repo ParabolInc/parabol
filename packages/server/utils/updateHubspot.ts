@@ -1,8 +1,7 @@
 import fetch from 'node-fetch'
 import sleep from 'parabol-client/utils/sleep'
-import ServerAuthToken from '../database/types/ServerAuthToken'
 import IUser from '../postgres/types/IUser'
-import executeGraphQL from '../graphql/executeGraphQL'
+import parabolFetch from '../graphql/parabolFetch'
 import sendToSentry from './sendToSentry'
 
 interface BulkRecord {
@@ -211,28 +210,6 @@ query ArchiveTeam($userId: ID!) {
 const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
 const hapiKey = process.env.HUBSPOT_API_KEY
 
-const parabolFetch = async (query: string, variables: Record<string, unknown>) => {
-  const result = await executeGraphQL({
-    authToken: new ServerAuthToken(),
-    query,
-    variables,
-    isPrivate: true
-  })
-
-  if (result.errors) {
-    const [firstError] = result.errors
-    const safeError = new Error(firstError.message)
-    safeError.stack = (firstError as Error).stack
-    sendToSentry(safeError)
-  }
-  if (!result.data) {
-    sendToSentry(new Error('HS Parabol did not return data'), {
-      tags: {query, variables: JSON.stringify(variables)}
-    })
-  }
-  return result.data
-}
-
 const normalize = (value?: string | number) => {
   if (typeof value === 'string' && new Date(value).toJSON() === value) {
     return new Date(value).getTime()
@@ -390,6 +367,12 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
     // wait for hubspot to associate the contact with the company, fn must run in 5 seconds
     await sleep(5000)
     await updateHubspotCompany(email, company)
+  } else if (event === 'Account Removed') {
+    const {parabolPayload} = properties
+    if (!parabolPayload) return
+    const {user} = (parabolPayload as unknown) as {[key: string]: any}
+    const {email, company, ...contact} = user
+    await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
   } else if (tierChanges.includes(event)) {
     const {email} = properties
     const parabolPayload = await parabolFetch(query, {userId})
