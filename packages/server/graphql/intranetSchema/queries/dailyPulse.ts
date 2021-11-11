@@ -58,7 +58,7 @@ const makeTopXSection = async (domainCount: DomainCount[]) => {
   let curTotals = ''
   const fields = [] as TypeField[]
   for (let i = 0; i < aggregated.length; i++) {
-    const signup = aggregated[i]
+    const signup = aggregated[i]!
     const {domain, total, allTimeTotal} = signup
     curDomains += `*${domain}*\n`
     curTotals += `*${total}* (${allTimeTotal} total)\n`

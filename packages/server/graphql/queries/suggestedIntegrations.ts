@@ -52,7 +52,7 @@ export default {
     const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByUserId]
     // dedupes for perms, user vs team items, as well as possible name changes
     for (let i = 0; i < userAndTeamItems.length; i++) {
-      const integration = userAndTeamItems[i]
+      const integration = userAndTeamItems[i]!
       if (!permLookup[integration.service] || idSet.has(integration.id)) {
         continue
       }

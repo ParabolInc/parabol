@@ -96,7 +96,7 @@ const extractMarkdownStyles = (
   const extractedStyles = []
   let es = editorState
   for (let i = 0; i < styles.length; i++) {
-    es = extractStyle(es, getNextState, styles[i], blockKey, extractedStyles)
+    es = extractStyle(es, getNextState, styles[i]!, blockKey, extractedStyles)
   }
   if (es !== editorState) {
     // squash the undo stack so hitting undo (or transitively backspace) undoes all the styling

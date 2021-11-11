@@ -59,7 +59,7 @@ const fetchGitHubRepos = async (
     endpointContext,
     info
   })
-  if (errors) {
+  if (errors && errors[0]) {
     console.error(errors[0].message)
     return []
   }

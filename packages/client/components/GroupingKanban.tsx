@@ -77,7 +77,7 @@ const GroupingKanban = (props: Props) => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
     for (let i = 0; i < reflectionGroups.length; i++) {
-      const group = reflectionGroups[i]
+      const group = reflectionGroups[i]!
       const {reflections, promptId} = group
       container[promptId] = container[promptId] || []
       container[promptId].push(group)

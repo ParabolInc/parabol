@@ -50,11 +50,11 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
     const {stages} = estimatePhase
     const summaries = [] as StageSummary[]
     for (let i = 0; i < stages.length; i++) {
-      const stage = stages[i]
+      const stage = stages[i]!
       const {taskId, task} = stage
       const batch = [stage]
       for (let j = i + 1; j < stages.length; j++) {
-        const nextStage = stages[j]
+        const nextStage = stages[j]!
         if (nextStage.taskId !== taskId) break
         batch.push(nextStage)
       }

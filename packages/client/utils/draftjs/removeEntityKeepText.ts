@@ -8,11 +8,11 @@ import {
 const updateBlockEntityRanges = (blocks: RawDraftContentBlock[], updatedKeyMap: any) => {
   const nextBlocks = [] as RawDraftContentBlock[]
   for (let ii = 0; ii < blocks.length; ii++) {
-    const block = blocks[ii]
+    const block = blocks[ii]!
     const {entityRanges} = block
     const nextEntityRanges = [] as RawDraftEntityRange[]
     for (let jj = 0; jj < entityRanges.length; jj++) {
-      const entityRange = entityRanges[jj]
+      const entityRange = entityRanges[jj]!
       const nextKey = updatedKeyMap[entityRange.key]
       if (nextKey !== null) {
         nextEntityRanges.push({...entityRange, key: nextKey})
@@ -37,8 +37,8 @@ const removeEntityKeepText = (rawContent: RawDraftContentState, eqFn: (entity: a
   const releasedKeys = [] as string[]
   const entityMapKeys = Object.keys(entityMap)
   for (let ii = 0; ii < entityMapKeys.length; ii++) {
-    const key = entityMapKeys[ii]
-    const entity = entityMap[key]
+    const key = entityMapKeys[ii]!
+    const entity = entityMap[key]!
     if (eqFn(entity)) {
       removedEntities.push(entity)
       updatedKeyMap[key] = null

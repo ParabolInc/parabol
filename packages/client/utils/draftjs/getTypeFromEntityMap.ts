@@ -13,8 +13,8 @@ const getTypeFromEntityMap = (
   const typeSet = new Set<string>()
   const id = keyLookup[type]
   for (let i = 0; i < entityKeys.length; i++) {
-    const key = entityKeys[i]
-    const entity = entityMap[key]
+    const key = entityKeys[i]!
+    const entity = entityMap[key]!
     if (entity.type === type) {
       typeSet.add(entity.data[id])
     }

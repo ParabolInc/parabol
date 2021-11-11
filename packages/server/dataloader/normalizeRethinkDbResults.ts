@@ -4,7 +4,7 @@ const normalizeRethinkDbResults = <T extends {id: string}>(
 ) => {
   const map = {} as {[key: string]: T}
   for (let i = 0; i < results.length; i++) {
-    const result = results[i]
+    const result = results[i]!
     map[result.id] = result
   }
   const mappedResults = [] as T[]

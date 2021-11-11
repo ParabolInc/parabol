@@ -393,9 +393,10 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.queryKey !== queryKey)
     subsToRemove.forEach((subKey) => {
       const unaffectedSub = this.querySubscriptions.find((qs) => qs.subKey === subKey)
-      if (!unaffectedSub && this.subscriptions[subKey]) {
+      const subscription = this.subscriptions[subKey]
+      if (!unaffectedSub && subscription) {
         // tell the server to unsubscribe
-        this.subscriptions[subKey].unsubscribe()
+        subscription.unsubscribe()
       }
     })
   }

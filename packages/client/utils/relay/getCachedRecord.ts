@@ -45,7 +45,7 @@ function getCachedRecord(
     const allRecords = records || optimisticRecords
     const keys = Object.keys(allRecords)
     for (let ii = 0; ii < keys.length; ii++) {
-      const key = keys[ii]
+      const key = keys[ii]!
       const record = allRecords[key]
       if (filterFn(record)) {
         if (!options.isPlural) return record

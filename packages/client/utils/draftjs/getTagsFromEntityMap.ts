@@ -4,8 +4,8 @@ const getTagsFromEntityMap = <T = string>(entityMap: RawDraftContentState['entit
   const entityKeys = Object.keys(entityMap)
   const tags = new Set<T>()
   for (let i = 0; i < entityKeys.length; i++) {
-    const key = entityKeys[i]
-    const entity = entityMap[key]
+    const key = entityKeys[i]!
+    const entity = entityMap[key]!
     if (entity.type === 'TAG') {
       tags.add(entity.data.value)
     }

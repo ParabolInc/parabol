@@ -54,9 +54,9 @@ class RateLimiter {
     const now = Date.now()
     const userIds = Object.keys(this._lastCall)
     for (let ii = 0; ii < userIds.length; ii++) {
-      const userId = userIds[ii]
+      const userId = userIds[ii]!
       // warning! never entirely GCs users that make at least 1 request/hour. OK for now
-      if (this._lastCall[userId] < now - HOUR) {
+      if (this._lastCall[userId]! < now - HOUR) {
         delete this._lastCall[userId]
         delete this._records[userId]
       }

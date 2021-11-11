@@ -154,7 +154,7 @@ const CommentEditor = (props: Props) => {
   const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i]
+        const tag = textTags[i]!
         if (text.indexOf(tag) !== -1) {
           const selection = editorState.getSelection()
           entityPasteStartRef.current = {

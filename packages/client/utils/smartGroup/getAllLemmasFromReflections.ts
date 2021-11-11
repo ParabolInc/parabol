@@ -8,7 +8,7 @@ const getAllLemmasFromReflections = (reflectionEntities: {lemma?: string, name: 
     const entities = reflectionEntities[jj]
     if (!Array.isArray(entities)) continue
     for (let ii = 0; ii < entities.length; ii++) {
-      const entity = entities[ii]
+      const entity = entities[ii]!
       const {lemma} = entity
       if (lemma) {
         lemmaSet.add(lemma)

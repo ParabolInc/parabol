@@ -65,7 +65,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
       const reactjiIdx = reactjis.findIndex((reactji) => reactji.getValue('id') === id)
       if (isRemove) {
         if (reactjiIdx === -1) return
-        const reactji = reactjis[reactjiIdx]
+        const reactji = reactjis[reactjiIdx]!
         const count = reactji.getValue('count')
         if (count === 1) {
           const nextReactjis = [...reactjis.slice(0, reactjiIdx), ...reactjis.slice(reactjiIdx + 1)]
@@ -86,7 +86,7 @@ const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMuta
           const nextReactjis = [...reactjis, optimisticReactji]
           reactable.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
-          const reactji = reactjis[reactjiIdx]
+          const reactji = reactjis[reactjiIdx]!
           const count = reactji.getValue('count')
           reactji.setValue(count + 1, 'count')
           reactji.setValue(true, 'isViewerReactji')

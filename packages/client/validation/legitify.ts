@@ -23,7 +23,7 @@ const legitify = (expected: {[key: string]: any}) => (actual: any) => {
   if (typeof actual === 'object') {
     const expectedKeys = Object.keys(expected)
     for (let i = 0; i < expectedKeys.length; i++) {
-      const key = expectedKeys[i]
+      const key = expectedKeys[i]!
       const maybeValidator = expected[key]
       const actualValue = actual[key]
       if (typeof maybeValidator === 'function') {

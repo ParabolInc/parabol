@@ -7,8 +7,8 @@ const relayUnsubscribeAll = (connectionContext: ConnectionContext, options: Opti
   if (!connectionContext.subs) return
   const opIds = Object.keys(connectionContext.subs)
   for (let ii = 0; ii < opIds.length; ii++) {
-    const opId = opIds[ii]
-    const sub = connectionContext.subs[opId]
+    const opId = opIds[ii]!
+    const sub = connectionContext.subs[opId]!
     sub.return!()
   }
   connectionContext.subs = {}

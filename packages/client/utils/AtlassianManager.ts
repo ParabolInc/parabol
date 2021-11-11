@@ -335,7 +335,7 @@ export default abstract class AtlassianManager {
       return new Error(json.errorMessages[0])
     }
     if ('errors' in json) {
-      const errorFieldName = Object.keys(json.errors)[0]
+      const errorFieldName = Object.keys(json.errors)[0] as string
       return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
     }
     return json
@@ -360,7 +360,9 @@ export default abstract class AtlassianManager {
     }
     if ('errors' in error) {
       const errorFieldName = Object.keys(error.errors)[0]
-      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      if (errorFieldName) {
+        return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      }
     }
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
   }
@@ -383,7 +385,9 @@ export default abstract class AtlassianManager {
     }
     if ('errors' in error) {
       const errorFieldName = Object.keys(error.errors)[0]
-      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      if (errorFieldName) {
+        return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      }
     }
 
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
@@ -578,7 +582,7 @@ export default abstract class AtlassianManager {
       return `${projectFilter}${and}${textFilter} ${orderBy}`
     }
     const reqs = cloudIds.map(async (cloudId) => {
-      const projectKeys = projectFiltersByCloudId[cloudId]
+      const projectKeys = projectFiltersByCloudId[cloudId]!
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const jql = composeJQL(queryString, isJQL, projectKeys)
       const payload = {

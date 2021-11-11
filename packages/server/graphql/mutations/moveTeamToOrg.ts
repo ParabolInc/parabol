@@ -151,7 +151,7 @@ export default {
   ) {
     const results = [] as (string | any)[]
     for (let i = 0; i < teamIds.length; i++) {
-      const teamId = teamIds[i]
+      const teamId = teamIds[i]!
       const result = await moveToOrg(teamId, orgId, authToken)
       results.push(result)
     }

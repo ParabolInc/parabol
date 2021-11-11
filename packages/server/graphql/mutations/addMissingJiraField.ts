@@ -124,7 +124,7 @@ const addMissingJiraField = {
     const screensToCleanup: Array<{screenId: string; tabId: string}> = []
     // iterate over all the screens sorted by probability, try to update the given field
     for (let i = 0; i < possibleScreens.length; i++) {
-      const screen = possibleScreens[i]
+      const screen = possibleScreens[i]!
       const {screenId, tabId} = screen
       const addFieldResponse = await manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
       if (addFieldResponse instanceof Error) {

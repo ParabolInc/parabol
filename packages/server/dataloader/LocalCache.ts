@@ -34,8 +34,8 @@ export default class LocalCache<T extends keyof CacheType> {
     const keys = Object.keys(this.cacheMap)
     const oldestValidTS = Date.now() - this.ttl
     for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      const {ts} = this.cacheMap[key]
+      const key = keys[i]!
+      const {ts} = this.cacheMap[key]!
       if (ts < oldestValidTS) {
         delete this.cacheMap[key]
       }
@@ -44,7 +44,7 @@ export default class LocalCache<T extends keyof CacheType> {
   private resolveCacheHits(cacheHits: Thunk[]) {
     // cacheHits are possibly from the previous batch, hence the param
     for (let i = 0; i < cacheHits.length; i++) {
-      cacheHits[i]()
+      cacheHits[i]!()
     }
   }
   private dispatchReadBatch = async () => {
@@ -59,7 +59,7 @@ export default class LocalCache<T extends keyof CacheType> {
       const values = await this.redisCache.read(fetches)
       this.resolveCacheHits(cacheHits)
       for (let i = 0; i < fetches.length; i++) {
-        const {resolve, reject} = fetches[i]
+        const {resolve, reject} = fetches[i]!
         const value = values[i]
         const handle = value instanceof Error ? reject : resolve
         handle(value)
@@ -67,7 +67,7 @@ export default class LocalCache<T extends keyof CacheType> {
     } catch (e) {
       this.resolveCacheHits(cacheHits)
       for (let i = 0; i < fetches.length; i++) {
-        const fetch = fetches[i]
+        const fetch = fetches[i]!
         const {table, id, reject} = fetch
         const key = `${table}:${id}`
         this.clearLocal(key)
@@ -144,7 +144,7 @@ export default class LocalCache<T extends keyof CacheType> {
   async readMany<T extends keyof CacheType>(table: T, ids: string[]) {
     const loadPromises = [] as Promise<CacheType[T]>[]
     for (let i = 0; i < ids.length; i++) {
-      loadPromises.push(this.read(table, ids[i]).catch((error) => error))
+      loadPromises.push(this.read(table, ids[i]!).catch((error) => error))
     }
     return Promise.all(loadPromises)
   }

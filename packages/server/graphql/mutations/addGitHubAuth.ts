@@ -46,7 +46,7 @@ export default {
       batchRef: context
     })
 
-    if (errors) {
+    if (errors && errors[0]) {
       return standardError(new Error(errors[0].message), {userId: viewerId})
     }
     const {viewer} = data

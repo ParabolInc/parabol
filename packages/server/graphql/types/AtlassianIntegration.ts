@@ -190,7 +190,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
                 if (!VALID_TYPES.includes(field.schema?.type)) return false
                 const fieldName = field.name.toLowerCase()
                 for (let i = 0; i < INVALID_WORDS.length; i++) {
-                  if (fieldName.includes(INVALID_WORDS[i])) return false
+                  if (fieldName.includes(INVALID_WORDS[i]!)) return false
                 }
                 return true
               })

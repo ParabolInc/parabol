@@ -81,9 +81,9 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     // add mounted nodes
     const mountingKeys = [] as Key[]
     for (let i = 0; i < children.length; i++) {
-      const nextChild = children[i]
+      const nextChild = children[i]!
       const idxInPrev = prevTChildren.findIndex(({child}) => child.key === nextChild.key)
-      const status = idxInPrev === -1 ? TransitionStatus.MOUNTED : prevTChildren[idxInPrev].status
+      const status = idxInPrev === -1 ? TransitionStatus.MOUNTED : prevTChildren[idxInPrev]!.status
       currentTChildren.push({
         status,
         child: nextChild,
@@ -101,7 +101,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
 
     // add exiting nodes
     for (let i = 0; i < prevTChildren.length; i++) {
-      const prevTChild = prevTChildren[i]
+      const prevTChild = prevTChildren[i]!
       const {child} = prevTChild
       const {key} = child
       const idxInNext = children.findIndex((child) => child.key === key)

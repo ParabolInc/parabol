@@ -34,7 +34,7 @@ const ActionMeetingSidebar = (props: Props) => {
   const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
-  const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
+  const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase?.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined

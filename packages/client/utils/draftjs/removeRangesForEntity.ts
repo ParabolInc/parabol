@@ -21,7 +21,7 @@ const getEntities = (entityMap, entityType, eqFn) => {
   const entityKeys = Object.keys(entityMap)
   const entities = [] as string[]
   for (let i = 0; i < entityKeys.length; i++) {
-    const key = entityKeys[i]
+    const key = entityKeys[i]!
     const entity = entityMap[key]
     if (entity.type === entityType && eqFn(entity.data)) {
       entities.push(key)
@@ -60,7 +60,7 @@ const removeRangesForEntity = (content: string, entityType: string, eqFn: any) =
     const {entityRanges, key: blockKey, text} = block
     const removalRanges = getRemovalRanges(entities, entityRanges, text)
     for (let j = 0; j < removalRanges.length; j++) {
-      const range = removalRanges[j]
+      const range = removalRanges[j]!
       const selectionToRemove = selectionState.merge({
         anchorKey: blockKey,
         focusKey: blockKey,

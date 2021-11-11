@@ -33,7 +33,7 @@ const makePeriodEndStr = (periodEnd: Date) => {
 const getEmailDetails = (organizations: Organization[], userMap: Map<string, IUser>) => {
   const details = [] as Details[]
   for (let ii = 0; ii < organizations.length; ii++) {
-    const organization = organizations[ii]
+    const organization = organizations[ii]!
     const {id: orgId, billingLeaderIds, periodEnd} = organization
     const newUsers = organization.newUserIds
       .map((id) => {

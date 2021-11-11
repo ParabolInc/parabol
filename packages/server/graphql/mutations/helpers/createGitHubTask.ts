@@ -44,7 +44,7 @@ const createGitHubTask = async (
     }
   )
 
-  if (errors) {
+  if (errors && errors[0]) {
     return {error: new Error(errors[0].message)}
   }
 
@@ -74,7 +74,7 @@ const createGitHubTask = async (
     endpointContext,
     batchRef: context
   })
-  if (createIssueErrors instanceof Error) {
+  if (createIssueErrors && createIssueErrors[0]) {
     return {error: new Error(createIssueErrors[0].message)}
   }
 

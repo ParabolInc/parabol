@@ -105,7 +105,8 @@ const createPoll = {
     if (insertPollResult.length === 0) {
       return {error: {message: `Couldn't create a poll`}}
     }
-    const [{pollId}] = insertPollResult
+
+    const {pollId} = insertPollResult[0]!
 
     const data = {pollId}
     segmentIo.track({

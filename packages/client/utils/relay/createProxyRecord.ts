@@ -18,7 +18,7 @@ const createProxyRecord = <
   newRecord.setValue(id, 'id')
   const keys = Object.keys(record)
   for (let ii = 0; ii < keys.length; ii++) {
-    const key = keys[ii]
+    const key = keys[ii]!
     const val = record[key]
     // It's impossible to handle setLinkedRecords for empty arrays because we can't determine if it's a value or a link
     newRecord.setValue(val, key)
