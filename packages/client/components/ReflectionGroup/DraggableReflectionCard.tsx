@@ -109,10 +109,16 @@ const DraggableReflectionCard = (props: Props) => {
   const {viewer} = spotlightSearchResults
   const {similarReflectionGroups} = viewer
   const isReflectionIdInSpotlight = useMemo(() => {
-    const resultReflectionIdsInSpotlight =
-      similarReflectionGroups?.flatMap(({reflections}) => reflections.map(({id}) => id)) || []
-    return [...resultReflectionIdsInSpotlight, spotlightReflectionId].includes(reflectionId)
-  }, [similarReflectionGroups, reflectionId])
+    return (
+      reflectionId === spotlightReflectionId ||
+      !!(
+        reflectionId &&
+        similarReflectionGroups?.find(({reflections}) =>
+          reflections.find(({id}) => id === reflectionId)
+        )
+      )
+    )
+  }, [similarReflectionGroups, reflectionId, spotlightReflectionId])
 
   const {onMouseDown} = useDraggableReflectionCard(
     meeting,
