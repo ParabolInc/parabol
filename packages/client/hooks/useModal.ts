@@ -9,6 +9,9 @@ interface Options extends UsePortalOptions {
   noClose?: boolean
 }
 
+/**
+ * Wrapper around {@link usePortal} for displaying dialogs
+ */
 const useModal = (options: Options = {}) => {
   const {background, onOpen, onClose, noClose, id, parentId} = options
   const targetRef = useRef<HTMLDivElement>(null)

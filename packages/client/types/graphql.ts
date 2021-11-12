@@ -55240,7 +55240,7 @@ export interface IMutation {
   autoGroupReflections: IAutoGroupReflectionsPayload | null;
 
   /**
-   * Change the team a task is associated with
+   * Change the team a task is associated with. Also copy the viewers integration if necessary.
    */
   changeTaskTeam: IChangeTaskTeamPayload | null;
 
@@ -58938,7 +58938,6 @@ export interface IUpdateTaskInput {
   content?: string | null;
   sortOrder?: number | null;
   status?: TaskStatusEnum | null;
-  teamId?: string | null;
 
   /**
    * userId, the owner of the task. This can be null if the task is not assigned to anyone.

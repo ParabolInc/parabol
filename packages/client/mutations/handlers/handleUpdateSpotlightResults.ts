@@ -35,7 +35,7 @@ const handleUpdateSpotlightResults = (
   const isInSpotlight = groupsIds.includes(reflectionGroupId)
   const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
   // added to another group. Remove old reflection group
-  if (isOldGroupEmpty) {
+  if (isOldGroupEmpty && wasInSpotlight) {
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
         reflectionGroupId: spotlightGroupId,
@@ -44,7 +44,9 @@ const handleUpdateSpotlightResults = (
     })
   }
   // ungrouping created a new group or was added to a group in the kanban
-  if ((reflectionsCount === 1 && wasInSpotlight) || (isOldGroupEmpty && !isInSpotlight)) {
+  // reflectionsCount is undefined when ungrouping
+  // don't use else if: when a result is added to a kanban group, remove old empty group and add new one
+  if (!isInSpotlight && reflectionsCount !== undefined && wasInSpotlight) {
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionGroupId: spotlightGroupId,

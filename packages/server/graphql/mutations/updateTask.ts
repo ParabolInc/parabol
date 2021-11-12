@@ -25,7 +25,6 @@ type UpdateTaskInput = {
   content?: string | null
   sortOrder?: number | null
   status?: TaskStatusEnum | null
-  teamId?: string | null
   userId?: string | null
 }
 type UpdateTaskMutationVariables = {
@@ -57,14 +56,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // VALIDATION
-    const {
-      id: taskId,
-      teamId: inputTeamId,
-      userId: inputUserId,
-      status,
-      sortOrder,
-      content
-    } = updatedTask
+    const {id: taskId, userId: inputUserId, status, sortOrder, content} = updatedTask
     const validContent = normalizeRawDraftJS(content)
     const task = await r
       .table('Task')
@@ -75,12 +67,11 @@ export default {
     }
     const {teamId, userId} = task
     const nextUserId = inputUserId === undefined ? userId : inputUserId
-    const nextTeamId = inputTeamId || teamId
-    if (!isTeamMember(authToken, teamId) || !isTeamMember(authToken, nextTeamId)) {
+    if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (inputTeamId || inputUserId) {
-      const error = await validateTaskUserIsTeamMember(nextUserId, nextTeamId, dataLoader)
+    if (teamId || inputUserId) {
+      const error = await validateTaskUserIsTeamMember(nextUserId, teamId, dataLoader)
       if (error) {
         return standardError(new Error('Invalid user ID'), {userId: viewerId})
       }
@@ -90,7 +81,6 @@ export default {
       updatedTask.sortOrder !== undefined && Object.keys(updatedTask).length === 2
     const nextTask = new Task({
       ...task,
-      teamId: nextTeamId,
       userId: nextUserId,
       status: status || task.status,
       sortOrder: sortOrder || task.sortOrder,
