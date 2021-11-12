@@ -8,6 +8,7 @@ type XReadGroupRes = [streamName: string, messages: Message[]]
 export default class RedisStream<T> implements AsyncIterableIterator<T> {
   private stream: string
   private consumerGroup: string
+  // xreadgroup blocks until a response is received, so this needs its own connection
   private redis = new Redis(REDIS_URL)
   private consumer: string
 
