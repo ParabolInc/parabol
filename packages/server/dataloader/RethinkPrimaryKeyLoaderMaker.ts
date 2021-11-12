@@ -1,5 +1,8 @@
 import {DBType} from '../database/rethinkDriver'
 
-export default class LoaderMakerPrimary<T extends keyof DBType> {
+/**
+ * Used to register rethink types in the dataloader
+ */
+export default class RethinkPrimaryKeyLoaderMaker<T extends keyof DBType> {
   constructor(public table: T) {}
 }

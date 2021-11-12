@@ -1,6 +1,11 @@
-import * as primaryLoaderMakers from './primaryLoaderMakers'
+import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
-export default class LoaderMakerForeign<T extends keyof typeof primaryLoaderMakers> {
+/**
+ * Load rethink entities by foreign key
+ */
+export default class RethinkForeignKeyLodaerMaker<
+  T extends keyof typeof rethinkPrimaryKeyLoaderMakers
+> {
   constructor(
     public pk: T,
     public field: string,
