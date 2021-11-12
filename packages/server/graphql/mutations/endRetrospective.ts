@@ -173,7 +173,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: phase.phaseType !== DISCUSS,
+      isKill: phase && phase.phaseType !== DISCUSS,
       removedTaskIds,
       timelineEventId
     }
