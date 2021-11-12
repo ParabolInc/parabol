@@ -22,11 +22,10 @@ import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import sendToSentry from '../../utils/sendToSentry'
-import errorFilter from '../errorFilter'
-import interpolateGitHubLabelTemplate from 'parabol-client/shared/interpolateGitHubLabelTemplate'
-import getUniqueTaskEstimatesByDimensionName from '../../postgres/queries/getUniqueTaskEstimatesByDimensionName'
+import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
 import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
+import getRethink from '../../database/rethinkDriver'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -152,54 +151,40 @@ const Task = new GraphQLObjectType<any, GQLContext>({
               sendToSentry(new Error(labelErrors[0].message), {userId: accessUserId})
             }
           } else if (estimates.length) {
-            const labels = labelsData.repository.issue.labels.nodes
-            const dimensionFieldMaps = (
-              await dataLoader.get('githubDimensionFieldMaps').loadMany(
-                estimates.map((estimate) => {
-                  return {dimensionName: estimate.name, nameWithOwner, teamId}
-                })
-              )
-            ).filter(errorFilter)
-
+            const ghIssueLabels = labelsData.repository.issue.labels.nodes.map(({name}) => name)
             await Promise.all(
-              estimates.map((estimate) => {
-                const dimension = dimensionFieldMaps.find((d) => d.dimensionName === estimate.name)!
-
-                const {labelTemplate} = dimension
-                const expectedLabel = interpolateGitHubLabelTemplate(labelTemplate, estimate.label)
-                const existingLabel = labels.find((label) => label.name === expectedLabel)
+              estimates.map(async (estimate) => {
+                const {githubLabelName, name: dimensionName} = estimate
+                const existingLabel = ghIssueLabels.includes(githubLabelName)
                 if (existingLabel) return
+                const r = await getRethink()
+                const taskIds = await r
+                  .table('Task')
+                  .getAll(teamId, {index: 'teamId'})
+                  .filter((row) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
+                  .run()
 
-                return (async () => {
-                  const previousEstimatesForDimension = await getUniqueTaskEstimatesByDimensionName(
-                    dimension.dimensionName,
-                    teamId,
-                    nameWithOwner
-                  )
+                const similarEstimate = await getSimilarTaskEstimate(
+                  taskIds,
+                  dimensionName,
+                  ghIssueLabels
+                )
 
-                  const githubLabelsNames = labels.map((label) => label.name)
-                  for (const previousEstimateForDimension of previousEstimatesForDimension) {
-                    const value = previousEstimateForDimension.label
+                if (!similarEstimate) return
 
-                    const githubLabelName = interpolateGitHubLabelTemplate(labelTemplate, value)
-                    if (githubLabelsNames.includes(githubLabelName)) {
-                      return insertTaskEstimate({
-                        changeSource: 'external',
-                        // keep the link to the discussion alive, if possible
-                        discussionId: estimate.discussionId,
-                        jiraFieldId: undefined,
-                        label: value,
-                        name: estimate.name,
-                        meetingId: null,
-                        stageId: null,
-                        taskId,
-                        userId: accessUserId,
-                        githubLabelName
-                      })
-                    }
-                  }
-                  return undefined
-                })()
+                return insertTaskEstimate({
+                  changeSource: 'external',
+                  // keep the link to the discussion alive, if possible
+                  discussionId: estimate.discussionId,
+                  jiraFieldId: undefined,
+                  label: similarEstimate.label,
+                  name: estimate.name,
+                  meetingId: null,
+                  stageId: null,
+                  taskId,
+                  userId: accessUserId,
+                  githubLabelName: similarEstimate.githubLabelName!
+                })
               })
             )
           }
