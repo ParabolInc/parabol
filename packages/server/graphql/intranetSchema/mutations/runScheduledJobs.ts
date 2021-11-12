@@ -11,8 +11,9 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import appOrigin from '../../../appOrigin'
-import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
 import {ValueOf} from '../../../../client/types/generics'
+import MattermostServerManager from '../../../utils/MattermostServerManager'
+import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
 
 const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
   const r = await getRethink()
@@ -47,13 +48,13 @@ const processMeetingStageTimeLimits = async (
   const {meetingId} = job
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {teamId, facilitatorUserId} = meeting
-  const [{slackNotification, slackAuth}, mattermostAuth] = await Promise.all([
+  const [{slackNotification, slackAuth}, mattermostWebhook] = await Promise.all([
     getSlackNotificationAndAuth(teamId, facilitatorUserId),
     MattermostServerManager.getBestWebhook(facilitatorUserId, teamId, dataLoader)
   ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
 
-  const sendViaMattermost = !!mattermostAuth
+  const sendViaMattermost = !!mattermostWebhook
 
   if (slackAuth?.botAccessToken && slackNotification?.channelId) {
     const manager = new SlackServerManager(slackAuth.botAccessToken)
@@ -121,10 +122,10 @@ const runScheduledJobs = {
 
     // RESOLUTION
     const before = new Date(now.getTime() + seconds * 1000)
-    const upcomingJobs = await r
+    const upcomingJobs = (await r
       .table('ScheduledJob')
       .between(r.minval, before, {index: 'runAt'})
-      .run()
+      .run()) as ScheduledJobUnion[]
 
     upcomingJobs.forEach((job) => {
       const {runAt} = job

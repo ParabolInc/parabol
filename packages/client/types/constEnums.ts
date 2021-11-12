@@ -249,11 +249,6 @@ export const enum Providers {
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Use GitHub Issues from within Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
-  GITLAB_NAME = 'GitLab',
-  GITLAB_DESC = 'Use GitLab Issues from within Parabol',
-  GITLAB_SCOPE = 'read_api', // TODO: downscope this
-  MATTERMOST_NAME = 'Mattermost',
-  MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }

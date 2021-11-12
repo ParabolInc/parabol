@@ -9,7 +9,6 @@ import getRedis from '../../packages/server/utils/getRedis'
 import sendToSentry from '../../packages/server/utils/sendToSentry'
 import makeGlobalIntegrationProvidersFromEnv from '../../packages/server/utils/makeGlobalIntegrationProvidersFromEnv'
 import upsertGlobalIntegrationProvider from '../../packages/server/postgres/queries/upsertGlobalIntegrationProvider'
-import upsertMattermostAuth from '../../packages/server/postgres/queries/upsertMattermostAuth'
 import plural from 'parabol-client/utils/plural'
 
 const PROJECT_ROOT = getProjectRoot()
@@ -73,7 +72,7 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
   let providers = []
   await Promise.all(
     makeGlobalIntegrationProvidersFromEnv().map((provider) => {
-      providers.push(provider.providerType)
+      providers.push(provider.type)
       return upsertGlobalIntegrationProvider(provider)
     })
   )

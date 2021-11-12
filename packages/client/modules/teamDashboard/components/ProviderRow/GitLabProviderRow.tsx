@@ -17,7 +17,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint, Providers as Integrations} from '../../../../types/constEnums'
+import {Breakpoint} from '../../../../types/constEnums'
 import GitLabClientManager from '../../../../utils/GitLabClientManager'
 import {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
 import GitLabConfigMenu from './GitLabConfigMenu'
@@ -128,8 +128,7 @@ const GitLabProviderRow = (props: Props) => {
     MenuPosition.UPPER_RIGHT
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const primaryProviderName =
-    primaryProvider && secondaryProvider ? `${Integrations.GITLAB_NAME} Cloud` : 'Connect'
+  const primaryProviderName = !secondaryProvider ? 'Connect' : primaryProvider!.name
   const {
     tooltipPortal: primaryTooltipPortal,
     openTooltip: primaryOpenTooltip,
@@ -147,8 +146,8 @@ const GitLabProviderRow = (props: Props) => {
     <ProviderCard>
       <GitLabProviderLogo />
       <RowInfo>
-        <ProviderName>{Integrations.GITLAB_NAME}</ProviderName>
-        <RowInfoCopy>{Integrations.GITLAB_DESC}</RowInfoCopy>
+        <ProviderName>GitLab</ProviderName>
+        <RowInfoCopy>Use GitLab Issues from within Parabol</RowInfoCopy>
       </RowInfo>
       {!isActive && (
         <ProviderActions>

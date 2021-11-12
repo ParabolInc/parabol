@@ -13,7 +13,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
+import {Breakpoint, Layout} from '../../../../types/constEnums'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import MattermostPanel from './MattermostPanel'
@@ -119,8 +119,8 @@ const MattermostProviderRow = (props: Props) => {
       <CardTop>
         <MattermostProviderLogo />
         <RowInfo>
-          <ProviderName>{Providers.MATTERMOST_NAME}</ProviderName>
-          <RowInfoCopy>{Providers.MATTERMOST_DESC}</RowInfoCopy>
+          <ProviderName>Mattermost</ProviderName>
+          <RowInfoCopy>Push notifications to Mattermost</RowInfoCopy>
         </RowInfo>
         {isActive ? (
           <ListAndMenu>

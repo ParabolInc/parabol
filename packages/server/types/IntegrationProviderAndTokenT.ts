@@ -21,7 +21,7 @@ export interface GlobalIntegrationProvider extends Omit<IntegrationProvider, 'or
 
 export type GlobalIntegrationProviderInput = Omit<
   GlobalIntegrationProvider,
-  'id' | 'createdAt' | 'updatedAt'
+  'id' | 'scopeGlobal' | 'createdAt' | 'updatedAt'
 >
 
 export interface IntegrationTokenWithProvider extends IntegrationToken {

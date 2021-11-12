@@ -9,10 +9,10 @@ import IntegrationProviderId, {
 import IntegrationServerManager from './IntegrationServerManager'
 import GitLabServerManager from './GitLabServerManager'
 
-// TODO fix me
+// TODO: make Mattermost fit this pattern!
 
 const taskIntegrationProviderClassMap: {
-  [K in IntegrationProviderTypesEnum]: new (...args: any[]) => any
+  [K in Exclude<IntegrationProviderTypesEnum, 'MATTERMOST'>]: new (...args: any[]) => any
 } = {
   GITLAB: GitLabServerManager
 }

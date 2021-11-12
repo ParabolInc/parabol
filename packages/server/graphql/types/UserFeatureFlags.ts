@@ -7,7 +7,7 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     gitlab: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if jira is allowed',
+      description: 'true if gitlab is allowed',
       resolve: ({gitlab}) => !!gitlab
     },
     video: {

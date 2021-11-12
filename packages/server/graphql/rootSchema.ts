@@ -38,7 +38,6 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
       baseUri: activeProvider.serverBaseUri,
       headers: {Accept: 'application/json'}
     }
-    console.log(`context: ${context}`)
     return context
   },
   prefix: '_xGitLab',

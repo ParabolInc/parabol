@@ -12,7 +12,7 @@ export async function up() {
     "webhookUrl" VARCHAR(2083) NOT NULL,
     "userId" VARCHAR(100) NOT NULL,
     "teamId" VARCHAR(100) NOT NULL,
-    PRIMARY KEY ("teamId")
+    PRIMARY KEY ("teamId","userId")
   );
   CREATE INDEX IF NOT EXISTS "idx_MattermostAuth_teamId" ON "MattermostAuth"("teamId");
 `)

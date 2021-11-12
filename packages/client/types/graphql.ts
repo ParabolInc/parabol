@@ -49956,7 +49956,7 @@ export interface IGitHubIntegration {
   login: string;
 
   /**
-   * The comma-separated list of oauthScopes requested from GitHub
+   * The comma-separated list of scopes requested from GitHub
    */
   scope: string;
 
@@ -51477,7 +51477,7 @@ export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
-   * true if jira is allowed
+   * true if gitlab is allowed
    */
   gitlab: boolean;
 
