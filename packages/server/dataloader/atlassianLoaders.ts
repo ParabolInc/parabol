@@ -56,24 +56,13 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
             // if user integrated the same Jira account with using different teams we need to update them as well
             // reference: https://github.com/ParabolInc/parabol/issues/5601
             const updatedSameJiraAccountAtlassianAuths = userAtlassianAuths
-              .filter(
-                (auth) =>
-                  auth.teamId !== teamId && auth.accountId === atlassianAuthToRefresh.accountId
-              )
+              .filter((auth) => auth.accountId === atlassianAuthToRefresh.accountId)
               .map((auth) => ({
                 ...auth,
                 accessToken,
                 refreshToken: updatedRefreshToken
               }))
-
-            await upsertAtlassianAuths([
-              {
-                ...atlassianAuthToRefresh,
-                accessToken,
-                refreshToken: updatedRefreshToken
-              },
-              ...updatedSameJiraAccountAtlassianAuths
-            ])
+            await upsertAtlassianAuths(updatedSameJiraAccountAtlassianAuths)
           }
 
           return atlassianAuthToRefresh
