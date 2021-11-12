@@ -20,11 +20,6 @@ import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import formatTime from 'parabol-client/utils/date/formatTime'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 
-const okResponse: MattermostApiResponse = {
-  ok: true,
-  status: 0
-}
-
 const notifyMattermost = async (
   event: EventEnum,
   webhookUri: string,
@@ -87,7 +82,7 @@ export const startMattermostMeeting = async (
     teamId,
     dataLoader
   )
-  if (!webhookUri) return okResponse
+  if (!webhookUri) return null
 
   const searchParams = {
     utm_source: 'mattermost meeting start',
@@ -173,7 +168,7 @@ export const endMattermostMeeting = async (
     teamId,
     dataLoader
   )
-  if (!webhookUri) return okResponse
+  if (!webhookUri) return null
   const team = await dataLoader.get('teams').load(teamId)
   const {facilitatorUserId: userId} = meeting
   const summaryText = getSummaryText(meeting)
@@ -220,7 +215,7 @@ export const notifyMattermostTimeLimitStart = async (
     teamId,
     dataLoader
   )
-  if (!webhookUri) return okResponse
+  if (!webhookUri) return null
 
   const team = await dataLoader.get('teams').load(teamId)
   const {name: meetingName, phases, facilitatorStageId, facilitatorUserId: userId} = meeting
@@ -295,7 +290,7 @@ export const notifyMattermostTimeLimitEnd = async (
     teamId,
     dataLoader
   )
-  if (!webhookUri) return okResponse
+  if (!webhookUri) return null
 
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
