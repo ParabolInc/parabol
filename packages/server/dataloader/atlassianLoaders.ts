@@ -44,15 +44,12 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            const {
-              accessToken,
-              refreshToken: newRefreshToken,
-              error
-            } = await AtlassianServerManager.refresh(refreshToken)
-            if (error) {
-              sendToSentry(new Error(error))
+            const oauthRes = await AtlassianServerManager.refresh(refreshToken)
+            if (oauthRes instanceof Error) {
+              sendToSentry(oauthRes)
               return null
             }
+            const {accessToken, refreshToken: newRefreshToken} = oauthRes
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
 
