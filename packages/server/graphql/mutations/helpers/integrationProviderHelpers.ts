@@ -8,7 +8,7 @@ import standardError from '../../../utils/standardError'
 import AuthToken from '../../../database/types/AuthToken'
 import {DataLoaderWorker} from '../../graphql'
 import {
-  IntegrationProvidersEnum as IntegrationProvidersEnumT,
+  IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
   IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
   IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
 } from '../../../types/IntegrationProviderAndTokenT'
@@ -27,7 +27,7 @@ export const auth = (
   const isTeamMember = checkTeamMember(authToken, teamId)
   const isBillingLeader = checkBillingLeader(viewerId, orgId, dataLoader)
 
-  switch (provider.providerScope) {
+  switch (provider.scope) {
     case 'global':
       if (!isSuperUser)
         return standardError(new Error('permission denied modifying globally scoped provider'))
@@ -54,14 +54,14 @@ export const validate = async (
   orgId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  switch (provider.providerScope) {
+  switch (provider.scope) {
     case 'global':
-      if (provider.providerTokenType !== 'oauth2')
+      if (provider.tokenType !== 'oauth2')
         return standardError(new Error('globally-scoped token provider must be OAuth2 provider'))
       break
     // @ts-ignore fall-through is desired here
     case 'org':
-      if (provider.providerTokenType !== 'oauth2')
+      if (provider.tokenType !== 'oauth2')
         return standardError(new Error('org-scoped token provider must be OAuth2 provider'))
     case 'team':
       const checkTeam = await dataLoader.get('teams').load(teamId)
@@ -69,9 +69,10 @@ export const validate = async (
       const checkOrg = await dataLoader.get('organizations').load(orgId)
       if (!checkOrg) return standardError(new Error('organization not found'))
   }
-  switch (provider.providerTokenType) {
+  switch (provider.tokenType) {
     case 'oauth2':
-      if (!provider.scopes) return standardError(new Error('scopes required for OAuth2 provider'))
+      if (!provider.oauthScopes)
+        return standardError(new Error('scopes required for OAuth2 provider'))
       if (!provider.oauthClientId)
         return standardError(new Error('oauthClientId required for OAuth2 provider'))
       if (!provider.oauthClientSecret)
@@ -88,14 +89,14 @@ export const validate = async (
 export const makeDbIntegrationProvider = (
   provider: AddIntegrationProviderInputT | UpdateIntegrationProviderInputT
 ) => ({
-  scopes: [],
+  oauthScopes: [],
   oauthClientId: null,
   oauthClientSecret: null,
   ...('id' in provider
     ? (({id: _, ...providerWithoutId}) => providerWithoutId)(provider)
     : provider),
-  providerType: provider.providerType.toUpperCase() as IntegrationProvidersEnumT,
-  providerScope: provider.providerScope.toUpperCase() as IntegrationProviderScopesEnumT,
-  providerTokenType: provider.providerTokenType.toUpperCase() as IntegrationProviderTokenTypeEnumT,
+  type: provider.type.toUpperCase() as IntegrationProviderTypesEnumT,
+  scope: provider.scope.toUpperCase() as IntegrationProviderScopesEnumT,
+  tokenType: provider.tokenType.toUpperCase() as IntegrationProviderTokenTypeEnumT,
   isActive: true
 })

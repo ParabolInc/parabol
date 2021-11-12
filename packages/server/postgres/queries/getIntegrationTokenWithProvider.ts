@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IntegrationProvidersEnum,
+  IntegrationProviderTypesEnum,
   getIntegrationTokensWithProviderQuery,
   IGetIntegrationTokensWithProviderQueryResult
 } from './generated/getIntegrationTokensWithProviderQuery'
@@ -27,12 +27,12 @@ export const nestProviderOnDbToken = (
 }
 
 const getIntegrationTokenWithProvider = async (
-  providerType: IntegrationProvidersEnum,
+  type: IntegrationProviderTypesEnum,
   teamId: string,
   userId: string
 ) => {
   const [res] = await getIntegrationTokensWithProviderQuery.run(
-    {providerType, teamId, userId, byUserId: true},
+    {type, teamId, userId, byUserId: true},
     getPg()
   )
   return nestProviderOnDbToken(res)

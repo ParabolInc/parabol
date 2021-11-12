@@ -2,46 +2,46 @@
  @name upsertGlobalIntegrationProviderQuery
  */
 INSERT INTO "IntegrationProvider" (
-  "providerType",
-	"providerTokenType",
-	"providerScope",
+  "type",
+	"tokenType",
+	"scope",
 	"isActive",
 	"name",
 	"serverBaseUri",
-	"scopes",
+	"oauthScopes",
 	"oauthClientId",
 	"oauthClientSecret"
   ) VALUES (
-	  :providerType,
+	  :type,
 		'OAUTH2'::"IntegrationProviderTokenTypeEnum",
 		'GLOBAL'::"IntegrationProviderScopesEnum",
 		TRUE,
 		:name,
 		:serverBaseUri,
-		:scopes,
+		:oauthScopes,
 		:oauthClientId,
 		:oauthClientSecret
 	)
-	ON CONFLICT ("providerScopeGlobal", "providerType")
+	ON CONFLICT ("scopeGlobal", "type")
   DO UPDATE
     SET (
-		  "providerType",
-		  "providerTokenType",
-		  "providerScope",
+		  "type",
+		  "tokenType",
+		  "scope",
 			"isActive",
 			"name",
 			"serverBaseUri",
-			"scopes",
+			"oauthScopes",
 			"oauthClientId",
 			"oauthClientSecret",
 			"updatedAt") = (
-			EXCLUDED."providerType",
+			EXCLUDED."type",
 		  'OAUTH2'::"IntegrationProviderTokenTypeEnum",
 		  'GLOBAL'::"IntegrationProviderScopesEnum",
 			TRUE,
 			EXCLUDED."name",
 			EXCLUDED."serverBaseUri",
-			EXCLUDED."scopes",
+			EXCLUDED."oauthScopes",
 			EXCLUDED."oauthClientId",
 			EXCLUDED."oauthClientSecret",
 			CURRENT_TIMESTAMP

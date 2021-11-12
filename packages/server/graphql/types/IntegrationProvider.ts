@@ -11,7 +11,7 @@ import GraphQLURLType from './GraphQLURLType'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {
-  IntegrationProvidersEnum as IntegrationProvidersEnumT,
+  IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
   IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
   IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
 } from 'parabol-server/types/IntegrationProviderAndTokenT'
@@ -23,7 +23,7 @@ export const IntegrationProviderTypeEnum = new GraphQLEnumType({
   values: {
     gitlab: {},
     mattermost: {}
-  } as {[P in Lowercase<IntegrationProvidersEnumT>]: any}
+  } as {[P in Lowercase<IntegrationProviderTypesEnumT>]: any}
 })
 
 export const IntegrationProviderTokenTypeEnum = new GraphQLEnumType({
@@ -55,21 +55,21 @@ const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
       description: "The provider's unique identifier",
       resolve: ({id}) => IntegrationProviderId.join(id)
     },
-    providerType: {
+    type: {
       description: 'The service this provider is associated with',
       type: new GraphQLNonNull(IntegrationProviderTypeEnum),
-      resolve: ({providerType}) => providerType.toLowerCase()
+      resolve: ({type}) => type.toLowerCase()
     },
-    providerTokenType: {
+    tokenType: {
       description: 'The kind of token used by this provider',
       type: new GraphQLNonNull(IntegrationProviderTokenTypeEnum),
-      resolve: ({providerTokenType}) => providerTokenType.toLowerCase()
+      resolve: ({tokenType}) => tokenType.toLowerCase()
     },
-    providerScope: {
+    scope: {
       description:
         'The scope this provider configuration was created at (globally, org-wide, or by the team)',
       type: new GraphQLNonNull(IntegrationProviderScopesEnum),
-      resolve: ({providerScope}) => providerScope.toLowerCase()
+      resolve: ({scope}) => scope.toLowerCase()
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -83,7 +83,7 @@ const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the provider, suitable for display on a user interface'
     },
-    scopes: {
+    oauthScopes: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
       description: 'A list of scope strings that should be requested from the provider'
     },

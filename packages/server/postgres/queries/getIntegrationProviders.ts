@@ -1,17 +1,17 @@
 import {MaybeReadonly} from '../../../client/types/generics'
 import getPg from '../getPg'
 import {
-  IntegrationProvidersEnum,
+  IntegrationProviderTypesEnum,
   getIntegrationProvidersQuery,
   IGetIntegrationProvidersQueryResult
 } from './generated/getIntegrationProvidersQuery'
 
 const getIntegrationProviders = async (
-  providerType: MaybeReadonly<IntegrationProvidersEnum>,
+  type: MaybeReadonly<IntegrationProviderTypesEnum>,
   teamId: MaybeReadonly<string>,
   orgId: MaybeReadonly<string>
 ) => {
-  return getIntegrationProvidersQuery.run({providerType, teamId, orgId}, getPg()) as Promise<
+  return getIntegrationProvidersQuery.run({type, teamId, orgId}, getPg()) as Promise<
     IGetIntegrationProvidersQueryResult[]
   >
 }

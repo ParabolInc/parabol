@@ -1,8 +1,7 @@
 export type IntegrationProviderIdT = string
 
 const IntegrationProviderId = {
-  join: (integrationProviderId: number): IntegrationProviderIdT =>
-    `integrationProvider:${integrationProviderId}`,
+  join: (providerId: number): IntegrationProviderIdT => `integrationProvider:${providerId}`,
   split: (id: IntegrationProviderIdT) => parseInt(id.split(':')[1])
 }
 

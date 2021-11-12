@@ -59,7 +59,7 @@ const addIntegrationToken = {
     })
     if (maybeSetupOauth2Response instanceof Error)
       return standardError(maybeSetupOauth2Response, {userId: viewerId})
-    const {accessToken, oauthRefreshToken, scopes} = maybeSetupOauth2Response
+    const {accessToken, oauthRefreshToken, oauthScopes} = maybeSetupOauth2Response
 
     const [tokenTestValid, tokenTestError] = await ServerManager.isTokenValid(info, context)
 
@@ -74,8 +74,8 @@ const addIntegrationToken = {
     await upsertIntegrationToken({
       accessToken,
       oauthRefreshToken,
-      scopes,
-      integrationProviderId: ServerManager.provider.id,
+      oauthScopes,
+      providerId: ServerManager.provider.id,
       teamId,
       userId: viewerId
     })

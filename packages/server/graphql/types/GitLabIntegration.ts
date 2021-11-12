@@ -22,7 +22,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId}, _args, {dataLoader}) => {
         const orgId = (await dataLoader.get('teams').load(teamId)).orgId
         const providers = await dataLoader.get('integrationProvidersByType').load({
-          providerType: 'GITLAB',
+          type: 'GITLAB',
           teamId,
           orgId
         })
@@ -63,7 +63,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({accessToken}) => !!accessToken
     },
-    scopes: {
+    oauthScopes: {
       description: "The token's scopes",
       type: GraphQLList(GraphQLString)
     },

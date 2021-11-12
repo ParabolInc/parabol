@@ -3,14 +3,14 @@
   @param ids -> (...)
 */
 UPDATE "IntegrationProvider" SET
-  "providerType" = COALESCE(:providerType, "providerType"),
-  "providerTokenType" = COALESCE(:providerTokenType, "providerTokenType"),
-  "providerScope" = COALESCE(:providerScope, "providerScope"),
+  "type" = COALESCE(:type, "type"),
+  "tokenType" = COALESCE(:tokenType, "tokenType"),
+  "scope" = COALESCE(:scope, "scope"),
   "name" = COALESCE(:name, "name"),
   "serverBaseUri" = COALESCE(:serverBaseUri, "serverBaseUri"),
   "oauthClientId" = COALESCE(:oauthClientId, "oauthClientId"),
   "oauthClientSecret" = COALESCE(:oauthClientSecret, "oauthClientSecret"),
-  "scopes" = COALESCE(:scopes, "scopes"),
+  "oauthScopes" = COALESCE(:oauthScopes, "oauthScopes"),
   "orgId" = COALESCE(:orgId, "orgId"),
   "teamId" = COALESCE(:teamId, "teamId")
  WHERE id IN :ids;

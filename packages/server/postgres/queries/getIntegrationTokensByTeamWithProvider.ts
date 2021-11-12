@@ -1,17 +1,17 @@
 import getPg from '../getPg'
 import {
-  IntegrationProvidersEnum,
+  IntegrationProviderTypesEnum,
   getIntegrationTokensWithProviderQuery
 } from './generated/getIntegrationTokensWithProviderQuery'
 import {nestProviderOnDbToken} from './getIntegrationTokenWithProvider'
 
 const getIntegrationTokensByTeamWithProvider = async (
-  providerType: IntegrationProvidersEnum,
+  type: IntegrationProviderTypesEnum,
   teamId: string
 ) =>
   (
     await getIntegrationTokensWithProviderQuery.run(
-      {providerType, teamId, userId: null, byUserId: false},
+      {type, teamId, userId: null, byUserId: false},
       getPg()
     )
   ).map(nestProviderOnDbToken)

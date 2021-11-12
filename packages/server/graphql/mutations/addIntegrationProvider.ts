@@ -64,7 +64,7 @@ const addIntegrationProvider = {
     }
 
     // RESOLUTION
-    switch (provider.providerScope) {
+    switch (provider.scope) {
       case 'global':
         upsertGlobalIntegrationProvider(dbProvider)
         break
@@ -77,7 +77,7 @@ const addIntegrationProvider = {
             accessToken: null,
             expiresAt: null,
             oauthRefreshToken: null,
-            scopes: [],
+            oauthScopes: [],
             attributes: {},
             ...maybeToken
           }

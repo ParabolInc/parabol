@@ -2,25 +2,25 @@
   @name insertIntegrationProviderQuery
 */
 INSERT INTO "IntegrationProvider" (
-  "providerType",
-  "providerTokenType",
-  "providerScope",
+  "type",
+  "tokenType",
+  "scope",
   "name",
   "serverBaseUri",
   "oauthClientId",
   "oauthClientSecret",
-  "scopes",
+  "oauthScopes",
   "orgId",
   "teamId"
 ) VALUES (
-  :providerType,
-  :providerTokenType,
-  :providerScope,
+  :type,
+  :tokenType,
+  :scope,
   :name,
   :serverBaseUri,
   :oauthClientId,
   :oauthClientSecret,
-  :scopes,
+  :oauthScopes,
   :orgId,
   :teamId
 );

@@ -96,7 +96,7 @@ class MattermostServerManager extends MattermostManager {
   static async getBestWebhook(userId: string, teamId: string, dataLoader: DataLoaderWorker) {
     const tokensAndProvider: IntegrationTokenWithProvider[] = await dataLoader
       .get('integrationTokensByTeamWithProvider')
-      .load({providerType: 'MATTERMOST', teamId})
+      .load({type: 'MATTERMOST', teamId})
 
     const bestTokenAndProvider = tokensAndProvider.sort((a, b) => {
       const userIdCompare = (b.userId != userId ? 0 : 1) - (a.userId != userId ? 0 : 1)

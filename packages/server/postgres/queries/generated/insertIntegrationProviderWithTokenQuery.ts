@@ -5,7 +5,7 @@ export type IntegrationProviderScopesEnum = 'GLOBAL' | 'ORG' | 'TEAM';
 
 export type IntegrationProviderTokenTypeEnum = 'OAUTH2' | 'PAT' | 'WEBHOOK';
 
-export type IntegrationProvidersEnum = 'GITLAB' | 'MATTERMOST';
+export type IntegrationProviderTypesEnum = 'GITLAB' | 'MATTERMOST';
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
@@ -14,14 +14,14 @@ export type stringArray = (string)[];
 /** 'InsertIntegrationProviderWithTokenQuery' parameters type */
 export interface IInsertIntegrationProviderWithTokenQueryParams {
   provider: {
-    providerType: IntegrationProvidersEnum | null | void,
-    providerTokenType: IntegrationProviderTokenTypeEnum | null | void,
-    providerScope: IntegrationProviderScopesEnum | null | void,
+    type: IntegrationProviderTypesEnum | null | void,
+    tokenType: IntegrationProviderTokenTypeEnum | null | void,
+    scope: IntegrationProviderScopesEnum | null | void,
     name: string | null | void,
     serverBaseUri: string | null | void,
     oauthClientId: string | null | void,
     oauthClientSecret: string | null | void,
-    scopes: stringArray | null | void,
+    oauthScopes: stringArray | null | void,
     orgId: string | null | void,
     teamId: string | null | void
   };
@@ -30,7 +30,7 @@ export interface IInsertIntegrationProviderWithTokenQueryParams {
   accessToken: string | null | void;
   expiresAt: Date | null | void;
   oauthRefreshToken: string | null | void;
-  scopes: stringArray | null | void;
+  oauthScopes: stringArray | null | void;
   attributes: Json | null | void;
 }
 
@@ -45,32 +45,32 @@ export interface IInsertIntegrationProviderWithTokenQueryQuery {
   result: IInsertIntegrationProviderWithTokenQueryResult;
 }
 
-const insertIntegrationProviderWithTokenQueryIR: any = {"name":"insertIntegrationProviderWithTokenQuery","params":[{"name":"provider","codeRefs":{"defined":{"a":60,"b":67,"line":3,"col":9},"used":[{"a":461,"b":468,"line":17,"col":13}]},"transform":{"type":"pick_tuple","keys":["providerType","providerTokenType","providerScope","name","serverBaseUri","oauthClientId","oauthClientSecret","scopes","orgId","teamId"]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":679,"b":684,"line":28,"col":3}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":690,"b":695,"line":29,"col":3}]}},{"name":"accessToken","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":735,"b":745,"line":31,"col":3}]}},{"name":"expiresAt","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":751,"b":759,"line":32,"col":3}]}},{"name":"oauthRefreshToken","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":776,"b":792,"line":33,"col":3}]}},{"name":"scopes","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":798,"b":803,"line":34,"col":3}]}},{"name":"attributes","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":820,"b":829,"line":35,"col":3}]}}],"usedParamSet":{"provider":true,"teamId":true,"userId":true,"accessToken":true,"expiresAt":true,"oauthRefreshToken":true,"scopes":true,"attributes":true},"statement":{"body":"WITH providerRow AS (\n   INSERT INTO \"IntegrationProvider\" (\n    \"providerType\",\n    \"providerTokenType\",\n    \"providerScope\",\n    \"name\",\n    \"serverBaseUri\",\n    \"oauthClientId\",\n    \"oauthClientSecret\",\n    \"scopes\",\n    \"orgId\",\n    \"teamId\"\n   ) VALUES :provider RETURNING *\n) INSERT INTO \"IntegrationToken\" (\n  \"teamId\",\n  \"userId\",\n  \"integrationProviderId\",\n  \"accessToken\",\n  \"expiresAt\",\n  \"oauthRefreshToken\",\n  \"scopes\",\n  \"attributes\"\n) SELECT * FROM (VALUES (\n  :teamId,\n  :userId,\n  (SELECT \"id\" FROM providerRow),\n  :accessToken,\n  :expiresAt::timestamp,\n  :oauthRefreshToken,\n  :scopes::varchar[],\n  :attributes::jsonb\n)) AS \"integrationToken\"\n  ON CONFLICT (\"integrationProviderId\", \"userId\", \"teamId\")\n  DO UPDATE\n  SET (\"accessToken\", \"oauthRefreshToken\", \"scopes\", \"integrationProviderId\", \"isActive\", \"updatedAt\") = (\n    EXCLUDED.\"accessToken\",\n    EXCLUDED.\"oauthRefreshToken\",\n    EXCLUDED.\"scopes\",\n    EXCLUDED.\"integrationProviderId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  )\n   RETURNING \"integrationProviderId\" AS \"id\"","loc":{"a":202,"b":1244,"line":5,"col":0}}};
+const insertIntegrationProviderWithTokenQueryIR: any = {"name":"insertIntegrationProviderWithTokenQuery","params":[{"name":"provider","codeRefs":{"defined":{"a":60,"b":67,"line":3,"col":9},"used":[{"a":423,"b":430,"line":17,"col":13}]},"transform":{"type":"pick_tuple","keys":["type","tokenType","scope","name","serverBaseUri","oauthClientId","oauthClientSecret","oauthScopes","orgId","teamId"]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":635,"b":640,"line":28,"col":3}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":646,"b":651,"line":29,"col":3}]}},{"name":"accessToken","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":691,"b":701,"line":31,"col":3}]}},{"name":"expiresAt","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":707,"b":715,"line":32,"col":3}]}},{"name":"oauthRefreshToken","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":732,"b":748,"line":33,"col":3}]}},{"name":"oauthScopes","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":754,"b":764,"line":34,"col":3}]}},{"name":"attributes","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":781,"b":790,"line":35,"col":3}]}}],"usedParamSet":{"provider":true,"teamId":true,"userId":true,"accessToken":true,"expiresAt":true,"oauthRefreshToken":true,"oauthScopes":true,"attributes":true},"statement":{"body":"WITH providerRow AS (\n   INSERT INTO \"IntegrationProvider\" (\n    \"type\",\n    \"tokenType\",\n    \"scope\",\n    \"name\",\n    \"serverBaseUri\",\n    \"oauthClientId\",\n    \"oauthClientSecret\",\n    \"oauthScopes\",\n    \"orgId\",\n    \"teamId\"\n   ) VALUES :provider RETURNING *\n) INSERT INTO \"IntegrationToken\" (\n  \"teamId\",\n  \"userId\",\n  \"providerId\",\n  \"accessToken\",\n  \"expiresAt\",\n  \"oauthRefreshToken\",\n  \"oauthScopes\",\n  \"attributes\"\n) SELECT * FROM (VALUES (\n  :teamId,\n  :userId,\n  (SELECT \"id\" FROM providerRow),\n  :accessToken,\n  :expiresAt::timestamp,\n  :oauthRefreshToken,\n  :oauthScopes::varchar[],\n  :attributes::jsonb\n)) AS \"integrationToken\"\n  ON CONFLICT (\"providerId\", \"userId\", \"teamId\")\n  DO UPDATE\n  SET (\"accessToken\", \"oauthRefreshToken\", \"oauthScopes\", \"providerId\", \"isActive\", \"updatedAt\") = (\n    EXCLUDED.\"accessToken\",\n    EXCLUDED.\"oauthRefreshToken\",\n    EXCLUDED.\"oauthScopes\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  )\n   RETURNING \"providerId\" AS \"id\"","loc":{"a":183,"b":1171,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * WITH providerRow AS (
  *    INSERT INTO "IntegrationProvider" (
- *     "providerType",
- *     "providerTokenType",
- *     "providerScope",
+ *     "type",
+ *     "tokenType",
+ *     "scope",
  *     "name",
  *     "serverBaseUri",
  *     "oauthClientId",
  *     "oauthClientSecret",
- *     "scopes",
+ *     "oauthScopes",
  *     "orgId",
  *     "teamId"
  *    ) VALUES :provider RETURNING *
  * ) INSERT INTO "IntegrationToken" (
  *   "teamId",
  *   "userId",
- *   "integrationProviderId",
+ *   "providerId",
  *   "accessToken",
  *   "expiresAt",
  *   "oauthRefreshToken",
- *   "scopes",
+ *   "oauthScopes",
  *   "attributes"
  * ) SELECT * FROM (VALUES (
  *   :teamId,
@@ -79,20 +79,20 @@ const insertIntegrationProviderWithTokenQueryIR: any = {"name":"insertIntegratio
  *   :accessToken,
  *   :expiresAt::timestamp,
  *   :oauthRefreshToken,
- *   :scopes::varchar[],
+ *   :oauthScopes::varchar[],
  *   :attributes::jsonb
  * )) AS "integrationToken"
- *   ON CONFLICT ("integrationProviderId", "userId", "teamId")
+ *   ON CONFLICT ("providerId", "userId", "teamId")
  *   DO UPDATE
- *   SET ("accessToken", "oauthRefreshToken", "scopes", "integrationProviderId", "isActive", "updatedAt") = (
+ *   SET ("accessToken", "oauthRefreshToken", "oauthScopes", "providerId", "isActive", "updatedAt") = (
  *     EXCLUDED."accessToken",
  *     EXCLUDED."oauthRefreshToken",
- *     EXCLUDED."scopes",
- *     EXCLUDED."integrationProviderId",
+ *     EXCLUDED."oauthScopes",
+ *     EXCLUDED."providerId",
  *     TRUE,
  *     CURRENT_TIMESTAMP
  *   )
- *    RETURNING "integrationProviderId" AS "id"
+ *    RETURNING "providerId" AS "id"
  * ```
  */
 export const insertIntegrationProviderWithTokenQuery = new PreparedQuery<IInsertIntegrationProviderWithTokenQueryParams,IInsertIntegrationProviderWithTokenQueryResult>(insertIntegrationProviderWithTokenQueryIR);

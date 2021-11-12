@@ -5,12 +5,8 @@ import {AddIntegrationTokenMutation as TAddIntegrationTokenMutation} from '../__
 
 graphql`
   fragment AddIntegrationTokenMutation_part on AddIntegrationTokenSuccess {
-    teamMember {
-      integrations {
-        gitlab {
-          ...GitLabProviderRowGitLabIntegration
-        }
-      }
+    user {
+      ...GitLabProviderRow_viewer @relay(mask: false)
     }
   }
 `

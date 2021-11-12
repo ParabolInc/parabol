@@ -12,17 +12,17 @@ import {
   IntegrationProviderScopesEnum
 } from './IntegrationProvider'
 import {
-  IntegrationProvidersEnum as IntegrationProvidersEnumT,
+  IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
   IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
   IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
 } from '../../types/IntegrationProviderAndTokenT'
 
 export interface AddIntegrationProviderInputT {
-  providerType: Lowercase<IntegrationProvidersEnumT>
-  providerTokenType: Lowercase<IntegrationProviderTokenTypeEnumT>
-  providerScope: Lowercase<IntegrationProviderScopesEnumT>
+  type: Lowercase<IntegrationProviderTypesEnumT>
+  tokenType: Lowercase<IntegrationProviderTokenTypeEnumT>
+  scope: Lowercase<IntegrationProviderScopesEnumT>
   name: string
-  scopes?: string[] | null
+  oauthScopes?: string[] | null
   serverBaseUri: string
   oauthClientId?: string | null
   oauthClientSecret?: string | null
@@ -34,15 +34,15 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
   name: 'AddIntegrationProviderInput',
   description: 'An Integration Provider configuration',
   fields: () => ({
-    providerType: {
+    type: {
       type: IntegrationProviderTypeEnum,
       description: 'The service this provider is associated with'
     },
-    providerTokenType: {
+    tokenType: {
       type: IntegrationProviderTokenTypeEnum,
       description: 'The kind of token used by this provider'
     },
-    providerScope: {
+    scope: {
       type: IntegrationProviderScopesEnum,
       description:
         'The scope this provider configuration was created at (globally, org-wide, or by the team)'
@@ -51,7 +51,7 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the provider, suitable for display on a user interface'
     },
-    scopes: {
+    oauthScopes: {
       type: new GraphQLList(GraphQLNonNull(GraphQLString)),
       description: 'A list of scope strings that should be requested from the provider'
     },

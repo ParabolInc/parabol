@@ -1,5 +1,8 @@
 import {DataLoaderWorker} from '../graphql/graphql'
-import {IntegrationProvider, IntegrationProvidersEnum} from '../types/IntegrationProviderAndTokenT'
+import {
+  IntegrationProvider,
+  IntegrationProviderTypesEnum
+} from '../types/IntegrationProviderAndTokenT'
 import IntegrationProviderId, {
   IntegrationProviderIdT
 } from 'parabol-client/shared/gqlIds/IntegrationProviderId'
@@ -9,7 +12,7 @@ import GitLabServerManager from './GitLabServerManager'
 // TODO fix me
 
 const taskIntegrationProviderClassMap: {
-  [K in IntegrationProvidersEnum]: new (...args: any[]) => any
+  [K in IntegrationProviderTypesEnum]: new (...args: any[]) => any
 } = {
   GITLAB: GitLabServerManager
 }
@@ -24,7 +27,7 @@ class MakeIntegrationServerManager {
       .get('integrationProviders')
       .load(providerDbId)) as IntegrationProvider
 
-    return new taskIntegrationProviderClassMap[provider.providerType](provider)
+    return new taskIntegrationProviderClassMap[provider.type](provider)
   }
 }
 

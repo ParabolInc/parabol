@@ -17,7 +17,7 @@ export interface SetupOAuth2ProviderParams {
 }
 
 interface IntegrationTokenState
-  extends Pick<IntegrationToken, 'accessToken' | 'oauthRefreshToken' | 'scopes'> {
+  extends Pick<IntegrationToken, 'accessToken' | 'oauthRefreshToken' | 'oauthScopes'> {
   createdAt?: IntegrationToken['createdAt'] | null
 }
 
@@ -72,7 +72,7 @@ abstract class IntegrationServerManager {
       accessToken,
       createdAt: maybeCreatedAt ? new Date(maybeCreatedAt) : null,
       oauthRefreshToken: oauthRefreshToken || null,
-      scopes: scope.split(',')
+      oauthScopes: scope.split(',')
     }
 
     return this.token

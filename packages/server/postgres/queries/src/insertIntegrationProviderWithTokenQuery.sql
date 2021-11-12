@@ -1,28 +1,28 @@
 /*
   @name insertIntegrationProviderWithTokenQuery
-  @param provider -> (providerType, providerTokenType, providerScope, name, serverBaseUri, oauthClientId, oauthClientSecret, scopes, orgId, teamId)
+  @param provider -> (type, tokenType, scope, name, serverBaseUri, oauthClientId, oauthClientSecret, oauthScopes, orgId, teamId)
 */
 WITH providerRow AS (
    INSERT INTO "IntegrationProvider" (
-    "providerType",
-    "providerTokenType",
-    "providerScope",
+    "type",
+    "tokenType",
+    "scope",
     "name",
     "serverBaseUri",
     "oauthClientId",
     "oauthClientSecret",
-    "scopes",
+    "oauthScopes",
     "orgId",
     "teamId"
    ) VALUES :provider RETURNING *
 ) INSERT INTO "IntegrationToken" (
   "teamId",
   "userId",
-  "integrationProviderId",
+  "providerId",
   "accessToken",
   "expiresAt",
   "oauthRefreshToken",
-  "scopes",
+  "oauthScopes",
   "attributes"
 ) SELECT * FROM (VALUES (
   :teamId,
@@ -31,17 +31,17 @@ WITH providerRow AS (
   :accessToken,
   :expiresAt::timestamp,
   :oauthRefreshToken,
-  :scopes::varchar[],
+  :oauthScopes::varchar[],
   :attributes::jsonb
 )) AS "integrationToken"
-  ON CONFLICT ("integrationProviderId", "userId", "teamId")
+  ON CONFLICT ("providerId", "userId", "teamId")
   DO UPDATE
-  SET ("accessToken", "oauthRefreshToken", "scopes", "integrationProviderId", "isActive", "updatedAt") = (
+  SET ("accessToken", "oauthRefreshToken", "oauthScopes", "providerId", "isActive", "updatedAt") = (
     EXCLUDED."accessToken",
     EXCLUDED."oauthRefreshToken",
-    EXCLUDED."scopes",
-    EXCLUDED."integrationProviderId",
+    EXCLUDED."oauthScopes",
+    EXCLUDED."providerId",
     TRUE,
     CURRENT_TIMESTAMP
   )
-   RETURNING "integrationProviderId" AS "id";
+   RETURNING "providerId" AS "id";

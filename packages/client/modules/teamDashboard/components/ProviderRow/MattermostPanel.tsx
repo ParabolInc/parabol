@@ -119,8 +119,9 @@ const MattermostPanel = (props: Props) => {
   const {error: fieldError, value: fieldValue} = fields.webhookUrl
   // corner case: let them re-upsert the same webhook url when reverting to a
   //              previous value
+  const serverWebhookUrl = activeProvider?.serverBaseUri || ''
   const updateDisabled = (error, value) =>
-    error || submitting || !value || (value === mattermost?.webhookUrl && !mutationError)
+    error || submitting || !value || (value === serverWebhookUrl && !mutationError)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -129,9 +130,9 @@ const MattermostPanel = (props: Props) => {
     setDirtyField()
     submitMutation()
     const provider: AddIntegrationProviderInputT = {
-      providerType: 'mattermost',
-      providerScope: 'team',
-      providerTokenType: 'webhook',
+      type: 'mattermost',
+      scope: 'team',
+      tokenType: 'webhook',
       name: `Mattermost webhook for ${preferredName ? preferredName : email}`,
       serverBaseUri: webhookUrl,
       orgId,

@@ -8,9 +8,9 @@ import {IntegrationProvider} from 'parabol-server/types/IntegrationProviderAndTo
 interface AbridgedProvider
   extends Pick<IntegrationProvider, 'oauthClientId' | 'name' | 'serverBaseUri'> {
   id: string
-  providerScope: Lowercase<IntegrationProvider['providerScope']>
-  providerTokenType: Lowercase<IntegrationProvider['providerTokenType']>
-  scopes: ReadonlyArray<string>
+  scope: Lowercase<IntegrationProvider['scope']>
+  tokenType: Lowercase<IntegrationProvider['tokenType']>
+  oauthScopes: ReadonlyArray<string>
   updatedAt: string
 }
 
@@ -23,14 +23,14 @@ class GitLabClientManager {
     teamId: string,
     mutationProps: MenuMutationProps
   ) {
-    const {id: providerId, oauthClientId, serverBaseUri, scopes: scopesList} = provider
+    const {id: providerId, oauthClientId, serverBaseUri, oauthScopes: oauthScopesList} = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const scopes = scopesList ? scopesList.join(' ') : ''
+    const oauthScopes = oauthScopesList ? oauthScopesList.join(' ') : ''
     const providerState = Math.random()
       .toString(36)
       .substring(5)
     const redirect_uri = makeHref('/auth/gitlab')
-    const uri = `${serverBaseUri}/oauth/authorize?client_id=${oauthClientId}&scope=${scopes}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
+    const uri = `${serverBaseUri}/oauth/authorize?client_id=${oauthClientId}&scope=${oauthScopes}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
 
     const popup = window.open(
       uri,
@@ -57,23 +57,21 @@ class GitLabClientManager {
 
   static getPrimaryProvider(providerList: readonly AbridgedProvider[]) {
     return providerList.find(
-      (provider) => provider.providerScope === 'global' && provider.providerTokenType === 'oauth2'
+      (provider) => provider.scope === 'global' && provider.tokenType === 'oauth2'
     )
   }
 
   static getSecondaryProvider(providerList: readonly AbridgedProvider[]) {
-    const providerScopeScore = {
+    const scopeScore = {
       global: 0,
       org: 1,
       team: 2
     }
     const sortedProviders = providerList
-      .filter(
-        (provider) => provider.providerScope != 'global' && provider.providerTokenType === 'oauth2'
-      )
+      .filter((provider) => provider.scope != 'global' && provider.tokenType === 'oauth2')
       .map((provider) => ({
         ...provider,
-        score: providerScopeScore[provider.providerScope]
+        score: scopeScore[provider.scope]
       }))
       .sort((a, b) => {
         const scoreCompare = b.score - a.score

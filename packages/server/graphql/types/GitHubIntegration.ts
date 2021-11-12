@@ -63,7 +63,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     scope: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'The comma-separated list of scopes requested from GitHub'
+      description: 'The comma-separated list of oauthScopes requested from GitHub'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

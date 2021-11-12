@@ -25,15 +25,15 @@ const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The the id of the Integration Provider to update'
     },
-    providerType: {
+    type: {
       type: IntegrationProviderTypeEnum,
       description: 'The service this provider is associated with'
     },
-    providerTokenType: {
+    tokenType: {
       type: IntegrationProviderTokenTypeEnum,
       description: 'The kind of token used by this provider'
     },
-    providerScope: {
+    scope: {
       type: IntegrationProviderScopesEnum,
       description:
         'The scope this provider configuration was created at (globally, org-wide, or by the team)'
@@ -42,7 +42,7 @@ const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the provider, suitable for display on a user interface'
     },
-    scopes: {
+    oauthScopes: {
       type: new GraphQLList(GraphQLNonNull(GraphQLString)),
       description: 'A list of scope strings that should be requested from the provider'
     },

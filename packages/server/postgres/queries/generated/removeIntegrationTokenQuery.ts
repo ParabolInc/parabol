@@ -17,14 +17,14 @@ export interface IRemoveIntegrationTokenQueryQuery {
   result: IRemoveIntegrationTokenQueryResult;
 }
 
-const removeIntegrationTokenQueryIR: any = {"name":"removeIntegrationTokenQuery","params":[{"name":"providerId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":157,"b":166,"line":6,"col":33}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":186,"b":191,"line":7,"col":18}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":211,"b":216,"line":8,"col":18}]}}],"usedParamSet":{"providerId":true,"teamId":true,"userId":true},"statement":{"body":"UPDATE \"IntegrationToken\"\nSET \"isActive\" = FALSE, \"updatedAt\" = CURRENT_TIMESTAMP\nWHERE \"integrationProviderId\" = :providerId\n  AND \"teamId\" = :teamId\n  AND \"userId\" = :userId\n  AND \"isActive\" = TRUE","loc":{"a":42,"b":240,"line":4,"col":0}}};
+const removeIntegrationTokenQueryIR: any = {"name":"removeIntegrationTokenQuery","params":[{"name":"providerId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":146,"b":155,"line":6,"col":22}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":175,"b":180,"line":7,"col":18}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":200,"b":205,"line":8,"col":18}]}}],"usedParamSet":{"providerId":true,"teamId":true,"userId":true},"statement":{"body":"UPDATE \"IntegrationToken\"\nSET \"isActive\" = FALSE, \"updatedAt\" = CURRENT_TIMESTAMP\nWHERE \"providerId\" = :providerId\n  AND \"teamId\" = :teamId\n  AND \"userId\" = :userId\n  AND \"isActive\" = TRUE","loc":{"a":42,"b":229,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * UPDATE "IntegrationToken"
  * SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
- * WHERE "integrationProviderId" = :providerId
+ * WHERE "providerId" = :providerId
  *   AND "teamId" = :teamId
  *   AND "userId" = :userId
  *   AND "isActive" = TRUE

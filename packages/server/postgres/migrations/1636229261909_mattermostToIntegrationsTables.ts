@@ -47,21 +47,21 @@ export async function up() {
   const mattermostAuthsToInsert = mattermostAuths.map((mattermostAuth) => {
     return insertIntegrationProviderWithToken(
       {
-        providerType: 'MATTERMOST',
-        providerTokenType: 'WEBHOOK',
-        providerScope: 'TEAM',
+        type: 'MATTERMOST',
+        tokenType: 'WEBHOOK',
+        scope: 'TEAM',
         name: 'mattermost',
         serverBaseUri: mattermostAuth.webhookUrl,
         oauthClientId: null,
         oauthClientSecret: null,
-        scopes: null,
+        oauthScopes: null,
         orgId: orgIdsByTeamId[mattermostAuth.teamId],
         teamId: mattermostAuth.teamId
       },
       {
         accessToken: null,
         expiresAt: null,
-        scopes: null,
+        oauthScopes: null,
         oauthRefreshToken: null,
         attributes: null,
         userId: mattermostAuth.userId,
@@ -86,22 +86,22 @@ export async function down() {
     SELECT
       "IntegrationToken".*,
       "IntegrationProvider"."id" AS "IntegrationProvider_id",
-      "IntegrationProvider"."providerType" AS "IntegrationProvider_providerType",
-      "IntegrationProvider"."providerScope" AS "IntegrationProvider_providerScope",
+      "IntegrationProvider"."type" AS "IntegrationProvider_type",
+      "IntegrationProvider"."scope" AS "IntegrationProvider_scope",
       "IntegrationProvider"."orgId" AS "IntegrationProvider_orgId",
       "IntegrationProvider"."teamId" AS "IntegrationProvider_teamId",
       "IntegrationProvider"."isActive" AS "IntegrationProvider_isActive",
       "IntegrationProvider"."name" AS "IntegrationProvider_name",
       "IntegrationProvider"."serverBaseUri" AS "IntegrationProvider_serverBaseUri",
-      "IntegrationProvider"."scopes" AS "IntegrationProvider_scopes",
+      "IntegrationProvider"."oauthScopes" AS "IntegrationProvider_oauthScopes",
       "IntegrationProvider"."oauthClientId" AS "IntegrationProvider_oauthClientId",
       "IntegrationProvider"."createdAt" AS "IntegrationProvider_createdAt",
       "IntegrationProvider"."updatedAt" AS "IntegrationProvider_updatedAt"
     FROM "IntegrationToken" 
     JOIN "IntegrationProvider"
-    ON ("IntegrationToken"."integrationProviderId" = "IntegrationProvider"."id") 
+    ON ("IntegrationToken"."providerId" = "IntegrationProvider"."id") 
     WHERE (
-      "IntegrationProvider"."providerType" = 'MATTERMOST'
+      "IntegrationProvider"."type" = 'MATTERMOST'
       AND "IntegrationToken"."isActive" = TRUE
       AND "IntegrationProvider"."isActive" = TRUE
     );
@@ -142,11 +142,11 @@ export async function down() {
     const tokenDeletionQueries = mattermostTokensWithProvider.map((row) =>
       client.query(
         `
-      DELETE FROM "IntegrationToken" WHERE "integrationProviderId" = $1
+      DELETE FROM "IntegrationToken" WHERE "providerId" = $1
         AND "userId" = $2
         AND "teamId" = $3;
       `,
-        [row.integrationProviderId, row.userId, row.teamId]
+        [row.providerId, row.userId, row.teamId]
       )
     )
     await Promise.all(tokenDeletionQueries)

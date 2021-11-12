@@ -1,16 +1,16 @@
 /*
   @name upsertIntegrationTokenQuery
-  @param auth -> (accessToken, oauthRefreshToken, scopes, integrationProviderId, teamId, userId)
+  @param auth -> (accessToken, oauthRefreshToken, oauthScopes, providerId, teamId, userId)
 */
-INSERT INTO "IntegrationToken" ("accessToken", "oauthRefreshToken", "scopes", "integrationProviderId", "teamId", "userId")
+INSERT INTO "IntegrationToken" ("accessToken", "oauthRefreshToken", "oauthScopes", "providerId", "teamId", "userId")
   VALUES :auth
-  ON CONFLICT ("integrationProviderId", "userId", "teamId")
+  ON CONFLICT ("providerId", "userId", "teamId")
   DO UPDATE
-  SET ("accessToken", "oauthRefreshToken", "scopes", "integrationProviderId", "isActive", "updatedAt") = (
+  SET ("accessToken", "oauthRefreshToken", "oauthScopes", "providerId", "isActive", "updatedAt") = (
     EXCLUDED."accessToken",
     EXCLUDED."oauthRefreshToken",
-    EXCLUDED."scopes",
-    EXCLUDED."integrationProviderId",
+    EXCLUDED."oauthScopes",
+    EXCLUDED."providerId",
     TRUE,
     CURRENT_TIMESTAMP
   ) RETURNING *;

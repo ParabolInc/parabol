@@ -89,7 +89,22 @@ const GitLabProviderRow = (props: Props) => {
         teamMember(teamId: $teamId) {
           integrations {
             gitlab {
-              ...GitLabProviderRowGitLabIntegration @relay(mask: false)
+              availableProviders {
+                id
+                scope
+                tokenType
+                name
+                oauthClientId
+                oauthScopes
+                serverBaseUri
+                updatedAt
+              }
+              activeProvider {
+                id
+                name
+              }
+              isActive
+              teamId
             }
           }
         }
@@ -195,26 +210,5 @@ const GitLabProviderRow = (props: Props) => {
     </ProviderCard>
   )
 }
-
-graphql`
-  fragment GitLabProviderRowGitLabIntegration on GitLabIntegration {
-    availableProviders {
-      id
-      providerScope
-      providerTokenType
-      name
-      oauthClientId
-      scopes
-      serverBaseUri
-      updatedAt
-    }
-    activeProvider {
-      id
-      name
-    }
-    isActive
-    teamId
-  }
-`
 
 export default GitLabProviderRow

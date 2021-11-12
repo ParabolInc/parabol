@@ -5,13 +5,13 @@ export type IntegrationProviderScopesEnum = 'GLOBAL' | 'ORG' | 'TEAM';
 
 export type IntegrationProviderTokenTypeEnum = 'OAUTH2' | 'PAT' | 'WEBHOOK';
 
-export type IntegrationProvidersEnum = 'GITLAB' | 'MATTERMOST';
+export type IntegrationProviderTypesEnum = 'GITLAB' | 'MATTERMOST';
 
 export type stringArray = (string)[];
 
 /** 'GetIntegrationProvidersQuery' parameters type */
 export interface IGetIntegrationProvidersQueryParams {
-  providerType: IntegrationProvidersEnum | null | void;
+  type: IntegrationProviderTypesEnum | null | void;
   orgId: string | null | void;
   teamId: string | null | void;
 }
@@ -19,16 +19,16 @@ export interface IGetIntegrationProvidersQueryParams {
 /** 'GetIntegrationProvidersQuery' return type */
 export interface IGetIntegrationProvidersQueryResult {
   id: number;
-  providerType: IntegrationProvidersEnum;
-  providerTokenType: IntegrationProviderTokenTypeEnum;
-  providerScope: IntegrationProviderScopesEnum;
-  providerScopeGlobal: boolean | null;
+  type: IntegrationProviderTypesEnum;
+  tokenType: IntegrationProviderTokenTypeEnum;
+  scope: IntegrationProviderScopesEnum;
+  scopeGlobal: boolean | null;
   orgId: string | null;
   teamId: string | null;
   isActive: boolean;
   name: string;
   serverBaseUri: string;
-  scopes: stringArray | null;
+  oauthScopes: stringArray | null;
   oauthClientId: string | null;
   oauthClientSecret: string | null;
   createdAt: Date;
@@ -41,18 +41,18 @@ export interface IGetIntegrationProvidersQueryQuery {
   result: IGetIntegrationProvidersQueryResult;
 }
 
-const getIntegrationProvidersQueryIR: any = {"name":"getIntegrationProvidersQuery","params":[{"name":"providerType","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":105,"b":116,"line":5,"col":26}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":236,"b":240,"line":9,"col":47}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":292,"b":297,"line":10,"col":49}]}}],"usedParamSet":{"providerType":true,"orgId":true,"teamId":true},"statement":{"body":"SELECT * FROM \"IntegrationProvider\"\n  WHERE \"providerType\" = :providerType\n    AND \"isActive\" = TRUE\n    AND (\n        \"providerScope\" = 'GLOBAL'\n    OR (\"providerScope\" = 'ORG' AND \"orgId\" = :orgId)\n    OR (\"providerScope\" = 'TEAM' AND \"teamId\" = :teamId)\t\n)","loc":{"a":43,"b":301,"line":4,"col":0}}};
+const getIntegrationProvidersQueryIR: any = {"name":"getIntegrationProvidersQuery","params":[{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":97,"b":100,"line":5,"col":18}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":204,"b":208,"line":9,"col":39}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":252,"b":257,"line":10,"col":41}]}}],"usedParamSet":{"type":true,"orgId":true,"teamId":true},"statement":{"body":"SELECT * FROM \"IntegrationProvider\"\n  WHERE \"type\" = :type\n    AND \"isActive\" = TRUE\n    AND (\n        \"scope\" = 'GLOBAL'\n    OR (\"scope\" = 'ORG' AND \"orgId\" = :orgId)\n    OR (\"scope\" = 'TEAM' AND \"teamId\" = :teamId)\t\n)","loc":{"a":43,"b":261,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT * FROM "IntegrationProvider"
- *   WHERE "providerType" = :providerType
+ *   WHERE "type" = :type
  *     AND "isActive" = TRUE
  *     AND (
- *         "providerScope" = 'GLOBAL'
- *     OR ("providerScope" = 'ORG' AND "orgId" = :orgId)
- *     OR ("providerScope" = 'TEAM' AND "teamId" = :teamId)	
+ *         "scope" = 'GLOBAL'
+ *     OR ("scope" = 'ORG' AND "orgId" = :orgId)
+ *     OR ("scope" = 'TEAM' AND "teamId" = :teamId)	
  * )
  * ```
  */

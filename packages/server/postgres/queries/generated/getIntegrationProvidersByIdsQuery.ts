@@ -5,7 +5,7 @@ export type IntegrationProviderScopesEnum = 'GLOBAL' | 'ORG' | 'TEAM';
 
 export type IntegrationProviderTokenTypeEnum = 'OAUTH2' | 'PAT' | 'WEBHOOK';
 
-export type IntegrationProvidersEnum = 'GITLAB' | 'MATTERMOST';
+export type IntegrationProviderTypesEnum = 'GITLAB' | 'MATTERMOST';
 
 export type stringArray = (string)[];
 
@@ -17,16 +17,16 @@ export interface IGetIntegrationProvidersByIdsQueryParams {
 /** 'GetIntegrationProvidersByIdsQuery' return type */
 export interface IGetIntegrationProvidersByIdsQueryResult {
   id: number;
-  providerType: IntegrationProvidersEnum;
-  providerTokenType: IntegrationProviderTokenTypeEnum;
-  providerScope: IntegrationProviderScopesEnum;
-  providerScopeGlobal: boolean | null;
+  type: IntegrationProviderTypesEnum;
+  tokenType: IntegrationProviderTokenTypeEnum;
+  scope: IntegrationProviderScopesEnum;
+  scopeGlobal: boolean | null;
   orgId: string | null;
   teamId: string | null;
   isActive: boolean;
   name: string;
   serverBaseUri: string;
-  scopes: stringArray | null;
+  oauthScopes: stringArray | null;
   oauthClientId: string | null;
   oauthClientSecret: string | null;
   createdAt: Date;

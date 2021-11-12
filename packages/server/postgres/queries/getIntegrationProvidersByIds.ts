@@ -1,11 +1,11 @@
 import {
-  IntegrationProvidersEnum as _IntegrationProvidersEnum,
+  IntegrationProviderTypesEnum as _IntegrationProviderTypesEnum,
   getIntegrationProvidersByIdsQuery,
   IGetIntegrationProvidersByIdsQueryResult
 } from './generated/getIntegrationProvidersByIdsQuery'
 import getPg from '../getPg'
 
-export type IntegrationProvidersEnum = _IntegrationProvidersEnum
+export type IntegrationProviderTypesEnum = _IntegrationProviderTypesEnum
 export interface IntegrationProvider extends IGetIntegrationProvidersByIdsQueryResult {}
 
 const getIntegrationProvidersByIds = async (ids: readonly number[]) => {

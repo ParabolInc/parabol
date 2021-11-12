@@ -5,20 +5,20 @@ export type IntegrationProviderScopesEnum = 'GLOBAL' | 'ORG' | 'TEAM';
 
 export type IntegrationProviderTokenTypeEnum = 'OAUTH2' | 'PAT' | 'WEBHOOK';
 
-export type IntegrationProvidersEnum = 'GITLAB' | 'MATTERMOST';
+export type IntegrationProviderTypesEnum = 'GITLAB' | 'MATTERMOST';
 
 export type stringArray = (string)[];
 
 /** 'InsertIntegrationProviderQuery' parameters type */
 export interface IInsertIntegrationProviderQueryParams {
-  providerType: IntegrationProvidersEnum | null | void;
-  providerTokenType: IntegrationProviderTokenTypeEnum | null | void;
-  providerScope: IntegrationProviderScopesEnum | null | void;
+  type: IntegrationProviderTypesEnum | null | void;
+  tokenType: IntegrationProviderTokenTypeEnum | null | void;
+  scope: IntegrationProviderScopesEnum | null | void;
   name: string | null | void;
   serverBaseUri: string | null | void;
   oauthClientId: string | null | void;
   oauthClientSecret: string | null | void;
-  scopes: stringArray | null | void;
+  oauthScopes: stringArray | null | void;
   orgId: string | null | void;
   teamId: string | null | void;
 }
@@ -32,31 +32,31 @@ export interface IInsertIntegrationProviderQueryQuery {
   result: IInsertIntegrationProviderQueryResult;
 }
 
-const insertIntegrationProviderQueryIR: any = {"name":"insertIntegrationProviderQuery","params":[{"name":"providerType","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":260,"b":271,"line":16,"col":3}]}},{"name":"providerTokenType","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":277,"b":293,"line":17,"col":3}]}},{"name":"providerScope","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":299,"b":311,"line":18,"col":3}]}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":317,"b":320,"line":19,"col":3}]}},{"name":"serverBaseUri","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":326,"b":338,"line":20,"col":3}]}},{"name":"oauthClientId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":344,"b":356,"line":21,"col":3}]}},{"name":"oauthClientSecret","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":362,"b":378,"line":22,"col":3}]}},{"name":"scopes","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":384,"b":389,"line":23,"col":3}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":395,"b":399,"line":24,"col":3}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":405,"b":410,"line":25,"col":3}]}}],"usedParamSet":{"providerType":true,"providerTokenType":true,"providerScope":true,"name":true,"serverBaseUri":true,"oauthClientId":true,"oauthClientSecret":true,"scopes":true,"orgId":true,"teamId":true},"statement":{"body":"INSERT INTO \"IntegrationProvider\" (\n  \"providerType\",\n  \"providerTokenType\",\n  \"providerScope\",\n  \"name\",\n  \"serverBaseUri\",\n  \"oauthClientId\",\n  \"oauthClientSecret\",\n  \"scopes\",\n  \"orgId\",\n  \"teamId\"\n) VALUES (\n  :providerType,\n  :providerTokenType,\n  :providerScope,\n  :name,\n  :serverBaseUri,\n  :oauthClientId,\n  :oauthClientSecret,\n  :scopes,\n  :orgId,\n  :teamId\n)","loc":{"a":45,"b":412,"line":4,"col":0}}};
+const insertIntegrationProviderQueryIR: any = {"name":"insertIntegrationProviderQuery","params":[{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":241,"b":244,"line":16,"col":3}]}},{"name":"tokenType","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":250,"b":258,"line":17,"col":3}]}},{"name":"scope","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":264,"b":268,"line":18,"col":3}]}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":274,"b":277,"line":19,"col":3}]}},{"name":"serverBaseUri","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":283,"b":295,"line":20,"col":3}]}},{"name":"oauthClientId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":301,"b":313,"line":21,"col":3}]}},{"name":"oauthClientSecret","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":319,"b":335,"line":22,"col":3}]}},{"name":"oauthScopes","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":341,"b":351,"line":23,"col":3}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":357,"b":361,"line":24,"col":3}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":367,"b":372,"line":25,"col":3}]}}],"usedParamSet":{"type":true,"tokenType":true,"scope":true,"name":true,"serverBaseUri":true,"oauthClientId":true,"oauthClientSecret":true,"oauthScopes":true,"orgId":true,"teamId":true},"statement":{"body":"INSERT INTO \"IntegrationProvider\" (\n  \"type\",\n  \"tokenType\",\n  \"scope\",\n  \"name\",\n  \"serverBaseUri\",\n  \"oauthClientId\",\n  \"oauthClientSecret\",\n  \"oauthScopes\",\n  \"orgId\",\n  \"teamId\"\n) VALUES (\n  :type,\n  :tokenType,\n  :scope,\n  :name,\n  :serverBaseUri,\n  :oauthClientId,\n  :oauthClientSecret,\n  :oauthScopes,\n  :orgId,\n  :teamId\n)","loc":{"a":45,"b":374,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO "IntegrationProvider" (
- *   "providerType",
- *   "providerTokenType",
- *   "providerScope",
+ *   "type",
+ *   "tokenType",
+ *   "scope",
  *   "name",
  *   "serverBaseUri",
  *   "oauthClientId",
  *   "oauthClientSecret",
- *   "scopes",
+ *   "oauthScopes",
  *   "orgId",
  *   "teamId"
  * ) VALUES (
- *   :providerType,
- *   :providerTokenType,
- *   :providerScope,
+ *   :type,
+ *   :tokenType,
+ *   :scope,
  *   :name,
  *   :serverBaseUri,
  *   :oauthClientId,
  *   :oauthClientSecret,
- *   :scopes,
+ *   :oauthScopes,
  *   :orgId,
  *   :teamId
  * )

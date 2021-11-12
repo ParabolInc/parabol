@@ -49956,7 +49956,7 @@ export interface IGitHubIntegration {
   login: string;
 
   /**
-   * The comma-separated list of scopes requested from GitHub
+   * The comma-separated list of oauthScopes requested from GitHub
    */
   scope: string;
 
@@ -50043,7 +50043,7 @@ export interface IGitLabIntegration {
   /**
    * The token's scopes
    */
-  scopes: Array<string | null> | null;
+  oauthScopes: Array<string | null> | null;
 
   /**
    * *The team that the token is linked to
@@ -50076,17 +50076,17 @@ export interface IIntegrationProvider {
   /**
    * The service this provider is associated with
    */
-  providerType: IntegrationProviderTypeEnum;
+  type: IntegrationProviderTypeEnum;
 
   /**
    * The kind of token used by this provider
    */
-  providerTokenType: IntegrationProviderTokenTypeEnum;
+  tokenType: IntegrationProviderTokenTypeEnum;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
    */
-  providerScope: IntegrationProviderScopesEnum;
+  scope: IntegrationProviderScopesEnum;
 
   /**
    * The timestamp the provider was created
@@ -50106,7 +50106,7 @@ export interface IIntegrationProvider {
   /**
    * A list of scope strings that should be requested from the provider
    */
-  scopes: Array<string>;
+  oauthScopes: Array<string>;
 
   /**
    * The base URI used to access the provider
@@ -59795,17 +59795,17 @@ export interface IAddIntegrationProviderInput {
   /**
    * The service this provider is associated with
    */
-  providerType?: IntegrationProviderTypeEnum | null;
+  type?: IntegrationProviderTypeEnum | null;
 
   /**
    * The kind of token used by this provider
    */
-  providerTokenType?: IntegrationProviderTokenTypeEnum | null;
+  tokenType?: IntegrationProviderTokenTypeEnum | null;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
    */
-  providerScope?: IntegrationProviderScopesEnum | null;
+  scope?: IntegrationProviderScopesEnum | null;
 
   /**
    * The name of the provider, suitable for display on a user interface
@@ -59815,7 +59815,7 @@ export interface IAddIntegrationProviderInput {
   /**
    * A list of scope strings that should be requested from the provider
    */
-  scopes?: Array<string> | null;
+  oauthScopes?: Array<string> | null;
 
   /**
    * The base URI used to access the provider
@@ -59891,17 +59891,17 @@ export interface IUpdateIntegrationProviderInput {
   /**
    * The service this provider is associated with
    */
-  providerType?: IntegrationProviderTypeEnum | null;
+  type?: IntegrationProviderTypeEnum | null;
 
   /**
    * The kind of token used by this provider
    */
-  providerTokenType?: IntegrationProviderTokenTypeEnum | null;
+  tokenType?: IntegrationProviderTokenTypeEnum | null;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
    */
-  providerScope?: IntegrationProviderScopesEnum | null;
+  scope?: IntegrationProviderScopesEnum | null;
 
   /**
    * The name of the provider, suitable for display on a user interface
@@ -59911,7 +59911,7 @@ export interface IUpdateIntegrationProviderInput {
   /**
    * A list of scope strings that should be requested from the provider
    */
-  scopes?: Array<string> | null;
+  oauthScopes?: Array<string> | null;
 
   /**
    * The base URI used to access the provider
