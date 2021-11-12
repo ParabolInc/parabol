@@ -41,8 +41,8 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
         const url = avatarUrls['48x48']
         const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
         if (!auth) return null
-        const {accessToken, refreshToken} = auth
-        const manager = new AtlassianServerManager(accessToken, refreshToken)
+        const {accessToken} = auth
+        const manager = new AtlassianServerManager(accessToken)
         const avatar = await manager.getProjectAvatar(url)
         return avatar || defaultJiraProjectAvatar
       }

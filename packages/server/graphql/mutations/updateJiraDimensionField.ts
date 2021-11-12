@@ -22,8 +22,8 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianA
     return {fieldId: fieldName, type: 'string' as const}
   }
   // a regular Jira field
-  const {accessToken, refreshToken} = auth
-  const manager = new AtlassianServerManager(accessToken, refreshToken)
+  const {accessToken} = auth
+  const manager = new AtlassianServerManager(accessToken)
   const fields = await manager.getFields(cloudId)
   if (fields instanceof Error) return null
   const selectedField = fields.find((field) => field.name === fieldName)

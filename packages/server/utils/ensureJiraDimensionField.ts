@@ -53,8 +53,8 @@ const ensureJiraDimensionField = async (
   ]
   const auth = await dataLoader.get('freshAtlassianAuth').load({userId, teamId})
   if (!auth) return
-  const {accessToken, refreshToken} = auth
-  const manager = new AtlassianServerManager(accessToken, refreshToken)
+  const {accessToken} = auth
+  const manager = new AtlassianServerManager(accessToken)
   const newJiraDimensionFields = await Promise.all(
     missingMappers.map(async (mapper) => {
       const {cloudId, projectKey, issueKey, dimensionName} = mapper

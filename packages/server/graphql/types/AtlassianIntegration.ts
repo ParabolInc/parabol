@@ -97,7 +97,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async (
-        {teamId, userId, accessToken, refreshToken, cloudIds}: AtlassianAuth,
+        {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
         {first, queryString, isJQL, projectKeyFilters},
         context
       ) => {
@@ -108,7 +108,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        const manager = new AtlassianServerManager(accessToken, refreshToken)
+        const manager = new AtlassianServerManager(accessToken)
         const projectKeyFiltersByCloudId = {}
         if (projectKeyFilters?.length > 0) {
           projectKeyFilters.forEach((globalProjectKey) => {
@@ -151,13 +151,13 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
       resolve: async (
-        {accessToken, refreshToken, cloudIds, teamId, userId}: AtlassianAuth,
+        {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
         _args,
         {authToken}
       ) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
-        const manager = new AtlassianServerManager(accessToken, refreshToken)
+        const manager = new AtlassianServerManager(accessToken)
         const projects = await manager.getAllProjects(cloudIds)
         return projects.map((project) => ({
           ...project,
@@ -175,8 +175,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'Filter the fields to single cloudId'
         }
       },
-      resolve: async ({accessToken, refreshToken}: AtlassianAuth, {cloudId}) => {
-        const manager = new AtlassianServerManager(accessToken, refreshToken)
+      resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
+        const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
         if (fields instanceof Error) return []
         const VALID_TYPES = ['string', 'number']

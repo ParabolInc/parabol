@@ -38,7 +38,7 @@ class AtlassianServerManager extends AtlassianManager {
     })
   }
 
-  static async fetchToken(partialQueryParams: AuthQueryParams | RefreshQueryParams) {
+  private static async fetchToken(partialQueryParams: AuthQueryParams | RefreshQueryParams) {
     const queryParams = {
       ...partialQueryParams,
       client_id: process.env.ATLASSIAN_CLIENT_ID,
@@ -57,20 +57,12 @@ class AtlassianServerManager extends AtlassianManager {
     })
 
     const tokenJson = (await tokenRes.json()) as OAuth2Response
-
-    const {access_token: accessToken, refresh_token: refreshToken, error} = tokenJson
-    if (error) {
-      throw new Error(`Atlassian: ${error}`)
-    }
-
-    return new AtlassianServerManager(accessToken, refreshToken)
+    const {access_token: accessToken, refresh_token: refreshToken, scope, error} = tokenJson
+    return {accessToken, refreshToken, scope, error}
   }
 
-  refreshToken: string
-
-  constructor(accessToken: string, refreshToken: string) {
+  constructor(accessToken: string) {
     super(accessToken)
-    this.refreshToken = refreshToken
   }
 }
 

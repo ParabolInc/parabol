@@ -11,8 +11,8 @@ const fetchAtlassianProjects = async (
 ) => {
   const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
   if (!auth) return []
-  const {accessToken, refreshToken} = auth
-  const manager = new AtlassianServerManager(accessToken, refreshToken)
+  const {accessToken} = auth
+  const manager = new AtlassianServerManager(accessToken)
   const sites = await manager.getAccessibleResources()
 
   if ('message' in sites) {

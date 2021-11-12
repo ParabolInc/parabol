@@ -100,8 +100,8 @@ const setTaskEstimate = {
       if (!auth) {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
-      const {accessToken, refreshToken} = auth
-      const manager = new AtlassianServerManager(accessToken, refreshToken)
+      const {accessToken} = auth
+      const manager = new AtlassianServerManager(accessToken)
       const jiraDimensionFields = team.jiraDimensionFields || []
       const dimensionField = jiraDimensionFields.find(
         (dimensionField) =>
