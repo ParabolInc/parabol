@@ -19,7 +19,7 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(_source, {userId, meetingId}) {
+  async resolve(_source: unknown, {userId, meetingId}: {userId: string; meetingId: string}) {
     return {meetingId, userId}
   }
 }

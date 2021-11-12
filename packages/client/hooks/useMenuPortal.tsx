@@ -17,6 +17,9 @@ const MenuBlock = styled('div')({
   zIndex: ZIndex.MENU
 })
 
+/**
+ * Use a portal to display a menu, you usually want to use {@link useMenu} instead
+ */
 const useMenuPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: RefObject<HTMLDivElement>,

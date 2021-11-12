@@ -5,6 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.36.0 2021-Nov-10
+
+### Added
+
+- Spotlight: groups UI (#5390)
+- GitHub: Persist favorite queries (#5435)
+- Spotlight: drag source to result (#5412)
+- Spotlight: drag result to source (#5414)
+- Allow to push integration tasks with assignee's and own integration (#5342)
+
+### Fixed
+
+- Fix some no-implicit-any errors (#5476)
+- Fix ending meeting without open phases (#5520)
+- Prevent remote reflection from loosing its position when opening spotlight (#5624)
+
+## 6.35.0 2021-Nov-03
+
+### Added
+
+- User can now create a poll in discussion thread (but can't vote yet) (#5361)
+- Show remote spotlight activity (#5500)
+- Expand Poker task description by default in estimate phase (#5569)
+
+### Fixed
+
+- Fix the bug where reflections are missing if the reto meeting does not advance to discuss phase (#5568)
+- Fix an issue where updating estimates at Atlanssian Jira does not reflect it at Parabol side (#5566)
+- Fix a performance issue in disconnectSocket mutation (#5583)
+- Fix a migration issue where silent RethinkDB fails if stage has not taskId (#5571)
+
 ## 6.34.0 2021-Oct-27
 
 ### Fixed

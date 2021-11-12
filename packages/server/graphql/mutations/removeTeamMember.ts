@@ -6,6 +6,7 @@ import publish from '../../utils/publish'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -16,7 +17,11 @@ export default {
       description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve(_source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {teamMemberId}: {teamMemberId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 

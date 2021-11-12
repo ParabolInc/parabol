@@ -114,6 +114,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
+  INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/'
@@ -375,6 +376,8 @@ export const enum Times {
   REFLECTION_DRAG_STALE_TIMEOUT = 10000,
   REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT = 120000,
   REFLECTION_COLUMN_SWIPE_THRESH = 600,
+  SPOTLIGHT_SOURCE_DURATION = 300,
+  SPOTLIGHT_MODAL_DURATION = 300,
   TOUCH_LONGPRESS = 120,
   WEBSOCKET_KEEP_ALIVE = 10000
 }

@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import UpdatePokerTemplateDimensionScalePayload from '../types/UpdatePokerTemplateDimensionScalePayload'
 
 const updatePokerTemplateDimensionScale = {
@@ -17,12 +18,19 @@ const updatePokerTemplateDimensionScale = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {dimensionId, scaleId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {dimensionId, scaleId}: {dimensionId: string; scaleId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
+    const dimension = await r
+      .table('TemplateDimension')
+      .get(dimensionId)
+      .run()
     const viewerId = getUserId(authToken)
     const teamId = dimension.teamId
 
@@ -35,12 +43,19 @@ const updatePokerTemplateDimensionScale = {
     }
 
     // VALIDATION
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const scale = await r
+      .table('TemplateScale')
+      .get(scaleId)
+      .run()
     if (!scale || scale.removedAt || (!scale.isStarter && scale.teamId !== teamId)) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
-    await r.table('TemplateDimension').get(dimensionId).update({scaleId, updatedAt: now}).run()
+    await r
+      .table('TemplateDimension')
+      .get(dimensionId)
+      .update({scaleId, updatedAt: now})
+      .run()
 
     const data = {dimensionId}
     publish(

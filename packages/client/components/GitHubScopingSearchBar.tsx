@@ -20,9 +20,9 @@ const GitHubScopingSearchBar = (props: Props) => {
   const {meeting} = props
   return (
     <SearchBar>
-      <GitHubScopingSearchHistoryToggle meeting={meeting} />
-      <GitHubScopingSearchInput meeting={meeting} />
-      <GitHubScopingSearchFilterToggle meeting={meeting} />
+      <GitHubScopingSearchHistoryToggle meetingRef={meeting} />
+      <GitHubScopingSearchInput meetingRef={meeting} />
+      <GitHubScopingSearchFilterToggle meetingRef={meeting} />
     </SearchBar>
   )
 }

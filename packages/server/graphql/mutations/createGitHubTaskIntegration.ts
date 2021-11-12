@@ -7,9 +7,12 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import {GQLContext, GQLResolveInfo} from '../graphql'
 import CreateGitHubTaskIntegrationPayload from '../types/CreateGitHubTaskIntegrationPayload'
 import createGitHubTask from './helpers/createGitHubTask'
+import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 
 type CreateGitHubTaskIntegrationMutationVariables = {
   nameWithOwner: string
@@ -32,7 +35,7 @@ export default {
     _source: any,
     {nameWithOwner, taskId}: CreateGitHubTaskIntegrationMutationVariables,
     context: GQLContext,
-    info
+    info: GQLResolveInfo
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const r = await getRethink()
@@ -49,7 +52,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {teamId} = task
+    const {teamId, userId} = task
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -68,36 +71,55 @@ export default {
       })
     }
 
-    // RESOLUTION
     const {content: rawContentStr, meetingId} = task
-    const viewerAuth = await dataLoader.get('githubAuth').load({teamId, userId: viewerId})
-
-    if (!viewerAuth) {
+    const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
+      dataLoader.get('githubAuth').load({teamId, userId: viewerId}),
+      userId ? dataLoader.get('githubAuth').load({teamId, userId}) : null,
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId)
+    ])
+    const auth = viewerAuth ?? assigneeAuth
+    const accessUserId = viewerAuth ? viewerId : assigneeAuth ? userId : null
+    if (!accessUserId) {
       return standardError(
-        new Error(`Assignment failed! The assignee does not have access to GitHub`),
+        new Error(`Assignment failed! Neither you nor the assignee has access to GitHub`),
         {userId: viewerId}
       )
     }
+    // using teamMembers to get the preferredName as we need the members for the notification part anyways
+    const {preferredName: viewerName} = teamMembers.find(({userId}) => userId === viewerId)
+    const {preferredName: assigneeName} =
+      (userId && teamMembers.find((user) => user.userId === userId)) || {}
+
+    // RESOLUTION
+    const {name: teamName} = team
+    const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
+    const createdBySomeoneElseComment =
+      userId && userId !== viewerId
+        ? makeCreateGitHubTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+        : undefined
 
     const res = await createGitHubTask(
       rawContentStr,
       repoOwner,
       repoName,
-      viewerAuth,
+      auth,
       context,
-      info
+      info,
+      createdBySomeoneElseComment
     )
     if (res.error) {
       return {error: {message: res.error.message}}
     }
     const {issueNumber} = res
+
     await r
       .table('Task')
       .get(taskId)
       .update({
         integrationHash: GitHubIssueId.join(nameWithOwner, issueNumber),
         integration: {
-          accessUserId: viewerId,
+          accessUserId,
           service: 'github',
           issueNumber,
           nameWithOwner
@@ -105,7 +127,6 @@ export default {
         updatedAt: now
       })
       .run()
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
       publish(

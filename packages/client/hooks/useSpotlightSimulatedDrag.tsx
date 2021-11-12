@@ -1,23 +1,21 @@
-import {useCallback, useEffect, useRef} from 'react'
-import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
+import {MutableRefObject, useCallback, useEffect, useRef} from 'react'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
-import clientTempId from '../utils/relay/clientTempId'
 import useAtmosphere from './useAtmosphere'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {commitLocalUpdate} from 'react-relay'
 
-const useSpotlightSimulatedDrag = (meeting: GroupingKanban_meeting) => {
+const useSpotlightSimulatedDrag = (
+  meeting: GroupingKanban_meeting,
+  dragIdRef: MutableRefObject<string | undefined>
+) => {
   const atmosphere = useAtmosphere()
-
-  const dragIdRef = useRef<string>()
   const reflectionIdRef = useRef<string>()
   const updateTimerRef = useRef(0)
-
-  const {id: meetingId, spotlightReflection} = meeting
+  const {id: meetingId, spotlightGroup} = meeting
 
   // handle the case when someone steals the reflection
   useEffect(() => {
-    if (reflectionIdRef.current && !spotlightReflection) {
+    if (reflectionIdRef.current && !spotlightGroup) {
       const reflectionId = reflectionIdRef.current
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)
@@ -32,26 +30,30 @@ const useSpotlightSimulatedDrag = (meeting: GroupingKanban_meeting) => {
         }
       })
     }
-  }, [!spotlightReflection])
+  }, [!spotlightGroup])
 
   const onCloseSpotlight = useCallback(() => {
     clearTimeout(updateTimerRef.current)
     updateTimerRef.current = 0
-
+    const clone = document.getElementById(`clone-${reflectionIdRef.current}`)
+    if (clone && document.body.contains(clone)) {
+      document.body.removeChild(clone)
+    }
     // Only send the enddragging mutation when we didn't send it before,
     // but always null the spotlight reflection to close the dialog
     const reflectionId = reflectionIdRef.current
-    reflectionId &&
-      EndDraggingReflectionMutation(atmosphere, {
-        reflectionId,
-        dropTargetType: null,
-        dropTargetId: null,
-        dragId: dragIdRef.current
-      })
+    if (!reflectionId) return
+    EndDraggingReflectionMutation(atmosphere, {
+      reflectionId,
+      dropTargetType: null,
+      dropTargetId: null,
+      dragId: dragIdRef.current
+    })
 
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
-      meetingProxy?.setValue(null, 'spotlightReflection')
+      meetingProxy?.setValue(null, 'spotlightGroup')
+      meetingProxy?.setValue(null, 'spotlightReflectionId')
     })
     dragIdRef.current = undefined
     reflectionIdRef.current = undefined
@@ -59,18 +61,14 @@ const useSpotlightSimulatedDrag = (meeting: GroupingKanban_meeting) => {
 
   const onOpenSpotlight = useCallback(
     (reflectionId: string) => {
-      dragIdRef.current = clientTempId()
       reflectionIdRef.current = reflectionId
-      StartDraggingReflectionMutation(atmosphere, {
-        reflectionId,
-        dragId: dragIdRef.current,
-        isSpotlight: true
-      })
 
       commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)
+        const reflectionGroupId = store.get(reflectionId)?.getValue('reflectionGroupId') as string
+        const reflectionGroup = reflectionGroupId && store.get(reflectionGroupId)
         const meetingProxy = store.get(meetingId)
-        reflection && meetingProxy?.setLinkedRecord(reflection, 'spotlightReflection')
+        reflectionGroup && meetingProxy?.setLinkedRecord(reflectionGroup, 'spotlightGroup')
+        meetingProxy?.setValue(reflectionId, 'spotlightReflectionId')
       })
     },
     [meetingId]

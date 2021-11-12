@@ -35,7 +35,7 @@ const updateGitHubDimensionField = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {dimensionName, labelTemplate, meetingId, nameWithOwner}: Args,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {

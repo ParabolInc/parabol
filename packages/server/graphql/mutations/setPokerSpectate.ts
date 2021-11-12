@@ -20,8 +20,8 @@ const setPokerSpectate = {
     }
   },
   resolve: async (
-    _source,
-    {meetingId, isSpectating},
+    _source: unknown,
+    {meetingId, isSpectating}: {meetingId: string; isSpectating: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

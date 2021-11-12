@@ -15,4 +15,9 @@ const UpdateUserProfileInput = new GraphQLInputObjectType({
   })
 })
 
+export type UpdateUserProfileInputType = {
+  picture?: string | null
+  preferredName?: string | null
+}
+
 export default UpdateUserProfileInput
