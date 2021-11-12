@@ -65,6 +65,7 @@ export const getDroppingStyles = (
     ? !!(spotlightEl && document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`))
     : false
   const isInSpotlight = spotlightEl && spotlightEl.contains(element)
+  const notInSpotlight = spotlightEl && !spotlightEl.contains(element)
   const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
   const {top, left} = bbox
   const minTop = getMinTop(top, element)
@@ -74,19 +75,18 @@ export const getDroppingStyles = (
   const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s linear 0s forwards`
   const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s linear 0s forwards`
 
-  const notInSpotlightSuggestions = spotlightEl && !isInSpotlight
   const isCurrentlyBehindSpotlight = lastZIndex !== ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
   const isFadingIn =
-    // Spotlight is open and the element is not a part of the spotlight suggestions
-    notInSpotlightSuggestions &&
+    // Spotlight is open and the element is not a part of the spotlight
+    notInSpotlight &&
     // Element is hovering any spotlight element
     isTargetInSpotlight &&
     // Element is not released and not returning to its place behind the spotlight
     !isClose
 
   const isFadingOut =
-    // Spotlight is open and the element is not a part of the spotlight suggestions
-    notInSpotlightSuggestions &&
+    // Spotlight is open and the element is not a part of the spotlight
+    notInSpotlight &&
     // The element is not behind the spotlight already
     // make sense when the remote reflection first appears in the background
     !isCurrentlyBehindSpotlight &&
