@@ -4,6 +4,7 @@ import {GQLContext} from '../../graphql'
 import getAtlassianAuthsToUpdate from '../../../postgres/queries/getAtlassianAuthsToUpdate'
 import {Threshold} from '~/types/constEnums'
 import {isNotNull} from '../../../utils/predicates'
+import isNotError from '../../errorFilter'
 
 const updateOAuthRefreshTokens = {
   type: GraphQLInt,
@@ -18,7 +19,7 @@ const updateOAuthRefreshTokens = {
     const atlassianAuthsToUpdate = await getAtlassianAuthsToUpdate(olderThan14DaysThreshold)
     const updatedAtlassianAuths = (
       await dataLoader.get('freshAtlassianAuth').loadMany(atlassianAuthsToUpdate)
-    ).filter(isNotNull)
+    ).filter((auth) => isNotNull(auth) && isNotError(auth))
 
     return updatedAtlassianAuths.length
   }
