@@ -25,6 +25,7 @@ const hardDeleteUser = {
       description: 'the user email'
     },
     reasonText: {
+      /* this is passed to segment track method under properties via `softDeleteUser` resolver fn */
       type: GraphQLString,
       description: 'the reason why the user wants to delete their account'
     }

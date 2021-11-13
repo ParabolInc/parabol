@@ -53,6 +53,11 @@ const softDeleteUser = async (
     removeGitHubAuths(userIdToDelete, teamIds),
     removeSlackAuths(userIdToDelete, teamIds, true)
   ])
+  /*
+   * eagerly pass in parabolPayload to segment track method instead of
+   * lazily querying for it so we can promptly delete user on our side without
+   * worrying about hubspot needing that data and not finding it
+   */
   segmentIo.track({
     userId: userIdToDelete,
     event: 'Account Removed',
