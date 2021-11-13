@@ -84,7 +84,6 @@ const subscription = graphql`
       ... on JiraIssue {
         id
         summary
-        description
         descriptionHTML
       }
     }

@@ -327,8 +327,11 @@ export default abstract class AtlassianManager {
     const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
 
     if (res.status === 429) {
-      const retryAfterSeconds = res.headers.get('Retry-After') ?? '30'
-      return new RateLimitError('error', new Date(Date.now() + Number(retryAfterSeconds) * 1000))
+      const retryAfterSeconds = res.headers.get('Retry-After') ?? '3'
+      return new RateLimitError(
+        JSON.stringify(json),
+        new Date(Date.now() + Number(retryAfterSeconds) * 1000)
+      )
     }
 
     if ('message' in json) {
