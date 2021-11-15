@@ -1,9 +1,9 @@
 import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
 import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
-import LoaderMakerForeign from './LoaderMakerForeign'
+import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 
-export const activeMeetingsByTeamId = new LoaderMakerForeign(
+export const activeMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
   'newMeetings',
   'teamId',
   async (teamIds) => {
@@ -17,7 +17,7 @@ export const activeMeetingsByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const agendaItemsByTeamId = new LoaderMakerForeign(
+export const agendaItemsByTeamId = new RethinkForeignKeyLoaderMaker(
   'agendaItems',
   'teamId',
   async (teamIds) => {
@@ -31,7 +31,7 @@ export const agendaItemsByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const agendaItemsByMeetingId = new LoaderMakerForeign(
+export const agendaItemsByMeetingId = new RethinkForeignKeyLoaderMaker(
   'agendaItems',
   'meetingId',
   async (meetingIds) => {
@@ -44,7 +44,7 @@ export const agendaItemsByMeetingId = new LoaderMakerForeign(
   }
 )
 
-export const commentsByDiscussionId = new LoaderMakerForeign(
+export const commentsByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'comments',
   'discussionId',
   async (discussionIds) => {
@@ -60,7 +60,7 @@ export const commentsByDiscussionId = new LoaderMakerForeign(
   }
 )
 
-export const completedMeetingsByTeamId = new LoaderMakerForeign(
+export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
   'newMeetings',
   'teamId',
   async (teamIds) => {
@@ -78,7 +78,7 @@ export const completedMeetingsByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const reflectPromptsByTemplateId = new LoaderMakerForeign(
+export const reflectPromptsByTemplateId = new RethinkForeignKeyLoaderMaker(
   'reflectPrompts',
   'templateId',
   async (templateIds) => {
@@ -91,7 +91,7 @@ export const reflectPromptsByTemplateId = new LoaderMakerForeign(
   }
 )
 
-export const massInvitationsByTeamMemberId = new LoaderMakerForeign(
+export const massInvitationsByTeamMemberId = new RethinkForeignKeyLoaderMaker(
   'massInvitations',
   'teamMemberId',
   async (teamMemberIds) => {
@@ -103,7 +103,7 @@ export const massInvitationsByTeamMemberId = new LoaderMakerForeign(
       .run()
   }
 )
-export const meetingMembersByMeetingId = new LoaderMakerForeign(
+export const meetingMembersByMeetingId = new RethinkForeignKeyLoaderMaker(
   'meetingMembers',
   'meetingId',
   async (meetingIds) => {
@@ -115,7 +115,7 @@ export const meetingMembersByMeetingId = new LoaderMakerForeign(
   }
 )
 
-export const meetingMembersByUserId = new LoaderMakerForeign(
+export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   'meetingMembers',
   'userId',
   async (userIds) => {
@@ -127,7 +127,7 @@ export const meetingMembersByUserId = new LoaderMakerForeign(
   }
 )
 
-export const organizationsByActiveDomain = new LoaderMakerForeign(
+export const organizationsByActiveDomain = new RethinkForeignKeyLoaderMaker(
   'organizations',
   'activeDomain',
   async (activeDomains) => {
@@ -138,7 +138,7 @@ export const organizationsByActiveDomain = new LoaderMakerForeign(
       .run()
   }
 )
-export const organizationUsersByOrgId = new LoaderMakerForeign(
+export const organizationUsersByOrgId = new RethinkForeignKeyLoaderMaker(
   'organizationUsers',
   'orgId',
   async (orgIds) => {
@@ -151,7 +151,7 @@ export const organizationUsersByOrgId = new LoaderMakerForeign(
   }
 )
 
-export const organizationUsersByUserId = new LoaderMakerForeign(
+export const organizationUsersByUserId = new RethinkForeignKeyLoaderMaker(
   'organizationUsers',
   'userId',
   async (userIds) => {
@@ -164,7 +164,7 @@ export const organizationUsersByUserId = new LoaderMakerForeign(
   }
 )
 
-export const retroReflectionGroupsByMeetingId = new LoaderMakerForeign(
+export const retroReflectionGroupsByMeetingId = new RethinkForeignKeyLoaderMaker(
   'retroReflectionGroups',
   'meetingId',
   async (meetingIds) => {
@@ -177,7 +177,7 @@ export const retroReflectionGroupsByMeetingId = new LoaderMakerForeign(
   }
 )
 
-export const meetingTemplatesByOrgId = new LoaderMakerForeign(
+export const meetingTemplatesByOrgId = new RethinkForeignKeyLoaderMaker(
   'meetingTemplates',
   'orgId',
   async (orgId) => {
@@ -189,7 +189,7 @@ export const meetingTemplatesByOrgId = new LoaderMakerForeign(
       .run()
   }
 )
-export const meetingTemplatesByTeamId = new LoaderMakerForeign(
+export const meetingTemplatesByTeamId = new RethinkForeignKeyLoaderMaker(
   'meetingTemplates',
   'teamId',
   async (teamIds) => {
@@ -202,7 +202,7 @@ export const meetingTemplatesByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const scalesByTeamId = new LoaderMakerForeign(
+export const scalesByTeamId = new RethinkForeignKeyLoaderMaker(
   'templateScales',
   'teamId',
   async (teamIds) => {
@@ -220,7 +220,7 @@ export const scalesByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const retroReflectionsByMeetingId = new LoaderMakerForeign(
+export const retroReflectionsByMeetingId = new RethinkForeignKeyLoaderMaker(
   'retroReflections',
   'meetingId',
   async (meetingIds) => {
@@ -233,7 +233,7 @@ export const retroReflectionsByMeetingId = new LoaderMakerForeign(
   }
 )
 
-export const templateDimensionsByTemplateId = new LoaderMakerForeign(
+export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
   'templateDimensions',
   'templateId',
   async (templateIds) => {
@@ -249,7 +249,7 @@ export const templateDimensionsByTemplateId = new LoaderMakerForeign(
     )
   }
 )
-export const timelineEventsByMeetingId = new LoaderMakerForeign(
+export const timelineEventsByMeetingId = new RethinkForeignKeyLoaderMaker(
   'timelineEvents',
   'meetingId',
   async (meetingIds) => {
@@ -262,15 +262,19 @@ export const timelineEventsByMeetingId = new LoaderMakerForeign(
   }
 )
 
-export const slackAuthByUserId = new LoaderMakerForeign('slackAuths', 'userId', async (userIds) => {
-  const r = await getRethink()
-  return r
-    .table('SlackAuth')
-    .getAll(r.args(userIds), {index: 'userId'})
-    .run()
-})
+export const slackAuthByUserId = new RethinkForeignKeyLoaderMaker(
+  'slackAuths',
+  'userId',
+  async (userIds) => {
+    const r = await getRethink()
+    return r
+      .table('SlackAuth')
+      .getAll(r.args(userIds), {index: 'userId'})
+      .run()
+  }
+)
 
-export const slackNotificationsByTeamId = new LoaderMakerForeign(
+export const slackNotificationsByTeamId = new RethinkForeignKeyLoaderMaker(
   'slackNotifications',
   'teamId',
   async (teamIds) => {
@@ -282,7 +286,7 @@ export const slackNotificationsByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const suggestedActionsByUserId = new LoaderMakerForeign(
+export const suggestedActionsByUserId = new RethinkForeignKeyLoaderMaker(
   'suggestedActions',
   'userId',
   async (userIds) => {
@@ -295,7 +299,7 @@ export const suggestedActionsByUserId = new LoaderMakerForeign(
   }
 )
 
-export const tasksByDiscussionId = new LoaderMakerForeign(
+export const tasksByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'tasks',
   'discussionId',
   async (discusisonIds) => {
@@ -310,21 +314,25 @@ export const tasksByDiscussionId = new LoaderMakerForeign(
   }
 )
 
-export const tasksByTeamId = new LoaderMakerForeign('tasks', 'teamId', async (teamIds) => {
-  const r = await getRethink()
-  // waraning! contains private tasks
-  return r
-    .table('Task')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter((task) =>
-      task('tags')
-        .contains('archived')
-        .not()
-    )
-    .run()
-})
+export const tasksByTeamId = new RethinkForeignKeyLoaderMaker(
+  'tasks',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    // waraning! contains private tasks
+    return r
+      .table('Task')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter((task) =>
+        task('tags')
+          .contains('archived')
+          .not()
+      )
+      .run()
+  }
+)
 
-export const teamInvitationsByTeamId = new LoaderMakerForeign(
+export const teamInvitationsByTeamId = new RethinkForeignKeyLoaderMaker(
   'teamInvitations',
   'teamId',
   async (teamIds) => {
@@ -339,7 +347,7 @@ export const teamInvitationsByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const teamMembersByTeamId = new LoaderMakerForeign(
+export const teamMembersByTeamId = new RethinkForeignKeyLoaderMaker(
   'teamMembers',
   'teamId',
   async (teamIds) => {
@@ -353,7 +361,7 @@ export const teamMembersByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const teamMembersByUserId = new LoaderMakerForeign(
+export const teamMembersByUserId = new RethinkForeignKeyLoaderMaker(
   'teamMembers',
   'userId',
   async (userIds) => {

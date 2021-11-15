@@ -8,7 +8,7 @@ import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/ji
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import {isNotNull} from '../utils/predicates'
 import sendToSentry from '../utils/sendToSentry'
-import RethinkDataLoader from './RethinkDataLoader'
+import RootDataLoader from './RootDataLoader'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 
@@ -28,7 +28,7 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
-export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
+export const freshAtlassianAuth = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -80,7 +80,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
   )
 }
 
-export const jiraRemoteProject = (parent: RethinkDataLoader) => {
+export const jiraRemoteProject = (parent: RootDataLoader) => {
   return new DataLoader<JiraRemoteProjectKey, JiraProject | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -106,7 +106,7 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
   )
 }
 
-export const jiraIssue = (parent: RethinkDataLoader) => {
+export const jiraIssue = (parent: RootDataLoader) => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -178,7 +178,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
 interface CloudNameLookup {
   [cloudId: string]: string
 }
-export const atlassianCloudNameLookup = (parent: RethinkDataLoader) => {
+export const atlassianCloudNameLookup = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, CloudNameLookup, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -208,7 +208,7 @@ interface CloudNameKey extends TeamUserKey {
   cloudId: string
 }
 
-export const atlassianCloudName = (parent: RethinkDataLoader) => {
+export const atlassianCloudName = (parent: RootDataLoader) => {
   return new DataLoader<CloudNameKey, string, string>(
     async (keys) => {
       const results = await Promise.allSettled(
