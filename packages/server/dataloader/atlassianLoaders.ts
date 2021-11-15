@@ -37,21 +37,24 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           const atlassianAuthToRefresh = userAtlassianAuths.find(
             (atlassianAuth) => atlassianAuth.teamId === teamId
           )
-          if (!atlassianAuthToRefresh?.refreshToken) {
-            // Not always an error! For suggested integrations, this won't exist.
-            // sendToSentry(new Error('No atlassian access token exists for team member'), {
-            //   userId,
-            //   tags: {teamId}
-            // })
+          if (!atlassianAuthToRefresh) {
             return null
           }
+
           const {accessToken: existingAccessToken, refreshToken} = atlassianAuthToRefresh
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken, refreshToken: newRefreshToken} = manager
+            const {
+              accessToken,
+              refreshToken: newRefreshToken,
+              error
+            } = await AtlassianServerManager.refresh(refreshToken)
+            if (error) {
+              sendToSentry(new Error(error))
+              return null
+            }
             const updatedRefreshToken = newRefreshToken ?? atlassianAuthToRefresh.refreshToken
             // if user integrated the same Jira account with using different teams we need to update them as well
             // reference: https://github.com/ParabolInc/parabol/issues/5601

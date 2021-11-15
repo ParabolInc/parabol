@@ -27,11 +27,14 @@ export type PortalId =
   | 'StageTimerEndTimePicker'
   | 'StageTimerStartTimePicker'
   | 'StageTimerMinutePicker'
+  | 'taskFooterTeamAssigneeAddIntegration'
+  | 'taskFooterTeamAssigneeMenu'
 
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void
   onClose?: () => void
   id?: PortalId
+  // if you nest portals, this should be the id of the parent portal
   parentId?: PortalId
   // allow body to scroll while modal is open
   allowScroll?: boolean
@@ -45,6 +48,10 @@ const getParent = (parentId: string | undefined) => {
   return parent
 }
 
+/**
+ * Create and manage a React.Portal to display nodes outside the DOM. Manages Keyboard presses etc.
+ * To nest multiple portals, the outer one should have id set and the inner one parentId
+ */
 const usePortal = (options: UsePortalOptions = {}) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
@@ -149,10 +156,10 @@ const usePortal = (options: UsePortalOptions = {}) => {
       portalRef.current = document.createElement('div')
       portalRef.current.id = options.id || 'portal'
       getParent(options.parentId).appendChild(portalRef.current)
-      if (e && e.currentTarget) {
+      if (e?.currentTarget) {
         originRef.current = e.currentTarget as HTMLElement
       }
-      options.onOpen && options.onOpen(portalRef.current)
+      options.onOpen?.(portalRef.current)
     }
   })
 

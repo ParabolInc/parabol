@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -11,7 +11,7 @@ import textOverflow from '../../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Radius} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
-import {TaskFooterTeamAssignee_task} from '../../../../__generated__/TaskFooterTeamAssignee_task.graphql'
+import {TaskFooterTeamAssignee_task$key} from '../../../../__generated__/TaskFooterTeamAssignee_task.graphql'
 
 const TooltipToggle = styled('div')({
   width: '100%'
@@ -45,7 +45,7 @@ const TeamToggleButton = styled(CardButton)({
 
 interface Props {
   canAssign: boolean
-  task: TaskFooterTeamAssignee_task
+  task: TaskFooterTeamAssignee_task$key
   useTaskChild: UseTaskChild
 }
 
@@ -56,10 +56,25 @@ const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
-  const {canAssign, task, useTaskChild} = props
+  const {canAssign, task: taskRef, useTaskChild} = props
+
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterTeamAssignee_task on Task {
+        ...TaskFooterTeamAssigneeMenu_task
+        team {
+          name
+        }
+      }
+    `,
+    taskRef
+  )
+
   const {team} = task
   const {name: teamName} = team
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
+    id: 'taskFooterTeamAssigneeMenu'
+  })
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -88,13 +103,4 @@ const TaskFooterTeamAssignee = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskFooterTeamAssignee, {
-  task: graphql`
-    fragment TaskFooterTeamAssignee_task on Task {
-      ...TaskFooterTeamAssigneeMenu_task
-      team {
-        name
-      }
-    }
-  `
-})
+export default TaskFooterTeamAssignee
