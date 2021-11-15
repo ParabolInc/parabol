@@ -2,7 +2,7 @@ import DataLoader from 'dataloader'
 import getRethink, {DBType} from '../database/rethinkDriver'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 
-const pkLoader = <T extends keyof DBType>(
+const rethinkPrimaryKeyLoader = <T extends keyof DBType>(
   options: DataLoader.Options<string, DBType[T]>,
   table: T
 ) => {
@@ -18,4 +18,4 @@ const pkLoader = <T extends keyof DBType>(
   return new DataLoader<string, DBType[T]>(batchFn, options)
 }
 
-export default pkLoader
+export default rethinkPrimaryKeyLoader
