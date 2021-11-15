@@ -5,6 +5,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   type: PromoteNewMeetingFacilitatorPayload,
@@ -19,9 +20,9 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {facilitatorUserId, meetingId},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {facilitatorUserId, meetingId}: {facilitatorUserId: string; meetingId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()

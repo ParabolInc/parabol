@@ -8,6 +8,7 @@ import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import AddReflectTemplatePromptPayload from '../types/AddReflectTemplatePromptPayload'
 
 const addReflectTemplatePrompt = {
@@ -18,7 +19,11 @@ const addReflectTemplatePrompt = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {templateId}: {templateId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}

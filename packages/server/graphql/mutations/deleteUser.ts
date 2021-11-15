@@ -30,8 +30,12 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {userId, email, reason}: {userId?: string; email?: string; reason?: string},
+    _source: unknown,
+    {
+      userId,
+      email,
+      reason
+    }: {userId?: string | null; email?: string | null; reason?: string | null},
     {authToken, dataLoader}: GQLContext
   ) => {
     // AUTH

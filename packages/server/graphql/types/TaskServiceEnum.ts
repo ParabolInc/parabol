@@ -10,4 +10,6 @@ const TaskServiceEnum = new GraphQLEnumType({
   }
 })
 
+export type TaskServiceEnumType = 'github' | 'jira' | 'PARABOL'
+
 export default TaskServiceEnum

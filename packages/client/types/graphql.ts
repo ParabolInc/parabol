@@ -48987,9 +48987,9 @@ export interface IOrganizationUserOnUserArguments {
 
 export interface ISimilarReflectionGroupsOnUserArguments {
   /**
-   * The id of the selected reflection in the Spotlight
+   * The id of the selected reflection group in the Spotlight
    */
-  reflectionId: string;
+  reflectionGroupId: string;
 
   /**
    * Only return reflection groups that match the search query
@@ -51272,11 +51272,6 @@ export const enum TaskStatusEnum {
  */
 export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
-
-  /**
-   * true if the user has access to retro meeting video
-   */
-  video: boolean;
 
   /**
    * true if jira is allowed
@@ -55245,7 +55240,7 @@ export interface IMutation {
   autoGroupReflections: IAutoGroupReflectionsPayload | null;
 
   /**
-   * Change the team a task is associated with
+   * Change the team a task is associated with. Also copy the viewers integration if necessary.
    */
   changeTaskTeam: IChangeTaskTeamPayload | null;
 
@@ -56289,7 +56284,7 @@ export interface IPayLaterOnMutationArguments {
 
 export interface IPersistJiraSearchQueryOnMutationArguments {
   /**
-   * the team witht the settings we add the query to
+   * the team with the settings we add the query to
    */
   teamId: string;
 
@@ -56559,6 +56554,7 @@ export interface ISignUpWithPasswordOnMutationArguments {
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
   dragId: string;
+  isSpotlight?: boolean | null;
 }
 
 export interface IStartCheckInOnMutationArguments {
@@ -57181,7 +57177,6 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  video = 'video',
   jira = 'jira',
   poker = 'poker'
 }
@@ -57840,6 +57835,7 @@ export interface IRemoteReflectionDrag {
    * The name of the dragUser
    */
   dragUserName: string | null;
+  isSpotlight: boolean | null;
   clientHeight: number | null;
   clientWidth: number | null;
 
@@ -58942,7 +58938,6 @@ export interface IUpdateTaskInput {
   content?: string | null;
   sortOrder?: number | null;
   status?: TaskStatusEnum | null;
-  teamId?: string | null;
 
   /**
    * userId, the owner of the task. This can be null if the task is not assigned to anyone.
@@ -59357,7 +59352,7 @@ export interface IPoll {
   /**
    * The user that created the item
    */
-  createdByUser: IUser | null;
+  createdByUser: IUser;
 
   /**
    * the replies to this threadable item
@@ -59496,6 +59491,7 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 
 export type MeetingSubscriptionPayload =
   | IAddCommentSuccess
+  | ICreatePollSuccess
   | IAddReactjiToReflectionSuccess
   | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload

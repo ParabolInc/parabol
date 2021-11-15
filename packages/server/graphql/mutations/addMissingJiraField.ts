@@ -24,8 +24,8 @@ const addMissingJiraField = {
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId},
+    _source: unknown,
+    {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
@@ -77,12 +77,12 @@ const addMissingJiraField = {
     const team = await dataLoader.get('teams').load(teamId)
     const jiraDimensionFields = team.jiraDimensionFields || []
     const dimensionField = jiraDimensionFields.find(
-      (dimensionField) =>
+      (dimensionField: {dimensionName: string; cloudId: string; projectKey: string}) =>
         dimensionField.dimensionName === dimensionName &&
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
-    const {fieldType, fieldId} = dimensionField
+    const {fieldType, fieldId}: {fieldType: 'string' | 'number'; fieldId: string} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
     if (screensResponse instanceof Error) {

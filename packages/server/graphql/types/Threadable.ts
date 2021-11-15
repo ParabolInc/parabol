@@ -74,7 +74,7 @@ const Threadable = new GraphQLInterfaceType({
       return Task
     }
 
-    if ('options' in threadable) {
+    if ('title' in threadable) {
       return Poll
     }
 

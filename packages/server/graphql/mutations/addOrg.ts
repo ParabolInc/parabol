@@ -47,11 +47,14 @@ export default {
       if (Object.keys(errors).length) {
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
+      const user = await db.read('User', viewerId)
+      if (!user) {
+        return standardError(new Error('Authorization error'), {userId: viewerId})
+      }
 
       // RESOLUTION
       const orgId = generateUID()
       const teamId = generateUID()
-      const user = await db.read('User', viewerId)
       const {email} = user
       await createNewOrg(orgId, orgName, viewerId, email)
       await createTeamAndLeader(viewerId, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})

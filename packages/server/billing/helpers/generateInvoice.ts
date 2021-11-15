@@ -73,7 +73,9 @@ interface DetailedLineItemDict {
 const getEmailLookup = async (userIds: string[]) => {
   const usersAndEmails = await db.readMany('User', userIds)
   return usersAndEmails.reduce((dict, doc) => {
-    dict[doc.id] = doc.email
+    if (doc) {
+      dict[doc.id] = doc.email
+    }
     return dict
   }, {} as {[key: string]: string}) as EmailLookup
 }

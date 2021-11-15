@@ -24,8 +24,8 @@ const movePokerTemplateScaleValue = {
     }
   },
   resolve: async (
-    _source,
-    {scaleId, label, index},
+    _source: unknown,
+    {scaleId, label, index}: {scaleId: string; label: string; index: number},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

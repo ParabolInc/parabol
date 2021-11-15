@@ -8,7 +8,7 @@ interface InitSignal {
 }
 
 // make the closure context as small as possible. there will be dozens of these. DOZENS
-const handleMessage = (ws) => (data: any) => {
+const handleMessage = (ws: UWebSocket) => (data: any) => {
   handleSignal(ws, data)
 }
 

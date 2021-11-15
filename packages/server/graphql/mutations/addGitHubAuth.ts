@@ -6,6 +6,7 @@ import getProfile from '../../utils/githubQueries/getProfile.graphql'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
+import {GQLContext, GQLResolveInfo} from '../graphql'
 import {GitHubRequest} from '../rootSchema'
 import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
 
@@ -20,7 +21,12 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {code, teamId}, context, info) => {
+  resolve: async (
+    _source: unknown,
+    {code, teamId}: {code: string; teamId: string},
+    context: GQLContext,
+    info: GQLResolveInfo
+  ) => {
     const {authToken} = context
     const viewerId = getUserId(authToken)
 

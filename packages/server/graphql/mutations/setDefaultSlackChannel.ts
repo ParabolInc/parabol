@@ -17,7 +17,11 @@ const setDefaultSlackChannel = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {slackChannelId, teamId}, {authToken, dataLoader}: GQLContext) => {
+  resolve: async (
+    _source: unknown,
+    {slackChannelId, teamId}: {slackChannelId: string; teamId: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
 

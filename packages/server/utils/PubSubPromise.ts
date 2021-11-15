@@ -9,16 +9,21 @@ interface Job {
 }
 
 const {SERVER_ID, REDIS_URL} = process.env
-export default class PubSubPromise<Request, Response> {
+
+interface BaseRequest {
+  serverChannel?: string
+}
+
+export default class PubSubPromise<Request extends BaseRequest, Response> {
   jobs = {} as {[jobId: string]: Job}
   publisher = new Redis(REDIS_URL)
   subscriber = new Redis(REDIS_URL)
   subChannel: string
-  pubChannel: string
+  stream: string
   jobCounter = 0
 
-  constructor(pubChannel: string, subChannel: string) {
-    this.pubChannel = pubChannel
+  constructor(stream: string, subChannel: string) {
+    this.stream = stream
     this.subChannel = subChannel
   }
   onMessage = (_channel: string, message: string) => {
@@ -49,8 +54,14 @@ export default class PubSubPromise<Request, Response> {
         sendToSentry(new Error('REDIS JOB ALREADY EXISTS'), {tags: {jobId}})
       }
       this.jobs[jobId] = {resolve, timeoutId}
-      const message = JSON.stringify({jobId, request})
-      this.publisher.publish(this.pubChannel, message)
+      const {serverChannel, ...rest} = request
+      const message = JSON.stringify({jobId, request: rest})
+      if (serverChannel) {
+        this.publisher.publish(serverChannel, message)
+      } else {
+        // cap the stream to slightly more than 1000 entries.
+        this.publisher.xadd(this.stream, 'MAXLEN', '~', 1000, '*', 'msg', message)
+      }
     })
   }
 }

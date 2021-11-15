@@ -1,11 +1,12 @@
 import {ExternalLinks} from '../../client/types/constEnums'
+import {Doc} from './convertContentStateToADF'
 
 const makeScoreJiraComment = (
   dimensionName: string,
   finalScore: string,
   meetingName: string,
   discussionURL: string
-) => ({
+): Doc => ({
   version: 1,
   type: 'doc',
   content: [

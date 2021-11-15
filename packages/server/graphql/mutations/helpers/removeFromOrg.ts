@@ -99,7 +99,7 @@ const removeFromOrg = async (
     console.log(e)
   }
   return {
-    tms: user.tms,
+    tms: user?.tms ?? [],
     taskIds,
     kickOutNotificationIds,
     teamIds,
