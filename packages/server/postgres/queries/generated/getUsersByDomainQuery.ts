@@ -1,13 +1,13 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getUsersByDomainQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
-
 export type AuthTokenRole = 'su';
 
-export type stringArray = (string)[];
+export type TierEnum = 'enterprise' | 'personal' | 'pro';
 
 export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
+
+export type stringArray = (string)[];
 
 /** 'GetUsersByDomainQuery' parameters type */
 export interface IGetUsersByDomainQueryParams {

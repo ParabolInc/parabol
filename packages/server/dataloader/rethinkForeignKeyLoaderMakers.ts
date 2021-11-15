@@ -43,28 +43,7 @@ export const agendaItemsByMeetingId = new RethinkForeignKeyLoaderMaker(
       .run()
   }
 )
-export const atlassianAuthByUserId = new RethinkForeignKeyLoaderMaker(
-  'atlassianAuths',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r
-      .table('AtlassianAuth')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .run()
-  }
-)
-export const atlassianAuthByTeamId = new RethinkForeignKeyLoaderMaker(
-  'atlassianAuths',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('AtlassianAuth')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .run()
-  }
-)
+
 export const commentsByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'comments',
   'discussionId',
