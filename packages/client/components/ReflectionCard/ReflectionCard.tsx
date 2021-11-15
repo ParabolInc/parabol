@@ -91,6 +91,8 @@ const ReflectionCard = (props: Props) => {
     content,
     promptId,
     isViewerCreator,
+    isViewerDragging,
+    isDropping,
     meetingId,
     reactjis,
     reflectionGroupId
@@ -245,6 +247,8 @@ const ReflectionCard = (props: Props) => {
     !isSpotlightOpen &&
     !isComplete &&
     !isDemoRoute() &&
+    !isViewerDragging &&
+    !isDropping &&
     (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
@@ -298,7 +302,9 @@ export default createFragmentContainer(ReflectionCard, {
       ...ColorBadge_reflection
       isViewerCreator
       id
+      isDropping
       isEditing
+      isViewerDragging
       meetingId
       reflectionGroupId
       promptId

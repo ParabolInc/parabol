@@ -66,7 +66,7 @@ const useRemotelyDraggedCard = (
         setRemoteCard(isClose, newTimeRemaining, bbox.top)
       })
     } else if (isSpotlight) {
-      // move animating remote Spotlight when other reflections move
+      // move animating remote Spotlight when other kanban reflections move
       spotlightAnimRef.current = requestAnimationFrame(() => {
         const newTimeRemaining = timeRemaining - (Date.now() - beforeFrame)
         setRemoteCard(isClose, newTimeRemaining, bbox.top, isSpotlight)
