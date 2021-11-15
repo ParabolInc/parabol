@@ -6,7 +6,7 @@ import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
-import useSpotlightResults from '../../hooks/useSpotlightResults'
+import useSpotlightReflectionGroup from '../../hooks/useSpotlightReflectionGroup'
 import {
   DragAttribute,
   ElementWidth,
@@ -47,7 +47,7 @@ const ReflectionWrapper = styled('div')<{
   isDropping: boolean | null
   groupCount: number
   isHiddenSpotlightSource: boolean
-}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource}): any => {
+}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource}) => {
   const isHidden = staticIdx === -1 || isDropping || isHiddenSpotlightSource
   const multiple = Math.max(0, Math.min(staticIdx, 2))
   const scaleX =
@@ -94,35 +94,18 @@ const ReflectionGroup = (props: Props) => {
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const spotlightGroupId = spotlightGroup?.id
-  const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
-  const isSpotlightOpen = !!spotlightGroupId
-  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, '', true) // TODO: add search query
-  const visibleReflections = useMemo(() => {
-    return isSpotlightSrcGroup
-      ? reflections.filter(({id}) => !reflectionIdsToHide?.includes(id))
-      : reflections.slice()
-  }, [reflections, reflectionIdsToHide])
-  const isInSpotlight = !openSpotlight
-  const isBehindSpotlight = isSpotlightOpen && !isInSpotlight
-  const isRemoteSpotlightSrc = useMemo(
-    () => !!visibleReflections.find(({remoteDrag}) => remoteDrag?.isSpotlight),
-    [visibleReflections]
+  const visibleReflections = useMemo(
+    () => reflections.filter(({id}) => !reflectionIdsToHide?.includes(id)),
+    [reflections, reflectionIdsToHide]
   )
-  const disableDrop = useMemo(() => {
-    const isViewerDraggingResult = !!spotlightResultGroups?.find(({reflections}) =>
-      reflections?.find(({isViewerDragging}) => isViewerDragging)
-    )
-    const isSourceGroup = spotlightGroupId === reflectionGroupId
-    return isSpotlightOpen
-      ? (isViewerDraggingResult && !isSourceGroup) || isBehindSpotlight // prevent grouping results into results
-      : isRemoteSpotlightSrc // prevent dropping onto animating remote source
-  }, [
-    spotlightResultGroups,
+  const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
+  const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
+  const [hideSpotlightHeader, disableDrop] = useSpotlightReflectionGroup(
+    visibleReflections,
     spotlightGroupId,
     reflectionGroupId,
-    isBehindSpotlight,
-    isRemoteSpotlightSrc
-  ])
+    isBehindSpotlight
+  )
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -191,8 +174,7 @@ const ReflectionGroup = (props: Props) => {
 
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
-    !isSpotlightSrcGroup &&
-    !isRemoteSpotlightSrc
+    !hideSpotlightHeader
   return (
     <>
       {portal(
@@ -241,7 +223,6 @@ const ReflectionGroup = (props: Props) => {
           {visibleReflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
-            const isHiddenSpotlightSource = isSpotlightSrcGroup && isBehindSpotlight
             return (
               <ReflectionWrapper
                 data-cy={`${dataCy}-card-${staticIdx}`}
@@ -249,7 +230,7 @@ const ReflectionGroup = (props: Props) => {
                 groupCount={visibleReflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
-                isHiddenSpotlightSource={isHiddenSpotlightSource}
+                isHiddenSpotlightSource={isSpotlightSrcGroup && isBehindSpotlight}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}
