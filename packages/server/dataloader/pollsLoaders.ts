@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import RethinkDataLoader from './RethinkDataLoader'
+import RootDataLoader from './RootDataLoader'
 import getPollOptionsByPollIds from '../postgres/queries/getPollOptionsByPollIds'
 import getPollsByDiscussionIds from '../postgres/queries/getPollsByDiscussionIds'
 import getPollsByIds from '../postgres/queries/getPollsByIds'
@@ -7,7 +7,7 @@ import {IGetPollOptionsByPollIdsQueryResult} from '../postgres/queries/generated
 import {IGetPollsByIdsQueryResult} from '../postgres/queries/generated/getPollsByIdsQuery'
 import {IGetPollsByDiscussionIdsQueryResult} from '../postgres/queries/generated/getPollsByDiscussionIdsQuery'
 
-export const pollOptions = (parent: RethinkDataLoader) => {
+export const pollOptions = (parent: RootDataLoader) => {
   return new DataLoader<number, IGetPollOptionsByPollIdsQueryResult[], string>(
     async (pollIds) => {
       const rows = await getPollOptionsByPollIds(pollIds)
@@ -19,7 +19,7 @@ export const pollOptions = (parent: RethinkDataLoader) => {
   )
 }
 
-export const polls = (parent: RethinkDataLoader) => {
+export const polls = (parent: RootDataLoader) => {
   return new DataLoader<number, IGetPollsByIdsQueryResult | null, string>(
     async (pollIds) => {
       const rows = await getPollsByIds(pollIds)
@@ -31,7 +31,7 @@ export const polls = (parent: RethinkDataLoader) => {
   )
 }
 
-export const pollsByDiscussionId = (parent: RethinkDataLoader) => {
+export const pollsByDiscussionId = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetPollsByDiscussionIdsQueryResult[], string>(
     async (discussionIds) => {
       const rows = await getPollsByDiscussionIds(discussionIds)
