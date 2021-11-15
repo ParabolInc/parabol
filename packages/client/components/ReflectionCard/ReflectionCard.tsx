@@ -50,7 +50,7 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
   opacity: 1,
   position: 'absolute',
   right: 2,
-  visibility: showSpotlight ? 'visible' : 'hidden',
+  visibility: showSpotlight ? 'inherit' : 'hidden',
   zIndex: ZIndex.TOOLTIP,
   ':hover': {
     backgroundColor: PALETTE.SLATE_200
@@ -91,8 +91,6 @@ const ReflectionCard = (props: Props) => {
     content,
     promptId,
     isViewerCreator,
-    isViewerDragging,
-    isDropping,
     meetingId,
     reactjis,
     reflectionGroupId
@@ -247,8 +245,6 @@ const ReflectionCard = (props: Props) => {
     !isSpotlightOpen &&
     !isComplete &&
     !isDemoRoute() &&
-    !isViewerDragging &&
-    !isDropping &&
     (isHovering || !isDesktop)
   return (
     <ReflectionCardRoot
@@ -302,9 +298,7 @@ export default createFragmentContainer(ReflectionCard, {
       ...ColorBadge_reflection
       isViewerCreator
       id
-      isDropping
       isEditing
-      isViewerDragging
       meetingId
       reflectionGroupId
       promptId

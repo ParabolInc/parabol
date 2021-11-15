@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer, useLazyLoadQuery} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
+import useSpotlightResults from '../../hooks/useSpotlightResults'
 import {
   DragAttribute,
   ElementWidth,
@@ -20,7 +21,6 @@ import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
-import {ReflectionGroupLocalQuery} from '../../__generated__/ReflectionGroupLocalQuery.graphql'
 
 const CardStack = styled('div')({
   position: 'relative'
@@ -96,30 +96,7 @@ const ReflectionGroup = (props: Props) => {
   const spotlightGroupId = spotlightGroup?.id
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isSpotlightOpen = !!spotlightGroupId
-  const spotlightSearchResults = useLazyLoadQuery<ReflectionGroupLocalQuery>(
-    graphql`
-      query ReflectionGroupLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
-        viewer {
-          similarReflectionGroups(
-            reflectionGroupId: $reflectionGroupId
-            searchQuery: $searchQuery
-          ) {
-            id
-            reflections {
-              id
-              isViewerDragging
-            }
-          }
-        }
-      }
-    `,
-    // TODO: add search query
-    {reflectionGroupId: spotlightGroupId || '', searchQuery: ''},
-    {fetchPolicy: 'store-only'}
-  )
-  const {viewer} = spotlightSearchResults
-  const {similarReflectionGroups} = viewer
-
+  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, '', true) // TODO: add search query
   const visibleReflections = useMemo(() => {
     return isSpotlightSrcGroup
       ? reflections.filter(({id}) => !reflectionIdsToHide?.includes(id))
@@ -132,15 +109,15 @@ const ReflectionGroup = (props: Props) => {
     [visibleReflections]
   )
   const disableDrop = useMemo(() => {
-    const isViewerDraggingResult = !!similarReflectionGroups?.find(({reflections}) =>
-      reflections.find(({isViewerDragging}) => isViewerDragging)
+    const isViewerDraggingResult = !!spotlightResultGroups?.find(({reflections}) =>
+      reflections?.find(({isViewerDragging}) => isViewerDragging)
     )
     const isSourceGroup = spotlightGroupId === reflectionGroupId
     return isSpotlightOpen
       ? (isViewerDraggingResult && !isSourceGroup) || isBehindSpotlight // prevent grouping results into results
       : isRemoteSpotlightSrc // prevent dropping onto animating remote source
   }, [
-    similarReflectionGroups,
+    spotlightResultGroups,
     spotlightGroupId,
     reflectionGroupId,
     isBehindSpotlight,

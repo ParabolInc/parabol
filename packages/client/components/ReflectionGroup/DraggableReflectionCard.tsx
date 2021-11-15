@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
-import {createFragmentContainer, useLazyLoadQuery} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import useSpotlightResults from '~/hooks/useSpotlightResults'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
-import {DraggableReflectionCardLocalQuery} from '../../__generated__/DraggableReflectionCardLocalQuery.graphql'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
 import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
@@ -86,28 +86,8 @@ const DraggableReflectionCard = (props: Props) => {
   const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  const spotlightSearchResults = useLazyLoadQuery<DraggableReflectionCardLocalQuery>(
-    graphql`
-      query DraggableReflectionCardLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
-        viewer {
-          similarReflectionGroups(
-            reflectionGroupId: $reflectionGroupId
-            searchQuery: $searchQuery
-          ) {
-            id
-          }
-        }
-      }
-    `,
-    // TODO: add search query
-    {reflectionGroupId: spotlightGroupId || '', searchQuery: ''},
-    {fetchPolicy: 'store-only'}
-  )
-  const {viewer} = spotlightSearchResults
-  const {similarReflectionGroups} = viewer
-  const resultGroupIdsInSpotlight = similarReflectionGroups
-    ? similarReflectionGroups.map(({id}) => id)
-    : []
+  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, '') // TODO: add search query
+  const resultGroupIdsInSpotlight = spotlightResultGroups?.map(({id}) => id) || []
   const isReflectionGroupIdInSpotlight = [...resultGroupIdsInSpotlight, spotlightGroupId].includes(
     reflectionGroupId
   )

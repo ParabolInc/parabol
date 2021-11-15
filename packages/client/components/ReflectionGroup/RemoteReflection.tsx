@@ -15,7 +15,7 @@ import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import getBBox from '../RetroReflectPhase/getBBox'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
-import {RemoteReflectionLocalQuery} from '../../__generated__/RemoteReflectionLocalQuery.graphql'
+import useSpotlightResults from '~/hooks/useSpotlightResults'
 
 const circleAnimation = (transform?: string) => keyframes`
   0%{
@@ -161,29 +161,11 @@ const RemoteReflection = (props: Props) => {
   const [editorState] = useEditorState(content)
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
-  const spotlightSearchResults = useLazyLoadQuery<RemoteReflectionLocalQuery>(
-    graphql`
-      query RemoteReflectionLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
-        viewer {
-          similarReflectionGroups(
-            reflectionGroupId: $reflectionGroupId
-            searchQuery: $searchQuery
-          ) {
-            id
-          }
-        }
-      }
-    `,
-    // TODO: add search query
-    {reflectionGroupId: spotlightGroup?.id || '', searchQuery: ''},
-    {fetchPolicy: 'store-only'}
+  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, '') // TODO: add search query
+  const isInViewerSpotlightResults = useMemo(
+    () => !!spotlightResultGroups?.find(({id}) => id === reflectionGroupId),
+    [spotlightResultGroups]
   )
-  const isInViewerSpotlightResults = useMemo(() => {
-    const {viewer} = spotlightSearchResults
-    const {similarReflectionGroups} = viewer
-    if (!similarReflectionGroups) return false
-    return !!similarReflectionGroups.find((group) => group.id === reflectionGroupId)
-  }, [spotlightSearchResults])
 
   useEffect(() => {
     timeoutRef.current = window.setTimeout(
