@@ -31,7 +31,11 @@ export default {
     }
 
     // RESOLUTION
-    const manager = await AtlassianServerManager.init(code)
+    const {accessToken, refreshToken, error: oAuthError} = await AtlassianServerManager.init(code)
+    if (oAuthError) {
+      return standardError(new Error(oAuthError), {userId: viewerId})
+    }
+    const manager = new AtlassianServerManager(accessToken)
     const sites = await manager.getAccessibleResources()
     if (!Array.isArray(sites)) {
       return standardError(new Error(sites.message), {userId: viewerId})
@@ -41,7 +45,6 @@ export default {
     if (!('accountId' in self)) {
       return standardError(new Error(self.message), {userId: viewerId})
     }
-    const {accessToken, refreshToken} = manager
 
     await upsertAtlassianAuth({
       accountId: self.accountId,

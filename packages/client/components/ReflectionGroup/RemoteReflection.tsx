@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer, useLazyLoadQuery} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEditorState from '../../hooks/useEditorState'
 import {Elevation} from '../../styles/elevation'

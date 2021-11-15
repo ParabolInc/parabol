@@ -35,22 +35,24 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
-
-          if (!atlassianAuth?.refreshToken) {
-            // Not always an error! For suggested integrations, this won't exist.
-            // sendToSentry(new Error('No atlassian access token exists for team member'), {
-            //   userId,
-            //   tags: {teamId}
-            // })
+          if (!atlassianAuth) {
             return null
           }
+
           const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken, refreshToken: newRefreshToken} = manager
+            const {
+              accessToken,
+              refreshToken: newRefreshToken,
+              error
+            } = await AtlassianServerManager.refresh(refreshToken)
+            if (error) {
+              sendToSentry(new Error(error))
+              return null
+            }
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
 
@@ -63,8 +65,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           return atlassianAuth
         })
       )
-      const res = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return res
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
