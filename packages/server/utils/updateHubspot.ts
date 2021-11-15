@@ -219,7 +219,7 @@ const parabolFetch = async (query: string, variables: Record<string, unknown>) =
     isPrivate: true
   })
 
-  if (result.errors && result.errors[0]) {
+  if (result.errors?.[0]) {
     const [firstError] = result.errors
     const safeError = new Error(firstError.message)
     safeError.stack = (firstError as Error).stack

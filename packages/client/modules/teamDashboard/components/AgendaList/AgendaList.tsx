@@ -58,8 +58,8 @@ const AgendaList = (props: Props) => {
     ) {
       return
     }
-    const sourceItem = agendaItems[source.index]!
-    const destinationItem = agendaItems[destination.index]!
+    const sourceItem = agendaItems[source.index]
+    const destinationItem = agendaItems[destination.index]
 
     let sortOrder
     if (destination.index === 0) {
@@ -69,7 +69,7 @@ const AgendaList = (props: Props) => {
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (agendaItems[destination.index + offset]!.sortOrder + destinationItem.sortOrder) / 2 +
+        (agendaItems[destination.index + offset].sortOrder + destinationItem.sortOrder) / 2 +
         dndNoise()
     }
     UpdateAgendaItemMutation(

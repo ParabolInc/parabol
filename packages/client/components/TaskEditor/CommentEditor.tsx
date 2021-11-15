@@ -153,8 +153,7 @@ const CommentEditor = (props: Props) => {
 
   const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
-      for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i]!
+      textTags.forEach((tag) => {
         if (text.indexOf(tag) !== -1) {
           const selection = editorState.getSelection()
           entityPasteStartRef.current = {
@@ -162,7 +161,7 @@ const CommentEditor = (props: Props) => {
             anchorKey: selection.getAnchorKey()
           }
         }
-      }
+      })
     }
     const links = linkify.match(text)
     const url = links && links[0].url.trim()

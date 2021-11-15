@@ -52,12 +52,9 @@ class MasonryCSSGrid extends Component<Props> {
   }
 
   setSpans = () => {
-    const keys = Object.keys(this.itemRefs)
-    for (let ii = 0; ii < keys.length; ii++) {
-      const key = keys[ii]!
-      const itemRef = this.itemRefs[key]!
+    Object.values(this.itemRefs).forEach((itemRef) => {
       this.setSpan(itemRef)
-    }
+    })
   }
 
   setSpan(c: HTMLElement | null) {

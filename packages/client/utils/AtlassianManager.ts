@@ -105,7 +105,7 @@ interface IssueCreateMetadata {
   })[]
 }
 
-interface JiraCreateIssueResponse {
+export interface JiraCreateIssueResponse {
   id: string
   key: string
   self: string
@@ -335,8 +335,10 @@ export default abstract class AtlassianManager {
       return new Error(json.errorMessages[0])
     }
     if ('errors' in json) {
-      const errorFieldName = Object.keys(json.errors)[0] as string
-      return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
+      const errorFieldName = Object.keys(json.errors)[0]
+      if (errorFieldName) {
+        return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
+      }
     }
     return json
   }
@@ -568,7 +570,6 @@ export default abstract class AtlassianManager {
     isJQL: boolean,
     projectFiltersByCloudId: {[cloudId: string]: string[]}
   ) {
-    const cloudIds = Object.keys(projectFiltersByCloudId)
     const allIssues = [] as JiraGQLFields[]
     let firstError: Error | undefined
     const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
@@ -581,8 +582,7 @@ export default abstract class AtlassianManager {
       const and = projectFilter && textFilter ? ' AND ' : ''
       return `${projectFilter}${and}${textFilter} ${orderBy}`
     }
-    const reqs = cloudIds.map(async (cloudId) => {
-      const projectKeys = projectFiltersByCloudId[cloudId]!
+    const reqs = Object.entries(projectFiltersByCloudId).map(async ([cloudId, projectKeys]) => {
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const jql = composeJQL(queryString, isJQL, projectKeys)
       const payload = {
@@ -602,7 +602,7 @@ export default abstract class AtlassianManager {
         }
         return
       }
-      const issues = res.issues.map((issue) => {
+      const issues = (res as JiraSearchResponse).issues.map((issue) => {
         const {key: issueKey, fields, renderedFields} = issue
         const {description, summary} = fields
         const {description: descriptionHTML} = renderedFields

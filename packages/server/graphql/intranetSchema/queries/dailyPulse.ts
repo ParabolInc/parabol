@@ -57,12 +57,11 @@ const makeTopXSection = async (domainCount: DomainCount[]) => {
   let curDomains = ''
   let curTotals = ''
   const fields = [] as TypeField[]
-  for (let i = 0; i < aggregated.length; i++) {
-    const signup = aggregated[i]!
+  aggregated.forEach((signup) => {
     const {domain, total, allTimeTotal} = signup
     curDomains += `*${domain}*\n`
     curTotals += `*${total}* (${allTimeTotal} total)\n`
-  }
+  })
   if (aggregated.length === 0) {
     curDomains = 'No Data'
     curTotals = 'Sad Panda'

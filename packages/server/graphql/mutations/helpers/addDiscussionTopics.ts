@@ -8,7 +8,8 @@ const addDiscussionTopics = async (meeting: MeetingRetrospective, dataLoader: Da
   const {id: meetingId, phases} = meeting
   const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')
   if (!discussPhase) return {discussPhaseStages: [], meetingId}
-  const placeholderStage = discussPhase.stages[0]!
+  const placeholderStage = discussPhase.stages[0]
+  if (!placeholderStage) return {discussPhaseStages: [], meetingId}
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const sortedReflectionGroups = mapGroupsToStages(reflectionGroups)
   const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
@@ -26,7 +27,7 @@ const addDiscussionTopics = async (meeting: MeetingRetrospective, dataLoader: Da
     })
   })
   const firstDiscussStage = nextDiscussStages[0]
-  if (!firstDiscussStage || !placeholderStage) return {discussPhaseStages: [], meetingId}
+  if (!firstDiscussStage) return {discussPhaseStages: [], meetingId}
 
   // MUTATIVE
   discussPhase.stages = nextDiscussStages

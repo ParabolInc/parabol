@@ -57,8 +57,7 @@ const getTargetReference = (
   prevTargetId: string
 ) => {
   const distances = [] as number[]
-  for (let i = 0; i < targets.length; i++) {
-    const target = targets[i]!
+  targets.forEach((target, i) => {
     distances[i] = 1e6
     const centroidX = target.left + ElementWidth.REFLECTION_CARD / 2
     const centroidY = target.top + target.height / 2
@@ -69,7 +68,7 @@ const getTargetReference = (
 
     // distance is from cursor to card centroid
     distances[i] = Math.sqrt(Math.abs(deltaX) ** 2 + Math.abs(deltaY) ** 2) - loyaltyDiscount
-  }
+  })
   const minValue = Math.min(...distances)
 
   // if they were off the grid, require them to get very close to a card so we can assume they're back on the grid

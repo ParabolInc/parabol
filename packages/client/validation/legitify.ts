@@ -18,13 +18,10 @@ const legitify = (expected: {[key: string]: any}) => (actual: any) => {
     }
     return {errors: hasErrors && errors, data}
   }
-  const data = {}
-  const errors = {}
+  const data = {} as {[key: string]: any}
+  const errors = {} as {[key: string]: any}
   if (typeof actual === 'object') {
-    const expectedKeys = Object.keys(expected)
-    for (let i = 0; i < expectedKeys.length; i++) {
-      const key = expectedKeys[i]!
-      const maybeValidator = expected[key]
+    for (const [key, maybeValidator] of Object.entries(expected)) {
       const actualValue = actual[key]
       if (typeof maybeValidator === 'function') {
         const monadicVal = new Legitity(actualValue)

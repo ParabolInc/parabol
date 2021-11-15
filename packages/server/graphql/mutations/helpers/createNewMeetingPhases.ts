@@ -33,7 +33,7 @@ export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
       stage.isNavigableByFacilitator = true
     })
   }
-  if (secondPhase && secondPhase.stages[0]) {
+  if (secondPhase?.stages[0]) {
     secondPhase.stages[0].isNavigableByFacilitator = true
   }
 }

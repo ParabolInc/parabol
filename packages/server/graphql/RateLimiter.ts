@@ -30,12 +30,12 @@ class RateLimiter {
     if (!this._records[userId]) {
       this._records[userId] = {}
     }
-    const userRecord = this._records[userId]
+    const userRecord = this._records[userId]!
     if (!userRecord[fieldName]) {
       userRecord[fieldName] = [now]
       return {lastMinute: 1, lastHour: 1}
     }
-    const calls = userRecord[fieldName]
+    const calls = userRecord[fieldName]!
     calls.push(now)
     const lastMinuteCalls = calls.filter((timestamp) => timestamp > now - MINUTE)
     const lastHourCalls = isExtendedLog
@@ -53,14 +53,13 @@ class RateLimiter {
   gc() {
     const now = Date.now()
     const userIds = Object.keys(this._lastCall)
-    for (let ii = 0; ii < userIds.length; ii++) {
-      const userId = userIds[ii]!
+    userIds.forEach((userId) => {
       // warning! never entirely GCs users that make at least 1 request/hour. OK for now
       if (this._lastCall[userId]! < now - HOUR) {
         delete this._lastCall[userId]
         delete this._records[userId]
       }
-    }
+    })
   }
 }
 

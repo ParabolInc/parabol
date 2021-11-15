@@ -37,7 +37,11 @@ export default {
       return standardError(new Error(sites.message), {userId: viewerId})
     }
     const cloudIds = sites.map((cloud) => cloud.id)
-    const self = await manager.getMyself(cloudIds[0] as string)
+    const cloudId = cloudIds[0]
+    if (!cloudId) {
+      return standardError(new Error('Missing cloudId'), {userId: viewerId})
+    }
+    const self = await manager.getMyself(cloudId)
     if (!('accountId' in self)) {
       return standardError(new Error(self.message), {userId: viewerId})
     }
