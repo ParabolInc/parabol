@@ -42,6 +42,7 @@ import users from './queries/users'
 import updateEmail from './mutations/updateEmail'
 import updateWatchlist from './mutations/updateWatchlist'
 import updateOAuthRefreshTokens from './mutations/updateOAuthRefreshTokens'
+import setNewTeamLead from './mutations/setNewTeamLead'
 
 const query = new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
@@ -94,7 +95,8 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       stripeInvoiceFinalized,
       updateEmail,
       updateWatchlist,
-      updateOAuthRefreshTokens
+      updateOAuthRefreshTokens,
+      setNewTeamLead
     } as any)
 })
 
