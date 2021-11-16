@@ -9,7 +9,6 @@ import {
 graphql`
   fragment UpdateNewCheckInQuestionMutation_meeting on UpdateNewCheckInQuestionPayload {
     meeting {
-      id
       phases {
         ... on CheckInPhase {
           checkInQuestion

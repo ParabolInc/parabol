@@ -7,10 +7,7 @@ export default class CompiledQueryCache {
   store = {} as {[docId: string]: CompiledQuery}
   private set(docId: string, queryString: string, schema: GraphQLSchema) {
     const document = parse(queryString)
-    const start = performance.now()
     const compiledQuery = compileQuery(schema, document)
-    const end = performance.now()
-    console.log('compiled in', end - start, queryString.slice(0, 50))
     if (!('query' in compiledQuery)) return null
     this.store[docId] = compiledQuery
     return compiledQuery
