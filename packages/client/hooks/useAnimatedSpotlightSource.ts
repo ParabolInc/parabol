@@ -17,6 +17,14 @@ const useAnimatedSpotlightSource = (
   const sourceRef = useRef<HTMLDivElement | null>(null)
   const sourceCloneRef = useRef<HTMLDivElement | null>(null)
 
+  const startDrag = (reflectionId: string, dragId: string) => {
+    StartDraggingReflectionMutation(atmosphere, {
+      reflectionId,
+      dragId,
+      isSpotlight: true
+    })
+  }
+
   useLayoutEffect(() => {
     const {current: source} = sourceRef
     const {current: sourceClone} = sourceCloneRef
@@ -43,14 +51,11 @@ const useAnimatedSpotlightSource = (
     }, 0)
     dragIdRef.current = clientTempId()
     // execute mutation after cloning as the mutation will cause reflection height to change
+    startDrag(reflectionId, dragIdRef.current)
     const dragInterval = setInterval(() => {
       // execute every second so that the remote animation continues when subscribers refresh page
       if (!dragIdRef.current) return
-      StartDraggingReflectionMutation(atmosphere, {
-        reflectionId,
-        dragId: dragIdRef.current,
-        isSpotlight: true
-      })
+      startDrag(reflectionId, dragIdRef.current)
     }, 1000)
     const removeCloneTimeout = setTimeout(() => {
       if (clone && document.body.contains(clone)) {
