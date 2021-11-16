@@ -51,26 +51,18 @@ const getTransition = (isClipped: boolean, timeRemaining: number) => {
     : transition
 }
 
-export const getDroppingStyles = (
+export const getSpotlightAnimation = (
   element: HTMLDivElement,
-  bbox: ClientRect,
-  maxTop: number,
-  timeRemaining: number,
-  targetId?: string | null,
-  isClose?: boolean,
-  lastZIndex?: number
+  targetId: string | null | undefined,
+  groupIdsInSpotlight: string[],
+  isClose: boolean,
+  lastZIndex: number | undefined
 ) => {
   const spotlightEl = document.getElementById('spotlight')
-  const isTargetInSpotlight = targetId
-    ? !!(spotlightEl && document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`))
-    : false
+  const isTargetInSpotlight = targetId && groupIdsInSpotlight.includes(targetId)
   const isInSpotlight = spotlightEl && spotlightEl.contains(element)
   const notInSpotlight = spotlightEl && !spotlightEl.contains(element)
   const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
-  const {top, left} = bbox
-  const minTop = getMinTop(top, element)
-  const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
-  const isClipped = clippedTop !== top
 
   const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s linear 0s forwards`
   const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s linear 0s forwards`
@@ -94,14 +86,31 @@ export const getDroppingStyles = (
     // or element is released and moving back to its place behind the spotlight
     (!showAboveSpotlight || isClose)
 
+  return isFadingIn ? fadeInAnimation : isFadingOut ? fadeOutAnimation : undefined
+}
+
+export const getDroppingStyles = (
+  element: HTMLDivElement,
+  bbox: ClientRect,
+  maxTop: number,
+  timeRemaining: number,
+  targetId?: string | null,
+  groupIdsInSpotlight?: string[]
+) => {
+  const spotlightEl = document.getElementById('spotlight')
+  const isTargetInSpotlight = !!(targetId && groupIdsInSpotlight?.includes(targetId))
+  const isInSpotlight = spotlightEl && spotlightEl.contains(element)
+  const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
+  const {top, left} = bbox
+  const minTop = getMinTop(top, element)
+  const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
+  const isClipped = clippedTop !== top
+
   return {
     transform: `translate(${left}px,${clippedTop}px)`,
     transition: getTransition(isClipped, timeRemaining),
     opacity: isClipped ? 0 : 1,
-    zIndex: showAboveSpotlight
-      ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
-      : ZIndex.REFLECTION_IN_FLIGHT,
-    animation: isFadingIn ? fadeInAnimation : isFadingOut ? fadeOutAnimation : undefined
+    zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
   }
 }
 
