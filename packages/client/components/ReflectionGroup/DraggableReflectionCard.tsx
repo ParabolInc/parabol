@@ -56,7 +56,6 @@ interface Props {
   staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
-  isRemoteSpotlightSrc?: boolean
 }
 
 export interface TargetBBox {
@@ -77,8 +76,7 @@ const DraggableReflectionCard = (props: Props) => {
     openSpotlight,
     isDraggable,
     swipeColumn,
-    dataCy,
-    isRemoteSpotlightSrc
+    dataCy
   } = props
   const {id: meetingId, teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
@@ -110,7 +108,7 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-  const canHandleDrag = phaseType === 'group' && !isComplete && !isRemoteSpotlightSrc
+  const canHandleDrag = phaseType === 'group' && !isComplete && isDraggable
   const showDragCursor = isDraggable && canHandleDrag && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event, so use canHandleDrag instead of canDrag
   const handleDrag = canHandleDrag ? onMouseDown : undefined

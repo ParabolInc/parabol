@@ -174,7 +174,6 @@ const ReflectionGroup = (props: Props) => {
 
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
-    !isRemoteSpotlightSrc &&
     !isSpotlightSrcGroup
   return (
     <>
@@ -237,9 +236,8 @@ const ReflectionGroup = (props: Props) => {
                   dataCy={`${dataCy}-card-${staticIdx}`}
                   key={reflection.id}
                   staticIdx={staticIdx}
-                  isClipped={staticIdx > 0}
-                  isDraggable={staticIdx === 0}
-                  isRemoteSpotlightSrc={isRemoteSpotlightSrc}
+                  isClipped={staticIdx > 0 || isRemoteSpotlightSrc}
+                  isDraggable={staticIdx === 0 && !isRemoteSpotlightSrc}
                   meeting={meeting}
                   openSpotlight={openSpotlight}
                   reflection={reflection}
