@@ -7,7 +7,7 @@ export const ToggleTeamDrawerSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'ToggleTeamDrawerSuccess',
   fields: () => ({
     teamMember: {
-      type: GraphQLNonNull(TeamMember),
+      type: new GraphQLNonNull(TeamMember),
       resolve: async ({teamMemberId}, _args, {dataLoader}) => {
         return dataLoader.get('teamMembers').load(teamMemberId)
       }

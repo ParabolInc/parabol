@@ -26,15 +26,15 @@ export interface TUpdatePokerScopeItemInput {
 }
 
 const updatePokerScope = {
-  type: GraphQLNonNull(UpdatePokerScopePayload),
+  type: new GraphQLNonNull(UpdatePokerScopePayload),
   description: `Add or remove a task and its estimate phase from the meeting`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the meeting with the estimate phases to modify'
     },
     updates: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(UpdatePokerScopeItemInput))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UpdatePokerScopeItemInput))),
       description: 'The list of items to add/remove to the estimate phase'
     }
   },

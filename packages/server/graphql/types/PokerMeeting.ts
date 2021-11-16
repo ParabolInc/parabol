@@ -14,24 +14,24 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...newMeetingFields(),
     commentCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: ({commentCount}) => commentCount || 0
     },
     meetingMembers: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(PokerMeetingMember))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PokerMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
       resolve: ({id: meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
       }
     },
     storyCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of stories scored during a meeting',
       resolve: ({storyCount}) => storyCount || 0
     },
     settings: {
-      type: GraphQLNonNull(PokerMeetingSettings),
+      type: new GraphQLNonNull(PokerMeetingSettings),
       description: 'The settings that govern the Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'poker'})
@@ -42,7 +42,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       description: 'A single story created in a Sprint Poker meeting',
       args: {
         storyId: {
-          type: GraphQLNonNull(GraphQLID)
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
       resolve: async ({id: meetingId}, {storyId: taskId}, {dataLoader}) => {
@@ -55,16 +55,16 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     templateId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       deprecationReason: 'The underlying template could be mutated. Use templateRefId',
       description:
         'The ID of the template used for the meeting. Note the underlying template could have changed!'
     },
     templateRefId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The ID of the immutable templateRef used for the meeting'
     },
     viewerMeetingMember: {

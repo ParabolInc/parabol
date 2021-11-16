@@ -13,14 +13,14 @@ import {GQLContext} from '../graphql'
 import AddMissingJiraFieldPayload from '../types/AddMissingJiraFieldPayload'
 
 const addMissingJiraField = {
-  type: GraphQLNonNull(AddMissingJiraFieldPayload),
+  type: new GraphQLNonNull(AddMissingJiraFieldPayload),
   description: `Adds a missing Jira field to a screen currently assigned to a Jira project`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (

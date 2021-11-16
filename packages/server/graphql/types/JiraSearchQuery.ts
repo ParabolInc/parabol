@@ -14,25 +14,25 @@ const JiraSearchQuery = new GraphQLObjectType<any, GQLContext>({
   description: 'A jira search query including all filters selected when the query was executed',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
     },
     queryString: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The query string, either simple or JQL depending on the isJQL flag'
     },
     isJQL: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the queryString is JQL, else false',
       resolve: ({isJQL}) => !!isJQL
     },
     projectKeyFilters: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'The list of project keys selected as a filter. null if not set',
       resolve: ({projectKeyFilters}) => projectKeyFilters || []
     },
     lastUsedAt: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the time the search query was last used. Used for sorting'
     }
   })

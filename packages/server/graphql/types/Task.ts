@@ -47,11 +47,11 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       }
     },
     createdBy: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The userId that created the item'
     },
     createdByUser: {
-      type: GraphQLNonNull(require('./User').default),
+      type: new GraphQLNonNull(require('./User').default),
       description: 'The user that created the item',
       resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
         return dataLoader.get('users').load(createdBy)
@@ -62,7 +62,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       description: 'a user-defined due date'
     },
     estimates: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEstimate))),
       description: 'A list of the most recent estimates for the task',
       resolve: async ({id: taskId, integration, teamId}: DBTask, _args, {dataLoader}) => {
         if (integration?.service === 'jira') {
@@ -233,7 +233,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       }
     },
     title: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The first block of the content',
       resolve: ({plaintextContent}) => {
         const firstBreak = plaintextContent.trim().indexOf('\n')

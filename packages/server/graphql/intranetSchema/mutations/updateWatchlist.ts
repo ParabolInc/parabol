@@ -10,12 +10,12 @@ import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 
 const updateWatchlist = {
-  type: GraphQLNonNull(UpdateWatchlistPayload),
+  type: new GraphQLNonNull(UpdateWatchlistPayload),
   description:
     'add/remove user(s) to/from the LogRocket watchlist so that we start/stop recording their sessions',
   args: {
     emails: {
-      type: GraphQLList(GraphQLNonNull(GraphQLString)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: `a list of email addresses of users whose sessions we want to start/stop recording in LogRocket`
     },
     domain: {

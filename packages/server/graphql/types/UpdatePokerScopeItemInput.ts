@@ -6,16 +6,16 @@ const UpdatePokerScopeItemInput = new GraphQLInputObjectType({
   name: 'UpdatePokerScopeItemInput',
   fields: () => ({
     service: {
-      type: GraphQLNonNull(TaskServiceEnum),
+      type: new GraphQLNonNull(TaskServiceEnum),
       description:
         'The location of the single source of truth (e.g. a jira-integrated parabol task would be "jira")'
     },
     serviceTaskId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'If vanilla parabol task, taskId. If integrated parabol task, integrationHash'
     },
     action: {
-      type: GraphQLNonNull(AddOrDeleteEnum),
+      type: new GraphQLNonNull(AddOrDeleteEnum),
       description: 'The action to perform'
     }
   })

@@ -12,7 +12,7 @@ interface MessageSlackUserError {
 }
 
 const messageAllSlackUsers = {
-  type: GraphQLNonNull(MessageAllSlackUsersPayload),
+  type: new GraphQLNonNull(MessageAllSlackUsersPayload),
   description: 'Send a message to all authorised Slack users',
   args: {
     message: {

@@ -9,7 +9,7 @@ export const UpdateTemplateScopeSuccess = new GraphQLObjectType<any, GQLContext>
   name: 'UpdateTemplateScopeSuccess',
   fields: () => ({
     template: {
-      type: GraphQLNonNull(MeetingTemplate),
+      type: new GraphQLNonNull(MeetingTemplate),
       description:
         'the template that was just updated, if downscoped, does not provide whole story',
       resolve: async ({templateId}, _args, {dataLoader}) => {
@@ -24,7 +24,7 @@ export const UpdateTemplateScopeSuccess = new GraphQLObjectType<any, GQLContext>
       }
     },
     settings: {
-      type: GraphQLNonNull(TeamMeetingSettings),
+      type: new GraphQLNonNull(TeamMeetingSettings),
       description: 'The settings that contain the teamTemplates array that was modified',
       resolve: (
         {teamId, meetingType = 'retrospective'}: {teamId: string; meetingType: MeetingTypeEnum},

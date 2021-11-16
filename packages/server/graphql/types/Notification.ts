@@ -14,11 +14,11 @@ import PageInfoDateCursor from './PageInfoDateCursor'
 
 export const notificationInterfaceFields = {
   id: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'A shortid for the notification'
   },
   status: {
-    type: GraphQLNonNull(NotificationStatusEnum),
+    type: new GraphQLNonNull(NotificationStatusEnum),
     description: 'UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it'
   },
   // orgId: {
@@ -27,14 +27,14 @@ export const notificationInterfaceFields = {
   //     '*The unique organization ID for this notification. Can be blank for targeted notifications'
   // },
   createdAt: {
-    type: GraphQLNonNull(GraphQLISO8601Type),
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The datetime to activate the notification & send it to the client'
   },
   type: {
-    type: GraphQLNonNull(NotificationEnum)
+    type: new GraphQLNonNull(NotificationEnum)
   },
   userId: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: '*The userId that should see this notification'
   }
 }

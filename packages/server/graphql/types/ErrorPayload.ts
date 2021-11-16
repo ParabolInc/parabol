@@ -6,7 +6,7 @@ const ErrorPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'ErrorPayload',
   fields: () => ({
     error: {
-      type: GraphQLNonNull(StandardMutationError)
+      type: new GraphQLNonNull(StandardMutationError)
     }
   })
 })

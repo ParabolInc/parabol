@@ -7,7 +7,7 @@ export const ArchiveTimelineEventSuccess = new GraphQLObjectType<any, GQLContext
   name: 'ArchiveTimelineEventSuccess',
   fields: () => ({
     timelineEvent: {
-      type: GraphQLNonNull(TimelineEvent),
+      type: new GraphQLNonNull(TimelineEvent),
       description: 'the archived timelineEvent',
       resolve: async ({timelineEventId}, _args, {dataLoader}) => {
         return dataLoader.get('timelineEvents').load(timelineEventId)

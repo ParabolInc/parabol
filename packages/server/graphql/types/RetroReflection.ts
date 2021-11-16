@@ -100,7 +100,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       }
     },
     reactjis: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(require('./Reactji').default))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(require('./Reactji').default))),
       description: 'All the reactjis for the given reflection',
       resolve: resolveReactjis
     },

@@ -13,11 +13,11 @@ import ResetRetroMeetingToGroupStagePayload from '../types/ResetRetroMeetingToGr
 import {primePhases} from './helpers/createNewMeetingPhases'
 
 const resetRetroMeetingToGroupStage = {
-  type: GraphQLNonNull(ResetRetroMeetingToGroupStagePayload),
+  type: new GraphQLNonNull(ResetRetroMeetingToGroupStagePayload),
   description: `Reset a retro meeting to group stage`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
