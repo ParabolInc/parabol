@@ -43,11 +43,15 @@ const useAnimatedSpotlightSource = (
     }, 0)
     dragIdRef.current = clientTempId()
     // execute mutation after cloning as the mutation will cause reflection height to change
-    StartDraggingReflectionMutation(atmosphere, {
-      reflectionId,
-      dragId: dragIdRef.current,
-      isSpotlight: true
-    })
+    const dragInterval = setInterval(() => {
+      // execute every second so that the remote animation continues when subscribers refresh page
+      if (!dragIdRef.current) return
+      StartDraggingReflectionMutation(atmosphere, {
+        reflectionId,
+        dragId: dragIdRef.current,
+        isSpotlight: true
+      })
+    }, 1000)
     const removeCloneTimeout = setTimeout(() => {
       if (clone && document.body.contains(clone)) {
         document.body.removeChild(clone)
@@ -59,6 +63,7 @@ const useAnimatedSpotlightSource = (
     return () => {
       clearTimeout(transitionTimeout)
       clearTimeout(removeCloneTimeout)
+      clearTimeout(dragInterval)
     }
   }, [portalStatus])
 
