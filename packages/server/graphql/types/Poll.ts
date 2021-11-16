@@ -14,14 +14,14 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...(threadableFields() as any),
     createdByUser: {
-      type: GraphQLNonNull(User),
+      type: new GraphQLNonNull(User),
       description: 'The user that created the item',
       resolve: ({createdById}, _args, {dataLoader}: GQLContext) => {
         return dataLoader.get('users').load(createdById)
       }
     },
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'Poll id in a format of `poll:idGeneratedByDatabase`',
       resolve: ({id}) => PollId.join(id)
     },
@@ -30,22 +30,22 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
       description: 'The foreign key for the meeting the poll was created in'
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team (indexed)'
     },
     team: {
-      type: GraphQLNonNull(Team),
+      type: new GraphQLNonNull(Team),
       description: 'The team this poll belongs to',
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
     title: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Poll title'
     },
     options: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(PollOption))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PollOption))),
       description: 'A list of all the poll options related to this poll',
       resolve: async ({id: pollId}, _args, {dataLoader}) => {
         return dataLoader.get('pollOptions').load(pollId)

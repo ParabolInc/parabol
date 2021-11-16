@@ -11,7 +11,7 @@ import {GQLContext} from '../graphql'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
 export default {
-  type: GraphQLNonNull(ArchiveTeamPayload),
+  type: new GraphQLNonNull(ArchiveTeamPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

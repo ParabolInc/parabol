@@ -11,7 +11,7 @@ const NotifyTeamArchived = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [Notification],
   fields: () => ({
     archivor: {
-      type: GraphQLNonNull(User),
+      type: new GraphQLNonNull(User),
       description: 'the user that archived the team',
       resolve: ({archivorUserId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(archivorUserId)

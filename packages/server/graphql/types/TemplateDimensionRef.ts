@@ -22,7 +22,7 @@ const TemplateDimensionRef = new GraphQLObjectType<any, GQLContext>({
       description: 'The name of the dimension'
     },
     scaleRefId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The md5 hash to resolve the immutable selected scale ref'
     },
     scale: {

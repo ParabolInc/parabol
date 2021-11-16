@@ -87,11 +87,11 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'A string of text to search for, or JQL if isJQL is true'
         },
         isJQL: {
-          type: GraphQLNonNull(GraphQLBoolean),
+          type: new GraphQLNonNull(GraphQLBoolean),
           description: 'true if the queryString is JQL, else false'
         },
         projectKeyFilters: {
-          type: GraphQLList(GraphQLNonNull(GraphQLID)),
+          type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
           descrption:
             'A list of projects to restrict the search to. format is cloudId:projectKey. If null, will search all'
         }
@@ -147,7 +147,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     projects: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraRemoteProject))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
       resolve: async (
@@ -167,11 +167,11 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     jiraFields: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: 'The list of field names that can be used as a ',
       args: {
         cloudId: {
-          type: GraphQLNonNull(GraphQLID),
+          type: new GraphQLNonNull(GraphQLID),
           description: 'Filter the fields to single cloudId'
         }
       },
@@ -200,7 +200,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     jiraSearchQueries: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
       resolve: async ({teamId, userId, jiraSearchQueries}: AtlassianAuth) => {

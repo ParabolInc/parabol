@@ -7,7 +7,7 @@ import standardError from '../../utils/standardError'
 import SlackServerManager from '../../utils/SlackServerManager'
 
 const setDefaultSlackChannel = {
-  type: GraphQLNonNull(SetDefaultSlackChannelPayload),
+  type: new GraphQLNonNull(SetDefaultSlackChannelPayload),
   description: 'Update the default Slack channel where notifications are sent',
   args: {
     slackChannelId: {

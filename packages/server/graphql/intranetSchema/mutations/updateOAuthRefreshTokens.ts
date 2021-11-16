@@ -15,7 +15,7 @@ const updateOAuthRefreshTokens = {
   description: `Updates Atlassian OAuth tokens that haven't been updated since the date specified in input`,
   args: {
     updatedBefore: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'Threshold date for `updatedAt` from AtlassianAuth'
     }
   },

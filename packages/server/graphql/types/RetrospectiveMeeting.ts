@@ -52,7 +52,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       resolve: ({commentCount}) => commentCount || 0
     },
     maxVotesPerGroup: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the number of votes allowed for each participant to cast on a single group'
     },
     meetingMembers: {
@@ -68,7 +68,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
         'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved'
     },
     reflectionCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of reflections generated in the meeting',
       resolve: ({reflectionCount}) => reflectionCount || 0
     },
@@ -77,7 +77,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       description: 'a single reflection group',
       args: {
         reflectionGroupId: {
-          type: GraphQLNonNull(GraphQLID)
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
       resolve: async ({id: meetingId}, {reflectionGroupId}, {dataLoader}) => {
@@ -141,7 +141,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       resolve: ({taskCount}) => taskCount || 0
     },
     tasks: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',
       resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
@@ -152,19 +152,19 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       }
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     templateId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The ID of the template used for the meeting'
     },
     topicCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of topics generated in the meeting',
       resolve: ({topicCount}) => topicCount || 0
     },
     totalVotes: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the total number of votes allowed for each participant'
     },
     votesRemaining: {

@@ -8,16 +8,16 @@ export const StartCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'StartCheckInSuccess',
   fields: () => ({
     meeting: {
-      type: GraphQLNonNull(ActionMeeting),
+      type: new GraphQLNonNull(ActionMeeting),
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     team: {
-      type: GraphQLNonNull(Team),
+      type: new GraphQLNonNull(Team),
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }

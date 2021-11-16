@@ -7,7 +7,7 @@ export const UpdateCommentContentSuccess = new GraphQLObjectType<any, GQLContext
   name: 'UpdateCommentContentSuccess',
   fields: () => ({
     comment: {
-      type: GraphQLNonNull(Comment),
+      type: new GraphQLNonNull(Comment),
       description: 'the comment with updated content',
       resolve: async ({commentId}, _args, {dataLoader}) => {
         return dataLoader.get('comments').load(commentId)

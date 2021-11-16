@@ -10,7 +10,7 @@ import {GQLContext} from '../graphql'
 
 export default {
   description: 'Changes the priority of the estimating tasks',
-  type: GraphQLNonNull(DragEstimatingTaskPayload),
+  type: new GraphQLNonNull(DragEstimatingTaskPayload),
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
