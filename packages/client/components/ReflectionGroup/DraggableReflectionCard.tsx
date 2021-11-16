@@ -110,7 +110,7 @@ const DraggableReflectionCard = (props: Props) => {
   )
   const canHandleDrag = phaseType === 'group' && !isComplete && isDraggable
   const showDragCursor = isDraggable && canHandleDrag && !isEditing && !isDropping
-  // slow state updates can mean we miss an onMouseDown event, so use canHandleDrag instead of canDrag
+  // slow state updates can mean we miss an onMouseDown event
   const handleDrag = canHandleDrag ? onMouseDown : undefined
   // if spotlight was just opened and card is in the middle of dropping we let it drop into original position
   const [isFinishingRemoteDragging, setIsFinishingRemoteDragging] = useState(
