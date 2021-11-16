@@ -23,8 +23,7 @@ const useSpotlightReflectionGroup = (
       ? (isViewerDraggingResult && !isSpotlightSrcGroup) || isBehindSpotlight // prevent grouping results into results
       : isRemoteSpotlightSrc // prevent dropping onto animating remote source
   }, [spotlightResultGroups, isSpotlightSrcGroup, isBehindSpotlight, isRemoteSpotlightSrc])
-  const hideSpotlightHeader = isSpotlightSrcGroup || isRemoteSpotlightSrc
-  return [hideSpotlightHeader, disableDrop]
+  return [isRemoteSpotlightSrc, disableDrop]
 }
 
 export default useSpotlightReflectionGroup

@@ -100,7 +100,7 @@ const ReflectionGroup = (props: Props) => {
   )
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
-  const [hideSpotlightHeader, disableDrop] = useSpotlightReflectionGroup(
+  const [isRemoteSpotlightSrc, disableDrop] = useSpotlightReflectionGroup(
     visibleReflections,
     spotlightGroupId,
     reflectionGroupId,
@@ -154,7 +154,7 @@ const ReflectionGroup = (props: Props) => {
     }
   })
   const onClick = () => {
-    if (isEditing) return
+    if (isEditing || isRemoteSpotlightSrc) return
     const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
     if (wasDrag) return
     if (visibleReflections.length === 1) {
@@ -174,7 +174,8 @@ const ReflectionGroup = (props: Props) => {
 
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
-    !hideSpotlightHeader
+    !isRemoteSpotlightSrc &&
+    !isSpotlightSrcGroup
   return (
     <>
       {portal(
@@ -238,6 +239,7 @@ const ReflectionGroup = (props: Props) => {
                   staticIdx={staticIdx}
                   isClipped={staticIdx > 0}
                   isDraggable={staticIdx === 0}
+                  isRemoteSpotlightSrc={isRemoteSpotlightSrc}
                   meeting={meeting}
                   openSpotlight={openSpotlight}
                   reflection={reflection}

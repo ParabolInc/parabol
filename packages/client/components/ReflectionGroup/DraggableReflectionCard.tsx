@@ -40,8 +40,8 @@ const makeDragState = () => ({
   timeout: null as null | number
 })
 
-const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDraggable}) => ({
-  cursor: isDraggable ? 'grab' : undefined
+const DragWrapper = styled('div')<{showDragCursor: boolean | undefined}>(({showDragCursor}) => ({
+  cursor: showDragCursor ? 'grab' : undefined
 }))
 
 export type ReflectionDragState = ReturnType<typeof makeDragState>
@@ -56,6 +56,7 @@ interface Props {
   staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
+  isRemoteSpotlightSrc?: boolean
 }
 
 export interface TargetBBox {
@@ -76,7 +77,8 @@ const DraggableReflectionCard = (props: Props) => {
     openSpotlight,
     isDraggable,
     swipeColumn,
-    dataCy
+    dataCy,
+    isRemoteSpotlightSrc
   } = props
   const {id: meetingId, teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
@@ -108,10 +110,10 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-  const isDragPhase = phaseType === 'group' && !isComplete
-  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
-  // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
-  const handleDrag = isDragPhase ? onMouseDown : undefined
+  const canHandleDrag = phaseType === 'group' && !isComplete && !isRemoteSpotlightSrc
+  const showDragCursor = isDraggable && canHandleDrag && !isEditing && !isDropping
+  // slow state updates can mean we miss an onMouseDown event, so use canHandleDrag instead of canDrag
+  const handleDrag = canHandleDrag ? onMouseDown : undefined
   // if spotlight was just opened and card is in the middle of dropping we let it drop into original position
   const [isFinishingRemoteDragging, setIsFinishingRemoteDragging] = useState(
     () => isDropping && isSpotlightOpen && !!remoteDrag
@@ -140,7 +142,7 @@ const DraggableReflectionCard = (props: Props) => {
       }}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
-      isDraggable={canDrag}
+      showDragCursor={showDragCursor}
     >
       <ReflectionCard
         dataCy={dataCy}
