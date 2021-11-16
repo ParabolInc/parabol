@@ -42,11 +42,9 @@ function getCachedRecord(
         ...source._sink._records
       }
     }
-    const allRecords = records || optimisticRecords
-    const keys = Object.keys(allRecords)
-    for (let ii = 0; ii < keys.length; ii++) {
-      const key = keys[ii]!
-      const record = allRecords[key]
+    const allRecords: Record[] = records || optimisticRecords
+
+    for (const record of Object.values(allRecords)) {
       if (filterFn(record)) {
         if (!options.isPlural) return record
         filteredRecords.push(record)
