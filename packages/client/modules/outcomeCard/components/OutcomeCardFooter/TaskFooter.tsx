@@ -84,17 +84,22 @@ const TaskFooter = (props: Props) => {
   const showTeam = area === USER_DASH
   const {content, id: taskId, error, integration, tags, userId} = task
   const isArchived = isTaskArchived(tags)
-  const canAssign = !integration && !isArchived
+  const canAssignUser = !integration && !isArchived
+  const canAssignTeam = !isArchived
   return (
     <React.Fragment>
       <Footer>
         <AvatarBlock>
           {showTeam ? (
-            <TaskFooterTeamAssignee canAssign={canAssign} task={task} useTaskChild={useTaskChild} />
+            <TaskFooterTeamAssignee
+              canAssign={canAssignTeam}
+              task={task}
+              useTaskChild={useTaskChild}
+            />
           ) : (
             <TaskFooterUserAssignee
               area={area}
-              canAssign={canAssign}
+              canAssign={canAssignUser}
               cardIsActive={cardIsActive}
               task={task}
               useTaskChild={useTaskChild}

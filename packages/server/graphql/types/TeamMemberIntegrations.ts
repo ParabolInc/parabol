@@ -6,6 +6,7 @@ import AtlassianIntegration from './AtlassianIntegration'
 import GitHubIntegration from './GitHubIntegration'
 import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
+
 const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
   name: 'TeamMemberIntegrations',
   description: 'All the available integrations available for this team member',
@@ -20,10 +21,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       description: 'All things associated with an Atlassian integration for a team member',
       resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        const atlassianIntegration = await dataLoader
-          .get('freshAtlassianAuth')
-          .load({teamId, userId})
-        return atlassianIntegration
+        return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       }
     },
     github: {

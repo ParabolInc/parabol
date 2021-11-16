@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import ms from 'ms'
-import AtlassianAuth from '../../database/types/AtlassianAuth'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -21,6 +20,7 @@ import JiraSearchQuery from './JiraSearchQuery'
 import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -40,7 +40,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user',
       type: GraphQLID,
-      resolve: async ({accessToken, userId}, _args, {authToken}) => {
+      resolve: async ({accessToken, userId}: AtlassianAuth, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
@@ -97,7 +97,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async (
-        {teamId, userId, accessToken, cloudIds},
+        {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
         {first, queryString, isJQL, projectKeyFilters},
         context
       ) => {
@@ -105,11 +105,6 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, err)
-        }
-        if (!accessToken) {
-          const err = new Error('Not integrated with Jira')
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
@@ -155,7 +150,11 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async ({accessToken, cloudIds, teamId, userId}, _args, {authToken}) => {
+      resolve: async (
+        {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
+        _args,
+        {authToken}
+      ) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         const manager = new AtlassianServerManager(accessToken)
@@ -177,7 +176,6 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
-        if (!accessToken) return []
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
         if (fields instanceof Error) return []

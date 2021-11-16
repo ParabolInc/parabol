@@ -18,6 +18,9 @@ export interface MenuProps {
   isDropdown: boolean
 }
 
+/**
+ * Wrapper around {@link usePortal} to display menus
+ */
 const useMenu = <T extends HTMLElement = HTMLButtonElement>(
   preferredMenuPosition: MenuPosition,
   options: Options = {}

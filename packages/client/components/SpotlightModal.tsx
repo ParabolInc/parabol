@@ -192,6 +192,7 @@ const SpotlightModal = (props: Props) => {
               reflectionGroup={spotlightGroup}
               meeting={meeting}
               reflectionIdsToHide={reflectionIdsToHideRef.current}
+              expandedReflectionGroupPortalParentId='spotlight'
             />
           )}
         </Source>
