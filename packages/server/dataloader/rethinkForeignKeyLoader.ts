@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
 
-const fkLoader = <T extends keyof DBType>(
+const rethinkForeignKeyLoader = <T extends keyof DBType>(
   standardLoader: DataLoader<string, DBType[T]>,
   options: DataLoader.Options<string, DBType[T]>,
   field: string,
@@ -17,4 +17,4 @@ const fkLoader = <T extends keyof DBType>(
   return new DataLoader<string, DBType[T]>(batchFn, options)
 }
 
-export default fkLoader
+export default rethinkForeignKeyLoader

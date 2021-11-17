@@ -16,7 +16,7 @@ import Task from '../database/types/Task'
 import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import User from '../database/types/User'
 import TeamMember from '../database/types/TeamMember'
-import {Loaders} from '../dataloader/RethinkDataLoader'
+import {Loaders} from '../dataloader/RootDataLoader'
 
 export const resolveAgendaItem = (
   {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},

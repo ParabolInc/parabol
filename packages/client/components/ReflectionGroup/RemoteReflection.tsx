@@ -140,12 +140,11 @@ const getStyle = (
   if (isSpotlight && !isDropping) return {transform: style.transform}
   if (isDropping || !remoteDrag?.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
-  const {zIndex, animation} = style
+  const {zIndex} = style
   return {
     nextStyle: {
       transform: `translate(${left}px,${top}px)`,
-      zIndex,
-      animation
+      zIndex
     },
     minTop
   }
@@ -153,12 +152,13 @@ const getStyle = (
 
 interface Props {
   style: React.CSSProperties
+  animation: string | undefined
   reflection: RemoteReflection_reflection
   meeting: RemoteReflection_meeting
 }
 
 const RemoteReflection = (props: Props) => {
-  const {meeting, reflection, style} = props
+  const {meeting, reflection, style, animation} = props
   const {id: reflectionId, content, isDropping} = reflection
   const {meetingMembers} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
@@ -199,19 +199,16 @@ const RemoteReflection = (props: Props) => {
   if (!remoteDrag) return null
   const {dragUserId, dragUserName, isSpotlight} = remoteDrag
 
-  const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
-  const {animation, ...remoteReflectionModalStyle} = nextStyle ?? {}
-
+  const {transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
       <RemoteReflectionModal
         ref={ref}
-        style={remoteReflectionModalStyle}
         isDropping={isDropping}
         isSpotlight={isSpotlight}
         transform={transform}
-        animation={animation as string | undefined}
+        animation={animation}
       >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}

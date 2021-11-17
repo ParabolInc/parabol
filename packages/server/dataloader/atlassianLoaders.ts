@@ -11,7 +11,7 @@ import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/ji
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import {isNotNull} from '../utils/predicates'
 import sendToSentry from '../utils/sendToSentry'
-import RethinkDataLoader from './RethinkDataLoader'
+import RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -29,28 +29,30 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
-export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
+export const freshAtlassianAuth = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
-
-          if (!atlassianAuth?.refreshToken) {
-            // Not always an error! For suggested integrations, this won't exist.
-            // sendToSentry(new Error('No atlassian access token exists for team member'), {
-            //   userId,
-            //   tags: {teamId}
-            // })
+          if (!atlassianAuth) {
             return null
           }
+
           const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken, refreshToken: newRefreshToken} = manager
+            const {
+              accessToken,
+              refreshToken: newRefreshToken,
+              error
+            } = await AtlassianServerManager.refresh(refreshToken)
+            if (error) {
+              sendToSentry(new Error(error))
+              return null
+            }
             atlassianAuth.accessToken = accessToken
             atlassianAuth.updatedAt = now
 
@@ -63,8 +65,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
           return atlassianAuth
         })
       )
-      const res = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return res
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
@@ -73,7 +74,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
   )
 }
 
-export const jiraRemoteProject = (parent: RethinkDataLoader) => {
+export const jiraRemoteProject = (parent: RootDataLoader) => {
   return new DataLoader<JiraRemoteProjectKey, JiraProject | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -99,7 +100,7 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
   )
 }
 
-export const jiraIssue = (parent: RethinkDataLoader) => {
+export const jiraIssue = (parent: RootDataLoader) => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -171,7 +172,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
 interface CloudNameLookup {
   [cloudId: string]: string
 }
-export const atlassianCloudNameLookup = (parent: RethinkDataLoader) => {
+export const atlassianCloudNameLookup = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, CloudNameLookup, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -201,7 +202,7 @@ interface CloudNameKey extends TeamUserKey {
   cloudId: string
 }
 
-export const atlassianCloudName = (parent: RethinkDataLoader) => {
+export const atlassianCloudName = (parent: RootDataLoader) => {
   return new DataLoader<CloudNameKey, string, string>(
     async (keys) => {
       const results = await Promise.allSettled(
