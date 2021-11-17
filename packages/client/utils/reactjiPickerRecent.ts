@@ -26,14 +26,12 @@ const updateUsage = (emojiId: string) => {
 
 const getRecentArray = () => {
   const frequentlyUsed = getRecent()
-
-  const sortedFrequentlyUsed = Object.keys(frequentlyUsed).map((emoji) => [
-    emoji,
-    frequentlyUsed[emoji] ?? 0
-  ])
+  const sortedFrequentlyUsed = Object.entries(frequentlyUsed) as [string, number][]
   sortedFrequentlyUsed.sort((a, b) => b[1] - a[1])
 
-  return Object.keys(sortedFrequentlyUsed).map((emoji) => sortedFrequentlyUsed[emoji][0])
+  return Object.keys(sortedFrequentlyUsed)
+    .map((emoji) => sortedFrequentlyUsed[emoji][0])
+    .slice(0, 18)
 }
 
 export {updateUsage, getRecentArray}
