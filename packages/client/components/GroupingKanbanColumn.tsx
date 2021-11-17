@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useRef} from 'react'
+import React, {RefObject, Suspense, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import useDeepEqual from '~/hooks/useDeepEqual'
@@ -175,15 +175,16 @@ const GroupingKanbanColumn = (props: Props) => {
                 .filter((group) => (isWidthExpanded ? group.subColumnIdx === subColumnIdx : true))
                 .map((reflectionGroup, idx) => {
                   return (
-                    <ReflectionGroup
-                      dataCy={`${question}-group-${idx}`}
-                      key={reflectionGroup.id}
-                      meeting={meeting}
-                      openSpotlight={openSpotlight}
-                      phaseRef={phaseRef}
-                      reflectionGroup={reflectionGroup}
-                      swipeColumn={swipeColumn}
-                    />
+                    <Suspense key={reflectionGroup.id} fallback={''}>
+                      <ReflectionGroup
+                        dataCy={`${question}-group-${idx}`}
+                        meeting={meeting}
+                        openSpotlight={openSpotlight}
+                        phaseRef={phaseRef}
+                        reflectionGroup={reflectionGroup}
+                        swipeColumn={swipeColumn}
+                      />
+                    </Suspense>
                   )
                 })}
             </ColumnBody>
