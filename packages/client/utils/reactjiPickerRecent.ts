@@ -11,6 +11,7 @@ const DEFAULT_ORDER = {
 }
 
 const RECENT_REACTJI_PICKER = 'recentReactjiPicker'
+const MAX_RECENT_EMOJIS = 9
 
 const getRecent = () => {
   const localStorageRecent = localStorage.getItem(RECENT_REACTJI_PICKER)
@@ -28,10 +29,7 @@ const getRecentArray = () => {
   const frequentlyUsed = getRecent()
   const sortedFrequentlyUsed = Object.entries(frequentlyUsed) as [string, number][]
   sortedFrequentlyUsed.sort((a, b) => b[1] - a[1])
-
-  return Object.keys(sortedFrequentlyUsed)
-    .map((emoji) => sortedFrequentlyUsed[emoji][0])
-    .slice(0, 18)
+  return sortedFrequentlyUsed.map(([emoji]) => emoji).slice(0, MAX_RECENT_EMOJIS)
 }
 
 export {updateUsage, getRecentArray}
