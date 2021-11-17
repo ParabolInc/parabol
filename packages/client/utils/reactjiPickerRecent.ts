@@ -27,14 +27,13 @@ const updateUsage = (emojiId: string) => {
 const getRecentArray = () => {
   const frequentlyUsed = getRecent()
 
-  const sortedFrequentlyUsed: [string, number][] = []
-  for (const emoji in frequentlyUsed) sortedFrequentlyUsed.push([emoji, frequentlyUsed[emoji]])
-  sortedFrequentlyUsed.sort((a, b) => a[1] - b[1]).reverse()
+  const sortedFrequentlyUsed = Object.keys(frequentlyUsed).map((emoji) => [
+    emoji,
+    frequentlyUsed[emoji] ?? 0
+  ])
+  sortedFrequentlyUsed.sort((a, b) => b[1] - a[1])
 
-  const sortedFrequentlyUsedKeys: string[] = []
-  for (const emoji of sortedFrequentlyUsed) sortedFrequentlyUsedKeys.push(emoji[0])
-
-  return sortedFrequentlyUsedKeys
+  return Object.keys(sortedFrequentlyUsed).map((emoji) => sortedFrequentlyUsed[emoji][0])
 }
 
 export {updateUsage, getRecentArray}
