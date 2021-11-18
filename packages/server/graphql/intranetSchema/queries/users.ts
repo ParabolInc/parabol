@@ -3,10 +3,10 @@ import {requireSU} from '../../../utils/authorization'
 import User from '../../types/User'
 
 const users = {
-  type: GraphQLNonNull(GraphQLList(User)),
+  type: new GraphQLNonNull(new GraphQLList(User)),
   args: {
     userIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'a list of userIds'
     }
   },

@@ -14,22 +14,22 @@ interface Args {
 }
 
 const updateGitHubDimensionField = {
-  type: GraphQLNonNull(UpdateGitHubDimensionFieldPayload),
+  type: new GraphQLNonNull(UpdateGitHubDimensionFieldPayload),
   description: `Update how a parabol dimension maps to a GitHub label`,
   args: {
     dimensionName: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     labelTemplate: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The template string to map to a label'
     },
     nameWithOwner: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The repo the issue lives on'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description:
         'The meeting the update happend in. Returns a meeting object with updated serviceField'
     }

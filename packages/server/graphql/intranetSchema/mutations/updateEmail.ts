@@ -8,15 +8,15 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import db from '../../../db'
 
 const updateEmail = {
-  type: GraphQLNonNull(GraphQLBoolean),
+  type: new GraphQLNonNull(GraphQLBoolean),
   description: `Updates the user email`,
   args: {
     oldEmail: {
-      type: GraphQLNonNull(GraphQLEmailType),
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'User current email'
     },
     newEmail: {
-      type: GraphQLNonNull(GraphQLEmailType),
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'User new email'
     }
   },

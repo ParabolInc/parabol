@@ -12,11 +12,11 @@ const CreateTaskIntegrationInput = new GraphQLInputObjectType({
   name: 'CreateTaskIntegrationInput',
   fields: () => ({
     service: {
-      type: GraphQLNonNull(TaskServiceEnum),
+      type: new GraphQLNonNull(TaskServiceEnum),
       description: 'The service to push this new task to'
     },
     serviceProjectHash: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description:
         'The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey'
     }

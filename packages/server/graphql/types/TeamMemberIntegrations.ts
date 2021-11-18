@@ -11,7 +11,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
   description: 'All the available integrations available for this team member',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'composite',
       resolve: ({teamId, userId}) => TeamMemberIntegrationsId.join(teamId, userId)
     },

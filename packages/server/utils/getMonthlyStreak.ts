@@ -13,7 +13,7 @@ const getMonthlyStreak = (descendingTimestamps: number[], fromNow?: boolean) => 
   let minDate = start
   let streakHit = false
   for (let i = 0; i < dates.length; i++) {
-    const nextDate = dates[i]
+    const nextDate = dates[i]!
     if (nextDate >= lowThresh) {
       minDate = nextDate
       streakHit = true

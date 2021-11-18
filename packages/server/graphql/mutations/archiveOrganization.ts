@@ -12,10 +12,10 @@ import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
 import IUser from '../../postgres/types/IUser'
 
 export default {
-  type: GraphQLNonNull(ArchiveOrganizationPayload),
+  type: new GraphQLNonNull(ArchiveOrganizationPayload),
   args: {
     orgId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The orgId to archive'
     }
   },

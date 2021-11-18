@@ -27,14 +27,14 @@ const Comment = new GraphQLObjectType<any, GQLContext>({
     ...threadableFields(),
     ...reactableFields(),
     content: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The rich text body of the item, if inactive, a tombstone text',
       resolve: ({isActive, content}) => {
         return isActive ? content : TOMBSTONE
       }
     },
     createdAt: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the item was created'
     },
     createdBy: {
@@ -52,17 +52,17 @@ const Comment = new GraphQLObjectType<any, GQLContext>({
       }
     },
     isActive: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the agenda item has not been processed or deleted',
       resolve: ({isActive}) => !!isActive
     },
     isAnonymous: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the comment is anonymous, else false',
       resolve: ({isAnonymous}) => !!isAnonymous
     },
     isViewerComment: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer wrote this comment, else false',
       resolve: ({createdBy, isActive}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
@@ -70,7 +70,7 @@ const Comment = new GraphQLObjectType<any, GQLContext>({
       }
     },
     reactjis: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Reactji))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Reactji))),
       description: 'All the reactjis for the given reflection',
       resolve: (source, args, context) => {
         const {isActive} = source

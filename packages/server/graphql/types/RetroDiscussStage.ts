@@ -29,7 +29,7 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
     ...newMeetingStageFields(),
     ...discussionThreadStageFields(),
     discussion: {
-      type: GraphQLNonNull(Discussion),
+      type: new GraphQLNonNull(Discussion),
       description: 'The discussion about the stage or a dummy data when there is no disscussion',
       resolve: async ({discussionId, reflectionGroupId}, _args, {dataLoader}) => {
         const isDummy = reflectionGroupId === ''
@@ -37,11 +37,11 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
       }
     },
     reflectionGroupId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'foreign key. use reflectionGroup'
     },
     reflectionGroup: {
-      type: GraphQLNonNull(RetroReflectionGroup),
+      type: new GraphQLNonNull(RetroReflectionGroup),
       description: 'the group that is the focal point of the discussion',
       resolve: async ({reflectionGroupId, meetingId}, _args, {dataLoader}) => {
         if (!reflectionGroupId) {

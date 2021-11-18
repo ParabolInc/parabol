@@ -21,11 +21,11 @@ const resetPassword = {
   description: 'Reset the password for an account',
   args: {
     token: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the password reset token'
     },
     newPassword: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The new password for the account'
     }
   },
