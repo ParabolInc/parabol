@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.37.0 2021-Nov-18
+
+### Added
+
+- Allow moving integration tasks between teams (#5513)
+- Added updateOAuthRefreshTokens mutation (#5590)
+- Use 2 GraphQL Executors (#5560)
+- prepare upgrade to graphql v16 (#5662)
+- make atlassian oauth2 response spec compliant (#5652)
+
+### Fixed
+
+- support new m1 (#5593)
+- Fix source returning to kanban & 2 column error (#5626)
+- Fix collapsed reflections (#5642)
+- Fix graphiql fetcher import (#5653)
+- Fix 100 noUncheckedIndexedAccess errors (#5651)
+
+### Changed
+
+- build(deps): bump tmpl from 1.0.4 to 1.0.5 (#5618)
+- build(deps): bump vm2 from 3.9.3 to 3.9.5 (#5619)
+- bump graphiql (#5646)
+- add final newline on save vscode (#5647)
+- Rename and document dataLoader (#5649)
+
 ## 6.36.0 2021-Nov-10
 
 ### Added
