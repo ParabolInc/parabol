@@ -24,8 +24,8 @@ const SpotlightSourceGroup = (props: Props) => {
       {spotlightGroup && (
         <ReflectionGroup
           phaseRef={modalRef}
-          reflectionGroup={spotlightGroup}
-          meeting={meeting}
+          reflectionGroupRef={spotlightGroup}
+          meetingRef={meeting}
           reflectionIdsToHide={reflectionIdsToHideRef.current}
         />
       )}

@@ -106,7 +106,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     invoiceDetails,
     invoices,
     isAnyBillingLeader: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is a billing leader on any organization, else false',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
@@ -125,7 +125,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     isPatientZero: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is the first to sign up from their domain, else false',
       resolve: async ({id: userId, email}) => {
         const domain = getDomainFromEmail(email)
@@ -142,12 +142,12 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description: 'the reason the user account was removed'
     },
     isRemoved: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user was removed from parabol, else false',
       resolve: ({isRemoved}) => !!isRemoved
     },
     isWatched: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if all user sessions are being recorded in LogRocket, else false',
       resolve: ({isWatched}) => isWatched
     },
@@ -164,7 +164,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     meetingCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of meetings the user has attended',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
@@ -172,7 +172,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     monthlyStreakMax: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The largest number of consecutive months the user has checked into a meeting',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
@@ -184,7 +184,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     monthlyStreakCurrent: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description:
         'The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
@@ -209,7 +209,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     payLaterClickCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the number of times the user clicked pay later',
       resolve: ({payLaterClickCount}) => payLaterClickCount || 0
     },
@@ -262,7 +262,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       type: Discussion,
       args: {
         id: {
-          type: GraphQLNonNull(GraphQLID),
+          type: new GraphQLNonNull(GraphQLID),
           description: 'The ID of the discussion'
         }
       },
@@ -440,7 +440,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description: 'Only return reflection groups that match the search query'
         }
       },
-      resolve: async ({id: userId}, {reflectionGroupId, searchQuery: rawSearchQuery}, {dataLoader}) => {
+      resolve: async (
+        {id: userId},
+        {reflectionGroupId, searchQuery: rawSearchQuery},
+        {dataLoader}
+      ) => {
         const searchQuery = rawSearchQuery.toLowerCase().trim()
         const retroReflectionGroup = await dataLoader
           .get('retroReflectionGroups')
@@ -468,7 +472,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           const matchedReflections = reflections.filter(({plaintextContent}) =>
             plaintextContent.toLowerCase().includes(searchQuery.toLowerCase())
           )
-          const relatedReflections = matchedReflections.filter(({reflectionGroupId: groupId}: Reflection) => groupId != reflectionGroupId)
+          const relatedReflections = matchedReflections.filter(
+            ({reflectionGroupId: groupId}: Reflection) => groupId != reflectionGroupId
+          )
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
           ].slice(0, MAX_RESULT_GROUP_SIZE)
@@ -597,7 +603,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     tier: {
-      type: GraphQLNonNull(TierEnum),
+      type: new GraphQLNonNull(TierEnum),
       description: 'The highest tier of any org the user belongs to'
     },
     tms: {

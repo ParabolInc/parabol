@@ -8,9 +8,9 @@ import {
 } from 'graphql'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
+import getGitHubRequest from '../../utils/getGitHubRequest'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import {GitHubRequest} from '../rootSchema'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -47,11 +47,11 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       }
     },
     createdBy: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The userId that created the item'
     },
     createdByUser: {
-      type: GraphQLNonNull(require('./User').default),
+      type: new GraphQLNonNull(require('./User').default),
       description: 'The user that created the item',
       resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
         return dataLoader.get('users').load(createdBy)
@@ -62,7 +62,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       description: 'a user-defined due date'
     },
     estimates: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEstimate))),
       description: 'A list of the most recent estimates for the task',
       resolve: async ({id: taskId, integration, teamId}: DBTask, _args, {dataLoader}) => {
         if (integration?.service === 'jira') {
@@ -100,6 +100,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
           ])
 
           if (!githubAuth) return null
+          const {accessToken} = githubAuth
           const {nameWithOwner, issueNumber} = integration
           const {repoOwner, repoName} = GitHubRepoId.split(nameWithOwner)
           const query = `
@@ -110,45 +111,25 @@ const Task = new GraphQLObjectType<any, GQLContext>({
                     }
                   }
                 }`
-          const githubRequest = (info.schema as any).githubRequest as GitHubRequest
-
-          const [{data, errors}, {data: labelsData, errors: labelErrors}] = await Promise.all([
-            githubRequest({
-              query,
-              endpointContext: {
-                accessToken: githubAuth.accessToken
-              },
-              batchRef: context,
-              info
-            }),
+          const githubRequest = getGitHubRequest(info, context, {accessToken})
+          const [[data, error], [labelsData, labelsError]] = await Promise.all([
+            githubRequest(query),
             estimates.length > 0
-              ? githubRequest<GetIssueLabelsQuery, GetIssueLabelsQueryVariables>({
-                  query: getIssueLabels,
-                  variables: {
-                    first: 100,
-                    repoName,
-                    repoOwner,
-                    issueNumber
-                  },
-                  endpointContext: {
-                    accessToken: githubAuth.accessToken
-                  },
-                  batchRef: context,
-                  info
+              ? githubRequest<GetIssueLabelsQuery, GetIssueLabelsQueryVariables>(getIssueLabels, {
+                  first: 100,
+                  repoName,
+                  repoOwner,
+                  issueNumber
                 })
-              : {data: null, errors: null}
+              : [null, null]
           ])
 
-          if (errors || labelErrors) {
-            if (errors) {
-              console.error(errors)
-              sendToSentry(new Error(errors[0].message), {
-                userId: accessUserId
-              })
+          if (error || labelsError) {
+            if (error) {
+              sendToSentry(error, {userId: accessUserId})
             }
-            if (labelErrors) {
-              console.error(labelErrors)
-              sendToSentry(new Error(labelErrors[0].message), {userId: accessUserId})
+            if (labelsError) {
+              sendToSentry(labelsError, {userId: accessUserId})
             }
           } else if (estimates.length) {
             const ghIssueLabels = labelsData.repository.issue.labels.nodes.map(({name}) => name)
@@ -233,7 +214,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       }
     },
     title: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The first block of the content',
       resolve: ({plaintextContent}) => {
         const firstBreak = plaintextContent.trim().indexOf('\n')

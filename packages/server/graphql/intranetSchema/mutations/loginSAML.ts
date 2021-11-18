@@ -38,7 +38,7 @@ const loginSAML = {
       description: 'The querystring provided by the IdP including SAMLResponse and RelayState'
     },
     samlName: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The name of the SAML identifier. The slug used in the redirect URL'
     }
   },

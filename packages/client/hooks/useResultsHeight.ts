@@ -9,7 +9,6 @@ const useResultsHeight = (resultsRef: RefObject<HTMLDivElement>, spotlightSearch
   useLayoutEffect(() => {
     const newHeight = resultsRef.current?.clientHeight
     if (newHeight && height !== newHeight && !spotlightSearchQuery) {
-      console.log(`Setting the height from ${height} to ${newHeight}`)
       setHeight(newHeight)
     }
   }, [height])

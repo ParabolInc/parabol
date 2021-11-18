@@ -25,7 +25,7 @@ const emailPasswordReset = {
   description: 'Send an email to reset a password',
   args: {
     email: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'email to send the password reset code to'
     }
   },

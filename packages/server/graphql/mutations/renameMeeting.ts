@@ -9,15 +9,15 @@ import {GQLContext} from '../graphql'
 import RenameMeetingPayload from '../types/RenameMeetingPayload'
 
 const renameMeeting = {
-  type: GraphQLNonNull(RenameMeetingPayload),
+  type: new GraphQLNonNull(RenameMeetingPayload),
   description: `Rename a meeting`,
   args: {
     name: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'the new meeting name'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the meeting with the new name'
     }
   },

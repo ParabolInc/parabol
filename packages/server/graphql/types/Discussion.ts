@@ -20,37 +20,37 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
   description: 'A discussion thread',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     createdAt: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'time the thread was created'
     },
     discussionTopicId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description:
         'The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId'
     },
     discussionTopicType: {
-      type: GraphQLNonNull(DiscussionTopicTypeEnum),
+      type: new GraphQLNonNull(DiscussionTopicTypeEnum),
       description:
         'The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue'
     },
     commentCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments contained in the thread',
       resolve: async ({id: discussionId}, _args, {dataLoader}) => {
         return dataLoader.get('commentCountByDiscussionId').load(discussionId)
       }
     },
     commentors: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(User))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The users writing a comment right now',
       resolve: async ({id: discussionId}) => {
         const redis = getRedis()
@@ -61,7 +61,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
       }
     },
     thread: {
-      type: GraphQLNonNull(ThreadableConnection),
+      type: new GraphQLNonNull(ThreadableConnection),
       description: 'The comments & tasks thread in the discussion',
       args: {
         first: {

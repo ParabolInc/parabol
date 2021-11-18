@@ -5,10 +5,10 @@ export const MessageSlackUserError = new GraphQLObjectType({
   description: 'An error from sending a message to a Slack user',
   fields: () => ({
     userId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     error: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The error message received from Slack'
     }
   })

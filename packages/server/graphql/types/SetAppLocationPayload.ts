@@ -7,7 +7,7 @@ export const SetAppLocationSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetAppLocationSuccess',
   fields: () => ({
     user: {
-      type: GraphQLNonNull(User),
+      type: new GraphQLNonNull(User),
       description: 'the user with the updated location',
       resolve: async ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)

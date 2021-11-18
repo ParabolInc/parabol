@@ -6,11 +6,11 @@ const ServiceField = new GraphQLObjectType<any, GQLContext>({
   description: 'A field that exists on a 3rd party service',
   fields: () => ({
     name: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the field as provided by the service'
     },
     type: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The field type, to be used for validation and analytics'
     }
   })

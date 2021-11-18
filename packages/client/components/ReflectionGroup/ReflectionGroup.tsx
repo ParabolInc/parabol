@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -13,8 +13,8 @@ import {
   Times
 } from '../../types/constEnums'
 import {GROUP} from '../../utils/constants'
-import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
-import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {ReflectionGroup_meeting$key} from '../../__generated__/ReflectionGroup_meeting.graphql'
+import {ReflectionGroup_reflectionGroup$key} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import {SwipeColumn} from '../GroupingKanban'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
@@ -67,9 +67,9 @@ const ReflectionWrapper = styled('div')<{
 
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
-  meeting: ReflectionGroup_meeting
+  meetingRef: ReflectionGroup_meeting$key
   openSpotlight?: OpenSpotlight
-  reflectionGroup: ReflectionGroup_reflectionGroup
+  reflectionGroupRef: ReflectionGroup_reflectionGroup$key
   swipeColumn?: SwipeColumn
   dataCy?: string
   expandedReflectionGroupPortalParentId?: PortalId
@@ -78,15 +78,67 @@ interface Props {
 
 const ReflectionGroup = (props: Props) => {
   const {
-    meeting,
+    meetingRef,
     openSpotlight,
     phaseRef,
-    reflectionGroup,
+    reflectionGroupRef,
     swipeColumn,
     dataCy,
     expandedReflectionGroupPortalParentId,
     reflectionIdsToHide
   } = props
+  const meeting = useFragment(
+    graphql`
+      fragment ReflectionGroup_meeting on RetrospectiveMeeting {
+        ...DraggableReflectionCard_meeting
+        ...ReflectionGroupHeader_meeting
+        id
+        localPhase {
+          phaseType
+        }
+        localStage {
+          isComplete
+        }
+        isViewerDragInProgress
+        spotlightGroup {
+          id
+          reflections {
+            isViewerDragging
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+
+  const reflectionGroup = useFragment(
+    graphql`
+      fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
+        ...ReflectionGroupHeader_reflectionGroup
+        promptId
+        id
+        sortOrder
+        titleIsUserDefined
+        title
+        reflections {
+          ...DraggableReflectionCard_reflection
+          ...DraggableReflectionCard_staticReflections
+          ...ReflectionCard_reflection
+          id
+          promptId
+          sortOrder
+          isViewerDragging
+          isDropping
+          isEditing
+          remoteDrag {
+            dragUserId
+          }
+        }
+        isExpanded
+      }
+    `,
+    reflectionGroupRef
+  )
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
@@ -256,50 +308,4 @@ const ReflectionGroup = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectionGroup, {
-  meeting: graphql`
-    fragment ReflectionGroup_meeting on RetrospectiveMeeting {
-      ...DraggableReflectionCard_meeting
-      id
-      ...ReflectionGroupHeader_meeting
-      localPhase {
-        phaseType
-      }
-      localStage {
-        isComplete
-      }
-      isViewerDragInProgress
-      spotlightGroup {
-        id
-        reflections {
-          isViewerDragging
-        }
-      }
-    }
-  `,
-  reflectionGroup: graphql`
-    fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
-      ...ReflectionGroupHeader_reflectionGroup
-      promptId
-      id
-      sortOrder
-      titleIsUserDefined
-      title
-      reflections {
-        ...DraggableReflectionCard_reflection
-        ...DraggableReflectionCard_staticReflections
-        ...ReflectionCard_reflection
-        id
-        promptId
-        sortOrder
-        isViewerDragging
-        isDropping
-        isEditing
-        remoteDrag {
-          dragUserId
-        }
-      }
-      isExpanded
-    }
-  `
-})
+export default ReflectionGroup

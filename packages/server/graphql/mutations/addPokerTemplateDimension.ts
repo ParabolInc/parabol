@@ -72,7 +72,7 @@ const addPokerTemplateDimension = {
         : SprintPokerDefaults.DEFAULT_SCALE_ID
 
     const newDimension = new TemplateDimension({
-      scaleId: defaultScaleId,
+      scaleId: defaultScaleId as string,
       description: '',
       sortOrder: sortOrder,
       name: `*New Dimension #${activeDimensions.length + 1}`,

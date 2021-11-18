@@ -20,11 +20,11 @@ import removeEmptyTasks from './helpers/removeEmptyTasks'
 import getPhase from '../../utils/getPhase'
 
 export default {
-  type: GraphQLNonNull(EndSprintPokerPayload),
+  type: new GraphQLNonNull(EndSprintPokerPayload),
   description: 'Finish a sprint poker meeting',
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The meeting to end'
     }
   },

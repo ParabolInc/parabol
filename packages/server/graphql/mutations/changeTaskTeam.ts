@@ -9,8 +9,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
-import upsertAtlassianAuth from '../../postgres/queries/upsertAtlassianAuth'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
+import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -88,10 +88,12 @@ export default {
       if (task.integration) {
         if (sourceTeamAuth && !targetTeamAuth) {
           if (task.integration.service === 'jira') {
-            await upsertAtlassianAuth({
-              ...sourceTeamAuth,
-              teamId
-            })
+            await upsertAtlassianAuths([
+              {
+                ...sourceTeamAuth,
+                teamId
+              }
+            ])
             // dataLoader does not allow to refresh the value, so clear the updated one
             dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
             const data = {teamId, userId: viewerId}

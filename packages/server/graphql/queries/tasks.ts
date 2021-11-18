@@ -56,12 +56,12 @@ export default {
       description: 'the datetime cursor'
     },
     userIds: {
-      type: GraphQLList(GraphQLID),
+      type: new GraphQLList(GraphQLID),
       description:
         'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.'
     },
     teamIds: {
-      type: GraphQLList(GraphQLNonNull(GraphQLID)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
       description:
         'a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams'
     },
@@ -71,7 +71,7 @@ export default {
       defaultValue: false
     },
     statusFilters: {
-      type: GraphQLList(GraphQLNonNull(TaskStatusEnum)),
+      type: new GraphQLList(new GraphQLNonNull(TaskStatusEnum)),
       description: 'filter tasks by the chosen statuses'
     },
     filterQuery: {
