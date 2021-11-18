@@ -199,7 +199,6 @@ const RemoteReflection = (props: Props) => {
   const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
 
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
-  console.log({transform})
   return (
     <>
       <RemoteReflectionModal
