@@ -5,11 +5,11 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {NotificationConnection} from '../types/Notification'
 
 export default {
-  type: GraphQLNonNull(NotificationConnection),
+  type: new GraphQLNonNull(NotificationConnection),
   args: {
     // currently not used
     first: {
-      type: GraphQLNonNull(GraphQLInt)
+      type: new GraphQLNonNull(GraphQLInt)
     },
     after: {
       type: GraphQLISO8601Type

@@ -8,7 +8,7 @@ export const PokerResetDimensionSuccess = new GraphQLObjectType<any, GQLContext>
   name: 'PokerResetDimensionSuccess',
   fields: () => ({
     stage: {
-      type: GraphQLNonNull(EstimateStage),
+      type: new GraphQLNonNull(EstimateStage),
       description: 'The stage that holds the updated isVoting step',
       resolve: resolveStage('ESTIMATE')
     }

@@ -11,7 +11,7 @@ const EstimatePhase = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...newMeetingPhaseFields(),
     stages: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EstimateStage))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(EstimateStage))),
       resolve: resolveGQLStagesFromPhase
     }
   })

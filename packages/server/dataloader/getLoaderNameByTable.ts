@@ -1,8 +1,8 @@
-import * as primaryLoaderMakers from './primaryLoaderMakers'
+import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
 const loadersByTable = {}
-Object.keys(primaryLoaderMakers).forEach((loaderName) => {
-  const loader = primaryLoaderMakers[loaderName]
+Object.keys(rethinkPrimaryKeyLoaderMakers).forEach((loaderName) => {
+  const loader = rethinkPrimaryKeyLoaderMakers[loaderName]
   loadersByTable[loader.table] = loaderName
 })
 

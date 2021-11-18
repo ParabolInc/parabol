@@ -4,10 +4,10 @@ import rateLimit from '../rateLimit'
 import GetDemoEntitiesPayload from '../types/GetDemoEntitiesPayload'
 
 const getDemoEntities = {
-  type: GraphQLNonNull(GetDemoEntitiesPayload),
+  type: new GraphQLNonNull(GetDemoEntitiesPayload),
   args: {
     text: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'the reflection bodies to entitize'
     }
   },

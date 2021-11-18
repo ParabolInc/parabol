@@ -54,7 +54,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       resolve: ({isOnboardTeam}) => !!isOnboardTeam
     },
     lastMeetingType: {
-      type: GraphQLNonNull(MeetingTypeEnum),
+      type: new GraphQLNonNull(MeetingTypeEnum),
       description: 'The type of the last meeting run'
     },
     lockMessageHTML: {
@@ -62,7 +62,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'The HTML message to show if isPaid is false'
     },
     massInvitation: {
-      type: GraphQLNonNull(MassInvitation),
+      type: new GraphQLNonNull(MassInvitation),
       args: {
         meetingId: {
           type: GraphQLID,
@@ -101,7 +101,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     integrations: {
-      type: GraphQLNonNull(TeamIntegrations),
+      type: new GraphQLNonNull(TeamIntegrations),
       description: 'Integration details that are shared by all team members. Nothing user specific',
       resolve: (source) => source
     },
@@ -135,7 +135,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     teamInvitations: {
-      type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamInvitation))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamInvitation))),
       description: 'The outstanding invitations to join the team',
       resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return []
@@ -228,7 +228,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     tier: {
-      type: GraphQLNonNull(TierEnum),
+      type: new GraphQLNonNull(TierEnum),
       description: 'The level of access to features on the parabol site'
     },
     organization: {

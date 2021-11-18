@@ -41,12 +41,12 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       description: 'true if the user is a part of the team, false if they no longer are'
     },
     isLead: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'Is user a team lead?',
       resolve: ({isLead}) => !!isLead
     },
     isSpectatingPoker: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user prefers to not vote during a poker meeting',
       resolve: ({isSpectatingPoker}) => !!isSpectatingPoker
     },
@@ -72,7 +72,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       }
     },
     integrations: {
-      type: GraphQLNonNull(TeamMemberIntegrations),
+      type: new GraphQLNonNull(TeamMemberIntegrations),
       description: 'The integrations that the team member has authorized. accessible by all',
       resolve: ({teamId, userId}) => {
         return {teamId, userId}

@@ -8,16 +8,16 @@ export const StartRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>(
   name: 'StartRetrospectiveSuccess',
   fields: () => ({
     meeting: {
-      type: GraphQLNonNull(RetrospectiveMeeting),
+      type: new GraphQLNonNull(RetrospectiveMeeting),
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     team: {
-      type: GraphQLNonNull(Team),
+      type: new GraphQLNonNull(Team),
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }

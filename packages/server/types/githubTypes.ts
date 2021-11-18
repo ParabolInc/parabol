@@ -22064,6 +22064,28 @@ export type GetIssueIdQuery = {
   repository?: Maybe<{__typename?: 'Repository'; issue?: Maybe<{__typename?: 'Issue'; id: string}>}>
 }
 
+export type GetIssueLabelsQueryVariables = Exact<{
+  repoName: Scalars['String']
+  repoOwner: Scalars['String']
+  issueNumber: Scalars['Int']
+  first: Scalars['Int']
+}>
+
+export type GetIssueLabelsQuery = {
+  __typename?: 'Query'
+  repository?: Maybe<{
+    __typename?: 'Repository'
+    issue?: Maybe<{
+      __typename?: 'Issue'
+      id: string
+      labels?: Maybe<{
+        __typename?: 'LabelConnection'
+        nodes?: Maybe<Array<Maybe<{__typename?: 'Label'; id: string; name: string}>>>
+      }>
+    }>
+  }>
+}
+
 export type GetProfileQueryVariables = Exact<{[key: string]: never}>
 
 export type GetProfileQuery = {
