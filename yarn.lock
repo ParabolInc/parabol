@@ -304,14 +304,7 @@
   dependencies:
     "@babel/types" "^7.15.4"
 
-"@babel/helper-module-imports@^7.0.0", "@babel/helper-module-imports@^7.12.13", "@babel/helper-module-imports@^7.14.5":
-  version "7.14.5"
-  resolved "https://registry.yarnpkg.com/@babel/helper-module-imports/-/helper-module-imports-7.14.5.tgz#6d1a44df6a38c957aa7c312da076429f11b422f3"
-  integrity sha512-SwrNHu5QWS84XlHwGYPDtCxcA0hrSlL2yhWYLgeOc0w7ccOl2qv4s/nARI0aYZW+bSwAL5CukeXA47B/1NKcnQ==
-  dependencies:
-    "@babel/types" "^7.14.5"
-
-"@babel/helper-module-imports@^7.15.4":
+"@babel/helper-module-imports@^7.0.0", "@babel/helper-module-imports@^7.12.13", "@babel/helper-module-imports@^7.14.5", "@babel/helper-module-imports@^7.15.4":
   version "7.15.4"
   resolved "https://registry.yarnpkg.com/@babel/helper-module-imports/-/helper-module-imports-7.15.4.tgz#e18007d230632dea19b47853b984476e7b4e103f"
   integrity sha512-jeAHZbzUwdW/xHgHQ3QmWR4Jg6j15q4w/gCfwZvtqOxoo5DKtLHk8Bsf4c5RZRC7NmLEs+ohkdq8jFefuvIxAA==
@@ -3841,12 +3834,7 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*":
-  version "11.0.3"
-  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-11.0.3.tgz#359cecd4eeb00a51db7691eeb38b756238a60176"
-  integrity sha512-wZRKA7hy1jXqrs7vZmwlwPll6UjLMhsbF0AUd63f+WT/DRnVDF1087zvCx9qZ4giPq+whyASVpx+nfz2+sBQtw==
-
-"@types/relay-runtime@^11.0.4":
+"@types/relay-runtime@*", "@types/relay-runtime@^11.0.4":
   version "11.0.4"
   resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-11.0.4.tgz#b22ac549b1c6790fb71b20acf3949d97c0cadf7e"
   integrity sha512-dz3IuWmiIzrwQCbBeap1ispL8mvr6noRjQDeL7LLc4Y/kDJQWhfnwCIOkIt+ABNnrAtWZb8jK3b/oV6RGKXcfw==

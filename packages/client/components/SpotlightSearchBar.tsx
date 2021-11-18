@@ -50,7 +50,7 @@ const SearchInput = styled('input')({
   }
 })
 
-const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: string | null) => {
+const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return

@@ -470,7 +470,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
 
         if (searchQuery !== '') {
           const matchedReflections = reflections.filter(({plaintextContent}) =>
-            plaintextContent.toLowerCase().includes(searchQuery.toLowerCase())
+            plaintextContent.toLowerCase().includes(searchQuery)
           )
           const relatedReflections = matchedReflections.filter(
             ({reflectionGroupId: groupId}: Reflection) => groupId != reflectionGroupId

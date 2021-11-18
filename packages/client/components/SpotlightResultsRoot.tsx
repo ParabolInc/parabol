@@ -1,4 +1,4 @@
-import React, {RefObject, useRef} from 'react'
+import React, {RefObject, Suspense, useRef} from 'react'
 import spotlightGroupsQuery, {
   SpotlightGroupsQuery
 } from '../__generated__/SpotlightGroupsQuery.graphql'
@@ -31,7 +31,10 @@ const SpotlightResultsRoot = (props: Props) => {
     true
   )
 
-  if (!queryRef) return null
-  return <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />
+  return (
+    <Suspense fallback={''}>
+      {queryRef && <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />}
+    </Suspense>
+  )
 }
 export default SpotlightResultsRoot
