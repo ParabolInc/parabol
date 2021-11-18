@@ -7,6 +7,7 @@ import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -51,7 +52,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const {orgId} = team
         const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
         const organizationTemplates = templates.filter(
-          (template) =>
+          (template: MeetingTemplate) =>
             template.scope !== 'TEAM' && template.teamId !== teamId && template.type === 'poker'
         )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)

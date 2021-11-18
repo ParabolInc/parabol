@@ -2,34 +2,17 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "esModuleInterop": true,
-    // "noImplicitAny": true,
+    "noImplicitAny": true,
     "baseUrl": "../",
     "paths": {
-      "server/*": [
-        ""
-      ],
-      "parabol-client/*": [
-        "client/*"
-      ],
-      "~/*": [
-        "client/*"
-      ]
+      "server/*": [""],
+      "parabol-client/*": ["client/*"],
+      "~/*": ["client/*"]
     },
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "node",
-      "jest",
-      "jest-extended"
-    ],
+    "lib": ["esnext", "dom"],
+    "types": ["node", "jest", "jest-extended"]
   },
-  "exclude": [
-    "**/node_modules",
-    "types/githubTypes.ts",
-    "postgres/migrationTemplate.ts"
-  ],
+  "exclude": ["**/node_modules", "types/githubTypes.ts", "postgres/migrationTemplate.ts"],
   "files": [
     "types/modules.d.ts",
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
@@ -39,5 +22,5 @@
     "hubspot/backfillHubSpot.ts",
     "server.ts",
     "debugJira.ts"
-  ],
+  ]
 }

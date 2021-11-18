@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {GQLContext} from '../graphql'
 import {resolveGQLStagesFromPhase} from '../resolvers'
 import GenericMeetingStage from './GenericMeetingStage'
@@ -31,7 +32,7 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
         // only show prompts that were created before the meeting and
         // either have not been removed or they were removed after the meeting was created
         return prompts.filter(
-          (prompt) =>
+          (prompt: RetrospectivePrompt) =>
             prompt.createdAt < meeting.createdAt &&
             (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
         )

@@ -53,7 +53,7 @@ const handleMessage = (
     handleReliableMessage(messageBuffer, connectionContext)
     return
   }
-  let parsedMessage
+  let parsedMessage: WRTCMessage | OutgoingMessage
   try {
     parsedMessage = JSON.parse(Buffer.from(message).toString())
   } catch (e) {

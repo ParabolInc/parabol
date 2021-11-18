@@ -35,21 +35,22 @@ export const threadableFields = () => ({
   createdByUser: {
     type: require('./User').default,
     description: 'The user that created the item',
-    resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
+    resolve: ({createdBy}: {createdBy: Date}, _args: unknown, {dataLoader}: GQLContext) => {
       return dataLoader.get('users').load(createdBy)
     }
   },
   replies: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Threadable))),
     description: 'the replies to this threadable item',
-    resolve: ({replies}) => replies || []
+    resolve: ({replies}: {replies: ThreadableDB[]}) => replies || []
   },
   discussionId: {
     type: GraphQLID,
     description:
       'The FK of the discussion this task was created in. Null if task was not created in a discussion',
     // can remove the threadId after 2021-07-01
-    resolve: ({discussionId, threadId}) => discussionId || threadId
+    resolve: ({discussionId, threadId}: {discussionId: string; threadId: string}) =>
+      discussionId || threadId
   },
   threadParentId: {
     type: GraphQLID,

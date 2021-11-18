@@ -1,9 +1,10 @@
+import {GQLContext} from './../graphql'
 import {Poll} from '../../postgres/queries/getPollsByIds'
 import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'
 
-const resolveThreadableConnection = async (discussionId, {dataLoader}) => {
+const resolveThreadableConnection = async (discussionId: string, {dataLoader}: GQLContext) => {
   const [comments, tasks, polls] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').load(discussionId),
     dataLoader.get('tasksByDiscussionId').load(discussionId),
