@@ -32,10 +32,11 @@ export default {
     }
 
     // RESOLUTION
-    const {accessToken, refreshToken, error: oAuthError} = await AtlassianServerManager.init(code)
-    if (oAuthError) {
-      return standardError(new Error(oAuthError), {userId: viewerId})
+    const oauthResponse = await AtlassianServerManager.init(code)
+    if (oauthResponse instanceof Error) {
+      return standardError(oauthResponse, {userId: viewerId})
     }
+    const {accessToken, refreshToken} = oauthResponse
     const manager = new AtlassianServerManager(accessToken)
     const sites = await manager.getAccessibleResources()
     if (!Array.isArray(sites)) {
