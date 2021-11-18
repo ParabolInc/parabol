@@ -6,20 +6,20 @@ import GraphQLEmailType from '../../types/GraphQLEmailType'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const setNewTeamLead = {
-  type: GraphQLNonNull(GraphQLBoolean),
+  type: new GraphQLNonNull(GraphQLBoolean),
   description: 'Sets given team member as a team leader. ',
   args: {
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'Team id of the team which is about to get a new team leader'
     },
     newTeamLeadEmail: {
-      type: GraphQLNonNull(GraphQLEmailType),
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'Email of the user who will be set as a new team leader'
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {teamId, newTeamLeadEmail}: {teamId: string; newTeamLeadEmail: string},
     {authToken}: InternalContext
   ) => {
