@@ -4,6 +4,8 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import useTooltip from '../../../hooks/useTooltip'
+import {MenuPosition} from '../../../hooks/useCoords'
 
 const GreetingBlock = styled('div')({
   fontSize: '1.5rem',
@@ -25,10 +27,16 @@ const NewMeetingCheckInGreeting = (props: Props) => {
   const {teamMember, checkInGreeting} = props
   const {content, language} = checkInGreeting
   const {preferredName} = teamMember
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
+    MenuPosition.UPPER_CENTER
+  )
   return (
     <GreetingBlock>
-      <GreetingSpan title={`${content} means “hello” in ${language}`}>{content}</GreetingSpan>
+      <GreetingSpan ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
+        {content}
+      </GreetingSpan>
       {`, ${preferredName || 'Unknown user'}:`}
+      {tooltipPortal(<div>{`${content} means “hello” in ${language}`}</div>)}
     </GreetingBlock>
   )
 }
