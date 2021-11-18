@@ -27,7 +27,7 @@
     "typescript": "4.4.2"
   },
   "dependencies": {
-    "dd-trace": "^0.31.4",
+    "dd-trace": "^1.5.1",
     "parabol-client": "^6.37.0",
     "parabol-server": "^6.37.0"
   }

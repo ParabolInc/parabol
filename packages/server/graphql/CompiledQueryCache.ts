@@ -1,8 +1,11 @@
+import tracer from 'dd-trace'
 import {GraphQLSchema, parse} from 'graphql'
-import {CompiledQuery, compileQuery} from 'graphql-jit'
+import {CompiledQuery} from 'graphql-jit'
 import getRethink from '../database/rethinkDriver'
 import PROD from '../PROD'
+import {tracedCompileQuery} from './traceGraphQL'
 
+const compileQuery = tracedCompileQuery(tracer, {})
 export default class CompiledQueryCache {
   store = {} as {[docId: string]: CompiledQuery}
   private set(docId: string, queryString: string, schema: GraphQLSchema) {
