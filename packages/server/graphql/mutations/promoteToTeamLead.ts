@@ -1,13 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
-import {getUserId, isTeamLead} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isSuperUser} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
 
 export default {
   type: PromoteToTeamLeadPayload,
@@ -26,13 +25,23 @@ export default {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
+    const {teamId} = TeamMemberId.split(teamMemberId)
 
     // AUTH
-    const viewerId = getUserId(authToken)
-    const {teamId} = fromTeamMemberId(teamMemberId)
-    const myTeamMemberId = toTeamMemberId(teamId, viewerId)
-    if (!(await isTeamLead(viewerId, teamId))) {
-      return standardError(new Error('Not team lead'), {userId: viewerId})
+    const oldLeadTeamMemberId = await r
+      .table('TeamMember')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isNotRemoved: true, isLead: true})
+      .nth(0)('id')
+      .default(null)
+      .run()
+
+    if (!isSuperUser(authToken)) {
+      const viewerTeamMemberId = TeamMemberId.join(teamId, viewerId)
+      if (viewerTeamMemberId !== oldLeadTeamMemberId) {
+        return standardError(new Error('Not team lead'), {userId: viewerId})
+      }
     }
 
     // VALIDATION
@@ -48,7 +57,7 @@ export default {
     await r({
       teamLead: r
         .table('TeamMember')
-        .get(myTeamMemberId)
+        .get(oldLeadTeamMemberId)
         .update({
           isLead: false
         }),
@@ -60,7 +69,7 @@ export default {
         })
     }).run()
 
-    const data = {teamId, oldLeaderId: myTeamMemberId, newLeaderId: teamMemberId}
+    const data = {teamId, oldLeaderId: oldLeadTeamMemberId, newLeaderId: teamMemberId}
     publish(SubscriptionChannel.TEAM, teamId, 'PromoteToTeamLeadPayload', data, subOptions)
     return data
   }
