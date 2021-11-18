@@ -9,7 +9,7 @@ const PokerMeetingMember = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...meetingMemberFields(),
     isSpectating: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description:
         'true if the user is not voting and does not want their vote to count towards aggregates'
     }

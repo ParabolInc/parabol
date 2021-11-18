@@ -12,7 +12,7 @@ const AtlassianTeamIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: ({id: teamId}) => `atlassianTeamIntegration:${teamId}`
     },
     jiraDimensionFields: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraDimensionField))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraDimensionField))),
       description: 'The dimensions and their corresponding Jira fields',
       resolve: ({jiraDimensionFields}) => jiraDimensionFields || []
     }

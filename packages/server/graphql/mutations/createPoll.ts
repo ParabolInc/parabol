@@ -24,10 +24,10 @@ type CreatePollInputVariables = {
 }
 
 const createPoll = {
-  type: GraphQLNonNull(CreatePollPayload),
+  type: new GraphQLNonNull(CreatePollPayload),
   args: {
     newPoll: {
-      type: GraphQLNonNull(CreatePollInput),
+      type: new GraphQLNonNull(CreatePollInput),
       description: 'The new poll including title and poll options'
     }
   },

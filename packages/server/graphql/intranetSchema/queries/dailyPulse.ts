@@ -78,15 +78,15 @@ const dailyPulse = {
   type: GraphQLBoolean,
   args: {
     after: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the earliest time to run the query'
     },
     email: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'the email that holds the credentials to the channelId'
     },
     channelId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the ID of channel to post to'
     }
   },

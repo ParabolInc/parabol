@@ -11,7 +11,7 @@ const NotifyKickedOut = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...notificationInterfaceFields,
     evictor: {
-      type: GraphQLNonNull(User),
+      type: new GraphQLNonNull(User),
       description: 'the user that evicted recipient',
       resolve: async ({evictorUserId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(evictorUserId)

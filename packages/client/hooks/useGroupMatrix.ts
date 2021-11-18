@@ -19,9 +19,10 @@ const useGroupMatrix = (
     const width = el?.clientWidth
     if (!width) return null
     let colCount = 1
+    const currentMaxColumns = Math.min(resultsGroups.length, MAX_SPOTLIGHT_COLUMNS)
     const getNextWidth = (count: number) =>
       ElementWidth.MEETING_CARD * count + ElementWidth.MEETING_CARD_MARGIN * (count - 1)
-    while (getNextWidth(colCount + 1) < width && colCount + 1 <= MAX_SPOTLIGHT_COLUMNS) {
+    while (getNextWidth(colCount + 1) < width && colCount + 1 <= currentMaxColumns) {
       colCount++
     }
     return colCount

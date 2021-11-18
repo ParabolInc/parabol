@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import upsertAtlassianAuth from '../../postgres/queries/upsertAtlassianAuth'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -8,6 +7,8 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLMutation} from '../graphql'
 import AddAtlassianAuthPayload from '../types/AddAtlassianAuthPayload'
+import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
+import getAtlassianAuthsByUserId from '../../postgres/queries/getAtlassianAuthsByUserId'
 
 export default {
   name: 'AddAtlassianAuth',
@@ -31,7 +32,11 @@ export default {
     }
 
     // RESOLUTION
-    const manager = await AtlassianServerManager.init(code)
+    const {accessToken, refreshToken, error: oAuthError} = await AtlassianServerManager.init(code)
+    if (oAuthError) {
+      return standardError(new Error(oAuthError), {userId: viewerId})
+    }
+    const manager = new AtlassianServerManager(accessToken)
     const sites = await manager.getAccessibleResources()
     if (!Array.isArray(sites)) {
       return standardError(new Error(sites.message), {userId: viewerId})
@@ -45,17 +50,31 @@ export default {
     if (!('accountId' in self)) {
       return standardError(new Error(self.message), {userId: viewerId})
     }
-    const {accessToken, refreshToken} = manager
 
-    await upsertAtlassianAuth({
-      accountId: self.accountId,
-      userId: viewerId,
-      accessToken,
-      refreshToken,
-      cloudIds,
-      teamId,
-      scope: AtlassianServerManager.SCOPE.join(' ')
-    })
+    // if there are the same Jira integrations existing we need to update them with new credentials as well
+    // if there's an existing integration for a given user and team (user used an option to refresh the token), skip it as
+    // we'll create a new atlassian auth object for it for the upsert
+    const userAtlassianAuths = await getAtlassianAuthsByUserId(viewerId)
+    const atlassianAuthsToUpdate = userAtlassianAuths
+      .filter((auth) => auth.accountId === self.accountId && auth.teamId !== teamId)
+      .map((auth) => ({
+        ...auth,
+        accessToken,
+        refreshToken
+      }))
+
+    await upsertAtlassianAuths([
+      {
+        accountId: self.accountId,
+        userId: viewerId,
+        accessToken,
+        refreshToken,
+        cloudIds,
+        teamId,
+        scope: AtlassianServerManager.SCOPE.join(' ')
+      },
+      ...atlassianAuthsToUpdate
+    ])
 
     segmentIo.track({
       userId: viewerId,

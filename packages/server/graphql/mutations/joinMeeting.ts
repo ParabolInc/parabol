@@ -45,11 +45,11 @@ const createMeetingMember = (meeting: Meeting, teamMember: TeamMember) => {
 }
 
 const joinMeeting = {
-  type: GraphQLNonNull(JoinMeetingPayload),
+  type: new GraphQLNonNull(JoinMeetingPayload),
   description: `Create a meeting member for a user`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (

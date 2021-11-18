@@ -15,11 +15,11 @@ import {GQLContext} from '../graphql'
 import {RDatum} from '../../database/stricterR'
 
 export default {
-  type: GraphQLNonNull(AddFeatureFlagPayload),
+  type: new GraphQLNonNull(AddFeatureFlagPayload),
   description: 'Give someone advanced features in a flag',
   args: {
     emails: {
-      type: GraphQLList(GraphQLNonNull(GraphQLString)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: `a list of the complete or partial email of the person to whom you are giving advanced features.
       Matches via a regex to support entire domains`
     },

@@ -2,16 +2,15 @@ import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import {JiraGetIssueRes, JiraProject} from 'parabol-client/utils/AtlassianManager'
-import getAtlassianAuthByUserIdTeamId, {
-  AtlassianAuth
-} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
-import upsertAtlassianAuth from '../postgres/queries/upsertAtlassianAuth'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import {isNotNull} from '../utils/predicates'
 import sendToSentry from '../utils/sendToSentry'
-import RethinkDataLoader from './RethinkDataLoader'
+import RootDataLoader from './RootDataLoader'
+import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
+import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -29,42 +28,50 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
-export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
+export const freshAtlassianAuth = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const atlassianAuth = await getAtlassianAuthByUserIdTeamId(userId, teamId)
-
-          if (!atlassianAuth?.refreshToken) {
-            // Not always an error! For suggested integrations, this won't exist.
-            // sendToSentry(new Error('No atlassian access token exists for team member'), {
-            //   userId,
-            //   tags: {teamId}
-            // })
+          const userAtlassianAuths = await getAtlassianAuthsByUserId(userId)
+          const atlassianAuthToRefresh = userAtlassianAuths.find(
+            (atlassianAuth) => atlassianAuth.teamId === teamId
+          )
+          if (!atlassianAuthToRefresh) {
             return null
           }
-          const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
+
+          const {accessToken: existingAccessToken, refreshToken} = atlassianAuthToRefresh
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            const manager = await AtlassianServerManager.refresh(refreshToken)
-            const {accessToken, refreshToken: newRefreshToken} = manager
-            atlassianAuth.accessToken = accessToken
-            atlassianAuth.updatedAt = now
-
-            if (newRefreshToken) {
-              atlassianAuth.refreshToken = newRefreshToken
+            const {
+              accessToken,
+              refreshToken: newRefreshToken,
+              error
+            } = await AtlassianServerManager.refresh(refreshToken)
+            if (error) {
+              sendToSentry(new Error(error))
+              return null
             }
-
-            await upsertAtlassianAuth(atlassianAuth)
+            const updatedRefreshToken = newRefreshToken ?? atlassianAuthToRefresh.refreshToken
+            // if user integrated the same Jira account with using different teams we need to update them as well
+            // reference: https://github.com/ParabolInc/parabol/issues/5601
+            const updatedSameJiraAccountAtlassianAuths = userAtlassianAuths
+              .filter((auth) => auth.accountId === atlassianAuthToRefresh.accountId)
+              .map((auth) => ({
+                ...auth,
+                accessToken,
+                refreshToken: updatedRefreshToken
+              }))
+            await upsertAtlassianAuths(updatedSameJiraAccountAtlassianAuths)
           }
-          return atlassianAuth
+
+          return atlassianAuthToRefresh
         })
       )
-      const res = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return res
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
     },
     {
       ...parent.dataLoaderOptions,
@@ -73,7 +80,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
   )
 }
 
-export const jiraRemoteProject = (parent: RethinkDataLoader) => {
+export const jiraRemoteProject = (parent: RootDataLoader) => {
   return new DataLoader<JiraRemoteProjectKey, JiraProject | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -99,7 +106,7 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
   )
 }
 
-export const jiraIssue = (parent: RethinkDataLoader) => {
+export const jiraIssue = (parent: RootDataLoader) => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -171,7 +178,7 @@ export const jiraIssue = (parent: RethinkDataLoader) => {
 interface CloudNameLookup {
   [cloudId: string]: string
 }
-export const atlassianCloudNameLookup = (parent: RethinkDataLoader) => {
+export const atlassianCloudNameLookup = (parent: RootDataLoader) => {
   return new DataLoader<TeamUserKey, CloudNameLookup, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -201,7 +208,7 @@ interface CloudNameKey extends TeamUserKey {
   cloudId: string
 }
 
-export const atlassianCloudName = (parent: RethinkDataLoader) => {
+export const atlassianCloudName = (parent: RootDataLoader) => {
   return new DataLoader<CloudNameKey, string, string>(
     async (keys) => {
       const results = await Promise.allSettled(

@@ -21,7 +21,7 @@ const {SERVER_ID} = process.env
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
-  type: GraphQLNonNull(User),
+  type: new GraphQLNonNull(User),
   resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
     const r = await getRethink()
     const redis = getRedis()

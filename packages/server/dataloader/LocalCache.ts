@@ -5,6 +5,10 @@ import {RWrite, Updater} from './RethinkDBCache'
 const resolvedPromise = Promise.resolve()
 
 type Thunk = () => void
+
+/**
+ * This cache is only used for the User table, {@see ProxiedCache}, {@see ../db}
+ */
 export default class LocalCache<T extends keyof CacheType> {
   private cacheMap = {} as {[key: string]: {ts: number; promise: Promise<any>}}
   private hasReadDispatched = true

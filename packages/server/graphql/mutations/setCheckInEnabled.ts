@@ -8,7 +8,7 @@ import {GQLContext} from '../graphql'
 import SetCheckInEnabledPayload from '../types/SetCheckInEnabledPayload'
 
 const setCheckInEnabled = {
-  type: GraphQLNonNull(SetCheckInEnabledPayload),
+  type: new GraphQLNonNull(SetCheckInEnabledPayload),
   description: 'Enabled or disable the icebreaker round',
   args: {
     settingsId: {

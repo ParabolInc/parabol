@@ -3,20 +3,21 @@ import {DBType} from '../database/rethinkDriver'
 import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
-import fkLoader from './fkLoader'
-import * as foreignLoaderMakers from './foreignLoaderMakers'
-import LoaderMakerForeign from './LoaderMakerForeign'
-import LoaderMakerPrimary from './LoaderMakerPrimary'
-import pkLoader from './pkLoader'
-import * as primaryLoaderMakers from './primaryLoaderMakers'
+import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
+import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
+import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
+import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
+import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
+import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
 }
 
+// Register all loaders
 const loaderMakers = {
-  ...primaryLoaderMakers,
-  ...foreignLoaderMakers,
+  ...rethinkPrimaryKeyLoaderMakers,
+  ...rethinkForeignKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
   ...pollLoaders
@@ -25,19 +26,19 @@ const loaderMakers = {
 type LoaderMakers = typeof loaderMakers
 export type Loaders = keyof LoaderMakers
 
-type PrimaryLoaderMakers = typeof primaryLoaderMakers
+type PrimaryLoaderMakers = typeof rethinkPrimaryKeyLoaderMakers
 type PrimaryLoaders = keyof PrimaryLoaderMakers
-type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? DBType[U] : never
+type Unprimary<T> = T extends RethinkPrimaryKeyLoaderMaker<infer U> ? DBType[U] : never
 type TypeFromPrimary<T extends PrimaryLoaders> = Unprimary<PrimaryLoaderMakers[T]>
 
-type ForeignLoaderMakers = typeof foreignLoaderMakers
+type ForeignLoaderMakers = typeof rethinkForeignKeyLoaderMakers
 type ForeignLoaders = keyof ForeignLoaderMakers
-type Unforeign<T> = T extends LoaderMakerForeign<infer U> ? U : never
+type Unforeign<T> = T extends RethinkForeignKeyLoaderMaker<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
 type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof pollLoaders
 type CustomLoaders = keyof CustomLoaderMakers
-type Uncustom<T> = T extends (parent: RethinkDataLoader) => infer U ? U : never
+type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
 
 type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
@@ -51,7 +52,10 @@ type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
         : never
     >
 
-export default class RethinkDataLoader {
+/**
+ * This is the main dataloader
+ */
+export default class RootDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
   loaders: LoaderDict = {}
   constructor(dataLoaderOptions: DataLoader.Options<any, any> = {}) {
@@ -62,14 +66,14 @@ export default class RethinkDataLoader {
     let loader = this.loaders[loaderName]
     if (loader) return loader as TypedDataLoader<LoaderName>
     const loaderMaker = loaderMakers[loaderName]
-    if (loaderMaker instanceof LoaderMakerPrimary) {
+    if (loaderMaker instanceof RethinkPrimaryKeyLoaderMaker) {
       const {table} = loaderMaker
-      loader = pkLoader(this.dataLoaderOptions, table)
+      loader = rethinkPrimaryKeyLoader(this.dataLoaderOptions, table)
       this.loaders[loaderName]
-    } else if (loaderMaker instanceof LoaderMakerForeign) {
+    } else if (loaderMaker instanceof RethinkForeignKeyLoaderMaker) {
       const {fetch, field, pk} = loaderMaker
       const basePkLoader = this.get(pk as PrimaryLoaders)
-      loader = fkLoader(basePkLoader, this.dataLoaderOptions, field, fetch)
+      loader = rethinkForeignKeyLoader(basePkLoader, this.dataLoaderOptions, field, fetch)
     } else {
       loader = (loaderMaker as any)(this)
     }

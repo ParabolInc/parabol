@@ -20,7 +20,7 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       description: 'A single agenda item',
       args: {
         agendaItemId: {
-          type: GraphQLNonNull(GraphQLID)
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
       resolve: async ({id: meetingId}, {agendaItemId}, {dataLoader}) => {
@@ -30,7 +30,7 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     agendaItemCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of agenda items generated in the meeting',
       resolve: async ({agendaItemCount}) => {
         // only populated after the meeting has been completed (not killed)
@@ -45,7 +45,7 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     commentCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: async ({commentCount}) => {
         // only populated after the meeting has been completed (not killed)
@@ -75,7 +75,7 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     tasks: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',
       resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)

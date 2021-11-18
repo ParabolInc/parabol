@@ -7,11 +7,11 @@ export const MessageAllSlackUsersSuccess = new GraphQLObjectType<any, GQLContext
   name: 'MessageAllSlackUsersSuccess',
   fields: () => ({
     messagedUserIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'A list of the Parabol user ids that have been sent a direct message in Slack'
     },
     errors: {
-      type: GraphQLList(GraphQLNonNull(MessageSlackUserError)),
+      type: new GraphQLList(new GraphQLNonNull(MessageSlackUserError)),
       description: 'Slack messages that failed to send'
     }
   })

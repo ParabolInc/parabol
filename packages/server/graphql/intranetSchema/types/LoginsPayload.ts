@@ -8,14 +8,14 @@ const LoginsPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'LoginsPayload',
   fields: () => ({
     total: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the total number of records',
       resolve: async ({after, isActive}) => {
         return authCount(after, isActive, 'lastSeenAt')
       }
     },
     byDomain: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(DomainCountPayload))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(DomainCountPayload))),
       description: 'The total broken down by email domain',
       resolve: async ({after, isActive}) => {
         return authCountByDomain(after, isActive, 'lastSeenAt')

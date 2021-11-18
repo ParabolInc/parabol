@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.36.0 2021-Nov-10
+
+### Added
+
+- Spotlight: groups UI (#5390)
+- GitHub: Persist favorite queries (#5435)
+- Spotlight: drag source to result (#5412)
+- Spotlight: drag result to source (#5414)
+- Allow to push integration tasks with assignee's and own integration (#5342)
+
+### Fixed
+
+- Fix some no-implicit-any errors (#5476)
+- Fix ending meeting without open phases (#5520)
+- Prevent remote reflection from loosing its position when opening spotlight (#5624)
+
 ## 6.35.0 2021-Nov-03
 
 ### Added
