@@ -335,10 +335,8 @@ export default abstract class AtlassianManager {
       return new Error(json.errorMessages[0])
     }
     if ('errors' in json) {
-      const errorFieldName = Object.keys(json.errors)[0]
-      if (errorFieldName) {
-        return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
-      }
+      const errorFieldName = Object.keys(json.errors)[0] || 'Unknown'
+      return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
     }
     return json
   }
@@ -602,7 +600,7 @@ export default abstract class AtlassianManager {
         }
         return
       }
-      const issues = (res as JiraSearchResponse).issues.map((issue) => {
+      const issues = res.issues.map((issue) => {
         const {key: issueKey, fields, renderedFields} = issue
         const {description, summary} = fields
         const {description: descriptionHTML} = renderedFields

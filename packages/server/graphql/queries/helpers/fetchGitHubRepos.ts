@@ -1,8 +1,8 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {GetRepositoriesQuery} from '../../../types/githubTypes'
+import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
 import {DataLoaderWorker} from '../../graphql'
-import {GitHubRequest} from '../../rootSchema'
 
 interface Repo {
   nameWithOwner: string
@@ -51,16 +51,10 @@ const fetchGitHubRepos = async (
   const auth = await dataLoader.get('githubAuth').load({teamId, userId})
   if (!auth) return []
   const {accessToken} = auth
-  const endpointContext = {accessToken}
-  const githubRequest = (info.schema as any).githubRequest as GitHubRequest
-  const {data, errors} = await githubRequest<GetRepositoriesQuery>({
-    query: getRepositories,
-    batchRef: context,
-    endpointContext,
-    info
-  })
-  if (errors && errors[0]) {
-    console.error(errors[0].message)
+  const githubRequest = getGitHubRequest(info, context, {accessToken})
+  const [data, error] = await githubRequest<GetRepositoriesQuery>(getRepositories)
+  if (error) {
+    console.error(error.message)
     return []
   }
   const {viewer} = data
