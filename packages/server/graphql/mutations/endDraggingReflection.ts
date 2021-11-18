@@ -72,7 +72,7 @@ export default {
     }
 
     // RESOLUTION
-    let newReflectionGroupId
+    let newReflectionGroupId: string | undefined
     if (dropTargetType === 'REFLECTION_GRID') {
       // ungroup
       try {
