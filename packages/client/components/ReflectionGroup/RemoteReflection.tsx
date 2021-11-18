@@ -17,20 +17,16 @@ import getBBox from '../RetroReflectPhase/getBBox'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
 
-const circleAnimation = (transform?: string) => keyframes`
-  0%{
-    transform:translate(5px)
-              rotate(0deg)
-              translate(-5px)
-              rotate(0deg)
-              ${transform ?? ''}
-  }
-  100%{
-    transform:translate(5px)
-              rotate(360deg)
-              translate(-5px)
-              rotate(-360deg)
-              ${transform ?? ''}
+// original from https://codepen.io/Maelig/pen/KrjAgq
+// scale(0.75)
+// translate(-39.5px, 1px)
+// transform determined by hand by delta(kanban el, floating el)
+// round all decimals, convert to relative
+const triquetaPath = `path('m0 0c0 10-8 18-18 18s-18-8-18-18c3-2 6-2 9-2c10 0 18 8 18 18c0 6-3 12-9 16c-6-3-9-9-9-16c0-10 8-18 18-18c3 0 6 0 9 2z')`
+
+const spotlightWiggle = keyframes`
+  100% {
+    offset-distance: 100%;
   }
 `
 
@@ -49,8 +45,10 @@ const RemoteReflectionModal = styled('div')<{
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
   }ms ${BezierCurve.DECELERATE}`,
   transform,
-  animation:
-    isSpotlight && !isDropping ? `${circleAnimation(transform)} 3s ease infinite;` : undefined,
+  transformOrigin: '0 0',
+  offsetPath: triquetaPath,
+  offsetRotate: '0deg',
+  animation: isSpotlight && !isDropping ? `${spotlightWiggle} 4s linear infinite;` : undefined,
   zIndex: isInViewerSpotlightResults
     ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
     : ZIndex.REFLECTION_IN_FLIGHT
@@ -201,6 +199,7 @@ const RemoteReflection = (props: Props) => {
   const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
 
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
+  console.log({transform})
   return (
     <>
       <RemoteReflectionModal
