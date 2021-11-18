@@ -4,6 +4,7 @@ import {isTeamLead, requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 import GraphQLEmailType from '../../types/GraphQLEmailType'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import {WriteResult} from 'rethinkdb-ts'
 
 const setNewTeamLead = {
   type: new GraphQLNonNull(GraphQLBoolean),
@@ -37,25 +38,23 @@ const setNewTeamLead = {
       throw new Error(`Already a team lead!`)
     }
 
-    // downgrade old team leader(s)
-    await r
-      .table('TeamMember')
-      .filter({teamId, isLead: true})
-      .update({
-        isLead: false
-      })
-      .run()
+    const {setNewTeamLead} = await r({
+      removeTeamLead: r
+        .table('TeamMember')
+        .filter({teamId, isLead: true})
+        .update({
+          isLead: false
+        }),
+      setNewTeamLead: r
+        .table('TeamMember')
+        .filter({email: newTeamLeadEmail, teamId})
+        .update({
+          isLead: true
+        })
+        .coerceTo('object') as WriteResult
+    }).run()
 
-    // set a new team lead
-    const result = await r
-      .table('TeamMember')
-      .filter({email: newTeamLeadEmail, teamId})
-      .update({
-        isLead: true
-      })
-      .run()
-
-    return result.replaced === 1
+    return setNewTeamLead.replaced === 1
   }
 }
 
