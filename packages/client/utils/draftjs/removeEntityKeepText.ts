@@ -7,19 +7,17 @@ import {
 
 const updateBlockEntityRanges = (blocks: RawDraftContentBlock[], updatedKeyMap: any) => {
   const nextBlocks = [] as RawDraftContentBlock[]
-  for (let ii = 0; ii < blocks.length; ii++) {
-    const block = blocks[ii]
+  blocks.forEach((block) => {
     const {entityRanges} = block
     const nextEntityRanges = [] as RawDraftEntityRange[]
-    for (let jj = 0; jj < entityRanges.length; jj++) {
-      const entityRange = entityRanges[jj]
+    entityRanges.forEach((entityRange) => {
       const nextKey = updatedKeyMap[entityRange.key]
       if (nextKey !== null) {
         nextEntityRanges.push({...entityRange, key: nextKey})
       }
-    }
+    })
     nextBlocks.push({...block, entityRanges: nextEntityRanges})
-  }
+  })
   return nextBlocks
 }
 
@@ -31,14 +29,12 @@ const removeEntityKeepText = (rawContent: RawDraftContentState, eqFn: (entity: a
   const {blocks, entityMap} = rawContent
   const nextEntityMap = {} as RawDraftContentState['entityMap']
   // oldKey: newKey. null is a remove sentinel
-  const updatedKeyMap = {}
+  const updatedKeyMap = {} as {[key: string]: string | null}
   const removedEntities = [] as RawDraftEntity[]
   // I'm not really sure how draft-js assigns keys, so I just reuse what they give me FIFO
   const releasedKeys = [] as string[]
-  const entityMapKeys = Object.keys(entityMap)
-  for (let ii = 0; ii < entityMapKeys.length; ii++) {
-    const key = entityMapKeys[ii]
-    const entity = entityMap[key]
+
+  for (const [key, entity] of Object.entries(entityMap)) {
     if (eqFn(entity)) {
       removedEntities.push(entity)
       updatedKeyMap[key] = null

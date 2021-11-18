@@ -43,7 +43,7 @@ const ArchiveTeamForm = (props: Props) => {
     e.preventDefault()
     setDirtyField()
     const {archivedTeamName: res} = validateField()
-    if (submitting || res.error) return
+    if (submitting || res?.error) return
     submitMutation()
     ArchiveTeamMutation(atmosphere, {teamId}, {history, onError, onCompleted})
   }

@@ -15,7 +15,7 @@ const connectionFromTemplateArray = (
     edges,
     pageInfo: {
       startCursor: firstEdge && firstEdge.cursor,
-      endCursor: firstEdge ? edges[edges.length - 1].cursor : '',
+      endCursor: firstEdge ? edges[edges.length - 1]!.cursor : '',
       hasNextPage: scoredTemplates.length > nodes.length
     }
   }

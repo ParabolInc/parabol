@@ -2,12 +2,12 @@ import GoogleAnalyzedEntity from '../../../../database/types/GoogleAnalyzedEntit
 import {GoogleAnalyzedSyntax} from '../../../../GoogleLanguageManager'
 
 const getTokenIndices = (entityName: string, tokens: GoogleAnalyzedSyntax['tokens']) => {
-  const indices = [] as {start: number, end: number}[]
+  const indices = [] as {start: number; end: number}[]
   // assumes already lowercased
   const namePieces = entityName.split(' ')
   const [firstPiece] = namePieces
   for (let jj = 0; jj < tokens.length; jj++) {
-    const token = tokens[jj]
+    const token = tokens[jj]!
     if (token.text.content.toLowerCase() === firstPiece) {
       let startIdxFound = true
       // make sure the rest of the pieces match
@@ -34,7 +34,7 @@ export const addLemmaToEntity = (entityName: string, tokens: GoogleAnalyzedSynta
   const tokenIndices = getTokenIndices(entityName, tokens)
   if (tokenIndices.length === 0) return entityName
   // we only care about the first match since the lemma will be the same for all
-  const [firstTokenIdx] = tokenIndices
+  const firstTokenIdx = tokenIndices[0]!
   const {end} = firstTokenIdx
   const {lemma: partialLemma} = tokens[end]
   const namePieces = entityName.split(' ')
@@ -47,7 +47,10 @@ interface EntityWithoutLemma {
   salience: number // 0 - 1
 }
 
-const addLemmaToEntities = (entities: EntityWithoutLemma[], syntax: GoogleAnalyzedSyntax | null): GoogleAnalyzedEntity[] => {
+const addLemmaToEntities = (
+  entities: EntityWithoutLemma[],
+  syntax: GoogleAnalyzedSyntax | null
+): GoogleAnalyzedEntity[] => {
   if (!syntax) return entities
   const {tokens} = syntax
   if (!Array.isArray(tokens)) return entities

@@ -132,7 +132,7 @@ const auditEventTypeLookup = {
   [InvoiceItemType.PAUSE_USER]: 'inactivated',
   [InvoiceItemType.REMOVE_USER]: 'removed',
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
-} as {[key: string]: OrganizationUserAuditEventTypeEnum}
+} as {[key in InvoiceItemType]: OrganizationUserAuditEventTypeEnum}
 
 interface Options {
   prorationDate?: Date
