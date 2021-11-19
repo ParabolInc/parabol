@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useState} from 'react'
-import {createFragmentContainer, useLazyLoadQuery} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import useSpotlightResults from '~/hooks/useSpotlightResults'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
-import {DraggableReflectionCardLocalQuery} from '../../__generated__/DraggableReflectionCardLocalQuery.graphql'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
 import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
@@ -40,8 +40,8 @@ const makeDragState = () => ({
   timeout: null as null | number
 })
 
-const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDraggable}) => ({
-  cursor: isDraggable ? 'grab' : undefined
+const DragWrapper = styled('div')<{showDragCursor: boolean | undefined}>(({showDragCursor}) => ({
+  cursor: showDragCursor ? 'grab' : undefined
 }))
 
 export type ReflectionDragState = ReturnType<typeof makeDragState>
@@ -86,40 +86,18 @@ const DraggableReflectionCard = (props: Props) => {
   const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  const spotlightSearchResults = useLazyLoadQuery<DraggableReflectionCardLocalQuery>(
-    graphql`
-      query DraggableReflectionCardLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
-        viewer {
-          similarReflectionGroups(
-            reflectionGroupId: $reflectionGroupId
-            searchQuery: $searchQuery
-          ) {
-            id
-            reflections {
-              id
-            }
-          }
-        }
-      }
-    `,
-    // TODO: add search query
-    {reflectionGroupId: spotlightGroupId || '', searchQuery: ''},
-    {fetchPolicy: 'store-only'}
-  )
-  const {viewer} = spotlightSearchResults
-  const {similarReflectionGroups} = viewer
+  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, '', true) // TODO: add search query
   const isReflectionIdInSpotlight = useMemo(() => {
     return (
       reflectionId === spotlightReflectionId ||
       !!(
         reflectionId &&
-        similarReflectionGroups?.find(({reflections}) =>
-          reflections.find(({id}) => id === reflectionId)
+        spotlightResultGroups?.find(({reflections}) =>
+          reflections?.find(({id}) => id === reflectionId)
         )
       )
     )
-  }, [similarReflectionGroups, reflectionId, spotlightReflectionId])
-
+  }, [spotlightResultGroups, reflectionId, spotlightReflectionId])
   const {onMouseDown} = useDraggableReflectionCard(
     meeting,
     reflection,
@@ -130,10 +108,10 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflectionCount,
     swipeColumn
   )
-  const isDragPhase = phaseType === 'group' && !isComplete
-  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
-  // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
-  const handleDrag = isDragPhase ? onMouseDown : undefined
+  const canHandleDrag = phaseType === 'group' && !isComplete && isDraggable
+  const showDragCursor = isDraggable && canHandleDrag && !isEditing && !isDropping
+  // slow state updates can mean we miss an onMouseDown event
+  const handleDrag = canHandleDrag ? onMouseDown : undefined
   // if spotlight was just opened and card is in the middle of dropping we let it drop into original position
   const [isFinishingRemoteDragging, setIsFinishingRemoteDragging] = useState(
     () => isDropping && isSpotlightOpen && !!remoteDrag
@@ -162,7 +140,7 @@ const DraggableReflectionCard = (props: Props) => {
       }}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
-      isDraggable={canDrag}
+      showDragCursor={showDragCursor}
     >
       <ReflectionCard
         dataCy={dataCy}
