@@ -6,7 +6,7 @@ export const EnableSAMLForDomainSuccess = new GraphQLObjectType<any, GQLContext>
   name: 'EnableSAMLForDomainSuccess',
   fields: () => ({
     success: {
-      type: GraphQLNonNull(GraphQLBoolean)
+      type: new GraphQLNonNull(GraphQLBoolean)
     }
   })
 })

@@ -44,6 +44,9 @@ export class CacheWorker<T extends DataLoaderBase> {
   }
 }
 
+/**
+ * A cache of dataloaders, see {@link getDataLoader} for usage
+ */
 export default class DataLoaderCache<T extends DataLoaderBase> {
   ttl: number
   workers: {[did: string]: CacheWorker<T>} = {}

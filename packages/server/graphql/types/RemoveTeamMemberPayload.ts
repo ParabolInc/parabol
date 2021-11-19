@@ -26,7 +26,7 @@ const RemoveTeamMemberPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: resolveTeam
     },
     updatedTasks: {
-      type: GraphQLList(GraphQLNonNull(Task)),
+      type: new GraphQLList(new GraphQLNonNull(Task)),
       description: 'The tasks that got reassigned',
       resolve: resolveTasks
     },

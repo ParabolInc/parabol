@@ -27,6 +27,7 @@ const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string
 
   //don't modify if the user doesn't have a company tld or has the same tld as the active one
   const newUser = await db.read('User', userId)
+  if (!newUser) return
   const {email} = newUser
   const newUserDomain = getDomainFromEmail(email)
   if (!isCompanyDomain(newUserDomain) || newUserDomain === activeDomain) return
@@ -131,7 +132,7 @@ const auditEventTypeLookup = {
   [InvoiceItemType.PAUSE_USER]: 'inactivated',
   [InvoiceItemType.REMOVE_USER]: 'removed',
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
-} as {[key: string]: OrganizationUserAuditEventTypeEnum}
+} as {[key in InvoiceItemType]: OrganizationUserAuditEventTypeEnum}
 
 interface Options {
   prorationDate?: Date
@@ -169,7 +170,7 @@ export default async function adjustUserCount(
   if (type === InvoiceItemType.REMOVE_USER) {
     // if the user is paused, they've already been removed from stripe
     const user = await db.read('User', userId)
-    if (user.inactive) {
+    if (!user || user.inactive) {
       return
     }
   }

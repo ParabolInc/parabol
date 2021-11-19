@@ -105,7 +105,7 @@ interface IssueCreateMetadata {
   })[]
 }
 
-interface JiraCreateIssueResponse {
+export interface JiraCreateIssueResponse {
   id: string
   key: string
   self: string
@@ -335,7 +335,7 @@ export default abstract class AtlassianManager {
       return new Error(json.errorMessages[0])
     }
     if ('errors' in json) {
-      const errorFieldName = Object.keys(json.errors)[0]
+      const errorFieldName = Object.keys(json.errors)[0] || 'Unknown'
       return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
     }
     return json
@@ -360,7 +360,9 @@ export default abstract class AtlassianManager {
     }
     if ('errors' in error) {
       const errorFieldName = Object.keys(error.errors)[0]
-      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      if (errorFieldName) {
+        return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      }
     }
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
   }
@@ -383,7 +385,9 @@ export default abstract class AtlassianManager {
     }
     if ('errors' in error) {
       const errorFieldName = Object.keys(error.errors)[0]
-      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      if (errorFieldName) {
+        return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      }
     }
 
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
@@ -564,7 +568,6 @@ export default abstract class AtlassianManager {
     isJQL: boolean,
     projectFiltersByCloudId: {[cloudId: string]: string[]}
   ) {
-    const cloudIds = Object.keys(projectFiltersByCloudId)
     const allIssues = [] as JiraGQLFields[]
     let firstError: Error | undefined
     const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
@@ -577,8 +580,7 @@ export default abstract class AtlassianManager {
       const and = projectFilter && textFilter ? ' AND ' : ''
       return `${projectFilter}${and}${textFilter} ${orderBy}`
     }
-    const reqs = cloudIds.map(async (cloudId) => {
-      const projectKeys = projectFiltersByCloudId[cloudId]
+    const reqs = Object.entries(projectFiltersByCloudId).map(async ([cloudId, projectKeys]) => {
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const jql = composeJQL(queryString, isJQL, projectKeys)
       const payload = {

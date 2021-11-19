@@ -21,16 +21,20 @@ const resetPassword = {
   description: 'Reset the password for an account',
   args: {
     token: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the password reset token'
     },
     newPassword: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The new password for the account'
     }
   },
   resolve: rateLimit({perMinute: 10, perHour: 100})(
-    async (_source, {token, newPassword}, context: GQLContext) => {
+    async (
+      _source: unknown,
+      {token, newPassword}: {token: string; newPassword: string},
+      context: GQLContext
+    ) => {
       const r = await getRethink()
       const resetRequest = (await r
         .table('PasswordResetRequest')

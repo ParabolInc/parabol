@@ -9,7 +9,7 @@ export const SetTaskEstimateSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetTaskEstimateSuccess',
   fields: () => ({
     task: {
-      type: GraphQLNonNull(Task)
+      type: new GraphQLNonNull(Task)
     },
     stage: {
       type: EstimateStage,

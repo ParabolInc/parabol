@@ -6,6 +6,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import SelectTemplatePayload from '../types/SelectTemplatePayload'
+import {GQLContext} from '../graphql'
 
 const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -15,13 +16,13 @@ const selectTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   async resolve(
-    _source,
-    {selectedTemplateId, teamId},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {selectedTemplateId, teamId}: {selectedTemplateId: string; teamId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()

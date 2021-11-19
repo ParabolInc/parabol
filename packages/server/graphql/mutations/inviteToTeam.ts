@@ -42,8 +42,12 @@ export default {
   },
   resolve: rateLimit({perMinute: 10, perHour: 100})(
     async (
-      _source,
-      {invitees, meetingId, teamId}: {invitees: string[]; meetingId?: string; teamId: string},
+      _source: unknown,
+      {
+        invitees,
+        meetingId,
+        teamId
+      }: {invitees: string[]; meetingId?: string | null; teamId: string},
       {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
       const operationId = dataLoader.share()
@@ -80,7 +84,7 @@ export default {
           expiresAt,
           email,
           invitedBy: viewerId,
-          meetingId,
+          meetingId: meetingId ?? undefined,
           teamId,
           token: tokens[idx]
         })
@@ -119,7 +123,7 @@ export default {
           .run()
       }
 
-      const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)
+      const bestMeeting = await getBestInvitationMeeting(teamId, meetingId ?? undefined, dataLoader)
 
       // send emails
       const searchParams = {

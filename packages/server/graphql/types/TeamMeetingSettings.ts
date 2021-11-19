@@ -13,7 +13,7 @@ export const teamMeetingSettingsFields = () => ({
   },
   meetingType: {
     description: 'The type of meeting these settings apply to',
-    type: GraphQLNonNull(MeetingTypeEnum)
+    type: new GraphQLNonNull(MeetingTypeEnum)
   },
   phaseTypes: {
     description: 'The broad phase types that will be addressed during the meeting',
@@ -25,7 +25,7 @@ export const teamMeetingSettingsFields = () => ({
   },
   team: {
     description: 'The team these settings belong to',
-    type: GraphQLNonNull(Team),
+    type: new GraphQLNonNull(Team),
     resolve: resolveTeam
   }
 })

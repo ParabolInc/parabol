@@ -11,13 +11,15 @@ import getPg from '../../postgres/getPg'
 import catchAndLog from '../../postgres/utils/catchAndLog'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
+import {GQLContext} from '../graphql'
+import {RDatum} from '../../database/stricterR'
 
 export default {
-  type: GraphQLNonNull(AddFeatureFlagPayload),
+  type: new GraphQLNonNull(AddFeatureFlagPayload),
   description: 'Give someone advanced features in a flag',
   args: {
     emails: {
-      type: GraphQLList(GraphQLNonNull(GraphQLString)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: `a list of the complete or partial email of the person to whom you are giving advanced features.
       Matches via a regex to support entire domains`
     },
@@ -31,9 +33,9 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {emails, domain, flag}: {emails: string[] | null; domain: string | null; flag: string},
-    {authToken, dataLoader}
+    {authToken, dataLoader}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId}
@@ -57,7 +59,7 @@ export default {
       return {error: {message: 'No users found matching the email or domain'}}
     }
 
-    const reqlUpdater = (user) => ({
+    const reqlUpdater = (user: RDatum<IUser | undefined>) => ({
       featureFlags: user('featureFlags')
         .default([])
         .append(flag)

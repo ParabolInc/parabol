@@ -2,6 +2,9 @@ import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
 import db from '../db'
 
+/**
+ * Used to add {@link LocalCache} to the User dataloader
+ */
 export default class ProxiedCache<T extends keyof DBType> implements DataLoader<string, T> {
   table: T
   constructor(table: T) {

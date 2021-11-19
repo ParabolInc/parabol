@@ -10,6 +10,7 @@ import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import {GQLContext} from '../graphql'
 
 const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const r = await getRethink()
@@ -120,7 +121,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
 
   const newUsers = await db.readMany('User', newToOrgUserIds)
 
-  const inactiveUserIds = newUsers.filter((user) => user.inactive).map(({id}) => id)
+  const inactiveUserIds = newUsers.filter((user) => user && user.inactive).map((user) => user!.id)
   inactiveUserIds.map((newInactiveUserId) => {
     return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
   })
@@ -143,10 +144,14 @@ export default {
       description: 'The ID of the organization you want to move the team to'
     }
   },
-  async resolve(_source, {teamIds, orgId}, {authToken}) {
+  async resolve(
+    _source: unknown,
+    {teamIds, orgId}: {teamIds: string[]; orgId: string},
+    {authToken}: GQLContext
+  ) {
     const results = [] as (string | any)[]
     for (let i = 0; i < teamIds.length; i++) {
-      const teamId = teamIds[i]
+      const teamId = teamIds[i]!
       const result = await moveToOrg(teamId, orgId, authToken)
       results.push(result)
     }

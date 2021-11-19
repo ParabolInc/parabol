@@ -17,15 +17,15 @@ import {Threadable as ThreadableDB} from '../../database/types/Threadable'
 
 export const threadableFields = () => ({
   id: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
   content: {
-    type: GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLString),
     description: 'The rich text body of the item'
   },
   createdAt: {
-    type: GraphQLNonNull(GraphQLISO8601Type),
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the item was created'
   },
   createdBy: {
@@ -40,7 +40,7 @@ export const threadableFields = () => ({
     }
   },
   replies: {
-    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Threadable))),
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Threadable))),
     description: 'the replies to this threadable item',
     resolve: ({replies}) => replies || []
   },
@@ -60,7 +60,7 @@ export const threadableFields = () => ({
     description: 'the order of this threadable, relative to threadParentId'
   },
   updatedAt: {
-    type: GraphQLNonNull(GraphQLISO8601Type),
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the item was updated'
   }
 })
@@ -74,7 +74,7 @@ const Threadable = new GraphQLInterfaceType({
       return Task
     }
 
-    if ('options' in threadable) {
+    if ('title' in threadable) {
       return Poll
     }
 

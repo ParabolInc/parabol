@@ -20,13 +20,22 @@ graphql`
       id
       dragUserId
       dragUserName
+      isSpotlight
     }
   }
 `
 
 const mutation = graphql`
-  mutation StartDraggingReflectionMutation($reflectionId: ID!, $dragId: ID!) {
-    startDraggingReflection(reflectionId: $reflectionId, dragId: $dragId) {
+  mutation StartDraggingReflectionMutation(
+    $reflectionId: ID!
+    $dragId: ID!
+    $isSpotlight: Boolean
+  ) {
+    startDraggingReflection(
+      reflectionId: $reflectionId
+      dragId: $dragId
+      isSpotlight: $isSpotlight
+    ) {
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
     }
   }
@@ -75,6 +84,9 @@ export const startDraggingReflectionMeetingUpdater: SharedUpdater<StartDraggingR
       reflection.setValue(false, 'isViewerDragging')
       reflection.setValue(false, 'isDropping')
       reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
+      // cancel spotlight, too
+      const meeting = meetingId !== null ? store.get(meetingId) : null
+      meeting?.setValue(null, 'spotlightReflection')
     } else {
       // viewer wins
       return
@@ -109,6 +121,7 @@ const StartDraggingReflectionMutation = (
     onCompleted,
     updater: (store) => {
       const {viewerId} = atmosphere
+      const {isSpotlight} = variables
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
       const reflectionId = payload.getValue('reflectionId')!
@@ -120,13 +133,18 @@ const StartDraggingReflectionMutation = (
         const remoteDragUserId = remoteDrag.getValue('dragUserId')!
         if (remoteDragUserId <= viewerId) return
       }
-      reflection.setValue(true, 'isViewerDragging')
+      if (!isSpotlight) {
+        // remoteDrag tells subscribers it's in Spotlight; isViewerDragging is false so viewer can drag source
+        reflection.setValue(true, 'isViewerDragging')
+      }
     },
     optimisticUpdater: (store) => {
-      const {reflectionId} = variables
+      const {reflectionId, isSpotlight} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-      reflection.setValue(true, 'isViewerDragging')
+      if (!isSpotlight) {
+        reflection.setValue(true, 'isViewerDragging')
+      }
     }
   })
 }

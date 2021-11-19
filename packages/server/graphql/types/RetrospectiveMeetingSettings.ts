@@ -29,7 +29,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       description: 'FK. The template that will be used to start the retrospective'
     },
     selectedTemplate: {
-      type: GraphQLNonNull(ReflectTemplate),
+      type: new GraphQLNonNull(ReflectTemplate),
       description: 'The template that will be used to start the retrospective',
       resolve: resolveSelectedTemplate('workingStuckTemplate')
     },
@@ -53,10 +53,10 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     organizationTemplates: {
-      type: GraphQLNonNull(ReflectTemplateConnection),
+      type: new GraphQLNonNull(ReflectTemplateConnection),
       args: {
         first: {
-          type: GraphQLNonNull(GraphQLInt)
+          type: new GraphQLNonNull(GraphQLInt)
         },
         after: {
           type: GraphQLID,
@@ -79,11 +79,11 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     publicTemplates: {
-      type: GraphQLNonNull(ReflectTemplateConnection),
+      type: new GraphQLNonNull(ReflectTemplateConnection),
       description: 'The list of templates shared across the organization to start a retrospective',
       args: {
         first: {
-          type: GraphQLNonNull(GraphQLInt)
+          type: new GraphQLNonNull(GraphQLInt)
         },
         after: {
           type: GraphQLID,

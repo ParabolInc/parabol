@@ -11,7 +11,7 @@ interface Props {
 
 const createNewLocalUser = (props: Props) => {
   const {email, hashedPassword, segmentId, isEmailVerified} = props
-  const [nickname] = email.split('@')
+  const nickname = email.split('@')[0]!
   const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
   const newUser = new User({
     preferredName,

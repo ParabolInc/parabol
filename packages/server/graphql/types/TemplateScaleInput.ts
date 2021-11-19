@@ -15,4 +15,9 @@ const TemplateScaleInput = new GraphQLInputObjectType({
   })
 })
 
+export type TemplateScaleInputType = {
+  color: string
+  label: string
+}
+
 export default TemplateScaleInput

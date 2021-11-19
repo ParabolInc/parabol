@@ -48,6 +48,9 @@ const run = async () => {
   console.log(`\n💧💧💧 Ready for GraphQL Execution: ${SERVER_ID} 💧💧💧`)
 
   for await (const message of incomingStream) {
+    // don't await the call below so this instance can immediately call incomingStream.next()
+    // and be put back in the consumer group, which means it can process more than 1 job at a time
+    // See https://www.loom.com/share/b56812bc561348d0b3d74fe35414499d
     onMessage('', message)
   }
 }

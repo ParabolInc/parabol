@@ -11,17 +11,17 @@ import {GQLContext} from '../graphql'
 import ArchiveTimelineEventPayload from '../types/ArchiveTimelineEventPayload'
 
 const archiveTimelineEvent = {
-  type: GraphQLNonNull(ArchiveTimelineEventPayload),
+  type: new GraphQLNonNull(ArchiveTimelineEventPayload),
   description: `Archive a timeline event`,
   args: {
     timelineEventId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the id for the timeline event'
     }
   },
   resolve: async (
-    _source,
-    {timelineEventId},
+    _source: unknown,
+    {timelineEventId}: {timelineEventId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

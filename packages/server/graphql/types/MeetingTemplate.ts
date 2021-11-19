@@ -11,7 +11,7 @@ import Team from './Team'
 
 export const meetingTemplateFields = () => ({
   id: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
   createdAt: {
@@ -30,11 +30,11 @@ export const meetingTemplateFields = () => ({
     description: 'The name of the template'
   },
   orgId: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: '*Foreign key. The organization that owns the team that created the template'
   },
   scope: {
-    type: GraphQLNonNull(SharingScopeEnum),
+    type: new GraphQLNonNull(SharingScopeEnum),
     description: 'Who can see this template'
   },
   teamId: {

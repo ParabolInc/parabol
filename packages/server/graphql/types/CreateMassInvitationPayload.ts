@@ -7,7 +7,7 @@ const CreateMassInvitationSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateMassInvitationSuccess',
   fields: () => ({
     team: {
-      type: GraphQLNonNull(Team),
+      type: new GraphQLNonNull(Team),
       description: 'the team with the updated mass inivtation',
       resolve: async ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)

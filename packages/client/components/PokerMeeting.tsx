@@ -35,22 +35,12 @@ export interface PokerMeetingPhaseProps {
 
 const PokerMeeting = (props: Props) => {
   const {meeting} = props
-  const {
-    toggleSidebar,
-    room,
-    peers,
-    producers,
-    consumers,
-    mediaRoom,
-    handleGotoNext,
-    gotoStageId,
-    safeRoute,
-    handleMenuClick
-  } = useMeeting(meeting)
-  const {showSidebar, viewerMeetingMember, localPhase} = meeting
+  const {toggleSidebar, handleGotoNext, gotoStageId, safeRoute, handleMenuClick} = useMeeting(
+    meeting
+  )
+  const {showSidebar, localPhase} = meeting
 
   if (!safeRoute) return null
-  const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = localPhase?.phaseType
   const Phase = phaseLookup[localPhaseType]
   return (
@@ -68,17 +58,7 @@ const PokerMeeting = (props: Props) => {
           gotoStageId={gotoStageId}
           meeting={meeting}
           toggleSidebar={toggleSidebar}
-          avatarGroup={
-            <NewMeetingAvatarGroup
-              allowVideo={allowVideo}
-              room={room}
-              peers={peers}
-              producers={producers}
-              consumers={consumers}
-              mediaRoom={mediaRoom}
-              meeting={meeting}
-            />
-          }
+          avatarGroup={<NewMeetingAvatarGroup meeting={meeting} />}
         />
       </Suspense>
       <MeetingControlBar
@@ -113,13 +93,6 @@ export default createFragmentContainer(PokerMeeting, {
         }
       }
       showSidebar
-      viewerMeetingMember {
-        user {
-          featureFlags {
-            video
-          }
-        }
-      }
     }
   `
 })

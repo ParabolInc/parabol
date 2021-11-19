@@ -22,7 +22,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
   if (!integrationHash) {
     return <PokerEstimateHeaderCardParabol task={task} />
   }
-  // it's an intergrated task, but the service might be down
+  // it's an integrated task, but the service might be down
   if (!integration) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   }

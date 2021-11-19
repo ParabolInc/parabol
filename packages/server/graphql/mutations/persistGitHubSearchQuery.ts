@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import GitHubSearchQuery from '../../database/types/GitHubSearchQuery'
+import generateUID from '../../generateUID'
 import updateGitHubSearchQueries from '../../postgres/queries/updateGitHubSearchQueries'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -8,15 +8,15 @@ import {GQLContext} from '../graphql'
 import PersistGitHubSearchQueryPayload from '../types/PersistGitHubSearchQueryPayload'
 
 const persistGitHubSearchQuery = {
-  type: GraphQLNonNull(PersistGitHubSearchQueryPayload),
+  type: new GraphQLNonNull(PersistGitHubSearchQueryPayload),
   description: ``,
   args: {
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the team witht the settings we add the query to'
     },
     queryString: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The query string as sent to GitHub'
     },
     isRemove: {
@@ -25,32 +25,36 @@ const persistGitHubSearchQuery = {
     }
   },
   resolve: async (
-    _source,
-    {teamId, queryString, isRemove},
+    _source: unknown,
+    {
+      teamId,
+      queryString,
+      isRemove
+    }: {teamId: string; queryString: string; isRemove?: boolean | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const MAX_QUERIES = 5
+
     //AUTH
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not on team`}}
     }
     const githubAuth = await dataLoader.get('githubAuth').load({teamId, userId: viewerId})
-
     if (!githubAuth) {
       return {error: {message: 'Not integrated with GitHub'}}
     }
-    // MUTATIVE
+
+    // RESOLUTION
     const {githubSearchQueries} = githubAuth
-    const searchQueryStrings = githubSearchQueries.map(({queryString}) => queryString)
-    const existingIdx = searchQueryStrings.indexOf(queryString)
+    const normalizedQueryString = queryString.toLowerCase().trim()
+    const existingIdx = githubSearchQueries.findIndex(
+      (query) => query.queryString === normalizedQueryString
+    )
     let isChange = true
     if (existingIdx !== -1) {
-      // the search query already exists
-      // if remove, then delete it
-      // if not, then update the lastUsedAt
       if (isRemove) {
         // MUTATIVE
         githubSearchQueries.splice(existingIdx, 1)
@@ -63,19 +67,27 @@ const persistGitHubSearchQuery = {
           isChange = false
         }
       }
-    } else if (!isRemove) {
-      const newQuery = new GitHubSearchQuery({queryString})
-      // MUTATIVE
-      githubSearchQueries.unshift(newQuery)
-      githubSearchQueries.slice(0, MAX_QUERIES)
+    } else {
+      if (!isRemove) {
+        const newQuery = {
+          lastUsedAt: new Date(),
+          queryString: normalizedQueryString,
+          id: generateUID()
+        }
+        // MUTATIVE
+        githubSearchQueries.unshift(newQuery)
+        githubSearchQueries.slice(0, MAX_QUERIES)
+      } else {
+        isChange = false
+      }
     }
     const data = {teamId, userId: viewerId}
     if (isChange) {
-      await updateGitHubSearchQueries({teamId, userId: viewerId, githubSearchQueries})
+      await updateGitHubSearchQueries({githubSearchQueries, teamId, userId: viewerId})
       publish(
         SubscriptionChannel.NOTIFICATION,
         viewerId,
-        'PersistJiraSearchQuerySuccess',
+        'PersistGitHubSearchQuerySuccess',
         data,
         subOptions
       )

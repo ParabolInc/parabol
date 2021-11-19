@@ -8,6 +8,7 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import SetPhaseFocusPayload from '../types/SetPhaseFocusPayload'
+import {GQLContext} from '../graphql'
 
 const setPhaseFocus = {
   type: SetPhaseFocusPayload,
@@ -22,9 +23,9 @@ const setPhaseFocus = {
     }
   },
   async resolve(
-    _source,
-    {meetingId, focusedPromptId},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {meetingId, focusedPromptId}: {meetingId: string; focusedPromptId?: string | null},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -53,7 +54,7 @@ const setPhaseFocus = {
 
     // RESOLUTION
     // mutative
-    reflectPhase.focusedPromptId = focusedPromptId || null
+    reflectPhase.focusedPromptId = focusedPromptId ?? undefined
     await r
       .table('NewMeeting')
       .get(meetingId)

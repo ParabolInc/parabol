@@ -31,11 +31,11 @@ const removeTeamMember = async (
     .table('TeamMember')
     .getAll(teamId, {index: 'teamId'})
     .run()
-  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)!
-  const {isLead, isNotRemoved} = teamMember
+  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
+  const {isLead, isNotRemoved} = teamMember ?? {}
   // if the guy being removed is the leader & not the last, pick a new one. else, use him
   const teamLeader = activeTeamMembers.find((t) => t.isLead === !isLead) || teamMember
-  if (!isNotRemoved) {
+  if (!isNotRemoved || !teamMember || !teamLeader) {
     throw new Error('Team member already removed')
   }
 
@@ -124,6 +124,9 @@ const removeTeamMember = async (
     db.write('User', userId, reqlUpdater),
     removeUserTms(teamId, userId)
   ])
+  if (!user) {
+    throw new Error('Team member already removed')
+  }
   let notificationId
   if (evictorUserId) {
     const notification = new NotificationKickedOut({teamId, userId, evictorUserId})

@@ -10,7 +10,7 @@ ADD yarn.lock .
 COPY . .
 
 FROM base as prod
-RUN yarn install
+RUN yarn install --frozen-lockfile
 RUN yarn build
 RUN cp docker/entrypoint.prod.sh /bin/entrypoint
 RUN chmod +x /bin/entrypoint

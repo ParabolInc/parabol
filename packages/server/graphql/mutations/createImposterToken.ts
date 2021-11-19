@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import CreateImposterTokenPayload from '../types/CreateImposterTokenPayload'
 import {getUserId, requireSU} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 
 const createImposterToken = {
   type: new GraphQLNonNull(CreateImposterTokenPayload),
@@ -12,7 +13,7 @@ const createImposterToken = {
       description: 'The target userId to impersonate'
     }
   },
-  async resolve (_source, {userId}, {authToken, dataLoader}) {
+  async resolve(_source: unknown, {userId}: {userId: string}, {authToken, dataLoader}: GQLContext) {
     // AUTH
     requireSU(authToken)
     const viewerId = getUserId(authToken)

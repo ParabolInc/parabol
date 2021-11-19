@@ -5,9 +5,9 @@ interface Phase {
 }
 
 const getMeetingPhase = <T extends Phase>(phases: readonly T[]) => {
-  return (phases.find((phase) => {
+  return phases.find((phase) => {
     return !phase.stages.every((stage) => stage.isComplete)
-  }) as unknown) as T
+  })
 }
 
 export default getMeetingPhase

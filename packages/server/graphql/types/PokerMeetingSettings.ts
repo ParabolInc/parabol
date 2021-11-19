@@ -19,7 +19,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       description: 'FK. The template that will be used to start the poker meeting'
     },
     selectedTemplate: {
-      type: GraphQLNonNull(PokerTemplate),
+      type: new GraphQLNonNull(PokerTemplate),
       description: 'The template that will be used to start the Poker meeting',
       resolve: resolveSelectedTemplate('estimatedEffortTemplate')
     },
@@ -35,10 +35,10 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     organizationTemplates: {
-      type: GraphQLNonNull(PokerTemplateConnection),
+      type: new GraphQLNonNull(PokerTemplateConnection),
       args: {
         first: {
-          type: GraphQLNonNull(GraphQLInt)
+          type: new GraphQLNonNull(GraphQLInt)
         },
         after: {
           type: GraphQLID,
@@ -59,11 +59,11 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     publicTemplates: {
-      type: GraphQLNonNull(PokerTemplateConnection),
+      type: new GraphQLNonNull(PokerTemplateConnection),
       description: 'The list of templates shared across the organization to start a Poker meeting',
       args: {
         first: {
-          type: GraphQLNonNull(GraphQLInt)
+          type: new GraphQLNonNull(GraphQLInt)
         },
         after: {
           type: GraphQLID,

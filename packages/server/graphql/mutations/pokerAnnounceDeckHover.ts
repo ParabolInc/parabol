@@ -11,23 +11,23 @@ import {GQLContext} from '../graphql'
 import PokerAnnounceDeckHoverPayload from '../types/PokerAnnounceDeckHoverPayload'
 
 const pokerAnnounceDeckHover = {
-  type: GraphQLNonNull(PokerAnnounceDeckHoverPayload),
+  type: new GraphQLNonNull(PokerAnnounceDeckHoverPayload),
   description: ``,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     isHover: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer has started hovering the deck, else false'
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId, isHover},
+    _source: unknown,
+    {meetingId, stageId, isHover}: {meetingId: string; stageId: string; isHover: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

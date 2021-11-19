@@ -17,33 +17,33 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   isTypeOf: ({cloudId, issueKey}) => !!(cloudId && issueKey),
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'GUID cloudId:issueKey',
       resolve: ({cloudId, issueKey}) => {
         return JiraIssueId.join(cloudId, issueKey)
       }
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The parabol teamId this issue was fetched for'
     },
     userId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The parabol userId this issue was fetched for'
     },
     cloudId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The ID of the jira cloud where the issue lives'
     },
     cloudName: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The name of the jira cloud where the issue lives',
       resolve: async ({cloudId, teamId, userId}, _args, {dataLoader}) => {
         return dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId})
       }
     },
     url: {
-      type: GraphQLNonNull(GraphQLURLType),
+      type: new GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue',
       resolve: async ({cloudId, teamId, userId, issueKey}, _args, {dataLoader}) => {
         const cloudName = await dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId})
@@ -51,11 +51,11 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       }
     },
     issueKey: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The key of the issue as found in Jira'
     },
     projectKey: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The key of the project, which is the prefix to the issueKey',
       resolve: ({issueKey}) => JiraProjectKeyId.join(issueKey)
     },
@@ -68,16 +68,16 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       }
     },
     summary: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The plaintext summary of the jira issue'
     },
     description: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The stringified ADF of the jira issue description',
       resolve: ({description}) => (description ? JSON.stringify(description) : '')
     },
     descriptionHTML: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The description converted into raw HTML'
     }
   })

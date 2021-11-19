@@ -11,25 +11,29 @@ import {GQLContext} from '../graphql'
 import UpdateRetroMaxVotesPayload from '../types/UpdateRetroMaxVotesPayload'
 
 const updateRetroMaxVotes = {
-  type: GraphQLNonNull(UpdateRetroMaxVotesPayload),
+  type: new GraphQLNonNull(UpdateRetroMaxVotesPayload),
   description: `Change the max votes for participants`,
   args: {
     totalVotes: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The total number of votes for each participant'
     },
     maxVotesPerGroup: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The total number of votes for each participant to vote on a single topic'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the meeting to update'
     }
   },
   resolve: async (
-    _source,
-    {totalVotes, maxVotesPerGroup, meetingId},
+    _source: unknown,
+    {
+      totalVotes,
+      maxVotesPerGroup,
+      meetingId
+    }: {totalVotes: number; maxVotesPerGroup: number; meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

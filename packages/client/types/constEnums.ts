@@ -114,6 +114,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
+  INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/'
@@ -373,8 +374,11 @@ export const enum Times {
   REFLECTION_COLLAPSE_DURATION = 300,
   REFLECTION_DROP_DURATION = 1000,
   REFLECTION_REMOTE_DROP_DURATION = 2000,
-  REFLECTION_STALE_LIMIT = 5000,
+  REFLECTION_DRAG_STALE_TIMEOUT = 10000,
+  REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT = 120000,
   REFLECTION_COLUMN_SWIPE_THRESH = 600,
+  SPOTLIGHT_SOURCE_DURATION = 300,
+  SPOTLIGHT_MODAL_DURATION = 300,
   TOUCH_LONGPRESS = 120,
   WEBSOCKET_KEEP_ALIVE = 10000
 }
@@ -424,5 +428,15 @@ export const enum Polls {
   MAX_OPTIONS = 4,
   MIN_OPTIONS = 2,
   MAX_TITLE_LENGTH = 100,
-  MIN_TITLE_LENGTH = 2
+  MIN_TITLE_LENGTH = 2,
+  MIN_OPTION_TITLE_LENGTH = 1,
+  MAX_OPTION_TITLE_LENGTH = 30
+}
+
+export const enum PollsAriaLabels {
+  POLL_TITLE_EDITOR = 'Poll Editor',
+  POLL_OPTION_EDITOR = 'Poll Option Editor',
+  POLL_SUBMIT_VOTE = 'Submit poll vote',
+  POLL_START = 'Start a poll',
+  POLL_ADD_OPTION = 'Add a poll option'
 }

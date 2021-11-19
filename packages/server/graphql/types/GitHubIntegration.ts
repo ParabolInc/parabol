@@ -8,6 +8,7 @@ import {
 } from 'graphql'
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
+import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import updateGitHubSearchQueries from '../../postgres/queries/updateGitHubSearchQueries'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
@@ -41,10 +42,10 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: ({accessToken}) => !!accessToken
     },
     githubSearchQueries: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GitHubSearchQuery))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitHubSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({githubSearchQueries, teamId, userId}) => {
+      resolve: async ({githubSearchQueries, teamId, userId}: GitHubAuth) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
         const unexpiredQueries = githubSearchQueries.filter(
@@ -61,7 +62,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       description: '*The GitHub login used for queries'
     },
     scope: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The comma-separated list of scopes requested from GitHub'
     },
     teamId: {

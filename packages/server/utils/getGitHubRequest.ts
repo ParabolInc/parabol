@@ -14,7 +14,7 @@ const getGitHubRequest = (
 ) => {
   const {schema} = info
   const composedRequest = (schema as any).githubRequest as GitHubRequest
-  const githubRequest = async <TData = any, TVars = any>(query: string, variables: TVars) => {
+  const githubRequest = async <TData = any, TVars = any>(query: string, variables?: TVars) => {
     const result = await composedRequest<TData, TVars>({
       query,
       variables,

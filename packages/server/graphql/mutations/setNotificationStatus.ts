@@ -5,7 +5,7 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import NotificationStatusEnum from '../types/NotificationStatusEnum'
+import NotificationStatusEnum, {NotificationStatusEnumType} from '../types/NotificationStatusEnum'
 import SetNotificationStatusPayload from '../types/SetNotificationStatusPayload'
 
 export default {
@@ -13,16 +13,16 @@ export default {
   description: 'set the interaction status of a notifcation',
   args: {
     notificationId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the notification'
     },
     status: {
-      type: GraphQLNonNull(NotificationStatusEnum)
+      type: new GraphQLNonNull(NotificationStatusEnum)
     }
   },
   async resolve(
-    _source,
-    {notificationId, status},
+    _source: unknown,
+    {notificationId, status}: {notificationId: string; status: NotificationStatusEnumType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()

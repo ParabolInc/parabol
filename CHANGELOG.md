@@ -5,6 +5,74 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.37.0 2021-Nov-18
+
+### Added
+
+- Allow moving integration tasks between teams (#5513)
+- Added updateOAuthRefreshTokens mutation (#5590)
+- Use 2 GraphQL Executors (#5560)
+- prepare upgrade to graphql v16 (#5662)
+- make atlassian oauth2 response spec compliant (#5652)
+
+### Fixed
+
+- support new m1 (#5593)
+- Fix source returning to kanban & 2 column error (#5626)
+- Fix collapsed reflections (#5642)
+- Fix graphiql fetcher import (#5653)
+- Fix 100 noUncheckedIndexedAccess errors (#5651)
+
+### Changed
+
+- build(deps): bump tmpl from 1.0.4 to 1.0.5 (#5618)
+- build(deps): bump vm2 from 3.9.3 to 3.9.5 (#5619)
+- bump graphiql (#5646)
+- add final newline on save vscode (#5647)
+- Rename and document dataLoader (#5649)
+
+## 6.36.0 2021-Nov-10
+
+### Added
+
+- Spotlight: groups UI (#5390)
+- GitHub: Persist favorite queries (#5435)
+- Spotlight: drag source to result (#5412)
+- Spotlight: drag result to source (#5414)
+- Allow to push integration tasks with assignee's and own integration (#5342)
+
+### Fixed
+
+- Fix some no-implicit-any errors (#5476)
+- Fix ending meeting without open phases (#5520)
+- Prevent remote reflection from loosing its position when opening spotlight (#5624)
+
+## 6.35.0 2021-Nov-03
+
+### Added
+
+- User can now create a poll in discussion thread (but can't vote yet) (#5361)
+- Show remote spotlight activity (#5500)
+- Expand Poker task description by default in estimate phase (#5569)
+
+### Fixed
+
+- Fix the bug where reflections are missing if the reto meeting does not advance to discuss phase (#5568)
+- Fix an issue where updating estimates at Atlanssian Jira does not reflect it at Parabol side (#5566)
+- Fix a performance issue in disconnectSocket mutation (#5583)
+- Fix a migration issue where silent RethinkDB fails if stage has not taskId (#5571)
+
+## 6.34.0 2021-Oct-27
+
+### Fixed
+
+- Fix pg query count datatype (#5562)
+- Fix/users type from dataloader (#5538)
+
+### Added
+
+- Better logging for timeout in publishInternalGQL (#5552)
+
 ## 6.33.1 2021-Oct-21
 
 ### Fixed

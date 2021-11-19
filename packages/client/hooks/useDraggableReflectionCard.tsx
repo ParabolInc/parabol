@@ -1,5 +1,6 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
@@ -27,14 +28,22 @@ const windowDims = {
   clientWidth: window.innerWidth
 }
 
-const useRemoteDrag = (
+// Adds the remotely dragged card substitute, does not hide the local card or collapse anything
+const useRemotelyDraggedCard = (
+  meeting: DraggableReflectionCard_meeting,
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number
 ) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
-  const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
+  const spotlightAnimRef = useRef<number | null>(null)
+  const setRemoteCard = (
+    isClose: boolean,
+    timeRemaining: number,
+    lastTop?: number,
+    isSpotlight?: boolean
+  ) => {
     if (!drag.ref || timeRemaining <= 0) return
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
@@ -46,6 +55,7 @@ const useRemoteDrag = (
         <RemoteReflection
           style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
           reflection={reflection}
+          meeting={meeting}
         />
       )
     }
@@ -55,8 +65,24 @@ const useRemoteDrag = (
         const newTimeRemaining = timeRemaining - (Date.now() - beforeFrame)
         setRemoteCard(isClose, newTimeRemaining, bbox.top)
       })
+    } else if (isSpotlight) {
+      // move animating remote Spotlight when other kanban reflections move
+      spotlightAnimRef.current = requestAnimationFrame(() => {
+        const newTimeRemaining = timeRemaining - (Date.now() - beforeFrame)
+        setRemoteCard(isClose, newTimeRemaining, bbox.top, isSpotlight)
+      })
     }
   }
+
+  // is animating remote Spotlight
+  useEffect(() => {
+    if (remoteDrag?.isSpotlight) {
+      setRemoteCard(false, Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT, undefined, true)
+    } else if (spotlightAnimRef.current !== null) {
+      cancelAnimationFrame(spotlightAnimRef.current)
+    }
+  }, [remoteDrag?.isSpotlight])
+
   // is opening
   useEffect(() => {
     if (remoteDrag) {
@@ -311,7 +337,8 @@ const useDragAndDrop = (
   return {onMouseDown, onMouseMove, onMouseUp}
 }
 
-const usePlaceholder = (
+// Collapse the position of the card in the list if necessary
+const useCollapsePlaceholder = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
@@ -327,6 +354,9 @@ const usePlaceholder = (
       // the card is the only one in the group, shrink the group!
       style.height = scrollHeight + 'px'
       style.transition = `height ${Times.REFLECTION_DROP_DURATION}ms`
+      const {remoteDrag} = reflection
+      // do not collapse if remote opened spotlight
+      if (remoteDrag?.isSpotlight) return
       requestAnimationFrame(() => {
         style.height = '0'
       })
@@ -352,6 +382,7 @@ const usePlaceholder = (
 }
 
 const useDraggableReflectionCard = (
+  meeting: DraggableReflectionCard_meeting,
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
@@ -360,9 +391,9 @@ const useDraggableReflectionCard = (
   staticReflectionCount: number,
   swipeColumn?: SwipeColumn
 ) => {
-  useRemoteDrag(reflection, drag, staticIdx)
+  useRemotelyDraggedCard(meeting, reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
-  usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
+  useCollapsePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
   const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(
     drag,
     reflection,

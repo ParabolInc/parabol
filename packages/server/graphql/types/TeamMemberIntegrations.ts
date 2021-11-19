@@ -5,12 +5,13 @@ import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
 import GitHubIntegration from './GitHubIntegration'
 import SlackIntegration from './SlackIntegration'
+
 const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
   name: 'TeamMemberIntegrations',
   description: 'All the available integrations available for this team member',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'composite',
       resolve: ({teamId, userId}) => TeamMemberIntegrationsId.join(teamId, userId)
     },
@@ -19,10 +20,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       description: 'All things associated with an atlassian integration for a team member',
       resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        const atlassianIntegration = await dataLoader
-          .get('freshAtlassianAuth')
-          .load({teamId, userId})
-        return atlassianIntegration
+        return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       }
     },
     github: {

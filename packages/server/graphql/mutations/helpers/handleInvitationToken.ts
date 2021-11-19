@@ -11,6 +11,9 @@ const handleInvitationToken = async (
   notificationId?: string
 ) => {
   const viewer = await db.read('User', viewerId)
+  if (!viewer) {
+    throw new Error('Authorization Error')
+  }
   const {email, tms} = viewer
   const isMassInviteToken = getIsMassInviteToken(invitationToken)
   if (isMassInviteToken) return handleMassInviteToken(invitationToken, email, tms, dataLoader)

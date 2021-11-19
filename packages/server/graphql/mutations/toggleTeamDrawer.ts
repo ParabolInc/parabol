@@ -7,7 +7,7 @@ import standardError from '../../utils/standardError'
 import TeamDrawerEnum, {TeamDrawer} from '../types/TeamDrawerEnum'
 
 const toggleTeamDrawer = {
-  type: GraphQLNonNull(ToggleTeamDrawerPayload),
+  type: new GraphQLNonNull(ToggleTeamDrawerPayload),
   description: `Show/hide the drawer in the team dashboard`,
   args: {
     teamId: {
@@ -21,7 +21,7 @@ const toggleTeamDrawer = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {teamId, teamDrawerType}: {teamId: string; teamDrawerType: TeamDrawer | null},
     {authToken}: GQLContext
   ) => {

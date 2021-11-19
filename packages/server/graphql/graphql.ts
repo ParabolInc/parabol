@@ -1,11 +1,12 @@
-import {GraphQLFieldConfig} from 'graphql'
+import {GraphQLFieldConfig, GraphQLResolveInfo} from 'graphql'
 import AuthToken from '../database/types/AuthToken'
-import RethinkDataLoader from '../dataloader/RethinkDataLoader'
+import RootDataLoader from '../dataloader/RootDataLoader'
 import {CacheWorker} from './DataLoaderCache'
 import RateLimiter from './RateLimiter'
+import {RootSchema} from './rootSchema'
 
 // Avoid needless parsing & validating for the 300 hottest operations
-export type DataLoaderWorker = CacheWorker<RethinkDataLoader>
+export type DataLoaderWorker = CacheWorker<RootDataLoader>
 
 export interface GQLContext {
   authToken: AuthToken
@@ -21,3 +22,7 @@ export interface InternalContext {
 }
 
 export type GQLMutation = GraphQLFieldConfig<undefined, GQLContext> & {name: string}
+
+export type GQLResolveInfo = GraphQLResolveInfo & {
+  schema: RootSchema
+}

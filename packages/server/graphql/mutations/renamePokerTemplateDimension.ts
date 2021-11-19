@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import RenamePokerTemplateDimensionPayload from '../types/RenamePokerTemplateDimensionPayload'
 
 const renamePokerTemplateDimension = {
@@ -17,7 +18,11 @@ const renamePokerTemplateDimension = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {dimensionId, name}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {dimensionId, name}: {dimensionId: string; name: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

@@ -7,11 +7,11 @@ const MassInvitation = new GraphQLObjectType<any, GQLContext>({
   description: 'An invitation and expiration',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the invitation token'
     },
     expiration: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the expiration for the token'
     },
     meetingId: {

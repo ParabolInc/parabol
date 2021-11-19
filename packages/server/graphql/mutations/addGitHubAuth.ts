@@ -2,11 +2,12 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import {GetProfileQuery} from '../../types/githubTypes'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getGitHubRequest from '../../utils/getGitHubRequest'
 import getProfile from '../../utils/githubQueries/getProfile.graphql'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {GitHubRequest} from '../rootSchema'
+import {GQLContext, GQLResolveInfo} from '../graphql'
 import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
 
 export default {
@@ -20,7 +21,12 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {code, teamId}, context, info) => {
+  resolve: async (
+    _source: unknown,
+    {code, teamId}: {code: string; teamId: string},
+    context: GQLContext,
+    info: GQLResolveInfo
+  ) => {
     const {authToken} = context
     const viewerId = getUserId(authToken)
 
@@ -31,17 +37,13 @@ export default {
 
     // RESOLUTION
     const {accessToken, scope} = await GitHubServerManager.init(code)
-    const endpointContext = {accessToken}
-    const githubRequest = info.schema.githubRequest as GitHubRequest
-    const {data, errors} = await githubRequest<GetProfileQuery>({
-      query: getProfile,
-      info,
-      endpointContext,
-      batchRef: context
+    const githubRequest = getGitHubRequest(info, context, {
+      accessToken
     })
+    const [data, error] = await githubRequest<GetProfileQuery>(getProfile)
 
-    if (errors) {
-      return standardError(new Error(errors[0].message), {userId: viewerId})
+    if (error) {
+      return standardError(error, {userId: viewerId})
     }
     const {viewer} = data
     const {login} = viewer

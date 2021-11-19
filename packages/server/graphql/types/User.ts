@@ -105,7 +105,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     invoiceDetails,
     invoices,
     isAnyBillingLeader: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is a billing leader on any organization, else false',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
@@ -124,7 +124,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     isPatientZero: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is the first to sign up from their domain, else false',
       resolve: async ({id: userId, email}) => {
         const domain = getDomainFromEmail(email)
@@ -141,12 +141,12 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description: 'the reason the user account was removed'
     },
     isRemoved: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user was removed from parabol, else false',
       resolve: ({isRemoved}) => !!isRemoved
     },
     isWatched: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if all user sessions are being recorded in LogRocket, else false',
       resolve: ({isWatched}) => isWatched
     },
@@ -163,7 +163,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     meetingCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of meetings the user has attended',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
@@ -171,7 +171,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     monthlyStreakMax: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The largest number of consecutive months the user has checked into a meeting',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
@@ -183,7 +183,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     monthlyStreakCurrent: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description:
         'The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
@@ -208,7 +208,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     payLaterClickCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the number of times the user clicked pay later',
       resolve: ({payLaterClickCount}) => payLaterClickCount || 0
     },
@@ -261,7 +261,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       type: Discussion,
       args: {
         id: {
-          type: GraphQLNonNull(GraphQLID),
+          type: new GraphQLNonNull(GraphQLID),
           description: 'The ID of the discussion'
         }
       },
@@ -430,21 +430,23 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description:
         'The reflection groups that are similar to the selected reflection in the Spotlight',
       args: {
-        reflectionId: {
+        reflectionGroupId: {
           type: new GraphQLNonNull(GraphQLID),
-          description: 'The id of the selected reflection in the Spotlight'
+          description: 'The id of the selected reflection group in the Spotlight'
         },
         searchQuery: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'Only return reflection groups that match the search query'
         }
       },
-      resolve: async ({id: userId}, {reflectionId}, {dataLoader}) => {
-        const retroReflection = await dataLoader.get('retroReflections').load(reflectionId)
-        if (!retroReflection) {
+      resolve: async ({id: userId}, {reflectionGroupId}, {dataLoader}) => {
+        const retroReflectionGroup = await dataLoader
+          .get('retroReflectionGroups')
+          .load(reflectionGroupId)
+        if (!retroReflectionGroup) {
           return standardError(new Error('Invalid reflection id'), {userId})
         }
-        const {meetingId} = retroReflection
+        const {meetingId} = retroReflectionGroup
         const meetingMemberId = MeetingMemberId.join(meetingId, userId)
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
@@ -470,15 +472,15 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             maxGroupSize: reflectionsCount,
             maxReductionPercent: MAX_REDUCTION_PERCENTAGE
           })
-          const spotlightGroup = groupedReflectionsRes.find(
-            (group) => group.reflectionId === reflectionId
+          const spotlightGroupedReflection = groupedReflectionsRes.find(
+            (group) => group.oldReflectionGroupId === reflectionGroupId
           )
-          if (!spotlightGroup) break
+          if (!spotlightGroupedReflection) break
           for (const groupedReflectionRes of groupedReflectionsRes) {
             const {reflectionGroupId, oldReflectionGroupId} = groupedReflectionRes
             if (
-              reflectionGroupId === spotlightGroup.reflectionGroupId &&
-              oldReflectionGroupId !== spotlightGroup.oldReflectionGroupId
+              reflectionGroupId === spotlightGroupedReflection.reflectionGroupId &&
+              oldReflectionGroupId !== spotlightGroupedReflection.oldReflectionGroupId
             ) {
               nextResultGroupIds.add(oldReflectionGroupId)
             }
@@ -578,7 +580,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     tier: {
-      type: GraphQLNonNull(TierEnum),
+      type: new GraphQLNonNull(TierEnum),
       description: 'The highest tier of any org the user belongs to'
     },
     tms: {

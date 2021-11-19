@@ -3,13 +3,15 @@ import EndDraggingReflectionPayload from '../types/EndDraggingReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import DragReflectionDropTargetTypeEnum from '../types/DragReflectionDropTargetTypeEnum'
+import DragReflectionDropTargetTypeEnum, {
+  DragReflectionDropTargetTypeEnumType
+} from '../types/DragReflectionDropTargetTypeEnum'
 import addReflectionToGroup from './helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from './helpers/updateReflectionLocation/removeReflectionFromGroup'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
-type TDragReflectionDropTargetTypeEnum = 'REFLECTION_GRID' | 'REFLECTION_GROUP'
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',
   type: EndDraggingReflectionPayload,
@@ -33,7 +35,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {
       reflectionId,
       dropTargetType,
@@ -41,11 +43,11 @@ export default {
       dragId
     }: {
       reflectionId: string
-      dropTargetType: TDragReflectionDropTargetTypeEnum
-      dropTargetId: string
-      dragId: string
+      dropTargetType: DragReflectionDropTargetTypeEnumType
+      dropTargetId: string | null
+      dragId: string | null
     },
-    context
+    context: GQLContext
   ) {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
@@ -70,7 +72,7 @@ export default {
     }
 
     // RESOLUTION
-    let newReflectionGroupId
+    let newReflectionGroupId: string | undefined
     if (dropTargetType === 'REFLECTION_GRID') {
       // ungroup
       try {

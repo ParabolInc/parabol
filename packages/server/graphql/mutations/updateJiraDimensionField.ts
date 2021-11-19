@@ -33,33 +33,45 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianA
 }
 
 const updateJiraDimensionField = {
-  type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
+  type: new GraphQLNonNull(UpdateJiraDimensionFieldPayload),
   description: `Set the jira field that the poker dimension should map to`,
   args: {
     dimensionName: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     fieldName: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The jira field name that we should push estimates to'
     },
     cloudId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The cloudId the field lives on'
     },
     projectKey: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The project the field lives on'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description:
         'The meeting the update happend in. Returns a meeting object with updated serviceField'
     }
   },
   resolve: async (
-    _source,
-    {dimensionName, fieldName, meetingId, cloudId, projectKey},
+    _source: unknown,
+    {
+      dimensionName,
+      fieldName,
+      meetingId,
+      cloudId,
+      projectKey
+    }: {
+      dimensionName: string
+      fieldName: string
+      cloudId: string
+      projectKey: string
+      meetingId: string
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
