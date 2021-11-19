@@ -33,7 +33,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         'The top level domain this organization is linked to, null if only generic emails used'
     },
     isActiveDomainTouched: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description:
         'false if the activeDomain is null or was set automatically via a heuristic, true if set manually',
       resolve: ({isActiveDomainTouched}) => !!isActiveDomainTouched

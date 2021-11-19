@@ -26,11 +26,11 @@ const checkEqAndWriteOutput = async (
 }
 
 const checkRethinkPgEquality = {
-  type: GraphQLNonNull(GraphQLString),
+  type: new GraphQLNonNull(GraphQLString),
   description: 'check equality of a table between rethinkdb and postgres',
   args: {
     tableName: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The table name to be compared'
     },
     maxErrors: {

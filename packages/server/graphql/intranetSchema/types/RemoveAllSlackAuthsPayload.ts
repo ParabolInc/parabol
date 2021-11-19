@@ -6,11 +6,11 @@ export const RemoveAllSlackAuthsSuccess = new GraphQLObjectType<any, GQLContext>
   name: 'RemoveAllSlackAuthsSuccess',
   fields: () => ({
     slackAuthRes: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Response from removing all Slack auths'
     },
     slackNotificationRes: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Response from removing all Slack notifications'
     }
   })

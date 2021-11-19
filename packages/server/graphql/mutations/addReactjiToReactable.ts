@@ -21,19 +21,19 @@ const tableLookup = {
 } as const
 
 const addReactjiToReactable = {
-  type: GraphQLNonNull(AddReactjiToReactablePayload),
+  type: new GraphQLNonNull(AddReactjiToReactablePayload),
   description: `Add or remove a reactji from a reactable`,
   args: {
     reactableId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the reactable'
     },
     reactableType: {
-      type: GraphQLNonNull(ReactableEnum),
+      type: new GraphQLNonNull(ReactableEnum),
       description: 'the type of the'
     },
     reactji: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'the id of the reactji to add'
     },
     isRemove: {
@@ -41,7 +41,7 @@ const addReactjiToReactable = {
       description: 'If true, remove the reaction, else add it'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the meeting'
     }
   },

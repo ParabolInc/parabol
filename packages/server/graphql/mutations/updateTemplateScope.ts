@@ -15,15 +15,15 @@ import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
 import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
 
 const updateTemplateScope = {
-  type: GraphQLNonNull(UpdateTemplateScopePayload),
+  type: new GraphQLNonNull(UpdateTemplateScopePayload),
   description: `Change the scope of a template`,
   args: {
     templateId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the template'
     },
     scope: {
-      type: GraphQLNonNull(SharingScopeEnum),
+      type: new GraphQLNonNull(SharingScopeEnum),
       description: 'the new scope'
     }
   },

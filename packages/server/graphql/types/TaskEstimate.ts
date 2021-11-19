@@ -8,32 +8,32 @@ const TaskEstimate = new GraphQLObjectType<any, GQLContext>({
   description: 'An estimate for a Task that was voted on and scored in a poker meeting',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The ID of the estimate'
     },
     createdAt: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the estimate was created'
     },
     changeSource: {
-      type: GraphQLNonNull(ChangeSourceEnum),
+      type: new GraphQLNonNull(ChangeSourceEnum),
       description: 'The source that a change came in through'
     },
     name: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the estimate dimension'
     },
     label: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The human-readable label for the estimate',
       resolve: ({label}) => label || ''
     },
     taskId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: '*The taskId that the estimate refers to'
     },
     userId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The userId that added the estimate'
     },
     meetingId: {

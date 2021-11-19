@@ -11,15 +11,15 @@ const JiraSearchQueryInput = new GraphQLInputObjectType({
   name: 'JiraSearchQueryInput',
   fields: () => ({
     queryString: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The query string, either simple or JQL depending on the isJQL flag'
     },
     isJQL: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the queryString is JQL, else false'
     },
     projectKeyFilters: {
-      type: GraphQLList(GraphQLNonNull(GraphQLID)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
       description: 'The list of project keys selected as a filter. null if not set'
     },
     isRemove: {

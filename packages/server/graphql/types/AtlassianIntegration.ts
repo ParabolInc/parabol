@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import ms from 'ms'
-import AtlassianAuth from '../../database/types/AtlassianAuth'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -21,6 +20,7 @@ import JiraSearchQuery from './JiraSearchQuery'
 import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -40,7 +40,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user',
       type: GraphQLID,
-      resolve: async ({accessToken, userId}, _args, {authToken}) => {
+      resolve: async ({accessToken, userId}: AtlassianAuth, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
@@ -87,17 +87,17 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'A string of text to search for, or JQL if isJQL is true'
         },
         isJQL: {
-          type: GraphQLNonNull(GraphQLBoolean),
+          type: new GraphQLNonNull(GraphQLBoolean),
           description: 'true if the queryString is JQL, else false'
         },
         projectKeyFilters: {
-          type: GraphQLList(GraphQLNonNull(GraphQLID)),
+          type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
           descrption:
             'A list of projects to restrict the search to. format is cloudId:projectKey. If null, will search all'
         }
       },
       resolve: async (
-        {teamId, userId, accessToken, cloudIds},
+        {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
         {first, queryString, isJQL, projectKeyFilters},
         context
       ) => {
@@ -105,11 +105,6 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, err)
-        }
-        if (!accessToken) {
-          const err = new Error('Not integrated with Jira')
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
@@ -152,10 +147,14 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     projects: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraRemoteProject))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async ({accessToken, cloudIds, teamId, userId}, _args, {authToken}) => {
+      resolve: async (
+        {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
+        _args,
+        {authToken}
+      ) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         const manager = new AtlassianServerManager(accessToken)
@@ -168,16 +167,15 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     jiraFields: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: 'The list of field names that can be used as a ',
       args: {
         cloudId: {
-          type: GraphQLNonNull(GraphQLID),
+          type: new GraphQLNonNull(GraphQLID),
           description: 'Filter the fields to single cloudId'
         }
       },
       resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
-        if (!accessToken) return []
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
         if (fields instanceof Error) return []
@@ -190,7 +188,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
                 if (!VALID_TYPES.includes(field.schema?.type)) return false
                 const fieldName = field.name.toLowerCase()
                 for (let i = 0; i < INVALID_WORDS.length; i++) {
-                  if (fieldName.includes(INVALID_WORDS[i])) return false
+                  if (fieldName.includes(INVALID_WORDS[i]!)) return false
                 }
                 return true
               })
@@ -202,7 +200,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     jiraSearchQueries: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
       resolve: async ({teamId, userId, jiraSearchQueries}: AtlassianAuth) => {

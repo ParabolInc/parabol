@@ -4,15 +4,15 @@ import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {requireSU} from '../../../utils/authorization'
 
 const lockTeams = {
-  type: GraphQLNonNull(GraphQLBoolean),
+  type: new GraphQLNonNull(GraphQLBoolean),
   description: 'Lock/Unlock teams, flagging them as unpaid/paid. Return true if successful',
   args: {
     teamIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLID)),
+      type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
       description: 'List of teams to target'
     },
     isPaid: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true to unlock the teams, false to lock'
     },
     message: {

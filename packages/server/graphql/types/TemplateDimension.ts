@@ -71,7 +71,7 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       resolve: ({description}) => description || ''
     },
     scaleId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The scaleId to resolve the selected scale'
     },
     selectedScale: {

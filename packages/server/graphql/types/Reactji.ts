@@ -7,15 +7,15 @@ const Reactji = new GraphQLObjectType<ReactjiDB, GQLContext>({
   description: 'An aggregate of reactji metadata',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'composite of entity:reactjiId'
     },
     count: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of users who have added this reactji'
     },
     isViewerReactji: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is included in the count, else false'
     }
   })

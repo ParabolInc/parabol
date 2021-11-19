@@ -20,11 +20,7 @@ const filterOutliers = (someArray: number[]) => {
 
 // allDurations is sorted by age, descending
 const getSuggestedDuration = (filteredDurations: number[], allDurations: number[]) => {
-  for (let i = 0; i < allDurations.length; i++) {
-    const curDur = allDurations[i]
-    if (filteredDurations.includes(curDur)) return curDur
-  }
-  return undefined
+  return allDurations.find((duration) => filteredDurations.includes(duration))
 }
 
 export interface GenericMeetingStageInput {
