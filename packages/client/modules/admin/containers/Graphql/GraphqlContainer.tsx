@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import GraphiQL from 'graphiql'
-import {Fetcher} from 'graphiql/dist/components/GraphiQL'
+import {Fetcher} from '@graphiql/toolkit'
 import {ToolbarSelect, ToolbarSelectOption} from 'graphiql/dist/components/ToolbarSelect'
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
