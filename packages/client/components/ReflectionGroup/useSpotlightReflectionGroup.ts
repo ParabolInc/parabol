@@ -1,6 +1,6 @@
 import useSpotlightResults from '~/hooks/useSpotlightResults'
-import {ReflectionGroup_reflectionGroup} from './../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import {useMemo} from 'react'
+import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
 
 const useSpotlightReflectionGroup = (
   visibleReflections: ReflectionGroup_reflectionGroup['reflections'],
