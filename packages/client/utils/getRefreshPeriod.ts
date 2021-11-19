@@ -16,9 +16,9 @@ export default function getRefreshPeriod(maybeTime) {
   const msElapsed = Date.now() - time.getTime() || 0
   const threshKeys = Object.keys(thresholds)
   for (let i = 1; i < threshKeys.length; i++) {
-    const thresh = thresholds[threshKeys[i]]
+    const thresh = thresholds[threshKeys[i]!]
     if (msElapsed < thresh) {
-      const largestUnit = thresholds[threshKeys[i - 1]]
+      const largestUnit = thresholds[threshKeys[i - 1]!]
       const timeToNext = largestUnit - (msElapsed % largestUnit)
       return msElapsed > thresholds.minute ? timeToNext : thresholds.minute
     }

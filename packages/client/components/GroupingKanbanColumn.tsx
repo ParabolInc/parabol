@@ -178,10 +178,10 @@ const GroupingKanbanColumn = (props: Props) => {
                     <Suspense key={reflectionGroup.id} fallback={''}>
                       <ReflectionGroup
                         dataCy={`${question}-group-${idx}`}
-                        meeting={meeting}
+                        meetingRef={meeting}
                         openSpotlight={openSpotlight}
                         phaseRef={phaseRef}
-                        reflectionGroup={reflectionGroup}
+                        reflectionGroupRef={reflectionGroup}
                         swipeColumn={swipeColumn}
                       />
                     </Suspense>
