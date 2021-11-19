@@ -216,7 +216,7 @@ export const resolveFilterByTeam = (
   getTeamId: (obj: any) => string
 ) => async (source: any, _args: any, context: GQLContext) => {
   const {teamIdFilter} = source
-  const resolvedArray = await resolver(source, _args, context)
+  const resolvedArray = await resolver(source, _args: unknown, context)
   return teamIdFilter
     ? resolvedArray.filter((obj: any) => getTeamId(obj) === teamIdFilter)
     : resolvedArray

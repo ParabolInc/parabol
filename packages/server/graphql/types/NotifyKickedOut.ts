@@ -13,7 +13,7 @@ const NotifyKickedOut = new GraphQLObjectType<any, GQLContext>({
     evictor: {
       type: new GraphQLNonNull(User),
       description: 'the user that evicted recipient',
-      resolve: async ({evictorUserId}, _args, {dataLoader}) => {
+      resolve: async ({evictorUserId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(evictorUserId)
       }
     },
@@ -28,7 +28,7 @@ const NotifyKickedOut = new GraphQLObjectType<any, GQLContext>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team the task is on',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     }

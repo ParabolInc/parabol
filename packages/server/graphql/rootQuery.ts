@@ -12,7 +12,7 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     viewer: {
       type: new GraphQLNonNull(User),
-      resolve: async (_source: unknown, _args, {authToken, dataLoader}) => {
+      resolve: async (_source: unknown, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (!viewerId) throw new Error('401 Please log in')
         return dataLoader.get('users').load(viewerId)

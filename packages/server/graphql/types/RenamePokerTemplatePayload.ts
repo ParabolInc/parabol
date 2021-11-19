@@ -11,7 +11,7 @@ const RenamePokerTemplatePayload = new GraphQLObjectType<any, GQLContext>({
     },
     pokerTemplate: {
       type: PokerTemplate,
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         if (!templateId) return null
         return dataLoader.get('meetingTemplates').load(templateId)
       }

@@ -21,7 +21,7 @@ export const PersistGitHubSearchQuerySuccess = new GraphQLObjectType<any, GQLCon
     githubIntegration: {
       type: new GraphQLNonNull(GitHubIntegration),
       description: 'The auth with the updated search queries',
-      resolve: async ({teamId, userId}: Source, _args, {dataLoader}) => {
+      resolve: async ({teamId, userId}: Source, _args: unknown, {dataLoader}) => {
         return dataLoader.get('githubAuth').load({teamId, userId})
       }
     }

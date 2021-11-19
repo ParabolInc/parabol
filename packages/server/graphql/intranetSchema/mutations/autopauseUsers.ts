@@ -9,7 +9,7 @@ const autopauseUsers = {
   type: GraphQLInt,
   description:
     'automatically pause users that have been inactive for 30 days. returns the number of users paused',
-  resolve: async (_source: unknown, _args, {authToken}) => {
+  resolve: async (_source: unknown, _args: unknown, {authToken}) => {
     const r = await getRethink()
 
     // AUTH

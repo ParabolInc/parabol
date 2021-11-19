@@ -28,7 +28,7 @@ const InviteToTeamPayload = new GraphQLObjectType<any, GQLContext>({
     teamInvitationNotification: {
       type: NotificationTeamInvitation,
       description: 'The notification sent to the invitee if they are a parabol user',
-      resolve: ({teamInvitationNotificationId}, _args, {dataLoader}) => {
+      resolve: ({teamInvitationNotificationId}, _args: unknown, {dataLoader}) => {
         return teamInvitationNotificationId
           ? dataLoader.get('notifications').load(teamInvitationNotificationId)
           : null

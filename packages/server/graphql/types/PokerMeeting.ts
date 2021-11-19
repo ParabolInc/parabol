@@ -21,7 +21,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PokerMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
-      resolve: ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: ({id: meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
       }
     },
@@ -33,7 +33,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
     settings: {
       type: new GraphQLNonNull(PokerMeetingSettings),
       description: 'The settings that govern the Poker meeting',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'poker'})
       }
     },
@@ -70,7 +70,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
     viewerMeetingMember: {
       type: PokerMeetingMember,
       description: 'The Poker meeting member of the viewer',
-      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
+      resolve: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}: GQLContext) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)

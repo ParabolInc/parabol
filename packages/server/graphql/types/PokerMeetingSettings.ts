@@ -27,7 +27,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
     teamTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PokerTemplate))),
       description: 'The list of templates used to start a Poker meeting',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         const templates = await dataLoader
           .get('meetingTemplatesByType')
           .load({teamId, meetingType: 'poker'})

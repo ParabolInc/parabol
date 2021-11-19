@@ -12,7 +12,7 @@ export default {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
   type: DisconnectSocketPayload,
-  resolve: async (_source: unknown, _args, {authToken, socketId}: GQLContext) => {
+  resolve: async (_source: unknown, _args: unknown, {authToken, socketId}: GQLContext) => {
     // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
     const redis = getRedis()
 

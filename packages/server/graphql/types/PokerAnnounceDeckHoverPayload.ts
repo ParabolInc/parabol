@@ -19,7 +19,7 @@ export const PokerAnnounceDeckHoverSuccess = new GraphQLObjectType<any, GQLConte
     },
     user: {
       type: new GraphQLNonNull(User),
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     },

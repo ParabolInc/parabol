@@ -47,7 +47,7 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
     options: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PollOption))),
       description: 'A list of all the poll options related to this poll',
-      resolve: async ({id: pollId}, _args, {dataLoader}) => {
+      resolve: async ({id: pollId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('pollOptions').load(pollId)
       }
     }

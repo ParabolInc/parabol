@@ -16,7 +16,7 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
     prompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts that are part of this template',
-      resolve: async ({id: templateId}, _args, {dataLoader}) => {
+      resolve: async ({id: templateId}, _args: unknown, {dataLoader}) => {
         const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
         return prompts
           .filter((prompt: RetrospectivePrompt) => !prompt.removedAt)

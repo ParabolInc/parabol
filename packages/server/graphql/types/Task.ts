@@ -38,7 +38,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',
-      resolve: async ({discussionId}, _args, {dataLoader}) => {
+      resolve: async ({discussionId}, _args: unknown, {dataLoader}) => {
         if (!discussionId) return null
         const discussion = await dataLoader.get('discussions').load(discussionId)
         if (!discussion) return null
@@ -54,7 +54,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     createdByUser: {
       type: new GraphQLNonNull(require('./User').default),
       description: 'The user that created the item',
-      resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
+      resolve: ({createdBy}, _args: unknown, {dataLoader}: GQLContext) => {
         return dataLoader.get('users').load(createdBy)
       }
     },
@@ -65,7 +65,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     estimates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEstimate))),
       description: 'A list of the most recent estimates for the task',
-      resolve: async ({id: taskId, integration, teamId}: DBTask, _args, {dataLoader}) => {
+      resolve: async ({id: taskId, integration, teamId}: DBTask, _args: unknown, {dataLoader}) => {
         if (integration?.service === 'jira') {
           const {accessUserId, cloudId, issueKey} = integration
           // this dataloader has the side effect of guaranteeing fresh estimates
@@ -85,7 +85,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     integration: {
       type: TaskIntegration,
       description: 'The reference to the single source of truth for this task',
-      resolve: async ({integration, teamId, id: taskId}: DBTask, _args, context, info) => {
+      resolve: async ({integration, teamId, id: taskId}: DBTask, _args: unknown, context, info) => {
         const {dataLoader} = context
         if (!integration) return null
         const {accessUserId} = integration
@@ -212,7 +212,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team this task belongs to',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
@@ -233,7 +233,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: require('./User').default,
       description: 'The user the task is assigned to. Null if it is not assigned to anyone.',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         if (!userId) return null
         return dataLoader.get('users').load(userId)
       }

@@ -50,13 +50,13 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     meeting: {
       type: new GraphQLNonNull(RetrospectiveMeeting),
       description: 'The retrospective meeting this reflection was created in',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     prompt: {
       type: new GraphQLNonNull(ReflectPrompt),
-      resolve: ({promptId}, _args, {dataLoader}) => {
+      resolve: ({promptId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('reflectPrompts').load(promptId)
       }
     },
@@ -66,7 +66,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     },
     reflections: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
-      resolve: async ({id: reflectionGroupId, meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: reflectionGroupId, meetingId}, _args: unknown, {dataLoader}) => {
         // use meetingId so we only hit the DB once instead of once per group
         const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         const filteredReflections = reflections.filter(
@@ -90,7 +90,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     team: {
       type: Team,
       description: 'The team that is running the retro',
-      resolve: async ({meetingId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return dataLoader.get('teams').load(meeting.teamId)
       }
@@ -125,7 +125,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     viewerVoteCount: {
       type: GraphQLInt,
       description: 'The number of votes the viewer has given this group',
-      resolve: ({voterIds}, _args, {authToken}) => {
+      resolve: ({voterIds}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return voterIds
           ? voterIds.reduce(

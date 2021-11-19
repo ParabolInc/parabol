@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
@@ -23,7 +24,7 @@ const lockTeams = {
   resolve: async (
     _source: unknown,
     {message, teamIds, isPaid}: {teamIds: string[]; isPaid: boolean; message?: string},
-    {authToken}
+    {authToken}: GQLContext
   ) => {
     const r = await getRethink()
 

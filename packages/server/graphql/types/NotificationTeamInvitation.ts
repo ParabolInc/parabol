@@ -22,7 +22,7 @@ const NotificationTeamInvitation = new GraphQLObjectType<any, GQLContext>({
     invitation: {
       description: 'The invitation that triggered this notification',
       type: new GraphQLNonNull(TeamInvitation),
-      resolve: async ({invitationId}, _args, {dataLoader}) => {
+      resolve: async ({invitationId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teamInvitations').load(invitationId)
       }
     },

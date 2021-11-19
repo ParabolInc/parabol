@@ -45,7 +45,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
     commentCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments contained in the thread',
-      resolve: async ({id: discussionId}, _args, {dataLoader}) => {
+      resolve: async ({id: discussionId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('commentCountByDiscussionId').load(discussionId)
       }
     },
@@ -73,7 +73,7 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
           description: 'the incrementing sort order in string format'
         }
       },
-      resolve: async ({id: discussionId}, _args, {dataLoader}) => {
+      resolve: async ({id: discussionId}, _args: unknown, {dataLoader}) => {
         return resolveThreadableConnection(discussionId, {dataLoader})
       }
     }

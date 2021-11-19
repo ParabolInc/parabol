@@ -41,14 +41,14 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
       description: 'The list of templates used to start a retrospective',
       deprecatedReason: 'renamed to teamTemplates',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingTemplatesByType').load({teamId, meetingType: 'retrospective'})
       }
     },
     teamTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
       description: 'The list of templates used to start a retrospective',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         const templates = await dataLoader
           .get('meetingTemplatesByType')
           .load({teamId, meetingType: 'retrospective' as MeetingTypeEnum})

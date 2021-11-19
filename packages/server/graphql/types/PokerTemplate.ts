@@ -17,7 +17,7 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
     dimensions: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateDimension))),
       description: 'The dimensions that are part of this template',
-      resolve: async ({id: templateId}, _args, {dataLoader}) => {
+      resolve: async ({id: templateId}, _args: unknown, {dataLoader}) => {
         const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
         const activeDimensions = dimensions.filter(({removedAt}: {removedAt: Date}) => !removedAt)
         return activeDimensions

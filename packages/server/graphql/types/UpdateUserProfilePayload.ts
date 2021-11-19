@@ -19,7 +19,7 @@ const UpdateUserProfilePayload = new GraphQLObjectType<any, GQLContext>({
     teamMembers: {
       type: new GraphQLList(new GraphQLNonNull(TeamMember)),
       description: 'The updated team member',
-      resolve: ({teamIds, userId}, _args, {dataLoader}) => {
+      resolve: ({teamIds, userId}, _args: unknown, {dataLoader}) => {
         if (!teamIds) return []
         const teamMemberIds = teamIds.map((teamId: string) => toTeamMemberId(teamId, userId))
         return dataLoader.get('teamMembers').loadMany(teamMemberIds)

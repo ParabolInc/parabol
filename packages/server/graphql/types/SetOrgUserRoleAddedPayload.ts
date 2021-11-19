@@ -16,7 +16,7 @@ const SetOrgUserRoleAddedPayload: GraphQLObjectType<any, GQLContext> = new Graph
     notificationsAdded: {
       type: new GraphQLList(Notification),
       description: 'If promoted, notify them and give them all other admin notifications',
-      resolve: async ({notificationIdsAdded}, _args, {authToken, dataLoader}) => {
+      resolve: async ({notificationIdsAdded}, _args: unknown, {authToken, dataLoader}) => {
         if (!notificationIdsAdded) return []
         const viewerId = getUserId(authToken)
         const notifications = (

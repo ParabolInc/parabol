@@ -39,7 +39,7 @@ const stop = () => {
 const profileCPU = {
   type: GraphQLString,
   description: 'profile the CPU',
-  resolve: async (_source: unknown, _args, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
     // AUTH
     requireSU(authToken)
     if (!session) {

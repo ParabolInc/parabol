@@ -3,7 +3,7 @@ import {GQLContext} from '../../graphql'
 
 const resolveSelectedTemplate = (fallbackTemplateId: string) => async (
   source,
-  _args,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   const {id: settingsId, selectedTemplateId} = source

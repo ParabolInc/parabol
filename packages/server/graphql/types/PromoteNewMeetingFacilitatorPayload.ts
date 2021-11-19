@@ -19,7 +19,7 @@ const PromoteNewMeetingFacilitatorPayload = new GraphQLObjectType<any, GQLContex
     },
     facilitatorStage: {
       type: NewMeetingStage,
-      resolve: async ({meetingId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {facilitatorStageId} = meeting
         return resolveGQLStageFromId(facilitatorStageId, meeting)

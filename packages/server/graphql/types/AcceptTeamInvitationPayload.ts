@@ -33,14 +33,14 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
     },
     notifications: {
       type: NotificationTeamInvitation,
-      resolve: ({notificationId}, _args, {dataLoader}) => {
+      resolve: ({notificationId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('notifications').load(notificationId)
       }
     },
     teamLead: {
       type: User,
       description: 'For payloads going to the team leader that got new suggested actions',
-      resolve: async ({teamLeadId}, _args, {dataLoader}) => {
+      resolve: async ({teamLeadId}, _args: unknown, {dataLoader}) => {
         return teamLeadId ? dataLoader.get('users').load(teamLeadId) : null
       }
     }

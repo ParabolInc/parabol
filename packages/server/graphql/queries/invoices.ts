@@ -11,7 +11,7 @@ export default {
   type: InvoiceConnection,
   args: {
     first: {
-      type: GraphQLInt
+      type: new GraphQLNonNull(GraphQLInt)
     },
     after: {
       type: GraphQLISO8601Type,
@@ -24,7 +24,7 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {orgId, first = 0, after}: {orgId: string; first: number; after?: Date},
+    {orgId, first, after}: {orgId: string; first: number; after?: Date},
     {authToken, dataLoader}: GQLContext
   ) {
     const r = await getRethink()

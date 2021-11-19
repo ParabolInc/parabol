@@ -19,7 +19,7 @@ const RemoveSlackAuthPayload = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: User,
       description: 'The user with updated slackAuth',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     }
