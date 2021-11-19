@@ -25,7 +25,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {isUnvote, reflectionGroupId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {

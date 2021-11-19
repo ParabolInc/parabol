@@ -13,7 +13,7 @@ export default {
       description: 'The meeting ID'
     }
   },
-  async resolve(_source, {meetingId}, {authToken, dataLoader}) {
+  async resolve(_source: unknown, {meetingId}, {authToken, dataLoader}) {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {

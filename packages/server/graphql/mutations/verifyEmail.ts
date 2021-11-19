@@ -25,7 +25,7 @@ export default {
   resolve: rateLimit({
     perMinute: 50,
     perHour: 100
-  })(async (_source, {verificationToken}, context) => {
+  })(async (_source: unknown, {verificationToken}, context) => {
     const r = await getRethink()
     const now = new Date()
     const emailVerification = (await r

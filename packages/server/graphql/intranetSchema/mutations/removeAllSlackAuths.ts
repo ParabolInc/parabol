@@ -7,7 +7,7 @@ import {GQLContext} from '../../graphql'
 const removeAllSlackAuths = {
   type: new GraphQLNonNull(RemoveAllSlackAuthsPayload),
   description: 'Remove Slack integrations for all users',
-  resolve: async (_source, _args, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, _args, {authToken}: GQLContext) => {
     const r = await getRethink()
     const now = new Date()
     //AUTH

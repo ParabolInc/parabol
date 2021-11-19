@@ -32,7 +32,7 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 2, perHour: 8})(
-    async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+    async (_source: unknown, args, {authToken, dataLoader, socketId: mutatorId}) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 

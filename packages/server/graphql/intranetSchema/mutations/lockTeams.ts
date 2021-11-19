@@ -21,7 +21,7 @@ const lockTeams = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {message, teamIds, isPaid}: {teamIds: string[]; isPaid: boolean; message?: string},
     {authToken}
   ) => {

@@ -103,7 +103,7 @@ const runScheduledJobs = {
     //   description: 'filter jobs by their type'
     // }
   },
-  resolve: async (_source, {seconds}, {authToken}) => {
+  resolve: async (_source: unknown, {seconds}, {authToken}) => {
     const r = await getRethink()
     const now = new Date()
     // AUTH

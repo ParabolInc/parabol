@@ -42,7 +42,7 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 60, perHour: 1800})(
-    async (_source, {token}, {dataLoader}: GQLContext) => {
+    async (_source: unknown, {token}, {dataLoader}: GQLContext) => {
       const r = await getRethink()
       const now = new Date()
       const teamInvitation = await r

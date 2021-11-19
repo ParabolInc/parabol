@@ -15,7 +15,7 @@ const AddFeatureFlagPayload = new GraphQLObjectType<any, GQLContext>({
       type: User,
       description:
         'the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users',
-      resolve: (_source, _args, {authToken}) => {
+      resolve: (_source: unknown, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return db.read('User', viewerId)
       }

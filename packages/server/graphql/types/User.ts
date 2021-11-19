@@ -266,7 +266,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
       },
       description: 'the comments and tasks created from the discussion',
-      resolve: async (_source, {id}, {authToken, dataLoader}) => {
+      resolve: async (_source: unknown, {id}, {authToken, dataLoader}) => {
         const discussion = await dataLoader.get('discussions').load(id)
         if (!discussion) return null
         const {teamId} = discussion
@@ -605,7 +605,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description: 'The other user'
         }
       },
-      resolve: async (_source, {userId}, {authToken, dataLoader}) => {
+      resolve: async (_source: unknown, {userId}, {authToken, dataLoader}) => {
         const userOnTeam = await dataLoader.get('users').load(userId)
         // const teams = new Set(userOnTeam)
         const {tms} = userOnTeam

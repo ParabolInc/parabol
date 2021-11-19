@@ -20,7 +20,7 @@ const updateOAuthRefreshTokens = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {updatedBefore}: UpdateOAuthRefreshTokensInput,
     {authToken, dataLoader}: GQLContext
   ) => {

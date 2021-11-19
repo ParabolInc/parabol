@@ -180,7 +180,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {newTask}: {newTask: CreateTaskInputType},
     context: GQLContext,
     info: GraphQLResolveInfo

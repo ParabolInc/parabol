@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull, GraphQLInt} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import Invoice from '../../database/types/Invoice'
@@ -21,7 +22,11 @@ export default {
       description: 'The id of the organization'
     }
   },
-  async resolve(_source, {orgId, first, after}, {authToken, dataLoader}) {
+  async resolve(
+    _source: unknown,
+    {orgId, first = 0, after}: {orgId: string; first: number; after?: Date},
+    {authToken, dataLoader}: GQLContext
+  ) {
     const r = await getRethink()
 
     // AUTH
