@@ -1,19 +1,34 @@
 import React, {RefObject, Suspense, useRef} from 'react'
+import graphql from 'babel-plugin-relay/macro'
 import spotlightGroupsQuery, {
   SpotlightGroupsQuery
 } from '../__generated__/SpotlightGroupsQuery.graphql'
 import SpotlightGroups from './SpotlightGroups'
 import useQueryLoaderNow from '~/hooks/useQueryLoaderNow'
+import {SpotlightResultsRoot_meeting$key} from '../__generated__/SpotlightResultsRoot_meeting.graphql'
+import {useFragment} from 'react-relay'
 
 interface Props {
-  spotlightGroupId?: string
+  meetingRef: SpotlightResultsRoot_meeting$key
   phaseRef: RefObject<HTMLDivElement>
-  meetingId: string
-  spotlightSearchQuery: string
 }
 
 const SpotlightResultsRoot = (props: Props) => {
-  const {meetingId, spotlightGroupId, phaseRef, spotlightSearchQuery} = props
+  const {meetingRef, phaseRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment SpotlightResultsRoot_meeting on RetrospectiveMeeting {
+        id
+        spotlightGroup {
+          id
+        }
+        spotlightSearchQuery
+      }
+    `,
+    meetingRef
+  )
+  const {id: meetingId, spotlightGroup, spotlightSearchQuery} = meeting
+  const spotlightGroupId = spotlightGroup?.id
   const groupIdRef = useRef('')
   const nextGroupId = spotlightGroupId ?? ''
   if (nextGroupId) {
@@ -21,7 +36,7 @@ const SpotlightResultsRoot = (props: Props) => {
   }
   const variables = {
     reflectionGroupId: groupIdRef.current,
-    searchQuery: spotlightSearchQuery,
+    searchQuery: spotlightSearchQuery ?? '',
     meetingId
   }
   const queryRef = useQueryLoaderNow<SpotlightGroupsQuery>(

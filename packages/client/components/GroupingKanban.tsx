@@ -131,7 +131,7 @@ const GroupingKanban = (props: Props) => {
       {modalPortal(
         <SpotlightModal
           closeSpotlight={onCloseSpotlight}
-          meeting={meeting}
+          meetingRef={meeting}
           sourceRef={sourceRef}
           portalStatus={portalStatus}
         />
@@ -145,6 +145,7 @@ export default createFragmentContainer(GroupingKanban, {
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
       ...ReflectionGroup_meeting
+      ...SpotlightModal_meeting
       id
       spotlightSearchQuery
       teamId

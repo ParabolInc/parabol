@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
@@ -7,10 +8,11 @@ import SpotlightTopBar from './SpotlightTopBar'
 import SpotlightSearchBar from './SpotlightSearchBar'
 import SpotlightSourceGroup from './SpotlightSourceGroup'
 import {PALETTE} from '../styles/paletteV3'
-import {GroupingKanban_meeting$data} from '../__generated__/GroupingKanban_meeting.graphql'
+import {SpotlightModal_meeting$key} from '../__generated__/SpotlightModal_meeting.graphql'
 import {BezierCurve, Breakpoint, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
 import {PortalStatus} from '~/hooks/usePortal'
+import {useFragment} from 'react-relay'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
@@ -49,16 +51,33 @@ const SourceSection = styled('div')({
 })
 interface Props {
   closeSpotlight: () => void
-  meeting: GroupingKanban_meeting$data
+  meetingRef: SpotlightModal_meeting$key
   sourceRef: RefObject<HTMLDivElement>
   portalStatus: number
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, sourceRef, portalStatus} = props
+  const {closeSpotlight, meetingRef, sourceRef, portalStatus} = props
+  const meeting = useFragment(
+    graphql`
+      fragment SpotlightModal_meeting on RetrospectiveMeeting {
+        spotlightGroup {
+          id
+          reflections {
+            id
+          }
+        }
+        spotlightReflectionId
+        ...SpotlightSearchBar_meeting
+        ...SpotlightResultsRoot_meeting
+        ...SpotlightSourceGroup_meeting
+      }
+    `,
+    meetingRef
+  )
   const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
-  const {id: meetingId, spotlightGroup, spotlightReflectionId, spotlightSearchQuery} = meeting
+  const {spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
   const spotlightGroupId = spotlightGroup?.id
   const groupIdRef = useRef('')
@@ -97,22 +116,14 @@ const SpotlightModal = (props: Props) => {
       <SourceSection>
         <SpotlightTopBar closeSpotlight={closeSpotlight} />
         <SpotlightSourceGroup
-          meeting={meeting}
+          meetingRef={meeting}
           sourceRef={sourceRef}
           modalRef={modalRef}
           reflectionIdsToHideRef={reflectionIdsToHideRef}
         />
-        <SpotlightSearchBar
-          meetingId={meetingId}
-          spotlightSearchQuery={spotlightSearchQuery || ''}
-        />
+        <SpotlightSearchBar meetingRef={meeting} />
       </SourceSection>
-      <SpotlightResultsRoot
-        phaseRef={modalRef}
-        meetingId={meetingId}
-        spotlightGroupId={spotlightGroupId}
-        spotlightSearchQuery={spotlightSearchQuery || ''}
-      />
+      <SpotlightResultsRoot phaseRef={modalRef} meetingRef={meeting} />
     </Modal>
   )
 }

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
@@ -6,7 +7,8 @@ import MenuItemLabel from './MenuItemLabel'
 import Icon from './Icon'
 import {ElementHeight, ElementWidth} from '../types/constEnums'
 import Atmosphere from '../Atmosphere'
-import {commitLocalUpdate} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
+import {SpotlightSearchBar_meeting$key} from '../__generated__/SpotlightSearchBar_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import React, {useRef} from 'react'
 
@@ -59,12 +61,21 @@ const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: st
 }
 
 interface Props {
-  meetingId: string
-  spotlightSearchQuery: string
+  meetingRef: SpotlightSearchBar_meeting$key
 }
 
 const SpotlightSearchBar = (props: Props) => {
-  const {meetingId, spotlightSearchQuery} = props
+  const {meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment SpotlightSearchBar_meeting on RetrospectiveMeeting {
+        id
+        spotlightSearchQuery
+      }
+    `,
+    meetingRef
+  )
+  const {id: meetingId, spotlightSearchQuery} = meeting
   const atmosphere = useAtmosphere()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
