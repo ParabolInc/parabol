@@ -44,7 +44,7 @@
     "cross-env": "^5.1.6",
     "css-loader": "5.0.1",
     "dynamic-serializer": "^0.2.1",
-    "eslint": "^6.6.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-emotion": "^10.0.14",
     "eslint-plugin-prettier": "^3.1.1",
