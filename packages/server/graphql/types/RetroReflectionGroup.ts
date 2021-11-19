@@ -128,7 +128,10 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
       resolve: ({voterIds}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return voterIds
-          ? voterIds.reduce((sum, voterId) => (voterId === viewerId ? sum + 1 : sum), 0)
+          ? voterIds.reduce(
+              (sum: number, voterId: string) => (voterId === viewerId ? sum + 1 : sum),
+              0
+            )
           : 0
       }
     }

@@ -13,7 +13,7 @@ import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
-import TaskStatusEnum from '../types/TaskStatusEnum'
+import TaskStatusEnum, {TaskStatusEnumType} from '../types/TaskStatusEnum'
 import connectionFromTasks from './helpers/connectionFromTasks'
 
 const getValidTeamIds = (teamIds: null | string[], tms: string[]) => {
@@ -85,8 +85,26 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {first, after, userIds, teamIds, archived, statusFilters, filterQuery, includeUnassigned},
+    _source: unknown,
+    {
+      first,
+      after,
+      userIds,
+      teamIds,
+      archived,
+      statusFilters,
+      filterQuery,
+      includeUnassigned
+    }: {
+      first: number
+      after?: Date
+      userIds: string[]
+      teamIds: string[]
+      archived?: boolean
+      statusFilters: TaskStatusEnumType[]
+      filterQuery?: string
+      includeUnassigned?: boolean
+    },
     {authToken, dataLoader}: GQLContext
   ) {
     // AUTH
@@ -96,7 +114,7 @@ export default {
       const err = new Error('Task filter is too broad')
       standardError(err, {
         userId: viewerId,
-        tags: {userIds, teamIds}
+        tags: {userIds: JSON.stringify(userIds), teamIds: JSON.stringify(teamIds)}
       })
       return connectionFromTasks([], 0, err)
     }

@@ -75,7 +75,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         'The hash and expiration for a token that allows anyone with it to join the team',
       resolve: async (
         {id: teamId}: {id: string},
-        {meetingId}: {meetingId: string},
+        {meetingId}: {meetingId: string | undefined},
         {authToken, dataLoader}: GQLContext
       ) => {
         if (!isTeamMember(authToken, teamId)) return null

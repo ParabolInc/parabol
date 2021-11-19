@@ -1,3 +1,4 @@
+import {IGetLatestTaskEstimatesQueryResult} from './../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {
   GraphQLFloat,
   GraphQLID,
@@ -132,9 +133,11 @@ const Task = new GraphQLObjectType<any, GQLContext>({
               sendToSentry(labelsError, {userId: accessUserId})
             }
           } else if (estimates.length) {
-            const ghIssueLabels = labelsData.repository.issue.labels.nodes.map(({name}) => name)
+            const ghIssueLabels = labelsData.repository.issue.labels.nodes.map(
+              ({name}: {name: string}) => name
+            )
             await Promise.all(
-              estimates.map(async (estimate) => {
+              estimates.map(async (estimate: IGetLatestTaskEstimatesQueryResult) => {
                 const {githubLabelName, name: dimensionName} = estimate
                 const existingLabel = ghIssueLabels.includes(githubLabelName)
                 if (existingLabel) return

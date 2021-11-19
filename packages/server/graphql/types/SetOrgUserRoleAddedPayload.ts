@@ -5,7 +5,10 @@ import {GQLContext} from '../graphql'
 import Notification from './Notification'
 import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
 
-const SetOrgUserRoleAddedPayload = new GraphQLObjectType<any, GQLContext>({
+const SetOrgUserRoleAddedPayload: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<
+  any,
+  GQLContext
+>({
   name: 'SetOrgUserRoleAddedPayload',
   interfaces: () => [SetOrgUserRolePayload],
   fields: () => ({

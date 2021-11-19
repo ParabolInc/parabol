@@ -5,6 +5,7 @@ import RetrospectiveMeeting from './RetrospectiveMeeting'
 import ReflectPhase from './ReflectPhase'
 import {REFLECT} from 'parabol-client/utils/constants'
 import {GQLContext} from '../graphql'
+import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 
 const SetPhaseFocusPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetPhaseFocusPayload',
@@ -20,7 +21,7 @@ const SetPhaseFocusPayload = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(ReflectPhase),
       resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        return meeting.phases.find((phase) => phase.phaseType === REFLECT)
+        return meeting.phases.find((phase: GenericMeetingPhase) => phase.phaseType === REFLECT)
       }
     }
   })

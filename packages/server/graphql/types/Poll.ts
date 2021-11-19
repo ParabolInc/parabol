@@ -1,5 +1,5 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import {GQLContext} from '../graphql'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
 import PollOption from './PollOption'
@@ -16,7 +16,7 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
     createdByUser: {
       type: new GraphQLNonNull(User),
       description: 'The user that created the item',
-      resolve: ({createdById}, _args, {dataLoader}: GQLContext) => {
+      resolve: ({createdById}: {createdById: string}, _args: unknown, {dataLoader}: GQLContext) => {
         return dataLoader.get('users').load(createdById)
       }
     },
@@ -36,7 +36,7 @@ const Poll = new GraphQLObjectType<any, GQLContext>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team this poll belongs to',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}: {teamId: string}, _args: unknown, {dataLoader}: GQLContext) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
