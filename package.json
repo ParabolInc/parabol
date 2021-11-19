@@ -37,7 +37,7 @@
     "dev": "node scripts/dev.js && pm2-runtime start pm2.dev.config.js",
     "lint": "lerna run --parallel lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
-    "typecheck": "lerna run --parallel typecheck",
+    "typecheck": "lerna run --parallel --no-bail typecheck",
     "update-schema": "node scripts/updateSchemaCLI.js",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000"
   },
