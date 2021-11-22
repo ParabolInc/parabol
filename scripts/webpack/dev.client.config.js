@@ -120,8 +120,7 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
-      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT),
-      __STATIC_IMAGES__: JSON.stringify(`/static/images`)
+      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
     }),
     new webpack.HotModuleReplacementPlugin()
   ],

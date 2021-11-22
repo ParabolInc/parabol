@@ -110,13 +110,13 @@ const useInnerWidth = () => {
 const NewMeeting = (props: Props) => {
   const {teamId, viewer, retry} = props
   const {teams} = viewer
-  const newMeetingOrder = ['poker', 'retrospective', 'action']
+  const newMeetingOrder = ['poker', 'retrospective', 'action'] as const
 
   useStoreQueryRetry(retry)
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
-  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
+  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)]
   const sendToMeRef = useRef(false)
   useEffect(() => {
     if (!teamId) {

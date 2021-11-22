@@ -6,7 +6,7 @@ import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
 import DialogContainer from './DialogContainer'
-
+import paymentSuccessSvg from '../../../static/images/illustrations/conversion_prompt-payment_success.svg'
 const Illustration = styled('img')({
   display: 'block ',
   maxWidth: 256
@@ -43,9 +43,7 @@ const UpgradeSuccess = (props: Props) => {
   const {closePortal} = props
   return (
     <Container>
-      <Illustration
-        src={`${__STATIC_IMAGES__}/illustrations/conversion_prompt-payment_success.svg`}
-      />
+      <Illustration src={paymentSuccessSvg} />
       <StyledDialogTitle>{'Upgraded!'}</StyledDialogTitle>
       <InvitationDialogCopy>{'Your organization is'}</InvitationDialogCopy>
       <InvitationDialogCopy>
