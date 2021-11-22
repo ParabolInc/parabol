@@ -3,7 +3,6 @@ import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sseClients from '../sseClients'
 import publishInternalGQL from '../utils/publishInternalGQL'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
-import closeWRTC from '../wrtc/signalServer/closeWRTC'
 
 interface Options {
   exitCode?: number
@@ -26,7 +25,6 @@ const handleDisconnect = (connectionContext: ConnectionContext, options: Options
   // check if isClosing & if isClosing bail
   clearInterval(cancelKeepAlive!)
   relayUnsubscribeAll(connectionContext)
-  closeWRTC(socket as any)
   publishInternalGQL({authToken, ip, query, socketId})
   if (connectionContext.id.startsWith('sse')) {
     sseClients.delete(connectionContext.id)
