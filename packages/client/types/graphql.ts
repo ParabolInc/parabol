@@ -51269,9 +51269,14 @@ export interface IUserFeatureFlags {
   jira: boolean;
 
   /**
-   * true if jira is allowed
+   * true if poker is allowed
    */
   poker: boolean;
+
+  /**
+   * true if spotlight is allowed
+   */
+  spotlight: boolean;
 }
 
 /**
@@ -57169,6 +57174,7 @@ export interface IAddFeatureFlagPayload {
 export const enum UserFlagEnum {
   jira = 'jira',
   poker = 'poker',
+  spotlight = 'spotlight',
 }
 
 export interface IAddGitHubAuthPayload {

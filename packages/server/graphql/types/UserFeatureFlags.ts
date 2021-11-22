@@ -12,8 +12,13 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
     },
     poker: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if jira is allowed',
+      description: 'true if poker is allowed',
       resolve: ({poker}) => !!poker
+    },
+    spotlight: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if spotlight is allowed',
+      resolve: ({spotlight}) => !!spotlight
     }
   })
 })
