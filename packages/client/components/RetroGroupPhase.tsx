@@ -38,7 +38,7 @@ const RetroGroupPhase = (props: Props) => {
     const viewer = viewerMeetingMember?.user
     if (!viewer) return
     const {email, featureFlags} = viewer
-    if (!email || featureFlags.spotlight) return
+    if (featureFlags.spotlight) return
     AddFeatureFlagMutation(atmosphere, {emails: [email], flag: 'spotlight'}, {onError, onCompleted})
   })
 
