@@ -1,4 +1,3 @@
-import {GQLContext} from './../../../graphql'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import getRethink from '../../../../database/rethinkDriver'
