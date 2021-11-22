@@ -27,9 +27,12 @@ const NewMeetingCheckInGreeting = (props: Props) => {
   const {teamMember, checkInGreeting} = props
   const {content, language} = checkInGreeting
   const {preferredName} = teamMember
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
-    MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef
+  } = useTooltip(MenuPosition.UPPER_CENTER, {delay: 0})
   return (
     <GreetingBlock>
       <GreetingSpan ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
