@@ -12,6 +12,7 @@ import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
 import {GQLContext} from '../graphql'
 import {RDatum} from '../../database/stricterR'
+import {UserFeatureFlagEnum} from '../types/UserFeatureFlags'
 
 export default {
   type: new GraphQLNonNull(AddFeatureFlagPayload),
@@ -33,7 +34,11 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {emails, domain, flag}: {emails: string[] | null; domain: string | null; flag: string},
+    {
+      emails,
+      domain,
+      flag
+    }: {emails: string[] | null; domain: string | null; flag: UserFeatureFlagEnum},
     {dataLoader}: GQLContext
   ) {
     const operationId = dataLoader.share()

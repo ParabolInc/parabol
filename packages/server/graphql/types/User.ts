@@ -45,7 +45,7 @@ import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
-import UserFeatureFlags from './UserFeatureFlags'
+import UserFeatureFlags, {UserFeatureFlagEnum} from './UserFeatureFlags'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import TeamInvitation from '../../database/types/TeamInvitation'
@@ -83,9 +83,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     featureFlags: {
       type: new GraphQLNonNull(UserFeatureFlags),
       description: 'Any super power given to the user via a super user',
-      resolve: (source: any) => {
-        const featureFlags: string[] = source.featureFlags || []
-        const flagObj: {[key: string]: boolean} = {}
+      resolve: ({featureFlags}: {featureFlags: UserFeatureFlagEnum[]}) => {
+        const flagObj = {} as Record<UserFeatureFlagEnum, boolean>
         featureFlags.forEach((flag) => {
           flagObj[flag] = true
         })

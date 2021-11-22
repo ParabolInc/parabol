@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 
+export type UserFeatureFlagEnum = 'jira' | 'poker' | 'spotlight'
+
 const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
   name: 'UserFeatureFlags',
   description: 'The user account profile',

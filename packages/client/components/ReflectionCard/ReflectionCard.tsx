@@ -99,7 +99,7 @@ const ReflectionCard = (props: Props) => {
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
-  const isSpotlightFlagActive = !!viewerMeetingMember?.user.featureFlags.spotlight
+  const isSpotlightFlagActive = !!viewerMeetingMember?.user?.featureFlags?.spotlight
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
@@ -334,8 +334,6 @@ export default createFragmentContainer(ReflectionCard, {
       viewerMeetingMember {
         user {
           featureFlags {
-            jira
-            poker
             spotlight
           }
         }
