@@ -116,7 +116,7 @@ const NewMeeting = (props: Props) => {
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
-  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)]
+  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
   const sendToMeRef = useRef(false)
   useEffect(() => {
     if (!teamId) {
