@@ -241,7 +241,7 @@ const ReflectionCard = (props: Props) => {
   }
 
   const showSpotlight =
-    isSpotlightFlagActive &&
+    (!__PRODUCTION__ || isSpotlightFlagActive) &&
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&
