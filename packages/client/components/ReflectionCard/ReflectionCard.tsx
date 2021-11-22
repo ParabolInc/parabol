@@ -99,8 +99,7 @@ const ReflectionCard = (props: Props) => {
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
-  const {user} = viewerMeetingMember
-  const {featureFlags} = user
+  const isSpotlightFlagActive = !!viewerMeetingMember?.user.featureFlags.spotlight
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
@@ -242,7 +241,7 @@ const ReflectionCard = (props: Props) => {
   }
 
   const showSpotlight =
-    featureFlags.spotlight &&
+    isSpotlightFlagActive &&
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&

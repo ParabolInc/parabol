@@ -2,7 +2,6 @@ import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import IUser from '../../postgres/types/IUser'
 import db from '../../db'
-import {requireSU} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
 import UserFlagEnum from '../types/UserFlagEnum'
@@ -35,13 +34,10 @@ export default {
   async resolve(
     _source: unknown,
     {emails, domain, flag}: {emails: string[] | null; domain: string | null; flag: string},
-    {authToken, dataLoader}: GQLContext
+    {dataLoader}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId}
-
-    // AUTH
-    requireSU(authToken)
 
     // RESOLUTION
     const users = [] as IUser[]
