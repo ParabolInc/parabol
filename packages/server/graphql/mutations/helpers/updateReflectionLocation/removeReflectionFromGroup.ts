@@ -3,15 +3,13 @@ import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTit
 import dndNoise from '../../../../../client/utils/dndNoise'
 import getRethink from '../../../../database/rethinkDriver'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
+import {GQLContext} from '../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
   const now = new Date()
-  const reflection = await r
-    .table('RetroReflection')
-    .get(reflectionId)
-    .run()
+  const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
   const [oldReflectionGroup, reflectionGroupsInColumn, meeting] = await Promise.all([
@@ -59,6 +57,8 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
       .update({nextAutoGroupThreshold: null})
   }).run()
   // mutates the dataloader response
+  reflection.sortOrder = 0
+  reflection.reflectionGroupId = reflectionGroupId
   meeting.nextAutoGroupThreshold = null
   const oldReflections = await r
     .table('RetroReflection')

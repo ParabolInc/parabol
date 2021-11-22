@@ -50,7 +50,7 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
   opacity: 1,
   position: 'absolute',
   right: 2,
-  visibility: showSpotlight ? 'visible' : 'hidden',
+  visibility: showSpotlight ? 'inherit' : 'hidden',
   zIndex: ZIndex.TOOLTIP,
   ':hover': {
     backgroundColor: PALETTE.SLATE_200

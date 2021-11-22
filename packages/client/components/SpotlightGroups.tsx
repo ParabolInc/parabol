@@ -98,9 +98,9 @@ const SpotlightGroups = (props: Props) => {
             {row.map((group) => (
               <ReflectionGroup
                 key={group.id}
-                meeting={meeting!}
+                meetingRef={meeting!}
                 phaseRef={phaseRef}
-                reflectionGroup={group}
+                reflectionGroupRef={group}
                 expandedReflectionGroupPortalParentId='spotlight'
               />
             ))}
