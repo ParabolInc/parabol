@@ -73,7 +73,11 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
           description: 'the incrementing sort order in string format'
         }
       },
-      resolve: async ({id: discussionId}, _args: unknown, {dataLoader}) => {
+      resolve: async (
+        {id: discussionId}: {id: string},
+        _args: unknown,
+        {dataLoader}: GQLContext
+      ) => {
         return resolveThreadableConnection(discussionId, {dataLoader})
       }
     }

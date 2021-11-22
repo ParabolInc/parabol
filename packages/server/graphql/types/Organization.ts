@@ -140,7 +140,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         }
       },
       type: new GraphQLNonNull(OrganizationUserConnection),
-      resolve: async ({id: orgId}, _args: unknown, {dataLoader}) => {
+      resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         organizationUsers.sort((a: OrganizationUser, b: OrganizationUser) =>
           a.orgId > b.orgId ? 1 : -1
@@ -163,7 +163,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     orgUserCount: {
       type: new GraphQLNonNull(OrgUserCount),
       description: 'The count of active & inactive users',
-      resolve: async ({id: orgId}, _args: unknown, {dataLoader}) => {
+      resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const inactiveUserCount = organizationUsers.filter(
           ({inactive}: OrganizationUser) => inactive
@@ -177,7 +177,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     billingLeaders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
-      resolve: async ({id: orgId}, _args: unknown, {dataLoader}) => {
+      resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const billingLeaderUserIds = organizationUsers
           .filter(

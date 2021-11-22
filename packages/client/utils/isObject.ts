@@ -1,3 +1,3 @@
 export default function isObject(val: unknown) {
-  return val && typeof val === 'object'
+  return !!(val && typeof val === 'object')
 }

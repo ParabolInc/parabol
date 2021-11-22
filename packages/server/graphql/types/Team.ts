@@ -22,7 +22,6 @@ import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
-import IMeetingTypeEnum from '../../database/types/Meeting'
 import NewMeeting from './NewMeeting'
 import Organization from './Organization'
 import ReflectPrompt from './ReflectPrompt'
@@ -75,7 +74,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         'The hash and expiration for a token that allows anyone with it to join the team',
       resolve: async (
         {id: teamId}: {id: string},
-        {meetingId}: {meetingId: string | undefined},
+        {meetingId},
         {authToken, dataLoader}: GQLContext
       ) => {
         if (!isTeamMember(authToken, teamId)) return null
@@ -178,7 +177,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'The team-specific settings for running all available types of meetings',
       resolve: async (
         {id: teamId}: {id: string},
-        {meetingType}: {meetingType: IMeetingTypeEnum},
+        {meetingType},
         {authToken, dataLoader}: GQLContext
       ) => {
         // the implicit business logic says client will never request settings for a foregin team
@@ -197,7 +196,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       },
       resolve: async (
         {id: teamId}: {id: string},
-        {scaleId}: {scaleId: string},
+        {scaleId},
         {authToken, dataLoader}: GQLContext
       ) => {
         const viewerId = getUserId(authToken)
@@ -248,7 +247,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       },
       resolve: async (
         {id: teamId}: {id: string},
-        {meetingId}: {meetingId: string},
+        {meetingId},
         {authToken, dataLoader}: GQLContext
       ) => {
         if (!isTeamMember(authToken, teamId)) return null

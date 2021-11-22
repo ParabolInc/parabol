@@ -9,7 +9,11 @@ const SuProOrgInfo = new GraphQLObjectType<any, GQLContext>({
     organization: {
       type: Organization,
       description: 'The PRO organization',
-      resolve: ({organizationId}, _args: unknown, {dataLoader}) => {
+      resolve: (
+        {organizationId}: {organizationId: string},
+        _args: unknown,
+        {dataLoader}: GQLContext
+      ) => {
         return dataLoader.get('organizations').load(organizationId)
       }
     },

@@ -1,5 +1,5 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
 import {resolveTeam, resolveTeamMember} from '../resolvers'
 import NotificationTeamInvitation from './NotificationTeamInvitation'
 import StandardMutationError from './StandardMutationError'
@@ -33,14 +33,22 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
     },
     notifications: {
       type: NotificationTeamInvitation,
-      resolve: ({notificationId}, _args: unknown, {dataLoader}) => {
+      resolve: (
+        {notificationId}: {notificationId: string},
+        _args: unknown,
+        {dataLoader}: GQLContext
+      ) => {
         return dataLoader.get('notifications').load(notificationId)
       }
     },
     teamLead: {
       type: User,
       description: 'For payloads going to the team leader that got new suggested actions',
-      resolve: async ({teamLeadId}, _args: unknown, {dataLoader}) => {
+      resolve: async (
+        {teamLeadId}: {teamLeadId: string},
+        _args: unknown,
+        {dataLoader}: GQLContext
+      ) => {
         return teamLeadId ? dataLoader.get('users').load(teamLeadId) : null
       }
     }

@@ -3,11 +3,13 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {VOTE} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
+import ReflectionGroup from '../../database/types/ReflectionGroup'
 import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import VoteForReflectionGroupPayload from '../types/VoteForReflectionGroupPayload'
 import safelyCastVote from './helpers/safelyCastVote'
 import safelyWithdrawVote from './helpers/safelyWithdrawVote'
@@ -26,8 +28,8 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {isUnvote, reflectionGroupId},
-    {authToken, dataLoader, socketId: mutatorId}
+    {isUnvote = false, reflectionGroupId}: {isUnvote: boolean; reflectionGroupId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -42,7 +44,7 @@ export default {
     if (!reflectionGroup || !reflectionGroup.isActive) {
       return standardError(new Error('Reflection group not found'), {
         userId: viewerId,
-        tags: {reflectionGroupId, isUnvote}
+        tags: {reflectionGroupId, isUnvote: JSON.stringify(isUnvote)}
       })
     }
     const {meetingId} = reflectionGroup
@@ -93,7 +95,10 @@ export default {
     const reflectionGroups = await dataLoader
       .get('retroReflectionGroupsByMeetingId')
       .load(meetingId)
-    const voteCount = reflectionGroups.reduce((sum, group) => sum + group.voterIds.length, 0)
+    const voteCount = reflectionGroups.reduce(
+      (sum: number, group: ReflectionGroup) => sum + group.voterIds.length,
+      0
+    )
 
     let isUnlock
     let unlockedStageIds

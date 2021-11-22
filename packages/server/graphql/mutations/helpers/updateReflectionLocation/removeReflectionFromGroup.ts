@@ -1,10 +1,11 @@
+import {GQLContext} from './../../../graphql'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import getRethink from '../../../../database/rethinkDriver'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
-const removeReflectionFromGroup = async (reflectionId, {dataLoader}) => {
+const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
   const now = new Date()
   const reflection = await r

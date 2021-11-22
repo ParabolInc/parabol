@@ -63,7 +63,7 @@ const voteForPokerStory = {
   },
   resolve: async (
     _source: unknown,
-    {meetingId, stageId, score},
+    {meetingId, stageId, score}: {meetingId: string; stageId: string; score?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
