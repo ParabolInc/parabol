@@ -51258,7 +51258,7 @@ export const enum TaskStatusEnum {
 }
 
 /**
- * The user account profile
+ * The types of flags that give an individual user super powers
  */
 export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';

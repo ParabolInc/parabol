@@ -1,11 +1,9 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 
-export type UserFeatureFlagEnum = 'jira' | 'poker' | 'spotlight'
-
 const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
   name: 'UserFeatureFlags',
-  description: 'The user account profile',
+  description: 'The types of flags that give an individual user super powers',
   fields: () => ({
     jira: {
       type: new GraphQLNonNull(GraphQLBoolean),

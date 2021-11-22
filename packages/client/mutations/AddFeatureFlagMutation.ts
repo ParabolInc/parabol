@@ -18,9 +18,6 @@ graphql`
 const mutation = graphql`
   mutation AddFeatureFlagMutation($emails: [String!], $domain: String, $flag: UserFlagEnum!) {
     addFeatureFlag(emails: $emails, domain: $domain, flag: $flag) {
-      error {
-        message
-      }
       ...AddFeatureFlagMutation_notification @relay(mask: false)
     }
   }

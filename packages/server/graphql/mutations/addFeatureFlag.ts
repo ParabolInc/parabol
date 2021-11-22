@@ -2,17 +2,18 @@ import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import IUser from '../../postgres/types/IUser'
 import db from '../../db'
+import {getUserId, isSuperUser} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
-import UserFlagEnum from '../types/UserFlagEnum'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import getPg from '../../postgres/getPg'
 import catchAndLog from '../../postgres/utils/catchAndLog'
-import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
+import {getUserByEmail, getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
 import {GQLContext} from '../graphql'
 import {RDatum} from '../../database/stricterR'
-import {UserFeatureFlagEnum} from '../types/UserFeatureFlags'
+import standardError from '../../utils/standardError'
+import UserFlagEnum, {UserFeatureFlagEnum} from '../types/UserFlagEnum'
 
 export default {
   type: new GraphQLNonNull(AddFeatureFlagPayload),
@@ -39,10 +40,21 @@ export default {
       domain,
       flag
     }: {emails: string[] | null; domain: string | null; flag: UserFeatureFlagEnum},
-    {dataLoader}: GQLContext
+    {authToken, dataLoader}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId}
+
+    // AUTH
+    if (!isSuperUser(authToken)) {
+      const viewerId = getUserId(authToken)
+      const user = emails && (await getUserByEmail(emails[0]))
+      if (domain || (emails && emails?.length > 1) || user?.id !== viewerId) {
+        return standardError(new Error('Cannot add feature flag for a different user'), {
+          userId: viewerId
+        })
+      }
+    }
 
     // RESOLUTION
     const users = [] as IUser[]

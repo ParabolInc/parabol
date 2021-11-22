@@ -45,13 +45,14 @@ import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
-import UserFeatureFlags, {UserFeatureFlagEnum} from './UserFeatureFlags'
+import UserFeatureFlags from './UserFeatureFlags'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import OrganizationType from '../../database/types/Organization'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import MeetingMemberType from '../../database/types/MeetingMember'
+import {UserFeatureFlagEnum} from './UserFlagEnum'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
