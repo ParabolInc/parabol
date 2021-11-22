@@ -51264,16 +51264,6 @@ export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
-   * true if jira is allowed
-   */
-  jira: boolean;
-
-  /**
-   * true if poker is allowed
-   */
-  poker: boolean;
-
-  /**
    * true if spotlight is allowed
    */
   spotlight: boolean;
@@ -57172,8 +57162,6 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  jira = 'jira',
-  poker = 'poker',
   spotlight = 'spotlight',
 }
 

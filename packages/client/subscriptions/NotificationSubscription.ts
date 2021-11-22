@@ -102,16 +102,6 @@ const subscription = graphql`
         }
       }
 
-      # Feature flags
-      ... on AddFeatureFlagPayload {
-        user {
-          id
-          featureFlags {
-            jira
-          }
-        }
-      }
-
       # New Feature Broadcasts
       ... on AddNewFeaturePayload {
         newFeature {

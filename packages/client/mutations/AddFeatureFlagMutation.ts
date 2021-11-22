@@ -7,8 +7,6 @@ graphql`
   fragment AddFeatureFlagMutation_notification on AddFeatureFlagPayload {
     user {
       featureFlags {
-        jira
-        poker
         spotlight
       }
     }
