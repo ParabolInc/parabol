@@ -6,7 +6,7 @@ import {PortalId} from '~/hooks/usePortal'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
-import useSpotlightReflectionGroup from '../../hooks/useSpotlightReflectionGroup'
+import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 import {
   DragAttribute,
   ElementWidth,
@@ -133,6 +133,7 @@ const ReflectionGroup = (props: Props) => {
           isEditing
           remoteDrag {
             dragUserId
+            isSpotlight
           }
         }
         isExpanded
