@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
 import DialogContainer from './DialogContainer'
+import upgradeLaterSvg from '../../../static/images/illustrations/conversion_prompt-upgrade_later.svg'
 
 const Illustration = styled('img')({
   display: 'block ',
@@ -34,9 +35,7 @@ const UpgradeLater = (props: Props) => {
   const {closePortal} = props
   return (
     <Container>
-      <Illustration
-        src={`${__STATIC_IMAGES__}/illustrations/conversion_prompt-upgrade_later.svg`}
-      />
+      <Illustration src={upgradeLaterSvg} />
       <InvitationDialogCopy>{'Your organization has exceeded'}</InvitationDialogCopy>
       <InvitationDialogCopy>
         {'the free tier limit of '}

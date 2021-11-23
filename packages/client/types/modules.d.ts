@@ -10,7 +10,6 @@ declare module '*.woff2'
 
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
-declare const __STATIC_IMAGES__: string
 declare const __SOCKET_PORT__: string
 interface Window {
   __ACTION__: any
