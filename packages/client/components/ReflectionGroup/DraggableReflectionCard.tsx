@@ -56,6 +56,7 @@ interface Props {
   staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
+  isSpotlightEntering?: boolean
 }
 
 export interface TargetBBox {
@@ -76,7 +77,8 @@ const DraggableReflectionCard = (props: Props) => {
     openSpotlight,
     isDraggable,
     swipeColumn,
-    dataCy
+    dataCy,
+    isSpotlightEntering
   } = props
   const {id: meetingId, teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
@@ -116,11 +118,13 @@ const DraggableReflectionCard = (props: Props) => {
   return (
     <DragWrapper
       ref={(c) => {
-        // if the spotlight is closed, this card is the single source of truth
+        // If the spotlight is closed, this card is the single source of truth
         // Else, if it's a remote drag that is not in the spotlight
         // Else, if this is the instance in the source or search results
+        // And Spotlight modal isn't entering. This throws off dropping remote card position
         const isPriorityCard =
-          !isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight
+          (!isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight) &&
+          !isSpotlightEntering
         if (isPriorityCard) {
           drag.ref = c
         }

@@ -212,7 +212,12 @@ const SpotlightModal = (props: Props) => {
           </Search>
         </SearchWrapper>
       </SourceSection>
-      <ResultsRoot meetingId={meetingId} phaseRef={modalRef} spotlightGroupId={spotlightGroupId} />
+      <ResultsRoot
+        meetingId={meetingId}
+        phaseRef={modalRef}
+        spotlightGroupId={spotlightGroupId}
+        isSpotlightEntering={portalStatus === PortalStatus.Entering}
+      />
     </Modal>
   )
 }
