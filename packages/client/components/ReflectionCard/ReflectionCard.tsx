@@ -60,7 +60,7 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
 interface Props {
   isClipped?: boolean
   reflection: ReflectionCard_reflection
-  meeting: ReflectionCard_meeting | null
+  meeting: ReflectionCard_meeting
   openSpotlight?: OpenSpotlight
   stackCount?: number
   showOriginFooter?: boolean
@@ -95,9 +95,9 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {localPhase, localStage, spotlightGroup, viewerMeetingMember, phases} = meeting ?? {}
-  const phaseType = localPhase?.phaseType
-  const isComplete = localStage?.isComplete
+  const {localPhase, localStage, spotlightGroup, viewerMeetingMember, phases} = meeting
+  const {phaseType} = localPhase
+  const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
   const isSpotlightFlagActive = !!viewerMeetingMember?.user?.featureFlags?.spotlight
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
