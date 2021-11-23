@@ -41,8 +41,9 @@ const SubmitButton = styled(PrimaryButton)({
 const validatePassword = (password: string) => {
   return new Legitity(password)
     .required('Please enter a password')
+    .min(8, '8 character minimum')
     .max(1000, `That's a book, not a password`)
-    .matches(new RegExp("^(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\\w\\d\\s:])([^\\s]){8,}$"), 'Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character')
+    .matches(new RegExp("^((?=(.*[\\d]){1,})(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[^\\w\\d\\s]){1,}))"), 'Must include at least one uppercase letter, one lowercase letter, one number and one special character')
 }
 
 const SetNewPassword = (props: Props) => {
