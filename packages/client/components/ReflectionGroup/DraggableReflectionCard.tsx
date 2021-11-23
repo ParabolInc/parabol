@@ -78,7 +78,7 @@ const DraggableReflectionCard = (props: Props) => {
     swipeColumn,
     dataCy
   } = props
-  const {id: meetingId, teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
+  const {teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
   const {id: reflectionId, isDropping, isEditing, remoteDrag} = reflection
   const spotlightGroupId = spotlightGroup?.id
@@ -103,7 +103,6 @@ const DraggableReflectionCard = (props: Props) => {
     reflection,
     drag,
     staticIdx,
-    meetingId,
     teamId,
     staticReflectionCount,
     swipeColumn
