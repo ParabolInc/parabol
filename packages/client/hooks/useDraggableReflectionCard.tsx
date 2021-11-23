@@ -45,7 +45,7 @@ const useRemotelyDraggedCard = (
   const {remoteDrag, isDropping} = reflection
   const [lastZIndex, setLastZIndex] = useState<number | undefined>()
   const {spotlightGroup} = meeting
-  const spotlightGroupId = spotlightGroup?.id
+  const spotlightGroupId = spotlightGroup?.id ?? ''
 
   const spotlightSearchResults = useLazyLoadQuery<useDraggableReflectionCardLocalQuery>(
     graphql`
@@ -61,13 +61,13 @@ const useRemotelyDraggedCard = (
       }
     `,
     // TODO: add search query
-    {reflectionGroupId: spotlightGroupId || '', searchQuery: ''},
+    {reflectionGroupId: spotlightGroupId, searchQuery: ''},
     {fetchPolicy: 'store-only'}
   )
   const {viewer} = spotlightSearchResults
   const {similarReflectionGroups} = viewer
   const groupIdsInSpotlight = similarReflectionGroups
-    ? similarReflectionGroups.map(({id}) => id)
+    ? [...similarReflectionGroups.map(({id}) => id), spotlightGroupId]
     : []
   const spotlightAnimRef = useRef<number | null>(null)
   const setRemoteCard = (

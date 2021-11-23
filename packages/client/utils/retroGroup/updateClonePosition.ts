@@ -60,12 +60,11 @@ export const getSpotlightAnimation = (
 ) => {
   const spotlightEl = document.getElementById('spotlight')
   const isTargetInSpotlight = targetId && groupIdsInSpotlight.includes(targetId)
-  const isInSpotlight = spotlightEl && spotlightEl.contains(element)
-  const notInSpotlight = spotlightEl && !spotlightEl.contains(element)
+  const isInSpotlight = spotlightEl?.contains(element) ?? false
+  const notInSpotlight = spotlightEl ? !isInSpotlight : false
   const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
-
-  const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s linear 0s forwards`
-  const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s linear 0s forwards`
+  const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s ${BezierCurve.DECELERATE} 0s forwards`
+  const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s ${BezierCurve.DECELERATE} 0s forwards`
 
   const isCurrentlyBehindSpotlight = lastZIndex !== ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
   const isFadingIn =
