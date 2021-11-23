@@ -6,6 +6,7 @@ import {AddFeatureFlagMutation as TAddFeatureFlagMutation} from '../__generated_
 graphql`
   fragment AddFeatureFlagMutation_notification on AddFeatureFlagPayload {
     user {
+      id
       featureFlags {
         spotlight
       }

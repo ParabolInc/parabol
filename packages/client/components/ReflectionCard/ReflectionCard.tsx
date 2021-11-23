@@ -95,9 +95,9 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {localPhase, localStage, spotlightGroup, viewerMeetingMember, phases} = meeting!
-  const {phaseType} = localPhase
-  const {isComplete} = localStage
+  const {localPhase, localStage, spotlightGroup, viewerMeetingMember, phases} = meeting ?? {}
+  const phaseType = localPhase?.phaseType
+  const isComplete = localStage?.isComplete
   const spotlightGroupId = spotlightGroup?.id
   const isSpotlightFlagActive = !!viewerMeetingMember?.user?.featureFlags?.spotlight
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
