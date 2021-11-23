@@ -7,10 +7,10 @@ export const JoinMeetingSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'JoinMeetingSuccess',
   fields: () => ({
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meeting: {
-      type: GraphQLNonNull(NewMeeting),
+      type: new GraphQLNonNull(NewMeeting),
       description: 'The meeting with the updated stages, if any',
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)

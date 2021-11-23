@@ -33,17 +33,19 @@ const addReflectionToGroup = async (
     .run()
 
   // RESOLUTION
+  const sortOrder = maxSortOrder + 1 + dndNoise()
   await r
     .table('RetroReflection')
     .get(reflectionId)
     .update({
-      sortOrder: maxSortOrder + 1 + dndNoise(),
+      sortOrder,
       reflectionGroupId,
       updatedAt: now
     })
     .run()
 
   // mutate the dataLoader cache
+  reflection.sortOrder = sortOrder
   reflection.reflectionGroupId = reflectionGroupId
   reflection.updatedAt = now
 

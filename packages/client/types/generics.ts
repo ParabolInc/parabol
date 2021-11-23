@@ -86,3 +86,4 @@ export type Unproxy<T> = T extends RecordProxy<infer U> ? U : T
 
 // Can remove when this gets merged: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55847
 export type DiscriminateProxy<T, U> = RecordProxy<Extract<Unproxy<T>, {__typename: U}>>
+export type NonEmptyArray<T> = [T, ...T[]]

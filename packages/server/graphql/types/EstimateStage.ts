@@ -39,15 +39,15 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     ...newMeetingStageFields(),
     ...discussionThreadStageFields(),
     creatorUserId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the user that added this stage.'
     },
     taskId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The ID that points to the issue that exists in parabol'
     },
     serviceField: {
-      type: GraphQLNonNull(ServiceField),
+      type: new GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
       resolve: async ({dimensionRefIdx, meetingId, teamId, taskId}, _args, {dataLoader}) => {
         const NULL_FIELD = {name: '', type: 'string'}
@@ -114,11 +114,11 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       description: 'The sort order for reprioritizing discussion topics'
     },
     dimensionRefIdx: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The immutable index of the dimensionRef tied to this stage'
     },
     dimensionRef: {
-      type: GraphQLNonNull(TemplateDimensionRef),
+      type: new GraphQLNonNull(TemplateDimensionRef),
       description: 'The immutable dimension linked to this stage',
       resolve: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
@@ -152,7 +152,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       }
     },
     hoveringUserIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'the userIds of the team members hovering the deck',
       resolve: async ({id: stageId}) => {
         const redis = getRedis()
@@ -161,7 +161,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       }
     },
     hoveringUsers: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(User))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'the users of the team members hovering the deck',
       resolve: async ({id: stageId}) => {
         const redis = getRedis()
@@ -172,7 +172,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       }
     },
     scores: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EstimateUserScore))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(EstimateUserScore))),
       description: 'all the estimates, 1 per user',
       resolve: ({id: stageId, scores}) => {
         return scores.map((score) => ({
@@ -190,7 +190,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       }
     },
     isVoting: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description:
         'true when the participants are still voting and results are hidden. false when votes are revealed'
     }

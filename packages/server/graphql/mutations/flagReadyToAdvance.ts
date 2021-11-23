@@ -9,18 +9,18 @@ import {GQLContext} from '../graphql'
 import FlagReadyToAdvancePayload from '../types/FlagReadyToAdvancePayload'
 
 const flagReadyToAdvance = {
-  type: GraphQLNonNull(FlagReadyToAdvancePayload),
+  type: new GraphQLNonNull(FlagReadyToAdvancePayload),
   description: `flag a viewer as ready to advance to the next stage of a meeting`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the stage that the viewer marked as ready'
     },
     isReady: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if ready to advance, else false'
     }
   },

@@ -9,15 +9,15 @@ import PersistJiraSearchQueryPayload from '../types/PersistJiraSearchQueryPayloa
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 
 const persistJiraSearchQuery = {
-  type: GraphQLNonNull(PersistJiraSearchQueryPayload),
+  type: new GraphQLNonNull(PersistJiraSearchQueryPayload),
   description: `Add or remove a task and its estimate phase from the meeting`,
   args: {
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the team with the settings we add the query to'
     },
     input: {
-      type: GraphQLNonNull(JiraSearchQueryInput),
+      type: new GraphQLNonNull(JiraSearchQueryInput),
       description: 'the jira search query to persist (or remove, if isRemove is true)'
     }
   },

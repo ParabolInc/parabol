@@ -11,14 +11,14 @@ import {GQLContext} from '../graphql'
 import PokerRevealVotesPayload from '../types/PokerRevealVotesPayload'
 
 const pokerRevealVotes = {
-  type: GraphQLNonNull(PokerRevealVotesPayload),
+  type: new GraphQLNonNull(PokerRevealVotesPayload),
   description: 'Progresses the stage dimension to the reveal & discuss step',
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (

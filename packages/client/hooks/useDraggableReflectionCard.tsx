@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState, useRef} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -69,8 +69,13 @@ const useRemotelyDraggedCard = (
   const groupIdsInSpotlight = similarReflectionGroups
     ? similarReflectionGroups.map(({id}) => id)
     : []
-
-  const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
+  const spotlightAnimRef = useRef<number | null>(null)
+  const setRemoteCard = (
+    isClose: boolean,
+    timeRemaining: number,
+    lastTop?: number,
+    isSpotlight?: boolean
+  ) => {
     if (!drag.ref || timeRemaining <= 0) return
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
@@ -119,8 +124,24 @@ const useRemotelyDraggedCard = (
         const newTimeRemaining = timeRemaining - (Date.now() - beforeFrame)
         setRemoteCard(isClose, newTimeRemaining, bbox.top)
       })
+    } else if (isSpotlight) {
+      // move animating remote Spotlight when other kanban reflections move
+      spotlightAnimRef.current = requestAnimationFrame(() => {
+        const newTimeRemaining = timeRemaining - (Date.now() - beforeFrame)
+        setRemoteCard(isClose, newTimeRemaining, bbox.top, isSpotlight)
+      })
     }
   }
+
+  // is animating remote Spotlight
+  useEffect(() => {
+    if (remoteDrag?.isSpotlight) {
+      setRemoteCard(false, Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT, undefined, true)
+    } else if (spotlightAnimRef.current !== null) {
+      cancelAnimationFrame(spotlightAnimRef.current)
+    }
+  }, [remoteDrag?.isSpotlight])
+
   // is opening
   useEffect(() => {
     if (remoteDrag) {
@@ -383,11 +404,6 @@ const useCollapsePlaceholder = (
   staticReflectionCount: number
 ) => {
   useEffect(() => {
-    // do not collapse if remote opened spotlight
-    const {remoteDrag} = reflection
-    const isSpotlight = remoteDrag?.isSpotlight
-    if (isSpotlight) return
-
     const {ref} = drag
     if (!ref) return
     const {style, scrollHeight} = ref
@@ -397,6 +413,9 @@ const useCollapsePlaceholder = (
       // the card is the only one in the group, shrink the group!
       style.height = scrollHeight + 'px'
       style.transition = `height ${Times.REFLECTION_DROP_DURATION}ms`
+      const {remoteDrag} = reflection
+      // do not collapse if remote opened spotlight
+      if (remoteDrag?.isSpotlight) return
       requestAnimationFrame(() => {
         style.height = '0'
       })

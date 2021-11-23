@@ -14,7 +14,7 @@ import updateUser from '../../postgres/queries/updateUser'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {
-  type: GraphQLNonNull(VerifyEmailPayload),
+  type: new GraphQLNonNull(VerifyEmailPayload),
   description: `Verify an email address and sign in if not already a user`,
   args: {
     verificationToken: {

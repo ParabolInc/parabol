@@ -75,7 +75,7 @@ export default {
       edges,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
-        endCursor: firstEdge && edges[edges.length - 1].cursor,
+        endCursor: firstEdge && edges[edges.length - 1]!.cursor,
         hasNextPage: extraInvoices.length + (upcomingInvoice ? 1 : 0) > first
       }
     }
