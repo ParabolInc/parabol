@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useRef} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
