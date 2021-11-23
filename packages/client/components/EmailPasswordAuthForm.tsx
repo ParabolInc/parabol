@@ -80,8 +80,8 @@ const validateEmail = (email: string) => {
 const validatePassword = (password: string) => {
   return new Legitity(password)
     .required('Please enter a password')
-    .min(6, '6 character minimum')
     .max(1000, `That's a book, not a password`)
+    .matches(new RegExp("^(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\\w\\d\\s:])([^\\s]){8,}$"), 'Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character')
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
