@@ -6,7 +6,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import appleEmojis from 'emoji-mart/data/apple.json'
-import {getRecentArray, updateUsage} from '../utils/reactjiPickerRecent'
 
 const TallMenu = styled(Menu)({
   maxHeight: 354
@@ -23,7 +22,6 @@ const ReactjiPicker = (props: Props) => {
   const handleClick = (emoji) => {
     onClick(emoji.id)
     closePortal()
-    updateUsage(emoji.id)
   }
   return (
     <TallMenu ariaLabel='Pick a reactji' {...menuProps}>
@@ -37,7 +35,6 @@ const ReactjiPicker = (props: Props) => {
         onClick={handleClick}
         showPreview={false}
         showSkinTones={false}
-        recent={getRecentArray()}
         style={{borderRadius: 4}}
       />
     </TallMenu>
