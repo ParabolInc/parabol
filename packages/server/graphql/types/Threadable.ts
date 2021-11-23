@@ -35,7 +35,7 @@ export const threadableFields = () => ({
   createdByUser: {
     type: require('./User').default,
     description: 'The user that created the item',
-    resolve: ({createdBy}: {createdBy: Date}, _args: unknown, {dataLoader}: GQLContext) => {
+    resolve: ({createdBy}: {createdBy: string}, _args: unknown, {dataLoader}: GQLContext) => {
       return dataLoader.get('users').load(createdBy)
     }
   },
