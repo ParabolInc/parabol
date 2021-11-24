@@ -1,11 +1,6 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'prettier'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'prettier/@typescript-eslint',
-    'plugin:prettier/recommended'
-  ],
+  extends: ['plugin:@typescript-eslint/recommended', 'prettier/@typescript-eslint'],
   parserOptions: {
     project: './tsconfig.base.json',
     ecmaVersion: 2020,
@@ -26,6 +21,6 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-parameter-properties': 'off',
     '@typescript-eslint/no-namespace': 'off',
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    '@typescript-eslint/explicit-module-boundary-types': 'off'
   }
 }
