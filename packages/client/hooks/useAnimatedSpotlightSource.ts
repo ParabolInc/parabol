@@ -7,6 +7,7 @@ import cloneReflection from '~/utils/retroGroup/cloneReflection'
 import {PortalStatus} from '~/hooks/usePortal'
 import {MutableRefObject, useLayoutEffect, useRef} from 'react'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,
@@ -14,6 +15,7 @@ const useAnimatedSpotlightSource = (
   dragIdRef: MutableRefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const sourceRef = useRef<HTMLDivElement | null>(null)
   const sourceCloneRef = useRef<HTMLDivElement | null>(null)
 
@@ -52,6 +54,10 @@ const useAnimatedSpotlightSource = (
     dragIdRef.current = clientTempId()
     // execute mutation after cloning as the mutation will cause reflection height to change
     startDrag(reflectionId, dragIdRef.current)
+    SendClientSegmentEventMutation(atmosphere, 'Opened Spotlight', {
+      viewerId,
+      reflectionId
+    })
     const dragInterval = setInterval(() => {
       // execute every second so that the remote animation continues when subscribers refresh page
       if (!dragIdRef.current) return
