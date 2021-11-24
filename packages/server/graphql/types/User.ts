@@ -457,12 +457,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
-          r
-            .table('RetroReflection')
-            .getAll(meetingId, {index: 'meetingId'})
-            .filter({isActive: true})
-            .orderBy('createdAt')
-            .run()
+          dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         ])
         if (!viewerMeetingMember) {
           return standardError(new Error('Not on team'), {userId})
@@ -478,10 +473,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
           ].slice(0, MAX_RESULT_GROUP_SIZE)
-          return r
-            .table('RetroReflectionGroup')
-            .getAll(r.args(relatedGroupIds))
-            .run()
+          return dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds)
         }
 
         const reflectionsCount = reflections.length

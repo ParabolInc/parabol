@@ -107,7 +107,7 @@ const SpotlightSearchBar = (props: Props) => {
           spellCheck={true}
           onChange={onChange}
           ref={inputRef}
-          value={spotlightSearchQuery ?? ""}
+          value={spotlightSearchQuery ?? ''}
         />
       </Search>
     </SearchWrapper>

@@ -79,12 +79,6 @@ const SpotlightModal = (props: Props) => {
   const [hideModal, setHideModal] = useState(true)
   const {spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
-  const spotlightGroupId = spotlightGroup?.id
-  const groupIdRef = useRef('')
-  const nextGroupId = spotlightGroupId ?? ''
-  if (nextGroupId) {
-    groupIdRef.current = nextGroupId
-  }
   const reflectionIdsToHideRef = useRef<string[] | null>(null)
 
   useEffect(() => {

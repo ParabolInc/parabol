@@ -147,7 +147,6 @@ export default createFragmentContainer(GroupingKanban, {
       ...ReflectionGroup_meeting
       ...SpotlightModal_meeting
       id
-      spotlightSearchQuery
       teamId
       phases {
         ... on ReflectPhase {
