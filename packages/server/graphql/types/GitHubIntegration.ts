@@ -27,7 +27,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
     accessToken: {
       description: 'The access token to github. good forever',
       type: GraphQLID,
-      resolve: async ({accessToken, userId}, _args, {authToken}) => {
+      resolve: async ({accessToken, userId}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }

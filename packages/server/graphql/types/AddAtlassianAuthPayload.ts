@@ -15,7 +15,7 @@ const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
     atlassianIntegration: {
       type: AtlassianIntegration,
       description: 'The newly created auth',
-      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       }
     },
@@ -25,7 +25,7 @@ const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
     teamMember: {
       type: TeamMember,
       description: 'The team member with the updated atlassianAuth',
-      resolve: ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const teamMemberId = toTeamMemberId(teamId, userId)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
@@ -33,7 +33,7 @@ const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: User,
       description: 'The user with updated atlassianAuth',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     }

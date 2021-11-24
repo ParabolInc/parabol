@@ -37,7 +37,7 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
     },
     avatar: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: async ({avatarUrls, teamId, userId}, _args, {dataLoader}) => {
+      resolve: async ({avatarUrls, teamId, userId}, _args: unknown, {dataLoader}) => {
         const url = avatarUrls['48x48']
         const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
         if (!auth) return null

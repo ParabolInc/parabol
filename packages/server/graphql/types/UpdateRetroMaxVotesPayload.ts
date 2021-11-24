@@ -9,7 +9,7 @@ export const UpdateRetroMaxVotesSuccess = new GraphQLObjectType<any, GQLContext>
     meeting: {
       type: new GraphQLNonNull(RetrospectiveMeeting),
       description: 'the meeting with the updated max votes',
-      resolve: async ({meetingId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     }

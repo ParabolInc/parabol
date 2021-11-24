@@ -31,11 +31,7 @@ export default {
   },
   resolve: async (
     _source: unknown,
-    {
-      userId,
-      email,
-      reason
-    }: {userId?: string | null; email?: string | null; reason?: string | null},
+    {userId, email, reason},
     {authToken, dataLoader}: GQLContext
   ) => {
     // AUTH

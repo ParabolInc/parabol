@@ -25,7 +25,7 @@ const addNewFeature = {
       description: 'the permalink to the blog post'
     }
   },
-  resolve: async (_source, {copy, url}, {authToken, dataLoader}) => {
+  resolve: async (_source: unknown, {copy, url}, {authToken, dataLoader}) => {
     const r = await getRethink()
     const redis = getRedis()
 

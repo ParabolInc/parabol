@@ -11,7 +11,7 @@ const users = {
     }
   },
   description: 'Dig into many users by providing the userId',
-  async resolve(_source, {userIds}, {authToken, dataLoader}) {
+  async resolve(_source: unknown, {userIds}, {authToken, dataLoader}) {
     requireSU(authToken)
     const users = await dataLoader.get('users').loadMany(userIds)
     return users

@@ -22,7 +22,11 @@ export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
   type: new GraphQLNonNull(User),
-  resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
+  resolve: async (
+    _source: unknown,
+    _args: unknown,
+    {authToken, dataLoader, socketId}: GQLContext
+  ) => {
     const r = await getRethink()
     const redis = getRedis()
     const now = new Date()

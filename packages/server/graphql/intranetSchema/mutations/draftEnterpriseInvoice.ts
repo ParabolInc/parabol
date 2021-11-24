@@ -78,7 +78,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {orgId, quantity, email, apEmail, plan},
     {authToken, dataLoader}: GQLContext
   ) {

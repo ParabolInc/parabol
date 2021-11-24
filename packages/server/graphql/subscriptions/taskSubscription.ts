@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
@@ -6,7 +7,7 @@ import TaskSubscriptionPayload from '../types/TaskSubscriptionPayload'
 
 const taskSubscription = {
   type: new GraphQLNonNull(TaskSubscriptionPayload),
-  subscribe: async (_source, _args, {authToken}) => {
+  subscribe: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')

@@ -9,7 +9,7 @@ export const AddReactjiToReflectionSuccess = new GraphQLObjectType<any, GQLConte
     reflection: {
       type: new GraphQLNonNull(RetroReflection),
       description: 'the reflection with the updated list of reactjis',
-      resolve: async ({reflectionId}, _args, {dataLoader}) => {
+      resolve: async ({reflectionId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('retroReflections').load(reflectionId)
       }
     }

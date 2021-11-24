@@ -49,7 +49,11 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     serviceField: {
       type: new GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
-      resolve: async ({dimensionRefIdx, meetingId, teamId, taskId}, _args, {dataLoader}) => {
+      resolve: async (
+        {dimensionRefIdx, meetingId, teamId, taskId},
+        _args: unknown,
+        {dataLoader}
+      ) => {
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -120,7 +124,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     dimensionRef: {
       type: new GraphQLNonNull(TemplateDimensionRef),
       description: 'The immutable dimension linked to this stage',
-      resolve: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
+      resolve: async ({meetingId, dimensionRefIdx}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {templateRefId} = meeting as MeetingPoker
         const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
@@ -137,7 +141,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     finalScore: {
       type: GraphQLString,
       description: 'the final score, as defined by the facilitator',
-      resolve: async ({taskId, meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
+      resolve: async ({taskId, meetingId, dimensionRefIdx}, _args: unknown, {dataLoader}) => {
         const [meeting, estimates] = await Promise.all([
           dataLoader.get('newMeetings').load(meetingId),
           dataLoader.get('meetingTaskEstimates').load({taskId, meetingId})
@@ -185,7 +189,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       type: Task,
       description:
         'The task referenced in the stage, as it exists in Parabol. null if the task was deleted',
-      resolve: async ({taskId}, _args, {dataLoader}) => {
+      resolve: async ({taskId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('tasks').load(taskId)
       }
     },

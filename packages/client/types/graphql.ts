@@ -48875,7 +48875,7 @@ export interface IUser {
 }
 
 export interface IArchivedTasksOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor
@@ -48903,7 +48903,7 @@ export interface IInvoiceDetailsOnUserArguments {
 }
 
 export interface IInvoicesOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor

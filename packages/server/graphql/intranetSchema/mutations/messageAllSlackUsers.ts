@@ -20,7 +20,7 @@ const messageAllSlackUsers = {
       description: 'The slack message that will be sent to all Slack users'
     }
   },
-  resolve: async (_source, {message}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {message}, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     //AUTH

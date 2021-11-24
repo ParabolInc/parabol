@@ -16,7 +16,7 @@ export const SetPokerSpectateSuccess = new GraphQLObjectType<any, GQLContext>({
     meetingMember: {
       type: new GraphQLNonNull(PokerMeetingMember),
       description: 'The meeting member with the updated isSpectating value',
-      resolve: async ({userId, meetingId}, _args, {dataLoader}) => {
+      resolve: async ({userId, meetingId}, _args: unknown, {dataLoader}) => {
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
         return meetingMember

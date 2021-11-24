@@ -58,7 +58,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetrospectiveMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
-      resolve: ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: ({id: meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
       }
     },
@@ -131,7 +131,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     settings: {
       type: new GraphQLNonNull(RetrospectiveMeetingSettings),
       description: 'The settings that govern the retrospective meeting',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'})
       }
     },
@@ -143,7 +143,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     tasks: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',
-      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
@@ -171,7 +171,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
       type: new GraphQLNonNull(GraphQLInt),
       description:
         'The sum total of the votes remaining for the meeting members that are present in the meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args: unknown, {dataLoader}) => {
         const meetingMembers = (await dataLoader
           .get('meetingMembersByMeetingId')
           .load(meetingId)) as RetroMeetingMember[]
@@ -181,7 +181,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
     viewerMeetingMember: {
       type: RetrospectiveMeetingMember,
       description: 'The retrospective meeting member of the viewer',
-      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
+      resolve: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}: GQLContext) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)

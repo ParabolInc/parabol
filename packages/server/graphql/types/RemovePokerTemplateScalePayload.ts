@@ -12,7 +12,7 @@ const RemovePokerTemplateScalePayload = new GraphQLObjectType<any, GQLContext>({
     },
     scale: {
       type: TemplateScale,
-      resolve: ({scaleId}, _args, {dataLoader}) => {
+      resolve: ({scaleId}, _args: unknown, {dataLoader}) => {
         if (!scaleId) return null
         return dataLoader.get('templateScales').load(scaleId)
       }
