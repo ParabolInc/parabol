@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
@@ -176,10 +177,7 @@ const useDroppingDrag = (
               removeClone(reflectionId, setPortal)
             }
             commitLocalUpdate(atmosphere, (store) => {
-              store
-                .get(reflectionId)!
-                .setValue(false, 'isDropping')
-                .setValue(null, 'remoteDrag')
+              store.get(reflectionId)!.setValue(false, 'isDropping').setValue(null, 'remoteDrag')
             })
           },
           remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
@@ -196,13 +194,14 @@ const useDragAndDrop = (
   drag: ReflectionDragState,
   reflection: DraggableReflectionCard_reflection,
   staticIdx: number,
-  meetingId: string,
+  meeting: DraggableReflectionCard_meeting,
   teamId: string,
   reflectionCount: number,
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-
+  const {viewerId} = atmosphere
+  const {id: meetingId, spotlightGroup} = meeting
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -224,6 +223,16 @@ const useDragAndDrop = (
         ? 'REFLECTION_GRID'
         : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
+    const segmentVars = {viewerId, reflectionId, meetingId}
+    const isReflectionInSpotlightSrc = !!spotlightGroup?.reflections.find(
+      ({id}) => id === reflectionId
+    )
+    if (spotlightGroup?.id === targetGroupId && targetType === 'REFLECTION_GROUP') {
+      SendClientSegmentEventMutation(atmosphere, 'Spotlight result to source', segmentVars)
+    } else if (isReflectionInSpotlightSrc && targetType) {
+      const event = `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
+      SendClientSegmentEventMutation(atmosphere, event, segmentVars)
+    }
   })
 
   const announceDragUpdate = (cursorX: number, cursorY: number) => {
@@ -285,8 +294,9 @@ const useDragAndDrop = (
     }
     if (!drag.clone) return
     drag.clientY = clientY
-    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
-      drag.cardOffsetY}px)`
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${
+      clientY - drag.cardOffsetY
+    }px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl
@@ -386,7 +396,6 @@ const useDraggableReflectionCard = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
-  meetingId: string,
   teamId: string,
   staticReflectionCount: number,
   swipeColumn?: SwipeColumn
@@ -398,7 +407,7 @@ const useDraggableReflectionCard = (
     drag,
     reflection,
     staticIdx,
-    meetingId,
+    meeting,
     teamId,
     staticReflectionCount,
     swipeColumn

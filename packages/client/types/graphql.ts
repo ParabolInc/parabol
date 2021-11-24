@@ -58514,6 +58514,9 @@ export interface ISegmentEventTrackOptions {
   phase?: NewMeetingPhaseTypeEnum | null;
   eventId?: number | null;
   actionType?: string | null;
+  meetingId?: string | null;
+  reflectionId?: string | null;
+  viewerId?: string | null;
 }
 
 export interface ISelectTemplatePayload {
