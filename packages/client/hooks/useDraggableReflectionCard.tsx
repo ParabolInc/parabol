@@ -23,6 +23,7 @@ import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/update
 import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
+import useSpotlightResults from './useSpotlightResults'
 
 const windowDims = {
   clientHeight: window.innerHeight,
@@ -202,6 +203,7 @@ const useDragAndDrop = (
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {id: meetingId, spotlightGroup} = meeting
+  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, '') // TODO: add search query
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -216,22 +218,25 @@ const useDragAndDrop = (
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
+    const isReflectionInSpotlightResults = !!spotlightResultGroups?.find(
+      ({id}) => id === reflectionGroupId
+    )
     const targetType: DragReflectionDropTargetTypeEnum | null =
       targetGroupId && reflectionGroupId !== targetGroupId
         ? 'REFLECTION_GROUP'
-        : !targetGroupId && reflectionCount > 0
+        : !targetGroupId && reflectionCount > 0 && !isReflectionInSpotlightResults
         ? 'REFLECTION_GRID'
         : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
-    const segmentVars = {viewerId, reflectionId, meetingId}
-    const isReflectionInSpotlightSrc = !!spotlightGroup?.reflections.find(
-      ({id}) => id === reflectionId
-    )
-    if (spotlightGroup?.id === targetGroupId && targetType === 'REFLECTION_GROUP') {
-      SendClientSegmentEventMutation(atmosphere, 'Spotlight result to source', segmentVars)
-    } else if (isReflectionInSpotlightSrc && targetType) {
-      const event = `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
-      SendClientSegmentEventMutation(atmosphere, event, segmentVars)
+    if (spotlightGroup?.id) {
+      const event = isReflectionInSpotlightResults
+        ? `Spotlight result to ${targetType === 'REFLECTION_GROUP' ? 'source' : 'result'}`
+        : `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
+      SendClientSegmentEventMutation(atmosphere, event, {
+        viewerId,
+        reflectionId,
+        meetingId
+      })
     }
   })
 

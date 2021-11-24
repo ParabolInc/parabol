@@ -196,9 +196,6 @@ export default createFragmentContainer(DraggableReflectionCard, {
       }
       spotlightGroup {
         id
-        reflections {
-          id
-        }
       }
       spotlightReflectionId
     }
