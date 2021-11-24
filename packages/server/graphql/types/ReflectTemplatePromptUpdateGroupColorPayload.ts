@@ -11,7 +11,7 @@ const ReflectTemplatePromptUpdateGroupColorPayload = new GraphQLObjectType<any, 
     },
     prompt: {
       type: ReflectPrompt,
-      resolve: ({promptId}, _args, {dataLoader}) => {
+      resolve: ({promptId}, _args: unknown, {dataLoader}) => {
         if (!promptId) return null
         return dataLoader.get('reflectPrompts').load(promptId)
       }

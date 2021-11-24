@@ -4,7 +4,7 @@ import Notification, {notificationInterfaceFields} from './Notification'
 import Team from './Team'
 import User from './User'
 
-const NotifyKickedOut = new GraphQLObjectType<any, GQLContext>({
+const NotifyKickedOut: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'NotifyKickedOut',
   description: 'A notification sent to someone who was just kicked off a team',
   interfaces: () => [Notification],
@@ -13,7 +13,11 @@ const NotifyKickedOut = new GraphQLObjectType<any, GQLContext>({
     evictor: {
       type: new GraphQLNonNull(User),
       description: 'the user that evicted recipient',
-      resolve: async ({evictorUserId}, _args, {dataLoader}) => {
+      resolve: async (
+        {evictorUserId}: {evictorUserId: string},
+        _args: unknown,
+        {dataLoader}: GQLContext
+      ) => {
         return dataLoader.get('users').load(evictorUserId)
       }
     },
@@ -28,7 +32,7 @@ const NotifyKickedOut = new GraphQLObjectType<any, GQLContext>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team the task is on',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}: {teamId: string}, _args: unknown, {dataLoader}: GQLContext) => {
         return dataLoader.get('teams').load(teamId)
       }
     }

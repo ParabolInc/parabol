@@ -17,7 +17,7 @@ const user = {
     }
   },
   description: 'Dig into a user by providing the email or userId',
-  async resolve(_source, {email, userId}: {email: string; userId: string}, {authToken}) {
+  async resolve(_source: unknown, {email, userId}: {email: string; userId: string}, {authToken}) {
     requireSU(authToken)
     if (email) {
       return getUserByEmail(email)

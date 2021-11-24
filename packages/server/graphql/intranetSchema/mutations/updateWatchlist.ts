@@ -29,7 +29,7 @@ const updateWatchlist = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {
       includeInWatchlist,
       emails,

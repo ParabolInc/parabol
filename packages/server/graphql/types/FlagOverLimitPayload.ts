@@ -12,7 +12,7 @@ const FlagOverLimitPayload = new GraphQLObjectType<any, GQLContext>({
     users: {
       type: new GraphQLList(User),
       description: 'the users with the limit added or removed',
-      resolve: ({userIds}, _args, {dataLoader}) => {
+      resolve: ({userIds}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').loadMany(userIds)
       }
     }

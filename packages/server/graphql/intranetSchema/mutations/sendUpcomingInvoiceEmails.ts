@@ -62,7 +62,7 @@ const sendUpcomingInvoiceEmails = {
   type: new GraphQLList(GraphQLString),
   description:
     'send an email to organizations including all the users that were added in the current billing cycle',
-  resolve: async (_source, _args, {authToken}) => {
+  resolve: async (_source: unknown, _args: unknown, {authToken}) => {
     requireSU(authToken)
     const r = await getRethink()
     const now = new Date()

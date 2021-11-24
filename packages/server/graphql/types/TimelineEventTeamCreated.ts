@@ -21,7 +21,7 @@ const TimelineEventTeamCreated = new GraphQLObjectType<any>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team that can see this event',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     }

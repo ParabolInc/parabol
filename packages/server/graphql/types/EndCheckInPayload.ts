@@ -19,7 +19,7 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     team: {
       type: new GraphQLNonNull(Team),
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return teamId ? dataLoader.get('teams').load(teamId) : null
       }
     },
@@ -37,7 +37,7 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
     timelineEvent: {
       type: new GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
-      resolve: async ({timelineEventId}, _args, {dataLoader}) => {
+      resolve: async ({timelineEventId}, _args: unknown, {dataLoader}) => {
         return await dataLoader.get('timelineEvents').load(timelineEventId)
       }
     },
@@ -47,7 +47,7 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
     updatedTasks: {
       type: new GraphQLList(new GraphQLNonNull(Task)),
       description: 'Any tasks that were updated during the meeting',
-      resolve: async ({updatedTaskIds}, _args, {authToken, dataLoader}) => {
+      resolve: async ({updatedTaskIds}, _args: unknown, {authToken, dataLoader}) => {
         if (!updatedTaskIds) return []
         const viewerId = getUserId(authToken)
         const allUpdatedTasks = (await dataLoader.get('tasks').loadMany(updatedTaskIds)).filter(

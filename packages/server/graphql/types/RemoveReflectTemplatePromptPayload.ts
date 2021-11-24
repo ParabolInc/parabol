@@ -12,14 +12,14 @@ const RemoveReflectTemplatePromptPayload = new GraphQLObjectType<any, GQLContext
     },
     reflectTemplate: {
       type: ReflectTemplate,
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         if (!templateId) return null
         return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
     prompt: {
       type: ReflectPrompt,
-      resolve: ({promptId}, _args, {dataLoader}) => {
+      resolve: ({promptId}, _args: unknown, {dataLoader}) => {
         if (!promptId) return null
         return dataLoader.get('reflectPrompts').load(promptId)
       }

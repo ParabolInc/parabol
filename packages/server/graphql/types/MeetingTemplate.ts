@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {
   GraphQLID,
   GraphQLNonNull,
@@ -44,7 +45,7 @@ export const meetingTemplateFields = () => ({
   team: {
     type: new GraphQLNonNull(Team),
     description: 'The team this template belongs to',
-    resolve: async ({teamId}, _args, {dataLoader}) => {
+    resolve: async ({teamId}: {teamId: string}, _args: unknown, {dataLoader}: GQLContext) => {
       const team = await dataLoader.get('teams').load(teamId)
       return team
     }
