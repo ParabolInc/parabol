@@ -512,10 +512,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             }
           }
         }
-        return r
-          .table('RetroReflectionGroup')
-          .getAll(r.args(Array.from(currentResultGroupIds)), {index: 'id'})
-          .run()
+        return dataLoader.get('retroReflectionGroups').loadMany(Array.from(currentResultGroupIds))
       }
     },
     tasks: require('../queries/tasks').default,
