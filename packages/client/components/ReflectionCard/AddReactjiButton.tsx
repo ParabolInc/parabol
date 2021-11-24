@@ -4,8 +4,7 @@ import PlainButton from '~/components/PlainButton/PlainButton'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-
-const icon = `${__STATIC_IMAGES__}/icons/add_reactji_24.svg`
+import addReactjiSvg from '../../../../static/images/icons/add_reactji_24.svg'
 
 const Button = styled(PlainButton)({
   display: 'block',
@@ -50,7 +49,7 @@ const AddReactjiButton = (props: Props) => {
         ref={originRef}
         onMouseEnter={ReactjiPicker.preload}
       >
-        <AddIcon alt='' src={icon} />
+        <AddIcon alt='' src={addReactjiSvg} />
       </Button>
       {menuPortal(<ReactjiPicker menuProps={menuProps} onClick={onToggle} />)}
     </>
