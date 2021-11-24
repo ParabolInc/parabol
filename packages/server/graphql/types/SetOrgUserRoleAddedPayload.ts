@@ -5,7 +5,10 @@ import {GQLContext} from '../graphql'
 import Notification from './Notification'
 import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
 
-const SetOrgUserRoleAddedPayload = new GraphQLObjectType<any, GQLContext>({
+const SetOrgUserRoleAddedPayload: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<
+  any,
+  GQLContext
+>({
   name: 'SetOrgUserRoleAddedPayload',
   interfaces: () => [SetOrgUserRolePayload],
   fields: () => ({
@@ -13,7 +16,7 @@ const SetOrgUserRoleAddedPayload = new GraphQLObjectType<any, GQLContext>({
     notificationsAdded: {
       type: new GraphQLList(Notification),
       description: 'If promoted, notify them and give them all other admin notifications',
-      resolve: async ({notificationIdsAdded}, _args, {authToken, dataLoader}) => {
+      resolve: async ({notificationIdsAdded}, _args: unknown, {authToken, dataLoader}) => {
         if (!notificationIdsAdded) return []
         const viewerId = getUserId(authToken)
         const notifications = (

@@ -38,7 +38,7 @@ const RemoveTeamMemberPayload = new GraphQLObjectType<any, GQLContext>({
     kickOutNotification: {
       type: NotifyKickedOut,
       description: 'A notification if you were kicked out by the team leader',
-      resolve: async ({notificationId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({notificationId}, _args: unknown, {authToken, dataLoader}) => {
         if (!notificationId) return null
         const viewerId = getUserId(authToken)
         const notification = await dataLoader.get('notifications').load(notificationId)

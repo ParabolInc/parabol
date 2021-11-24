@@ -21,7 +21,7 @@ const updateEmail = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {oldEmail, newEmail}: {oldEmail: string; newEmail: string},
     {authToken}: InternalContext
   ) => {

@@ -39,7 +39,7 @@ const TeamInvitation = new GraphQLObjectType<any, GQLContext>({
     inviter: {
       type: new GraphQLNonNull(User),
       description: 'The userId of the person that sent the invitation',
-      resolve: async ({invitedBy}, _args, {dataLoader}) => {
+      resolve: async ({invitedBy}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(invitedBy)
       }
     },

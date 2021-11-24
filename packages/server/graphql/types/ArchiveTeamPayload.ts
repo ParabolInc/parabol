@@ -20,7 +20,7 @@ const ArchiveTeamPayload = new GraphQLObjectType<any, GQLContext>({
     notification: {
       type: NotifyTeamArchived,
       description: 'A notification explaining that the team was archived and removed from view',
-      resolve: async ({notificationIds}, _args, {authToken, dataLoader}) => {
+      resolve: async ({notificationIds}, _args: unknown, {authToken, dataLoader}) => {
         if (!notificationIds) return null
         const notifications = (
           await dataLoader.get('notifications').loadMany(notificationIds)

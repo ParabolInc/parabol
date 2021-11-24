@@ -16,7 +16,7 @@ const PayLaterPayload = new GraphQLObjectType<any, GQLContext>({
     meeting: {
       type: NewMeeting,
       description: 'the meetings that were showing conversion modals',
-      resolve: ({meetingId}, _args, {dataLoader}: GQLContext) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}: GQLContext) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     }

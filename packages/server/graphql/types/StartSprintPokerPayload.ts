@@ -12,13 +12,13 @@ export const StartSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     meeting: {
       type: new GraphQLNonNull(PokerMeeting),
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     team: {
       type: new GraphQLNonNull(Team),
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },

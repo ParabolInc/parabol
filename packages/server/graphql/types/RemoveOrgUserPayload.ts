@@ -53,7 +53,7 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
     kickOutNotifications: {
       type: new GraphQLList(new GraphQLNonNull(NotifyKickedOut)),
       description: 'The notifications for each team the user was kicked out of',
-      resolve: async ({kickOutNotificationIds}, _args, {authToken, dataLoader}) => {
+      resolve: async ({kickOutNotificationIds}, _args: unknown, {authToken, dataLoader}) => {
         if (!kickOutNotificationIds) return null
         const viewerId = getUserId(authToken)
         const notifications = (
@@ -65,7 +65,7 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
     removedOrgMember: {
       type: OrganizationUser,
       description: 'The organization member that got removed',
-      resolve: async ({organizationUserId}, _args, {dataLoader}) => {
+      resolve: async ({organizationUserId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('organizationUsers').load(organizationUserId)
       }
     },

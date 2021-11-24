@@ -16,7 +16,7 @@ export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     meeting: {
       type: new GraphQLNonNull(PokerMeeting),
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
@@ -25,7 +25,7 @@ export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     team: {
       type: new GraphQLNonNull(Team),
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },

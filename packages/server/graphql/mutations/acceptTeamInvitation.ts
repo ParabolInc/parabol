@@ -33,7 +33,7 @@ export default {
     perHour: 100
   })(
     async (
-      _source,
+      _source: unknown,
       {invitationToken, notificationId},
       {authToken, dataLoader, socketId: mutatorId}
     ) => {

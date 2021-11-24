@@ -4,7 +4,7 @@ import db from '../db'
 import {appendUserTmsQuery} from '../postgres/queries/generated/appendUserTmsQuery'
 import catchAndLog from '../postgres/utils/catchAndLog'
 
-const addTeamIdToTMS = async (userId, teamId) => {
+const addTeamIdToTMS = async (userId: string, teamId: string) => {
   const r = await getRethink()
   return Promise.all([
     catchAndLog(() => appendUserTmsQuery.run({id: userId, teamId}, getPg())),

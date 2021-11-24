@@ -38,14 +38,14 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     cloudName: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The name of the jira cloud where the issue lives',
-      resolve: async ({cloudId, teamId, userId}, _args, {dataLoader}) => {
+      resolve: async ({cloudId, teamId, userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId})
       }
     },
     url: {
       type: new GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue',
-      resolve: async ({cloudId, teamId, userId, issueKey}, _args, {dataLoader}) => {
+      resolve: async ({cloudId, teamId, userId, issueKey}, _args: unknown, {dataLoader}) => {
         const cloudName = await dataLoader.get('atlassianCloudName').load({cloudId, teamId, userId})
         return `https://${cloudName}.atlassian.net/browse/${issueKey}`
       }
@@ -62,7 +62,7 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     project: {
       type: JiraRemoteProject,
       description: 'The project fetched from jira',
-      resolve: async ({issueKey, teamId, userId, cloudId}, _args, {dataLoader}) => {
+      resolve: async ({issueKey, teamId, userId, cloudId}, _args: unknown, {dataLoader}) => {
         const projectKey = JiraProjectKeyId.join(issueKey)
         return dataLoader.get('jiraRemoteProject').load({cloudId, projectKey, teamId, userId})
       }

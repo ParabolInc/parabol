@@ -13,14 +13,14 @@ const AddSlackAuthPayload = new GraphQLObjectType<any, GQLContext>({
     slackIntegration: {
       type: SlackIntegration,
       description: 'The newly created auth',
-      resolve: async ({slackAuthId}, _args, {dataLoader}: GQLContext) => {
+      resolve: async ({slackAuthId}, _args: unknown, {dataLoader}: GQLContext) => {
         return dataLoader.get('slackAuths').load(slackAuthId)
       }
     },
     user: {
       type: User,
       description: 'The user with updated slackAuth',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     }

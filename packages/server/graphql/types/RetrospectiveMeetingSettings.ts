@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import db from '../../db'
 import {GQLContext} from '../graphql'
@@ -9,7 +10,10 @@ import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import ReflectTemplate, {ReflectTemplateConnection} from './ReflectTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 
-const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
+const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<
+  any,
+  GQLContext
+>({
   name: 'RetrospectiveMeetingSettings',
   description: 'The retro-specific meeting settings',
   interfaces: () => [TeamMeetingSettings],
@@ -37,14 +41,14 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
       description: 'The list of templates used to start a retrospective',
       deprecatedReason: 'renamed to teamTemplates',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingTemplatesByType').load({teamId, meetingType: 'retrospective'})
       }
     },
     teamTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
       description: 'The list of templates used to start a retrospective',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         const templates = await dataLoader
           .get('meetingTemplatesByType')
           .load({teamId, meetingType: 'retrospective' as MeetingTypeEnum})
@@ -69,7 +73,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const {orgId} = team
         const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
         const organizationTemplates = templates.filter(
-          (template) =>
+          (template: MeetingTemplate) =>
             template.scope !== 'TEAM' &&
             template.teamId !== teamId &&
             (template.type as MeetingTypeEnum) === 'retrospective'

@@ -67,7 +67,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     company: {
       type: Company,
       description: 'The assumed company this organizaiton belongs to',
-      resolve: async ({email}, _args, {authToken}) => {
+      resolve: async ({email}, _args: unknown, {authToken}) => {
         const domain = getDomainFromEmail(email)
         if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
         return {id: domain}
@@ -108,7 +108,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     isAnyBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is a billing leader on any organization, else false',
-      resolve: async ({id: userId}, _args, {dataLoader}) => {
+      resolve: async ({id: userId}, _args: unknown, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
           (organizationUser: OrganizationUserType) => organizationUser.role === 'BILLING_LEADER'
@@ -154,7 +154,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     lastMetAt: {
       type: GraphQLISO8601Type,
       description: 'the endedAt timestamp of the most recent meeting they were a member of',
-      resolve: async ({id: userId}, _args, {dataLoader}) => {
+      resolve: async ({id: userId}, _args: unknown, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const lastMetAt = Math.max(
           0,
@@ -166,7 +166,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     meetingCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of meetings the user has attended',
-      resolve: async ({id: userId}, _args, {dataLoader}) => {
+      resolve: async ({id: userId}, _args: unknown, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         return meetingMembers.length
       }
@@ -174,7 +174,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     monthlyStreakMax: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The largest number of consecutive months the user has checked into a meeting',
-      resolve: async ({id: userId}, _args, {dataLoader}) => {
+      resolve: async ({id: userId}, _args: unknown, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
           .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
@@ -187,7 +187,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       type: new GraphQLNonNull(GraphQLInt),
       description:
         'The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment',
-      resolve: async ({id: userId}, _args, {dataLoader}) => {
+      resolve: async ({id: userId}, _args: unknown, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
           .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
@@ -198,7 +198,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     suggestedActions: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SuggestedAction))),
       description: 'the most important actions for the user to perform',
-      resolve: async ({id: userId}, _args, {dataLoader, authToken}) => {
+      resolve: async ({id: userId}, _args: unknown, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
         const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
@@ -267,7 +267,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
       },
       description: 'the comments and tasks created from the discussion',
-      resolve: async (_source, {id}, {authToken, dataLoader}) => {
+      resolve: async (_source: unknown, {id}, {authToken, dataLoader}) => {
         const discussion = await dataLoader.get('discussions').load(id)
         if (!discussion) return null
         const {teamId} = discussion
@@ -284,7 +284,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     newFeature: {
       type: NewFeatureBroadcast,
       description: 'The new feature released by Parabol. null if the user already hid it',
-      resolve: ({newFeatureId}, _args, {dataLoader}) => {
+      resolve: ({newFeatureId}, _args: unknown, {dataLoader}) => {
         return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
       }
     },
@@ -372,7 +372,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     organizationUsers: {
       description: 'A single user that is connected to a single organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrganizationUser))),
-      resolve: async ({id: userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: userId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         organizationUsers.sort((a: OrganizationUserType, b: OrganizationUserType) =>
@@ -393,7 +393,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     organizations: {
       description: 'Get the list of all organizations a user belongs to',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
-      async resolve({id: userId}, _args, {authToken, dataLoader}) {
+      async resolve({id: userId}, _args: unknown, {authToken, dataLoader}) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const orgIds = organizationUsers.map(({orgId}: OrganizationUserType) => orgId)
         const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(
@@ -417,7 +417,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description:
         'a string with message stating that the user is over the free tier limit, else null',
       type: GraphQLString,
-      resolve: async (source, _args, {dataLoader}) => {
+      resolve: async (source, _args: unknown, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(source.id)
         const isAnyMemberOfPaidOrg = organizationUsers.some(
           (organizationUser: OrganizationUserType) => organizationUser.tier !== 'personal'
@@ -556,7 +556,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the user is on that the viewer can see.',
-      resolve: async ({id: userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: userId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const user = await dataLoader.get('users').load(userId)
         const teamIds =
@@ -601,7 +601,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     tms: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'all the teams the user is a part of that the viewer can see',
-      resolve: ({id: userId, tms}, _args, {authToken}) => {
+      resolve: ({id: userId, tms}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId
           ? tms
@@ -620,7 +620,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description: 'The other user'
         }
       },
-      resolve: async (_source, {userId}, {authToken, dataLoader}) => {
+      resolve: async (_source: unknown, {userId}, {authToken, dataLoader}) => {
         const userOnTeam = await dataLoader.get('users').load(userId)
         // const teams = new Set(userOnTeam)
         const {tms} = userOnTeam

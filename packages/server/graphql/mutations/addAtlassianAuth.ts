@@ -21,7 +21,11 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {code, teamId}, {authToken, socketId: mutatorId, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {code, teamId},
+    {authToken, socketId: mutatorId, dataLoader}
+  ) => {
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
