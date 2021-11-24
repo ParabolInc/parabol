@@ -40,8 +40,8 @@
     "typecheck": "lerna run --parallel --no-bail typecheck",
     "update-schema": "node scripts/updateSchemaCLI.js",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
-    "pre-commit": "lerna run --concurrency 1 --stream precommit",
-    "post-commit": "git update-index --again",
+    "precommit": "lerna run --stream precommit",
+    "postcommit": "git update-index --again",
     "prepare": "husky install"
   },
   "resolutions": {
