@@ -4,6 +4,7 @@
  */
 import {Span, SpanOptions, TraceOptions, Tracer} from 'dd-trace'
 import {
+  DefinitionNode,
   DocumentNode,
   ExecutionResult,
   GraphQLField,
@@ -11,10 +12,17 @@ import {
   GraphQLObjectType,
   GraphQLOutputType,
   GraphQLResolveInfo,
-  GraphQLSchema
+  GraphQLSchema,
+  OperationDefinitionNode
 } from 'graphql'
 import {Path} from 'graphql/jsutils/Path'
 import {CompiledQuery, compileQuery, CompilerOptions, isCompiledQuery} from 'graphql-jit'
+
+interface ExecutionArgs {
+  rootValue?: any
+  contextValue?: any
+  variableValues?: any
+}
 
 interface Config {
   /**
@@ -32,6 +40,17 @@ interface Config {
    * @default -1
    */
   depth?: number
+
+  /**
+   * An object of optional callbacks to be executed during the respective
+   * phase of a GraphQL operation. Undefined callbacks default to a noop
+   * function.
+   *
+   * @default {}
+   */
+  hooks?: {
+    execute?: (span: Span, args: ExecutionArgs, res?: any) => void
+  }
 }
 
 /**
@@ -50,7 +69,10 @@ export function tracedCompileQuery(tracer: Tracer, config: Config) {
     wrapSchema(tracer, config, schema)
     const query = compileQuery(schema, document, operationName, partialOptions)
     if (isCompiledQuery(query)) {
-      wrapCompiledQuery(tracer, query)
+      const operation = getOperation(document, operationName)
+      const type = operation?.operation
+      const name = operation?.name?.value
+      wrapCompiledQuery(tracer, config, query, name, type)
     }
     return query
   }
@@ -64,10 +86,17 @@ type PatchedMarker = {
  * Wrap the query function of a `CompiledQuery` to trace it.
  * This needs the schema wrapped with {@see wrapSchema}.
  */
-function wrapCompiledQuery(tracer: Tracer, compiledQuery: CompiledQuery) {
+function wrapCompiledQuery(
+  tracer: Tracer,
+  config: Config,
+  compiledQuery: CompiledQuery,
+  operationName?: string,
+  operationType?: string
+) {
   const query = compiledQuery.query
   if ((query as PatchedMarker)._datadog_patched) return
 
+  const resourceName = `${operationType} ${operationName}`
   const wrappedQuery = async (
     root: any,
     context: PatchedContext,
@@ -77,10 +106,11 @@ function wrapCompiledQuery(tracer: Tracer, compiledQuery: CompiledQuery) {
       'graphql',
       {
         tags: {
-          'graphql.operation.name': compiledQuery.operationName
+          'graphql.operation.name': operationName,
+          'graphql.operation.type': operationType
         },
         type: 'graphql',
-        resource: compiledQuery.operationName,
+        resource: resourceName,
         measured: true
       } as TraceOptions & SpanOptions,
       async (span) => {
@@ -93,6 +123,11 @@ function wrapCompiledQuery(tracer: Tracer, compiledQuery: CompiledQuery) {
 
         try {
           const result = await scope.activate(span, () => query(root, context, variables))
+          config.hooks?.execute?.(
+            span,
+            {rootValue: root, contextValue: context, variableValues: variables},
+            result
+          )
           return result
         } catch (error) {
           span.setTag('error', error)
@@ -131,14 +166,14 @@ function wrapSchema(tracer: Tracer, config: Config, schema: GraphQLSchema) {
   wrapFields(tracer, config, schema.getMutationType())
 }
 
-export interface Field {
+interface Field {
   parent?: Field
   span: Span
   error?: any
   finishTime?: number
 }
 
-export type PatchedContext = {
+type PatchedContext = {
   _datadog_graphql: {
     span: Span
     fields: {[name: string]: Field}
@@ -228,7 +263,7 @@ function wrappedResolve(
 
 function getParentField(context: PatchedContext, path: (string | number)[]) {
   for (let i = path.length - 1; i > 0; i--) {
-    const field = getField(context, path.slice(0, i))
+    const field = context._datadog_graphql.fields[path.slice(0, i).join('.')]
 
     if (field) {
       return field
@@ -240,26 +275,18 @@ function getParentField(context: PatchedContext, path: (string | number)[]) {
   }
 }
 
-function getField(contextValue: PatchedContext, path: (string | number)[]) {
-  return contextValue._datadog_graphql.fields[path.join('.')]
-}
-
-function startSpan(tracer: Tracer, name: string, options?: {childOf?: Span}) {
-  return tracer.startSpan(`graphql.${name}`, {
-    childOf: options?.childOf ?? tracer.scope().active() ?? undefined,
-    tags: {
-      'span.type': 'graphql'
-    }
-  })
-}
-
 function startResolveSpan(
   tracer: Tracer,
   childOf: Span,
   path: (string | number)[],
   info: GraphQLResolveInfo
 ) {
-  const span = startSpan(tracer, 'resolve', {childOf})
+  const span = tracer.startSpan('graphql.resolve', {
+    childOf: childOf ?? tracer.scope().active() ?? undefined,
+    tags: {
+      'span.type': 'graphql'
+    }
+  })
 
   span.addTags({
     'resource.name': `${info.fieldName}:${info.returnType}`,
@@ -308,7 +335,23 @@ function pathToArray(path: Path) {
 }
 
 function withCollapse(responsePathAsArray: typeof pathToArray) {
-  return function(path: Path) {
+  return function (path: Path) {
     return responsePathAsArray(path).map((segment) => (typeof segment === 'number' ? '*' : segment))
+  }
+}
+
+function isOperationDefinitionNode(node: DefinitionNode): node is OperationDefinitionNode {
+  return ['query', 'mutation', 'subscription'].includes((node as OperationDefinitionNode).operation)
+}
+
+function getOperation(document: DocumentNode, operationName?: string) {
+  const definitions = document.definitions
+
+  if (operationName) {
+    return definitions
+      .filter(isOperationDefinitionNode)
+      .find((def) => operationName === def.name?.value)
+  } else {
+    return definitions.find(isOperationDefinitionNode)
   }
 }
