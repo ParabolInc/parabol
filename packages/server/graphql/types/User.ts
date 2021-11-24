@@ -454,7 +454,6 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
         const {meetingId} = retroReflectionGroup
         const meetingMemberId = MeetingMemberId.join(meetingId, userId)
-        const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
           dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
