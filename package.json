@@ -72,6 +72,7 @@
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "5.64.1",
     "webpack-cli": "4.9.1",
+    "@parabol/webpack-autodll-plugin": "^1.2.4",
     "yarn-deduplicate": "^3.1.0"
   },
   "husky": {

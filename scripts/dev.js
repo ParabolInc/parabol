@@ -46,7 +46,6 @@ const dev = async (maybeInit) => {
   }
   // Enable this if you're creating new github schemas
   // await generate(codegenSchema)
-  const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
   const migrateRethinkDB = require('./migrate')()
   // wait for the rethinkdb migration to happen n case the pg migration depends on it or closes the connection prematurely
@@ -65,7 +64,7 @@ const dev = async (maybeInit) => {
     await require('./compileRelay')()
   }
   // await compileServers()
-  await Promise.all([clearRedis, migratePG, buildDLL])
+  await Promise.all([clearRedis, migratePG])
   redis.disconnect()
 }
 
