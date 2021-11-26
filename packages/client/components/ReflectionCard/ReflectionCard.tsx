@@ -105,7 +105,7 @@ const ReflectionCard = (props: Props) => {
   const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const [editorState, setEditorState] = useEditorState(content)
+  const [editorState, setEditorState] = useEditorState(content, meeting?.spotlightSearchQuery)
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
@@ -330,6 +330,7 @@ export default createFragmentContainer(ReflectionCard, {
       spotlightGroup {
         id
       }
+      spotlightSearchQuery
     }
   `
 })

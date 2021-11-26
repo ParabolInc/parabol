@@ -107,6 +107,7 @@ const ReflectionGroup = (props: Props) => {
             isViewerDragging
           }
         }
+        spotlightSearchQuery
       }
     `,
     meetingRef
@@ -135,6 +136,8 @@ const ReflectionGroup = (props: Props) => {
             dragUserId
             isSpotlight
           }
+          content
+          plaintextContent
         }
         isExpanded
       }
@@ -228,6 +231,31 @@ const ReflectionGroup = (props: Props) => {
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
     !isSpotlightSrcGroup
+
+  let visibleReflectionsSorted
+  let staticReflectionsSorted
+
+  const searchQuery = meeting?.spotlightSearchQuery
+  if (searchQuery != null && visibleReflections.length > 1) {
+    const searchQueryLower = searchQuery.toLowerCase()
+    const matchIndex = visibleReflections.findIndex((ref) => {
+      const textLower = ref.plaintextContent.toLowerCase()
+      return textLower.indexOf(searchQueryLower) !== -1
+    })
+
+    if (matchIndex > 0) {
+      visibleReflectionsSorted = [...visibleReflections]
+      staticReflectionsSorted = [...staticReflections]
+
+      // Move reflection to top
+      visibleReflectionsSorted.unshift(visibleReflectionsSorted.splice(matchIndex, 1)[0])
+      const staticIndex = staticReflections.indexOf(visibleReflections[matchIndex])
+      if (staticIndex > 0) {
+        staticReflectionsSorted.unshift(staticReflectionsSorted.splice(staticIndex, 1)[0])
+      }
+    }
+  }
+
   return (
     <>
       {portal(
@@ -243,8 +271,8 @@ const ReflectionGroup = (props: Props) => {
             />
           }
           phaseRef={phaseRef}
-          staticReflections={staticReflections}
-          reflections={visibleReflections}
+          staticReflections={staticReflectionsSorted ?? staticReflections}
+          reflections={visibleReflectionsSorted ?? visibleReflections}
           scrollRef={scrollRef}
           bgRef={bgRef}
           setItemsRef={setItemsRef}
@@ -273,8 +301,8 @@ const ReflectionGroup = (props: Props) => {
           />
         )}
         <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
-          {visibleReflections.map((reflection) => {
-            const staticIdx = staticReflections.indexOf(reflection)
+          {(visibleReflectionsSorted ?? visibleReflections).map((reflection) => {
+            const staticIdx = (staticReflectionsSorted ?? staticReflections).indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
             return (
               <ReflectionWrapper
