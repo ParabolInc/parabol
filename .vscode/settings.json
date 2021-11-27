@@ -1,8 +1,6 @@
 {
   "git.ignoreLimitWarning": true,
-  "eslint.packageManager": "yarn",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.tabSize": 2,
   "eslint.workingDirectories": [
     {
       "directory": "./packages/server",
@@ -16,20 +14,11 @@
   "eslint.validate": [
     "javascript",
     "javascriptreact",
-    {
-      "language": "typescript",
-      "autoFix": true
-    },
-    {
-      "language": "typescriptreact",
-      "autoFix": true
-    }
+    "typescript",
+    "typescriptreact"
   ],
+  "eslint.packageManager": "yarn",
   "npm.packageManager": "yarn",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "javascript.format.semicolons": "remove",
   "javascript.preferences.quoteStyle": "single",
   "javascript.preferences.useAliasesForRenames": false,
@@ -38,6 +27,8 @@
   "typescript.preferences.useAliasesForRenames": false,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "editor.formatOnSave": true,
   "editor.gotoLocation.multipleDefinitions": "goto",
   "editor.gotoLocation.multipleTypeDefinitions": "goto",
