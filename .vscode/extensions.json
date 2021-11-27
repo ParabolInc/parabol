@@ -1,3 +1,3 @@
 {
-  "recommendations": ["esbenp.prettier-vscode"]
+  "recommendations": ["dbaeumer.vscode-eslint", "graphql.vscode-graphql", "christian-kohler.path-intellisense"]
 }
