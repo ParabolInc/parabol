@@ -2,15 +2,14 @@ import {GraphQLNonNull} from 'graphql'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
-import db from '../../../db'
+import updateUser from '../../../postgres/queries/updateUser'
 import {getUserId} from '../../../utils/authorization'
+import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
+import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import User from '../../types/User'
-import getRedis from '../../../utils/getRedis'
-import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
-import updateUser from '../../../postgres/queries/updateUser'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -38,7 +37,7 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    const user = await db.read('User', userId)
+    const user = await dataLoader.get('users').load(userId)
     if (!user) {
       throw new Error('User does not exist')
     }
@@ -55,13 +54,14 @@ export default {
       // TODO: re-identify
     }
     const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
-    const updates = {
-      inactive: false,
-      lastSeenAt: now,
-      updatedAt: now
-    }
     if (!datesAreOnSameDay) {
-      await Promise.all([updateUser(updates, userId), db.write('User', userId, updates)])
+      await updateUser(
+        {
+          inactive: false,
+          lastSeenAt: now
+        },
+        userId
+      )
     }
     const socketCount = await redis.rpush(
       `presence:${userId}`,

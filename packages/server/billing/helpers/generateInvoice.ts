@@ -1,20 +1,19 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import generateUID from '../../generateUID'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
 import Coupon from '../../database/types/Coupon'
-import Invoice from '../../database/types/Invoice'
+import Invoice, {InvoiceStatusEnum} from '../../database/types/Invoice'
+import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
 import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
 import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
 import NextPeriodCharges from '../../database/types/NextPeriodCharges'
 import Organization from '../../database/types/Organization'
 import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
-import db from '../../db'
+import generateUID from '../../generateUID'
+import {DataLoaderWorker} from '../../graphql/graphql'
+import isValid from '../../graphql/isValid'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import StripeManager from '../../utils/StripeManager'
-import {InvoiceStatusEnum} from '../../database/types/Invoice'
-import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
-import {getUsersByIds} from '../../postgres/queries/getUsersByIds'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -70,8 +69,8 @@ interface DetailedLineItemDict {
   INACTIVITY_ADJUSTMENTS: ReducedItem[]
 }
 
-const getEmailLookup = async (userIds: string[]) => {
-  const usersAndEmails = await db.readMany('User', userIds)
+const getEmailLookup = async (userIds: string[], dataLoader: DataLoaderWorker) => {
+  const usersAndEmails = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
   return usersAndEmails.reduce((dict, doc) => {
     if (doc) {
       dict[doc.id] = doc.email
@@ -171,10 +170,10 @@ const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) =>
   return quantityChangeLineItems
 }
 
-const makeDetailedLineItems = async (itemDict: ItemDict) => {
+const makeDetailedLineItems = async (itemDict: ItemDict, dataLoader: DataLoaderWorker) => {
   // Make lookup table to get user Emails
   const userIds = Object.keys(itemDict)
-  const emailLookup = await getEmailLookup(userIds)
+  const emailLookup = await getEmailLookup(userIds, dataLoader)
   const detailedLineItems = {
     ADDED_USERS: [] as ReducedStandardPartial[],
     REMOVED_USERS: [] as ReducedStandardPartial[],
@@ -296,7 +295,8 @@ export default async function generateInvoice(
   invoice: Stripe.invoices.IInvoice,
   stripeLineItems: Stripe.invoices.IInvoiceLineItem[],
   orgId: string,
-  invoiceId: string
+  invoiceId: string,
+  dataLoader: DataLoaderWorker
 ) {
   const r = await getRethink()
   const now = new Date()
@@ -308,7 +308,7 @@ export default async function generateInvoice(
     itemDict,
     invoice.subscription as string
   )
-  const detailedLineItems = await makeDetailedLineItems(itemDict)
+  const detailedLineItems = await makeDetailedLineItems(itemDict, dataLoader)
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems)
   const invoiceLineItems = [
     ...unknownInvoiceLines.map(
@@ -352,7 +352,7 @@ export default async function generateInvoice(
       .coerceTo('array')('userId') as unknown) as string[]
   }).run()
 
-  const billingLeaders = await getUsersByIds(billingLeaderIds)
+  const billingLeaders = (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
   const billingLeaderEmails = billingLeaders.map((user) => user.email)
 
   const couponDetails = (invoice.discount && invoice.discount.coupon) || null

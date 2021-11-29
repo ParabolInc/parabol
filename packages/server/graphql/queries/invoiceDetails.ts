@@ -45,6 +45,6 @@ export default {
     ) {
       return currentInvoice
     }
-    return generateUpcomingInvoice(orgId)
+    return generateUpcomingInvoice(orgId, dataLoader)
   }
 } as any
