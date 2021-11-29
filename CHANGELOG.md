@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.38.0 2021-Nov-24
+
+### Added
+
+- Spotlight: remote animation edge cases (#5621)
+- Make RetroReflection opened in spotlight by another member non-droppable (#5556)
+- Added set new team lead mutation to internal schema (#5658)
+
+### Fixed
+
+- Console errors when remotely ungrouping (#5677)
+- fix relay error on drag end (#5674)
+- Fix missing isSpotlight in useSpotlightReflectionGroup (#5689)
+- Ironbank security patches for v6.36.0 (#5687)
+- Fix sticky tooltip in agenda item pins (#5700)
+- Fix dail_user_stat to order by user counts (#5693)
+- remove hasAuth from scopephaseareaadd (#5711)
+- Fix no implicit any errors (Part 3 of 8) (#5697)
+
+### Changed
+
+- Show all packages errors on yarn typecheck (#5688)
+- add frozen-lockfile so CI breaks if yarn.lock doesn't package.json
+- bump eslint to v8 (#5695)
+- favor built assets over \_\_STATIC_IMAGES\_\_ (#4847)
+- Remove wrtc signal server (#5698)
+
 ## 6.37.0 2021-Nov-18
 
 ### Added
