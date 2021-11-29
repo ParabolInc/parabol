@@ -85,7 +85,7 @@ const UserColumnsContainer = (props: Props) => {
       <TaskColumns
         area={areaForTaskCard}
         tasks={filteredTasks}
-        myTeamMemberId={toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)}
+        myTeamMemberId={toTeamMemberId(filteredTeams[0]!.id, userIds ? userIds[0]! : viewer.id)}
         teams={filteredTeams}
       />
     )

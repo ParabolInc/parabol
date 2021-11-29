@@ -412,6 +412,12 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
   } as Partial<IRetrospectiveMeeting>
 }
 
+type BaseUser = {
+  preferredName: string
+  email: string
+  picture: string
+}
+
 const initDB = (botScript) => {
   const baseUsers = [
     {
@@ -421,7 +427,7 @@ const initDB = (botScript) => {
     },
     getDemoAvatar(1),
     getDemoAvatar(2)
-  ]
+  ] as BaseUser[]
   const users = baseUsers.map(
     ({preferredName, email, picture}, idx) => new DemoUser(preferredName, email, picture, idx)
   )
@@ -432,13 +438,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ; (user as any).teamMember = teamMembers[idx]
+    ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ; (teamMember as any).team = team
+    ;(teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0

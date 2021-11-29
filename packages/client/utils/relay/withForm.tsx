@@ -101,7 +101,7 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
         return
       }
       const field = this.state.fields[name]
-      if (!field.dirty) {
+      if (!field?.dirty) {
         this.setState({
           fields: {
             ...this.state.fields,

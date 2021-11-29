@@ -55,7 +55,7 @@ const DashNavList = (props: Props) => {
       const {id: orgId, name: orgName} = organization
       const key = `${orgName}:${orgId}`
       teamsByOrgId[key] = teamsByOrgId[key] || []
-      teamsByOrgId[key].push(team)
+      teamsByOrgId[key]?.push(team)
     })
     return Object.entries(teamsByOrgId).sort((a, b) =>
       a[0].toLowerCase() < b[0].toLowerCase() ? -1 : 1
@@ -73,35 +73,35 @@ const DashNavList = (props: Props) => {
     <DashNavListStyles>
       {isSingleOrg
         ? teams.map((team) => (
-          <LeftDashNavItem
-            className={className}
-            onClick={onClick}
-            key={team.id}
-            icon={team.isPaid ? 'group' : 'warning'}
-            href={`/team/${team.id}`}
-            label={team.name}
-          />
-        ))
+            <LeftDashNavItem
+              className={className}
+              onClick={onClick}
+              key={team.id}
+              icon={team.isPaid ? 'group' : 'warning'}
+              href={`/team/${team.id}`}
+              label={team.name}
+            />
+          ))
         : teamsByOrgKey.map((entry, idx) => {
-          const [key, teams] = entry
-          const name = key.slice(0, key.lastIndexOf(':'))
-          return (
-            <Fragment key={key}>
-              <OrgName>{name}</OrgName>
-              {teams.map((team) => (
-                <LeftDashNavItem
-                  className={className}
-                  onClick={onClick}
-                  key={team.id}
-                  icon={team.isPaid ? 'group' : 'warning'}
-                  href={`/team/${team.id}`}
-                  label={team.name}
-                />
-              ))}
-              {idx !== teamsByOrgKey.length - 1 && <DashHR />}
-            </Fragment>
-          )
-        })}
+            const [key, teams] = entry
+            const name = key.slice(0, key.lastIndexOf(':'))
+            return (
+              <Fragment key={key}>
+                <OrgName>{name}</OrgName>
+                {teams.map((team) => (
+                  <LeftDashNavItem
+                    className={className}
+                    onClick={onClick}
+                    key={team.id}
+                    icon={team.isPaid ? 'group' : 'warning'}
+                    href={`/team/${team.id}`}
+                    label={team.name}
+                  />
+                ))}
+                {idx !== teamsByOrgKey.length - 1 && <DashHR />}
+              </Fragment>
+            )
+          })}
     </DashNavListStyles>
   )
 }
