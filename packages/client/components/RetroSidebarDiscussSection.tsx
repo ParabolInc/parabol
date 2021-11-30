@@ -4,6 +4,7 @@ import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
+import {DeepNonNullable} from '~/types/generics'
 import {RetroSidebarDiscussSection_meeting} from '~/__generated__/RetroSidebarDiscussSection_meeting.graphql'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
@@ -57,14 +58,16 @@ const ScrollWrapper = styled('div')({
   height: '100%'
 })
 
+type NonNullPhase = DeepNonNullable<RetroSidebarDiscussSection_meeting['phases'][0]>
+
 const RetroSidebarDiscussSection = (props: Props) => {
   const {atmosphere, gotoStageId, handleMenuClick, meeting} = props
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
-  const discussPhase = phases!.find(({phaseType}) => phaseType === 'discuss')!
+  const discussPhase = phases.find(({phaseType}) => phaseType === 'discuss')
   // assert that the discuss phase and its stages are non-null
   // since we render this component when the vote phase is complete
   // see: RetroSidebarPhaseListItemChildren.tsx
-  const {stages} = discussPhase!
+  const {stages} = discussPhase as NonNullPhase
   const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
 
@@ -80,18 +83,18 @@ const RetroSidebarDiscussSection = (props: Props) => {
       return
     }
 
-    const sourceTopic = stages![source.index]
-    const destinationTopic = stages![destination.index]
+    const sourceTopic = stages[source.index]
+    const destinationTopic = stages[destination.index]!
 
     let sortOrder
     if (destination.index === 0) {
       sortOrder = destinationTopic.sortOrder - SORT_STEP + dndNoise()
-    } else if (destination.index === stages!.length - 1) {
+    } else if (destination.index === stages.length - 1) {
       sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stages![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 +
+        (stages[destination.index + offset]!.sortOrder + destinationTopic.sortOrder) / 2 +
         dndNoise()
     }
 
@@ -111,7 +114,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
           {(provided) => {
             return (
               <ScrollWrapper data-cy='discussion-section' ref={provided.innerRef}>
-                {stages!.map((stage, idx) => {
+                {stages.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
                   const {title, voteCount} = reflectionGroup
