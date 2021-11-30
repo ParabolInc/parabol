@@ -23,6 +23,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fix dail_user_stat to order by user counts (#5693)
 - remove hasAuth from scopephaseareaadd (#5711)
 - Fix no implicit any errors (Part 3 of 8) (#5697)
+- Invitation required screen right after creating a new team #5721
 
 ### Changed
 
