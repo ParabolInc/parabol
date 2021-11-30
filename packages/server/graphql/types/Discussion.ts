@@ -6,9 +6,9 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -52,11 +52,11 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
     commentors: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The users writing a comment right now',
-      resolve: async ({id: discussionId}) => {
+      resolve: async ({id: discussionId}, _args: unknown, {dataLoader}) => {
         const redis = getRedis()
         const userIds = await redis.smembers(`commenting:${discussionId}`)
         if (userIds.length === 0) return []
-        const users = await db.readMany('User', userIds)
+        const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
         return users
       }
     },

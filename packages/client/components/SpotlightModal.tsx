@@ -117,7 +117,11 @@ const SpotlightModal = (props: Props) => {
         />
         <SpotlightSearchBar meetingRef={meeting} />
       </SourceSection>
-      <SpotlightResultsRoot phaseRef={modalRef} meetingRef={meeting} />
+      <SpotlightResultsRoot
+        phaseRef={modalRef}
+        meetingRef={meeting}
+        isSpotlightEntering={portalStatus === PortalStatus.Entering}
+      />
     </Modal>
   )
 }

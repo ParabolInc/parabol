@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLString} from 'graphql'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
+import {InternalContext} from '../../graphql'
 import User from '../../types/User'
 
 const user = {
@@ -17,12 +17,16 @@ const user = {
     }
   },
   description: 'Dig into a user by providing the email or userId',
-  async resolve(_source: unknown, {email, userId}: {email: string; userId: string}, {authToken}) {
+  async resolve(
+    _source: unknown,
+    {email, userId}: {email: string; userId: string},
+    {authToken, dataLoader}: InternalContext
+  ) {
     requireSU(authToken)
     if (email) {
       return getUserByEmail(email)
     }
-    return db.read('User', userId)
+    return dataLoader.get('users').load(userId)
   }
 }
 

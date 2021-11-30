@@ -26,11 +26,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const isUpcoming = invoiceId.startsWith('upcoming_')
-    const currentInvoice = await r
-      .table('Invoice')
-      .get(invoiceId)
-      .default(null)
-      .run()
+    const currentInvoice = await r.table('Invoice').get(invoiceId).default(null).run()
     const orgId = (currentInvoice && currentInvoice.orgId) || invoiceId.substring(9) // remove 'upcoming_'
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
       standardError(new Error('Not organization lead'), {userId: viewerId})
@@ -45,6 +41,6 @@ export default {
     ) {
       return currentInvoice
     }
-    return generateUpcomingInvoice(orgId)
+    return generateUpcomingInvoice(orgId, dataLoader)
   }
 } as any

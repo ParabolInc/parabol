@@ -1,11 +1,10 @@
 import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
-import updateUser from '../../../postgres/queries/updateUser'
 import GraphQLEmailType from '../../types/GraphQLEmailType'
-import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import db from '../../../db'
 
 const updateEmail = {
   type: new GraphQLNonNull(GraphQLBoolean),
@@ -47,11 +46,7 @@ const updateEmail = {
       updatedAt: new Date()
     }
     await Promise.all([
-      r
-        .table('User')
-        .get(userId)
-        .update(updates)
-        .run(),
+      r.table('User').get(userId).update(updates).run(),
       r
         .table('TeamMember')
         .getAll(userId, {index: 'userId'})
@@ -59,8 +54,7 @@ const updateEmail = {
           email: newEmail
         })
         .run(),
-      updateUser(updates, userId),
-      db.write('User', userId, updates)
+      updateUser(updates, userId)
     ])
 
     return true
