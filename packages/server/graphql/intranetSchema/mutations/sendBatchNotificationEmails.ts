@@ -11,7 +11,7 @@ const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),
   description:
     'Send summary emails of unread notifications to all users who have not been seen within the last 24 hours',
-  async resolve(_source, _args, {authToken}) {
+  async resolve(_source: unknown, _args: unknown, {authToken}) {
     // AUTH
     requireSU(authToken)
 

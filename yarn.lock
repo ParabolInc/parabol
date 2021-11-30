@@ -2732,15 +2732,6 @@
     shortid "^2.2.12"
     tslib "^1.9.3"
 
-"@mattkrick/fast-rtc-swarm@^0.4.0":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.4.1.tgz#1024c4aff66ba1e2a408d5435206c7bda3f32a44"
-  integrity sha512-4KX4MmX3q/K9Pkw4MqRF8dw2sCW1Q2Hmq8UedNnGg8usUrrMOIJQIkO9sAEShZF3tmQ0YWouXA4cNoLg3Lvnbg==
-  dependencies:
-    "@mattkrick/fast-rtc-peer" "^0.4.1"
-    eventemitter3 "^3.1.0"
-    tslib "^1.9.3"
-
 "@mattkrick/graphql-trebuchet-client@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-2.1.0.tgz#7c4a4e8f8b3bc3d2e6acc3081317f9059a1028ca"

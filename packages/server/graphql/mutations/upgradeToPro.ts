@@ -24,7 +24,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {orgId, stripeToken},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {

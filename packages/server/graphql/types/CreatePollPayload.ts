@@ -15,7 +15,7 @@ export const CreatePollSuccess = new GraphQLObjectType<any, GQLContext>({
     poll: {
       type: new GraphQLNonNull(Poll),
       description: 'the poll just created',
-      resolve: async ({pollId}, _args, {dataLoader}) => {
+      resolve: async ({pollId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('polls').load(pollId)
       }
     }

@@ -19,7 +19,7 @@ const ResetPasswordPayload = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: User,
       description: 'the user that changed their password',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return userId ? dataLoader.get('users').load(userId) : null
       }
     }

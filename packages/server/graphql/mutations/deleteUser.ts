@@ -1,16 +1,15 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import db from '../../db'
+import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import {getUserById} from '../../postgres/queries/getUsersByIds'
+import updateUser from '../../postgres/queries/updateUser'
 import {getUserId, isSuperUser} from '../../utils/authorization'
+import getDeletedEmail from '../../utils/getDeletedEmail'
 import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
-import updateUser from '../../postgres/queries/updateUser'
-import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import removeSlackAuths from './helpers/removeSlackAuths'
-import getDeletedEmail from '../../utils/getDeletedEmail'
-import {getUserById} from '../../postgres/queries/getUsersByIds'
-import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {
   type: new GraphQLNonNull(DeleteUserPayload),
@@ -31,11 +30,7 @@ export default {
   },
   resolve: async (
     _source: unknown,
-    {
-      userId,
-      email,
-      reason
-    }: {userId?: string | null; email?: string | null; reason?: string | null},
+    {userId, email, reason},
     {authToken, dataLoader}: GQLContext
   ) => {
     // AUTH
@@ -74,15 +69,15 @@ export default {
       })
     }
     // do this after 30 seconds so any segment API calls can still get the email
-    const update = {
-      isRemoved: true,
-      email: getDeletedEmail(userId),
-      reasonRemoved: validReason,
-      updatedAt: new Date()
-    }
     setTimeout(() => {
-      db.write('User', userIdToDelete, update)
-      updateUser(update, userIdToDelete)
+      updateUser(
+        {
+          isRemoved: true,
+          email: getDeletedEmail(userId),
+          reasonRemoved: validReason
+        },
+        userIdToDelete
+      )
     }, 30000)
     return {}
   }

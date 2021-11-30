@@ -12,7 +12,7 @@ const FlagConversionModalPayload = new GraphQLObjectType<any, GQLContext>({
     org: {
       type: Organization,
       description: 'the org with the limit added or removed',
-      resolve: ({orgId}, _args, {dataLoader}) => {
+      resolve: ({orgId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('organizations').load(orgId)
       }
     }

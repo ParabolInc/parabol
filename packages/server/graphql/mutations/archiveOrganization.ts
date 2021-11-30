@@ -56,7 +56,7 @@ export default {
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}: IGetTeamsByIdsQueryResult) => id)
     const teamArchiveResults = (await Promise.all(
-      teamIds.map((teamId: string) => safeArchiveTeam(teamId))
+      teamIds.map((teamId: string) => safeArchiveTeam(teamId, dataLoader))
     )) as any
     const allRemovedSuggestedActionIds = [] as string[]
     const allUserIds = [] as string[]

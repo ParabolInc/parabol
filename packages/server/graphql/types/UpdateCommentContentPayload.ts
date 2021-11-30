@@ -9,7 +9,7 @@ export const UpdateCommentContentSuccess = new GraphQLObjectType<any, GQLContext
     comment: {
       type: new GraphQLNonNull(Comment),
       description: 'the comment with updated content',
-      resolve: async ({commentId}, _args, {dataLoader}) => {
+      resolve: async ({commentId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('comments').load(commentId)
       }
     }

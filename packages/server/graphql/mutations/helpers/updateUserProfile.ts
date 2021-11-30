@@ -1,17 +1,16 @@
-import {getUserId, isAuthenticated} from '../../../utils/authorization'
-import getRethink from '../../../database/rethinkDriver'
-import standardError from '../../../utils/standardError'
-import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema'
-import {JSDOM} from 'jsdom'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
-import linkify from 'parabol-client/utils/linkify'
-import TeamMember from '../../../database/types/TeamMember'
-import db from '../../../db'
-import segmentIo from '../../../utils/segmentIo'
-import publish from '../../../utils/publish'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {JSDOM} from 'jsdom'
 import fetch from 'node-fetch'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import linkify from 'parabol-client/utils/linkify'
+import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema'
+import getRethink from '../../../database/rethinkDriver'
+import TeamMember from '../../../database/types/TeamMember'
 import updateUser from '../../../postgres/queries/updateUser'
+import {getUserId, isAuthenticated} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
+import segmentIo from '../../../utils/segmentIo'
+import standardError from '../../../utils/standardError'
 import {UpdateUserProfileInputType} from '../../types/UpdateUserProfileInput'
 
 const updateUserProfile = async (
@@ -20,7 +19,6 @@ const updateUserProfile = async (
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
-  const now = new Date()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
@@ -30,7 +28,8 @@ const updateUserProfile = async (
 
   // VALIDATION
   const schema = makeUserServerSchema()
-  const {data: validUpdatedUser, errors} = schema(updatedUser) as any
+  const {data: validUpdatedUser, errors}: {data: UpdateUserProfileInputType; errors: any[]} =
+    schema(updatedUser) as any
   if (Object.keys(errors).length) {
     return standardError(new Error('Failed input validation'), {userId})
   }
@@ -55,20 +54,19 @@ const updateUserProfile = async (
   }
 
   // RESOLUTION
-  const updates = {
-    ...validUpdatedUser,
-    updatedAt: now
-  }
   // propagate denormalized changes to TeamMember
+  const updateObj = {
+    picture: validUpdatedUser.picture ?? undefined,
+    preferredName: validUpdatedUser.preferredName ?? undefined
+  }
   const [teamMembers] = await Promise.all([
-    (r
+    r
       .table('TeamMember')
       .getAll(userId, {index: 'userId'})
-      .update(updates, {returnChanges: true})('changes')('new_val')
+      .update(updateObj, {returnChanges: true})('changes')('new_val')
       .default([])
-      .run() as unknown) as TeamMember[],
-    db.write('User', userId, updates),
-    updateUser(updates, userId)
+      .run() as unknown as TeamMember[],
+    updateUser(updateObj, userId)
   ])
   //
   // If we ever want to delete the previous profile images:

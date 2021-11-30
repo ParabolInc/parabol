@@ -19,7 +19,7 @@ const CreateTaskPayload = new GraphQLObjectType<any, GQLContext>({
     },
     involvementNotification: {
       type: NotifyTaskInvolves,
-      resolve: async ({notificationIds}, _args, {authToken, dataLoader}) => {
+      resolve: async ({notificationIds}, _args: unknown, {authToken, dataLoader}) => {
         if (!notificationIds) return null
         const notifications = (
           await dataLoader.get('notifications').loadMany(notificationIds)

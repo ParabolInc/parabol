@@ -15,7 +15,7 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     team: {
       type: new GraphQLNonNull(Team),
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return teamId ? dataLoader.get('teams').load(teamId) : null
       }
     },
@@ -33,7 +33,7 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
     timelineEvent: {
       type: new GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
-      resolve: async ({timelineEventId}, _args, {dataLoader}) => {
+      resolve: async ({timelineEventId}, _args: unknown, {dataLoader}) => {
         return await dataLoader.get('timelineEvents').load(timelineEventId)
       }
     }
