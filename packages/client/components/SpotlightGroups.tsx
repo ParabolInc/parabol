@@ -4,10 +4,10 @@ import React, {RefObject, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {ElementHeight, ElementWidth} from '~/types/constEnums'
-import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 import useGroupMatrix from '../hooks/useGroupMatrix'
 import useResultsHeight from '~/hooks/useResultsHeight'
 import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
+import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 
 const SimilarGroups = styled('div')({
   padding: '40px 0px 24px',
@@ -59,6 +59,7 @@ const SpotlightGroups = (props: Props) => {
               ...ReflectionGroup_meeting
               id
               teamId
+              spotlightSearchQuery
               localPhase {
                 phaseType
               }
@@ -87,9 +88,11 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
+  const {spotlightSearchQuery} = meeting!
+
   const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
-  const scrollHeight = useResultsHeight(resultsRef)
+  const scrollHeight = useResultsHeight(resultsRef, spotlightSearchQuery || '')
 
   if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
   return (

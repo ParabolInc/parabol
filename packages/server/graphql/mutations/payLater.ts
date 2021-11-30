@@ -31,10 +31,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()) as Meeting | null
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as Meeting | null
     if (!meeting) {
       return standardError(new Error('Invalid meeting'), {userId: viewerId})
     }
@@ -53,9 +50,7 @@ export default {
       .table('Organization')
       .get(orgId)
       .update((row) => ({
-        payLaterClickCount: row('payLaterClickCount')
-          .default(0)
-          .add(1)
+        payLaterClickCount: row('payLaterClickCount').default(0).add(1)
       }))
       .run()
     await r

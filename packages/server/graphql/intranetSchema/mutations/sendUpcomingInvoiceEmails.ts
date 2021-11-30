@@ -74,12 +74,8 @@ const sendUpcomingInvoiceEmails = {
       .getAll('pro', {index: 'tier'})
       .filter((organization) =>
         r.and(
-          organization('periodEnd')
-            .le(periodEndThresh)
-            .default(false),
-          organization('upcomingInvoiceEmailSentAt')
-            .le(lastSentThresh)
-            .default(true)
+          organization('periodEnd').le(periodEndThresh).default(false),
+          organization('upcomingInvoiceEmailSentAt').le(lastSentThresh).default(true)
         )
       )
       .coerceTo('array')
@@ -91,11 +87,7 @@ const sendUpcomingInvoiceEmails = {
           .filter({removedAt: null, role: null})('userId')
           .coerceTo('array')
       }))
-      .filter((organization) =>
-        organization('newUserIds')
-          .count()
-          .ge(1)
-      )
+      .filter((organization) => organization('newUserIds').count().ge(1))
       .merge((organization) => ({
         billingLeaderIds: r
           .table('OrganizationUser')

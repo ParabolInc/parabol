@@ -23,10 +23,7 @@ const moveToOrg = async (
   const su = isSuperUser(authToken)
   // VALIDATION
   const [org, teams] = await Promise.all([
-    r
-      .table('Organization')
-      .get(orgId)
-      .run(),
+    r.table('Organization').get(orgId).run(),
     getTeamsByIds([teamId])
   ])
   if (teams.length === 0) {
@@ -78,26 +75,16 @@ const moveToOrg = async (
   }
   const [rethinkResult] = await Promise.all([
     r({
-      notifications: (r
+      notifications: r
         .table('Notification')
         .filter({teamId})
-        .filter((notification) =>
-          notification('orgId')
-            .default(null)
-            .ne(null)
-        )
-        .update({orgId}) as unknown) as Notification[],
-      templates: r
-        .table('MeetingTemplate')
-        .getAll(currentOrgId, {index: 'orgId'})
-        .update({
-          orgId
-        }),
-      team: (r
-        .table('Team')
-        .get(teamId)
-        .update(updates) as unknown) as Team,
-      newToOrgUserIds: (r
+        .filter((notification) => notification('orgId').default(null).ne(null))
+        .update({orgId}) as unknown as Notification[],
+      templates: r.table('MeetingTemplate').getAll(currentOrgId, {index: 'orgId'}).update({
+        orgId
+      }),
+      team: r.table('Team').get(teamId).update(updates) as unknown as Team,
+      newToOrgUserIds: r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})
@@ -109,7 +96,7 @@ const moveToOrg = async (
             .count()
             .eq(0)
         })('userId')
-        .coerceTo('array') as unknown) as string[]
+        .coerceTo('array') as unknown as string[]
     }).run(),
     updateTeamByTeamId(updates, teamId)
   ])

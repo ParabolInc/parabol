@@ -20,11 +20,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
           .coerceTo('array')
           .distinct()
           .do((orgIds) =>
-            r
-              .table('Organization')
-              .getAll(r.args(orgIds))('tier')
-              .distinct()
-              .coerceTo('array')
+            r.table('Organization').getAll(r.args(orgIds))('tier').distinct().coerceTo('array')
           )
           .do((tiers) => {
             return r.branch(
@@ -45,10 +41,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({removedAt: null})
     .merge((orgUser) => ({
-      tier: r
-        .table('Organization')
-        .get(orgUser('orgId'))('tier')
-        .default('personal')
+      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('personal')
     }))
     .group('userId')('tier')
     .ungroup()

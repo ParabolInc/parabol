@@ -64,21 +64,13 @@ const resetPassword = {
       if (!localIdentity) {
         return standardError(new Error(`User ${email} does not have a local identity`), {userId})
       }
-      await r
-        .table('PasswordResetRequest')
-        .get(resetRequestId)
-        .update({isValid: false})
-        .run()
+      await r.table('PasswordResetRequest').get(resetRequestId).update({isValid: false}).run()
       // MUTATIVE
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
       await Promise.all([
         updateUser({identities}, userId),
-        r
-          .table('FailedAuthRequest')
-          .getAll(email, {index: 'email'})
-          .delete()
-          .run()
+        r.table('FailedAuthRequest').getAll(email, {index: 'email'}).delete().run()
       ])
       context.authToken = new AuthToken({sub: userId, tms, rol})
       await blacklistJWT(userId, context.authToken.iat, context.socketId)

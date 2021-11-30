@@ -52,6 +52,8 @@ import TeamInvitation from '../../database/types/TeamInvitation'
 import OrganizationType from '../../database/types/Organization'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import MeetingMemberType from '../../database/types/MeetingMember'
+import Reflection from '../../database/types/Reflection'
+import isValid from '../isValid'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -439,7 +441,12 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description: 'Only return reflection groups that match the search query'
         }
       },
-      resolve: async ({id: userId}, {reflectionGroupId}, {dataLoader}) => {
+      resolve: async (
+        {id: userId},
+        {reflectionGroupId, searchQuery: rawSearchQuery},
+        {dataLoader}
+      ) => {
+        const searchQuery = rawSearchQuery.toLowerCase().trim()
         const retroReflectionGroup = await dataLoader
           .get('retroReflectionGroups')
           .load(reflectionGroupId)
@@ -448,19 +455,27 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
         const {meetingId} = retroReflectionGroup
         const meetingMemberId = MeetingMemberId.join(meetingId, userId)
-        const r = await getRethink()
         const [viewerMeetingMember, reflections] = await Promise.all([
           dataLoader.get('meetingMembers').load(meetingMemberId),
-          r
-            .table('RetroReflection')
-            .getAll(meetingId, {index: 'meetingId'})
-            .filter({isActive: true})
-            .orderBy('createdAt')
-            .run()
+          dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         ])
         if (!viewerMeetingMember) {
           return standardError(new Error('Not on team'), {userId})
         }
+
+        if (searchQuery !== '') {
+          const matchedReflections = reflections.filter(({plaintextContent}) =>
+            plaintextContent.toLowerCase().includes(searchQuery)
+          )
+          const relatedReflections = matchedReflections.filter(
+            ({reflectionGroupId: groupId}: Reflection) => groupId != reflectionGroupId
+          )
+          const relatedGroupIds = [
+            ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
+          ].slice(0, MAX_RESULT_GROUP_SIZE)
+          return dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds).filter(isValid)
+        }
+
         const reflectionsCount = reflections.length
         const spotlightResultGroupSize = Math.min(reflectionsCount - 1, MAX_RESULT_GROUP_SIZE)
         let currentResultGroupIds = new Set<string>()
@@ -497,10 +512,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             }
           }
         }
-        return r
-          .table('RetroReflectionGroup')
-          .getAll(r.args(Array.from(currentResultGroupIds)), {index: 'id'})
-          .run()
+        return dataLoader
+          .get('retroReflectionGroups')
+          .loadMany(Array.from(currentResultGroupIds))
+          .filter(isValid)
       }
     },
     tasks: require('../queries/tasks').default,

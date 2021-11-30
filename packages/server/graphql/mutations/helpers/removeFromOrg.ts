@@ -40,7 +40,7 @@ const removeFromOrg = async (
   }, [])
 
   const [organizationUser, user] = await Promise.all([
-    (r
+    r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({orgId, removedAt: null})
@@ -50,7 +50,7 @@ const removeFromOrg = async (
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run() as unknown) as OrganizationUser,
+      .run() as unknown as OrganizationUser,
     dataLoader.get('users').load(userId)
   ])
 
@@ -58,10 +58,7 @@ const removeFromOrg = async (
   const {joinedAt, newUserUntil, role} = organizationUser
   const prorationDate = newUserUntil >= now ? new Date(joinedAt) : undefined
   if (role === 'BILLING_LEADER') {
-    const organization = await r
-      .table('Organization')
-      .get(orgId)
-      .run()
+    const organization = await r.table('Organization').get(orgId).run()
     if (organization.tier !== 'personal') {
       // if paid org & no other billing leader, promote the oldest
       // if no other member, downgrade to personal

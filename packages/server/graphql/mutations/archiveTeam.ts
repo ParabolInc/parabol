@@ -70,10 +70,7 @@ export default {
       )
 
     if (notifications.length) {
-      await r
-        .table('Notification')
-        .insert(notifications)
-        .run()
+      await r.table('Notification').insert(notifications).run()
     }
 
     const data = {
