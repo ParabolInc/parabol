@@ -1,12 +1,15 @@
-import db from '../../../db'
+import {DataLoaderWorker} from '../../graphql'
 import getTemplateScore from '../../../utils/getTemplateScore'
 
 const getScoredTemplates = async (
   templates: {createdAt: Date; id: string}[],
-  newHotnessFactor: number
+  newHotnessFactor: number,
+  dataLoader: DataLoaderWorker
 ) => {
   const sharedTemplateIds = templates.map(({id}) => id)
-  const sharedTemplateEndTimes = await db.readMany('endTimesByTemplateId', sharedTemplateIds)
+  const sharedTemplateEndTimes = await dataLoader
+    .get('endTimesByTemplateId')
+    .load(sharedTemplateIds)
   const scoreByTemplateId = {} as {[templateId: string]: number}
   templates.forEach((template, idx) => {
     const {id: templateId, createdAt} = template

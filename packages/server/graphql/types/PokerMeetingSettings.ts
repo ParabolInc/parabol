@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import db from '../../db'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
 import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplates'
@@ -31,7 +30,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const templates = await dataLoader
           .get('meetingTemplatesByType')
           .load({teamId, meetingType: 'poker'})
-        const scoredTemplates = await getScoredTemplates(templates, 0.9)
+        const scoredTemplates = await getScoredTemplates(templates, 0.9, dataLoader)
         return scoredTemplates
       }
     },
@@ -55,7 +54,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
           (template: MeetingTemplate) =>
             template.scope !== 'TEAM' && template.teamId !== teamId && template.type === 'poker'
         )
-        const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
+        const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8, dataLoader)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
     },
@@ -73,12 +72,12 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
         const [publicTemplates, team] = await Promise.all([
-          db.read('publicTemplates', 'poker'),
+          dataLoader.get('publicTemplates').load('poker'),
           dataLoader.get('teams').load(teamId)
         ])
         const {orgId} = team
         const unownedTemplates = publicTemplates.filter((template) => template.orgId !== orgId)
-        const scoredTemplates = await getPublicScoredTemplates(unownedTemplates)
+        const scoredTemplates = await getPublicScoredTemplates(unownedTemplates, dataLoader)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
     }

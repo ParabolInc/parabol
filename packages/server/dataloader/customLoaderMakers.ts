@@ -1,4 +1,10 @@
+/**
+ * @file Custom queries for the dataloader
+ *
+ * All results must be properly mapped to their input keys
+ */
 import DataLoader from 'dataloader'
+import ms from 'ms'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
@@ -130,10 +136,12 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
       const r = await getRethink()
-      const groups = (await (r
-        .table('Comment')
-        .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-        .group('discussionId') as any)
+      const groups = (await (
+        r
+          .table('Comment')
+          .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+          .group('discussionId') as any
+      )
         .count()
         .ungroup()
         .run()) as {group: string; reduction: number}[]
@@ -252,9 +260,7 @@ export const userTasks = (parent: RootDataLoader) => {
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
-                  : task('tags')
-                      .contains('archived')
-                      .not()
+                  : task('tags').contains('archived').not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true
@@ -426,4 +432,57 @@ export const templateScaleRefs = (parent: RootDataLoader) => {
       ...parent.dataLoaderOptions
     }
   )
+}
+
+export const endTimesByTemplateId = async (templateIds: string[]) => {
+  const r = await getRethink()
+  const aQuarterAgo = new Date(Date.now() - ms('90d'))
+  const meetings = (await (
+    r
+      .table('NewMeeting')
+      .getAll(r.args(templateIds), {index: 'templateId'})
+      .pluck('templateId', 'endedAt')
+      .filter((row) => row('endedAt').ge(aQuarterAgo))
+      .group('templateId' as any) as any
+  )
+    .limit(1000)('endedAt')
+    .run()) as {group: string; reduction: Date[]}[]
+  return templateIds.map((id) => {
+    const group = meetings.find((meeting) => meeting.group === id)
+    return group ? group.reduction.map((date) => date.getTime()) : []
+  })
+}
+
+export const publicTemplates = async (meetingTypes: string[]) => {
+  const r = await getRethink()
+
+  const publicTemplatesByType = await Promise.all(
+    meetingTypes.map((type) => {
+      const templateType = type === 'poker' ? 'poker' : 'retrospective'
+      return r
+        .table('MeetingTemplate')
+        .filter({scope: 'PUBLIC', isActive: true, type: templateType})
+        .limit(1000)
+        .run()
+    })
+  )
+
+  return publicTemplatesByType
+}
+
+export const starterScales = async (teamIds: string[]) => {
+  const r = await getRethink()
+
+  const starterScales = await Promise.all(
+    teamIds.map((teamId) => {
+      return r
+        .table('TemplateScale')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isStarter: true})
+        .filter((row) => row('removedAt').default(null).eq(null))
+        .run()
+    })
+  )
+
+  return starterScales
 }

@@ -14,7 +14,6 @@ import Task from '../../database/types/Task'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import ITeam from '../../database/types/Team'
-import db from '../../db'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
@@ -96,10 +95,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
             .run()
         }
         const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r
-          .table('MassInvitation')
-          .insert(massInvitation, {conflict: 'replace'})
-          .run()
+        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation
@@ -213,8 +209,10 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
       description: 'The list of scales this team can use',
       resolve: async ({id: teamId}: {id: string}, {}, {dataLoader}: GQLContext) => {
-        const activeTeamScales = await dataLoader.get('scalesByTeamId').load(teamId)
-        const publicScales = await db.read('starterScales', 'aGhostTeam')
+        const [activeTeamScales, publicScales] = await Promise.all([
+          dataLoader.get('scalesByTeamId').load(teamId),
+          dataLoader.get('starterScales').load('aGhostTeam')
+        ])
         const activeScales = [...activeTeamScales, ...publicScales]
         const uniqueScales = activeScales.filter(
           (scale, index) => index === activeScales.findIndex((obj) => obj.id === scale.id)

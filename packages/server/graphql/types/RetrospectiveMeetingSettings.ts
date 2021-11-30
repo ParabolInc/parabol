@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
-import db from '../../db'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
 import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplates'
@@ -52,7 +51,7 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
         const templates = await dataLoader
           .get('meetingTemplatesByType')
           .load({teamId, meetingType: 'retrospective' as MeetingTypeEnum})
-        const scoredTemplates = await getScoredTemplates(templates, 0.9)
+        const scoredTemplates = await getScoredTemplates(templates, 0.9, dataLoader)
         return scoredTemplates
       }
     },
@@ -78,7 +77,7 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
             template.teamId !== teamId &&
             (template.type as MeetingTypeEnum) === 'retrospective'
         )
-        const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
+        const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8, dataLoader)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
     },
@@ -96,12 +95,12 @@ const RetrospectiveMeetingSettings: GraphQLObjectType<any, GQLContext> = new Gra
       },
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
         const [publicTemplates, team] = await Promise.all([
-          db.read('publicTemplates', 'retrospective' as MeetingTypeEnum),
+          dataLoader.get('publicTemplates').load('retrospective'),
           dataLoader.get('teams').load(teamId)
         ])
         const {orgId} = team
         const unownedTemplates = publicTemplates.filter((template) => template.orgId !== orgId)
-        const scoredTemplates = await getPublicScoredTemplates(unownedTemplates)
+        const scoredTemplates = await getPublicScoredTemplates(unownedTemplates, dataLoader)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
     }
