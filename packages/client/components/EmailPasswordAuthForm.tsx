@@ -165,11 +165,11 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     if (submitting) return
     setDirtyField()
     const {email: emailRes, password: passwordRes} = validateField()
-    if (emailRes?.error) return
-    const email = emailRes!.value as string
+    if (emailRes.error) return
+    const {value: email} = emailRes
     const isSSO = await tryLoginWithSSO(email)
-    if (isSSO || passwordRes?.error) return
-    const password = passwordRes!.value as string
+    if (isSSO || passwordRes.error) return
+    const {value: password} = passwordRes
     submitMutation()
     if (isSignin) {
       LoginWithPasswordMutation(

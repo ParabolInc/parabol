@@ -18,6 +18,8 @@ export interface UseFormField {
   setError: (error: string) => void
 }
 
+type FieldStateKey<T> = keyof T & string
+
 type FieldState<T> = {
   [P in keyof T]: UseFormField
 }
@@ -79,7 +81,7 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
     useMemo(
       () =>
         Object.keys(fieldInputDict).reduce((obj, name) => {
-          obj[name as keyof T] = {
+          obj[name as FieldStateKey<T>] = {
             value: fieldInputDict[name]?.getDefault(),
             error: undefined,
             dirty: false,
@@ -99,7 +101,7 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
   )
 
   const normalize = useCallback(
-    (name: string, value: any) => {
+    (name: FieldStateKey<T>, value: any) => {
       const normalizeField = fieldInputDict[name]?.normalize
       const prevValue = state[name]?.value
       return normalizeField ? normalizeField(value, prevValue) : value
@@ -115,9 +117,9 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
     return res
   })
 
-  function _validateField(name: string): Legitity
-  function _validateField(name?: string): {[name: string]: Legitity}
-  function _validateField(name?: string) {
+  function _validateField(name: FieldStateKey<T>): Legitity
+  function _validateField(name?: FieldStateKey<T>): FieldState<T>
+  function _validateField(name?: FieldStateKey<T>) {
     if (!name) {
       return Object.keys(state).reduce((obj, name) => {
         obj[name] = _validateField(name)
@@ -129,7 +131,7 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
 
   const validateField = useEventCallback(_validateField)
 
-  const setDirty = useEventCallback((name?: string) => {
+  const setDirty = useEventCallback((name?: FieldStateKey<T>) => {
     if (!name) {
       Object.keys(state).forEach((name) => setDirty(name))
       return
@@ -137,7 +139,7 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
     dispatch({type: 'setDirty', name})
   })
 
-  const setValue = useEventCallback((name: string, value: string) => {
+  const setValue = useEventCallback((name: FieldStateKey<T>, value: string) => {
     dispatch({type: 'setValue', name, value})
   })
   const onChange = useEventCallback((e: React.ChangeEvent<HTMLInputElement>) => {
