@@ -18,7 +18,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     atlassian: {
       type: AtlassianIntegration,
       description: 'All things associated with an atlassian integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       }
@@ -26,7 +26,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     github: {
       type: GitHubIntegration,
       description: 'All things associated with a GitHub integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('githubAuth').load({teamId, userId})
       }
@@ -34,7 +34,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     slack: {
       type: SlackIntegration,
       description: 'All things associated with a slack integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         const auths = await dataLoader.get('slackAuthByUserId').load(userId)
         return auths.find((auth) => auth.teamId === teamId)

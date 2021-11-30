@@ -6,15 +6,14 @@ import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'
 import PasswordResetRequest from '../../database/types/PasswordResetRequest'
-import db from '../../db'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import updateUser from '../../postgres/queries/updateUser'
 import blacklistJWT from '../../utils/blacklistJWT'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import ResetPasswordPayload from '../types/ResetPasswordPayload'
-import updateUser from '../../postgres/queries/updateUser'
-import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 const resetPassword = {
   type: new GraphQLNonNull(ResetPasswordPayload),
@@ -73,13 +72,8 @@ const resetPassword = {
       // MUTATIVE
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
-      const updates = {
-        identities,
-        updatedAt: new Date()
-      }
       await Promise.all([
-        updateUser(updates, userId),
-        db.write('User', userId, updates),
+        updateUser({identities}, userId),
         r
           .table('FailedAuthRequest')
           .getAll(email, {index: 'email'})

@@ -2,11 +2,10 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import OrganizationUser from '../../../database/types/OrganizationUser'
-import db from '../../../db'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToPersonal from './resolveDowngradeToPersonal'
-import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 
 const removeFromOrg = async (
   userId: string,
@@ -36,7 +35,7 @@ const removeFromOrg = async (
   }, [])
 
   const kickOutNotificationIds = perTeamRes.reduce((arr: string[], res) => {
-    arr.push(res.notificationId)
+    res.notificationId && arr.push(res.notificationId)
     return arr
   }, [])
 
@@ -52,7 +51,7 @@ const removeFromOrg = async (
       )('changes')(0)('new_val')
       .default(null)
       .run() as unknown) as OrganizationUser,
-    db.read('User', userId)
+    dataLoader.get('users').load(userId)
   ])
 
   // need to make sure the org doc is updated before adjusting this

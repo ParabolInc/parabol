@@ -31,7 +31,7 @@ const PollOption = new GraphQLObjectType<any, GQLContext>({
     poll: {
       type: new GraphQLNonNull(Poll),
       description: 'The poll this option belongs to',
-      resolve: ({pollId}, _args, {dataLoader}) => {
+      resolve: ({pollId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('polls').load(pollId)
       }
     },

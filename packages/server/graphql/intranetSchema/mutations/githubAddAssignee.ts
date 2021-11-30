@@ -26,7 +26,7 @@
 //       description: 'The repo name and owner'
 //     }
 //   },
-//   resolve: async (_source, {integrationId, assigneeLogin, nameWithOwner}, {authToken}) => {
+//   resolve: async (_source: unknown, {integrationId, assigneeLogin, nameWithOwner}, {authToken}) => {
 //     const r = await getRethink()
 //     const now = new Date()
 

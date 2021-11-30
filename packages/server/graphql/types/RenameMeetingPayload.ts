@@ -9,7 +9,7 @@ export const RenameMeetingSuccess = new GraphQLObjectType<any, GQLContext>({
     meeting: {
       type: new GraphQLNonNull(NewMeeting),
       description: 'the renamed meeting',
-      resolve: async ({meetingId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     }

@@ -43,7 +43,7 @@ const ScopePhaseAreaGitHub = (props: Props) => {
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const hasAuth = integrations?.github?.scope === Providers.GITHUB_SCOPE
-  if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
+  if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meetingRef={meeting} />
   return <ScopePhaseAreaGitHubScoping meetingRef={meeting} />
 }
 

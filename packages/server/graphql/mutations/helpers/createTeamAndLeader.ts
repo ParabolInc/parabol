@@ -4,11 +4,12 @@ import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
+import getPg from '../../../postgres/getPg'
+import {insertTeamQuery} from '../../../postgres/queries/generated/insertTeamQuery'
+import IUser from '../../../postgres/types/IUser'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import {insertTeamQuery} from '../../../postgres/queries/generated/insertTeamQuery'
-import getPg from '../../../postgres/getPg'
 
 interface ValidNewTeam {
   id: string
@@ -18,8 +19,9 @@ interface ValidNewTeam {
 }
 
 // used for addorg, addTeam
-export default async function createTeamAndLeader(userId: string, newTeam: ValidNewTeam) {
+export default async function createTeamAndLeader(user: IUser, newTeam: ValidNewTeam) {
   const r = await getRethink()
+  const {id: userId} = user
   const {id: teamId, orgId} = newTeam
   const organization = await r
     .table('Organization')
@@ -53,7 +55,7 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
       .insert(meetingSettings)
       .run(),
     // denormalize common fields to team member
-    insertNewTeamMember(userId, teamId),
+    insertNewTeamMember(user, teamId),
     r
       .table('TimelineEvent')
       .insert(timelineEvent)

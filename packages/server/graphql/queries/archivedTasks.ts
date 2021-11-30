@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -9,7 +10,7 @@ export default {
   type: TaskConnection,
   args: {
     first: {
-      type: GraphQLInt
+      type: new GraphQLNonNull(GraphQLInt)
     },
     after: {
       type: GraphQLISO8601Type,
@@ -20,7 +21,11 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(_source, {first, after, teamId}, {authToken}) {
+  async resolve(
+    _source: unknown,
+    {first, after, teamId}: {first: number; after?: Date; teamId: string},
+    {authToken}: GQLContext
+  ) {
     const r = await getRethink()
 
     // AUTH

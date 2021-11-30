@@ -72,7 +72,7 @@ const AgendaItem = new GraphQLObjectType<any, GQLContext>({
     teamMember: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member that created the agenda item',
-      resolve: async ({teamMemberId}, _args, {dataLoader}) => {
+      resolve: async ({teamMemberId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     }

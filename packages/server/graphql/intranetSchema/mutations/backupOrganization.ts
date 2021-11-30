@@ -122,7 +122,7 @@ const backupOrganization = {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
     }
   },
-  resolve: async (_source, {orgIds}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {orgIds}, {authToken}: GQLContext) => {
     // AUTH
     requireSU(authToken)
 

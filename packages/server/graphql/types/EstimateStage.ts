@@ -13,9 +13,9 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -49,7 +49,11 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     serviceField: {
       type: new GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
-      resolve: async ({dimensionRefIdx, meetingId, teamId, taskId}, _args, {dataLoader}) => {
+      resolve: async (
+        {dimensionRefIdx, meetingId, teamId, taskId},
+        _args: unknown,
+        {dataLoader}
+      ) => {
         const NULL_FIELD = {name: '', type: 'string'}
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return NULL_FIELD
@@ -120,7 +124,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     dimensionRef: {
       type: new GraphQLNonNull(TemplateDimensionRef),
       description: 'The immutable dimension linked to this stage',
-      resolve: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
+      resolve: async ({meetingId, dimensionRefIdx}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {templateRefId} = meeting as MeetingPoker
         const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
@@ -137,7 +141,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     finalScore: {
       type: GraphQLString,
       description: 'the final score, as defined by the facilitator',
-      resolve: async ({taskId, meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
+      resolve: async ({taskId, meetingId, dimensionRefIdx}, _args: unknown, {dataLoader}) => {
         const [meeting, estimates] = await Promise.all([
           dataLoader.get('newMeetings').load(meetingId),
           dataLoader.get('meetingTaskEstimates').load({taskId, meetingId})
@@ -163,11 +167,11 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     hoveringUsers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'the users of the team members hovering the deck',
-      resolve: async ({id: stageId}) => {
+      resolve: async ({id: stageId}, _args: unknown, {dataLoader}) => {
         const redis = getRedis()
         const userIds = await redis.smembers(`pokerHover:${stageId}`)
         if (userIds.length === 0) return []
-        const users = await db.readMany('User', userIds)
+        const users = (await dataLoader.get('users').load(userIds)).filter(isValid)
         return users
       }
     },
@@ -185,7 +189,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       type: Task,
       description:
         'The task referenced in the stage, as it exists in Parabol. null if the task was deleted',
-      resolve: async ({taskId}, _args, {dataLoader}) => {
+      resolve: async ({taskId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('tasks').load(taskId)
       }
     },

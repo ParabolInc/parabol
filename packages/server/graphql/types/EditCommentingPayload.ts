@@ -13,7 +13,7 @@ export const EditCommentingSuccess = new GraphQLObjectType<any, GQLContext>({
     discussion: {
       type: new GraphQLNonNull(Discussion),
       description: 'The discussion where the commenting state changed',
-      resolve: async ({discussionId}, _args, {dataLoader}) => {
+      resolve: async ({discussionId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('discussions').load(discussionId)
       }
     }

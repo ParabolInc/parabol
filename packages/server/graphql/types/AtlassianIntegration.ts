@@ -40,7 +40,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user',
       type: GraphQLID,
-      resolve: async ({accessToken, userId}: AtlassianAuth, _args, {authToken}) => {
+      resolve: async ({accessToken, userId}: AtlassianAuth, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
@@ -152,7 +152,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         'A list of projects accessible by this team member. empty if viewer is not the user',
       resolve: async (
         {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
-        _args,
+        _args: unknown,
         {authToken}
       ) => {
         const viewerId = getUserId(authToken)

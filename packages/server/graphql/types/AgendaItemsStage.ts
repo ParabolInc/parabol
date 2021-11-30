@@ -19,7 +19,7 @@ const AgendaItemsStage = new GraphQLObjectType<any, GQLContext>({
     },
     agendaItem: {
       type: new GraphQLNonNull(AgendaItem),
-      resolve: ({agendaItemId}, _args, {dataLoader}) => {
+      resolve: ({agendaItemId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('agendaItems').load(agendaItemId)
       }
     }

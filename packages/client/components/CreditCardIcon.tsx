@@ -3,6 +3,23 @@ import React from 'react'
 import useSVG from '../hooks/useSVG'
 import {BezierCurve} from '../types/constEnums'
 import {keyframes} from '@emotion/core'
+import {CardTypeIcon} from '../utils/StripeClientManager'
+import ccJCB from '../../../static/images/creditCards/cc-jcb-brands.svg'
+import ccAmex from '../../../static/images/creditCards/cc-amex-brands.svg'
+import ccDiners from '../../../static/images/creditCards/cc-diners-club-brands.svg'
+import ccDiscover from '../../../static/images/creditCards/cc-discover-brands.svg'
+import ccMastercard from '../../../static/images/creditCards/cc-mastercard-brands.svg'
+import ccVisa from '../../../static/images/creditCards/cc-visa-brands.svg'
+
+const cardTypeIconToFilename = {
+  'cc-amex-brands': ccAmex,
+  'cc-diners-club-brands': ccDiners,
+  'cc-discover-brands': ccDiscover,
+  'cc-jcb-brands': ccJCB,
+  'cc-mastercard-brands': ccMastercard,
+  'cc-visa-brands': ccVisa,
+  credit_card: ''
+} as Record<CardTypeIcon, string>
 
 const keyframesOpacity = keyframes`
   0% {
@@ -23,15 +40,13 @@ const SVGStyles = styled('div')({
 })
 
 interface Props {
-  cardTypeIcon: string
+  cardTypeIcon: CardTypeIcon
 }
-
-const CCDir = `${__STATIC_IMAGES__}/creditCards`
 
 const CreditCardIcon = (props: Props) => {
   const {cardTypeIcon} = props
-  const isFallback = cardTypeIcon === 'credit_card'
-  const {svg, svgRef} = useSVG(isFallback ? '' : `${CCDir}/${cardTypeIcon}.svg`)
+  const icon = cardTypeIconToFilename[cardTypeIcon]
+  const {svg, svgRef} = useSVG(icon)
   if (!svg) return null
   return <SVGStyles ref={svgRef} dangerouslySetInnerHTML={{__html: svg}} />
 }

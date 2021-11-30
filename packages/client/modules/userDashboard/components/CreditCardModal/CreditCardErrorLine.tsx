@@ -1,4 +1,4 @@
-import StripeClientManager from '../../../../utils/StripeClientManager'
+import StripeClientManager, {CardTypeIcon} from '../../../../utils/StripeClientManager'
 import React, {useEffect, useState} from 'react'
 import CreditCardIcon from '../../../../components/CreditCardIcon'
 import styled from '@emotion/styled'
@@ -45,7 +45,7 @@ const Message = styled('div')({
 
 const CreditCardErrorLine = (props: Props) => {
   const {fields, serverError, stripeClientManager} = props
-  const [cardTypeIcon, setCardTypeIcon] = useState<string>()
+  const [cardTypeIcon, setCardTypeIcon] = useState<CardTypeIcon>()
   const {creditCardNumber, cvc, expiry} = fields
   const primaryError =
     serverError ||

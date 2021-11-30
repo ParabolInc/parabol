@@ -12,7 +12,7 @@ const DraftEnterpriseInvoicePayload = new GraphQLObjectType<any, GQLContext>({
     organization: {
       type: Organization,
       description: 'The updated organization',
-      resolve: ({orgId}, _args, {dataLoader}: GQLContext) => {
+      resolve: ({orgId}, _args: unknown, {dataLoader}: GQLContext) => {
         return dataLoader.get('organizations').load(orgId)
       }
     }

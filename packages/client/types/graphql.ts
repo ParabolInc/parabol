@@ -48875,7 +48875,7 @@ export interface IUser {
 }
 
 export interface IArchivedTasksOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor
@@ -48903,7 +48903,7 @@ export interface IInvoiceDetailsOnUserArguments {
 }
 
 export interface IInvoicesOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor
@@ -56297,9 +56297,14 @@ export interface IPromoteNewMeetingFacilitatorOnMutationArguments {
 
 export interface IPromoteToTeamLeadOnMutationArguments {
   /**
-   * the new team member that will be the leader
+   * Team id of the team which is about to get a new team leader
    */
-  teamMemberId: string;
+  teamId: string;
+
+  /**
+   * Email of the user who will be set as a new team leader
+   */
+  newTeamLeadEmail: any;
 }
 
 export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {

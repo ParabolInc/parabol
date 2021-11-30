@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {Threshold} from '../../../client/types/constEnums'
 import generateUpcomingInvoice from '../../billing/helpers/generateUpcomingInvoice'
@@ -14,14 +15,22 @@ export default {
       description: 'The id of the invoice'
     }
   },
-  async resolve(_source, {invoiceId}, {authToken, dataLoader}) {
+  async resolve(
+    _source: unknown,
+    {invoiceId}: {invoiceId: string},
+    {authToken, dataLoader}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
 
     // AUTH
     const viewerId = getUserId(authToken)
     const isUpcoming = invoiceId.startsWith('upcoming_')
-    const currentInvoice = await r.table('Invoice').get(invoiceId).default(null).run()
+    const currentInvoice = await r
+      .table('Invoice')
+      .get(invoiceId)
+      .default(null)
+      .run()
     const orgId = (currentInvoice && currentInvoice.orgId) || invoiceId.substring(9) // remove 'upcoming_'
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
       standardError(new Error('Not organization lead'), {userId: viewerId})
@@ -36,6 +45,6 @@ export default {
     ) {
       return currentInvoice
     }
-    return generateUpcomingInvoice(orgId)
+    return generateUpcomingInvoice(orgId, dataLoader)
   }
 } as any

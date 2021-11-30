@@ -4,14 +4,13 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
-import db from '../../../db'
-import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
-import {DataLoaderWorker} from '../../graphql'
-import removeStagesFromMeetings from './removeStagesFromMeetings'
-import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
+import removeStagesFromMeetings from './removeStagesFromMeetings'
+import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 
 interface Options {
   evictorUserId?: string
@@ -116,18 +115,10 @@ const removeTeamMember = async (
       .default([]) as unknown) as Task[]
   }).run()
 
-  const reqlUpdater = (user) => ({
-    tms: user('tms').difference([teamId])
-  })
+  await removeUserTms(teamId, userId)
+  const user = await dataLoader.get('users').load(userId)
 
-  const [user] = await Promise.all([
-    db.write('User', userId, reqlUpdater),
-    removeUserTms(teamId, userId)
-  ])
-  if (!user) {
-    throw new Error('Team member already removed')
-  }
-  let notificationId
+  let notificationId: string | undefined
   if (evictorUserId) {
     const notification = new NotificationKickedOut({teamId, userId, evictorUserId})
     notificationId = notification.id
