@@ -36,10 +36,10 @@ const PromoteTeamMemberModal = (props: Props) => {
     onCompleted,
     teamMember
   } = props
-  const {preferredName, teamMemberId} = teamMember
+  const {preferredName, teamId, newTeamLeadEmail} = teamMember
   const handleClick = () => {
     submitMutation()
-    PromoteToTeamLeadMutation(atmosphere, teamMemberId, onError, onCompleted)
+    PromoteToTeamLeadMutation(atmosphere, {teamId, newTeamLeadEmail}, {onError, onCompleted})
     closePortal()
   }
   return (
@@ -58,7 +58,8 @@ const PromoteTeamMemberModal = (props: Props) => {
 export default createFragmentContainer(withMutationProps(withAtmosphere(PromoteTeamMemberModal)), {
   teamMember: graphql`
     fragment PromoteTeamMemberModal_teamMember on TeamMember {
-      teamMemberId: id
+      newTeamLeadEmail: email
+      teamId
       preferredName
     }
   `

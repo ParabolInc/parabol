@@ -27,8 +27,9 @@ import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateR
 import getTemplateScaleRefsByIds, {
   TemplateScaleRef
 } from '../postgres/queries/getTemplateScaleRefsByIds'
+import {getUsersByIds} from '../postgres/queries/getUsersByIds'
+import IUser from '../postgres/types/IUser'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
-import ProxiedCache from './ProxiedCache'
 import RootDataLoader from './RootDataLoader'
 
 export interface UserTasksKey {
@@ -66,8 +67,16 @@ const reactableLoaders = [
 
 // TODO: refactor if the interface pattern is used a total of 3 times
 
-export const users = () => {
-  return new ProxiedCache('User')
+export const users = (parent: RootDataLoader) => {
+  return new DataLoader<string, IUser | undefined, string>(
+    async (userIds) => {
+      const users = await getUsersByIds(userIds)
+      return normalizeRethinkDbResults(userIds, users)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 }
 
 export const teams = (parent: RootDataLoader) =>

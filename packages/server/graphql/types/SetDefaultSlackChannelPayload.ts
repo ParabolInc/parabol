@@ -14,7 +14,7 @@ export const SetDefaultSlackChannelSuccess = new GraphQLObjectType<any, GQLConte
     teamMember: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member with the updated slack channel',
-      resolve: ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const teamMemberId = toTeamMemberId(teamId, userId)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }

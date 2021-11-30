@@ -30,13 +30,14 @@ const addGitHubToSchema = (
     schema: makeExecutableSchema({
       typeDefs: schema.idl
     }),
-    createProxyingResolver: () => (parent, _args, _context, info) => parent[info.fieldName],
+    createProxyingResolver: () => (parent, _args: unknown, _context, info) =>
+      parent[info.fieldName],
     transforms: [new RenameRootTypes(prefixGitHub), new RenameTypes(prefixGitHub)]
   })
 
   const makeResolve = (isMutation: boolean) => async (
     {accessToken, resolveErrors, errors},
-    _args,
+    _args: unknown,
     context,
     info
   ) => {

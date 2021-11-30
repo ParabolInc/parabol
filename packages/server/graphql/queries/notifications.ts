@@ -16,7 +16,7 @@ export default {
     }
   },
   description: 'all the notifications for a single user',
-  resolve: async (_source, {first, after}, {authToken}) => {
+  resolve: async (_source: unknown, {first, after}, {authToken}) => {
     const r = await getRethink()
     // AUTH
     const userId = getUserId(authToken)

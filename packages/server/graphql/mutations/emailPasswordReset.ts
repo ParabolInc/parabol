@@ -3,20 +3,19 @@ import crypto from 'crypto'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
-import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import util from 'util'
+import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
+import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
 import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import PasswordResetRequest from '../../database/types/PasswordResetRequest'
-import db from '../../db'
 import getMailManager from '../../email/getMailManager'
 import resetPasswordEmailCreator from '../../email/resetPasswordEmailCreator'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import updateUser from '../../postgres/queries/updateUser'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
-import updateUser from '../../postgres/queries/updateUser'
 import EmailPassWordResetPayload from '../types/EmailPasswordResetPayload'
-import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
-import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -85,8 +84,7 @@ const emailPasswordReset = {
         .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
         .run()
 
-      const updates = {identities, updatedAt: new Date()}
-      await Promise.all([updateUser(updates, userId), db.write('User', userId, updates)])
+      await updateUser({identities}, userId)
 
       const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
       const success = await getMailManager().sendEmail({

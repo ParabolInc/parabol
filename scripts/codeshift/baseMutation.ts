@@ -7,10 +7,9 @@ import {GQLContext} from '../graphql'
 const MUTATION_NAME = {
   type: 'TYPE',
   description: ``,
-  args: {
-  },
+  args: {},
   resolve: async (
-    _source,
+    _source: unknown,
     {},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -22,9 +21,7 @@ const MUTATION_NAME = {
 
     //AUTH
 
-
     // VALIDATION
-
 
     // RESOLUTION
     const data = {}

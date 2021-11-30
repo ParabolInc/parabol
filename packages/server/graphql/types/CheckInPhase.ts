@@ -5,7 +5,7 @@ import CheckInStage from './CheckInStage'
 import MeetingGreeting from './MeetingGreeting'
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
 
-const CheckInPhase = new GraphQLObjectType<any, GQLContext>({
+const CheckInPhase: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'CheckInPhase',
   description: 'The meeting phase where all team members check in one-by-one',
   interfaces: () => [NewMeetingPhase],

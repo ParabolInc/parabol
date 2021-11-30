@@ -15,7 +15,7 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 60, perHour: 1800})(
-    async (_source, {token}, {dataLoader}: GQLContext) => {
+    async (_source: unknown, {token}, {dataLoader}: GQLContext) => {
       const tokenRes = await verifyMassInviteToken(token, dataLoader)
       if ('error' in tokenRes && tokenRes.error === InvitationTokenError.NOT_FOUND) {
         return {errorType: InvitationTokenError.NOT_FOUND}

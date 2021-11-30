@@ -42,7 +42,7 @@
   "editor.gotoLocation.multipleDefinitions": "goto",
   "editor.gotoLocation.multipleTypeDefinitions": "goto",
   "editor.wordWrapColumn": 100,
-  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrap": "on",
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true

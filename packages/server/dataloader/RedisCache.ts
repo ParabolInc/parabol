@@ -10,8 +10,7 @@ export type RedisType = {
   [P in keyof typeof customRedisQueries]: Unpromise<ReturnType<typeof customRedisQueries[P]>>[0]
 }
 
-//TODO #5483 Omit User from DBType as temporary measure to still be able to read from User from Rethink but get the PG type from Dataloader
-export type CacheType = RedisType & Omit<DBType, 'User'>
+export type CacheType = RedisType & DBType
 
 const TTL = ms('3h')
 

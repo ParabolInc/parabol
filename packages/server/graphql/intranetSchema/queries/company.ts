@@ -17,7 +17,7 @@ const company = {
     }
   },
   description: 'All the info about a specific company',
-  async resolve(_source, {domain, userId}, {authToken, dataLoader}) {
+  async resolve(_source: unknown, {domain, userId}, {authToken, dataLoader}) {
     requireSU(authToken)
     if (domain) return {id: domain}
     const user = await dataLoader.get('users').load(userId)

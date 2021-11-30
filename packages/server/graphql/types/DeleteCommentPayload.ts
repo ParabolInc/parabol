@@ -12,7 +12,7 @@ export const DeleteCommentSuccess = new GraphQLObjectType<any, GQLContext>({
     comment: {
       type: new GraphQLNonNull(Comment),
       description: 'the comment just deleted',
-      resolve: async ({commentId}, _args, {dataLoader}) => {
+      resolve: async ({commentId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('comments').load(commentId)
       }
     }

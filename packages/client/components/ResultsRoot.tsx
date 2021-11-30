@@ -9,10 +9,11 @@ interface Props {
   spotlightGroupId?: string
   phaseRef: RefObject<HTMLDivElement>
   meetingId: string
+  isSpotlightEntering: boolean
 }
 
 const ResultsRoot = (props: Props) => {
-  const {meetingId, spotlightGroupId, phaseRef} = props
+  const {meetingId, spotlightGroupId, phaseRef, isSpotlightEntering} = props
   const searchQuery = '' // TODO: implement searchQuery
   const groupIdRef = useRef('')
   const nextGroupId = spotlightGroupId ?? ''
@@ -31,7 +32,13 @@ const ResultsRoot = (props: Props) => {
   )
   return (
     <Suspense fallback={''}>
-      {queryRef && <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />}
+      {queryRef && (
+        <SpotlightGroups
+          phaseRef={phaseRef}
+          queryRef={queryRef}
+          isSpotlightEntering={isSpotlightEntering}
+        />
+      )}
     </Suspense>
   )
 }

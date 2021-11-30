@@ -4,15 +4,20 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import Notification from '../../database/types/Notification'
 import Team from '../../database/types/Team'
-import db from '../../db'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
-import {GQLContext} from '../graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql'
+import isValid from '../isValid'
 
-const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
+const moveToOrg = async (
+  teamId: string,
+  orgId: string,
+  authToken: any,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   // AUTH
   const su = isSuperUser(authToken)
@@ -119,9 +124,9 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
     })
   )
 
-  const newUsers = await db.readMany('User', newToOrgUserIds)
+  const newUsers = (await dataLoader.get('users').loadMany(newToOrgUserIds)).filter(isValid)
 
-  const inactiveUserIds = newUsers.filter((user) => user && user.inactive).map((user) => user!.id)
+  const inactiveUserIds = newUsers.filter((user) => user.inactive).map((user) => user!.id)
   inactiveUserIds.map((newInactiveUserId) => {
     return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
   })
@@ -147,12 +152,12 @@ export default {
   async resolve(
     _source: unknown,
     {teamIds, orgId}: {teamIds: string[]; orgId: string},
-    {authToken}: GQLContext
+    {authToken, dataLoader}: GQLContext
   ) {
     const results = [] as (string | any)[]
     for (let i = 0; i < teamIds.length; i++) {
       const teamId = teamIds[i]!
-      const result = await moveToOrg(teamId, orgId, authToken)
+      const result = await moveToOrg(teamId, orgId, authToken, dataLoader)
       results.push(result)
     }
     const successes = results.filter((result) => typeof result === 'string')

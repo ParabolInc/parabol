@@ -58,7 +58,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: ({creatorId}, _args, {authToken}) => {
+      resolve: ({creatorId}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === creatorId
       }
@@ -80,7 +80,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     meeting: {
       type: new GraphQLNonNull(RetrospectiveMeeting),
       description: 'The retrospective meeting this reflection was created in',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
@@ -95,7 +95,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     },
     prompt: {
       type: new GraphQLNonNull(ReflectPrompt),
-      resolve: ({promptId}, _args, {dataLoader}) => {
+      resolve: ({promptId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('reflectPrompts').load(promptId)
       }
     },
@@ -111,7 +111,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     retroReflectionGroup: {
       type: RetroReflectionGroup,
       description: 'The group the reflection belongs to, if any',
-      resolve: async ({reflectionGroupId}, _args, {dataLoader}) => {
+      resolve: async ({reflectionGroupId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
       }
     },
@@ -122,7 +122,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team that is running the meeting that contains this reflection',
-      resolve: async ({meetingId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return dataLoader.get('teams').load(meeting.teamId)
       }

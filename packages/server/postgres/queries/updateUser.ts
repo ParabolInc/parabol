@@ -1,26 +1,19 @@
-import {updateUserQuery, IUpdateUserQueryParams} from './generated/updateUserQuery'
-import getPg from '../getPg'
-import catchAndLog from '../utils/catchAndLog'
 import AuthIdentity from '../../database/types/AuthIdentity'
-import {OptionalExceptFor} from '../../utils/TypeUtil'
+import getPg from '../getPg'
+import {IUpdateUserQueryParams, updateUserQuery} from './generated/updateUserQuery'
 
 interface UpdateUserQueryParams extends Omit<IUpdateUserQueryParams, 'identities'> {
   identities: AuthIdentity[]
 }
 
-const updateUser = async (
-  update: OptionalExceptFor<UpdateUserQueryParams, 'updatedAt'>,
-  userIds: string | string[]
-) => {
+const updateUser = async (update: Partial<UpdateUserQueryParams>, userIds: string | string[]) => {
   userIds = typeof userIds === 'string' ? [userIds] : userIds
-  return await catchAndLog(() =>
-    updateUserQuery.run(
-      {
-        ...update,
-        ids: userIds
-      } as IUpdateUserQueryParams,
-      getPg()
-    )
+  return updateUserQuery.run(
+    {
+      ...update,
+      ids: userIds
+    } as any,
+    getPg()
   )
 }
 

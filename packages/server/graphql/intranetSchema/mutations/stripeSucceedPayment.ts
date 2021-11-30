@@ -15,7 +15,7 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (_source, {invoiceId}, {authToken}: InternalContext) => {
+  resolve: async (_source: unknown, {invoiceId}, {authToken}: InternalContext) => {
     const r = await getRethink()
     const now = new Date()
 

@@ -14,7 +14,7 @@ const ArchiveOrganizationPayload = new GraphQLObjectType<any, GQLContext>({
     },
     teams: {
       type: new GraphQLList(new GraphQLNonNull(Team)),
-      resolve: ({teamIds}, _args, {dataLoader}) => {
+      resolve: ({teamIds}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').loadMany(teamIds)
       }
     },
