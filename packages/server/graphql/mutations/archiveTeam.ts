@@ -42,7 +42,7 @@ export default {
         teamId
       }
     })
-    const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId)
+    const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId, dataLoader)
 
     if (!team) {
       return standardError(new Error('Already archived team'), {userId: viewerId})

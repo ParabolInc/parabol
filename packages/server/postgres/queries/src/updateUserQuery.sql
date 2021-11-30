@@ -4,7 +4,7 @@
 */
 UPDATE "User" SET
   email = COALESCE(:email, "email"),
-  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
+  "updatedAt" = CURRENT_TIMESTAMP,
   inactive = COALESCE(:inactive, "inactive"),
   "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),
   "preferredName" = COALESCE(:preferredName, "preferredName"),

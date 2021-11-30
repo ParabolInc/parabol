@@ -1,18 +1,18 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import IUser from '../../../postgres/types/IUser'
-import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import segmentIo from '../../../utils/segmentIo'
+import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import StripeManager from '../../../utils/StripeManager'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
+import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
-import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const getBillingLeaderUser = async (
   email: string | null,
@@ -45,8 +45,11 @@ const getBillingLeaderUser = async (
   const billingLeaders = organizationUsers.filter(
     (organizationUser) => organizationUser.role === 'BILLING_LEADER'
   )
+
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
-  const billingLeaderUsers = await db.readMany('User', billingLeaderUserIds)
+  const billingLeaderUsers = (await dataLoader.get('users').loadMany(billingLeaderUserIds)).filter(
+    isValid
+  )
   return billingLeaderUsers[0]
 }
 

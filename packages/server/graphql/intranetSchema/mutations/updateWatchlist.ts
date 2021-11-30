@@ -1,13 +1,11 @@
 import {User} from '@sentry/node'
-import {GraphQLBoolean, GraphQLList, GraphQLString, GraphQLNonNull} from 'graphql'
-import getRethink from '../../../database/rethinkDriver'
+import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
+import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
+import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
-import db from '../../../db'
-import UpdateWatchlistPayload from '../../types/UpdateWatchlistPayload'
 import {InternalContext} from '../../graphql'
-import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
-import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
+import UpdateWatchlistPayload from '../../types/UpdateWatchlistPayload'
 
 const updateWatchlist = {
   type: new GraphQLNonNull(UpdateWatchlistPayload),
@@ -37,9 +35,6 @@ const updateWatchlist = {
     }: {includeInWatchlist: boolean; emails: string[]; domain: string},
     {authToken}: InternalContext
   ) => {
-    const r = await getRethink()
-    const now = new Date()
-
     // AUTH
     requireSU(authToken)
 
@@ -53,21 +48,11 @@ const updateWatchlist = {
       const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
     }
-    await db.prime('User', users)
     const userIds = users.map(({id}) => id).filter((id): id is string => !!id)
     if (users.length === 0) {
       return {error: {message: 'No users found matching the email or domain'}}
     }
-    const update = {isWatched: includeInWatchlist, updatedAt: now}
-    await Promise.all([
-      r
-        .table('User')
-        .getAll(r.args(userIds))
-        .update(update)
-        .run(),
-      updateUser(update, userIds),
-      db.writeMany('User', userIds, update)
-    ])
+    await updateUser({isWatched: includeInWatchlist}, userIds)
 
     return {success: true}
   }

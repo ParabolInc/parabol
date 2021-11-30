@@ -1,5 +1,4 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql'
-import db from '../../db'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import StandardMutationError from './StandardMutationError'
@@ -15,9 +14,9 @@ const AddFeatureFlagPayload = new GraphQLObjectType<any, GQLContext>({
       type: User,
       description:
         'the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users',
-      resolve: (_source: unknown, _args: unknown, {authToken}) => {
+      resolve: (_source: unknown, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        return db.read('User', viewerId)
+        return dataLoader.get('users').load(viewerId)
       }
     },
     users: {

@@ -1,10 +1,10 @@
 import getRethink from '../database/rethinkDriver'
 import Team from '../database/types/Team'
-import db from '../db'
-import removeUserTms from '../postgres/queries/removeUserTms'
+import {DataLoaderWorker} from '../graphql/graphql'
 import archiveTeamsByTeamIds from '../postgres/queries/archiveTeamsByTeamIds'
+import removeUserTms from '../postgres/queries/removeUserTms'
 
-const safeArchiveTeam = async (teamId: string) => {
+const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const now = new Date()
   const userIds = await r
@@ -12,16 +12,12 @@ const safeArchiveTeam = async (teamId: string) => {
     .getAll(teamId, {index: 'teamId'})
     .filter({isNotRemoved: true})('userId')
     .run()
-  const [users] = await Promise.all([
-    db.writeMany('User', userIds, (user) => ({
-      tms: user('tms').difference([teamId])
-    })),
-    removeUserTms(teamId, userIds)
-  ])
+  await removeUserTms(teamId, userIds)
   const updates = {
     isArchived: true,
     updatedAt: new Date()
   }
+  const users = await Promise.all(userIds.map((userId) => dataLoader.get('users').load(userId)))
   const [rethinkResult, pgResult] = await Promise.all([
     r({
       team: (r
@@ -49,6 +45,7 @@ const safeArchiveTeam = async (teamId: string) => {
     }).run(),
     archiveTeamsByTeamIds(teamId)
   ])
+
   return {...rethinkResult, team: pgResult[0] ?? null, users}
 }
 

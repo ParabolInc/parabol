@@ -1,8 +1,8 @@
 import getRethink from '../database/rethinkDriver'
-import db from '../db'
+import {updateUserTiersQuery} from '../postgres//queries/generated/updateUserTiersQuery'
 import getPg from '../postgres/getPg'
 import {TierEnum} from '../postgres/queries/generated/updateUserQuery'
-import {updateUserTiersQuery} from '../postgres//queries/generated/updateUserTiersQuery'
+import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import catchAndLog from '../postgres/utils/catchAndLog'
 import segmentIo from './segmentIo'
 
@@ -65,8 +65,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .run()) as {id: string; tier: TierEnum}[]
   await catchAndLog(() => updateUserTiersQuery.run({users: userTiers}, getPg()))
 
-  await Promise.all(userIds.map((userId) => db.clear('User', userId)))
-  const users = await db.readMany('User', userIds)
+  const users = await getUsersByIds(userIds)
   users.forEach((user) => {
     user &&
       segmentIo.identify({

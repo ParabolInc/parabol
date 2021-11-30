@@ -3,7 +3,6 @@ import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import Organization from '../../database/types/Organization'
-import db from '../../db'
 import {getUserId, isOrgLeaderOfUser} from '../../utils/authorization'
 import {toEpochSeconds} from '../../utils/epochTime'
 import standardError from '../../utils/standardError'
@@ -19,7 +18,7 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve(_source: unknown, {userId}: {userId: string}, {authToken}: GQLContext) {
+  async resolve(_source: unknown, {userId}: {userId: string}, {authToken, dataLoader}: GQLContext) {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     // AUTH
@@ -29,7 +28,7 @@ export default {
 
     // VALIDATION
     const [user, orgs] = await Promise.all([
-      db.read('User', userId),
+      dataLoader.get('users').load(userId),
       (r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
