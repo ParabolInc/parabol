@@ -15,10 +15,7 @@ const insertNewTeamMember = async (user: IUser, teamId: string) => {
       .filter({isNotRemoved: true})
       .count()
       .run(),
-    r
-      .table('TeamMember')
-      .get(teamMemberId)
-      .run()
+    r.table('TeamMember').get(teamMemberId).run()
   ])
   if (!user) {
     throw new Error('User does not exist')
@@ -26,11 +23,7 @@ const insertNewTeamMember = async (user: IUser, teamId: string) => {
   if (existingTeamMember) {
     existingTeamMember.isNotRemoved = true
     existingTeamMember.updatedAt = now
-    await r
-      .table('TeamMember')
-      .get(teamMemberId)
-      .replace(existingTeamMember)
-      .run()
+    await r.table('TeamMember').get(teamMemberId).replace(existingTeamMember).run()
     return existingTeamMember
   }
 
@@ -44,10 +37,7 @@ const insertNewTeamMember = async (user: IUser, teamId: string) => {
     email,
     isLead
   })
-  await r
-    .table('TeamMember')
-    .insert(teamMember)
-    .run()
+  await r.table('TeamMember').insert(teamMember).run()
   return teamMember
 }
 

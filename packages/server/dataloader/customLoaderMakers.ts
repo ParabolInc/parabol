@@ -130,10 +130,12 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
       const r = await getRethink()
-      const groups = (await (r
-        .table('Comment')
-        .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-        .group('discussionId') as any)
+      const groups = (await (
+        r
+          .table('Comment')
+          .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+          .group('discussionId') as any
+      )
         .count()
         .ungroup()
         .run()) as {group: string; reduction: number}[]
@@ -252,9 +254,7 @@ export const userTasks = (parent: RootDataLoader) => {
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
-                  : task('tags')
-                      .contains('archived')
-                      .not()
+                  : task('tags').contains('archived').not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true

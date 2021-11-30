@@ -37,18 +37,18 @@ const emailPasswordReset = {
       const yesterday = new Date(Date.now() - ms('1d'))
       const user = await getUserByEmail(email)
       const {failOnAccount, failOnTime} = await r({
-        failOnAccount: (r
+        failOnAccount: r
           .table('PasswordResetRequest')
           .getAll(ip, {index: 'ip'})
           .filter({email})
           .count()
-          .ge(Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS) as unknown) as boolean,
-        failOnTime: (r
+          .ge(Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS) as unknown as boolean,
+        failOnTime: r
           .table('PasswordResetRequest')
           .getAll(ip, {index: 'ip'})
           .filter((row) => row('time').ge(yesterday))
           .count()
-          .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown) as boolean
+          .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown as boolean
       }).run()
       if (failOnAccount || failOnTime) {
         return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}

@@ -29,18 +29,15 @@ export default {
     // VALIDATION
     const [user, orgs] = await Promise.all([
       dataLoader.get('users').load(userId),
-      (r
+      r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({removedAt: null})('orgId')
         .coerceTo('array')
         .do((orgIds) => {
-          return r
-            .table('Organization')
-            .getAll(r.args(orgIds), {index: 'id'})
-            .coerceTo('array')
+          return r.table('Organization').getAll(r.args(orgIds), {index: 'id'}).coerceTo('array')
         })
-        .run() as unknown) as Organization[]
+        .run() as unknown as Organization[]
     ])
     if (!user || user.inactive) {
       return standardError(new Error('User already inactivated'), {userId: viewerId})
