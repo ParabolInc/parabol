@@ -10,7 +10,6 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
-import getDeletedEmail from '../../../utils/getDeletedEmail'
 
 const hardDeleteUser = {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -32,7 +31,7 @@ const hardDeleteUser = {
   },
   resolve: async (
     _source,
-    {userId, email, reason}: {userId?: string; email?: string; reason?: string},
+    {userId, email, reasonText}: {userId?: string; email?: string; reasonText?: string},
     {authToken, dataLoader}: GQLContext
   ) => {
     // AUTH
@@ -137,9 +136,7 @@ const hardDeleteUser = {
     const teamDiscussionIds = discussions.rows.map(({id}) => id)
 
     // soft delete first for side effects
-    await softDeleteUser(userIdToDelete, dataLoader, reason)
-
-    const tombstoneId = getDeletedEmail(userIdToDelete)
+    const tombstoneId = await softDeleteUser(userIdToDelete, dataLoader, authToken, reasonText)
 
     // all other writes
     await r({
@@ -163,12 +160,6 @@ const hardDeleteUser = {
         .table('SuggestedAction')
         .getAll(userIdToDelete, {index: 'userId'})
         .delete(),
-      // if `softDeleteUser` found other teammates and reassigned tasks to them,
-      // this will be a noop. else, this will remove their userId as written:
-      assignedTasks: r
-        .table('Task')
-        .getAll(userIdToDelete, {index: 'userId'})
-        .update({userId: null}),
       createdTasks: r
         .table('Task')
         .getAll(r.args(teamIds), {index: 'teamId'})

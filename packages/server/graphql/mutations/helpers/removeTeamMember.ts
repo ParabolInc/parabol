@@ -42,18 +42,23 @@ const removeTeamMember = async (
   }
 
   if (activeTeamMembers.length === 1) {
-    // archive single-person teams
     const updates = {
       isArchived: true,
       updatedAt: new Date()
     }
     await Promise.all([
+      // archive single-person teams
       r
         .table('Team')
         .get(teamId)
         .update(updates)
         .run(),
-      updateTeamByTeamId(updates, teamId)
+      updateTeamByTeamId(updates, teamId),
+      // delete all tasks belonging to a 1-person team
+      r
+        .table('Task')
+        .getAll(teamId, {index: 'teamId'})
+        .delete()
     ])
   } else if (isLead) {
     // assign new leader, remove old leader flag

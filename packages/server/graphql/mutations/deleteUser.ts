@@ -2,18 +2,17 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
-import softDeleteUserResolver from './helpers/softDeleteUser'
+import softDeleteUser from './helpers/softDeleteUser'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import db from '../../db'
-import getDeletedEmail from '../../utils/getDeletedEmail'
 import updateUser from '../../postgres/queries/updateUser'
 import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 
-const markUserSoftDeleted = async (userIdToDelete, validReason) => {
+const markUserSoftDeleted = async (userIdToDelete, deletedUserEmail, validReason) => {
   const update = {
     isRemoved: true,
-    email: getDeletedEmail(userIdToDelete),
+    email: deletedUserEmail,
     reasonRemoved: validReason,
     updatedAt: new Date()
   }
@@ -64,8 +63,13 @@ export default {
     }
     const {id: userIdToDelete} = user
 
-    await softDeleteUserResolver(userIdToDelete, dataLoader, validReason)
-    await markUserSoftDeleted(userIdToDelete, validReason)
+    const deletedUserEmail = await softDeleteUser(
+      userIdToDelete,
+      dataLoader,
+      authToken,
+      validReason
+    )
+    await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
     return {}
   }
 }

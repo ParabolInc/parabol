@@ -6,7 +6,9 @@ import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
 import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
 import getRethink from '../../../database/rethinkDriver'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
-import parabolFetch from '../../parabolFetch'
+import getDeletedEmail from '../../../utils/getDeletedEmail'
+import executeGraphQL from '../../executeGraphQL'
+import AuthToken from '../../../database/types/AuthToken'
 
 const removeGitHubAuths = async (userId: string, teamIds: string[]) =>
   Promise.all(teamIds.map((teamId) => removeGitHubAuth(userId, teamId)))
@@ -17,6 +19,7 @@ const removeAtlassianAuths = async (userId: string, teamIds: string[]) =>
 const softDeleteUser = async (
   userIdToDelete: string,
   dataLoader: DataLoaderWorker,
+  authToken: AuthToken,
   validReason?: string
 ) => {
   const r = await getRethink()
@@ -35,20 +38,24 @@ const softDeleteUser = async (
   const teamIds = teamMemberIds.map((id) => TeamMemberId.split(id).teamId)
 
   const [parabolPayload] = await Promise.all([
-    parabolFetch(
-      `
-      query AccountRemoved($userId: ID!) {
-        user(userId: $userId) {
-          email
-          isRemoved
-          company {
-            userCount
-            activeUserCount
+    executeGraphQL({
+      authToken,
+      dataLoaderId: dataLoader.share(),
+      query: `
+        query AccountRemoved($userId: ID!) {
+          user(userId: $userId) {
+            email
+            isRemoved
+            company {
+              userCount
+              activeUserCount
+            }
           }
         }
-      }`,
-      {userId: userIdToDelete}
-    ),
+      `,
+      variables: {userId: userIdToDelete},
+      isPrivate: true
+    }),
     removeAtlassianAuths(userIdToDelete, teamIds),
     removeGitHubAuths(userIdToDelete, teamIds),
     removeSlackAuths(userIdToDelete, teamIds, true)
@@ -63,9 +70,11 @@ const softDeleteUser = async (
     event: 'Account Removed',
     properties: {
       reason: validReason,
-      parabolPayload
+      parabolPayload: parabolPayload.data
     }
   })
+
+  return getDeletedEmail(userIdToDelete)
 }
 
 export default softDeleteUser

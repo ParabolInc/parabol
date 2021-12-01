@@ -1,8 +1,26 @@
 import fetch from 'node-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import IUser from '../postgres/types/IUser'
-import parabolFetch from '../graphql/parabolFetch'
 import sendToSentry from './sendToSentry'
+import executeGraphQL from '../graphql/executeGraphQL'
+import ServerAuthToken from '../database/types/ServerAuthToken'
+
+interface Company {
+  userCount: number
+  activeUserCount: number
+  [key: string]: number
+}
+interface UserPayloadBase {
+  email: string
+  isRemoved: boolean
+  [key: string]: string | number | boolean
+}
+type UserPayload = UserPayloadBase & {company: Company}
+
+interface ParabolPayload {
+  user: UserPayload
+  [key: string]: UserPayload
+}
 
 interface BulkRecord {
   id?: string
@@ -210,7 +228,29 @@ query ArchiveTeam($userId: ID!) {
 const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
 const hapiKey = process.env.HUBSPOT_API_KEY
 
-const normalize = (value?: string | number) => {
+export const parabolFetch = async (query: string, variables: Record<string, unknown>) => {
+  const result = await executeGraphQL({
+    authToken: new ServerAuthToken(),
+    query,
+    variables,
+    isPrivate: true
+  })
+
+  if (result.errors) {
+    const [firstError] = result.errors
+    const safeError = new Error(firstError.message)
+    safeError.stack = (firstError as Error).stack
+    sendToSentry(safeError)
+  }
+  if (!result.data) {
+    sendToSentry(new Error('HS Parabol did not return data'), {
+      tags: {query, variables: JSON.stringify(variables)}
+    })
+  }
+  return result.data
+}
+
+const normalize = (value?: string | number | boolean) => {
   if (typeof value === 'string' && new Date(value).toJSON() === value) {
     return new Date(value).getTime()
   }
@@ -219,7 +259,7 @@ const normalize = (value?: string | number) => {
 
 const upsertHubspotContact = async (
   email: string,
-  propertiesObj: {[key: string]: string | number},
+  propertiesObj: {[key: string]: string | number | boolean},
   retryCount = 0
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
@@ -370,7 +410,7 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
   } else if (event === 'Account Removed') {
     const {parabolPayload} = properties
     if (!parabolPayload) return
-    const {user} = (parabolPayload as unknown) as {[key: string]: any}
+    const {user} = (parabolPayload as unknown) as ParabolPayload
     const {email, company, ...contact} = user
     await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
   } else if (tierChanges.includes(event)) {
