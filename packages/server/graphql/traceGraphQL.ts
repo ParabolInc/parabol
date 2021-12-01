@@ -1,18 +1,20 @@
 /**
  * @file Wrapping functions to instrument compiled queries.
- * These conflict with the dd-trace graphql plugin since the use the same fields to store intermediate data
+ * These conflict with the dd-trace graphql plugin since they use the same fields to store intermediate data
  */
 import {Span, SpanOptions, TraceOptions, Tracer} from 'dd-trace'
 import {
   DefinitionNode,
   DocumentNode,
   ExecutionResult,
+  getNamedType,
   GraphQLField,
   GraphQLFieldResolver,
+  GraphQLNamedType,
   GraphQLObjectType,
-  GraphQLOutputType,
   GraphQLResolveInfo,
   GraphQLSchema,
+  isObjectType,
   OperationDefinitionNode
 } from 'graphql'
 import {Path} from 'graphql/jsutils/Path'
@@ -69,9 +71,9 @@ export function tracedCompileQuery(tracer: Tracer, config: Config) {
     wrapSchema(tracer, config, schema)
     const query = compileQuery(schema, document, operationName, partialOptions)
     if (isCompiledQuery(query)) {
-      const operation = getOperation(document, operationName)
-      const type = operation?.operation
-      const name = operation?.name?.value
+      const operation = getOperation(document, operationName)!
+      const type = operation.operation
+      const name = operation.name?.value
       wrapCompiledQuery(tracer, config, query, name, type)
     }
     return query
@@ -181,10 +183,14 @@ type PatchedContext = {
   }
 }
 
-type PatchedGraphQLObjectType = GraphQLOutputType & PatchedMarker
+type PatchedGraphQLObjectType = GraphQLObjectType & PatchedMarker
 
-function wrapFields(tracer: Tracer, config: Config, type?: PatchedGraphQLObjectType | null) {
-  if (!type || typeof (type as GraphQLObjectType)?.getFields !== 'function') {
+function wrapFields(
+  tracer: Tracer,
+  config: Config,
+  type: PatchedGraphQLObjectType | null | undefined
+) {
+  if (!type || typeof type?.getFields !== 'function') {
     return
   }
   const fields = (type as GraphQLObjectType).getFields()
@@ -200,24 +206,23 @@ function wrapFields(tracer: Tracer, config: Config, type?: PatchedGraphQLObjectT
   })
 }
 
-function wrapFieldResolve(tracer: Tracer, config: Config, field?: GraphQLField<any, any>) {
-  if (!field || !field.resolve) return
+function wrapFieldResolve(tracer: Tracer, config: Config, field: GraphQLField<any, any>) {
+  if (!field.resolve) return
   field.resolve = wrappedResolve(tracer, config, field.resolve)
 }
 
 function wrapFieldType(tracer: Tracer, config: Config, field?: GraphQLField<any, any>) {
   if (!field || !field.type) return
+  const unwrappedType = getNamedType(field.type)
 
-  let unwrappedType = field.type
-
-  while ((unwrappedType as any).ofType) {
-    unwrappedType = (unwrappedType as any).ofType
+  if (isObjectType(unwrappedType)) {
+    wrapFields(tracer, config, unwrappedType)
   }
-
-  wrapFields(tracer, config, unwrappedType)
 }
 
-type PatchedGraphQLFieldResolver = GraphQLFieldResolver<any, any> & PatchedMarker
+interface PatchedGraphQLFieldResolver extends GraphQLFieldResolver<any, any> {
+  _datadog_patched?: true
+}
 function wrappedResolve(
   tracer: Tracer,
   config: Config,
@@ -227,7 +232,7 @@ function wrappedResolve(
 
   const responsePathAsArray = config.collapse ? withCollapse(pathToArray) : pathToArray
 
-  async function resolveWithTrace(source, args, context, info) {
+  const resolveWithTrace: PatchedGraphQLFieldResolver = async (source, args, context, info) => {
     if (!context._datadog_graphql) return resolve(source, args, context, info)
 
     const path = responsePathAsArray(info && info.path)
@@ -255,7 +260,6 @@ function wrappedResolve(
       field.finishTime = (field.span as any)._getTime?.() ?? 0
     }
   }
-
   resolveWithTrace._datadog_patched = true
 
   return resolveWithTrace
@@ -292,7 +296,7 @@ function startResolveSpan(
     'resource.name': `${info.fieldName}:${info.returnType}`,
     'graphql.field.name': info.fieldName,
     'graphql.field.path': path.join('.'),
-    'graphql.field.type': (info.returnType as any).name,
+    'graphql.field.type': (info.returnType as GraphQLNamedType).name,
     // not sure if this is needed if the outer span is measured already, but that's what the graphql plugin does
     '_dd.measured': true
   })
@@ -341,7 +345,7 @@ function withCollapse(responsePathAsArray: typeof pathToArray) {
 }
 
 function isOperationDefinitionNode(node: DefinitionNode): node is OperationDefinitionNode {
-  return ['query', 'mutation', 'subscription'].includes((node as OperationDefinitionNode).operation)
+  return node.kind === 'OperationDefinition'
 }
 
 function getOperation(document: DocumentNode, operationName?: string) {

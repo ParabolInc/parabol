@@ -24,9 +24,11 @@ import SAMLHandler from './utils/SAMLHandler'
 import PROD from './PROD'
 import {r} from 'rethinkdb-ts'
 
-if (PROD) {
-  tracer.init()
-}
+tracer.init({
+  enabled: process.env.DD_TRACE_ENABLED === 'true',
+  service: `Web ${process.env.SERVER_ID}`,
+  plugins: false
+})
 
 const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
 if (!PROD) {
