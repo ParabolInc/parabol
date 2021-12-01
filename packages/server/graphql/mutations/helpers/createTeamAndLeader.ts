@@ -23,10 +23,7 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
   const r = await getRethink()
   const {id: userId} = user
   const {id: teamId, orgId} = newTeam
-  const organization = await r
-    .table('Organization')
-    .get(orgId)
-    .run()
+  const organization = await r.table('Organization').get(orgId).run()
   const {tier} = organization
   const verifiedTeam = new Team({...newTeam, createdBy: userId, tier})
   const meetingSettings = [
@@ -50,16 +47,10 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
       .default(null)
       .run(),
     // add meeting settings
-    r
-      .table('MeetingSettings')
-      .insert(meetingSettings)
-      .run(),
+    r.table('MeetingSettings').insert(meetingSettings).run(),
     // denormalize common fields to team member
     insertNewTeamMember(user, teamId),
-    r
-      .table('TimelineEvent')
-      .insert(timelineEvent)
-      .run(),
+    r.table('TimelineEvent').insert(timelineEvent).run(),
     addTeamIdToTMS(userId, teamId)
   ])
 }

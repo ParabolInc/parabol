@@ -130,11 +130,7 @@ export default {
     if (!stripeId) {
       // create the customer
       const customer = await manager.createCustomer(orgId, apEmail || user.email)
-      await r
-        .table('Organization')
-        .get(orgId)
-        .update({stripeId: customer.id})
-        .run()
+      await r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
       customerId = customer.id
     } else {
       customerId = stripeId
@@ -159,14 +155,11 @@ export default {
             tier: 'enterprise',
             updatedAt: now
           }),
-        teamIds: r
-          .table('Team')
-          .getAll(orgId, {index: 'orgId'})
-          .update({
-            isPaid: true,
-            tier: 'enterprise',
-            updatedAt: now
-          })
+        teamIds: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
+          isPaid: true,
+          tier: 'enterprise',
+          updatedAt: now
+        })
       }).run(),
       updateTeamByOrgId(
         {

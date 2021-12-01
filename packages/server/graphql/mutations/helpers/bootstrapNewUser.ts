@@ -68,10 +68,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam),
       addSeedTasks(userId, teamId),
-      r
-        .table('SuggestedAction')
-        .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
-        .run()
+      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
     ])
     segmentIo.track({
       userId,

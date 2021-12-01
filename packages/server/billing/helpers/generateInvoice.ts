@@ -103,12 +103,12 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
       const {unusedTime, remainingTime} = lineItems
       const unusedTimeAmount = unusedTime ? unusedTime.amount : 0
       const remainingTimeAmount = remainingTime ? remainingTime.amount : 0
-      reducedItems[k] = ({
+      reducedItems[k] = {
         id: generateUID(),
         amount: unusedTimeAmount + remainingTimeAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
-      } as unknown) as ReducedUnpausePartial | ReducedStandardPartial
+      } as unknown as ReducedUnpausePartial | ReducedStandardPartial
     }
   }
   return reducedItemsByType
@@ -202,9 +202,9 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
     metadata: {userId, type},
     period: {start}
   } = lineItem
-  const safeType = (type === InvoiceItemType.AUTO_PAUSE_USER
-    ? InvoiceItemType.PAUSE_USER
-    : type) as keyof TypesDict
+  const safeType = (
+    type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
+  ) as keyof TypesDict
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
   itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}
@@ -344,12 +344,12 @@ export default async function generateInvoice(
   const paidAt = status === 'PAID' ? now : undefined
 
   const {organization, billingLeaderIds} = await r({
-    organization: (r.table('Organization').get(orgId) as unknown) as Organization,
-    billingLeaderIds: (r
+    organization: r.table('Organization').get(orgId) as unknown as Organization,
+    billingLeaderIds: r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null, role: 'BILLING_LEADER'})
-      .coerceTo('array')('userId') as unknown) as string[]
+      .coerceTo('array')('userId') as unknown as string[]
   }).run()
 
   const billingLeaders = (await dataLoader.get('users').loadMany(billingLeaderIds)).filter(isValid)
