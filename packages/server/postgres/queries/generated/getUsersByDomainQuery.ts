@@ -37,6 +37,7 @@ export interface IGetUsersByDomainQueryResult {
   rol: AuthTokenRole | null;
   payLaterClickCount: number;
   isWatched: boolean;
+  domain: string | null;
 }
 
 /** 'GetUsersByDomainQuery' query type */
