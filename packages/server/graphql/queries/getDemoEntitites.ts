@@ -11,7 +11,7 @@ const getDemoEntities = {
       description: 'the reflection bodies to entitize'
     }
   },
-  resolve: rateLimit({perMinute: 5, perHour: 50})(async (_source, {text}) => {
+  resolve: rateLimit({perMinute: 5, perHour: 50})(async (_source: unknown, {text}) => {
     const entities = await getReflectionEntities(text)
     return {entities}
   })

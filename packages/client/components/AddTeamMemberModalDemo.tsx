@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'
 import DialogContainer from './DialogContainer'
 import hasToken from '../utils/hasToken'
+import momentumPng from '../../../static/images/illustrations/illus-momentum.png'
 
 const StyledDialogContainer = styled(DialogContainer)({
   alignItems: 'center',
@@ -31,10 +32,9 @@ const AddTeamMemberModalDemo = () => {
   const copy = hasToken()
     ? 'Invite your teammates to a team and kick off a real Retro!'
     : 'Sign up, invite your teammates, and kick off a real Retro!'
-  const imageSrc = `${__STATIC_IMAGES__}/illustrations/illus-momentum.png`
   return (
     <StyledDialogContainer>
-      <Illustration alt='' src={imageSrc} />
+      <Illustration alt='' src={momentumPng} />
       <StyledCopy>{copy}</StyledCopy>
       <DemoCreateAccountPrimaryButton />
     </StyledDialogContainer>

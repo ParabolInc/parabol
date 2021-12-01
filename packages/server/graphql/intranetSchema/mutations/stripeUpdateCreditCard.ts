@@ -15,7 +15,7 @@ export default {
       description: 'The stripe customer ID, or stripeId'
     }
   },
-  resolve: async (_source, {customerId}, {authToken}: InternalContext) => {
+  resolve: async (_source: unknown, {customerId}, {authToken}: InternalContext) => {
     // AUTH
     if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')

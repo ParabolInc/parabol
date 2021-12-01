@@ -26,7 +26,7 @@ const EstimateUserScore = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user that for this score',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     },

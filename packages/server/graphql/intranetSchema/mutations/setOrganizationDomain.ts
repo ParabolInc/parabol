@@ -17,7 +17,7 @@ const setOrganizationDomain = {
         'The top level domain of the company. Usually the part after the "@" in their email address'
     }
   },
-  resolve: async (_source, {orgId, domain}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {orgId, domain}, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     // AUTH

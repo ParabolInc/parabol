@@ -91,7 +91,7 @@ const dailyPulse = {
     }
   },
   description: 'Post signup and login metrics to slack',
-  async resolve(_source, {after, email, channelId}, {authToken}) {
+  async resolve(_source: unknown, {after, email, channelId}, {authToken}) {
     requireSU(authToken)
     const r = await getRethink()
     const user = await getUserByEmail(email)

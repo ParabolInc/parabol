@@ -44,7 +44,7 @@ const checkRethinkPgEquality = {
       description: 'Whether the output should be written to file'
     }
   },
-  resolve: async (_source, {tableName, maxErrors, writeToFile}, {authToken}) => {
+  resolve: async (_source: unknown, {tableName, maxErrors, writeToFile}, {authToken}) => {
     // AUTH
     requireSU(authToken)
 

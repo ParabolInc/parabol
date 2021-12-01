@@ -66,7 +66,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if this team member belongs to the user that queried it',
-      resolve: (source, _args, {authToken}) => {
+      resolve: (source, _args: unknown, {authToken}) => {
         const userId = getUserId(authToken)
         return source.userId === userId
       }
@@ -108,7 +108,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
           description: 'the datetime cursor'
         }
       },
-      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         const publicTasksForUserId = allTasks.filter((task) => {
           if (task.userId !== userId) return false
@@ -130,7 +130,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve({userId}, _args, {dataLoader}) {
+      resolve({userId}, _args: unknown, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },

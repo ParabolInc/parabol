@@ -15,14 +15,14 @@ const AddGitHubAuthPayload = new GraphQLObjectType<any, GQLContext>({
     githubIntegration: {
       type: GitHubIntegration,
       description: 'The newly created auth',
-      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('githubAuth').load({teamId, userId})
       }
     },
     teamMember: {
       type: TeamMember,
       description: 'The team member with the updated auth',
-      resolve: ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const teamMemberId = toTeamMemberId(teamId, userId)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
@@ -30,7 +30,7 @@ const AddGitHubAuthPayload = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: User,
       description: 'The user with updated githubAuth',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     }

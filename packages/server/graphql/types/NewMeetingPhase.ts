@@ -1,4 +1,11 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GQLContext} from './../graphql'
+import {
+  GraphQLID,
+  GraphQLInterfaceType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType
+} from 'graphql'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -17,6 +24,7 @@ import DiscussPhase from './DiscussPhase'
 import EstimatePhase from './EstimatePhase'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import {NewMeetingPhaseTypeEnum as INewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NewMeetingStage from './NewMeetingStage'
 import ReflectPhase from './ReflectPhase'
 import UpdatesPhase from './UpdatesPhase'
@@ -54,12 +62,12 @@ const resolveTypeLookup = {
   [LAST_CALL]: GenericMeetingPhase,
   SCOPE: GenericMeetingPhase,
   ESTIMATE: EstimatePhase
-}
+} as Record<INewMeetingPhaseTypeEnum, GraphQLObjectType<any, GQLContext>>
 
-const NewMeetingPhase = new GraphQLInterfaceType({
+const NewMeetingPhase: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'NewMeetingPhase',
   fields: newMeetingPhaseFields,
-  resolveType: ({phaseType}) => resolveTypeLookup[phaseType]
+  resolveType: ({phaseType}: {phaseType: INewMeetingPhaseTypeEnum}) => resolveTypeLookup[phaseType]
 })
 
 export default NewMeetingPhase
