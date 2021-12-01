@@ -8,8 +8,8 @@ import graphql from 'babel-plugin-relay/macro'
 type ResultGroups = useSpotlightResultsLocalQueryResponse['viewer']['similarReflectionGroups']
 
 const useSpotlightResults = (
-  spotlightGroupId: string | undefined,
-  searchQuery: string | undefined,
+  spotlightGroupId?: string,
+  searchQuery?: string | null,
   getReflections?: boolean
 ): ResultGroups | undefined => {
   const spotlightSearchResults = useLazyLoadQuery<useSpotlightResultsLocalQuery>(

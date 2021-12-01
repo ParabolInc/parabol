@@ -109,6 +109,7 @@ const ReflectionGroup = (props: Props) => {
             isViewerDragging
           }
         }
+        spotlightSearchQuery
       }
     `,
     meetingRef
@@ -147,19 +148,15 @@ const ReflectionGroup = (props: Props) => {
   const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
+  const {id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const spotlightGroupId = spotlightGroup?.id
-  const visibleReflections = useMemo(
-    () => reflections.filter(({id}) => !reflectionIdsToHide?.includes(id)),
-    [reflections, reflectionIdsToHide]
-  )
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
-  const [isRemoteSpotlightSrc, disableDrop] = useSpotlightReflectionGroup(
-    visibleReflections,
-    spotlightGroupId,
-    reflectionGroupId,
-    isBehindSpotlight
+  const {isRemoteSpotlightSrc, disableDrop, visibleReflections} = useSpotlightReflectionGroup(
+    meeting,
+    reflectionGroup,
+    isBehindSpotlight,
+    reflectionIdsToHide
   )
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
@@ -171,22 +168,14 @@ const ReflectionGroup = (props: Props) => {
     )
   }, [visibleReflections])
   const stackRef = useRef<HTMLDivElement>(null)
-  const {
-    setItemsRef,
-    scrollRef,
-    bgRef,
-    modalHeaderRef,
-    portal,
-    portalStatus,
-    collapse,
-    expand
-  } = useExpandedReflections(
-    groupRef,
-    stackRef,
-    visibleReflections.length,
-    headerRef,
-    expandedReflectionGroupPortalParentId
-  )
+  const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} =
+    useExpandedReflections(
+      groupRef,
+      stackRef,
+      visibleReflections.length,
+      headerRef,
+      expandedReflectionGroupPortalParentId
+    )
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === 'group' && !isComplete
