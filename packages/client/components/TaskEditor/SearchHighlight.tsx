@@ -2,7 +2,7 @@ import React, {ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
 const style = {
-  backgroundColor: PALETTE.GOLD_100,
+  backgroundColor: PALETTE.GOLD_HIGHLIGHT,
   borderRadius: 2
 }
 
