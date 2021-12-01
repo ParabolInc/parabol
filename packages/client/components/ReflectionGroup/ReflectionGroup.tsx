@@ -7,6 +7,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
+import useSpotlightVisibleReflections from './useSpotlightVisibleReflections'
 import {
   DragAttribute,
   ElementWidth,
@@ -151,9 +152,10 @@ const ReflectionGroup = (props: Props) => {
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const spotlightGroupId = spotlightGroup?.id
-  const visibleReflections = useMemo(
-    () => reflections.filter(({id}) => !reflectionIdsToHide?.includes(id)),
-    [reflections, reflectionIdsToHide]
+  const visibleReflections = useSpotlightVisibleReflections(
+    reflections,
+    spotlightSearchQuery,
+    reflectionIdsToHide
   )
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
@@ -233,29 +235,6 @@ const ReflectionGroup = (props: Props) => {
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
     !isSpotlightSrcGroup
 
-  let visibleReflectionsSorted
-  let staticReflectionsSorted
-
-  if (spotlightSearchQuery != null && visibleReflections.length > 1) {
-    const spotlightSearchQueryLower = spotlightSearchQuery.toLowerCase()
-    const matchIndex = visibleReflections.findIndex((reflection) => {
-      const textLower = reflection.plaintextContent.toLowerCase()
-      return textLower.indexOf(spotlightSearchQueryLower) !== -1
-    })
-
-    if (matchIndex > 0) {
-      visibleReflectionsSorted = [...visibleReflections]
-      staticReflectionsSorted = [...staticReflections]
-
-      // Move reflection to top
-      visibleReflectionsSorted.unshift(visibleReflectionsSorted.splice(matchIndex, 1)[0])
-      const staticIndex = staticReflections.indexOf(visibleReflections[matchIndex])
-      if (staticIndex > 0) {
-        staticReflectionsSorted.unshift(staticReflectionsSorted.splice(staticIndex, 1)[0])
-      }
-    }
-  }
-
   return (
     <>
       {portal(
@@ -271,8 +250,8 @@ const ReflectionGroup = (props: Props) => {
             />
           }
           phaseRef={phaseRef}
-          staticReflections={staticReflectionsSorted ?? staticReflections}
-          reflections={visibleReflectionsSorted ?? visibleReflections}
+          staticReflections={staticReflections}
+          reflections={visibleReflections}
           scrollRef={scrollRef}
           bgRef={bgRef}
           setItemsRef={setItemsRef}
@@ -301,8 +280,8 @@ const ReflectionGroup = (props: Props) => {
           />
         )}
         <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
-          {(visibleReflectionsSorted ?? visibleReflections).map((reflection) => {
-            const staticIdx = (staticReflectionsSorted ?? staticReflections).indexOf(reflection)
+          {visibleReflections.map((reflection) => {
+            const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
             return (
               <ReflectionWrapper
