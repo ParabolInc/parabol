@@ -34,6 +34,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import isDemoRoute from '~/utils/isDemoRoute'
+import remountDecorators from '../../utils/draftjs/remountDecorators'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -105,7 +106,7 @@ const ReflectionCard = (props: Props) => {
   const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const [editorState, setEditorState] = useEditorState(content, meeting?.spotlightSearchQuery)
+  const [editorState, setEditorState] = useEditorState(content)
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
@@ -130,6 +131,11 @@ const ReflectionCard = (props: Props) => {
     }
     return () => updateIsEditing(false)
   }, [])
+
+  useEffect(() => {
+    const refreshedState = remountDecorators(() => editorState, meeting?.spotlightSearchQuery)
+    setEditorState(refreshedState)
+  }, [meeting?.spotlightSearchQuery])
 
   const handleContentUpdate = () => {
     if (isAndroid) {

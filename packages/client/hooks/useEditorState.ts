@@ -3,11 +3,10 @@ import {convertFromRaw, EditorState} from 'draft-js'
 import {useEffect, useRef, useState} from 'react'
 import makeEditorState from '../utils/draftjs/makeEditorState'
 import mergeServerContent from '../utils/mergeServerContent'
-import remountDecorators from '../utils/draftjs/remountDecorators'
 
-const useEditorState = (content?: string | null | undefined, searchQuery?: string | null) => {
+const useEditorState = (content?: string | null | undefined) => {
   const [editorState, setEditorState] = useState<EditorState>(() =>
-    makeEditorState(content, () => editorStateRef.current!, searchQuery)
+    makeEditorState(content, () => editorStateRef.current!)
   )
   const editorStateRef = useRef<EditorState>(editorState)
   const isErrorSentToSentryRef = useRef<boolean>(false)
@@ -51,11 +50,6 @@ const useEditorState = (content?: string | null | undefined, searchQuery?: strin
     lastFiredRef.current = now
     setEditorState(editorStateRef.current)
   }, [content])
-
-  useEffect(() => {
-    const refreshedState = remountDecorators(() => editorStateRef.current!, searchQuery)
-    setEditorState(refreshedState)
-  }, [searchQuery])
 
   return [editorState, setEditorState] as [EditorState, (editorState: EditorState) => void]
 }
