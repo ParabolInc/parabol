@@ -38,8 +38,7 @@ const LeftNavToggle = styled(PlainButton)({
   borderRadius: 100,
   fontSize: ICON_SIZE.MD24,
   lineHeight: '16px',
-  paddingLeft: 16,
-  margin: 8,
+  margin: 12,
   padding: 4,
   ':focus': {
     boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`
