@@ -117,7 +117,9 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
 
   const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
-    setDirtyField(name)
+    if (name === 'email' || name === 'password') {
+      setDirtyField(name)
+    }
     if (name === 'email') {
       const {value: email} = fields.email
       const domain = getSSODomainFromEmail(email)
