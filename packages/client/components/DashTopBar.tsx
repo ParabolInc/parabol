@@ -42,7 +42,7 @@ const LeftNavToggle = styled(PlainButton)({
   margin: 8,
   padding: 4,
   ':focus': {
-    boxShadow: '0 0 0 2px #61B1EB'
+    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`
   }
 })
 
@@ -62,7 +62,7 @@ const LogoWrapper = styled('button')({
   margin: '8px 0',
   padding: '8px 8px 4px 8px',
   ':focus': {
-    boxShadow: '0 0 0 2px #61B1EB',
+    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
     outline: 'none'
   }
 })
