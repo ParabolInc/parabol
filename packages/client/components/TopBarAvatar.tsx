@@ -23,8 +23,6 @@ const AvatarWrapper = styled('button')({
   }
 })
 
-const SpacedAvatar = styled(Avatar)({})
-
 const StandardHubUserMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'StandardHubUserMenu' */ './StandardHubUserMenu')
 )
@@ -42,7 +40,7 @@ const TopBarAvatar = (props: Props) => {
   return (
     <>
       <AvatarWrapper onClick={togglePortal}>
-        <SpacedAvatar
+        <Avatar
           onMouseEnter={StandardHubUserMenu.preload}
           ref={originRef}
           hasBadge={false}
