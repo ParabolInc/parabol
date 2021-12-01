@@ -90,9 +90,9 @@ const EditorLinkChanger = (props: Props) => {
     e.preventDefault()
     setDirtyField()
     const {link: linkRes, text: textRes} = validateField()
-    if (linkRes.error || textRes.error) return
-    const link = linkRes.value as string
-    const text = textRes.value as string
+    if (linkRes?.error || textRes?.error) return
+    const link = linkRes?.value as string
+    const text = textRes?.value as string
     const href = linkify.match(link)[0].url
     removeModal(true)
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
@@ -116,7 +116,7 @@ const EditorLinkChanger = (props: Props) => {
     }
   }
 
-  const hasError = !!(fields.text.error || fields.link.error)
+  const hasError = !!(fields?.text?.error || fields?.link?.error)
   const label = text ? 'Update' : 'Add'
   return menuPortal(
     <ModalBoundary onBlur={handleBlur} onKeyDown={handleKeyDown} tabIndex={-1}>
@@ -125,7 +125,7 @@ const EditorLinkChanger = (props: Props) => {
           <TextBlock>
             <InputLabel>{'Text'}</InputLabel>
             <InputBlock>
-              <BasicInput {...fields.text} onChange={onChange} autoFocus name='text' />
+              <BasicInput {...fields.text!} onChange={onChange} autoFocus name='text' />
             </InputBlock>
           </TextBlock>
         )}
@@ -133,8 +133,8 @@ const EditorLinkChanger = (props: Props) => {
           <InputLabel>{'Link'}</InputLabel>
           <InputBlock>
             <BasicInput
-              {...fields.link}
-              value={fields.link.value === null ? '' : fields.link.value}
+              {...fields.link!}
+              value={fields.link!.value === null ? '' : fields.link!.value}
               autoFocus={link === null && text !== ''}
               onChange={onChange}
               name='link'
