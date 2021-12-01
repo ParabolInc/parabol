@@ -53,6 +53,7 @@ import OrganizationType from '../../database/types/Organization'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import MeetingMemberType from '../../database/types/MeetingMember'
 import Reflection from '../../database/types/Reflection'
+import isValid from '../isValid'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -472,7 +473,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
           ].slice(0, MAX_RESULT_GROUP_SIZE)
-          return dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds)
+          return dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds).filter(isValid)
         }
 
         const reflectionsCount = reflections.length
@@ -511,7 +512,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             }
           }
         }
-        return dataLoader.get('retroReflectionGroups').loadMany(Array.from(currentResultGroupIds))
+        return dataLoader
+          .get('retroReflectionGroups')
+          .loadMany(Array.from(currentResultGroupIds))
+          .filter(isValid)
       }
     },
     tasks: require('../queries/tasks').default,

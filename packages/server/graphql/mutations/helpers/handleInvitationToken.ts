@@ -1,4 +1,3 @@
-import db from '../../../db'
 import {DataLoaderWorker} from '../../graphql'
 import getIsMassInviteToken from './getIsMassInviteToken'
 import handleMassInviteToken from './handleMassInviteToken'
@@ -10,7 +9,7 @@ const handleInvitationToken = async (
   dataLoader: DataLoaderWorker,
   notificationId?: string
 ) => {
-  const viewer = await db.read('User', viewerId)
+  const viewer = await dataLoader.get('users').load(viewerId)
   if (!viewer) {
     throw new Error('Authorization Error')
   }

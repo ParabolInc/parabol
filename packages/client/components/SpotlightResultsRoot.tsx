@@ -11,10 +11,11 @@ import {useFragment} from 'react-relay'
 interface Props {
   meetingRef: SpotlightResultsRoot_meeting$key
   phaseRef: RefObject<HTMLDivElement>
+  isSpotlightEntering: boolean
 }
 
 const SpotlightResultsRoot = (props: Props) => {
-  const {meetingRef, phaseRef} = props
+  const {meetingRef, phaseRef, isSpotlightEntering} = props
   const meeting = useFragment(
     graphql`
       fragment SpotlightResultsRoot_meeting on RetrospectiveMeeting {
@@ -48,7 +49,13 @@ const SpotlightResultsRoot = (props: Props) => {
 
   return (
     <Suspense fallback={''}>
-      {queryRef && <SpotlightGroups phaseRef={phaseRef} queryRef={queryRef} />}
+      {queryRef && (
+        <SpotlightGroups
+          phaseRef={phaseRef}
+          queryRef={queryRef}
+          isSpotlightEntering={isSpotlightEntering}
+        />
+      )}
     </Suspense>
   )
 }
