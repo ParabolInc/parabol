@@ -66,8 +66,6 @@ const LogoWrapper = styled('button')({
   }
 })
 
-const Img = styled('img')({})
-
 const TopBarIcons = styled('div')({
   alignItems: 'center',
   color: PALETTE.SLATE_200,
@@ -103,7 +101,7 @@ const DashTopBar = (props: Props) => {
           <Icon>{'menu'}</Icon>
         </LeftNavToggle>
         <LogoWrapper onClick={gotoHome}>
-          <Img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
+          <img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
         </LogoWrapper>
       </LeftNavHeader>
       <TopBarMain>
