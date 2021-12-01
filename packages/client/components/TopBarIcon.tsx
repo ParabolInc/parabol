@@ -15,7 +15,7 @@ const Button = styled(PlainButton)({
   padding: 4,
   position: 'relative',
   ':focus': {
-    boxShadow: '0 0 0 2px #61B1EB'
+    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`
   }
 })
 
