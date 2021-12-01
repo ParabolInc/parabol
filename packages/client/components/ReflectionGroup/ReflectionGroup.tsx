@@ -138,7 +138,6 @@ const ReflectionGroup = (props: Props) => {
             dragUserId
             isSpotlight
           }
-          content
           plaintextContent
         }
         isExpanded
@@ -147,7 +146,7 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroupRef
   )
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage, spotlightGroup} = meeting
+  const {localPhase, localStage, spotlightGroup, spotlightSearchQuery} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
@@ -237,12 +236,11 @@ const ReflectionGroup = (props: Props) => {
   let visibleReflectionsSorted
   let staticReflectionsSorted
 
-  const searchQuery = meeting?.spotlightSearchQuery
-  if (searchQuery != null && visibleReflections.length > 1) {
-    const searchQueryLower = searchQuery.toLowerCase()
-    const matchIndex = visibleReflections.findIndex((ref) => {
-      const textLower = ref.plaintextContent.toLowerCase()
-      return textLower.indexOf(searchQueryLower) !== -1
+  if (spotlightSearchQuery != null && visibleReflections.length > 1) {
+    const spotlightSearchQueryLower = spotlightSearchQuery.toLowerCase()
+    const matchIndex = visibleReflections.findIndex((reflection) => {
+      const textLower = reflection.plaintextContent.toLowerCase()
+      return textLower.indexOf(spotlightSearchQueryLower) !== -1
     })
 
     if (matchIndex > 0) {

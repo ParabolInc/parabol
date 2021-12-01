@@ -14,7 +14,7 @@ const findEntity = (entityType) => (contentBlock, callback, contentState) => {
 }
 
 const findText = (searchQuery) => (contentBlock, callback) => {
-  if (searchQuery == null || searchQuery === '') {
+  if (!searchQuery) {
     return
   }
 
@@ -59,7 +59,7 @@ const decorators = (
     }
   ]
 
-  if (searchQuery != null && searchQuery !== '') {
+  if (searchQuery) {
     compositeDecorator.push({
       strategy: findText(searchQuery),
       component: SearchHighlight
