@@ -35,11 +35,9 @@ const RetroGroupPhase = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   useHotkey('s p o t l i g h t', () => {
-    const viewer = viewerMeetingMember?.user
-    if (!viewer) return
-    const {email, featureFlags} = viewer
-    if (featureFlags.spotlight) return
-    AddFeatureFlagMutation(atmosphere, {emails: [email], flag: 'spotlight'}, {onError, onCompleted})
+    const isSpotlightActive = viewerMeetingMember?.user.featureFlags.spotlight
+    if (isSpotlightActive) return
+    AddFeatureFlagMutation(atmosphere, {flag: 'spotlight'}, {onError, onCompleted})
   })
 
   return (
@@ -74,7 +72,6 @@ export default createFragmentContainer(RetroGroupPhase, {
       showSidebar
       viewerMeetingMember {
         user {
-          email
           featureFlags {
             spotlight
           }

@@ -1,12 +1,14 @@
+import {getUserById} from './../../postgres/queries/getUsersByIds'
+import {requireSU} from './../../utils/authorization'
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import standardError from '../../utils/standardError'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
-import {getUserByEmail, getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
+import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import IUser from '../../postgres/types/IUser'
-import {getUserId, isSuperUser} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
@@ -43,14 +45,15 @@ export default {
     const subOptions = {operationId}
 
     // AUTH
-    if (!isSuperUser(authToken)) {
-      const viewerId = getUserId(authToken)
-      const user = emails && (await getUserByEmail(emails[0]))
-      if (domain || (emails && emails?.length > 1) || user?.id !== viewerId) {
-        return standardError(new Error('Cannot add feature flag for a different user'), {
-          userId: viewerId
-        })
-      }
+    const viewerId = getUserId(authToken)
+    const viewer = await getUserById(viewerId)
+    const isAddingFlagToViewer = !emails?.length && !domain
+    if (!isAddingFlagToViewer) {
+      requireSU(authToken)
+    } else if (!viewer) {
+      return standardError(new Error('Unable to find viewer'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -62,6 +65,9 @@ export default {
     if (domain) {
       const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
+    }
+    if (isAddingFlagToViewer) {
+      users.push(viewer!)
     }
 
     if (users.length === 0) {
