@@ -228,7 +228,7 @@ query ArchiveTeam($userId: ID!) {
 const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
 const hapiKey = process.env.HUBSPOT_API_KEY
 
-export const parabolFetch = async (query: string, variables: Record<string, unknown>) => {
+const parabolFetch = async (query: string, variables: Record<string, unknown>) => {
   const result = await executeGraphQL({
     authToken: new ServerAuthToken(),
     query,
@@ -410,7 +410,7 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
   } else if (event === 'Account Removed') {
     const {parabolPayload} = properties
     if (!parabolPayload) return
-    const {user} = (parabolPayload as unknown) as ParabolPayload
+    const {user} = parabolPayload as unknown as ParabolPayload
     const {email, company, ...contact} = user
     await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
   } else if (tierChanges.includes(event)) {

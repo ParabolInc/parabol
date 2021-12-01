@@ -16,8 +16,7 @@ const markUserSoftDeleted = async (userIdToDelete, deletedUserEmail, validReason
     reasonRemoved: validReason,
     updatedAt: new Date()
   }
-  await db.write('User', userIdToDelete, update)
-  await updateUser(update, userIdToDelete)
+  await Promise.all([db.write('User', userIdToDelete, update), updateUser(update, userIdToDelete)])
 }
 
 export default {
