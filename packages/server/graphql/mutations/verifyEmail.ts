@@ -4,17 +4,16 @@ import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'
 import EmailVerification from '../../database/types/EmailVerification'
-import db from '../../db'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import updateUser from '../../postgres/queries/updateUser'
 import createNewLocalUser from '../../utils/createNewLocalUser'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import rateLimit from '../rateLimit'
 import VerifyEmailPayload from '../types/VerifyEmailPayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
-import updateUser from '../../postgres/queries/updateUser'
-import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 export default {
-  type: GraphQLNonNull(VerifyEmailPayload),
+  type: new GraphQLNonNull(VerifyEmailPayload),
   description: `Verify an email address and sign in if not already a user`,
   args: {
     verificationToken: {
@@ -25,7 +24,7 @@ export default {
   resolve: rateLimit({
     perMinute: 50,
     perHour: 100
-  })(async (_source, {verificationToken}, context) => {
+  })(async (_source: unknown, {verificationToken}, context) => {
     const r = await getRethink()
     const now = new Date()
     const emailVerification = (await r
@@ -56,16 +55,12 @@ export default {
       if (!localIdentity.isEmailVerified) {
         // mutative
         localIdentity.isEmailVerified = true
-        await Promise.all([
-          updateUser(
-            {
-              identities,
-              updatedAt: now
-            },
-            userId
-          ),
-          db.write('User', userId, {identities, updatedAt: now})
-        ])
+        await updateUser(
+          {
+            identities
+          },
+          userId
+        )
       }
       return {authToken, userId}
     }

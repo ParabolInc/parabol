@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
@@ -15,15 +16,15 @@ import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
 
 const setTaskEstimate = {
-  type: GraphQLNonNull(SetTaskEstimatePayload),
+  type: new GraphQLNonNull(SetTaskEstimatePayload),
   description: 'Update a task estimate',
   args: {
     taskEstimate: {
-      type: GraphQLNonNull(TaskEstimateInput)
+      type: new GraphQLNonNull(TaskEstimateInput)
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {taskEstimate}: {taskEstimate: ITaskEstimateInput},
     context: GQLContext,
     info: GraphQLResolveInfo
@@ -90,7 +91,8 @@ const setTaskEstimate = {
     const {integration} = task
     const service = integration?.service
     if (service === 'jira') {
-      const {accessUserId, cloudId, issueKey, projectKey} = integration!
+      const {accessUserId, cloudId, issueKey} = integration!
+      const projectKey = JiraProjectKeyId.join(issueKey)
       const [auth, team] = await Promise.all([
         dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
         dataLoader.get('teams').load(teamId)

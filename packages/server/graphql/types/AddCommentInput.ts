@@ -11,7 +11,7 @@ const AddCommentInput = new GraphQLInputObjectType({
   name: 'AddCommentInput',
   fields: () => ({
     content: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'A stringified draft-js document containing thoughts'
     },
     isAnonymous: {
@@ -19,11 +19,11 @@ const AddCommentInput = new GraphQLInputObjectType({
       description: 'true if the comment should be anonymous'
     },
     discussionId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'foreign key for the discussion this was created in'
     },
     threadSortOrder: {
-      type: GraphQLNonNull(GraphQLFloat)
+      type: new GraphQLNonNull(GraphQLFloat)
     },
     threadParentId: {
       type: GraphQLID

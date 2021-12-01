@@ -2,6 +2,7 @@ import getPg from '../../../../postgres/getPg'
 
 const domainFilterFields = ['createdAt', 'lastSeenAt'] as const
 type DomainFilterField = typeof domainFilterFields[number]
+type DomainTotal = {domain: string; total: number}
 
 const authCountByDomain = async (
   after: Date | null | undefined,
@@ -14,20 +15,22 @@ const authCountByDomain = async (
   const pg = getPg()
 
   const count = after
-    ? await pg.query(
-        `SELECT count(*) as total, split_part(email, '@', 2) as "domain" from "User"
+    ? await pg.query<DomainTotal>(
+        `SELECT count(*)::float as total, split_part(email, '@', 2) as "domain" from "User"
          WHERE (NOT $1 OR inactive = FALSE)
          AND "${filterField}" >= $2
-         GROUP BY split_part(email, '@', 2)`,
+         GROUP BY split_part(email, '@', 2)
+         ORDER BY total DESC`,
         [countOnlyActive ?? false, after]
       )
-    : await pg.query(
-        `SELECT count(*) as total, split_part(email, '@', 2) as "domain" from "User"
+    : await pg.query<DomainTotal>(
+        `SELECT count(*)::float as total, split_part(email, '@', 2) as "domain" from "User"
          WHERE (NOT $1 OR inactive = FALSE)
-         GROUP BY split_part(email, '@', 2)`,
+         GROUP BY split_part(email, '@', 2)
+         ORDER BY total DESC`,
         [countOnlyActive ?? false]
       )
-  return count.rows as {domain: string; total: number}[]
+  return count.rows
 }
 
 export default authCountByDomain

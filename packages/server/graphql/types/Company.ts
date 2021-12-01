@@ -15,13 +15,13 @@ const Company = new GraphQLObjectType<any, GQLContext>({
   description: 'A grouping of organizations. Automatically grouped by top level domain of each',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the top level domain'
     },
     activeTeamCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the number of active teams across all organizations',
-      resolve: async ({id: domain}, _args, {dataLoader}) => {
+      resolve: async ({id: domain}, _args: unknown, {dataLoader}) => {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}: OrganizationType) => id)
         const teamsByOrgId = await dataLoader.get('teamsByOrgIds').loadMany(orgIds)
@@ -30,9 +30,9 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       }
     },
     activeUserCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the number of active users across all organizations',
-      resolve: async ({id: domain}, _args, {dataLoader}) => {
+      resolve: async ({id: domain}, _args: unknown, {dataLoader}) => {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}: OrganizationType) => id)
         const organizationUsersByOrgId = (
@@ -53,7 +53,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLISO8601Type,
       description:
         'the last time any team in the organization started a meeting, null if no meetings were ever run',
-      resolve: async ({id: domain}, _args, {dataLoader}) => {
+      resolve: async ({id: domain}, _args: unknown, {dataLoader}) => {
         const r = await getRethink()
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}: OrganizationType) => id)
@@ -73,9 +73,9 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       }
     },
     meetingCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the total number of meetings started across all teams on all organizations',
-      resolve: async ({id: domain}, _args, {dataLoader}) => {
+      resolve: async ({id: domain}, _args: unknown, {dataLoader}) => {
         const r = await getRethink()
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}: OrganizationType) => id)
@@ -94,10 +94,10 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       }
     },
     monthlyTeamStreakMax: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description:
         'the longest monthly streak for meeting at least once per month for any team in the company',
-      resolve: async ({id: domain}, _args, {dataLoader}) => {
+      resolve: async ({id: domain}, _args: unknown, {dataLoader}) => {
         const r = await getRethink()
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}: OrganizationType) => id)
@@ -164,16 +164,16 @@ const Company = new GraphQLObjectType<any, GQLContext>({
     },
     organizations: {
       description: 'Get the list of all organizations that belong to the company',
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Organization))),
-      async resolve({id: domain}, _args, {dataLoader}) {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
+      async resolve({id: domain}, _args: unknown, {dataLoader}) {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         return organizations
       }
     },
     tier: {
       description: 'The highest tier for any organization within the company',
-      type: GraphQLNonNull(TierEnum),
-      async resolve({id: domain}, _args, {dataLoader}) {
+      type: new GraphQLNonNull(TierEnum),
+      async resolve({id: domain}, _args: unknown, {dataLoader}) {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const tiers: ETierEnum[] = organizations.map(({tier}: OrganizationType) => tier)
         if (tiers.includes('enterprise')) return 'enterprise'
@@ -182,9 +182,9 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       }
     },
     userCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the total number of users across all organizations',
-      resolve: async ({id: domain}, _args, {dataLoader}) => {
+      resolve: async ({id: domain}, _args: unknown, {dataLoader}) => {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}: OrganizationType) => id)
         const organizationUsersByOrgId = (

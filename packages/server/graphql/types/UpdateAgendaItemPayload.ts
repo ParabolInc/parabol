@@ -9,7 +9,7 @@ const UpdateAgendaItemPayload = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     agendaItem: {
       type: AgendaItem,
-      resolve: ({agendaItemId}, _args, {dataLoader}) => {
+      resolve: ({agendaItemId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('agendaItems').load(agendaItemId)
       }
     },
@@ -19,7 +19,7 @@ const UpdateAgendaItemPayload = new GraphQLObjectType<any, GQLContext>({
     meeting: {
       type: NewMeeting,
       description: 'The meeting with the updated agenda item, if any',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
       }
     },

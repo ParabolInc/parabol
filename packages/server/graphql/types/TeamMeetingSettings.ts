@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'grap
 import {resolveTeam} from '../resolvers'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import MeetingTypeEnum from './MeetingTypeEnum'
+import {MeetingTypeEnum as TMeetingTypeEnum} from '../../database/types/Meeting'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import PokerMeetingSettings from './PokerMeetingSettings'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
@@ -13,7 +14,7 @@ export const teamMeetingSettingsFields = () => ({
   },
   meetingType: {
     description: 'The type of meeting these settings apply to',
-    type: GraphQLNonNull(MeetingTypeEnum)
+    type: new GraphQLNonNull(MeetingTypeEnum)
   },
   phaseTypes: {
     description: 'The broad phase types that will be addressed during the meeting',
@@ -25,16 +26,16 @@ export const teamMeetingSettingsFields = () => ({
   },
   team: {
     description: 'The team these settings belong to',
-    type: GraphQLNonNull(Team),
+    type: new GraphQLNonNull(Team),
     resolve: resolveTeam
   }
 })
 
-const TeamMeetingSettings = new GraphQLInterfaceType({
+const TeamMeetingSettings: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'TeamMeetingSettings',
   description: 'The team settings for a specific type of meeting',
   fields: teamMeetingSettingsFields,
-  resolveType: ({meetingType}) => {
+  resolveType: ({meetingType}: {meetingType: TMeetingTypeEnum}) => {
     const resolveTypeLookup = {
       action: ActionMeetingSettings,
       retrospective: RetrospectiveMeetingSettings,

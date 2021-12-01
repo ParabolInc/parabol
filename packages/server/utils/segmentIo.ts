@@ -1,5 +1,5 @@
 import SegmentIo from 'analytics-node'
-import db from '../db'
+import {getUserById} from '../postgres/queries/getUsersByIds'
 import PROD from '../PROD'
 import updateHubspot from './updateHubspot'
 
@@ -12,10 +12,10 @@ const segmentIo = new SegmentIo(SEGMENT_WRITE_KEY || 'x', {
 segmentIo._track = segmentIo.track
 segmentIo.track = async (options) => {
   const {userId, event, properties: inProps} = options
-  const user = await db.read('User', options.userId)
-  const {email, segmentId} = user
+  const user = options.userId ? await getUserById(options.userId) : null
+  const {email, segmentId} = user ?? {}
   const properties = {...inProps, email}
-  updateHubspot(event, user, properties)
+  user && updateHubspot(event, user, properties)
   return (segmentIo as any)._track({
     userId,
     event,

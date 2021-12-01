@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import DeleteTaskPayload from '../types/DeleteTaskPayload'
 
 export default {
@@ -15,7 +16,11 @@ export default {
       description: 'The taskId to delete'
     }
   },
-  async resolve(_source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {taskId}: {taskId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

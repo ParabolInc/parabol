@@ -17,15 +17,15 @@ import {Threadable as ThreadableDB} from '../../database/types/Threadable'
 
 export const threadableFields = () => ({
   id: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
   content: {
-    type: GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLString),
     description: 'The rich text body of the item'
   },
   createdAt: {
-    type: GraphQLNonNull(GraphQLISO8601Type),
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the item was created'
   },
   createdBy: {
@@ -35,21 +35,22 @@ export const threadableFields = () => ({
   createdByUser: {
     type: require('./User').default,
     description: 'The user that created the item',
-    resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
+    resolve: ({createdBy}: {createdBy: string}, _args: unknown, {dataLoader}: GQLContext) => {
       return dataLoader.get('users').load(createdBy)
     }
   },
   replies: {
-    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Threadable))),
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Threadable))),
     description: 'the replies to this threadable item',
-    resolve: ({replies}) => replies || []
+    resolve: ({replies}: {replies: ThreadableDB[]}) => replies || []
   },
   discussionId: {
     type: GraphQLID,
     description:
       'The FK of the discussion this task was created in. Null if task was not created in a discussion',
     // can remove the threadId after 2021-07-01
-    resolve: ({discussionId, threadId}) => discussionId || threadId
+    resolve: ({discussionId, threadId}: {discussionId: string; threadId: string}) =>
+      discussionId || threadId
   },
   threadParentId: {
     type: GraphQLID,
@@ -60,7 +61,7 @@ export const threadableFields = () => ({
     description: 'the order of this threadable, relative to threadParentId'
   },
   updatedAt: {
-    type: GraphQLNonNull(GraphQLISO8601Type),
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the item was updated'
   }
 })
@@ -74,7 +75,7 @@ const Threadable = new GraphQLInterfaceType({
       return Task
     }
 
-    if ('options' in threadable) {
+    if ('title' in threadable) {
       return Poll
     }
 

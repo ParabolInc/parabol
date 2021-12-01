@@ -7,7 +7,7 @@ import standardError from '../../utils/standardError'
 import SlackServerManager from '../../utils/SlackServerManager'
 
 const setDefaultSlackChannel = {
-  type: GraphQLNonNull(SetDefaultSlackChannelPayload),
+  type: new GraphQLNonNull(SetDefaultSlackChannelPayload),
   description: 'Update the default Slack channel where notifications are sent',
   args: {
     slackChannelId: {
@@ -17,7 +17,11 @@ const setDefaultSlackChannel = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {slackChannelId, teamId}, {authToken, dataLoader}: GQLContext) => {
+  resolve: async (
+    _source: unknown,
+    {slackChannelId, teamId}: {slackChannelId: string; teamId: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
 

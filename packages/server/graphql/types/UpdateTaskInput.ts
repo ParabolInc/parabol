@@ -17,7 +17,6 @@ const UpdateTaskInput = new GraphQLInputObjectType({
     content: {type: GraphQLString},
     sortOrder: {type: GraphQLFloat},
     status: {type: TaskStatusEnum},
-    teamId: {type: GraphQLID},
     userId: {
       type: GraphQLID,
       description:

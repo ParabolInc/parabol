@@ -46,7 +46,7 @@ const handleGraphQLTrebuchetRequest = async (
         authToken,
         ip
       })
-      if (result.errors) {
+      if (result.errors?.[0]) {
         const [firstError] = result.errors
         const safeError = new Error(firstError.message)
         safeError.stack = firstError.stack
@@ -59,6 +59,7 @@ const handleGraphQLTrebuchetRequest = async (
     } catch (e) {
       if (e instanceof Error && e.message === 'TIMEOUT') {
         sendToSentry(new Error('GQL executor took too long to respond'), {
+          userId: getUserId(authToken),
           tags: {
             authToken: JSON.stringify(authToken),
             docId: docId || '',

@@ -6,7 +6,7 @@ import TaskServiceEnum from './TaskServiceEnum'
 export const suggestedIntegrationFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
-    resolve: ({id}) => {
+    resolve: ({id}: {id: string}) => {
       return `sa:${id}`
     }
   },

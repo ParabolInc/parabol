@@ -1,8 +1,11 @@
 import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
-import UpdateDragLocationInput from '../types/UpdateDragLocationInput'
+import UpdateDragLocationInput, {
+  UpdateDragLocationInputType
+} from '../types/UpdateDragLocationInput'
 import publish from '../../utils/publish'
 import {getUserId} from '../../utils/authorization'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const updateDragLocation = {
   description:
@@ -13,7 +16,11 @@ const updateDragLocation = {
       type: new GraphQLNonNull(UpdateDragLocationInput)
     }
   },
-  async resolve(_source, {input}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {input}: {input: UpdateDragLocationInputType},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const {teamId, meetingId, ...inputData} = input

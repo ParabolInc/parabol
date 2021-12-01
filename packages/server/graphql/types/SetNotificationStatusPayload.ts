@@ -12,7 +12,7 @@ const SetNotificationStatusPayload = new GraphQLObjectType<any, GQLContext>({
     notification: {
       type: Notification,
       description: 'The updated notification',
-      resolve: ({notificationId}, _args, {dataLoader}) => {
+      resolve: ({notificationId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('notifications').load(notificationId)
       }
     }

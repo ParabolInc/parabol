@@ -19,6 +19,7 @@ import Icon from './Icon'
 import BasicTextArea from './InputField/BasicTextArea'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
+import momentumPng from '../../../static/images/illustrations/illus-momentum.png'
 
 interface Props {
   closePortal: () => void
@@ -113,8 +114,7 @@ const Label = styled('div')({
 
 const IllustrationBlock = () => {
   const showIllustration = useBreakpoint(INVITE_DIALOG_BREAKPOINT)
-  const imageSrc = `${__STATIC_IMAGES__}/illustrations/illus-momentum.png`
-  return showIllustration ? <Illustration alt='' src={imageSrc} /> : null
+  return showIllustration ? <Illustration alt='' src={momentumPng} /> : null
 }
 
 const AddTeamMemberModal = (props: Props) => {
@@ -162,7 +162,7 @@ const AddTeamMemberModal = (props: Props) => {
         onError(
           new Error(
             `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails.length -
-            1} other emails are already on the team`
+              1} other emails are already on the team`
           )
         )
       }

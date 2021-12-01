@@ -13,7 +13,7 @@ const TimelineEventPokerComplete = new GraphQLObjectType<any>({
     meeting: {
       type: new GraphQLNonNull(PokerMeeting),
       description: 'The meeting that was completed',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
@@ -28,7 +28,7 @@ const TimelineEventPokerComplete = new GraphQLObjectType<any>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team that can see this event',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },

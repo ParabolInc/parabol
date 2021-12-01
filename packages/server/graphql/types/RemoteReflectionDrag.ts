@@ -1,4 +1,11 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {GQLContext} from '../graphql'
 
 const RemoteReflectionDrag = new GraphQLObjectType<any, GQLContext>({
@@ -15,10 +22,13 @@ const RemoteReflectionDrag = new GraphQLObjectType<any, GQLContext>({
     dragUserName: {
       description: 'The name of the dragUser',
       type: GraphQLString,
-      resolve: async ({dragUserId}, _args, {dataLoader}: GQLContext) => {
+      resolve: async ({dragUserId}, _args: unknown, {dataLoader}: GQLContext) => {
         const user = await dataLoader.get('users').load(dragUserId)
         return user.preferredName
       }
+    },
+    isSpotlight: {
+      type: GraphQLBoolean
     },
     clientHeight: {
       type: GraphQLFloat

@@ -13,16 +13,16 @@ export default {
   description: 'Track which users are commenting',
   args: {
     isCommenting: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'True if the user is commenting, false if the user has stopped commenting'
     },
     discussionId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
-    _source,
-    {isCommenting, discussionId},
+    _source: unknown,
+    {isCommenting, discussionId}: {isCommenting: boolean; discussionId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

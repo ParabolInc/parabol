@@ -12,14 +12,14 @@ const RemoveReflectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
     },
     reflectTemplate: {
       type: ReflectTemplate,
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         if (!templateId) return null
         return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
     retroMeetingSettings: {
       type: RetrospectiveMeetingSettings,
-      resolve: ({settingsId}, _args, {dataLoader}) => {
+      resolve: ({settingsId}, _args: unknown, {dataLoader}) => {
         if (!settingsId) return null
         return dataLoader.get('meetingSettings').load(settingsId)
       }

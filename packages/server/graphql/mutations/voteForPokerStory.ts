@@ -46,14 +46,14 @@ const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: s
 }
 
 const voteForPokerStory = {
-  type: GraphQLNonNull(VoteForPokerStoryPayload),
+  type: new GraphQLNonNull(VoteForPokerStoryPayload),
   description: 'Cast a vote for the estimated points for a given dimension',
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The stage that contains the dimension to vote for'
     },
     score: {
@@ -62,8 +62,8 @@ const voteForPokerStory = {
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId, score},
+    _source: unknown,
+    {meetingId, stageId, score}: {meetingId: string; stageId: string; score?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

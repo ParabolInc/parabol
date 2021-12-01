@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect} from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-
-const icon = `${__STATIC_IMAGES__}/icons/add_reactji_24.svg`
+import addReactjiSvg from '../../../../static/images/icons/add_reactji_24.svg'
 
 const Button = styled(PlainButton)({
   display: 'block',
@@ -42,6 +41,25 @@ const AddReactjiButton = (props: Props) => {
     menuContentStyles: {paddingTop: 0, paddingBottom: 0}
   })
 
+  useEffect(() => {
+    const existingRecent = localStorage.getItem('emoji-mart.frequently')
+    if (existingRecent) return
+    localStorage.setItem(
+      'emoji-mart.frequently',
+      JSON.stringify({
+        heart: 0,
+        tada: 0,
+        smile: 0,
+        rocket: 0,
+        fire: 0,
+        white_check_mark: 0,
+        confused: 0,
+        cry: 0,
+        x: 0
+      })
+    )
+  }, [])
+
   return (
     <>
       <Button
@@ -50,7 +68,7 @@ const AddReactjiButton = (props: Props) => {
         ref={originRef}
         onMouseEnter={ReactjiPicker.preload}
       >
-        <AddIcon alt='' src={icon} />
+        <AddIcon alt='' src={addReactjiSvg} />
       </Button>
       {menuPortal(<ReactjiPicker menuProps={menuProps} onClick={onToggle} />)}
     </>

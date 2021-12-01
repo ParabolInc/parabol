@@ -4,7 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import TemplateScaleInput from '../types/TemplateScaleInput'
+import TemplateScaleInput, {TemplateScaleInputType} from '../types/TemplateScaleInput'
 import UpdatePokerTemplateScaleValuePayload from '../types/UpdatePokerTemplateScaleValuePayload'
 import {
   validateColorValue,
@@ -12,6 +12,7 @@ import {
   validateScaleLabelValueUniqueness
 } from './helpers/validateScaleValue'
 import isSpecialPokerLabel from 'parabol-client/utils/isSpecialPokerLabel'
+import {GQLContext} from '../graphql'
 
 const updatePokerTemplateScaleValue = {
   description: 'Update the label, numerical value or color of a scale value in a scale',
@@ -28,9 +29,17 @@ const updatePokerTemplateScaleValue = {
     }
   },
   async resolve(
-    _source,
-    {scaleId, oldScaleValue, newScaleValue},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {
+      scaleId,
+      oldScaleValue,
+      newScaleValue
+    }: {
+      scaleId: string
+      oldScaleValue: TemplateScaleInputType
+      newScaleValue: TemplateScaleInputType
+    },
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const now = new Date()
@@ -39,7 +48,10 @@ const updatePokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const existingScale = await r.table('TemplateScale').get(scaleId).run()
+    const existingScale = await r
+      .table('TemplateScale')
+      .get(scaleId)
+      .run()
     if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -80,7 +92,10 @@ const updatePokerTemplateScaleValue = {
         updatedAt: now
       }))
       .run()
-    const updatedScale = await r.table('TemplateScale').get(scaleId).run()
+    const updatedScale = await r
+      .table('TemplateScale')
+      .get(scaleId)
+      .run()
 
     if (!validateScaleLabelValueUniqueness(updatedScale.values)) {
       // updated values or labels are not unique, rolling back

@@ -13,7 +13,8 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import CreateReflectionInput from '../types/CreateReflectionInput'
+import {GQLContext} from '../graphql'
+import CreateReflectionInput /*, {CreateReflectionInputType}*/ from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
 
@@ -25,7 +26,12 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve(_source, {input}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    //FIXME type mismatch, promptId is nullable in graphql
+    {input}, //: {input: CreateReflectionInputType},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

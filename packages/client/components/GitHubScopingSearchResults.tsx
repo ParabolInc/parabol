@@ -171,7 +171,6 @@ const GitHubScopingSearchResults = (props: Props) => {
       </>
     )
   }
-
   const persistQuery = () => {
     // don't persist empty
     if (!queryString) return
@@ -181,11 +180,11 @@ const GitHubScopingSearchResults = (props: Props) => {
     const githubSearchQueries =
       query.viewer.teamMember?.integrations.github?.githubSearchQueries ?? []
     const searchHashes = githubSearchQueries.map(({queryString}) => queryString)
-    const isQueryNew = !searchHashes.includes(queryString)
+    const isQueryNew = !searchHashes.includes(normalizedQueryString)
     if (isQueryNew) {
       PersistGitHubSearchQueryMutation(atmosphere, {
         teamId,
-        queryString
+        queryString: normalizedQueryString
       })
     }
   }

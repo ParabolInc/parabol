@@ -21,7 +21,7 @@ const markUserSoftDeleted = async (userIdToDelete, deletedUserEmail, validReason
 }
 
 export default {
-  type: GraphQLNonNull(DeleteUserPayload),
+  type: new GraphQLNonNull(DeleteUserPayload),
   description: `Delete a user, removing them from all teams and orgs`,
   args: {
     userId: {
@@ -38,8 +38,8 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {userId, email, reason}: {userId?: string; email?: string; reason?: string},
+    _source: unknown,
+    {userId, email, reason},
     {authToken, dataLoader}: GQLContext
   ) => {
     // AUTH

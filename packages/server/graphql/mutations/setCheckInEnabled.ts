@@ -4,10 +4,11 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import SetCheckInEnabledPayload from '../types/SetCheckInEnabledPayload'
 
 const setCheckInEnabled = {
-  type: GraphQLNonNull(SetCheckInEnabledPayload),
+  type: new GraphQLNonNull(SetCheckInEnabledPayload),
   description: 'Enabled or disable the icebreaker round',
   args: {
     settingsId: {
@@ -19,9 +20,9 @@ const setCheckInEnabled = {
     }
   },
   resolve: async (
-    _source,
-    {settingsId, isEnabled},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {settingsId, isEnabled}: {settingsId: string; isEnabled: boolean},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
     const operationId = dataLoader.share()

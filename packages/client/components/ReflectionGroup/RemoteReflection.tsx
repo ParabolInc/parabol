@@ -1,22 +1,46 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useRef} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEditorState from '../../hooks/useEditorState'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, DragAttribute, ElementWidth, Times} from '../../types/constEnums'
+import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
+import {keyframes} from '@emotion/core'
+import {RemoteReflection_meeting} from '../../__generated__/RemoteReflection_meeting.graphql'
 import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import getBBox from '../RetroReflectPhase/getBBox'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
+import useSpotlightResults from '~/hooks/useSpotlightResults'
+
+const circleAnimation = (transform?: string) => keyframes`
+  0%{
+    transform:translate(5px)
+              rotate(0deg)
+              translate(-5px)
+              rotate(0deg)
+              ${transform ?? ''}
+  }
+  100%{
+    transform:translate(5px)
+              rotate(360deg)
+              translate(-5px)
+              rotate(-360deg)
+              ${transform ?? ''}
+  }
+`
 
 const RemoteReflectionModal = styled('div')<{
+  isInViewerSpotlightResults: boolean
   isDropping?: boolean | null
-}>(({isDropping}) => ({
+  transform?: string
+  isSpotlight?: boolean
+  animation?: string
+}>(({isInViewerSpotlightResults, isDropping, transform, isSpotlight, animation}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
@@ -24,7 +48,16 @@ const RemoteReflectionModal = styled('div')<{
   pointerEvents: 'none',
   transition: `all ${
     isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
-  }ms ${BezierCurve.DECELERATE}`
+  }ms ${BezierCurve.DECELERATE}`,
+  transform,
+  animation: animation
+    ? animation
+    : isSpotlight && !isDropping
+    ? `${circleAnimation(transform)} 3s ease infinite;`
+    : undefined,
+  zIndex: isInViewerSpotlightResults
+    ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
+    : ZIndex.REFLECTION_IN_FLIGHT
 }))
 
 const HeaderModal = styled('div')({
@@ -96,51 +129,99 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
   }
 }
 
-const getInlineStyle = (
+/*
+  Having the dragging transform in inline style results in a smoother motion.
+  Animations don't work in inline style but these still need to have the correct
+  transform applied, thus switch between applying the transformation in inline style
+  and in the styled component depending on situation
+*/
+const getStyle = (
   remoteDrag: RemoteReflection_reflection['remoteDrag'],
   isDropping: boolean | null,
-  style: React.CSSProperties,
+  isSpotlight: boolean,
+  style: React.CSSProperties
 ) => {
-  if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
+  if (isSpotlight && !isDropping) return {transform: style.transform}
+  if (isDropping || !remoteDrag?.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
   const {zIndex} = style
-  return {nextStyle: {transform: `translate(${left}px,${top}px)`, zIndex}, minTop}
+  return {
+    nextStyle: {
+      transform: `translate(${left}px,${top}px)`,
+      zIndex
+    },
+    minTop
+  }
 }
 
 interface Props {
   style: React.CSSProperties
+  animation: string | undefined
   reflection: RemoteReflection_reflection
+  meeting: RemoteReflection_meeting
 }
 
 const RemoteReflection = (props: Props) => {
-  const {reflection, style} = props
-  const {id: reflectionId, content, isDropping} = reflection
+  const {meeting, reflection, style, animation} = props
+  const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
+  const {meetingMembers, spotlightGroup} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
-    NonNullable<RemoteReflection_reflection['remoteDrag']>
+    RemoteReflection_reflection['remoteDrag']
   >
   const ref = useRef<HTMLDivElement>(null)
   const [editorState] = useEditorState(content)
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
+  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, '') // TODO: add search query
+  const isInViewerSpotlightResults = useMemo(
+    () => !!spotlightResultGroups?.find(({id}) => id === reflectionGroupId),
+    [spotlightResultGroups]
+  )
+
   useEffect(() => {
-    timeoutRef.current = window.setTimeout(() => {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)!
-        reflection.setValue(true, 'isDropping')
-      })
-    }, Times.REFLECTION_STALE_LIMIT)
+    timeoutRef.current = window.setTimeout(
+      () => {
+        commitLocalUpdate(atmosphere, (store) => {
+          const reflection = store.get(reflectionId)!
+          reflection.setValue(true, 'isDropping')
+        })
+      },
+      remoteDrag?.isSpotlight
+        ? Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT
+        : Times.REFLECTION_DRAG_STALE_TIMEOUT
+    )
     return () => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
-  if (!remoteDrag) return null
-  const {dragUserId, dragUserName} = remoteDrag
 
-  const {nextStyle, minTop} = getInlineStyle(remoteDrag, isDropping, style)
+  useEffect(() => {
+    if (!remoteDrag || !meeting) return
+    const remoteDragUser = meetingMembers.find((user) => user.userId === remoteDrag.dragUserId)
+    if (!remoteDragUser || !remoteDragUser.user.isConnected) {
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)!
+        reflection.setValue(true, 'isDropping')
+      })
+    }
+  }, [remoteDrag, meetingMembers])
+
+  if (!remoteDrag) return null
+  const {dragUserId, dragUserName, isSpotlight} = remoteDrag
+
+  const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
-      <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>
+      <RemoteReflectionModal
+        ref={ref}
+        style={nextStyle}
+        isDropping={isDropping}
+        isSpotlight={isSpotlight}
+        isInViewerSpotlightResults={isInViewerSpotlightResults}
+        transform={transform}
+        animation={animation}
+      >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />
@@ -170,6 +251,7 @@ export default createFragmentContainer(RemoteReflection, {
       remoteDrag {
         dragUserId
         dragUserName
+        isSpotlight
         clientHeight
         clientWidth
         clientX
@@ -177,6 +259,20 @@ export default createFragmentContainer(RemoteReflection, {
         targetId
         targetOffsetX
         targetOffsetY
+      }
+    }
+  `,
+  meeting: graphql`
+    fragment RemoteReflection_meeting on RetrospectiveMeeting {
+      id
+      meetingMembers {
+        userId
+        user {
+          isConnected
+        }
+      }
+      spotlightGroup {
+        id
       }
     }
   `

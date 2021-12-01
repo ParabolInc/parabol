@@ -4,6 +4,7 @@ import {getUserId} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import sendToSentry from '../../utils/sendToSentry'
+import {GQLContext} from '../graphql'
 import {UserPresence} from '../intranetSchema/mutations/connectSocket'
 import rateLimit from '../rateLimit'
 import SetAppLocationPayload from '../types/SetAppLocationPayload'
@@ -23,9 +24,9 @@ export default {
     perHour: 100
   })(
     async (
-      _source,
+      _source: unknown,
       {location}: {location: string | null},
-      {authToken, dataLoader, socketId: mutatorId}
+      {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}

@@ -6,9 +6,9 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import resolveThreadableConnection from '../resolvers/resolveThreadableConnection'
 import DiscussionTopicTypeEnum from './DiscussionTopicTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -20,48 +20,48 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
   description: 'A discussion thread',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     createdAt: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'time the thread was created'
     },
     discussionTopicId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description:
         'The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId'
     },
     discussionTopicType: {
-      type: GraphQLNonNull(DiscussionTopicTypeEnum),
+      type: new GraphQLNonNull(DiscussionTopicTypeEnum),
       description:
         'The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue'
     },
     commentCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments contained in the thread',
-      resolve: async ({id: discussionId}, _args, {dataLoader}) => {
+      resolve: async ({id: discussionId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('commentCountByDiscussionId').load(discussionId)
       }
     },
     commentors: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(User))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The users writing a comment right now',
-      resolve: async ({id: discussionId}) => {
+      resolve: async ({id: discussionId}, _args: unknown, {dataLoader}) => {
         const redis = getRedis()
         const userIds = await redis.smembers(`commenting:${discussionId}`)
         if (userIds.length === 0) return []
-        const users = await db.readMany('User', userIds)
+        const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
         return users
       }
     },
     thread: {
-      type: GraphQLNonNull(ThreadableConnection),
+      type: new GraphQLNonNull(ThreadableConnection),
       description: 'The comments & tasks thread in the discussion',
       args: {
         first: {
@@ -73,7 +73,11 @@ const Discussion = new GraphQLObjectType<any, GQLContext>({
           description: 'the incrementing sort order in string format'
         }
       },
-      resolve: async ({id: discussionId}, _args, {dataLoader}) => {
+      resolve: async (
+        {id: discussionId}: {id: string},
+        _args: unknown,
+        {dataLoader}: GQLContext
+      ) => {
         return resolveThreadableConnection(discussionId, {dataLoader})
       }
     }

@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLFloat, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import SuggestedActionTypeEnum from './SuggestedActionTypeEnum'
@@ -37,7 +38,7 @@ export const suggestedActionInterfaceFields = () => ({
   user: {
     type: new GraphQLNonNull(User),
     description: 'The user than can see this event',
-    resolve: ({userId}, _args, {dataLoader}) => {
+    resolve: ({userId}: {userId: string}, _args: unknown, {dataLoader}: GQLContext) => {
       return dataLoader.get('users').load(userId)
     }
   }

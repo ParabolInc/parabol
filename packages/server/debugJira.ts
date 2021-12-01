@@ -8,7 +8,9 @@ const debugJira = async () => {
   // const fieldId = 'customfield_10000'
   // const fieldName = 'Story Points'
   const refreshToken = 'foofoo'
-  const manager = await AtlassianServerManager.refresh(refreshToken)
+  const res = await AtlassianServerManager.refresh(refreshToken)
+  if (res instanceof Error) return
+  const manager = new AtlassianServerManager(res.accessToken)
   const screens = await manager.getCloudNameLookup()
   console.log(JSON.stringify(screens))
 }

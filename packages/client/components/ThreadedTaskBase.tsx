@@ -30,10 +30,7 @@ const HeaderActions = styled('div')({
   paddingRight: 32
 })
 
-const StyledNullableTask = styled(NullableTask)({
-  //make the task assignee avatar line up with comment avatar above/below
-  marginLeft: -12
-})
+const StyledNullableTask = styled(NullableTask)({})
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]

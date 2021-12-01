@@ -7,7 +7,7 @@ export const VoteForPokerStorySuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'VoteForPokerStorySuccess',
   fields: () => ({
     stage: {
-      type: GraphQLNonNull(EstimateStage),
+      type: new GraphQLNonNull(EstimateStage),
       description: 'The stage that holds the updated scores',
       resolve: resolveStage('ESTIMATE')
     }

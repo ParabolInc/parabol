@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import getRethink from '../../database/rethinkDriver'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -7,7 +8,7 @@ import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPa
 
 export default {
   type: new GraphQLNonNull(OrganizationSubscriptionPayload),
-  subscribe: async (_source, _args, {authToken}) => {
+  subscribe: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
     // AUTH
     const viewerId = getUserId(authToken)
     const r = await getRethink()

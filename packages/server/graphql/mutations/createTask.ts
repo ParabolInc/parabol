@@ -7,7 +7,7 @@ import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
-import Task, {TaskServiceEnum, TaskStatusEnum} from '../../database/types/Task'
+import Task, {TaskServiceEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -16,7 +16,7 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
-import CreateTaskInput from '../types/CreateTaskInput'
+import CreateTaskInput, {CreateTaskInputType} from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
 import createTaskInService from './helpers/createTaskInService'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
@@ -79,7 +79,7 @@ const sendToSentryTaskCreated = async (
 }
 
 const validateTaskDiscussionId = async (
-  task: CreateTaskInput['newTask'],
+  task: CreateTaskInputType,
   dataLoader: DataLoaderWorker
 ) => {
   const {discussionId, teamId, meetingId} = task
@@ -165,24 +165,9 @@ export interface CreateTaskIntegrationInput {
   service: TaskServiceEnum
   serviceProjectHash: string
 }
-export type CreateTaskInput = {
-  newTask: {
-    content?: string | null
-    plaintextContent?: string | null
-    meetingId?: string | null
-    discussionId?: string | null
-    threadSortOrder?: number | null
-    threadParentId?: string | null
-    sortOrder?: number | null
-    status: TaskStatusEnum
-    teamId: string
-    userId?: string | null
-    integration?: CreateTaskIntegrationInput
-  }
-}
 
 export default {
-  type: GraphQLNonNull(CreateTaskPayload),
+  type: new GraphQLNonNull(CreateTaskPayload),
   description: 'Create a new task, triggering a CreateCard for other viewers',
   args: {
     newTask: {
@@ -195,8 +180,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {newTask}: CreateTaskInput,
+    _source: unknown,
+    {newTask}: {newTask: CreateTaskInputType},
     context: GQLContext,
     info: GraphQLResolveInfo
   ) {

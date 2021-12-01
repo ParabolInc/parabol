@@ -17,7 +17,7 @@ const EditTaskPayload = new GraphQLObjectType<any, GQLContext>({
     },
     editor: {
       type: User,
-      resolve: ({editorId}, _args, {dataLoader}) => {
+      resolve: ({editorId}, _args: unknown, {dataLoader}) => {
         return editorId ? dataLoader.get('users').load(editorId) : null
       }
     },

@@ -199,9 +199,9 @@ const RetroDiscussPhase = (props: Props) => {
                     <DiscussPhaseReflectionGrid meeting={meeting} />
                   ) : (
                     <ReflectionGroup
-                      meeting={meeting}
+                      meetingRef={meeting}
                       phaseRef={phaseRef}
-                      reflectionGroup={reflectionGroup}
+                      reflectionGroupRef={reflectionGroup}
                     />
                   )}
                 </ColumnInner>

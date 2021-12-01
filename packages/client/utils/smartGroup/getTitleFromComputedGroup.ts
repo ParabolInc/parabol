@@ -47,7 +47,7 @@ const getTitleFromComputedGroup = (
   let cumlSalience = 0
   const titleArr = [] as string[]
   for (let ii = 0; ii < arrWithIdx.length; ii++) {
-    const [totalSalience, idx] = arrWithIdx[ii]
+    const [totalSalience, idx] = arrWithIdx[ii]!
     if (totalSalience < MIN_SALIENCE) continue
     const lemma = uniqueLemmaArr[idx]
     const name = getNameFromLemma(lemma, reflectionEntities)

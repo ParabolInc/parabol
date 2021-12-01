@@ -17,9 +17,11 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
     dimensions: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateDimension))),
       description: 'The dimensions that are part of this template',
-      resolve: async ({id: templateId}, _args, {dataLoader}) => {
+      resolve: async ({id: templateId}, _args: unknown, {dataLoader}) => {
         const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
-        const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
+        const activeDimensions = dimensions.filter(
+          ({removedAt}: {removedAt: Date | undefined}) => !removedAt
+        )
         return activeDimensions
       }
     },
@@ -40,7 +42,7 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
           return standardError(new Error('Team not found'), {userId: viewerId})
         }
         const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
-        const dimension = dimensions.filter(({id}) => id === dimensionId)
+        const dimension = dimensions.filter(({id}: {id: string}) => id === dimensionId)
         if (!dimension) {
           return standardError(new Error('Dimension not found'), {userId: viewerId})
         }

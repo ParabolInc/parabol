@@ -2,11 +2,10 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import OrganizationUser from '../../../database/types/OrganizationUser'
-import db from '../../../db'
+import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToPersonal from './resolveDowngradeToPersonal'
-import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 
 const removeFromOrg = async (
   userId: string,
@@ -36,12 +35,12 @@ const removeFromOrg = async (
   }, [])
 
   const kickOutNotificationIds = perTeamRes.reduce((arr: string[], res) => {
-    arr.push(res.notificationId)
+    res.notificationId && arr.push(res.notificationId)
     return arr
   }, [])
 
   const [organizationUser, user] = await Promise.all([
-    (r
+    r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({orgId, removedAt: null})
@@ -51,18 +50,15 @@ const removeFromOrg = async (
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run() as unknown) as OrganizationUser,
-    db.read('User', userId)
+      .run() as unknown as OrganizationUser,
+    dataLoader.get('users').load(userId)
   ])
 
   // need to make sure the org doc is updated before adjusting this
   const {joinedAt, newUserUntil, role} = organizationUser
   const prorationDate = newUserUntil >= now ? new Date(joinedAt) : undefined
   if (role === 'BILLING_LEADER') {
-    const organization = await r
-      .table('Organization')
-      .get(orgId)
-      .run()
+    const organization = await r.table('Organization').get(orgId).run()
     if (organization.tier !== 'personal') {
       // if paid org & no other billing leader, promote the oldest
       // if no other member, downgrade to personal
@@ -99,7 +95,7 @@ const removeFromOrg = async (
     console.log(e)
   }
   return {
-    tms: user.tms,
+    tms: user?.tms ?? [],
     taskIds,
     kickOutNotificationIds,
     teamIds,

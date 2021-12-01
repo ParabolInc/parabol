@@ -5,14 +5,13 @@ import NotificationKickedOut from '../../../database/types/NotificationKickedOut
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import EstimateStage from '../../../database/types/EstimateStage'
-import db from '../../../db'
-import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
-import {DataLoaderWorker} from '../../graphql'
-import removeStagesFromMeetings from './removeStagesFromMeetings'
-import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
+import removeStagesFromMeetings from './removeStagesFromMeetings'
+import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 
 interface Options {
@@ -33,11 +32,11 @@ const removeTeamMember = async (
     .table('TeamMember')
     .getAll(teamId, {index: 'teamId'})
     .run()
-  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)!
-  const {isLead, isNotRemoved} = teamMember
+  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
+  const {isLead, isNotRemoved} = teamMember ?? {}
   // if the guy being removed is the leader & not the last, pick a new one. else, use him
   const teamLeader = activeTeamMembers.find((t) => t.isLead === !isLead) || teamMember
-  if (!isNotRemoved) {
+  if (!isNotRemoved || !teamMember || !teamLeader) {
     throw new Error('Team member already removed')
   }
 
@@ -123,15 +122,10 @@ const removeTeamMember = async (
       .default([]) as unknown) as Task[]
   }).run()
 
-  const reqlUpdater = (user) => ({
-    tms: user('tms').difference([teamId])
-  })
+  await removeUserTms(teamId, userId)
+  const user = await dataLoader.get('users').load(userId)
 
-  const [user] = await Promise.all([
-    db.write('User', userId, reqlUpdater),
-    removeUserTms(teamId, userId)
-  ])
-  let notificationId
+  let notificationId: string | undefined
   if (evictorUserId) {
     const notification = new NotificationKickedOut({teamId, userId, evictorUserId})
     notificationId = notification.id
