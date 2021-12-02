@@ -7,11 +7,8 @@ import {
   DefinitionNode,
   DocumentNode,
   ExecutionResult,
-  getNamedType,
-  GraphQLField,
   GraphQLFieldResolver,
   GraphQLNamedType,
-  GraphQLObjectType,
   GraphQLResolveInfo,
   GraphQLSchema,
   isObjectType,
@@ -159,13 +156,26 @@ function finishResolvers(contextValue) {
     })
 }
 
+type PatchedGraphQLSchema = GraphQLSchema & PatchedMarker
 /**
  * Wrap all query and mutation resolvers with tracing functions.
  * This doesn't do any measuring unless it's used together with {@link wrapCompiledQuery}
  */
-function wrapSchema(tracer: Tracer, config: Config, schema: GraphQLSchema) {
-  wrapFields(tracer, config, schema.getQueryType())
-  wrapFields(tracer, config, schema.getMutationType())
+function wrapSchema(tracer: Tracer, config: Config, schema: PatchedGraphQLSchema) {
+  if (schema._datadog_patched) return
+  schema._datadog_patched = true
+
+  const typeMap = schema.getTypeMap()
+  Object.values(typeMap).forEach((namedType) => {
+    // ignore introspection and scalar types
+    if (namedType.name.startsWith('__') || !isObjectType(namedType)) return
+    const fields = namedType.getFields()
+    Object.values(fields).forEach((field) => {
+      if (field.resolve) {
+        field.resolve = wrappedResolve(tracer, config, field.resolve)
+      }
+    })
+  })
 }
 
 interface Field {
@@ -183,56 +193,17 @@ type PatchedContext = {
   }
 }
 
-type PatchedGraphQLObjectType = GraphQLObjectType & PatchedMarker
-
-function wrapFields(
-  tracer: Tracer,
-  config: Config,
-  type: PatchedGraphQLObjectType | null | undefined
-) {
-  if (!type || typeof type?.getFields !== 'function') {
-    return
-  }
-  const fields = (type as GraphQLObjectType).getFields()
-  if (!fields || type._datadog_patched) {
-    return
-  }
-
-  type._datadog_patched = true
-
-  Object.values(fields).forEach((field) => {
-    wrapFieldResolve(tracer, config, field)
-    wrapFieldType(tracer, config, field)
-  })
-}
-
-function wrapFieldResolve(tracer: Tracer, config: Config, field: GraphQLField<any, any>) {
-  if (!field.resolve) return
-  field.resolve = wrappedResolve(tracer, config, field.resolve)
-}
-
-function wrapFieldType(tracer: Tracer, config: Config, field?: GraphQLField<any, any>) {
-  if (!field || !field.type) return
-  const unwrappedType = getNamedType(field.type)
-
-  if (isObjectType(unwrappedType)) {
-    wrapFields(tracer, config, unwrappedType)
-  }
-}
-
-interface PatchedGraphQLFieldResolver extends GraphQLFieldResolver<any, any> {
-  _datadog_patched?: true
-}
 function wrappedResolve(
   tracer: Tracer,
   config: Config,
-  resolve: PatchedGraphQLFieldResolver
-): PatchedGraphQLFieldResolver {
-  if (resolve._datadog_patched || typeof resolve !== 'function') return resolve
-
+  resolve: GraphQLFieldResolver<any, any>
+): GraphQLFieldResolver<any, any> {
+  if (typeof resolve !== 'function') {
+    return resolve
+  }
   const responsePathAsArray = config.collapse ? withCollapse(pathToArray) : pathToArray
 
-  const resolveWithTrace: PatchedGraphQLFieldResolver = async (source, args, context, info) => {
+  return async (source, args, context, info) => {
     if (!context._datadog_graphql) return resolve(source, args, context, info)
 
     const path = responsePathAsArray(info && info.path)
@@ -260,9 +231,6 @@ function wrappedResolve(
       field.finishTime = (field.span as any)._getTime?.() ?? 0
     }
   }
-  resolveWithTrace._datadog_patched = true
-
-  return resolveWithTrace
 }
 
 function getParentField(context: PatchedContext, path: (string | number)[]) {
