@@ -55,7 +55,7 @@ const DashNavList = (props: Props) => {
       const {id: orgId, name: orgName} = organization
       const key = `${orgName}:${orgId}`
       teamsByOrgId[key] = teamsByOrgId[key] || []
-      teamsByOrgId[key]?.push(team)
+      teamsByOrgId[key]!.push(team)
     })
     return Object.entries(teamsByOrgId).sort((a, b) =>
       a[0].toLowerCase() < b[0].toLowerCase() ? -1 : 1

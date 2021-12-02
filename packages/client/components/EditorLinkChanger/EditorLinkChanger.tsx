@@ -91,8 +91,8 @@ const EditorLinkChanger = (props: Props) => {
     setDirtyField()
     const {link: linkRes, text: textRes} = validateField()
     if (linkRes?.error || textRes?.error) return
-    const link = linkRes?.value as string
-    const text = textRes?.value as string
+    const link = linkRes!.value as string
+    const text = textRes!.value as string
     const href = linkify.match(link)[0].url
     removeModal(true)
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
