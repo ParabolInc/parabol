@@ -3,13 +3,13 @@ import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_r
 
 const useSpotlightVisibleReflections = (
   reflections: ReflectionGroup_reflectionGroup['reflections'],
-  spotlightSearchQuery: string | null,
+  spotlightSearchQuery?: string | null,
   reflectionIdsToHide?: string[] | null
 ) => {
   return useMemo(() => {
     const visibleReflections = reflections.filter(({id}) => !reflectionIdsToHide?.includes(id))
 
-    if (spotlightSearchQuery != null && visibleReflections.length > 1) {
+    if (spotlightSearchQuery && visibleReflections.length > 1) {
       const spotlightSearchQueryLower = spotlightSearchQuery.toLowerCase()
       const matchIndex = visibleReflections.findIndex((reflection) => {
         const textLower = reflection.plaintextContent.toLowerCase()
@@ -17,7 +17,8 @@ const useSpotlightVisibleReflections = (
       })
 
       if (matchIndex > 0) {
-        visibleReflections.unshift(visibleReflections.splice(matchIndex, 1)[0])
+        const matchingReflection = visibleReflections.splice(matchIndex, 1)[0]
+        visibleReflections.unshift(matchingReflection)
       }
     }
 

@@ -17,9 +17,7 @@ const findText = (searchQuery) => (contentBlock, callback) => {
   if (!searchQuery) {
     return
   }
-
-  const text = contentBlock.getText()
-  const textLower = text.toLowerCase()
+  const textLower = contentBlock.getText().toLowerCase()
   const searchQueryLower = searchQuery.toLowerCase()
 
   let start = 0
