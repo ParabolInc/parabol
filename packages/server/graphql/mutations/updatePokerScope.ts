@@ -51,6 +51,10 @@ const updatePokerScope = {
     const subOptions = {mutatorId, operationId}
     const now = new Date()
 
+    // lock the meeting while the scope is updating
+    const redisLock = new RedisLockQueue(`meeting:${meetingId}`, 3000)
+    await redisLock.lock(10000)
+
     //AUTH
     const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
     if (!meeting) {
@@ -68,10 +72,6 @@ const updatePokerScope = {
     if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-
-    // lock the meeting while the scope is updating
-    const redisLock = new RedisLockQueue(`meeting:${meetingId}`, 3000)
-    await redisLock.lock(10000)
 
     // RESOLUTION
 
