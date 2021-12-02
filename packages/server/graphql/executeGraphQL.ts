@@ -5,11 +5,10 @@
   It IS used to transform a source stream into a response stream
  */
 import {graphql} from 'graphql'
-import {execute, FormattedExecutionResult} from 'graphql/execution/execute'
+import {FormattedExecutionResult} from 'graphql/execution/execute'
 import AuthToken from '../database/types/AuthToken'
 import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
-import DocumentCache from './DocumentCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
 import privateSchema from './intranetSchema/intranetSchema'
@@ -31,7 +30,6 @@ export interface GQLRequest {
 }
 
 const queryCache = new CompiledQueryCache()
-const documentCache = new DocumentCache()
 
 const executeGraphQL = async (req: GQLRequest) => {
   const {
@@ -47,6 +45,7 @@ const executeGraphQL = async (req: GQLRequest) => {
     rootValue
   } = req
   // never re-use a dataloader since the things it cached may be old
+
   const dataLoader = getDataLoader(dataLoaderId)
   dataLoader.share()
   const rateLimiter = getRateLimiter()
@@ -57,11 +56,6 @@ const executeGraphQL = async (req: GQLRequest) => {
   let response: FormattedExecutionResult
   if (isAdHoc) {
     response = await graphql({schema, source, variableValues, contextValue})
-  } else if (docId && process.env.DD_TRACE_ENABLED === 'true') {
-    const document = await documentCache.fromID(docId)
-    response = document
-      ? await execute({schema, document, variableValues, contextValue, rootValue})
-      : {errors: [new Error(`Document ${docId} was not found in DocumentCache.`)] as any}
   } else {
     const compiledQuery = docId
       ? await queryCache.fromID(docId, schema)
