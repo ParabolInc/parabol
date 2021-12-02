@@ -33,8 +33,8 @@ import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
-  ; (RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
+;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
   subKey: string
@@ -137,11 +137,12 @@ export default class Atmosphere extends Environment {
 
   fetchHTTP = async (body: FetchHTTPData, connectionId?: string) => {
     const uploadables = body.payload.uploadables
-    const headers = {
+    const headers: Record<string, string> = {
       accept: 'application/json',
       'x-application-authorization': this.authToken ? `Bearer ${this.authToken}` : '',
       'x-correlation-id': connectionId || ''
     }
+
     /* if uploadables, don't set content type bc we want the browser to set it o*/
     if (!uploadables) headers['content-type'] = 'application/json'
     const res = await fetch('/graphql', {
@@ -419,8 +420,8 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
-      // remove all records
-      ; (this.getStore().getSource() as any).clear()
+    // remove all records
+    ;(this.getStore().getSource() as any).clear()
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null

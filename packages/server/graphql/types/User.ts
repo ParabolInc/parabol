@@ -47,7 +47,6 @@ import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
 import OrganizationUserType from '../../database/types/OrganizationUser'
-import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import OrganizationType from '../../database/types/Organization'
 import SuggestedActionType from '../../database/types/SuggestedAction'
@@ -179,7 +178,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
           .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
-          .sort((a: Date, b: Date) => (a < b ? 1 : -1))
+          .sort((a, b) => (a < b ? 1 : -1))
 
         return getMonthlyStreak(meetingDates)
       }
@@ -192,7 +191,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
           .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
-          .sort((a: Date, b: Date) => (a < b ? 1 : -1))
+          .sort((a, b) => (a < b ? 1 : -1))
         return getMonthlyStreak(meetingDates, true)
       }
     },
@@ -512,10 +511,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             }
           }
         }
-        return dataLoader
+        const retroReflectionGroups = await dataLoader
           .get('retroReflectionGroups')
           .loadMany(Array.from(currentResultGroupIds))
-          .filter(isValid)
+
+        return retroReflectionGroups.filter(isValid)
       }
     },
     tasks: require('../queries/tasks').default,
@@ -538,7 +538,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         if (!meetingId && !inTeamId) return {}
         const viewerId = getUserId(authToken)
         if (viewerId !== userId && !isSuperUser(authToken)) return {}
-        const user = await dataLoader.get('users').load(userId)
+        const user = (await dataLoader.get('users').load(userId))!
         const {email} = user
         let teamId = inTeamId
         if (!teamId) {
@@ -558,15 +558,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       description: 'all the teams the user is on that the viewer can see.',
       resolve: async ({id: userId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        const user = await dataLoader.get('users').load(userId)
+        const user = (await dataLoader.get('users').load(userId))!
         const teamIds =
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
             : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
         const teams = await dataLoader.get('teams').loadMany(teamIds)
-        teams.sort((a: IGetTeamsByIdsQueryResult, b: IGetTeamsByIdsQueryResult) =>
-          a.name > b.name ? 1 : -1
-        )
+        teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
       }
     },
@@ -621,7 +619,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
       },
       resolve: async (_source: unknown, {userId}, {authToken, dataLoader}) => {
-        const userOnTeam = await dataLoader.get('users').load(userId)
+        const userOnTeam = (await dataLoader.get('users').load(userId))!
         // const teams = new Set(userOnTeam)
         const {tms} = userOnTeam
         if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null

@@ -139,7 +139,7 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
         .count()
         .ungroup()
         .run()) as {group: string; reduction: number}[]
-      const lookup = {}
+      const lookup: Record<string, number> = {}
       groups.forEach(({group, reduction}) => {
         lookup[group] = reduction
       })
