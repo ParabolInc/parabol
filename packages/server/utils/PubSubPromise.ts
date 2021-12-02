@@ -3,7 +3,9 @@ import ms from 'ms'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
-const MAX_TIMEOUT = 10000
+const STANDARD_TIMEOUT = ms('10s')
+const ADHOC_TIMEOUT = ms('1m')
+
 interface Job {
   resolve: (payload: any) => void
   timeoutId: NodeJS.Timeout
@@ -48,7 +50,7 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
       const nextJob = numToBase64(this.jobCounter++)
       const jobId = `${SERVER_ID}:${nextJob}`
       const {isAdHoc} = request
-      const timeout = isAdHoc ? ms('1m') : MAX_TIMEOUT
+      const timeout = isAdHoc ? ADHOC_TIMEOUT : STANDARD_TIMEOUT
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
         reject(new Error('TIMEOUT'))
