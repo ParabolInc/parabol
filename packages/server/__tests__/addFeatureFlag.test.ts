@@ -32,8 +32,6 @@ test('Add feature flag by email', async () => {
     authToken
   })
 
-  console.log(JSON.stringify(update, undefined, 2))
-
   expect(update).toEqual({
     data: {
       addFeatureFlag: {
