@@ -57,11 +57,11 @@ const TaskColumnAddTask = (props: Props) => {
       <TaskColumnAddTaskSelectTeam
         sortOrder={sortOrder}
         status={status}
-        teams={teams!}
+        teams={teams}
         userId={userId || viewerId}
       />
     )
-  } else if ((area === 'teamDash' || isMyMeetingSection) && teamId) {
+  } else if (area === 'teamDash' || isMyMeetingSection) {
     const handleAddTask = () =>
       CreateTaskMutation(atmosphere, {newTask: {status, teamId, userId, sortOrder, meetingId}}, {})
     return <AddTaskButton onClick={handleAddTask} label={label} />
