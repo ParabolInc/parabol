@@ -1,13 +1,12 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import {getUserById} from '../../postgres/queries/getUsersByIds'
+import updateUser from '../../postgres/queries/updateUser'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import softDeleteUser from './helpers/softDeleteUser'
-import {getUserById} from '../../postgres/queries/getUsersByIds'
-import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
-import db from '../../db'
-import updateUser from '../../postgres/queries/updateUser'
-import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 
 const markUserSoftDeleted = async (userIdToDelete, deletedUserEmail, validReason) => {
   const update = {
@@ -16,7 +15,7 @@ const markUserSoftDeleted = async (userIdToDelete, deletedUserEmail, validReason
     reasonRemoved: validReason,
     updatedAt: new Date()
   }
-  await Promise.all([db.write('User', userIdToDelete, update), updateUser(update, userIdToDelete)])
+  await updateUser(update, userIdToDelete)
 }
 
 export default {
