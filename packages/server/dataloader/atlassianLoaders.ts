@@ -63,6 +63,12 @@ export const freshAtlassianAuth = (parent: RootDataLoader) => {
                 refreshToken: updatedRefreshToken
               }))
             await upsertAtlassianAuths(updatedSameJiraAccountAtlassianAuths)
+
+            return {
+              ...atlassianAuthToRefresh,
+              accessToken,
+              refreshToken: updatedRefreshToken
+            }
           }
 
           return atlassianAuthToRefresh
