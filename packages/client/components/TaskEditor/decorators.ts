@@ -49,11 +49,11 @@ const decorators = (
       const searchQueryLower = searchQuery.toLowerCase()
 
       let start = 0
-      let found = true
-      while (found) {
+      let foundAll = true
+      while (foundAll) {
         const index = textLower.indexOf(searchQueryLower, start)
         if (index === -1) {
-          found = false
+          foundAll = false
         } else {
           start = index + 1
           callback(index, index + searchQueryLower.length)
