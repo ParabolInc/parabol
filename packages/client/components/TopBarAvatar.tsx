@@ -20,6 +20,9 @@ const AvatarWrapper = styled('button')({
     boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
     cursor: 'pointer',
     outline: 'none'
+  },
+  ':active': {
+    boxShadow: '0 0 0 2px transparent'
   }
 })
 
