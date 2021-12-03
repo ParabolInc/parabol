@@ -132,7 +132,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const domain = getDomainFromEmail(email)
         const pg = getPg()
         const patientZeroId = await pg.query(
-          'SELECT id FROM "User" WHERE split_part(email, \'@\', 2) = $1 ORDER BY "createdAt" LIMIT 1',
+          'SELECT "id" FROM "User" WHERE "domain" = $1 ORDER BY "createdAt" LIMIT 1',
           [domain]
         )
         return patientZeroId.rows[0]?.id === userId
@@ -473,7 +473,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
           ].slice(0, MAX_RESULT_GROUP_SIZE)
-          return dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds).filter(isValid)
+          return (await dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds)).filter(
+            isValid
+          )
         }
 
         const reflectionsCount = reflections.length
@@ -512,10 +514,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             }
           }
         }
-        return dataLoader
-          .get('retroReflectionGroups')
-          .loadMany(Array.from(currentResultGroupIds))
-          .filter(isValid)
+        return (
+          await dataLoader.get('retroReflectionGroups').loadMany(Array.from(currentResultGroupIds))
+        ).filter(isValid)
       }
     },
     tasks: require('../queries/tasks').default,

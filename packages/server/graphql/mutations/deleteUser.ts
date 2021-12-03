@@ -4,12 +4,19 @@ import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import updateUser from '../../postgres/queries/updateUser'
 import {getUserId, isSuperUser} from '../../utils/authorization'
-import getDeletedEmail from '../../utils/getDeletedEmail'
-import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
-import removeFromOrg from './helpers/removeFromOrg'
-import removeSlackAuths from './helpers/removeSlackAuths'
+import softDeleteUser from './helpers/softDeleteUser'
+
+const markUserSoftDeleted = async (userIdToDelete, deletedUserEmail, validReason) => {
+  const update = {
+    isRemoved: true,
+    email: deletedUserEmail,
+    reasonRemoved: validReason,
+    updatedAt: new Date()
+  }
+  await updateUser(update, userIdToDelete)
+}
 
 export default {
   type: new GraphQLNonNull(DeleteUserPayload),
@@ -42,8 +49,9 @@ export default {
     }
     const su = isSuperUser(authToken)
     const viewerId = getUserId(authToken)
-
     const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
+    const validReason = reason?.trim().slice(0, USER_REASON_REMOVED_LIMIT) || 'No reason provided'
+
     if (!su) {
       if (!user || userId !== viewerId) {
         return {error: {message: 'Cannot delete someone else'}}
@@ -51,34 +59,15 @@ export default {
     } else if (!user) {
       return {error: {message: 'User not found'}}
     }
-    const {id: userIdToDelete, tms} = user
-    removeSlackAuths(userIdToDelete, tms, true)
-    const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)
-    const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
-    await Promise.all(
-      orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
+    const {id: userIdToDelete} = user
+
+    const deletedUserEmail = await softDeleteUser(
+      userIdToDelete,
+      dataLoader,
+      authToken,
+      validReason
     )
-    const validReason = reason?.trim().slice(0, USER_REASON_REMOVED_LIMIT) || 'No reason provided'
-    if (userId) {
-      segmentIo.track({
-        userId,
-        event: 'Account Removed',
-        properties: {
-          reason: validReason
-        }
-      })
-    }
-    // do this after 30 seconds so any segment API calls can still get the email
-    setTimeout(() => {
-      updateUser(
-        {
-          isRemoved: true,
-          email: getDeletedEmail(userId),
-          reasonRemoved: validReason
-        },
-        userIdToDelete
-      )
-    }, 30000)
+    await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
     return {}
   }
 }
