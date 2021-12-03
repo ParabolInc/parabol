@@ -18,6 +18,7 @@ import User from '../database/types/User'
 import TeamMember from '../database/types/TeamMember'
 import {Loaders} from '../dataloader/RootDataLoader'
 import isValid from './isValid'
+import {Team} from 'server/postgres/queries/getTeamsByIds'
 
 export const resolveAgendaItem = (
   {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},
@@ -108,7 +109,7 @@ export const resolveTeam = (
 }
 
 export const resolveTeams = (
-  {teamIds, teams}: {teamIds: string; teams: IGetTeamsByIdsQueryResult[]},
+  {teamIds, teams}: {teamIds: string; teams: Team[]},
   _args: any,
   {dataLoader}: GQLContext
 ) => {

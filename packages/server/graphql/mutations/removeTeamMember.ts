@@ -41,7 +41,7 @@ export default {
     const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
 
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    const {tms} = user
+    const {tms} = user!
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
     const data = {

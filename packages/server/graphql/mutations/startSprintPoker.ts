@@ -19,6 +19,8 @@ import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import isValid from '../isValid'
+import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -29,7 +31,9 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
   const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
   const {name: templateName} = template
   const uniqueScaleIds = Array.from(new Set(activeDimensions.map(({scaleId}) => scaleId)))
-  const uniqueScales = await dataLoader.get('templateScales').loadMany(uniqueScaleIds)
+  const uniqueScales = (await dataLoader.get('templateScales').loadMany(uniqueScaleIds)).filter(
+    isValid
+  )
   const templateScales = uniqueScales.map(({name, values}) => {
     const scale = {name, values}
     const {id, str} = getHashAndJSON(scale)
@@ -105,7 +109,7 @@ export default {
     const meetingSettings = await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType: 'poker'})
-    const {selectedTemplateId} = meetingSettings
+    const {selectedTemplateId} = meetingSettings as MeetingSettingsPoker
     const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
 
     const meeting = new MeetingPoker({
@@ -121,10 +125,7 @@ export default {
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     const now = new Date()
     await r({
-      template: r
-        .table('MeetingTemplate')
-        .get(selectedTemplateId)
-        .update({lastUsedAt: now}),
+      template: r.table('MeetingTemplate').get(selectedTemplateId).update({lastUsedAt: now}),
       meeting: r.table('NewMeeting').insert(meeting)
     }).run()
 
@@ -136,11 +137,7 @@ export default {
       return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .delete()
-        .run()
+      await r.table('NewMeeting').get(meetingId).delete().run()
       return {error: {message: 'Meeting already started'}}
     }
 
@@ -163,11 +160,7 @@ export default {
           })
         )
         .run(),
-      r
-        .table('Team')
-        .get(teamId)
-        .update(updates)
-        .run(),
+      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)

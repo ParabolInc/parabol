@@ -42,18 +42,12 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   const {id: reflectionGroupId} = reflectionGroup
   await r({
     reflectionGroup: r.table('RetroReflectionGroup').insert(reflectionGroup),
-    reflection: r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
-        sortOrder: 0,
-        reflectionGroupId,
-        updatedAt: now
-      }),
-    meeting: r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({nextAutoGroupThreshold: null})
+    reflection: r.table('RetroReflection').get(reflectionId).update({
+      sortOrder: 0,
+      reflectionGroupId,
+      updatedAt: now
+    }),
+    meeting: r.table('NewMeeting').get(meetingId).update({nextAutoGroupThreshold: null})
   }).run()
   // mutates the dataloader response
   reflection.sortOrder = 0

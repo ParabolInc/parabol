@@ -89,10 +89,7 @@ export default {
           token: tokens[idx]
         })
       })
-      await r
-        .table('TeamInvitation')
-        .insert(teamInvitationsToInsert)
-        .run()
+      await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
 
       // remove suggested action, if any
       let removedSuggestedActionId
@@ -117,10 +114,7 @@ export default {
         }
       })
       if (notificationsToInsert.length > 0) {
-        await r
-          .table('Notification')
-          .insert(notificationsToInsert)
-          .run()
+        await r.table('Notification').insert(notificationsToInsert).run()
       }
 
       const bestMeeting = await getBestInvitationMeeting(teamId, meetingId ?? undefined, dataLoader)
@@ -140,8 +134,8 @@ export default {
             inviteLink: makeAppURL(appOrigin, `team-invitation/${invitation.token}`, options),
             inviteeName: user ? user.preferredName : '',
             inviteeEmail: invitation.email,
-            inviterName: inviter.preferredName,
-            inviterEmail: inviter.email,
+            inviterName: inviter!.preferredName,
+            inviterEmail: inviter!.email,
             teamName,
             meeting: bestMeeting
           })
