@@ -18,7 +18,7 @@ import User from '../database/types/User'
 import TeamMember from '../database/types/TeamMember'
 import {Loaders} from '../dataloader/RootDataLoader'
 import isValid from './isValid'
-import {Team} from 'server/postgres/queries/getTeamsByIds'
+import {Team} from '../postgres/queries/getTeamsByIds'
 
 export const resolveAgendaItem = (
   {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},
@@ -205,7 +205,8 @@ export const makeResolve =
   (source: any, _args: any, {dataLoader}: GQLContext) => {
     const idValue = source[idName]
     const method = isMany ? 'loadMany' : 'load'
-    return idValue ? dataLoader.get(dataLoaderName)[method](idValue) : source[docName]
+    const dataLoaderMethod = dataLoader.get(dataLoaderName)[method] as any
+    return idValue ? dataLoaderMethod(idValue) : source[docName]
   }
 
 export const resolveFilterByTeam =

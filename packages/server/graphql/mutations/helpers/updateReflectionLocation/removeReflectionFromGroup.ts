@@ -4,6 +4,7 @@ import getRethink from '../../../../database/rethinkDriver'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import {GQLContext} from '../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
+import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
@@ -52,7 +53,8 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   // mutates the dataloader response
   reflection.sortOrder = 0
   reflection.reflectionGroupId = reflectionGroupId
-  meeting.nextAutoGroupThreshold = null
+  const retroMeeting = meeting as MeetingRetrospective
+  retroMeeting.nextAutoGroupThreshold = null
   const oldReflections = await r
     .table('RetroReflection')
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})

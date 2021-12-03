@@ -33,13 +33,13 @@ import RootDataLoader from './RootDataLoader'
 
 export interface UserTasksKey {
   first: number
-  after: number | string
-  userIds: string[] | null
+  after?: Date
+  userIds: string[]
   teamIds: string[]
-  archived: boolean
-  includeUnassigned: boolean
-  statusFilters?: TaskStatusEnum[]
+  archived?: boolean
+  statusFilters: TaskStatusEnum[]
   filterQuery?: string
+  includeUnassigned?: boolean
 }
 
 export interface ReactablesKey {

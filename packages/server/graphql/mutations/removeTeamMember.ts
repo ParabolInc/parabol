@@ -53,7 +53,7 @@ export default {
     }
     // messages to the rest of the team reporting the kick out
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)
-    teamMembers.forEach(({teamMemberUserId}) => {
+    teamMembers.forEach(({userId: teamMemberUserId}) => {
       // don't send updated tasks to the person being kicked out
       if (teamMemberUserId === userId) return
       publish(

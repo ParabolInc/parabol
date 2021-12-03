@@ -31,11 +31,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {facilitatorUserId: oldFacilitatorUserId, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -44,7 +40,7 @@ export default {
 
     // VALIDATION
     const newFacilitator = await dataLoader.get('users').load(facilitatorUserId)
-    if (!newFacilitator.tms.includes(teamId)) {
+    if (!newFacilitator!.tms.includes(teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
