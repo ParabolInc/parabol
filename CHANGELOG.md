@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.39.0 2021-Dec-02
+
+### Added
+
+- Language tooltip is updated on New Meeting CheckIn Greeting (#5682)
+- Spotlight: support searchQuery business logic for similarReflections (#5469)
+- Spotlight: animate remote reflection when it enters or leaves Spotlight (#5600)
+
+### Fixed
+
+- Fix remotely ungrouped results position in Spotlight (#5708)
+- Recently used emojis are managed using local storage (#5656)
+- Returning refreshed token from fresh atlassian auth loader (#5729)
+
 ## 6.38.0 2021-Nov-24
 
 ### Added
