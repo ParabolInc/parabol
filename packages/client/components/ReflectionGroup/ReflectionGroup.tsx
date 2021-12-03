@@ -7,6 +7,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
+import useSpotlightVisibleReflections from './useSpotlightVisibleReflections'
 import {
   DragAttribute,
   ElementWidth,
@@ -109,6 +110,7 @@ const ReflectionGroup = (props: Props) => {
             isViewerDragging
           }
         }
+        spotlightSearchQuery
       }
     `,
     meetingRef
@@ -137,6 +139,7 @@ const ReflectionGroup = (props: Props) => {
             dragUserId
             isSpotlight
           }
+          plaintextContent
         }
         isExpanded
       }
@@ -144,14 +147,15 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroupRef
   )
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage, spotlightGroup} = meeting
+  const {localPhase, localStage, spotlightGroup, spotlightSearchQuery} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const spotlightGroupId = spotlightGroup?.id
-  const visibleReflections = useMemo(
-    () => reflections.filter(({id}) => !reflectionIdsToHide?.includes(id)),
-    [reflections, reflectionIdsToHide]
+  const visibleReflections = useSpotlightVisibleReflections(
+    reflections,
+    spotlightSearchQuery,
+    reflectionIdsToHide
   )
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
@@ -230,6 +234,7 @@ const ReflectionGroup = (props: Props) => {
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
     !isSpotlightSrcGroup
+
   return (
     <>
       {portal(
