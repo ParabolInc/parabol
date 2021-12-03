@@ -120,7 +120,7 @@ export const jiraIssue = (parent: RootDataLoader) => {
             .map((estimate) => estimate.jiraFieldId)
             .filter(isNotNull)
 
-          const cacheImagesUpdateEstimates = async (issueRes: any) => {
+          const cacheImagesUpdateEstimates = async (issueRes: JiraGetIssueRes) => {
             const {fields} = issueRes
             const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
               cloudId,
@@ -156,9 +156,7 @@ export const jiraIssue = (parent: RootDataLoader) => {
               userId
             }
           }
-          const logError = (e: Error) => {
-            sendToSentry(e, {userId, tags: {cloudId, issueKey, teamId}})
-          }
+
           const publishUpdatedIssue = async (issue) => {
             const res = await cacheImagesUpdateEstimates(issue)
             publish(SubscriptionChannel.TEAM, teamId, JiraIssue, res)
@@ -171,7 +169,7 @@ export const jiraIssue = (parent: RootDataLoader) => {
             estimateFieldIds
           )
           if (issueRes instanceof Error) {
-            logError(issueRes)
+            sendToSentry(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
             return null
           }
           const res = await cacheImagesUpdateEstimates(issueRes)

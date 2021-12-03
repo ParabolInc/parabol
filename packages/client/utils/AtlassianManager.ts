@@ -192,10 +192,7 @@ interface JiraAddCommentResponse {
   jsdPublic: true
 }
 
-export type JiraGetIssueRes = JiraIssueBean<
-  {description: string; summary: string},
-  {description: string}
->
+export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 interface JiraGQLFields {
   cloudId: string
@@ -279,15 +276,17 @@ export type JiraPermissionScope =
   | 'offline_access'
   | 'manage:jira-project'
 
-export class RateLimitError extends Error {
+export class RateLimitError {
   retryAt: Date
   name: 'RateLimitError' = 'RateLimitError'
+  message: string
 
   constructor(message: string, retryAt: Date) {
-    super(message)
+    this.message = message
     this.retryAt = retryAt
   }
 }
+Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
 
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
@@ -329,7 +328,7 @@ export default abstract class AtlassianManager {
     if (res.status === 429) {
       const retryAfterSeconds = res.headers.get('Retry-After') ?? '3'
       return new RateLimitError(
-        JSON.stringify(json),
+        'got jira rate limit error',
         new Date(Date.now() + Number(retryAfterSeconds) * 1000)
       )
     }
@@ -433,7 +432,7 @@ export default abstract class AtlassianManager {
 
   async getPaginatedProjects(cloudId: string, url: string, callback: GetProjectsCallback) {
     const res = await this.get<JiraProjectResponse>(url)
-    if (res instanceof Error) {
+    if (res instanceof Error || res instanceof RateLimitError) {
       callback(res, null)
     } else {
       callback(null, {cloudId, newProjects: res.values})
@@ -483,7 +482,7 @@ export default abstract class AtlassianManager {
     let error: Error | undefined
     const getProjectPage = async (cloudId: string, url: string) => {
       const res = await this.get<JiraProjectResponse>(url)
-      if (res instanceof Error) {
+      if (res instanceof Error || res instanceof RateLimitError) {
         error = res
       } else {
         const pagedProjects = res.values.map((project) => ({
@@ -556,7 +555,7 @@ export default abstract class AtlassianManager {
   async getCloudNameLookup() {
     const sites = await this.getAccessibleResources()
     const cloudNameLookup = {} as {[cloudId: string]: string}
-    if (sites instanceof Error) {
+    if (sites instanceof Error || sites instanceof RateLimitError) {
       return sites
     }
     sites.forEach((site) => {
@@ -571,7 +570,7 @@ export default abstract class AtlassianManager {
     const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
     )
-    if (issueRes instanceof Error) return issueRes
+    if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
     return {
       ...issueRes,
       fields: {
@@ -673,7 +672,7 @@ export default abstract class AtlassianManager {
     testIssueKeyId: string
   ) {
     const fields = await this.getFields(cloudId)
-    if (fields instanceof Error) return null
+    if (fields instanceof Error || fields instanceof RateLimitError) return null
 
     const possibleFields = possibleFieldNames
       .map((fieldName) => {
