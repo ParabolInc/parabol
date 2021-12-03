@@ -472,7 +472,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
           ].slice(0, MAX_RESULT_GROUP_SIZE)
-          return dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds).filter(isValid)
+          return (await dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds)).filter(
+            isValid
+          )
         }
 
         const reflectionsCount = reflections.length
@@ -511,11 +513,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             }
           }
         }
-        const retroReflectionGroups = await dataLoader
-          .get('retroReflectionGroups')
-          .loadMany(Array.from(currentResultGroupIds))
-
-        return retroReflectionGroups.filter(isValid)
+        return (
+          await dataLoader.get('retroReflectionGroups').loadMany(Array.from(currentResultGroupIds))
+        ).filter(isValid)
       }
     },
     tasks: require('../queries/tasks').default,
