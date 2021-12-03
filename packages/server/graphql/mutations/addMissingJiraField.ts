@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
 import {SprintPokerDefaults, SubscriptionChannel} from '~/types/constEnums'
-import {JiraScreen} from '~/utils/AtlassianManager'
+import {JiraScreen, RateLimitError} from '~/utils/AtlassianManager'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -85,7 +85,7 @@ const addMissingJiraField = {
     const {fieldType, fieldId}: {fieldType: 'string' | 'number'; fieldId: string} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
-    if (screensResponse instanceof Error) {
+    if (screensResponse instanceof Error || screensResponse instanceof RateLimitError) {
       return {error: {message: screensResponse.message}}
     }
 
@@ -102,7 +102,7 @@ const addMissingJiraField = {
       await Promise.all(
         screens.map(async (screen) => {
           const screenTabsResponse = await manager.getScreenTabs(cloudId, screen.id)
-          if (screenTabsResponse instanceof Error) {
+          if (screenTabsResponse instanceof Error || screenTabsResponse instanceof RateLimitError) {
             return null
           }
 

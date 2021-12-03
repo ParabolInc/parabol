@@ -21,6 +21,7 @@ import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianInteg
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -177,7 +178,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
-        if (fields instanceof Error) return []
+        if (fields instanceof Error || fields instanceof RateLimitError) return []
         const VALID_TYPES = ['string', 'number']
         const INVALID_WORDS = ['color', 'name', 'description', 'environment']
         const uniqueFieldNames = Array.from(

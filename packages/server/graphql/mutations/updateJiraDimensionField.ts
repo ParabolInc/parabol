@@ -1,6 +1,7 @@
 import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
@@ -25,7 +26,7 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianA
   const {accessToken} = auth
   const manager = new AtlassianServerManager(accessToken)
   const fields = await manager.getFields(cloudId)
-  if (fields instanceof Error) return null
+  if (fields instanceof Error || fields instanceof RateLimitError) return null
   const selectedField = fields.find((field) => field.name === fieldName)
   if (!selectedField) return null
   const {id: fieldId, schema} = selectedField
@@ -140,11 +141,7 @@ const updateJiraDimensionField = {
       updatedAt: new Date()
     }
     await Promise.all([
-      r
-        .table('Team')
-        .get(teamId)
-        .update(updates)
-        .run(),
+      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
 
