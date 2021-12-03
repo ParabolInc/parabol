@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLInterfaceType} from 'graphql'
 import {resolveOrganization} from '../resolvers'
 import Organization from './Organization'
@@ -16,7 +17,11 @@ export const setOrgUserRoleFields = {
   },
   updatedOrgMember: {
     type: OrganizationUser,
-    resolve: async ({organizationUserId}, _args, {dataLoader}) => {
+    resolve: async (
+      {organizationUserId}: {organizationUserId: string},
+      _args: unknown,
+      {dataLoader}: GQLContext
+    ) => {
       return dataLoader.get('organizationUsers').load(organizationUserId)
     }
   }

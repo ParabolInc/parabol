@@ -8,15 +8,15 @@ import {GQLContext} from '../graphql'
 import PersistGitHubSearchQueryPayload from '../types/PersistGitHubSearchQueryPayload'
 
 const persistGitHubSearchQuery = {
-  type: GraphQLNonNull(PersistGitHubSearchQueryPayload),
+  type: new GraphQLNonNull(PersistGitHubSearchQueryPayload),
   description: ``,
   args: {
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the team witht the settings we add the query to'
     },
     queryString: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The query string as sent to GitHub'
     },
     isRemove: {

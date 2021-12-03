@@ -32,7 +32,11 @@ export const meetingMemberFields = () => ({
   },
   teamMember: {
     type: new GraphQLNonNull(TeamMember),
-    resolve: ({teamId, userId}, _args, {dataLoader}: GQLContext) => {
+    resolve: (
+      {teamId, userId}: {teamId: string; userId: string},
+      _args: unknown,
+      {dataLoader}: GQLContext
+    ) => {
       const teamMemberId = toTeamMemberId(teamId, userId)
       return dataLoader.get('teamMembers').load(teamMemberId)
     }

@@ -7,19 +7,19 @@ export const UpdateGitHubDimensionFieldSuccess = new GraphQLObjectType<any, GQLC
   name: 'UpdateGitHubDimensionFieldSuccess',
   fields: () => ({
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     team: {
-      type: GraphQLNonNull(Team),
+      type: new GraphQLNonNull(Team),
       resolve: ({teamId}, _auth, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
     meeting: {
-      type: GraphQLNonNull(PokerMeeting),
+      type: new GraphQLNonNull(PokerMeeting),
       description: 'The poker meeting the field was updated from',
       resolve: ({meetingId}, _auth, {dataLoader}) => {
         if (!meetingId) return null

@@ -16,17 +16,6 @@ interface Props {
   menuProps: MenuProps
 }
 
-const recent = [
-  'heart',
-  'tada',
-  'smile',
-  'rocket',
-  'fire',
-  'white_check_mark',
-  'confused',
-  'cry',
-  'x'
-]
 const ReactjiPicker = (props: Props) => {
   const {menuProps, onClick} = props
   const {closePortal} = menuProps
@@ -46,7 +35,6 @@ const ReactjiPicker = (props: Props) => {
         onClick={handleClick}
         showPreview={false}
         showSkinTones={false}
-        recent={recent}
         style={{borderRadius: 4}}
       />
     </TallMenu>

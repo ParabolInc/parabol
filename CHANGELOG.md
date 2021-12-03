@@ -5,6 +5,75 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.39.0 2021-Dec-02
+
+### Added
+
+- Language tooltip is updated on New Meeting CheckIn Greeting (#5682)
+- Spotlight: support searchQuery business logic for similarReflections (#5469)
+- Spotlight: animate remote reflection when it enters or leaves Spotlight (#5600)
+
+### Fixed
+
+- Fix remotely ungrouped results position in Spotlight (#5708)
+- Recently used emojis are managed using local storage (#5656)
+- Returning refreshed token from fresh atlassian auth loader (#5729)
+
+## 6.38.0 2021-Nov-24
+
+### Added
+
+- Spotlight: remote animation edge cases (#5621)
+- Make RetroReflection opened in spotlight by another member non-droppable (#5556)
+- Added set new team lead mutation to internal schema (#5658)
+
+### Fixed
+
+- Console errors when remotely ungrouping (#5677)
+- fix relay error on drag end (#5674)
+- Fix missing isSpotlight in useSpotlightReflectionGroup (#5689)
+- Ironbank security patches for v6.36.0 (#5687)
+- Fix sticky tooltip in agenda item pins (#5700)
+- Fix dail_user_stat to order by user counts (#5693)
+- remove hasAuth from scopephaseareaadd (#5711)
+- Fix no implicit any errors (Part 3 of 8) (#5697)
+- Invitation required screen right after creating a new team (#5721)
+
+### Changed
+
+- Show all packages errors on yarn typecheck (#5688)
+- add frozen-lockfile so CI breaks if yarn.lock doesn't package.json
+- bump eslint to v8 (#5695)
+- favor built assets over \_\_STATIC_IMAGES\_\_ (#4847)
+- Remove wrtc signal server (#5698)
+- support eslint v7+ (#5709)
+
+## 6.37.0 2021-Nov-18
+
+### Added
+
+- Allow moving integration tasks between teams (#5513)
+- Added updateOAuthRefreshTokens mutation (#5590)
+- Use 2 GraphQL Executors (#5560)
+- prepare upgrade to graphql v16 (#5662)
+- make atlassian oauth2 response spec compliant (#5652)
+
+### Fixed
+
+- support new m1 (#5593)
+- Fix source returning to kanban & 2 column error (#5626)
+- Fix collapsed reflections (#5642)
+- Fix graphiql fetcher import (#5653)
+- Fix 100 noUncheckedIndexedAccess errors (#5651)
+
+### Changed
+
+- build(deps): bump tmpl from 1.0.4 to 1.0.5 (#5618)
+- build(deps): bump vm2 from 3.9.3 to 3.9.5 (#5619)
+- bump graphiql (#5646)
+- add final newline on save vscode (#5647)
+- Rename and document dataLoader (#5649)
+
 ## 6.36.0 2021-Nov-10
 
 ### Added

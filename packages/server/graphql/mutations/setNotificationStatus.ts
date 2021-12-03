@@ -13,11 +13,11 @@ export default {
   description: 'set the interaction status of a notifcation',
   args: {
     notificationId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the notification'
     },
     status: {
-      type: GraphQLNonNull(NotificationStatusEnum)
+      type: new GraphQLNonNull(NotificationStatusEnum)
     }
   },
   async resolve(

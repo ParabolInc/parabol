@@ -172,8 +172,8 @@ const AgendaItem = (props: Props) => {
           metaContent={
             <IconBlock
               onClick={handleIconClick}
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
+              onMouseOver={openTooltip}
+              onMouseOut={closeTooltip}
               ref={originRef}
             >
               {getIcon()}

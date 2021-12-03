@@ -2,12 +2,7 @@ import {ExecutionResult} from 'graphql/execution/execute'
 import {HttpResponse, WebSocket} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import generateUID from '../generateUID'
-import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 import isHttpResponse from './isHttpResponse'
-
-export interface UserWebSocket extends WebSocket {
-  context?: WebSocketContext
-}
 
 export interface ConnectedSubs {
   [opId: string]: AsyncIterableIterator<ExecutionResult>

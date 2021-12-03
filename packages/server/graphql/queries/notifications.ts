@@ -5,18 +5,18 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {NotificationConnection} from '../types/Notification'
 
 export default {
-  type: GraphQLNonNull(NotificationConnection),
+  type: new GraphQLNonNull(NotificationConnection),
   args: {
     // currently not used
     first: {
-      type: GraphQLNonNull(GraphQLInt)
+      type: new GraphQLNonNull(GraphQLInt)
     },
     after: {
       type: GraphQLISO8601Type
     }
   },
   description: 'all the notifications for a single user',
-  resolve: async (_source, {first, after}, {authToken}) => {
+  resolve: async (_source: unknown, {first, after}, {authToken}) => {
     const r = await getRethink()
     // AUTH
     const userId = getUserId(authToken)

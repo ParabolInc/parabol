@@ -110,7 +110,7 @@ const useInnerWidth = () => {
 const NewMeeting = (props: Props) => {
   const {teamId, viewer, retry} = props
   const {teams} = viewer
-  const newMeetingOrder = ['poker', 'retrospective', 'action']
+  const newMeetingOrder = ['poker', 'retrospective', 'action'] as const
 
   useStoreQueryRetry(retry)
   const {history} = useRouter()

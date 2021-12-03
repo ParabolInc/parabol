@@ -12,14 +12,14 @@ const RemovePokerTemplatePayload = new GraphQLObjectType<any, GQLContext>({
     },
     pokerTemplate: {
       type: PokerTemplate,
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         if (!templateId) return null
         return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
     pokerMeetingSettings: {
       type: PokerMeetingSettings,
-      resolve: ({settingsId}, _args, {dataLoader}) => {
+      resolve: ({settingsId}, _args: unknown, {dataLoader}) => {
         if (!settingsId) return null
         return dataLoader.get('meetingSettings').load(settingsId)
       }

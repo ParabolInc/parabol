@@ -1,6 +1,6 @@
 /*
- @name upsertAtlassianAuthQuery
- @param auth -> (accessToken, refreshToken, cloudIds, scope, accountId, teamId, userId)
+ @name upsertAtlassianAuthsQuery
+ @param auths -> ((accessToken, refreshToken, cloudIds, scope, accountId, teamId, userId)...)
  */
 INSERT INTO "AtlassianAuth" (
     "accessToken",
@@ -11,7 +11,7 @@ INSERT INTO "AtlassianAuth" (
     "teamId",
     "userId"
   )
-VALUES :auth ON CONFLICT ("userId", "teamId") DO
+VALUES :auths ON CONFLICT ("userId", "teamId") DO
 UPDATE
 SET (
     "isActive",

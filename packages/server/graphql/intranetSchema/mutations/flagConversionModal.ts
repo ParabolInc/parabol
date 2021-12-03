@@ -17,7 +17,7 @@ const flagConversionModal = {
       description: 'the orgId to toggle the flag for'
     }
   },
-  resolve: async (_source, {active, orgId}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {active, orgId}, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     // AUTH

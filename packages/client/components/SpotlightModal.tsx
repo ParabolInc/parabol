@@ -1,26 +1,18 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useRef, useState} from 'react'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {Elevation} from '../styles/elevation'
+import SpotlightResultsRoot from './SpotlightResultsRoot'
+import SpotlightTopBar from './SpotlightTopBar'
+import SpotlightSearchBar from './SpotlightSearchBar'
+import SpotlightSourceGroup from './SpotlightSourceGroup'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {
-  BezierCurve,
-  Breakpoint,
-  ElementHeight,
-  ElementWidth,
-  Times,
-  ZIndex
-} from '../types/constEnums'
-import Icon from './Icon'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import MenuItemLabel from './MenuItemLabel'
-import PlainButton from './PlainButton/PlainButton'
-import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import ResultsRoot from './ResultsRoot'
+import {SpotlightModal_meeting$key} from '../__generated__/SpotlightModal_meeting.graphql'
+import {BezierCurve, Breakpoint, ElementWidth, Times, ZIndex} from '../types/constEnums'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'
-import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {PortalStatus} from '~/hooks/usePortal'
+import {useFragment} from 'react-relay'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const MODAL_PADDING = 72
@@ -57,93 +49,36 @@ const SourceSection = styled('div')({
   flexDirection: 'column',
   alignItems: 'center'
 })
-
-const Title = styled('div')({
-  color: PALETTE.SLATE_800,
-  fontSize: 16,
-  fontWeight: 600,
-  textAlign: 'center'
-})
-
-const TopRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
-
-const Source = styled('div')({
-  minHeight: ElementHeight.REFLECTION_CARD
-})
-
-const SearchInput = styled('input')({
-  appearance: 'none',
-  border: `1px solid ${PALETTE.SKY_500}`,
-  borderRadius: 4,
-  boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`,
-  color: PALETTE.SLATE_700,
-  display: 'block',
-  fontSize: 14,
-  lineHeight: '24px',
-  outline: 'none',
-  padding: '6px 0 6px 40px',
-  width: '100%',
-  '::placeholder': {
-    color: PALETTE.SLATE_600
-  }
-})
-
-const SearchWrapper = styled('div')({
-  width: ElementWidth.REFLECTION_CARD
-})
-
-const Search = styled(MenuItemLabel)({
-  overflow: 'visible',
-  padding: 0,
-  position: 'absolute',
-  bottom: -ElementHeight.REFLECTION_CARD / 2,
-  width: ElementWidth.REFLECTION_CARD
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  top: 8
-})
-
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD24
-})
-
-const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  position: 'absolute',
-  right: 16
-})
-
-const CloseIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  fontSize: ICON_SIZE.MD24,
-  '&:hover,:focus': {
-    color: PALETTE.SLATE_800
-  }
-})
-
 interface Props {
   closeSpotlight: () => void
-  meeting: GroupingKanban_meeting
+  meetingRef: SpotlightModal_meeting$key
   sourceRef: RefObject<HTMLDivElement>
   portalStatus: number
 }
 
 const SpotlightModal = (props: Props) => {
-  const {closeSpotlight, meeting, sourceRef, portalStatus} = props
+  const {closeSpotlight, meetingRef, sourceRef, portalStatus} = props
+  const meeting = useFragment(
+    graphql`
+      fragment SpotlightModal_meeting on RetrospectiveMeeting {
+        spotlightGroup {
+          id
+          reflections {
+            id
+          }
+        }
+        spotlightReflectionId
+        ...SpotlightSearchBar_meeting
+        ...SpotlightResultsRoot_meeting
+        ...SpotlightSourceGroup_meeting
+      }
+    `,
+    meetingRef
+  )
   const modalRef = useRef<HTMLDivElement>(null)
   const [hideModal, setHideModal] = useState(true)
-  const {id: meetingId, spotlightGroup, spotlightReflectionId} = meeting
+  const {spotlightGroup, spotlightReflectionId} = meeting
   const sourceReflections = spotlightGroup?.reflections
-  const spotlightGroupId = spotlightGroup?.id
   const reflectionIdsToHideRef = useRef<string[] | null>(null)
 
   useEffect(() => {
@@ -162,12 +97,6 @@ const SpotlightModal = (props: Props) => {
     return () => clearTimeout(timeout)
   }, [sourceReflections])
 
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape' && !e.currentTarget.value) {
-      closeSpotlight()
-    }
-  }
-
   useEffect(() => {
     if (portalStatus !== PortalStatus.Entered) return
     const timeout = setTimeout(() => {
@@ -179,42 +108,21 @@ const SpotlightModal = (props: Props) => {
   return (
     <Modal hideModal={hideModal} ref={modalRef}>
       <SourceSection>
-        <TopRow>
-          <Title>Find cards with similar reflections</Title>
-          <StyledCloseButton onClick={closeSpotlight}>
-            <CloseIcon>close</CloseIcon>
-          </StyledCloseButton>
-        </TopRow>
-        <Source ref={sourceRef}>
-          {spotlightGroup && (
-            <ReflectionGroup
-              phaseRef={modalRef}
-              reflectionGroup={spotlightGroup}
-              meeting={meeting}
-              reflectionIdsToHide={reflectionIdsToHideRef.current}
-              expandedReflectionGroupPortalParentId='spotlight'
-            />
-          )}
-        </Source>
-        <SearchWrapper>
-          <Search>
-            <StyledMenuItemIcon>
-              <SearchIcon>search</SearchIcon>
-            </StyledMenuItemIcon>
-            <SearchInput
-              onKeyDown={onKeyDown}
-              autoFocus
-              autoComplete='off'
-              name='search'
-              placeholder='Or search for keywords...'
-              type='text'
-            />
-          </Search>
-        </SearchWrapper>
+        <SpotlightTopBar closeSpotlight={closeSpotlight} />
+        <SpotlightSourceGroup
+          meetingRef={meeting}
+          sourceRef={sourceRef}
+          modalRef={modalRef}
+          reflectionIdsToHideRef={reflectionIdsToHideRef}
+        />
+        <SpotlightSearchBar meetingRef={meeting} />
       </SourceSection>
-      <ResultsRoot meetingId={meetingId} phaseRef={modalRef} spotlightGroupId={spotlightGroupId} />
+      <SpotlightResultsRoot
+        phaseRef={modalRef}
+        meetingRef={meeting}
+        isSpotlightEntering={portalStatus === PortalStatus.Entering}
+      />
     </Modal>
   )
 }
-
 export default SpotlightModal

@@ -6,11 +6,11 @@ const DomainCountPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'DomainCountPayload',
   fields: () => ({
     domain: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the email domain'
     },
     total: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'the sum total'
     }
   })

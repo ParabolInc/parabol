@@ -4,7 +4,7 @@ const PollOptionInput = new GraphQLInputObjectType({
   name: 'PollOptionInput',
   fields: () => ({
     title: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'Poll option title'
     }
   })

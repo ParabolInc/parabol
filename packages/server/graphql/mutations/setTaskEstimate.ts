@@ -16,11 +16,11 @@ import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
 
 const setTaskEstimate = {
-  type: GraphQLNonNull(SetTaskEstimatePayload),
+  type: new GraphQLNonNull(SetTaskEstimatePayload),
   description: 'Update a task estimate',
   args: {
     taskEstimate: {
-      type: GraphQLNonNull(TaskEstimateInput)
+      type: new GraphQLNonNull(TaskEstimateInput)
     }
   },
   resolve: async (

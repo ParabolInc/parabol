@@ -91,7 +91,7 @@ export const newMeetingStageFields = () => ({
     description: 'true if a time limit is set, false if end time is set, null if neither is set'
   },
   isViewerReady: {
-    type: GraphQLNonNull(GraphQLBoolean),
+    type: new GraphQLNonNull(GraphQLBoolean),
     description: 'true if the viewer is ready to advance, else false',
     resolve: (
       {readyToAdvance}: {readyToAdvance: string[]},
@@ -103,7 +103,7 @@ export const newMeetingStageFields = () => ({
     }
   },
   readyCount: {
-    type: GraphQLNonNull(GraphQLInt),
+    type: new GraphQLNonNull(GraphQLInt),
     description: 'the number of meeting members ready to advance, excluding the facilitator',
     resolve: async (
       {meetingId, readyToAdvance}: {meetingId: string; readyToAdvance: string[]},
@@ -134,7 +134,7 @@ export const newMeetingStageFields = () => ({
       'The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion'
   },
   teamId: {
-    type: GraphQLNonNull(GraphQLID)
+    type: new GraphQLNonNull(GraphQLID)
   },
   timeRemaining: {
     type: GraphQLFloat,

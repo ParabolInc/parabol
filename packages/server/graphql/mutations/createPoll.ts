@@ -24,10 +24,10 @@ type CreatePollInputVariables = {
 }
 
 const createPoll = {
-  type: GraphQLNonNull(CreatePollPayload),
+  type: new GraphQLNonNull(CreatePollPayload),
   args: {
     newPoll: {
-      type: GraphQLNonNull(CreatePollInput),
+      type: new GraphQLNonNull(CreatePollInput),
       description: 'The new poll including title and poll options'
     }
   },
@@ -105,7 +105,8 @@ const createPoll = {
     if (insertPollResult.length === 0) {
       return {error: {message: `Couldn't create a poll`}}
     }
-    const [{pollId}] = insertPollResult
+
+    const {pollId} = insertPollResult[0]!
 
     const data = {pollId}
     segmentIo.track({

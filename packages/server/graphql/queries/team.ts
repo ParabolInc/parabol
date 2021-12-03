@@ -16,7 +16,7 @@ export default {
       description: 'The team ID for the desired team'
     }
   },
-  async resolve(_source, {teamId}, {authToken, dataLoader}: GQLContext, info) {
+  async resolve(_source: unknown, {teamId}, {authToken, dataLoader}: GQLContext, info) {
     if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
       const viewerId = getUserId(authToken)
       if (!HANDLED_OPS.includes(info.operation.name.value)) {

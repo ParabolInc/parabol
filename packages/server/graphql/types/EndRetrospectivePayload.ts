@@ -10,17 +10,17 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndRetrospectiveSuccess',
   fields: () => ({
     isKill: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     team: {
-      type: GraphQLNonNull(Team),
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      type: new GraphQLNonNull(Team),
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return teamId ? dataLoader.get('teams').load(teamId) : null
       }
     },
     meeting: {
-      type: GraphQLNonNull(RetrospectiveMeeting),
+      type: new GraphQLNonNull(RetrospectiveMeeting),
       resolve: resolveNewMeeting
     },
     removedSuggestedActionId: {
@@ -28,12 +28,12 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
       description: 'The ID of the suggestion to try a retro meeting, if tried'
     },
     removedTaskIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
     },
     timelineEvent: {
-      type: GraphQLNonNull(TimelineEvent),
+      type: new GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
-      resolve: async ({timelineEventId}, _args, {dataLoader}) => {
+      resolve: async ({timelineEventId}, _args: unknown, {dataLoader}) => {
         return await dataLoader.get('timelineEvents').load(timelineEventId)
       }
     }

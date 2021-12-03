@@ -115,14 +115,14 @@ const backupPgOrganization = async (orgIds: string[]) => {
 }
 
 const backupOrganization = {
-  type: GraphQLNonNull(GraphQLString),
+  type: new GraphQLNonNull(GraphQLString),
   description: 'copies all the records from RethinkDB for a list of organizations',
   args: {
     orgIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
     }
   },
-  resolve: async (_source, {orgIds}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {orgIds}, {authToken}: GQLContext) => {
     // AUTH
     requireSU(authToken)
 

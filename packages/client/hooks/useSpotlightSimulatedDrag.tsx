@@ -3,6 +3,7 @@ import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMut
 import useAtmosphere from './useAtmosphere'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {commitLocalUpdate} from 'react-relay'
+import {Times} from '~/types/constEnums'
 
 const useSpotlightSimulatedDrag = (
   meeting: GroupingKanban_meeting,
@@ -10,7 +11,7 @@ const useSpotlightSimulatedDrag = (
 ) => {
   const atmosphere = useAtmosphere()
   const reflectionIdRef = useRef<string>()
-  const updateTimerRef = useRef(0)
+  const timeoutRef = useRef(0)
   const {id: meetingId, spotlightGroup} = meeting
 
   // handle the case when someone steals the reflection
@@ -33,8 +34,6 @@ const useSpotlightSimulatedDrag = (
   }, [!spotlightGroup])
 
   const onCloseSpotlight = useCallback(() => {
-    clearTimeout(updateTimerRef.current)
-    updateTimerRef.current = 0
     const clone = document.getElementById(`clone-${reflectionIdRef.current}`)
     if (clone && document.body.contains(clone)) {
       document.body.removeChild(clone)
@@ -54,9 +53,11 @@ const useSpotlightSimulatedDrag = (
       const meetingProxy = store.get(meetingId)
       meetingProxy?.setValue(null, 'spotlightGroup')
       meetingProxy?.setValue(null, 'spotlightReflectionId')
+      meetingProxy?.setValue(null, 'spotlightSearchQuery')
     })
     dragIdRef.current = undefined
     reflectionIdRef.current = undefined
+    clearTimeout(timeoutRef.current)
   }, [meetingId])
 
   const onOpenSpotlight = useCallback(
@@ -70,6 +71,9 @@ const useSpotlightSimulatedDrag = (
         reflectionGroup && meetingProxy?.setLinkedRecord(reflectionGroup, 'spotlightGroup')
         meetingProxy?.setValue(reflectionId, 'spotlightReflectionId')
       })
+      timeoutRef.current = window.setTimeout(() => {
+        onCloseSpotlight()
+      }, Times.REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT)
     },
     [meetingId]
   )

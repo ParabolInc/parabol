@@ -1,25 +1,22 @@
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getPg from '../../postgres/getPg'
+import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
+import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import IUser from '../../postgres/types/IUser'
-import db from '../../db'
 import {requireSU} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import {GQLContext} from '../graphql'
 import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
 import UserFlagEnum from '../types/UserFlagEnum'
-import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
-import getPg from '../../postgres/getPg'
-import catchAndLog from '../../postgres/utils/catchAndLog'
-import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
-import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
-import {GQLContext} from '../graphql'
-import {RDatum} from '../../database/stricterR'
 
 export default {
-  type: GraphQLNonNull(AddFeatureFlagPayload),
+  type: new GraphQLNonNull(AddFeatureFlagPayload),
   description: 'Give someone advanced features in a flag',
   args: {
     emails: {
-      type: GraphQLList(GraphQLNonNull(GraphQLString)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: `a list of the complete or partial email of the person to whom you are giving advanced features.
       Matches via a regex to support entire domains`
     },
@@ -53,23 +50,13 @@ export default {
       const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
     }
-    await db.prime('User', users)
 
     if (users.length === 0) {
       return {error: {message: 'No users found matching the email or domain'}}
     }
 
-    const reqlUpdater = (user: RDatum<IUser | undefined>) => ({
-      featureFlags: user('featureFlags')
-        .default([])
-        .append(flag)
-        .distinct()
-    })
     const userIds = users.map(({id}) => id)
-    await Promise.all([
-      catchAndLog(() => appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())),
-      db.writeMany('User', userIds, reqlUpdater)
-    ])
+    await appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
     userIds.forEach((userId) => {
       const data = {userId}
       publish(SubscriptionChannel.NOTIFICATION, userId, 'AddFeatureFlagPayload', data, subOptions)

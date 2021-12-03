@@ -12,14 +12,14 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
   description: 'All the available integrations available for this team member',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'composite',
       resolve: ({teamId, userId}) => TeamMemberIntegrationsId.join(teamId, userId)
     },
     atlassian: {
       type: AtlassianIntegration,
-      description: 'All things associated with an Atlassian integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      description: 'All things associated with an atlassian integration for a team member',
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       }
@@ -27,7 +27,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     github: {
       type: GitHubIntegration,
       description: 'All things associated with a GitHub integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('githubAuth').load({teamId, userId})
       }
@@ -35,15 +35,15 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     mattermost: {
       type: MattermostIntegration,
       description: 'All things associated with a Mattermost integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('mattermostAuthByUserIdTeamId').load({userId, teamId})
       }
     },
     slack: {
       type: SlackIntegration,
-      description: 'All things associated with a Slack integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      description: 'All things associated with a slack integration for a team member',
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         const auths = await dataLoader.get('slackAuthByUserId').load(userId)
         return auths.find((auth) => auth.teamId === teamId)

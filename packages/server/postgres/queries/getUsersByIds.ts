@@ -1,8 +1,9 @@
-import {getUsersByIdsQuery} from './generated/getUsersByIdsQuery'
+import {MaybeReadonly} from '../../../client/types/generics'
 import getPg from '../getPg'
 import IUser from '../types/IUser'
+import {getUsersByIdsQuery} from './generated/getUsersByIdsQuery'
 
-export const getUsersByIds = async (userIds: string[]): Promise<IUser[]> => {
+export const getUsersByIds = async (userIds: MaybeReadonly<string[]>): Promise<IUser[]> => {
   const users = await getUsersByIdsQuery.run({ids: userIds}, getPg())
   return users as IUser[]
 }

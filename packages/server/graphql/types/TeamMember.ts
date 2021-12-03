@@ -41,12 +41,12 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       description: 'true if the user is a part of the team, false if they no longer are'
     },
     isLead: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'Is user a team lead?',
       resolve: ({isLead}) => !!isLead
     },
     isSpectatingPoker: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user prefers to not vote during a poker meeting',
       resolve: ({isSpectatingPoker}) => !!isSpectatingPoker
     },
@@ -66,13 +66,13 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if this team member belongs to the user that queried it',
-      resolve: (source, _args, {authToken}) => {
+      resolve: (source, _args: unknown, {authToken}) => {
         const userId = getUserId(authToken)
         return source.userId === userId
       }
     },
     integrations: {
-      type: GraphQLNonNull(TeamMemberIntegrations),
+      type: new GraphQLNonNull(TeamMemberIntegrations),
       description: 'The integrations that the team member has authorized. accessible by all',
       resolve: ({teamId, userId}) => {
         return {teamId, userId}
@@ -108,7 +108,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
           description: 'the datetime cursor'
         }
       },
-      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         const publicTasksForUserId = allTasks.filter((task) => {
           if (task.userId !== userId) return false
@@ -130,7 +130,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve({userId}, _args, {dataLoader}) {
+      resolve({userId}, _args: unknown, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },
