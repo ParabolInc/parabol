@@ -7,7 +7,7 @@ import {GQLContext} from '../graphql'
 import CreateMassInvitationPayload from '../types/CreateMassInvitationPayload'
 
 const createMassInvitation = {
-  type: GraphQLNonNull(CreateMassInvitationPayload),
+  type: new GraphQLNonNull(CreateMassInvitationPayload),
   description: `Create a new mass inivtation and optionally void old ones`,
   args: {
     meetingId: {
@@ -15,7 +15,7 @@ const createMassInvitation = {
       description: 'the specific meeting where the invite occurred, if any'
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId to create the mass invitation for'
     },
     voidOld: {

@@ -16,7 +16,7 @@ const selectTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   async resolve(

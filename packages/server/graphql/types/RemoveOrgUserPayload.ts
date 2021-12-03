@@ -31,17 +31,17 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
       description: 'The organization the user was removed from'
     },
     teams: {
-      type: new GraphQLList(GraphQLNonNull(Team)),
+      type: new GraphQLList(new GraphQLNonNull(Team)),
       description: 'The teams the user was removed from',
       resolve: resolveFilterByTeam(resolveTeams, ({id}) => id)
     },
     teamMembers: {
-      type: new GraphQLList(GraphQLNonNull(TeamMember)),
+      type: new GraphQLList(new GraphQLNonNull(TeamMember)),
       description: 'The teamMembers removed',
       resolve: resolveFilterByTeam(resolveTeamMembers, ({teamId}) => teamId)
     },
     updatedTasks: {
-      type: new GraphQLList(GraphQLNonNull(Task)),
+      type: new GraphQLList(new GraphQLNonNull(Task)),
       description: 'The tasks that were archived or reassigned',
       resolve: resolveFilterByTeam(resolveTasks, ({teamId}) => teamId)
     },
@@ -51,9 +51,9 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: resolveUser
     },
     kickOutNotifications: {
-      type: new GraphQLList(GraphQLNonNull(NotifyKickedOut)),
+      type: new GraphQLList(new GraphQLNonNull(NotifyKickedOut)),
       description: 'The notifications for each team the user was kicked out of',
-      resolve: async ({kickOutNotificationIds}, _args, {authToken, dataLoader}) => {
+      resolve: async ({kickOutNotificationIds}, _args: unknown, {authToken, dataLoader}) => {
         if (!kickOutNotificationIds) return null
         const viewerId = getUserId(authToken)
         const notifications = (
@@ -65,7 +65,7 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
     removedOrgMember: {
       type: OrganizationUser,
       description: 'The organization member that got removed',
-      resolve: async ({organizationUserId}, _args, {dataLoader}) => {
+      resolve: async ({organizationUserId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('organizationUsers').load(organizationUserId)
       }
     },

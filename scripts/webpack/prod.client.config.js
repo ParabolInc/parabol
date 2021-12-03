@@ -63,16 +63,10 @@ module.exports = ({isDeploy, isStats}) => ({
       assert: path.join(PROJECT_ROOT, 'scripts/webpack/assert.js'),
       os: false
     },
-    modules: [
-      path.resolve(CLIENT_ROOT, '../node_modules'),
-      'node_modules'
-    ]
+    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
   },
   resolveLoader: {
-    modules: [
-      path.resolve(CLIENT_ROOT, '../node_modules'),
-      'node_modules'
-    ]
+    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
   },
   optimization: {
     minimize: Boolean(isDeploy || isStats),
@@ -127,10 +121,7 @@ module.exports = ({isDeploy, isStats}) => ({
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.DEBUG': false,
       'process.env.NODE_ENV': JSON.stringify('production'),
-      'process.env.PROTOO_LISTEN_PORT': JSON.stringify(
-        (process.env.PROTOO_LISTEN_PORT || 4444) - 1
-      ),
-      __STATIC_IMAGES__: JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
+      'process.env.PROTOO_LISTEN_PORT': JSON.stringify((process.env.PROTOO_LISTEN_PORT || 4444) - 1)
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[contenthash].js.map',
@@ -144,18 +135,18 @@ module.exports = ({isDeploy, isStats}) => ({
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     isDeploy &&
-    new S3Plugin({
-      s3Options: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        region: process.env.AWS_REGION
-      },
-      s3UploadOptions: {
-        Bucket: process.env.AWS_S3_BUCKET
-      },
-      basePath: getS3BasePath(),
-      directory: buildPath
-    }),
+      new S3Plugin({
+        s3Options: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          region: process.env.AWS_REGION
+        },
+        s3UploadOptions: {
+          Bucket: process.env.AWS_S3_BUCKET
+        },
+        basePath: getS3BasePath(),
+        directory: buildPath
+      }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
   module: {

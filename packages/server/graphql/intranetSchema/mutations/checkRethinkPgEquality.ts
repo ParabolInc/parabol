@@ -26,11 +26,11 @@ const checkEqAndWriteOutput = async (
 }
 
 const checkRethinkPgEquality = {
-  type: GraphQLNonNull(GraphQLString),
+  type: new GraphQLNonNull(GraphQLString),
   description: 'check equality of a table between rethinkdb and postgres',
   args: {
     tableName: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The table name to be compared'
     },
     maxErrors: {
@@ -44,7 +44,7 @@ const checkRethinkPgEquality = {
       description: 'Whether the output should be written to file'
     }
   },
-  resolve: async (_source, {tableName, maxErrors, writeToFile}, {authToken}) => {
+  resolve: async (_source: unknown, {tableName, maxErrors, writeToFile}, {authToken}) => {
     // AUTH
     requireSU(authToken)
 

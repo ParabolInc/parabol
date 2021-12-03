@@ -8,29 +8,29 @@ export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndSprintPokerSuccess',
   fields: () => ({
     isKill: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meeting: {
-      type: GraphQLNonNull(PokerMeeting),
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      type: new GraphQLNonNull(PokerMeeting),
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     removedTaskIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
     },
     team: {
-      type: GraphQLNonNull(Team),
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      type: new GraphQLNonNull(Team),
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   })
 })

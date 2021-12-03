@@ -12,7 +12,7 @@ interface MessageSlackUserError {
 }
 
 const messageAllSlackUsers = {
-  type: GraphQLNonNull(MessageAllSlackUsersPayload),
+  type: new GraphQLNonNull(MessageAllSlackUsersPayload),
   description: 'Send a message to all authorised Slack users',
   args: {
     message: {
@@ -20,7 +20,7 @@ const messageAllSlackUsers = {
       description: 'The slack message that will be sent to all Slack users'
     }
   },
-  resolve: async (_source, {message}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {message}, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     //AUTH

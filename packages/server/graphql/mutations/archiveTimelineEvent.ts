@@ -11,11 +11,11 @@ import {GQLContext} from '../graphql'
 import ArchiveTimelineEventPayload from '../types/ArchiveTimelineEventPayload'
 
 const archiveTimelineEvent = {
-  type: GraphQLNonNull(ArchiveTimelineEventPayload),
+  type: new GraphQLNonNull(ArchiveTimelineEventPayload),
   description: `Archive a timeline event`,
   args: {
     timelineEventId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the id for the timeline event'
     }
   },

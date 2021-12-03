@@ -11,7 +11,7 @@ const SetCheckInEnabledPayload = new GraphQLObjectType<any, GQLContext>({
     },
     settings: {
       type: TeamMeetingSettings,
-      resolve: ({settingsId}, _args, {dataLoader}) => {
+      resolve: ({settingsId}, _args: unknown, {dataLoader}) => {
         return settingsId ? dataLoader.get('meetingSettings').load(settingsId) : null
       }
     }

@@ -19,7 +19,7 @@ const RemoveAgendaItemPayload = new GraphQLObjectType<any, GQLContext>({
     meeting: {
       type: NewMeeting,
       description: 'The meeting with the updated agenda item, if any',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
       }
     }

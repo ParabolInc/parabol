@@ -8,7 +8,7 @@ import {GQLContext} from '../graphql'
 import standardError from '../../utils/standardError'
 
 const movePokerTemplateScaleValue = {
-  type: GraphQLNonNull(MovePokerTemplateScaleValuePayload),
+  type: new GraphQLNonNull(MovePokerTemplateScaleValuePayload),
   description: `Move a scale value to an index`,
   args: {
     scaleId: {

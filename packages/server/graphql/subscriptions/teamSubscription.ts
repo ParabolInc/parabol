@@ -7,7 +7,7 @@ import TeamSubscriptionPayload from '../types/TeamSubscriptionPayload'
 
 export default {
   type: new GraphQLNonNull(TeamSubscriptionPayload),
-  subscribe: (_source, _args, {authToken}: GQLContext) => {
+  subscribe: (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')

@@ -8,14 +8,14 @@ import {GQLContext} from '../graphql'
 import SetPokerSpectatePayload from '../types/SetPokerSpectatePayload'
 
 const setPokerSpectate = {
-  type: GraphQLNonNull(SetPokerSpectatePayload),
+  type: new GraphQLNonNull(SetPokerSpectatePayload),
   description: `Set whether the user is spectating poker meeting`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     isSpectating: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is spectating poker and does not want to vote. else false'
     }
   },

@@ -17,7 +17,7 @@ const NotificationMeetingStageTimeLimitEnd = new GraphQLObjectType<any, GQLConte
     meeting: {
       description: 'The meeting that had the time limit expire',
       type: new GraphQLNonNull(NewMeeting),
-      resolve: async ({meetingId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     }

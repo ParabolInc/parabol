@@ -1270,7 +1270,7 @@ export const enum XGitHubAuditLogOrderField {
   /**
    * Order audit log entries by timestamp
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -2439,7 +2439,7 @@ export const enum XGitHubCheckAnnotationLevel {
   /**
    * An annotation indicating an ignorable error.
    */
-  WARNING = 'WARNING'
+  WARNING = 'WARNING',
 }
 
 /**
@@ -2548,7 +2548,7 @@ export const enum XGitHubCheckConclusionState {
   /**
    * The check suite or run was marked stale by GitHub. Only GitHub can use this conclusion.
    */
-  STALE = 'STALE'
+  STALE = 'STALE',
 }
 
 /**
@@ -2876,7 +2876,7 @@ export const enum XGitHubCheckRunType {
   /**
    * The latest check run.
    */
-  LATEST = 'LATEST'
+  LATEST = 'LATEST',
 }
 
 /**
@@ -2911,7 +2911,7 @@ export const enum XGitHubCheckStatusState {
   /**
    * The check suite or run has been requested.
    */
-  REQUESTED = 'REQUESTED'
+  REQUESTED = 'REQUESTED',
 }
 
 /**
@@ -3576,7 +3576,7 @@ export const enum XGitHubCollaboratorAffiliation {
   /**
    * All collaborators the authenticated user can see.
    */
-  ALL = 'ALL'
+  ALL = 'ALL',
 }
 
 /**
@@ -3737,7 +3737,7 @@ export const enum XGitHubCommentAuthorAssociation {
   /**
    * Author has no association with the repository.
    */
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 /**
@@ -3777,7 +3777,7 @@ export const enum XGitHubCommentCannotUpdateReason {
   /**
    * You cannot update this comment
    */
-  DENIED = 'DENIED'
+  DENIED = 'DENIED',
 }
 
 /**
@@ -4646,7 +4646,7 @@ export const enum XGitHubCommitContributionOrderField {
   /**
    * Order commit contributions by how many commits they represent.
    */
-  COMMIT_COUNT = 'COMMIT_COUNT'
+  COMMIT_COUNT = 'COMMIT_COUNT',
 }
 
 /**
@@ -5017,7 +5017,7 @@ export const enum XGitHubContributionLevel {
   /**
    * Highest 25% of days of contributions. More contributions than the third quartile.
    */
-  FOURTH_QUARTILE = 'FOURTH_QUARTILE'
+  FOURTH_QUARTILE = 'FOURTH_QUARTILE',
 }
 
 /**
@@ -5039,9 +5039,7 @@ export interface IXGitHubContributionsCollection {
   /**
    * Commit contributions made by the user, grouped by repository.
    */
-  commitContributionsByRepository: Array<
-    IXGitHubCommitContributionsByRepository
-  >;
+  commitContributionsByRepository: Array<IXGitHubCommitContributionsByRepository>;
 
   /**
    * A calendar of this user's contributions on GitHub.
@@ -5155,9 +5153,7 @@ export interface IXGitHubContributionsCollection {
   /**
    * Pull request contributions made by the user, grouped by repository.
    */
-  pullRequestContributionsByRepository: Array<
-    IXGitHubPullRequestContributionsByRepository
-  >;
+  pullRequestContributionsByRepository: Array<IXGitHubPullRequestContributionsByRepository>;
 
   /**
    * Pull request review contributions made by the user.
@@ -5167,9 +5163,7 @@ export interface IXGitHubContributionsCollection {
   /**
    * Pull request review contributions made by the user, grouped by repository.
    */
-  pullRequestReviewContributionsByRepository: Array<
-    IXGitHubPullRequestReviewContributionsByRepository
-  >;
+  pullRequestReviewContributionsByRepository: Array<IXGitHubPullRequestReviewContributionsByRepository>;
 
   /**
    * A list of repositories owned by the user that the user created in this time range.
@@ -7191,7 +7185,7 @@ export const enum XGitHubDefaultRepositoryPermissionField {
   /**
    * Can read, write, and administrate repos by default
    */
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
 
 /**
@@ -8118,7 +8112,7 @@ export const enum XGitHubDeploymentOrderField {
   /**
    * Order collection by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -8226,7 +8220,7 @@ export const enum XGitHubDeploymentProtectionRuleType {
   /**
    * Wait timer
    */
-  WAIT_TIMER = 'WAIT_TIMER'
+  WAIT_TIMER = 'WAIT_TIMER',
 }
 
 /**
@@ -8438,7 +8432,7 @@ export const enum XGitHubDeploymentReviewState {
   /**
    * The deployment was rejected.
    */
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
 }
 
 /**
@@ -8542,7 +8536,7 @@ export const enum XGitHubDeploymentState {
   /**
    * The deployment is waiting.
    */
-  WAITING = 'WAITING'
+  WAITING = 'WAITING',
 }
 
 /**
@@ -8679,7 +8673,7 @@ export const enum XGitHubDeploymentStatusState {
   /**
    * The deployment is waiting.
    */
-  WAITING = 'WAITING'
+  WAITING = 'WAITING',
 }
 
 /**
@@ -8694,7 +8688,7 @@ export const enum XGitHubDiffSide {
   /**
    * The right side of the diff.
    */
-  RIGHT = 'RIGHT'
+  RIGHT = 'RIGHT',
 }
 
 /**
@@ -9540,7 +9534,7 @@ export const enum XGitHubDiscussionOrderField {
   /**
    * Order discussions by most recent modification time.
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -10051,7 +10045,7 @@ export const enum XGitHubEnterpriseAdministratorInvitationOrderField {
   /**
    * Order enterprise administrator member invitations by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -10066,7 +10060,7 @@ export const enum XGitHubEnterpriseAdministratorRole {
   /**
    * Represents a billing manager of the enterprise account.
    */
-  BILLING_MANAGER = 'BILLING_MANAGER'
+  BILLING_MANAGER = 'BILLING_MANAGER',
 }
 
 /**
@@ -10200,7 +10194,7 @@ export const enum XGitHubEnterpriseDefaultRepositoryPermissionSettingValue {
   /**
    * Organization members will only be able to clone and pull public repositories.
    */
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 /**
@@ -10220,7 +10214,7 @@ export const enum XGitHubEnterpriseEnabledDisabledSettingValue {
   /**
    * There is no policy set for organizations in the enterprise.
    */
-  NO_POLICY = 'NO_POLICY'
+  NO_POLICY = 'NO_POLICY',
 }
 
 /**
@@ -10235,7 +10229,7 @@ export const enum XGitHubEnterpriseEnabledSettingValue {
   /**
    * There is no policy set for organizations in the enterprise.
    */
-  NO_POLICY = 'NO_POLICY'
+  NO_POLICY = 'NO_POLICY',
 }
 
 /**
@@ -10397,7 +10391,7 @@ export const enum XGitHubEnterpriseMemberOrderField {
   /**
    * Order enterprise members by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -10427,7 +10421,7 @@ export const enum XGitHubEnterpriseMembersCanCreateRepositoriesSettingValue {
   /**
    * Members will not be able to create public or private repositories.
    */
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -10442,7 +10436,7 @@ export const enum XGitHubEnterpriseMembersCanMakePurchasesSettingValue {
   /**
    * The setting is disabled for organizations in the enterprise.
    */
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -12036,7 +12030,7 @@ export const enum XGitHubEnterpriseServerInstallationOrderField {
   /**
    * Order Enterprise Server installations by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -12263,7 +12257,7 @@ export const enum XGitHubEnterpriseServerUserAccountEmailOrderField {
   /**
    * Order emails by email
    */
-  EMAIL = 'EMAIL'
+  EMAIL = 'EMAIL',
 }
 
 /**
@@ -12293,7 +12287,7 @@ export const enum XGitHubEnterpriseServerUserAccountOrderField {
   /**
    * Order user accounts by creation time on the Enterprise Server installation
    */
-  REMOTE_CREATED_AT = 'REMOTE_CREATED_AT'
+  REMOTE_CREATED_AT = 'REMOTE_CREATED_AT',
 }
 
 /**
@@ -12400,7 +12394,7 @@ export const enum XGitHubEnterpriseServerUserAccountsUploadOrderField {
   /**
    * Order user accounts uploads by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -12420,7 +12414,7 @@ export const enum XGitHubEnterpriseServerUserAccountsUploadSyncState {
   /**
    * The synchronization of the upload failed.
    */
-  FAILURE = 'FAILURE'
+  FAILURE = 'FAILURE',
 }
 
 /**
@@ -12582,7 +12576,7 @@ export const enum XGitHubEnterpriseUserAccountMembershipRole {
   /**
    * The user is an owner of the enterprise membership.
    */
-  OWNER = 'OWNER'
+  OWNER = 'OWNER',
 }
 
 /**
@@ -12597,7 +12591,7 @@ export const enum XGitHubEnterpriseUserDeployment {
   /**
    * The user is part of a GitHub Enterprise Server deployment.
    */
-  SERVER = 'SERVER'
+  SERVER = 'SERVER',
 }
 
 /**
@@ -13017,7 +13011,7 @@ export const enum XGitHubFileViewedState {
   /**
    * The file has not been marked as viewed.
    */
-  UNVIEWED = 'UNVIEWED'
+  UNVIEWED = 'UNVIEWED',
 }
 
 /**
@@ -13175,7 +13169,7 @@ export const enum XGitHubFundingPlatform {
   /**
    * Custom funding platform.
    */
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 /**
@@ -13691,7 +13685,7 @@ export const enum XGitHubGistOrderField {
   /**
    * Order gists by push time
    */
-  PUSHED_AT = 'PUSHED_AT'
+  PUSHED_AT = 'PUSHED_AT',
 }
 
 /**
@@ -13711,7 +13705,7 @@ export const enum XGitHubGistPrivacy {
   /**
    * Gists that are public and secret
    */
-  ALL = 'ALL'
+  ALL = 'ALL',
 }
 
 /**
@@ -14013,7 +14007,7 @@ export const enum XGitHubGitSignatureState {
   /**
    * One or more certificates in chain has been revoked
    */
-  OCSP_REVOKED = 'OCSP_REVOKED'
+  OCSP_REVOKED = 'OCSP_REVOKED',
 }
 
 /**
@@ -14213,7 +14207,7 @@ export const enum XGitHubIdentityProviderConfigurationState {
   /**
    * Authentication with an identity provider is not configured.
    */
-  UNCONFIGURED = 'UNCONFIGURED'
+  UNCONFIGURED = 'UNCONFIGURED',
 }
 
 /**
@@ -14275,7 +14269,7 @@ export const enum XGitHubIpAllowListEnabledSettingValue {
   /**
    * The setting is disabled for the owner.
    */
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -14387,7 +14381,7 @@ export const enum XGitHubIpAllowListEntryOrderField {
   /**
    * Order IP allow list entries by the allow list value.
    */
-  ALLOW_LIST_VALUE = 'ALLOW_LIST_VALUE'
+  ALLOW_LIST_VALUE = 'ALLOW_LIST_VALUE',
 }
 
 /**
@@ -14402,7 +14396,7 @@ export const enum XGitHubIpAllowListForInstalledAppsEnabledSettingValue {
   /**
    * The setting is disabled for the owner.
    */
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -15179,7 +15173,7 @@ export const enum XGitHubIssueCommentOrderField {
   /**
    * Order issue comments by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -15354,7 +15348,7 @@ export const enum XGitHubIssueOrderField {
   /**
    * Order issues by comment count
    */
-  COMMENTS = 'COMMENTS'
+  COMMENTS = 'COMMENTS',
 }
 
 /**
@@ -15369,7 +15363,7 @@ export const enum XGitHubIssueState {
   /**
    * An issue that has been closed
    */
-  CLOSED = 'CLOSED'
+  CLOSED = 'CLOSED',
 }
 
 /**
@@ -15713,7 +15707,7 @@ export const enum XGitHubIssueTimelineItemsItemType {
   /**
    * Represents an 'unsubscribed' event on a given `Subscribable`.
    */
-  UNSUBSCRIBED_EVENT = 'UNSUBSCRIBED_EVENT'
+  UNSUBSCRIBED_EVENT = 'UNSUBSCRIBED_EVENT',
 }
 
 /**
@@ -15973,7 +15967,7 @@ export const enum XGitHubLabelOrderField {
   /**
    * Order labels by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -16138,7 +16132,7 @@ export const enum XGitHubLanguageOrderField {
   /**
    * Order languages by the size of all files containing the language
    */
-  SIZE = 'SIZE'
+  SIZE = 'SIZE',
 }
 
 /**
@@ -16347,7 +16341,7 @@ export const enum XGitHubLockReason {
   /**
    * The issue or pull request was locked because the conversation was spam.
    */
-  SPAM = 'SPAM'
+  SPAM = 'SPAM',
 }
 
 /**
@@ -17509,7 +17503,7 @@ export const enum XGitHubMergeableState {
   /**
    * The mergeability of the pull request is still being calculated.
    */
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 /**
@@ -17823,7 +17817,7 @@ export const enum XGitHubMilestoneOrderField {
   /**
    * Order milestones by their number.
    */
-  NUMBER = 'NUMBER'
+  NUMBER = 'NUMBER',
 }
 
 /**
@@ -17838,7 +17832,7 @@ export const enum XGitHubMilestoneState {
   /**
    * A milestone that has been closed.
    */
-  CLOSED = 'CLOSED'
+  CLOSED = 'CLOSED',
 }
 
 /**
@@ -20214,7 +20208,7 @@ export const enum XGitHubNotificationRestrictionSettingValue {
   /**
    * The setting is disabled for the owner.
    */
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -20393,7 +20387,7 @@ export const enum XGitHubOauthApplicationCreateAuditEntryState {
   /**
    * The OAuth Application was in the process of being deleted.
    */
-  PENDING_DELETION = 'PENDING_DELETION'
+  PENDING_DELETION = 'PENDING_DELETION',
 }
 
 /**
@@ -20433,7 +20427,7 @@ export const enum XGitHubOperationType {
   /**
    * An existing resource was transferred between multiple resources
    */
-  TRANSFER = 'TRANSFER'
+  TRANSFER = 'TRANSFER',
 }
 
 /**
@@ -20448,7 +20442,7 @@ export const enum XGitHubOrderDirection {
   /**
    * Specifies a descending order for a given `orderBy` argument.
    */
-  DESC = 'DESC'
+  DESC = 'DESC',
 }
 
 /**
@@ -20659,7 +20653,7 @@ export const enum XGitHubOrgAddMemberAuditEntryPermission {
   /**
    * Can read, clone, push, and add collaborators to repositories.
    */
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
 
 /**
@@ -21086,7 +21080,7 @@ export const enum XGitHubOrgCreateAuditEntryBillingPlan {
   /**
    * Tiered Per Seat Plan
    */
-  TIERED_PER_SEAT = 'TIERED_PER_SEAT'
+  TIERED_PER_SEAT = 'TIERED_PER_SEAT',
 }
 
 /**
@@ -22337,7 +22331,7 @@ export const enum XGitHubOrgRemoveBillingManagerAuditEntryReason {
   /**
    * SAML SSO enforcement requires an external identity
    */
-  SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY = 'SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY'
+  SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY = 'SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY',
 }
 
 /**
@@ -22470,7 +22464,7 @@ export const enum XGitHubOrgRemoveMemberAuditEntryMembershipType {
   /**
    * An outside collaborator is a person who isn't explicitly a member of the Organization, but who has Read, Write, or Admin permissions to one or more repositories in the organization.
    */
-  OUTSIDE_COLLABORATOR = 'OUTSIDE_COLLABORATOR'
+  OUTSIDE_COLLABORATOR = 'OUTSIDE_COLLABORATOR',
 }
 
 /**
@@ -22500,7 +22494,7 @@ export const enum XGitHubOrgRemoveMemberAuditEntryReason {
   /**
    * User was removed from organization during account recovery
    */
-  TWO_FACTOR_ACCOUNT_RECOVERY = 'TWO_FACTOR_ACCOUNT_RECOVERY'
+  TWO_FACTOR_ACCOUNT_RECOVERY = 'TWO_FACTOR_ACCOUNT_RECOVERY',
 }
 
 /**
@@ -22553,9 +22547,7 @@ export interface IXGitHubOrgRemoveOutsideCollaboratorAuditEntry {
   /**
    * The types of membership the outside collaborator has with the organization.
    */
-  membershipTypes: Array<
-    XGitHubOrgRemoveOutsideCollaboratorAuditEntryMembershipType
-  > | null;
+  membershipTypes: Array<XGitHubOrgRemoveOutsideCollaboratorAuditEntryMembershipType> | null;
 
   /**
    * The corresponding operation type for the action
@@ -22625,7 +22617,7 @@ export const enum XGitHubOrgRemoveOutsideCollaboratorAuditEntryMembershipType {
   /**
    * A billing manager is a user who manages the billing settings for the Organization, such as updating payment information.
    */
-  BILLING_MANAGER = 'BILLING_MANAGER'
+  BILLING_MANAGER = 'BILLING_MANAGER',
 }
 
 /**
@@ -22640,7 +22632,7 @@ export const enum XGitHubOrgRemoveOutsideCollaboratorAuditEntryReason {
   /**
    * SAML external identity missing
    */
-  SAML_EXTERNAL_IDENTITY_MISSING = 'SAML_EXTERNAL_IDENTITY_MISSING'
+  SAML_EXTERNAL_IDENTITY_MISSING = 'SAML_EXTERNAL_IDENTITY_MISSING',
 }
 
 /**
@@ -22728,9 +22720,7 @@ export interface IXGitHubOrgRestoreMemberAuditEntry {
   /**
    * Restored organization membership objects.
    */
-  restoredMemberships: Array<
-    _xGitHubOrgRestoreMemberAuditEntryMembership
-  > | null;
+  restoredMemberships: Array<_xGitHubOrgRestoreMemberAuditEntryMembership> | null;
 
   /**
    * The number of restored memberships.
@@ -23100,7 +23090,7 @@ export const enum XGitHubOrgUpdateDefaultRepositoryPermissionAuditEntryPermissio
   /**
    * No default permission value.
    */
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 /**
@@ -23218,7 +23208,7 @@ export const enum XGitHubOrgUpdateMemberAuditEntryPermission {
   /**
    * Can read, clone, push, and add collaborators to repositories.
    */
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
 
 /**
@@ -23366,7 +23356,7 @@ export const enum XGitHubOrgUpdateMemberRepositoryCreationPermissionAuditEntryVi
   /**
    * All organization members are restricted from creating public or private repositories.
    */
-  PUBLIC_PRIVATE = 'PUBLIC_PRIVATE'
+  PUBLIC_PRIVATE = 'PUBLIC_PRIVATE',
 }
 
 /**
@@ -24961,7 +24951,7 @@ export const enum XGitHubOrganizationInvitationRole {
   /**
    * The user's previous role will be reinstated.
    */
-  REINSTATE = 'REINSTATE'
+  REINSTATE = 'REINSTATE',
 }
 
 /**
@@ -24976,7 +24966,7 @@ export const enum XGitHubOrganizationInvitationType {
   /**
    * The invitation was to an email address.
    */
-  EMAIL = 'EMAIL'
+  EMAIL = 'EMAIL',
 }
 
 /**
@@ -25045,7 +25035,7 @@ export const enum XGitHubOrganizationMemberRole {
   /**
    * The user is an administrator of the organization.
    */
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }
 
 /**
@@ -25070,7 +25060,7 @@ export const enum XGitHubOrganizationMembersCanCreateRepositoriesSettingValue {
   /**
    * Members will not be able to create public or private repositories.
    */
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -25100,7 +25090,7 @@ export const enum XGitHubOrganizationOrderField {
   /**
    * Order organizations by login
    */
-  LOGIN = 'LOGIN'
+  LOGIN = 'LOGIN',
 }
 
 /**
@@ -25447,7 +25437,7 @@ export const enum XGitHubPackageFileOrderField {
   /**
    * Order package files by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -25472,7 +25462,7 @@ export const enum XGitHubPackageOrderField {
   /**
    * Order packages by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -25607,7 +25597,7 @@ export const enum XGitHubPackageType {
   /**
    * A python package.
    */
-  PYPI = 'PYPI'
+  PYPI = 'PYPI',
 }
 
 /**
@@ -25757,7 +25747,7 @@ export const enum XGitHubPackageVersionOrderField {
   /**
    * Order package versions by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -25952,7 +25942,7 @@ export const enum XGitHubPinnableItemType {
   /**
    * A team.
    */
-  TEAM = 'TEAM'
+  TEAM = 'TEAM',
 }
 
 /**
@@ -26079,7 +26069,7 @@ export const enum XGitHubPinnedDiscussionGradient {
   /**
    * A gradient of purple to coral
    */
-  PURPLE_CORAL = 'PURPLE_CORAL'
+  PURPLE_CORAL = 'PURPLE_CORAL',
 }
 
 /**
@@ -26114,7 +26104,7 @@ export const enum XGitHubPinnedDiscussionPattern {
   /**
    * A heart pattern
    */
-  HEART_FILL = 'HEART_FILL'
+  HEART_FILL = 'HEART_FILL',
 }
 
 /**
@@ -26867,7 +26857,7 @@ export const enum XGitHubProjectCardArchivedState {
   /**
    * A project card that is not archived
    */
-  NOT_ARCHIVED = 'NOT_ARCHIVED'
+  NOT_ARCHIVED = 'NOT_ARCHIVED',
 }
 
 /**
@@ -26936,7 +26926,7 @@ export const enum XGitHubProjectCardState {
   /**
    * The card is redacted.
    */
-  REDACTED = 'REDACTED'
+  REDACTED = 'REDACTED',
 }
 
 /**
@@ -27081,7 +27071,7 @@ export const enum XGitHubProjectColumnPurpose {
   /**
    * The column contains cards which are complete
    */
-  DONE = 'DONE'
+  DONE = 'DONE',
 }
 
 /**
@@ -27160,7 +27150,7 @@ export const enum XGitHubProjectOrderField {
   /**
    * Order projects by name
    */
-  NAME = 'NAME'
+  NAME = 'NAME',
 }
 
 /**
@@ -27302,7 +27292,7 @@ export const enum XGitHubProjectState {
   /**
    * The project is closed.
    */
-  CLOSED = 'CLOSED'
+  CLOSED = 'CLOSED',
 }
 
 /**
@@ -27327,7 +27317,7 @@ export const enum XGitHubProjectTemplate {
   /**
    * Create a board to triage and prioritize bugs with To do, priority, and Done columns.
    */
-  BUG_TRIAGE = 'BUG_TRIAGE'
+  BUG_TRIAGE = 'BUG_TRIAGE',
 }
 
 /**
@@ -28634,7 +28624,7 @@ export const enum XGitHubPullRequestMergeMethod {
   /**
    * Add all commits from the head branch onto the base branch individually.
    */
-  REBASE = 'REBASE'
+  REBASE = 'REBASE',
 }
 
 /**
@@ -28664,7 +28654,7 @@ export const enum XGitHubPullRequestOrderField {
   /**
    * Order pull_requests by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -29241,7 +29231,7 @@ export const enum XGitHubPullRequestReviewCommentState {
   /**
    * A comment that is part of a submitted review
    */
-  SUBMITTED = 'SUBMITTED'
+  SUBMITTED = 'SUBMITTED',
 }
 
 /**
@@ -29333,7 +29323,7 @@ export const enum XGitHubPullRequestReviewDecision {
   /**
    * A review is required before the pull request can be merged.
    */
-  REVIEW_REQUIRED = 'REVIEW_REQUIRED'
+  REVIEW_REQUIRED = 'REVIEW_REQUIRED',
 }
 
 /**
@@ -29375,7 +29365,7 @@ export const enum XGitHubPullRequestReviewEvent {
   /**
    * Dismiss review so it now longer effects merging.
    */
-  DISMISS = 'DISMISS'
+  DISMISS = 'DISMISS',
 }
 
 /**
@@ -29405,7 +29395,7 @@ export const enum XGitHubPullRequestReviewState {
   /**
    * A review that has been dismissed.
    */
-  DISMISSED = 'DISMISSED'
+  DISMISSED = 'DISMISSED',
 }
 
 /**
@@ -29611,7 +29601,7 @@ export const enum XGitHubPullRequestState {
   /**
    * A pull request that has been closed by being merged.
    */
-  MERGED = 'MERGED'
+  MERGED = 'MERGED',
 }
 
 /**
@@ -30114,7 +30104,7 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
   /**
    * Represents an 'unsubscribed' event on a given `Subscribable`.
    */
-  UNSUBSCRIBED_EVENT = 'UNSUBSCRIBED_EVENT'
+  UNSUBSCRIBED_EVENT = 'UNSUBSCRIBED_EVENT',
 }
 
 /**
@@ -30129,7 +30119,7 @@ export const enum XGitHubPullRequestUpdateState {
   /**
    * A pull request that has been closed without being merged.
    */
-  CLOSED = 'CLOSED'
+  CLOSED = 'CLOSED',
 }
 
 /**
@@ -31042,7 +31032,7 @@ export const enum XGitHubReactionContent {
   /**
    * Represents the `:eyes:` emoji.
    */
-  EYES = 'EYES'
+  EYES = 'EYES',
 }
 
 /**
@@ -31166,7 +31156,7 @@ export const enum XGitHubReactionOrderField {
   /**
    * Allows ordering a list of reactions by when they were created.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -31421,7 +31411,7 @@ export const enum XGitHubRefOrderField {
   /**
    * Order refs by their alphanumeric name
    */
-  ALPHABETICAL = 'ALPHABETICAL'
+  ALPHABETICAL = 'ALPHABETICAL',
 }
 
 /**
@@ -32026,7 +32016,7 @@ export const enum XGitHubReleaseOrderField {
   /**
    * Order releases alphabetically by name
    */
-  NAME = 'NAME'
+  NAME = 'NAME',
 }
 
 /**
@@ -32697,7 +32687,7 @@ export const enum XGitHubRepoAccessAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -32835,7 +32825,7 @@ export const enum XGitHubRepoAddMemberAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -33096,7 +33086,7 @@ export const enum XGitHubRepoArchivedAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -33239,7 +33229,7 @@ export const enum XGitHubRepoChangeMergeSettingAuditEntryMergeType {
   /**
    * The pull request's commits are squashed into a single commit before they are merged to the base branch.
    */
-  SQUASH = 'SQUASH'
+  SQUASH = 'SQUASH',
 }
 
 /**
@@ -34517,7 +34507,7 @@ export const enum XGitHubRepoCreateAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -34655,7 +34645,7 @@ export const enum XGitHubRepoDestroyAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -34793,7 +34783,7 @@ export const enum XGitHubRepoRemoveMemberAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -34951,7 +34941,7 @@ export const enum XGitHubReportedContentClassifiers {
   /**
    * The content has been resolved
    */
-  RESOLVED = 'RESOLVED'
+  RESOLVED = 'RESOLVED',
 }
 
 /**
@@ -36409,7 +36399,7 @@ export const enum XGitHubRepositoryAffiliation {
   /**
    * Repositories that the user has access to through being a member of an organization. This includes every repository on every team that the user is on.
    */
-  ORGANIZATION_MEMBER = 'ORGANIZATION_MEMBER'
+  ORGANIZATION_MEMBER = 'ORGANIZATION_MEMBER',
 }
 
 /**
@@ -36599,7 +36589,7 @@ export const enum XGitHubRepositoryContributionType {
   /**
    * Reviewed a pull request
    */
-  PULL_REQUEST_REVIEW = 'PULL_REQUEST_REVIEW'
+  PULL_REQUEST_REVIEW = 'PULL_REQUEST_REVIEW',
 }
 
 /**
@@ -36938,7 +36928,7 @@ export const enum XGitHubRepositoryInteractionLimit {
   /**
    * No interaction limits are enabled.
    */
-  NO_LIMIT = 'NO_LIMIT'
+  NO_LIMIT = 'NO_LIMIT',
 }
 
 /**
@@ -36968,7 +36958,7 @@ export const enum XGitHubRepositoryInteractionLimitExpiry {
   /**
    * The interaction limit will expire after 6 months.
    */
-  SIX_MONTHS = 'SIX_MONTHS'
+  SIX_MONTHS = 'SIX_MONTHS',
 }
 
 /**
@@ -36988,7 +36978,7 @@ export const enum XGitHubRepositoryInteractionLimitOrigin {
   /**
    * A limit that is configured at the user-wide level.
    */
-  USER = 'USER'
+  USER = 'USER',
 }
 
 /**
@@ -37101,7 +37091,7 @@ export const enum XGitHubRepositoryInvitationOrderField {
    * Order repository invitations by invitee login
    * @deprecated "`INVITEE_LOGIN` is no longer a valid field value. Repository invitations can now be associated with an email, not only an invitee. Removal on 2020-10-01 UTC."
    */
-  INVITEE_LOGIN = 'INVITEE_LOGIN'
+  INVITEE_LOGIN = 'INVITEE_LOGIN',
 }
 
 /**
@@ -37126,7 +37116,7 @@ export const enum XGitHubRepositoryLockReason {
   /**
    * The repository is locked due to a migration.
    */
-  MIGRATING = 'MIGRATING'
+  MIGRATING = 'MIGRATING',
 }
 
 /**
@@ -37200,7 +37190,7 @@ export const enum XGitHubRepositoryOrderField {
   /**
    * Order repositories by number of stargazers
    */
-  STARGAZERS = 'STARGAZERS'
+  STARGAZERS = 'STARGAZERS',
 }
 
 /**
@@ -37340,7 +37330,7 @@ export const enum XGitHubRepositoryPermission {
   /**
    * Can read and clone this repository. Can also open and comment on issues and pull requests
    */
-  READ = 'READ'
+  READ = 'READ',
 }
 
 /**
@@ -37355,7 +37345,7 @@ export const enum XGitHubRepositoryPrivacy {
   /**
    * Private
    */
-  PRIVATE = 'PRIVATE'
+  PRIVATE = 'PRIVATE',
 }
 
 /**
@@ -37442,7 +37432,7 @@ export const enum XGitHubRepositoryVisibility {
   /**
    * The repository is visible only to users in the same business.
    */
-  INTERNAL = 'INTERNAL'
+  INTERNAL = 'INTERNAL',
 }
 
 /**
@@ -37847,7 +37837,7 @@ export const enum XGitHubRequestableCheckStatusState {
   /**
    * The check suite or run is in pending state.
    */
-  PENDING = 'PENDING'
+  PENDING = 'PENDING',
 }
 
 /**
@@ -38295,7 +38285,7 @@ export const enum XGitHubSamlDigestAlgorithm {
   /**
    * SHA512
    */
-  SHA512 = 'SHA512'
+  SHA512 = 'SHA512',
 }
 
 /**
@@ -38320,7 +38310,7 @@ export const enum XGitHubSamlSignatureAlgorithm {
   /**
    * RSA-SHA512
    */
-  RSA_SHA512 = 'RSA_SHA512'
+  RSA_SHA512 = 'RSA_SHA512',
 }
 
 /**
@@ -38422,7 +38412,7 @@ export const enum XGitHubSavedReplyOrderField {
   /**
    * Order saved reply by when they were updated.
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -38534,7 +38524,7 @@ export const enum XGitHubSearchType {
   /**
    * Returns matching discussions in repositories.
    */
-  DISCUSSION = 'DISCUSSION'
+  DISCUSSION = 'DISCUSSION',
 }
 
 /**
@@ -38754,7 +38744,7 @@ export const enum XGitHubSecurityAdvisoryEcosystem {
   /**
    * Ruby gems hosted at RubyGems.org
    */
-  RUBYGEMS = 'RUBYGEMS'
+  RUBYGEMS = 'RUBYGEMS',
 }
 
 /**
@@ -38818,7 +38808,7 @@ export const enum XGitHubSecurityAdvisoryIdentifierType {
   /**
    * GitHub Security Advisory ID.
    */
-  GHSA = 'GHSA'
+  GHSA = 'GHSA',
 }
 
 /**
@@ -38848,7 +38838,7 @@ export const enum XGitHubSecurityAdvisoryOrderField {
   /**
    * Order advisories by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -38914,7 +38904,7 @@ export const enum XGitHubSecurityAdvisorySeverity {
   /**
    * Critical.
    */
-  CRITICAL = 'CRITICAL'
+  CRITICAL = 'CRITICAL',
 }
 
 /**
@@ -39026,7 +39016,7 @@ export const enum XGitHubSecurityVulnerabilityOrderField {
   /**
    * Order vulnerability by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -39330,7 +39320,7 @@ export const enum XGitHubSponsorOrderField {
   /**
    * Order sponsors by their relevance to the viewer.
    */
-  RELEVANCE = 'RELEVANCE'
+  RELEVANCE = 'RELEVANCE',
 }
 
 /**
@@ -39686,7 +39676,7 @@ export const enum XGitHubSponsorableOrderField {
   /**
    * Order sponsorable entities by login (username).
    */
-  LOGIN = 'LOGIN'
+  LOGIN = 'LOGIN',
 }
 
 /**
@@ -39759,7 +39749,7 @@ export const enum XGitHubSponsorsActivityAction {
   /**
    * The activity was disabling matching for a previously matched sponsorship.
    */
-  SPONSOR_MATCH_DISABLED = 'SPONSOR_MATCH_DISABLED'
+  SPONSOR_MATCH_DISABLED = 'SPONSOR_MATCH_DISABLED',
 }
 
 /**
@@ -39828,7 +39818,7 @@ export const enum XGitHubSponsorsActivityOrderField {
   /**
    * Order activities by when they happened.
    */
-  TIMESTAMP = 'TIMESTAMP'
+  TIMESTAMP = 'TIMESTAMP',
 }
 
 /**
@@ -39853,7 +39843,7 @@ export const enum XGitHubSponsorsActivityPeriod {
   /**
    * Don't restrict the activity to any date range, include all activity.
    */
-  ALL = 'ALL'
+  ALL = 'ALL',
 }
 
 /**
@@ -39900,7 +39890,7 @@ export const enum XGitHubSponsorsGoalKind {
   /**
    * The goal is about getting a certain amount in USD from sponsorships each month.
    */
-  MONTHLY_SPONSORSHIP_AMOUNT = 'MONTHLY_SPONSORSHIP_AMOUNT'
+  MONTHLY_SPONSORSHIP_AMOUNT = 'MONTHLY_SPONSORSHIP_AMOUNT',
 }
 
 /**
@@ -40178,7 +40168,7 @@ export const enum XGitHubSponsorsTierOrderField {
   /**
    * Order tiers by their monthly price in cents
    */
-  MONTHLY_PRICE_IN_CENTS = 'MONTHLY_PRICE_IN_CENTS'
+  MONTHLY_PRICE_IN_CENTS = 'MONTHLY_PRICE_IN_CENTS',
 }
 
 /**
@@ -40399,7 +40389,7 @@ export const enum XGitHubSponsorshipNewsletterOrderField {
   /**
    * Order sponsorship newsletters by when they were created.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -40424,7 +40414,7 @@ export const enum XGitHubSponsorshipOrderField {
   /**
    * Order sponsorship by creation time.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -40439,7 +40429,7 @@ export const enum XGitHubSponsorshipPrivacy {
   /**
    * Private
    */
-  PRIVATE = 'PRIVATE'
+  PRIVATE = 'PRIVATE',
 }
 
 /**
@@ -40464,7 +40454,7 @@ export const enum XGitHubStarOrderField {
   /**
    * Allows ordering a list of stars by when they were created.
    */
-  STARRED_AT = 'STARRED_AT'
+  STARRED_AT = 'STARRED_AT',
 }
 
 /**
@@ -40878,7 +40868,7 @@ export const enum XGitHubStatusState {
   /**
    * Status is successful.
    */
-  SUCCESS = 'SUCCESS'
+  SUCCESS = 'SUCCESS',
 }
 
 /**
@@ -41074,7 +41064,7 @@ export const enum XGitHubSubscriptionState {
   /**
    * The User is never notified.
    */
-  IGNORED = 'IGNORED'
+  IGNORED = 'IGNORED',
 }
 
 /**
@@ -42578,7 +42568,7 @@ export const enum XGitHubTeamDiscussionCommentOrderField {
   /**
    * Allows sequential ordering of team discussion comments (which is equivalent to chronological ordering).
    */
-  NUMBER = 'NUMBER'
+  NUMBER = 'NUMBER',
 }
 
 /**
@@ -42647,7 +42637,7 @@ export const enum XGitHubTeamDiscussionOrderField {
   /**
    * Allows chronological ordering of team discussions.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -42749,7 +42739,7 @@ export const enum XGitHubTeamMemberOrderField {
   /**
    * Order team members by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -42764,7 +42754,7 @@ export const enum XGitHubTeamMemberRole {
   /**
    * A team member has no administrative permissions on the team.
    */
-  MEMBER = 'MEMBER'
+  MEMBER = 'MEMBER',
 }
 
 /**
@@ -42784,7 +42774,7 @@ export const enum XGitHubTeamMembershipType {
   /**
    * Includes immediate and child team members for the team.
    */
-  ALL = 'ALL'
+  ALL = 'ALL',
 }
 
 /**
@@ -42809,7 +42799,7 @@ export const enum XGitHubTeamOrderField {
   /**
    * Allows ordering a list of teams by name.
    */
-  NAME = 'NAME'
+  NAME = 'NAME',
 }
 
 /**
@@ -42824,7 +42814,7 @@ export const enum XGitHubTeamPrivacy {
   /**
    * A visible team can be seen and @mentioned by every member of the organization.
    */
-  VISIBLE = 'VISIBLE'
+  VISIBLE = 'VISIBLE',
 }
 
 /**
@@ -43175,7 +43165,7 @@ export const enum XGitHubTeamRepositoryOrderField {
   /**
    * Order repositories by number of stargazers
    */
-  STARGAZERS = 'STARGAZERS'
+  STARGAZERS = 'STARGAZERS',
 }
 
 /**
@@ -43190,7 +43180,7 @@ export const enum XGitHubTeamRole {
   /**
    * User is a member of the team.
    */
-  MEMBER = 'MEMBER'
+  MEMBER = 'MEMBER',
 }
 
 /**
@@ -43352,7 +43342,7 @@ export const enum XGitHubTopicSuggestionDeclineReason {
   /**
    * The suggested topic is too general for the repository.
    */
-  TOO_GENERAL = 'TOO_GENERAL'
+  TOO_GENERAL = 'TOO_GENERAL',
 }
 
 /**
@@ -47620,7 +47610,7 @@ export const enum XGitHubUserBlockDuration {
   /**
    * The user was blocked permanently
    */
-  PERMANENT = 'PERMANENT'
+  PERMANENT = 'PERMANENT',
 }
 
 /**
@@ -47923,7 +47913,7 @@ export const enum XGitHubUserStatusOrderField {
   /**
    * Order user statuses by when they were updated.
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -48075,7 +48065,7 @@ export const enum XGitHubVerifiableDomainOrderField {
   /**
    * Order verifiable domains by their creation date.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -48337,7 +48327,7 @@ export interface IAuthIdentity {
  */
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE'
+  GOOGLE = 'GOOGLE',
 }
 
 /**
@@ -48425,7 +48415,7 @@ export const enum NewMeetingPhaseTypeEnum {
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
   SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE'
+  ESTIMATE = 'ESTIMATE',
 }
 
 /**
@@ -48885,7 +48875,7 @@ export interface IUser {
 }
 
 export interface IArchivedTasksOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor
@@ -48913,7 +48903,7 @@ export interface IInvoiceDetailsOnUserArguments {
 }
 
 export interface IInvoicesOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor
@@ -49561,7 +49551,7 @@ export interface ISuggestedIntegration {
 export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
-  PARABOL = 'PARABOL'
+  PARABOL = 'PARABOL',
 }
 
 /**
@@ -49569,7 +49559,7 @@ export const enum TaskServiceEnum {
  */
 export const enum TeamDrawer {
   agenda = 'agenda',
-  manageTeam = 'manageTeam'
+  manageTeam = 'manageTeam',
 }
 
 /**
@@ -50090,7 +50080,7 @@ export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START',
 }
 
 /**
@@ -50105,7 +50095,7 @@ export const enum SlackNotificationEventTypeEnum {
   /**
    * notification that concerns a single member on the team
    */
-  member = 'member'
+  member = 'member',
 }
 
 /**
@@ -50151,7 +50141,7 @@ export interface IMeetingMember {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 /**
@@ -50568,7 +50558,7 @@ export interface IReflectTemplate {
 export const enum SharingScopeEnum {
   TEAM = 'TEAM',
   ORGANIZATION = 'ORGANIZATION',
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -50826,7 +50816,7 @@ export interface ITemplateScaleValue {
 export const enum TierEnum {
   personal = 'personal',
   pro = 'pro',
-  enterprise = 'enterprise'
+  enterprise = 'enterprise',
 }
 
 /**
@@ -51155,7 +51145,7 @@ export interface IOrganizationUser {
  * The role of the org user
  */
 export const enum OrgUserRole {
-  BILLING_LEADER = 'BILLING_LEADER'
+  BILLING_LEADER = 'BILLING_LEADER',
 }
 
 export interface IOrgUserCount {
@@ -51240,7 +51230,7 @@ export interface ITaskEstimate {
 export const enum ChangeSourceEnum {
   meeting = 'meeting',
   task = 'task',
-  external = 'external'
+  external = 'external',
 }
 
 export interface ITaskEditorDetails {
@@ -51264,7 +51254,7 @@ export const enum TaskStatusEnum {
   active = 'active',
   stuck = 'stuck',
   done = 'done',
-  future = 'future'
+  future = 'future',
 }
 
 /**
@@ -51499,7 +51489,7 @@ export const enum InvoiceLineItemEnum {
   ADDED_USERS = 'ADDED_USERS',
   INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS',
   OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS',
-  REMOVED_USERS = 'REMOVED_USERS'
+  REMOVED_USERS = 'REMOVED_USERS',
 }
 
 /**
@@ -51541,7 +51531,7 @@ export const enum InvoiceStatusEnum {
   PENDING = 'PENDING',
   PAID = 'PAID',
   FAILED = 'FAILED',
-  UPCOMING = 'UPCOMING'
+  UPCOMING = 'UPCOMING',
 }
 
 /**
@@ -51634,7 +51624,7 @@ export const enum SuggestedActionTypeEnum {
   tryTheDemo = 'tryTheDemo',
   tryRetroMeeting = 'tryRetroMeeting',
   createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
+  tryActionMeeting = 'tryActionMeeting',
 }
 
 /**
@@ -51752,7 +51742,7 @@ export const enum TimelineEventEnum {
   actionComplete = 'actionComplete',
   joinedParabol = 'joinedParabol',
   createdTeam = 'createdTeam',
-  POKER_COMPLETE = 'POKER_COMPLETE'
+  POKER_COMPLETE = 'POKER_COMPLETE',
 }
 
 /**
@@ -51815,7 +51805,7 @@ export const enum DiscussionTopicTypeEnum {
   reflectionGroup = 'reflectionGroup',
   task = 'task',
   githubIssue = 'githubIssue',
-  jiraIssue = 'jiraIssue'
+  jiraIssue = 'jiraIssue',
 }
 
 /**
@@ -51941,7 +51931,7 @@ export interface INotification {
 export const enum NotificationStatusEnum {
   UNREAD = 'UNREAD',
   READ = 'READ',
-  CLICKED = 'CLICKED'
+  CLICKED = 'CLICKED',
 }
 
 /**
@@ -51954,7 +51944,7 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
 }
 
 /**
@@ -53947,7 +53937,7 @@ export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
  */
 export const enum ReflectionGroupSortEnum {
   voteCount = 'voteCount',
-  stageOrder = 'stageOrder'
+  stageOrder = 'stageOrder',
 }
 
 /**
@@ -55105,7 +55095,7 @@ export interface IMassInvitationPayload {
 export const enum TeamInvitationErrorEnum {
   accepted = 'accepted',
   expired = 'expired',
-  notFound = 'notFound'
+  notFound = 'notFound',
 }
 
 export interface IVerifiedInvitationPayload {
@@ -56312,9 +56302,14 @@ export interface IPromoteNewMeetingFacilitatorOnMutationArguments {
 
 export interface IPromoteToTeamLeadOnMutationArguments {
   /**
-   * the new team member that will be the leader
+   * Team id of the team which is about to get a new team leader
    */
-  teamMemberId: string;
+  teamId: string;
+
+  /**
+   * Email of the user who will be set as a new team leader
+   */
+  newTeamLeadEmail: any;
 }
 
 export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
@@ -57128,7 +57123,7 @@ export interface IAddReactjiToReactableSuccess {
  */
 export const enum ReactableEnum {
   COMMENT = 'COMMENT',
-  REFLECTION = 'REFLECTION'
+  REFLECTION = 'REFLECTION',
 }
 
 export interface IAddReflectTemplatePayload {
@@ -57178,7 +57173,7 @@ export interface IAddFeatureFlagPayload {
  */
 export const enum UserFlagEnum {
   jira = 'jira',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 export interface IAddGitHubAuthPayload {
@@ -57515,7 +57510,7 @@ export interface INotifyTaskInvolves {
  */
 export const enum TaskInvolvementType {
   ASSIGNEE = 'ASSIGNEE',
-  MENTIONEE = 'MENTIONEE'
+  MENTIONEE = 'MENTIONEE',
 }
 
 export interface ICreateTaskInput {
@@ -57566,7 +57561,7 @@ export interface ICreateTaskIntegrationInput {
 export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
-  userDash = 'userDash'
+  userDash = 'userDash',
 }
 
 /**
@@ -57875,7 +57870,7 @@ export interface IRemoteReflectionDrag {
  */
 export const enum DragReflectionDropTargetTypeEnum {
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  REFLECTION_GRID = 'REFLECTION_GRID'
+  REFLECTION_GRID = 'REFLECTION_GRID',
 }
 
 /**
@@ -58885,7 +58880,7 @@ export interface IUpdatePokerScopeItemInput {
  */
 export const enum AddOrDeleteEnum {
   ADD = 'ADD',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export interface IUpdateReflectionContentPayload {

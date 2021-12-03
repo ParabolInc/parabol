@@ -7,12 +7,12 @@ const TeamIntegrations = new GraphQLObjectType<any, GQLContext>({
   description: 'All the available integrations available for this team member',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'composite',
       resolve: ({id: teamId}) => `integrations:${teamId}`
     },
     atlassian: {
-      type: GraphQLNonNull(AtlassianTeamIntegration),
+      type: new GraphQLNonNull(AtlassianTeamIntegration),
       description: 'All things associated with an atlassian integration for a team member',
       resolve: async (source) => source
     }

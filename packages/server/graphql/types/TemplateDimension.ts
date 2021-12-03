@@ -56,7 +56,7 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
     template: {
       type: new GraphQLNonNull(PokerTemplate),
       description: 'The template that this dimension belongs to',
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
@@ -71,13 +71,13 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       resolve: ({description}) => description || ''
     },
     scaleId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The scaleId to resolve the selected scale'
     },
     selectedScale: {
       type: new GraphQLNonNull(TemplateScale),
       description: 'scale used in this dimension',
-      resolve: ({scaleId}, _args, {dataLoader}) => {
+      resolve: ({scaleId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('templateScales').load(scaleId)
       }
     }

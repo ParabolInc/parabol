@@ -76,15 +76,14 @@ const GroupingKanban = (props: Props) => {
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
-    for (let i = 0; i < reflectionGroups.length; i++) {
-      const group = reflectionGroups[i]
+    reflectionGroups.forEach((group) => {
       const {reflections, promptId} = group
-      container[promptId] = container[promptId] || []
-      container[promptId].push(group)
+      container[promptId] = container[promptId] ?? []
+      container[promptId]!.push(group)
       if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }
-    }
+    })
     return {groupsByPrompt: container, isAnyEditing: isEditing}
   }, [reflectionGroups])
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -132,7 +131,7 @@ const GroupingKanban = (props: Props) => {
       {modalPortal(
         <SpotlightModal
           closeSpotlight={onCloseSpotlight}
-          meeting={meeting}
+          meetingRef={meeting}
           sourceRef={sourceRef}
           portalStatus={portalStatus}
         />
@@ -146,6 +145,7 @@ export default createFragmentContainer(GroupingKanban, {
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
       ...ReflectionGroup_meeting
+      ...SpotlightModal_meeting
       id
       teamId
       phases {

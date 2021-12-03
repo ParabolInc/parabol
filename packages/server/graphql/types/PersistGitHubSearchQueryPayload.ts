@@ -11,17 +11,17 @@ export const PersistGitHubSearchQuerySuccess = new GraphQLObjectType<any, GQLCon
   name: 'PersistGitHubSearchQuerySuccess',
   fields: () => ({
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The affected teamId'
     },
     userId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The affected userId'
     },
     githubIntegration: {
-      type: GraphQLNonNull(GitHubIntegration),
+      type: new GraphQLNonNull(GitHubIntegration),
       description: 'The auth with the updated search queries',
-      resolve: async ({teamId, userId}: Source, _args, {dataLoader}) => {
+      resolve: async ({teamId, userId}: Source, _args: unknown, {dataLoader}) => {
         return dataLoader.get('githubAuth').load({teamId, userId})
       }
     }

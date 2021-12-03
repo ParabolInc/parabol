@@ -1,15 +1,15 @@
 import {GraphQLList, GraphQLString} from 'graphql'
+import {UpcomingInvoiceEmailProps} from 'parabol-client/modules/email/components/UpcomingInvoiceEmail'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {months} from 'parabol-client/utils/makeDateString'
 import {Threshold} from '../../../../client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import {UpcomingInvoiceEmailProps} from 'parabol-client/modules/email/components/UpcomingInvoiceEmail'
-import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTemplate'
-import getMailManager from '../../../email/getMailManager'
-import {requireSU} from '../../../utils/authorization'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import {getUsersByIds} from '../../../postgres/queries/getUsersByIds'
+import getRethink from '../../../database/rethinkDriver'
+import getMailManager from '../../../email/getMailManager'
+import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTemplate'
 import IUser from '../../../postgres/types/IUser'
+import {requireSU} from '../../../utils/authorization'
+import {InternalContext} from '../../graphql'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]
@@ -32,8 +32,7 @@ const makePeriodEndStr = (periodEnd: Date) => {
 
 const getEmailDetails = (organizations: Organization[], userMap: Map<string, IUser>) => {
   const details = [] as Details[]
-  for (let ii = 0; ii < organizations.length; ii++) {
-    const organization = organizations[ii]
+  organizations.forEach((organization) => {
     const {id: orgId, billingLeaderIds, periodEnd} = organization
     const newUsers = organization.newUserIds
       .map((id) => {
@@ -55,7 +54,7 @@ const getEmailDetails = (organizations: Organization[], userMap: Map<string, IUs
       memberUrl: makeAppURL(appOrigin, `me/organizations/${orgId}/members`),
       newUsers
     })
-  }
+  })
   return details
 }
 
@@ -63,7 +62,7 @@ const sendUpcomingInvoiceEmails = {
   type: new GraphQLList(GraphQLString),
   description:
     'send an email to organizations including all the users that were added in the current billing cycle',
-  resolve: async (_source, _args, {authToken}) => {
+  resolve: async (_source: unknown, _args: unknown, {authToken, dataLoader}: InternalContext) => {
     requireSU(authToken)
     const r = await getRethink()
     const now = new Date()
@@ -75,12 +74,8 @@ const sendUpcomingInvoiceEmails = {
       .getAll('pro', {index: 'tier'})
       .filter((organization) =>
         r.and(
-          organization('periodEnd')
-            .le(periodEndThresh)
-            .default(false),
-          organization('upcomingInvoiceEmailSentAt')
-            .le(lastSentThresh)
-            .default(true)
+          organization('periodEnd').le(periodEndThresh).default(false),
+          organization('upcomingInvoiceEmailSentAt').le(lastSentThresh).default(true)
         )
       )
       .coerceTo('array')
@@ -92,11 +87,7 @@ const sendUpcomingInvoiceEmails = {
           .filter({removedAt: null, role: null})('userId')
           .coerceTo('array')
       }))
-      .filter((organization) =>
-        organization('newUserIds')
-          .count()
-          .ge(1)
-      )
+      .filter((organization) => organization('newUserIds').count().ge(1))
       .merge((organization) => ({
         billingLeaderIds: r
           .table('OrganizationUser')
@@ -114,7 +105,9 @@ const sendUpcomingInvoiceEmails = {
       (prev, cur) => prev.concat(cur.billingLeaderIds, cur.newUserIds),
       [] as string[]
     )
-    const allUsers = await getUsersByIds(allUserIds)
+    const allUsers = await Promise.all(
+      allUserIds.map((userId) => dataLoader.get('users').load(userId))
+    )
     const allUserMap = allUsers.reduce((prev, cur) => {
       prev.set(cur.id, cur)
       return prev

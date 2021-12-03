@@ -6,14 +6,14 @@ const TemplateScaleValue = new GraphQLObjectType<any, GQLContext>({
   description: 'A value for a scale.',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       resolve: ({scaleId, label}) => {
         return `${scaleId}:${label}`
       }
     },
     scaleId: {
       description: 'The id of the scale this value belongs to',
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     color: {
       description: 'The color used to visually group a scale value',
