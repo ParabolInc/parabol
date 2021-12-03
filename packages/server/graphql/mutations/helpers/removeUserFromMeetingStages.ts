@@ -13,9 +13,14 @@ const removeUserFromMeetingStages = async (
 ) => {
   const now = new Date()
   const r = await getRethink()
-  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  const [activeMeetings, completedMeetings] = await Promise.all([
+    dataLoader.get('activeMeetingsByTeamId').load(teamId),
+    dataLoader.get('completedMeetingsByTeamId').load(teamId)
+  ])
+  const meetings = activeMeetings.concat(completedMeetings)
+
   await Promise.all(
-    activeMeetings.map((meeting) => {
+    meetings.map((meeting) => {
       const {id: meetingId, phases} = meeting
       let isChanged = false
       phases.forEach((phase) => {
@@ -24,11 +29,18 @@ const removeUserFromMeetingStages = async (
         for (let i = 0; i < stages.length; i++) {
           const stage = stages[i]
           const {readyToAdvance} = stage
-          if (!readyToAdvance) continue
           const userIdIdx = readyToAdvance.indexOf(userId)
-          if (userIdIdx === -1) continue
-          readyToAdvance.splice(userIdIdx, 1)
-          isChanged = true
+          if (userIdIdx !== -1) {
+            readyToAdvance.splice(userIdIdx, 1)
+            isChanged = true
+          }
+          if (stage.phaseType === 'ESTIMATE') {
+            const userIdIdx = stage.scores.map(({userId}) => userId).indexOf(userId)
+            if (userIdIdx !== -1) {
+              stage.scores.splice(userIdIdx, 1)
+              isChanged = true
+            }
+          }
         }
       })
       if (!isChanged) return Promise.resolve(undefined)
@@ -42,7 +54,7 @@ const removeUserFromMeetingStages = async (
         .run()
     })
   )
-  return activeMeetings.map((activeMeeting) => activeMeeting.id)
+  return meetings.map((meeting) => meeting.id)
 }
 
 export default removeUserFromMeetingStages

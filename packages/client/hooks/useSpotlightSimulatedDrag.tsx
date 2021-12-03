@@ -60,6 +60,7 @@ const useSpotlightSimulatedDrag = (
       const meetingProxy = store.get(meetingId)
       meetingProxy?.setValue(null, 'spotlightGroup')
       meetingProxy?.setValue(null, 'spotlightReflectionId')
+      meetingProxy?.setValue(null, 'spotlightSearchQuery')
     })
     dragIdRef.current = undefined
     reflectionIdRef.current = undefined

@@ -1,10 +1,10 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {getUserById} from '../postgres/queries/getUsersByIds'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import Team from '../database/types/Team'
 import generateUID from '../generateUID'
+import {getUserById} from '../postgres/queries/getUsersByIds'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
@@ -58,12 +58,15 @@ const acceptTeamInvitation = async (team: Team, userId: string) => {
       .coerceTo('array')
       .run()
   ])
+  if (!user) {
+    throw new Error('User not found')
+  }
   const {orgId} = team
   const email = user?.email
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
   const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   const [, invitationNotificationIds] = await Promise.all([
-    insertNewTeamMember(userId, teamId),
+    insertNewTeamMember(user, teamId),
     r
       .table('Notification')
       .getAll(userId, {index: 'userId'})
@@ -102,12 +105,7 @@ const acceptTeamInvitation = async (team: Team, userId: string) => {
   }
 
   // if accepted to team, don't count it towards the global denial count
-  await r
-    .table('PushInvitation')
-    .getAll(userId, {index: 'userId'})
-    .filter({teamId})
-    .delete()
-    .run()
+  await r.table('PushInvitation').getAll(userId, {index: 'userId'}).filter({teamId}).delete().run()
   return {
     teamLeadUserIdWithNewActions,
     invitationNotificationIds: invitationNotificationIds as string[]

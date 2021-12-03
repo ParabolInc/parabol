@@ -4,11 +4,11 @@ import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
+import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
-import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
-import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useModal from '../hooks/useModal'
+import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
@@ -131,7 +131,7 @@ const GroupingKanban = (props: Props) => {
       {modalPortal(
         <SpotlightModal
           closeSpotlight={closePortal}
-          meeting={meeting}
+          meetingRef={meeting}
           sourceRef={sourceRef}
           portalStatus={portalStatus}
         />
@@ -145,6 +145,7 @@ export default createFragmentContainer(GroupingKanban, {
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
       ...ReflectionGroup_meeting
+      ...SpotlightModal_meeting
       id
       teamId
       phases {

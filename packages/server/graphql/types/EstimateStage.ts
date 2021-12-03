@@ -13,9 +13,9 @@ import {SprintPokerDefaults} from '../../../client/types/constEnums'
 import EstimateStageDB from '../../database/types/EstimateStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -167,11 +167,11 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
     hoveringUsers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'the users of the team members hovering the deck',
-      resolve: async ({id: stageId}) => {
+      resolve: async ({id: stageId}, _args: unknown, {dataLoader}) => {
         const redis = getRedis()
         const userIds = await redis.smembers(`pokerHover:${stageId}`)
         if (userIds.length === 0) return []
-        const users = await db.readMany('User', userIds)
+        const users = (await dataLoader.get('users').load(userIds)).filter(isValid)
         return users
       }
     },
