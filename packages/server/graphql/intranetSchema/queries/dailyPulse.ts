@@ -100,11 +100,7 @@ const dailyPulse = {
     const slackAuth = await r
       .table('SlackAuth')
       .getAll(userId, {index: 'userId'})
-      .filter((row) =>
-        row('botAccessToken')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row) => row('botAccessToken').default(null).ne(null))
       .nth(0)
       .default(null)
       .run()
@@ -130,7 +126,7 @@ const dailyPulse = {
       makeSection(`*Top Logins*`),
       loginsList
     ]
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(channelId, blocks)
     return res.ok
   }

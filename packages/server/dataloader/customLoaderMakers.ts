@@ -10,7 +10,6 @@ import {
   IGetDiscussionsByIdQueryResult
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -21,7 +20,7 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByIds, {Team} from '../postgres/queries/getTeamsByIds'
 import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
 import getTemplateScaleRefsByIds, {
@@ -80,7 +79,7 @@ export const users = (parent: RootDataLoader) => {
 }
 
 export const teams = (parent: RootDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
+  new DataLoader<string, Team, string>(
     async (teamIds) => {
       const teams = await getTeamsByIds(teamIds)
       return normalizeRethinkDbResults(teamIds, teams)
@@ -91,7 +90,7 @@ export const teams = (parent: RootDataLoader) =>
   )
 
 export const teamsByOrgIds = (parent: RootDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdsQueryResult[], string>(
+  new DataLoader<string, Team[], string>(
     async (orgIds) => {
       const teamLoader = parent.get('teams')
       const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
@@ -104,7 +103,7 @@ export const teamsByOrgIds = (parent: RootDataLoader) =>
         teamsByOrgId.push(team)
         map[team.orgId] = teamsByOrgId
         return map
-      }, {} as {[key: string]: IGetTeamsByIdsQueryResult[]})
+      }, {} as {[key: string]: Team[]})
       return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
     },
     {

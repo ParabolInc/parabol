@@ -16,24 +16,21 @@ import appOrigin from '../../../appOrigin'
 const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLimit) => {
   const r = await getRethink()
   const {meetingId} = job
-  const meeting = (await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .run()) as Meeting
+  const meeting = (await r.table('NewMeeting').get(meetingId).run()) as Meeting
   const {teamId, facilitatorUserId} = meeting
   const {slackNotification, slackAuth} = await r({
-    slackNotification: (r
+    slackNotification: r
       .table('SlackNotification')
       .getAll(facilitatorUserId, {index: 'userId'})
       .filter({teamId, event: 'MEETING_STAGE_TIME_LIMIT_END'})
       .nth(0)
-      .default(null) as unknown) as SlackNotification,
-    slackAuth: (r
+      .default(null) as unknown as SlackNotification,
+    slackAuth: r
       .table('SlackAuth')
       .getAll(facilitatorUserId, {index: 'userId'})
       .filter({teamId})
       .nth(0)
-      .default(null) as unknown) as SlackAuth
+      .default(null) as unknown as SlackAuth
   }).run()
 
   let sendViaSlack = Boolean(slackAuth?.botAccessToken && slackNotification?.channelId)
@@ -43,7 +40,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
       sendViaSlack = false
     } else {
       const {botAccessToken} = slackAuth
-      const manager = new SlackServerManager(botAccessToken)
+      const manager = new SlackServerManager(botAccessToken!)
       const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
       const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
       const res = await manager.postMessage(channelId, slackText)
@@ -57,10 +54,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
       meetingId,
       userId: facilitatorUserId
     })
-    await r
-      .table('Notification')
-      .insert(notification)
-      .run()
+    await r.table('Notification').insert(notification).run()
     publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId, 'MeetingStageTimeLimitPayload', {
       notification
     })
@@ -79,11 +73,7 @@ const jobProcessors = {
 
 const processJob = async (job: ScheduledJob) => {
   const r = await getRethink()
-  const res = await r
-    .table('ScheduledJob')
-    .get(job.id)
-    .delete()
-    .run()
+  const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
   const processor = jobProcessors[job.type]

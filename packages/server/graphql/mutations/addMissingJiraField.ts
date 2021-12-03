@@ -82,7 +82,7 @@ const addMissingJiraField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
-    const {fieldType, fieldId}: {fieldType: 'string' | 'number'; fieldId: string} = dimensionField
+    const {fieldType, fieldId} = dimensionField!
 
     const screensResponse = await manager.getScreens(cloudId)
     if (screensResponse instanceof Error) {

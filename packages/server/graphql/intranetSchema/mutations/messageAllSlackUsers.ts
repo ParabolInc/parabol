@@ -27,10 +27,7 @@ const messageAllSlackUsers = {
     requireSU(authToken)
 
     // RESOLUTION
-    const allSlackAuths = await r
-      .table('SlackAuth')
-      .filter({isActive: true})
-      .run()
+    const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()
     if (!allSlackAuths || !allSlackAuths.length) {
       return standardError(new Error('No authorised Slack users'))
     }
@@ -40,7 +37,7 @@ const messageAllSlackUsers = {
     const errors = [] as MessageSlackUserError[]
     for (const slackAuth of allSlackAuths) {
       const {botAccessToken, defaultTeamChannelId, userId} = slackAuth
-      const manager = new SlackServerManager(botAccessToken)
+      const manager = new SlackServerManager(botAccessToken!)
       if (!messagedTeamChannelIds.has(defaultTeamChannelId)) {
         const postMessageRes = await manager.postMessage(defaultTeamChannelId, message)
         messagedTeamChannelIds.add(defaultTeamChannelId)

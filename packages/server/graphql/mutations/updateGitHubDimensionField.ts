@@ -5,6 +5,7 @@ import {isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateGitHubDimensionFieldPayload from '../types/UpdateGitHubDimensionFieldPayload'
+import MeetingPoker from '../../database/types/MeetingPoker'
 
 interface Args {
   dimensionName: string
@@ -47,7 +48,7 @@ const updateGitHubDimensionField = {
     if (!meeting) {
       return {error: {message: 'Invalid meetingId'}}
     }
-    const {teamId, templateRefId} = meeting
+    const {teamId, templateRefId} = meeting as MeetingPoker
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }

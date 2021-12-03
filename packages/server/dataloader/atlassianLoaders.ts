@@ -151,6 +151,9 @@ export const jiraIssue: (
           await Promise.all(
             estimates.map((estimate) => {
               const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
+              if (!jiraFieldId) {
+                return undefined
+              }
               const freshEstimate = String(fields[jiraFieldId])
               if (freshEstimate === label) return undefined
               // mutate current dataloader

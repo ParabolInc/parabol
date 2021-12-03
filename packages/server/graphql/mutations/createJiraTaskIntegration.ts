@@ -47,10 +47,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -74,6 +71,9 @@ export default {
       dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
     const auth = viewerAuth ?? assigneeAuth
+    if (!auth) {
+      return standardError(new Error('No auth exists for a given task!'), {userId: viewerId})
+    }
     const accessUserId = viewerAuth ? viewerId : assigneeAuth ? userId : null
     if (!accessUserId) {
       return standardError(new Error('Neither you nor the assignee has access to Jira'), {
@@ -82,8 +82,8 @@ export default {
     }
 
     // using teamMembers to get the preferredName as we need the members for the notification part anyways
-    const {preferredName: viewerName} = teamMembers.find(({userId}) => userId === viewerId)
-    const {preferredName: assigneeName} =
+    const {preferredName: viewerName} = teamMembers.find(({userId}) => userId === viewerId)!
+    const {preferredName: assigneeName = ''} =
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     // RESOLUTION
