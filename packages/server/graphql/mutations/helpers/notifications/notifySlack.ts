@@ -191,6 +191,10 @@ export const notifySlackTimeLimitStart = async (
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
+  const maybeMeetingShortLink = makeAppURL(
+    process.env.INVITATION_SHORTLINK || appOrigin,
+    `${meetingId}`
+  )
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const {phaseType} = stage
   const phaseLabel = phaseLabelLookup[phaseType]
@@ -213,7 +217,7 @@ export const notifySlackTimeLimitStart = async (
       makeSection(title),
       makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
       makeSection(constraint),
-      makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
+      makeSection(`*Link:*\n<${meetingUrl}|${maybeMeetingShortLink}>`),
       makeButtons([button])
     ]
     await manager.postMessage(channelId, blocks, title)
