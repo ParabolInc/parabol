@@ -59562,7 +59562,8 @@ export type NotificationSubscriptionPayload =
   | IPersistJiraSearchQuerySuccess
   | IUser
   | IAuthTokenPayload
-  | IPersistGitHubSearchQuerySuccess;
+  | IPersistGitHubSearchQuerySuccess
+  | IJiraIssue;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';
@@ -59768,7 +59769,6 @@ export type TeamSubscriptionPayload =
   | IEndNewMeetingPayload
   | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess
-  | IJiraIssue
   | INavigateMeetingPayload
   | IPushInvitationPayload
   | IPromoteToTeamLeadPayload

@@ -29,6 +29,7 @@ export interface JiraIssueKey {
   userId: string
   cloudId: string
   issueKey: string
+  viewerId: string
   taskId?: string
 }
 
@@ -117,7 +118,7 @@ export const jiraIssue = (parent: RootDataLoader) => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId, cloudId, issueKey, taskId}) => {
+        keys.map(async ({teamId, userId, cloudId, issueKey, taskId, viewerId}) => {
           const [auth, estimates] = await Promise.all([
             parent.get('freshAtlassianAuth').load({teamId, userId}),
             taskId ? parent.get('latestTaskEstimates').load(taskId) : []
@@ -168,7 +169,7 @@ export const jiraIssue = (parent: RootDataLoader) => {
 
           const publishUpdatedIssue = async (issue) => {
             const res = await cacheImagesUpdateEstimates(issue)
-            publish(SubscriptionChannel.TEAM, teamId, JiraIssue, res)
+            publish(SubscriptionChannel.NOTIFICATION, viewerId, JiraIssue, res)
           }
           const issueRes = await getIssue(
             manager,
