@@ -2,6 +2,7 @@ import useSpotlightResults from '~/hooks/useSpotlightResults'
 import {useMemo} from 'react'
 import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
 import {ReflectionGroup_meeting} from '~/__generated__/ReflectionGroup_meeting.graphql'
+import useSpotlightVisibleReflections from './useSpotlightVisibleReflections'
 
 const useSpotlightReflectionGroup = (
   meeting: ReflectionGroup_meeting,
@@ -14,10 +15,11 @@ const useSpotlightReflectionGroup = (
   const {reflections, id: reflectionGroupId} = reflectionGroup
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isSpotlightOpen = !!spotlightGroupId
-  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, spotlightSearchQuery, true)
-  const visibleReflections = useMemo(
-    () => reflections.filter(({id}) => !reflectionIdsToHide?.includes(id)),
-    [reflections, reflectionIdsToHide]
+  const spotlightResultGroups = useSpotlightResults(meeting)
+  const visibleReflections = useSpotlightVisibleReflections(
+    reflections,
+    spotlightSearchQuery,
+    reflectionIdsToHide
   )
   const isRemoteSpotlightSrc = useMemo(
     () => !!visibleReflections.find(({remoteDrag}) => remoteDrag?.isSpotlight),

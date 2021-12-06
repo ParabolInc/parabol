@@ -42,9 +42,9 @@ const useRemotelyDraggedCard = (
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
   const [lastZIndex, setLastZIndex] = useState<number | undefined>()
-  const {spotlightGroup, spotlightSearchQuery} = meeting
+  const {spotlightGroup} = meeting
   const spotlightGroupId = spotlightGroup?.id ?? ''
-  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, spotlightSearchQuery)
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const groupIdsInSpotlight = spotlightResultGroups
     ? [...spotlightResultGroups.map(({id}) => id), spotlightGroupId]
     : []
@@ -237,8 +237,8 @@ const useDragAndDrop = (
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-  const {id: meetingId, spotlightGroup} = meeting
-  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, '') // TODO: add search query
+  const {id: meetingId} = meeting
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {

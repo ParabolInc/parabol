@@ -95,6 +95,7 @@ const ReflectionGroup = (props: Props) => {
       fragment ReflectionGroup_meeting on RetrospectiveMeeting {
         ...DraggableReflectionCard_meeting
         ...ReflectionGroupHeader_meeting
+        ...useSpotlightResults_meeting
         id
         localPhase {
           phaseType
@@ -138,6 +139,7 @@ const ReflectionGroup = (props: Props) => {
             dragUserId
             isSpotlight
           }
+          plaintextContent
         }
         isExpanded
       }
@@ -219,6 +221,7 @@ const ReflectionGroup = (props: Props) => {
   const showHeader =
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
     !isSpotlightSrcGroup
+
   return (
     <>
       {portal(

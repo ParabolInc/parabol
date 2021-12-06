@@ -20,6 +20,7 @@ export const enum PALETTE {
   GOLD_300 = '#FFCC63',
   GOLD_500 = '#DE8E02',
   GOLD_700 = '#855000',
+  GOLD_HIGHLIGHT = '#FBDA95',
 
   GRADIENT_TOMATO_600_ROSE_500 = 'linear-gradient(to right, #F23B31 0, #ED4C86 100%)', // default: TOMATO_600 to ROSE_500
   GRADIENT_TOMATO_700_ROSE_600 = 'linear-gradient(to right, #D5211A 0, #EB195F 100%)', // hover: TOMATO_700 to ROSE_600

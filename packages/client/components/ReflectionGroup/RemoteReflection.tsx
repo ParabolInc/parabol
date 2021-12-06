@@ -157,7 +157,7 @@ interface Props {
 const RemoteReflection = (props: Props) => {
   const {meeting, reflection, style, animation} = props
   const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
-  const {meetingMembers, spotlightGroup, spotlightSearchQuery} = meeting
+  const {meetingMembers} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection['remoteDrag']
   >
@@ -165,7 +165,7 @@ const RemoteReflection = (props: Props) => {
   const [editorState] = useEditorState(content)
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
-  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, spotlightSearchQuery)
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const isInViewerSpotlightResults = useMemo(
     () => !!spotlightResultGroups?.find(({id}) => id === reflectionGroupId),
     [spotlightResultGroups]
@@ -257,6 +257,7 @@ export default createFragmentContainer(RemoteReflection, {
   `,
   meeting: graphql`
     fragment RemoteReflection_meeting on RetrospectiveMeeting {
+      ...useSpotlightResults_meeting
       id
       meetingMembers {
         userId
@@ -264,10 +265,6 @@ export default createFragmentContainer(RemoteReflection, {
           isConnected
         }
       }
-      spotlightGroup {
-        id
-      }
-      spotlightSearchQuery
     }
   `
 })

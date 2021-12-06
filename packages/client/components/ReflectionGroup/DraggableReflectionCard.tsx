@@ -80,7 +80,7 @@ const DraggableReflectionCard = (props: Props) => {
     dataCy,
     isSpotlightEntering
   } = props
-  const {teamId, localStage, spotlightGroup, spotlightReflectionId, spotlightSearchQuery} = meeting
+  const {teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
   const {id: reflectionId, isDropping, isEditing, remoteDrag} = reflection
   const spotlightGroupId = spotlightGroup?.id
@@ -88,7 +88,7 @@ const DraggableReflectionCard = (props: Props) => {
   const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, spotlightSearchQuery, true)
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const isReflectionIdInSpotlight = useMemo(() => {
     return (
       reflectionId === spotlightReflectionId ||
@@ -173,6 +173,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
     fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
       ...RemoteReflection_meeting
+      ...useSpotlightResults_meeting
       id
       teamId
       localStage {
@@ -189,7 +190,6 @@ export default createFragmentContainer(DraggableReflectionCard, {
         id
       }
       spotlightReflectionId
-      spotlightSearchQuery
     }
   `
 })
