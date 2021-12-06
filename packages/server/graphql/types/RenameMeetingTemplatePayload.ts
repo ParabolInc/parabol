@@ -11,7 +11,7 @@ const RenameMeetingTemplatePayload = new GraphQLObjectType<any, GQLContext>({
     },
     meetingTemplate: {
       type: MeetingTemplate,
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         if (!templateId) return null
         return dataLoader.get('meetingTemplates').load(templateId)
       }

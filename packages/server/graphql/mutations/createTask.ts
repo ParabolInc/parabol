@@ -167,7 +167,7 @@ export interface CreateTaskIntegrationInput {
 }
 
 export default {
-  type: GraphQLNonNull(CreateTaskPayload),
+  type: new GraphQLNonNull(CreateTaskPayload),
   description: 'Create a new task, triggering a CreateCard for other viewers',
   args: {
     newTask: {
@@ -180,7 +180,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {newTask}: {newTask: CreateTaskInputType},
     context: GQLContext,
     info: GraphQLResolveInfo

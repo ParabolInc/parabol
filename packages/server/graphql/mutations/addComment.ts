@@ -24,11 +24,11 @@ type AddCommentMutationVariables = {
 }
 
 const addComment = {
-  type: GraphQLNonNull(AddCommentPayload),
+  type: new GraphQLNonNull(AddCommentPayload),
   description: `Add a comment to a discussion`,
   args: {
     comment: {
-      type: GraphQLNonNull(AddCommentInput),
+      type: new GraphQLNonNull(AddCommentInput),
       description: 'A partial new comment'
     }
   },

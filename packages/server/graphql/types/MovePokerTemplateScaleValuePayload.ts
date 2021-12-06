@@ -9,7 +9,7 @@ export const MovePokerTemplateScaleValueSuccess = new GraphQLObjectType<any, GQL
     scale: {
       type: new GraphQLNonNull(TemplateScale),
       description: 'The scale after values are moved',
-      resolve: ({scaleId}, _args, {dataLoader}) => {
+      resolve: ({scaleId}, _args: unknown, {dataLoader}) => {
         if (!scaleId) return null
         return dataLoader.get('templateScales').load(scaleId)
       }

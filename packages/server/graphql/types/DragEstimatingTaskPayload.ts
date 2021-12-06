@@ -9,19 +9,19 @@ export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>(
   name: 'DragEstimatingTaskSuccess',
   fields: () => ({
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meeting: {
-      type: GraphQLNonNull(PokerMeeting),
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      type: new GraphQLNonNull(PokerMeeting),
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stage: {
-      type: GraphQLNonNull(EstimateStage),
+      type: new GraphQLNonNull(EstimateStage),
       resolve: resolveStage('ESTIMATE')
     }
   })

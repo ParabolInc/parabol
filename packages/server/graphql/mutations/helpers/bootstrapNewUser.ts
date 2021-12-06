@@ -6,11 +6,12 @@ import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTr
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
+import insertUser from '../../../postgres/queries/insertUser'
+import IUser from '../../../postgres/types/IUser'
 import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
-import insertUser from '../../../postgres/queries/insertUser'
 
 // no waiting necessary, it's just analytics
 const handleSegment = async (user: User, isInvited: boolean) => {
@@ -65,12 +66,9 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     const orgName = `${newUser.preferredName}’s Org`
     await createNewOrg(orgId, orgName, userId, email)
     await Promise.all([
-      createTeamAndLeader(userId, validNewTeam),
+      createTeamAndLeader(newUser as IUser, validNewTeam),
       addSeedTasks(userId, teamId),
-      r
-        .table('SuggestedAction')
-        .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
-        .run()
+      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
     ])
     segmentIo.track({
       userId,

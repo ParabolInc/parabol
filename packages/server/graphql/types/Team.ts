@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -9,13 +10,13 @@ import {
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import Task from '../../database/types/Task'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import ITeam from '../../database/types/Team'
 import db from '../../db'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -54,7 +55,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       resolve: ({isOnboardTeam}) => !!isOnboardTeam
     },
     lastMeetingType: {
-      type: GraphQLNonNull(MeetingTypeEnum),
+      type: new GraphQLNonNull(MeetingTypeEnum),
       description: 'The type of the last meeting run'
     },
     lockMessageHTML: {
@@ -62,7 +63,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'The HTML message to show if isPaid is false'
     },
     massInvitation: {
-      type: GraphQLNonNull(MassInvitation),
+      type: new GraphQLNonNull(MassInvitation),
       args: {
         meetingId: {
           type: GraphQLID,
@@ -71,7 +72,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       },
       description:
         'The hash and expiration for a token that allows anyone with it to join the team',
-      resolve: async ({id: teamId}, {meetingId}, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId}: {id: string},
+        {meetingId},
+        {authToken, dataLoader}: GQLContext
+      ) => {
         if (!isTeamMember(authToken, teamId)) return null
         const r = await getRethink()
         const viewerId = getUserId(authToken)
@@ -101,7 +106,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     integrations: {
-      type: GraphQLNonNull(TeamIntegrations),
+      type: new GraphQLNonNull(TeamIntegrations),
       description: 'Integration details that are shared by all team members. Nothing user specific',
       resolve: (source) => source
     },
@@ -135,9 +140,13 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     teamInvitations: {
-      type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamInvitation))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamInvitation))),
       description: 'The outstanding invitations to join the team',
-      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId}: {id: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) => {
         if (!isTeamMember(authToken, teamId)) return []
         return dataLoader.get('teamInvitationsByTeamId').load(teamId)
       }
@@ -145,7 +154,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     isLead: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
-      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId}: {id: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) => {
         if (!isTeamMember(authToken, teamId)) return false
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
@@ -162,7 +175,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'The team-specific settings for running all available types of meetings',
-      resolve: async ({id: teamId}, {meetingType}, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId}: {id: string},
+        {meetingType},
+        {authToken, dataLoader}: GQLContext
+      ) => {
         // the implicit business logic says client will never request settings for a foregin team
         if (!isTeamMember(authToken, teamId)) return null
         return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
@@ -177,10 +194,14 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
           description: 'The scale ID for the desired scale'
         }
       },
-      resolve: async ({id: teamId}, {scaleId}, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId}: {id: string},
+        {scaleId},
+        {authToken, dataLoader}: GQLContext
+      ) => {
         const viewerId = getUserId(authToken)
         const activeScales = await dataLoader.get('scalesByTeamId').load(teamId)
-        const scale = activeScales.find(({id}) => id === scaleId)
+        const scale = activeScales.find(({id}: {id: string}) => id === scaleId)
         if (!scale) {
           standardError(new Error('Scale not found'), {userId: viewerId})
           return null
@@ -191,7 +212,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     scales: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
       description: 'The list of scales this team can use',
-      resolve: async ({id: teamId}, {}, {dataLoader}) => {
+      resolve: async ({id: teamId}: {id: string}, {}, {dataLoader}: GQLContext) => {
         const activeTeamScales = await dataLoader.get('scalesByTeamId').load(teamId)
         const publicScales = await db.read('starterScales', 'aGhostTeam')
         const activeScales = [...activeTeamScales, ...publicScales]
@@ -204,7 +225,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     activeMeetings: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
       description: 'a list of meetings that are currently in progress',
-      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId}: {id: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) => {
         if (!isTeamMember(authToken, teamId)) return []
         // this is by team, not by meeting member, which caused an err in dev, not sure about prod
         // we need better perms for people to view/not view a meeting that happened before they joined the team
@@ -220,7 +245,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
           description: 'The unique meetingId'
         }
       },
-      resolve: async ({id: teamId}, {meetingId}, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId}: {id: string},
+        {meetingId},
+        {authToken, dataLoader}: GQLContext
+      ) => {
         if (!isTeamMember(authToken, teamId)) return null
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         if (meeting && meeting.teamId === teamId) return meeting
@@ -228,12 +257,16 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     tier: {
-      type: GraphQLNonNull(TierEnum),
+      type: new GraphQLNonNull(TierEnum),
       description: 'The level of access to features on the parabol site'
     },
     organization: {
       type: new GraphQLNonNull(Organization),
-      resolve: async ({id: teamId, orgId}, _args, {authToken, dataLoader}) => {
+      resolve: async (
+        {id: teamId, orgId}: {id: string; orgId: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) => {
         const organization = await dataLoader.get('organizations').load(orgId)
         // TODO this is bad, we should probably just put the perms on each field in the org
         if (!isTeamMember(authToken, teamId)) {
@@ -248,7 +281,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve({id: teamId}, _args, {authToken, dataLoader}) {
+      async resolve(
+        {id: teamId}: {id: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('agendaItemsByTeamId').load(teamId)
       }
@@ -265,7 +302,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'All of the tasks for this team',
-      async resolve({id: teamId}, _args, {authToken, dataLoader}) {
+      async resolve(
+        {id: teamId}: {id: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) {
         if (!isTeamMember(authToken, teamId)) {
           const err = new Error('Team not found')
           standardError(err, {tags: {teamId}})
@@ -273,7 +314,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
         const viewerId = getUserId(authToken)
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        const tasks = allTasks.filter((task) => {
+        const tasks = allTasks.filter((task: Task) => {
           if (!task.userId || (isTaskPrivate(task.tags) && task.userId !== viewerId)) return false
           return true
         })

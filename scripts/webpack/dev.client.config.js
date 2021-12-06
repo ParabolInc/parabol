@@ -27,10 +27,11 @@ module.exports = {
     contentBase: [
       path.join(PROJECT_ROOT, 'static'),
       path.join(PROJECT_ROOT, 'build'),
+      path.join(PROJECT_ROOT, 'dev'),
       path.join(PROJECT_ROOT, 'dev', 'dll'),
       path.join(PROJECT_ROOT, 'self-hosted')
     ],
-    contentBasePublicPath: ['/static/', '/static/', '/static/', '/self-hosted/'],
+    contentBasePublicPath: ['/static/', '/static/', '/static/', '/static/', '/self-hosted/'],
     publicPath: '/',
     hot: true,
     historyApiFallback: true,
@@ -111,8 +112,7 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
-      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT),
-      __STATIC_IMAGES__: JSON.stringify(`/static/images`)
+      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
     }),
     new webpack.HotModuleReplacementPlugin()
   ],

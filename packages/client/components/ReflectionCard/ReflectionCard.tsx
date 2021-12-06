@@ -34,6 +34,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import isDemoRoute from '~/utils/isDemoRoute'
+import remountDecorators from '../../utils/draftjs/remountDecorators'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -50,7 +51,7 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
   opacity: 1,
   position: 'absolute',
   right: 2,
-  visibility: showSpotlight ? 'visible' : 'hidden',
+  visibility: showSpotlight ? 'inherit' : 'hidden',
   zIndex: ZIndex.TOOLTIP,
   ':hover': {
     backgroundColor: PALETTE.SLATE_200
@@ -130,6 +131,11 @@ const ReflectionCard = (props: Props) => {
     }
     return () => updateIsEditing(false)
   }, [])
+
+  useEffect(() => {
+    const refreshedState = remountDecorators(() => editorState, meeting?.spotlightSearchQuery)
+    setEditorState(refreshedState)
+  }, [meeting?.spotlightSearchQuery])
 
   const handleContentUpdate = () => {
     if (isAndroid) {
@@ -330,6 +336,7 @@ export default createFragmentContainer(ReflectionCard, {
       spotlightGroup {
         id
       }
+      spotlightSearchQuery
     }
   `
 })

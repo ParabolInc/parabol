@@ -1,6 +1,7 @@
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../../../../appOrigin'
 import {PALETTE} from '~/styles/paletteV3'
+import authorIcon from '../../../../../../static/images/brand/mark-color@3x.png'
+import appOrigin from '../../../../appOrigin'
+import makeAppURL from '../../../../../client/utils/makeAppURL'
 
 export interface ButtonSpec {
   label: string
@@ -23,19 +24,22 @@ export interface FieldAttachmentHeader {
   author_icon?: string
 }
 
-// type FieldAttachment = FieldAttachmentHeader & {fields: Array<Field>}
-
 interface FieldAttachment extends FieldAttachmentHeader {
   fields: Array<Field>
 }
+
+const isUrlAbsolute = (url) => url.indexOf('://') > 0 || url.indexOf('//') === 0
 
 export const makeFieldsAttachment = (
   fields: Array<Field>,
   header?: FieldAttachmentHeader
 ): FieldAttachment => {
+  const absoluteAuthorIconUri = isUrlAbsolute(authorIcon)
+    ? authorIcon
+    : makeAppURL(appOrigin, authorIcon)
   const defaultHeader = {
     fallback: 'Parabol has a message for you',
-    author_icon: makeAppURL(appOrigin, `static/images/brand/mark-color%403x.png`),
+    author_icon: absoluteAuthorIconUri,
     author_name: 'Parabol',
     author_link: 'https://parabol.co/',
     color: PALETTE.GRAPE_500

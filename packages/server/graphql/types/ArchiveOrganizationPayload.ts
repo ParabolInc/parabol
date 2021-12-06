@@ -13,13 +13,13 @@ const ArchiveOrganizationPayload = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLID
     },
     teams: {
-      type: GraphQLList(GraphQLNonNull(Team)),
-      resolve: ({teamIds}, _args, {dataLoader}) => {
+      type: new GraphQLList(new GraphQLNonNull(Team)),
+      resolve: ({teamIds}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').loadMany(teamIds)
       }
     },
     removedSuggestedActionIds: {
-      type: GraphQLList(GraphQLID),
+      type: new GraphQLList(GraphQLID),
       description: 'all the suggested actions that never happened'
     }
   })

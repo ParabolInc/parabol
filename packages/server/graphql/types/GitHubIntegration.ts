@@ -27,7 +27,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
     accessToken: {
       description: 'The access token to github. good forever',
       type: GraphQLID,
-      resolve: async ({accessToken, userId}, _args, {authToken}) => {
+      resolve: async ({accessToken, userId}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
@@ -42,7 +42,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: ({accessToken}) => !!accessToken
     },
     githubSearchQueries: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GitHubSearchQuery))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitHubSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
       resolve: async ({githubSearchQueries, teamId, userId}: GitHubAuth) => {
@@ -62,7 +62,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       description: '*The GitHub login used for queries'
     },
     scope: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The comma-separated list of scopes requested from GitHub'
     },
     teamId: {

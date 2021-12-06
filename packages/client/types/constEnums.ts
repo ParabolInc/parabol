@@ -286,8 +286,9 @@ export const enum Security {
 }
 
 export const enum ServerChannel {
-  GQL_EXECUTOR_REQUEST = 'gqlExRreq',
-  GQL_EXECUTOR_RESPONSE = 'gqlExRes'
+  GQL_EXECUTOR_RESPONSE = 'gqlExRes',
+  GQL_EXECUTOR_STREAM = 'gqlStream',
+  GQL_EXECUTOR_CONSUMER_GROUP = 'gqlConsumerGroup'
 }
 
 export const enum SubscriptionChannel {

@@ -12,7 +12,7 @@ const PushInvitationPayload = new GraphQLObjectType<any, GQLContext>({
     },
     user: {
       type: User,
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     },
@@ -21,7 +21,7 @@ const PushInvitationPayload = new GraphQLObjectType<any, GQLContext>({
     },
     team: {
       type: Team,
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     }

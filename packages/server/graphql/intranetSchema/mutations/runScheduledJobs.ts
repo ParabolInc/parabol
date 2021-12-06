@@ -1,5 +1,5 @@
 import {GraphQLInt, GraphQLNonNull} from 'graphql'
-import {DataLoaderWorker, GQLContext} from '../../graphql'
+import {DataLoaderWorker} from '../../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
@@ -18,18 +18,18 @@ import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notification
 const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
   const r = await getRethink()
   const {slackNotification, slackAuth} = await r({
-    slackNotification: (r
+    slackNotification: r
       .table('SlackNotification')
       .getAll(facilitatorUserId, {index: 'userId'})
       .filter({teamId, event: 'MEETING_STAGE_TIME_LIMIT_END'})
       .nth(0)
-      .default(null) as unknown) as SlackNotification,
-    slackAuth: (r
+      .default(null) as unknown as SlackNotification,
+    slackAuth: r
       .table('SlackAuth')
       .getAll(facilitatorUserId, {index: 'userId'})
       .filter({teamId})
       .nth(0)
-      .default(null) as unknown) as SlackAuth
+      .default(null) as unknown as SlackAuth
   }).run()
   return {slackNotification, slackAuth}
 }
@@ -73,10 +73,7 @@ const processMeetingStageTimeLimits = async (
     userId: facilitatorUserId
   })
   const r = await getRethink()
-  await r
-    .table('Notification')
-    .insert(notification)
-    .run()
+  await r.table('Notification').insert(notification).run()
   publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId, 'MeetingStageTimeLimitPayload', {
     notification
   })
@@ -90,11 +87,7 @@ export type ScheduledJobUnion = Parameters<ValueOf<typeof jobProcessors>>[0]
 
 const processJob = async (job: ScheduledJobUnion, {dataLoader}) => {
   const r = await getRethink()
-  const res = await r
-    .table('ScheduledJob')
-    .get(job.id)
-    .delete()
-    .run()
+  const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
   if (res.deleted !== 1) return
   const processor = jobProcessors[job.type]
@@ -114,7 +107,7 @@ const runScheduledJobs = {
     //   description: 'filter jobs by their type'
     // }
   },
-  resolve: async (_source, {seconds}, {authToken, dataLoader}: GQLContext) => {
+  resolve: async (_source: unknown, {seconds}, {authToken, dataLoader}) => {
     const r = await getRethink()
     const now = new Date()
     // AUTH

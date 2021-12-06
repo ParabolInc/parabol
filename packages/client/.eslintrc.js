@@ -1,6 +1,7 @@
 module.exports = {
   plugins: ['@typescript-eslint', 'prettier', 'emotion', 'react', 'react-hooks'],
-  extends: ['plugin:react/recommended', '../../.eslintrc.js'],
+  extends: ['plugin:react/recommended', '../../.eslintrc.js', 'plugin:prettier/recommended'],
+  plugins: ['@typescript-eslint', 'prettier'],
   parserOptions: {
     project: './tsconfig.json',
     ecmaVersion: 2020,

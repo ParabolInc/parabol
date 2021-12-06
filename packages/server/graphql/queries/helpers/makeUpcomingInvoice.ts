@@ -2,7 +2,11 @@ import stripe from '../../../billing/stripe'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
 
-export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId) {
+export default async function makeUpcomingInvoice(
+  orgId: string,
+  stripeId?: string,
+  stripeSubscriptionId?: string | null
+) {
   if (!stripeId || !stripeSubscriptionId) return undefined
   let stripeInvoice
   try {

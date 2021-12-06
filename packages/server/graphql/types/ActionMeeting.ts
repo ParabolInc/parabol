@@ -20,7 +20,7 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       description: 'A single agenda item',
       args: {
         agendaItemId: {
-          type: GraphQLNonNull(GraphQLID)
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
       resolve: async ({id: meetingId}, {agendaItemId}, {dataLoader}) => {
@@ -30,7 +30,7 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     agendaItemCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of agenda items generated in the meeting',
       resolve: async ({agendaItemCount}) => {
         // only populated after the meeting has been completed (not killed)
@@ -40,12 +40,12 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'All of the agenda items for the meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args: unknown, {dataLoader}) => {
         return await dataLoader.get('agendaItemsByMeetingId').load(meetingId)
       }
     },
     commentCount: {
-      type: GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: async ({commentCount}) => {
         // only populated after the meeting has been completed (not killed)
@@ -55,14 +55,14 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ActionMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
-      resolve: ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: ({id: meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
       }
     },
     settings: {
       type: new GraphQLNonNull(ActionMeetingSettings),
       description: 'The settings that govern the action meeting',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'action'})
       }
     },
@@ -75,9 +75,9 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     tasks: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',
-      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
@@ -88,7 +88,7 @@ const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
     viewerMeetingMember: {
       type: ActionMeetingMember,
       description: 'The action meeting member of the viewer',
-      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
+      resolve: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}: GQLContext) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)

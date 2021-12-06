@@ -14,7 +14,7 @@ const TimelineEventCompletedActionMeeting = new GraphQLObjectType<any>({
     meeting: {
       type: new GraphQLNonNull(ActionMeeting),
       description: 'The meeting that was completed',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
       }
     },
@@ -29,7 +29,7 @@ const TimelineEventCompletedActionMeeting = new GraphQLObjectType<any>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team that can see this event',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },

@@ -6,27 +6,13 @@ import keepAlive from '../socketHelpers/keepAlive'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import handleReliableMessage from '../utils/handleReliableMessage'
 import sendToSentry from '../utils/sendToSentry'
-import handleSignal from '../wrtc/signalServer/handleSignal'
-import validateInit from '../wrtc/signalServer/validateInit'
-
-interface WRTCMessage {
-  type: 'WRTC_SIGNAL'
-  signal: any
-}
 
 const handleParsedMessage = async (
-  parsedMessage: OutgoingMessage | WRTCMessage,
+  parsedMessage: OutgoingMessage,
   connectionContext: ConnectionContext
 ) => {
-  const {socket, authToken} = connectionContext
   const parsedMessages = Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]
   parsedMessages.forEach(async (msg) => {
-    if (msg.type === 'WRTC_SIGNAL') {
-      if (validateInit(socket as any, msg.signal, authToken)) {
-        handleSignal(socket as any, msg.signal)
-      }
-      return
-    }
     const response = await handleGraphQLTrebuchetRequest(msg, connectionContext)
     // only reply if an opId was included. no opId = no sink on client = ignored
     if (response?.id) {
@@ -53,7 +39,7 @@ const handleMessage = (
     handleReliableMessage(messageBuffer, connectionContext)
     return
   }
-  let parsedMessage
+  let parsedMessage: OutgoingMessage
   try {
     parsedMessage = JSON.parse(Buffer.from(message).toString())
   } catch (e) {

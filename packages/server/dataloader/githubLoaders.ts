@@ -1,18 +1,14 @@
 import DataLoader from 'dataloader'
-import RethinkDataLoader from './RethinkDataLoader'
+import RootDataLoader from './RootDataLoader'
 import getGitHubAuthByUserIdTeamId, {
-  GetGitHubAuthByUserIdTeamIdResult
+  GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
 
-export const githubAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<
-    {teamId: string; userId: string},
-    GetGitHubAuthByUserIdTeamIdResult | null,
-    string
-  >(
+export const githubAuth = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => getGitHubAuthByUserIdTeamId(userId, teamId))
@@ -27,7 +23,7 @@ export const githubAuth = (parent: RethinkDataLoader) => {
   )
 }
 
-export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
+export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
   return new DataLoader<
     {teamId: string; dimensionName: string; nameWithOwner: string},
     GitHubDimensionFieldMap | null,

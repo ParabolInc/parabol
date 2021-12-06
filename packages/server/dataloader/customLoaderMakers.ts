@@ -21,9 +21,10 @@ import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateR
 import getTemplateScaleRefsByIds, {
   TemplateScaleRef
 } from '../postgres/queries/getTemplateScaleRefsByIds'
+import {getUsersByIds} from '../postgres/queries/getUsersByIds'
+import IUser from '../postgres/types/IUser'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
-import ProxiedCache from './ProxiedCache'
-import RethinkDataLoader from './RethinkDataLoader'
+import RootDataLoader from './RootDataLoader'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -56,15 +57,23 @@ const reactableLoaders = [
   {type: 'REFLECTION', loader: 'retroReflections'}
 ] as const
 
-// export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
+// export type LoaderMakerCustom<K, V, C = K> = (parent: RootDataLoader) => DataLoader<K, V, C>
 
 // TODO: refactor if the interface pattern is used a total of 3 times
 
-export const users = () => {
-  return new ProxiedCache('User')
+export const users = (parent: RootDataLoader) => {
+  return new DataLoader<string, IUser | undefined, string>(
+    async (userIds) => {
+      const users = await getUsersByIds(userIds)
+      return normalizeRethinkDbResults(userIds, users)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 }
 
-export const teams = (parent: RethinkDataLoader) =>
+export const teams = (parent: RootDataLoader) =>
   new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
     async (teamIds) => {
       const teams = await getTeamsByIds(teamIds)
@@ -75,7 +84,7 @@ export const teams = (parent: RethinkDataLoader) =>
     }
   )
 
-export const teamsByOrgIds = (parent: RethinkDataLoader) =>
+export const teamsByOrgIds = (parent: RootDataLoader) =>
   new DataLoader<string, IGetTeamsByIdsQueryResult[], string>(
     async (orgIds) => {
       const teamLoader = parent.get('teams')
@@ -111,7 +120,7 @@ export const serializeUserTasksKey = (key: UserTasksKey) => {
   return parts.join(':')
 }
 
-export const commentCountByDiscussionId = (parent: RethinkDataLoader) => {
+export const commentCountByDiscussionId = (parent: RootDataLoader) => {
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
       const r = await getRethink()
@@ -134,7 +143,7 @@ export const commentCountByDiscussionId = (parent: RethinkDataLoader) => {
   )
 }
 
-export const latestTaskEstimates = (parent: RethinkDataLoader) => {
+export const latestTaskEstimates = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
     async (taskIds) => {
       const rows = await getLatestTaskEstimates(taskIds)
@@ -146,7 +155,7 @@ export const latestTaskEstimates = (parent: RethinkDataLoader) => {
   )
 }
 
-export const meetingTaskEstimates = (parent: RethinkDataLoader) => {
+export const meetingTaskEstimates = (parent: RootDataLoader) => {
   return new DataLoader<{meetingId: string; taskId: string}, MeetingTaskEstimatesResult[], string>(
     async (keys) => {
       const meetingIds = keys.map(({meetingId}) => meetingId)
@@ -164,7 +173,7 @@ export const meetingTaskEstimates = (parent: RethinkDataLoader) => {
   )
 }
 
-export const reactables = (parent: RethinkDataLoader) => {
+export const reactables = (parent: RootDataLoader) => {
   return new DataLoader<ReactablesKey, Reactable, string>(
     async (keys) => {
       const reactableResults = (await Promise.all(
@@ -185,7 +194,7 @@ export const reactables = (parent: RethinkDataLoader) => {
   )
 }
 
-export const userTasks = (parent: RethinkDataLoader) => {
+export const userTasks = (parent: RootDataLoader) => {
   return new DataLoader<UserTasksKey, Task[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -270,7 +279,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
 }
 
 // TODO abstract this out so we can use this easier with PG
-export const discussions = (parent: RethinkDataLoader) => {
+export const discussions = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetDiscussionsByIdQueryResult | null, string>(
     async (keys) => {
       const rows = await getDiscussionsByIdQuery.run({ids: keys as string[]}, getPg())
@@ -282,7 +291,7 @@ export const discussions = (parent: RethinkDataLoader) => {
   )
 }
 
-export const meetingSettingsByType = (parent: RethinkDataLoader) => {
+export const meetingSettingsByType = (parent: RootDataLoader) => {
   return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
       const r = await getRethink()
@@ -316,7 +325,7 @@ export const meetingSettingsByType = (parent: RethinkDataLoader) => {
   )
 }
 
-export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
+export const meetingTemplatesByType = (parent: RootDataLoader) => {
   return new DataLoader<MeetingTemplateKey, MeetingTemplate[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -350,7 +359,7 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
   )
 }
 
-export const templateRefs = (parent: RethinkDataLoader) => {
+export const templateRefs = (parent: RootDataLoader) => {
   return new DataLoader<string, TemplateRef, string>(
     async (refIds) => {
       const templateRefs = await getTemplateRefsById(refIds)
@@ -362,7 +371,7 @@ export const templateRefs = (parent: RethinkDataLoader) => {
   )
 }
 
-export const templateScaleRefs = (parent: RethinkDataLoader) => {
+export const templateScaleRefs = (parent: RootDataLoader) => {
   return new DataLoader<string, TemplateScaleRef, string>(
     async (refIds) => {
       const templateScaleRefs = await getTemplateScaleRefsByIds(refIds)

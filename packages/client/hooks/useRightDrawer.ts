@@ -23,7 +23,8 @@ const useRightDrawer = (meetingId: string) => {
 
   const setDrawerOpen = (isOpen: boolean) => {
     commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)!
+      const meeting = store.get(meetingId)
+      if (!meeting) return
       meeting.setValue(isOpen, 'isRightDrawerOpen')
     })
   }

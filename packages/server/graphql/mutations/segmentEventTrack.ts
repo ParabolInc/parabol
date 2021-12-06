@@ -43,7 +43,7 @@ export default {
   type: GraphQLBoolean,
   args: {
     event: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     options: {
       type: SegmentEventTrackOptions

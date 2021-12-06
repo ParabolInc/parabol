@@ -7,6 +7,7 @@ import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -19,14 +20,14 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       description: 'FK. The template that will be used to start the poker meeting'
     },
     selectedTemplate: {
-      type: GraphQLNonNull(PokerTemplate),
+      type: new GraphQLNonNull(PokerTemplate),
       description: 'The template that will be used to start the Poker meeting',
       resolve: resolveSelectedTemplate('estimatedEffortTemplate')
     },
     teamTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PokerTemplate))),
       description: 'The list of templates used to start a Poker meeting',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         const templates = await dataLoader
           .get('meetingTemplatesByType')
           .load({teamId, meetingType: 'poker'})
@@ -35,10 +36,10 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     organizationTemplates: {
-      type: GraphQLNonNull(PokerTemplateConnection),
+      type: new GraphQLNonNull(PokerTemplateConnection),
       args: {
         first: {
-          type: GraphQLNonNull(GraphQLInt)
+          type: new GraphQLNonNull(GraphQLInt)
         },
         after: {
           type: GraphQLID,
@@ -51,7 +52,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const {orgId} = team
         const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
         const organizationTemplates = templates.filter(
-          (template) =>
+          (template: MeetingTemplate) =>
             template.scope !== 'TEAM' && template.teamId !== teamId && template.type === 'poker'
         )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
@@ -59,11 +60,11 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     publicTemplates: {
-      type: GraphQLNonNull(PokerTemplateConnection),
+      type: new GraphQLNonNull(PokerTemplateConnection),
       description: 'The list of templates shared across the organization to start a Poker meeting',
       args: {
         first: {
-          type: GraphQLNonNull(GraphQLInt)
+          type: new GraphQLNonNull(GraphQLInt)
         },
         after: {
           type: GraphQLID,

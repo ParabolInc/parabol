@@ -7,9 +7,9 @@ export const UpdatePokerScopeSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdatePokerScopeSuccess',
   fields: () => ({
     meeting: {
-      type: GraphQLNonNull(PokerMeeting),
+      type: new GraphQLNonNull(PokerMeeting),
       description: 'The meeting with the updated estimate phases',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     }

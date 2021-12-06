@@ -12,7 +12,6 @@ declare module '*.graphql' {
 }
 
 declare const __PRODUCTION__: string
-declare const __STATIC_IMAGES__: string
 declare const __SOCKET_PORT__: string
 
 interface Window {

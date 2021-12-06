@@ -5,7 +5,7 @@ module.exports = {
       script: 'scripts/gqlServers.js',
       instances: 1,
       autorestart: true,
-      watch: ['packages/server'],
+      watch: ['packages/server', 'packages/gql-executor'],
       ignore_watch: ['**/__tests__'],
       max_memory_restart: '3000M',
       env_production: {
@@ -33,6 +33,6 @@ module.exports = {
       env_production: {
         NODE_ENV: 'development'
       }
-    },
+    }
   ]
 }

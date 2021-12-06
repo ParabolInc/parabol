@@ -4,15 +4,15 @@ const TaskEstimateInput = new GraphQLInputObjectType({
   name: 'TaskEstimateInput',
   fields: () => ({
     taskId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     value: {
       description: 'The new estimate value',
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     dimensionName: {
       description: 'The name of the estimate, e.g. Story Points',
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     meetingId: {
       type: GraphQLID

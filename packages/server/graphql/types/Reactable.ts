@@ -5,11 +5,11 @@ import getReactableType from './getReactableType'
 
 export const reactableFields = () => ({
   id: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
   reactjis: {
-    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Reactji))),
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Reactji))),
     description: 'All the reactjis for the given reflection',
     resolve: resolveReactjis
   }

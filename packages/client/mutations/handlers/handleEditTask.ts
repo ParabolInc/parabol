@@ -15,7 +15,7 @@ const handleEditTask = (payload: RecordProxy, store: RecordSourceSelectorProxy) 
   if (isEditing) {
     // handle multiple socket connections
     for (let ii = 0; ii < taskEditors.length; ii++) {
-      const taskEditor = taskEditors[ii]
+      const taskEditor = taskEditors[ii]!
       if (taskEditor.getValue('userId') === userId) return
       newTaskEditors.push(taskEditor)
     }

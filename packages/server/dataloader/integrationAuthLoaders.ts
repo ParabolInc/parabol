@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import RethinkDataLoader from './RethinkDataLoader'
+import RootDataLoader from './RootDataLoader'
 import getIntegrationProvidersByIds, {
   IntegrationProviderTypesEnum,
   IntegrationProvider
@@ -21,7 +21,7 @@ interface IntegrationTokenPrimaryKey {
   userId: string
 }
 
-export const integrationProviders = (parent: RethinkDataLoader) => {
+export const integrationProviders = (parent: RootDataLoader) => {
   return new DataLoader<number, IntegrationProvider | null, string>(
     async (providerIds) => {
       const rows = await getIntegrationProvidersByIds(providerIds)
@@ -33,7 +33,7 @@ export const integrationProviders = (parent: RethinkDataLoader) => {
   )
 }
 
-export const integrationProvidersByType = (parent: RethinkDataLoader) => {
+export const integrationProvidersByType = (parent: RootDataLoader) => {
   return new DataLoader<IntegrationProviderKey, IntegrationProvider[] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -49,7 +49,7 @@ export const integrationProvidersByType = (parent: RethinkDataLoader) => {
   )
 }
 
-export const integrationTokenWithProvider = (parent: RethinkDataLoader) => {
+export const integrationTokenWithProvider = (parent: RootDataLoader) => {
   return new DataLoader<IntegrationTokenPrimaryKey, IntegrationTokenWithProvider | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -67,7 +67,7 @@ export const integrationTokenWithProvider = (parent: RethinkDataLoader) => {
   )
 }
 
-export const integrationTokensByTeamWithProvider = (parent: RethinkDataLoader) => {
+export const integrationTokensByTeamWithProvider = (parent: RootDataLoader) => {
   return new DataLoader<
     {type: IntegrationProviderTypesEnum; teamId: string},
     IntegrationTokenWithProvider[] | null,

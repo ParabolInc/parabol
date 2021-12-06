@@ -59,4 +59,9 @@ export {gitlabRequest}
 export type GitLabRequest = typeof gitlabRequest
 ;(withNestedSchema as any).gitlabRequest = gitlabRequest
 
+export type RootSchema = GraphQLSchema & {
+  githubRequest: GitHubRequest
+  gitlabRequest: GitLabRequest
+}
+
 export default withNestedSchema

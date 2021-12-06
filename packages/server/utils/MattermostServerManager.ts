@@ -19,7 +19,7 @@ export interface MattermostApiResponse {
 
 abstract class MattermostManager {
   webhookUrl: string
-  abstract fetch
+  abstract fetch: typeof fetch
   headers: any
 
   constructor(webhookUrl: string) {
@@ -33,7 +33,7 @@ abstract class MattermostManager {
       controller.abort()
     }, MAX_REQUEST_TIME)
     try {
-      const res = await this.fetch(url, {...options, signal})
+      const res = await this.fetch(url, {...options, signal} as any)
       clearTimeout(timeout)
       return res
     } catch (e) {
@@ -41,6 +41,8 @@ abstract class MattermostManager {
       return new Error('Mattermost is not responding')
     }
   }
+
+  // See: https://developers.mattermost.com/integrate/incoming-webhooks/
 
   private async post(payload: any) {
     const res = await this.fetchWithTimeout(this.webhookUrl, {
@@ -53,8 +55,7 @@ abstract class MattermostManager {
     })
     if (res instanceof Error) return res
     if (res.status !== 200) {
-      if (res.status === 400) {
-        // Bad request, Matter supplies a JSON error message
+      if (res.headers.get('content-type') === 'application/json') {
         const {message: error} = await res.json()
         return new Error(`${res.status}: ${error}`)
       } else {
@@ -71,7 +72,7 @@ abstract class MattermostManager {
         : Array.isArray(textOrAttachmentsArray)
         ? 'attachments'
         : null
-    if (!prop) throw new Error('Invalid mattermost message')
+    if (!prop) return new Error('Invalid mattermost message')
     const defaultPayload = {
       [prop]: textOrAttachmentsArray
     }

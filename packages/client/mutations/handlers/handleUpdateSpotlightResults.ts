@@ -12,13 +12,14 @@ const handleUpdateSpotlightResults = (
   const meeting = store.get(meetingId)
   // reflectionGroup is null if there's no target type
   if (!meeting || !reflectionGroup) return
+  const spotlightSearchQuery = (meeting.getValue('spotlightSearchQuery') || '') as string
   const spotlightGroup = meeting?.getLinkedRecord('spotlightGroup')
   const spotlightGroupId = spotlightGroup?.getValue('id')
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer || !spotlightGroupId) return
   const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
     reflectionGroupId: spotlightGroupId,
-    searchQuery: '' // TODO: add search query
+    searchQuery: spotlightSearchQuery
   })
   if (!similarReflectionGroups) return
   const reflectionsCount = reflectionGroup?.getLinkedRecords('reflections')?.length
@@ -30,24 +31,26 @@ const handleUpdateSpotlightResults = (
   const reflectionGroupId = reflectionGroup.getValue('id')
   const groupsIds = similarReflectionGroups
     .map((group) => group.getValue('id'))
-    .concat(reflectionGroupId)
+    .concat(spotlightGroupId)
   const isInSpotlight = groupsIds.includes(reflectionGroupId)
   const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
   // added to another group. Remove old reflection group
-  if (isOldGroupEmpty) {
+  if (isOldGroupEmpty && wasInSpotlight) {
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
         reflectionGroupId: spotlightGroupId,
-        searchQuery: '' // TODO: add search query
+        searchQuery: spotlightSearchQuery
       }
     })
   }
   // ungrouping created a new group or was added to a group in the kanban
-  if ((reflectionsCount === 1 && wasInSpotlight) || (isOldGroupEmpty && !isInSpotlight)) {
+  // reflectionsCount is undefined when ungrouping
+  // don't use else if: when a result is added to a kanban group, remove old empty group and add new one
+  if (!isInSpotlight && reflectionsCount !== undefined && wasInSpotlight) {
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
         reflectionGroupId: spotlightGroupId,
-        searchQuery: '' // TODO: add search query
+        searchQuery: spotlightSearchQuery
       }
     })
   }

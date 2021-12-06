@@ -13,14 +13,14 @@ import {GQLContext} from '../graphql'
 import AddMissingJiraFieldPayload from '../types/AddMissingJiraFieldPayload'
 
 const addMissingJiraField = {
-  type: GraphQLNonNull(AddMissingJiraFieldPayload),
+  type: new GraphQLNonNull(AddMissingJiraFieldPayload),
   description: `Adds a missing Jira field to a screen currently assigned to a Jira project`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
@@ -124,7 +124,7 @@ const addMissingJiraField = {
     const screensToCleanup: Array<{screenId: string; tabId: string}> = []
     // iterate over all the screens sorted by probability, try to update the given field
     for (let i = 0; i < possibleScreens.length; i++) {
-      const screen = possibleScreens[i]
+      const screen = possibleScreens[i]!
       const {screenId, tabId} = screen
       const addFieldResponse = await manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
       if (addFieldResponse instanceof Error) {

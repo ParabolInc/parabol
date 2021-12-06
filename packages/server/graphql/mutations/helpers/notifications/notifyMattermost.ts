@@ -29,9 +29,7 @@ const notifyMattermost = async (
   notificationText?: string
 ) => {
   const manager = new MattermostServerManager(webhookUri)
-  const result = await manager
-    .postMessage(textOrAttachmentsArray, notificationText)
-    .catch((err) => new Error(`Mattermost error: ${err.message}`))
+  const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
     sendToSentry(result, {userId, tags: {teamId, event, webhookUri}})
     return result
@@ -222,6 +220,10 @@ export const notifyMattermostTimeLimitStart = async (
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
+  const maybeMeetingShortLink = makeAppURL(
+    process.env.INVITATION_SHORTLINK || appOrigin,
+    `${meetingId}`
+  )
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const {phaseType} = stage
   const phaseLabel = phaseLabelLookup[phaseType]
@@ -254,7 +256,7 @@ export const notifyMattermostTimeLimitStart = async (
         {
           short: false,
           title: 'Link',
-          value: `[https:/prbl.in/${meetingId}](${meetingUrl})`
+          value: `[${maybeMeetingShortLink}](${meetingUrl})`
         },
         {
           short: false,
