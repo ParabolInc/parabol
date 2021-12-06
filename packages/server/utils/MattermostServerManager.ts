@@ -40,6 +40,8 @@ abstract class MattermostManager {
     }
   }
 
+  // See: https://developers.mattermost.com/integrate/incoming-webhooks/
+
   private async post(payload: any) {
     const res = await this.fetchWithTimeout(this.webhookUrl, {
       method: 'POST',

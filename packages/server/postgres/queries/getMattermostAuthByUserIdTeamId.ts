@@ -11,6 +11,6 @@ export interface GetMattermostAuthByUserIdTeamIdResult
 }
 const getMattermostAuthByUserIdTeamId = async (userId: string, teamId: string) => {
   const [res] = await getMattermostAuthByUserIdTeamIdQuery.run({userId, teamId}, getPg())
-  return res as GetMattermostAuthByUserIdTeamIdResult
+  return res as GetMattermostAuthByUserIdTeamIdResult | undefined
 }
 export default getMattermostAuthByUserIdTeamId

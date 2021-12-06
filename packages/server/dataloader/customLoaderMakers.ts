@@ -345,7 +345,7 @@ export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
 export const mattermostAuthByUserIdTeamId = (parent: RootDataLoader) => {
   return new DataLoader<
     {userId: string; teamId: string},
-    GetMattermostAuthByUserIdTeamIdResult | null,
+    GetMattermostAuthByUserIdTeamIdResult | null | undefined,
     string
   >(
     async (keys) => {
