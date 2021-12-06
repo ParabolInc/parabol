@@ -55,16 +55,34 @@ const useTrebuchetEvents = () => {
 
     const onReconnected = () => {
       setConnectedStatus(true)
-      atmosphere.retries.forEach((retry) => retry())
-      atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
     }
 
     const onData = async (payload: string | object) => {
       // hacky but that way we don't have to double parse huge json payloads. SSE graphql payloads are pre-parsed
       const obj = typeof payload === 'string' ? JSON.parse(payload) : payload
-      if (obj.version && obj.version !== __APP_VERSION__ && 'serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.getRegistration()
-        registration?.update().catch()
+
+      if (obj.version && obj.version !== __APP_VERSION__) {
+        atmosphere.retries.clear()
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          autoDismiss: 0,
+          message: 'You’re offline, Please refresh to continue',
+          key: 'offlineRefresh',
+          action: {
+            label: 'Refresh',
+            callback: () => {
+              window.location.reload()
+            }
+          }
+        })
+        atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
+
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.getRegistration()
+          registration?.update().catch()
+        }
+      } else if (obj.version && recentDisconnectsRef.current.length > 0) {
+        atmosphere.retries.forEach((retry) => retry())
+        atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
       }
       if (obj.authToken) {
         atmosphere.setAuthToken(obj.authToken)
