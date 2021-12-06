@@ -1,5 +1,4 @@
-import {getUserById} from './../../postgres/queries/getUsersByIds'
-import {requireSU} from './../../utils/authorization'
+import {isSuperUser} from './../../utils/authorization'
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import standardError from '../../utils/standardError'
@@ -46,12 +45,9 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const viewer = await getUserById(viewerId)
     const isAddingFlagToViewer = !emails?.length && !domain
-    if (!isAddingFlagToViewer) {
-      requireSU(authToken)
-    } else if (!viewer) {
-      return standardError(new Error('Unable to find viewer'), {
+    if (!isAddingFlagToViewer && !isSuperUser(authToken)) {
+      return standardError(new Error('Not authorised to add feature flag'), {
         userId: viewerId
       })
     }
@@ -66,15 +62,12 @@ export default {
       const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
     }
-    if (isAddingFlagToViewer) {
-      users.push(viewer!)
-    }
 
     if (users.length === 0) {
       return {error: {message: 'No users found matching the email or domain'}}
     }
 
-    const userIds = users.map(({id}) => id)
+    const userIds = isAddingFlagToViewer ? [viewerId] : users.map(({id}) => id)
     await appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
     userIds.forEach((userId) => {
       const data = {userId}
