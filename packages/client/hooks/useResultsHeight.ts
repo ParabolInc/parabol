@@ -1,7 +1,7 @@
 import {RefObject, useLayoutEffect, useState} from 'react'
 import useResizeObserver from './useResizeObserver'
 
-// if results are remotely ungrouped, SpotlightGroups increases in height.
+// if results are remotely ungrouped, SpotlightResults increases in height.
 // to prevent the modal height from changing, use initial groups height
 const useResultsHeight = (resultsRef: RefObject<HTMLDivElement>) => {
   const [height, setHeight] = useState<number | string>('100%')

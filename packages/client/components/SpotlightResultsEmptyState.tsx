@@ -3,10 +3,6 @@ import styled from '@emotion/styled'
 import purpleLines from '../styles/theme/images/purpleLines.svg'
 import {PALETTE} from '../styles/paletteV3'
 
-const Wrapper = styled('div')({
-  padding: '40px 0px 24px'
-})
-
 const EmptyState = styled('div')<{height: number | string}>(({height}) => ({
   display: 'flex',
   justifyContent: 'center',
@@ -52,23 +48,21 @@ interface Props {
   height: string | number
 }
 
-const SpotlightGroupsEmptyState = (props: Props) => {
+const SpotlightResultsEmptyState = (props: Props) => {
   const {height} = props
   return (
-    <Wrapper>
-      <EmptyState height={height}>
-        <Emoji>😔</Emoji>
-        <Content>
-          <Img src={purpleLines} />
-          <MessageWrapper>
-            <Message>No reflections match this card.</Message>
-            <Message>Try searching for specific keywords.</Message>
-          </MessageWrapper>
-          <Img isFlipped src={purpleLines} />
-        </Content>
-      </EmptyState>
-    </Wrapper>
+    <EmptyState height={height}>
+      <Emoji>😔</Emoji>
+      <Content>
+        <Img src={purpleLines} />
+        <MessageWrapper>
+          <Message>No reflections match this card.</Message>
+          <Message>Try searching for specific keywords.</Message>
+        </MessageWrapper>
+        <Img isFlipped src={purpleLines} />
+      </Content>
+    </EmptyState>
   )
 }
 
-export default SpotlightGroupsEmptyState
+export default SpotlightResultsEmptyState
