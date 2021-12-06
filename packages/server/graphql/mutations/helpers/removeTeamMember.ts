@@ -4,6 +4,7 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import EstimateStage from '../../../database/types/EstimateStage'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
@@ -11,6 +12,7 @@ import {DataLoaderWorker} from '../../graphql'
 import removeSlackAuths from './removeSlackAuths'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
+import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 
 interface Options {
   evictorUserId?: string
@@ -36,14 +38,16 @@ const removeTeamMember = async (
   }
 
   if (activeTeamMembers.length === 1) {
-    // archive single-person teams
     const updates = {
       isArchived: true,
       updatedAt: new Date()
     }
     await Promise.all([
+      // archive single-person teams
       r.table('Team').get(teamId).update(updates).run(),
-      updateTeamByTeamId(updates, teamId)
+      updateTeamByTeamId(updates, teamId),
+      // delete all tasks belonging to a 1-person team
+      r.table('Task').getAll(teamId, {index: 'teamId'}).delete()
     ])
   } else if (isLead) {
     // assign new leader, remove old leader flag
@@ -100,11 +104,18 @@ const removeTeamMember = async (
 
   const archivedTasks = await archiveTasksForDB(integratedTasksToArchive)
   const archivedTaskIds = archivedTasks.map(({id}) => id)
+  const agendaItemIds = await r
+    .table('AgendaItem')
+    .getAll(teamId, {index: 'teamId'})
+    .filter((row) => row('teamMemberId').eq(teamMemberId))
+    .getField('id')
+    .run()
 
   // if a new meeting was currently running, remove them from it
-  const filterFn = (stage: CheckInStage | UpdatesStage) => {
-    return stage.teamMemberId === teamMemberId
-  }
+  const filterFn = (stage: CheckInStage | UpdatesStage | EstimateStage | AgendaItemsStage) =>
+    (stage as CheckInStage | UpdatesStage).teamMemberId === teamMemberId ||
+    (stage as EstimateStage).creatorUserId === userId ||
+    agendaItemIds.includes((stage as AgendaItemsStage).agendaItemId)
   removeSlackAuths(userId, teamId)
   await removeStagesFromMeetings(filterFn, teamId, dataLoader)
   await removeUserFromMeetingStages(userId, teamId, dataLoader)

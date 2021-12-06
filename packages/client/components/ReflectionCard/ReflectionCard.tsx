@@ -34,6 +34,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import isDemoRoute from '~/utils/isDemoRoute'
+import remountDecorators from '../../utils/draftjs/remountDecorators'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -95,7 +96,14 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {localPhase, localStage, spotlightGroup, viewerMeetingMember, phases} = meeting
+  const {
+    localPhase,
+    localStage,
+    spotlightGroup,
+    viewerMeetingMember,
+    phases,
+    spotlightSearchQuery
+  } = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -109,9 +117,12 @@ const ReflectionCard = (props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.UPPER_CENTER)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -131,6 +142,11 @@ const ReflectionCard = (props: Props) => {
     }
     return () => updateIsEditing(false)
   }, [])
+
+  useEffect(() => {
+    const refreshedState = remountDecorators(() => editorState, spotlightSearchQuery)
+    setEditorState(refreshedState)
+  }, [spotlightSearchQuery])
 
   const handleContentUpdate = () => {
     if (isAndroid) {
@@ -338,6 +354,7 @@ export default createFragmentContainer(ReflectionCard, {
           }
         }
       }
+      spotlightSearchQuery
     }
   `
 })
