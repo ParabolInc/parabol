@@ -59,7 +59,6 @@ const SpotlightGroups = (props: Props) => {
               ...ReflectionGroup_meeting
               id
               teamId
-              spotlightSearchQuery
               localPhase {
                 phaseType
               }
@@ -88,18 +87,18 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
-  const {spotlightSearchQuery} = meeting!
-
   const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
-  const scrollHeight = useResultsHeight(resultsRef, spotlightSearchQuery || '')
+  const scrollHeight = useResultsHeight(resultsRef)
 
-  if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
+  if (!similarReflectionGroups.length) {
+    return <SpotlightGroupsEmptyState height={scrollHeight} />
+  }
   return (
     <SimilarGroups>
       <Scrollbar height={scrollHeight} ref={resultsRef}>
         {groupMatrix.map((row) => (
-          <Column key={`row-${row[0].id}`}>
+          <Column key={`row-${row[0]?.id}`}>
             {row.map((group) => (
               <ReflectionGroup
                 key={group.id}

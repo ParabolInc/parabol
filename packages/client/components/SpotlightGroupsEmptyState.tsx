@@ -3,14 +3,18 @@ import styled from '@emotion/styled'
 import purpleLines from '../styles/theme/images/purpleLines.svg'
 import {PALETTE} from '../styles/paletteV3'
 
-const EmptyState = styled('div')({
+const Wrapper = styled('div')({
+  padding: '40px 0px 24px'
+})
+
+const EmptyState = styled('div')<{height: number | string}>(({height}) => ({
   display: 'flex',
   justifyContent: 'center',
   alignContent: 'center',
   flexWrap: 'wrap',
   minHeight: 320,
-  height: '100%'
-})
+  height
+}))
 
 const MessageWrapper = styled('div')({
   display: 'flex',
@@ -44,18 +48,27 @@ const Content = styled('div')({
   alignItems: 'center'
 })
 
-const SpotlightGroupsEmptyState = () => (
-  <EmptyState>
-    <Emoji>😔</Emoji>
-    <Content>
-      <Img src={purpleLines} />
-      <MessageWrapper>
-        <Message>No reflections match this card.</Message>
-        <Message>Try searching for specific keywords.</Message>
-      </MessageWrapper>
-      <Img isFlipped src={purpleLines} />
-    </Content>
-  </EmptyState>
-)
+interface Props {
+  height: string | number
+}
+
+const SpotlightGroupsEmptyState = (props: Props) => {
+  const {height} = props
+  return (
+    <Wrapper>
+      <EmptyState height={height}>
+        <Emoji>😔</Emoji>
+        <Content>
+          <Img src={purpleLines} />
+          <MessageWrapper>
+            <Message>No reflections match this card.</Message>
+            <Message>Try searching for specific keywords.</Message>
+          </MessageWrapper>
+          <Img isFlipped src={purpleLines} />
+        </Content>
+      </EmptyState>
+    </Wrapper>
+  )
+}
 
 export default SpotlightGroupsEmptyState
