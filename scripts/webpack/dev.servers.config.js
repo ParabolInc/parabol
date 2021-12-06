@@ -73,9 +73,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              publicPath: (url) => {
-                return `dev/${url}`
-              }
+              publicPath: (url) => `static/${url}`
             }
           }
         ]

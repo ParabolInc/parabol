@@ -14,14 +14,15 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
+const publicPath = getWebpackPublicPath()
 
 const getNormalizedWebpackPublicPath = () => {
-  let publicPath = getWebpackPublicPath()
-  if (publicPath.startsWith('//')) {
+  let normalizedPath = publicPath
+  if (normalizedPath.startsWith('//')) {
     // protocol-relative url? normalize it:
-    publicPath = `https:${publicPath}`
+    normalizedPath = `https:${publicPath}`
   }
-  return publicPath
+  return normalizedPath
 }
 
 module.exports = ({isDeploy}) => ({
@@ -35,6 +36,7 @@ module.exports = ({isDeploy}) => ({
   },
   output: {
     filename: '[name].js',
+    publicPath: `${publicPath}server/dist/`,
     path: path.join(PROJECT_ROOT, 'dist')
   },
   resolve: {
@@ -59,7 +61,7 @@ module.exports = ({isDeploy}) => ({
   plugins: [
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[contenthash].js.map',
-      append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
+      append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}server/dist/[url]`
     }),
     isDeploy &&
       new S3Plugin({
@@ -71,7 +73,7 @@ module.exports = ({isDeploy}) => ({
         s3UploadOptions: {
           Bucket: process.env.AWS_S3_BUCKET
         },
-        basePath: getS3BasePath(),
+        basePath: `${getS3BasePath()}server/dist/`,
         directory: distPath
       })
   ].filter(Boolean),
@@ -84,9 +86,7 @@ module.exports = ({isDeploy}) => ({
           {
             loader: 'file-loader',
             options: {
-              publicPath: (url) => {
-                return `dist/${url}`
-              }
+              publicPath: (url) => `${publicPath}${url}`
             }
           }
         ]
