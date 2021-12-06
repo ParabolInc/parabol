@@ -58517,6 +58517,7 @@ export interface ISegmentEventTrackOptions {
   meetingId?: string | null;
   reflectionId?: string | null;
   viewerId?: string | null;
+  reflectionsCount?: number | null;
 }
 
 export interface ISelectTemplatePayload {

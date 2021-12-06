@@ -11,7 +11,8 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     actionType: {type: GraphQLString},
     meetingId: {type: GraphQLID},
     reflectionId: {type: GraphQLID},
-    viewerId: {type: GraphQLID}
+    viewerId: {type: GraphQLID},
+    reflectionsCount: {type: GraphQLInt}
   })
 })
 

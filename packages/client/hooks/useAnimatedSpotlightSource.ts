@@ -8,6 +8,7 @@ import {PortalStatus} from '~/hooks/usePortal'
 import {MutableRefObject, useLayoutEffect, useRef} from 'react'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
+import getEventIdFromTempId from '../utils/getEventIdFromTempId'
 
 const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,
@@ -52,9 +53,11 @@ const useAnimatedSpotlightSource = (
       cloneStyle.transition = `transform ${Times.SPOTLIGHT_SOURCE_DURATION}ms ${BezierCurve.DECELERATE}`
     }, 0)
     dragIdRef.current = clientTempId()
+    const eventId = getEventIdFromTempId(dragIdRef.current)
     // execute mutation after cloning as the mutation will cause reflection height to change
     startDrag(reflectionId, dragIdRef.current)
     SendClientSegmentEventMutation(atmosphere, 'Opened Spotlight', {
+      eventId,
       viewerId,
       reflectionId
     })
