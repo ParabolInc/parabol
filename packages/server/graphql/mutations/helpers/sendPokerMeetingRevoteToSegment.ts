@@ -14,7 +14,7 @@ const sendPokerMeetingRevoteToSegment = async (
       userId,
       event: 'Poker Meeting Team Revoted',
       properties: {
-        hasIcebreaker: phases[0]!.phaseType === 'checkin',
+        hasIcebreaker: phases[0]?.phaseType === 'checkin',
         wasFacilitator,
         meetingNumber,
         teamMembersCount: meetingMembers.length,

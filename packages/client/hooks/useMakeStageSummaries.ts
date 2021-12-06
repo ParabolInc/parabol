@@ -10,7 +10,7 @@ interface StageSummary {
   isNavigable: boolean
   isActive: boolean
   sortOrder: number
-  stageIds: string[]
+  stageIds: [string, ...string[]]
   finalScores: (string | null)[]
 }
 
@@ -96,7 +96,7 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
         sortOrder: stage.sortOrder,
-        stageIds: batch.map(({id}) => id),
+        stageIds: batch.map(({id}) => id) as [string, ...string[]],
         finalScores: batch.map(({finalScore}) => finalScore)
       })
       i += batch.length - 1

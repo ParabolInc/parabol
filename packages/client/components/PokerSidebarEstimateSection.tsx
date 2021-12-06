@@ -62,18 +62,19 @@ const PokerSidebarEstimateSection = (props: Props) => {
 
   const onDragEnd = (result) => {
     const {source, destination} = result
+    const sourceTopic = stageSummaries[source.index]
+    const destinationTopic = stageSummaries[destination.index]
 
     if (
       !destination ||
       destination.droppableId !== 'TASK' ||
       source.droppableId !== 'TASK' ||
-      destination.index === source.index
+      destination.index === source.index ||
+      !sourceTopic ||
+      !destinationTopic
     ) {
       return
     }
-
-    const sourceTopic = stageSummaries[source.index]!
-    const destinationTopic = stageSummaries[destination.index]!
 
     let sortOrder
     if (destination.index === 0) {
@@ -88,7 +89,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
     }
 
     const {stageIds} = sourceTopic
-    const [firstStageId] = stageIds as [string]
+    const [firstStageId] = stageIds
     const variables = {meetingId, stageId: firstStageId, sortOrder}
     DragEstimatingTaskMutation(atmosphere, variables)
   }
@@ -123,7 +124,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
               <ScrollWrapper ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
                   const {stageIds, title, subtitle, isActive, isNavigable, finalScores} = summary
-                  const [firstStageId] = stageIds as [string]
+                  const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage =
                     !inSync && stageIds.includes(facilitatorStageId)

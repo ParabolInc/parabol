@@ -3,22 +3,23 @@ import {Subtract} from '../../types/generics'
 import getDisplayName from '../getDisplayName'
 import Legitity from '../../validation/Legitity'
 
-export interface WithFormProps {
-  setDirtyField: (name?: string) => void
+export interface WithFormProps<K extends string | number | symbol> {
+  setDirtyField: (K?: string) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
-  validateField(): {[name: string]: Legitity}
+  validateField(): {[name in K]: Legitity}
 
-  validateField(name: string): Legitity
-  fields: FieldState
+  validateField(name: K): Legitity
+  fields: FieldState<K>
 }
 
-interface FieldInputDict {
-  [name: string]: {
+type FieldInputDict<K extends string | number | symbol> = Record<
+  K,
+  {
     getDefault(props: any): any
     validate(rawInput: any, props: any): Legitity
   }
-}
+>
 
 interface Field {
   value: string
@@ -26,15 +27,15 @@ interface Field {
   dirty: boolean
 }
 
-interface FieldState {
-  [name: string]: Field
-}
+type FieldState<K extends string | number | symbol> = Record<K, Field>
 
 // Serves as a lightweight alternative for a form library, best used for single-field forms
-const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
+const withForm = <K extends string | number | symbol>(fields: FieldInputDict<K>) => <
+  P extends WithFormProps<K>
+>(
   ComposedComponent: React.ComponentType<P>
 ) => {
-  class FormProps extends Component<Subtract<P, WithFormProps>> {
+  class FormProps extends Component<Subtract<P, WithFormProps<K>>> {
     static displayName = `WithForm(${getDisplayName(ComposedComponent)})`
     _mounted = false
 
@@ -46,13 +47,13 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
           dirty: false
         }
         return obj
-      }, {} as FieldState)
+      }, {} as FieldState<K>)
     }
 
     onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const {fields} = this.state
       const {value} = e.target
-      const name = e.target.name
+      const name = e.target.name as K
       const field = fields[name]
       this.setState(
         {
@@ -70,10 +71,10 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
       )
     }
 
-    validate = (name?: string) => {
+    validate = (name?: K) => {
       if (!name) {
         return Object.keys(this.state.fields).reduce((obj, name) => {
-          obj[name] = this.validate(name)
+          obj[name] = this.validate(name as K)
           return obj
         }, {})
       }
@@ -143,7 +144,7 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
     }
   }
 
-  return React.forwardRef((props: Subtract<P, WithFormProps>, ref?: Ref<any> | undefined) => (
+  return React.forwardRef((props: Subtract<P, WithFormProps<K>>, ref?: Ref<any> | undefined) => (
     <FormProps {...props} forwardedRef={ref} />
   ))
 }

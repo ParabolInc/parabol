@@ -48,7 +48,7 @@ const executeGraphQL = async (req: GQLRequest) => {
   } = req
   // never re-use a dataloader since the things it cached may be old
   const dataLoader = getDataLoader(dataLoaderId)
-  dataLoader?.share()
+  dataLoader.share()
   const rateLimiter = getRateLimiter()
   const contextValue = {ip, authToken, socketId, rateLimiter, dataLoader}
   const schema = isPrivate ? privateSchema : publicSchema
@@ -81,7 +81,7 @@ const executeGraphQL = async (req: GQLRequest) => {
     console.log((firstError as Error).stack)
     console.trace({error: JSON.stringify(response)})
   }
-  dataLoader?.dispose()
+  dataLoader.dispose()
   return response
 }
 
