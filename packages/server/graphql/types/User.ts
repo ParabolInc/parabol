@@ -131,7 +131,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         const domain = getDomainFromEmail(email)
         const pg = getPg()
         const patientZeroId = await pg.query(
-          'SELECT id FROM "User" WHERE split_part(email, \'@\', 2) = $1 ORDER BY "createdAt" LIMIT 1',
+          'SELECT "id" FROM "User" WHERE "domain" = $1 ORDER BY "createdAt" LIMIT 1',
           [domain]
         )
         return patientZeroId.rows[0]?.id === userId

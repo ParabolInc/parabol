@@ -26,10 +26,11 @@ module.exports = {
     contentBase: [
       path.join(PROJECT_ROOT, 'static'),
       path.join(PROJECT_ROOT, 'build'),
+      path.join(PROJECT_ROOT, 'dev'),
       path.join(PROJECT_ROOT, 'dev', 'dll'),
       path.join(PROJECT_ROOT, 'self-hosted')
     ],
-    contentBasePublicPath: ['/static/', '/static/', '/static/', '/self-hosted/'],
+    contentBasePublicPath: ['/static/', '/static/', '/static/', '/static/', '/self-hosted/'],
     publicPath: '/',
     hot: true,
     historyApiFallback: true,

@@ -17,7 +17,8 @@ import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {startSlackMeeting} from './helpers/notifySlack'
+import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 import isValid from '../isValid'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
@@ -163,6 +164,7 @@ export default {
       r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
+    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId: meetingId}
