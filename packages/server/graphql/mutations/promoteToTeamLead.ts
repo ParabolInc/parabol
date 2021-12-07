@@ -1,39 +1,60 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
-import {getUserId, isTeamLead} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isSuperUser} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
+import GraphQLEmailType from '../types/GraphQLEmailType'
 
 export default {
   type: PromoteToTeamLeadPayload,
   description: 'Promote another team member to be the leader',
   args: {
-    teamMemberId: {
+    teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'the new team member that will be the leader'
+      description: 'Team id of the team which is about to get a new team leader'
+    },
+    newTeamLeadEmail: {
+      type: new GraphQLNonNull(GraphQLEmailType),
+      description: 'Email of the user who will be set as a new team leader'
     }
   },
-  async resolve(_source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {teamId, newTeamLeadEmail}: {teamId: string; newTeamLeadEmail: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
-    const viewerId = getUserId(authToken)
-    const {teamId} = fromTeamMemberId(teamMemberId)
-    const myTeamMemberId = toTeamMemberId(teamId, viewerId)
-    if (!(await isTeamLead(viewerId, teamId))) {
-      return standardError(new Error('Not team lead'), {userId: viewerId})
+    const oldLeadTeamMemberId = await r
+      .table('TeamMember')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isNotRemoved: true, isLead: true})
+      .nth(0)('id')
+      .default(null)
+      .run()
+
+    if (!isSuperUser(authToken)) {
+      const viewerTeamMemberId = TeamMemberId.join(teamId, viewerId)
+      if (viewerTeamMemberId !== oldLeadTeamMemberId) {
+        return standardError(new Error('Not team lead'), {userId: viewerId})
+      }
     }
 
     // VALIDATION
     const promoteeOnTeam = await r
       .table('TeamMember')
-      .get(teamMemberId)
+      .getAll(teamId, {index: 'teamId'})
+      .filter({email: newTeamLeadEmail})
+      .nth(0)
+      .default(null)
       .run()
     if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -43,19 +64,19 @@ export default {
     await r({
       teamLead: r
         .table('TeamMember')
-        .get(myTeamMemberId)
+        .get(oldLeadTeamMemberId)
         .update({
           isLead: false
         }),
       promotee: r
         .table('TeamMember')
-        .get(teamMemberId)
+        .get(promoteeOnTeam.id)
         .update({
           isLead: true
         })
     }).run()
 
-    const data = {teamId, oldLeaderId: myTeamMemberId, newLeaderId: teamMemberId}
+    const data = {teamId, oldLeaderId: oldLeadTeamMemberId, newLeaderId: promoteeOnTeam.id}
     publish(SubscriptionChannel.TEAM, teamId, 'PromoteToTeamLeadPayload', data, subOptions)
     return data
   }

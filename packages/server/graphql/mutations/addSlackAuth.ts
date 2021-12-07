@@ -97,8 +97,8 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {code, teamId},
+    _source: unknown,
+    {code, teamId}: {code: string; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

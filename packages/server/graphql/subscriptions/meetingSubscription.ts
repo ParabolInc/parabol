@@ -13,7 +13,11 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: async (_source, {meetingId}, {authToken}: GQLContext) => {
+  subscribe: async (
+    _source: unknown,
+    {meetingId}: {meetingId: string},
+    {authToken}: GQLContext
+  ) => {
     // AUTH
     const r = await getRethink()
     const viewerId = getUserId(authToken)

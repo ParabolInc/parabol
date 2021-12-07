@@ -13,18 +13,18 @@ type DeleteCommentMutationVariables = {
 }
 
 const deleteComment = {
-  type: GraphQLNonNull(DeleteCommentPayload),
+  type: new GraphQLNonNull(DeleteCommentPayload),
   description: `Delete a comment from a discussion`,
   args: {
     commentId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {commentId, meetingId}: DeleteCommentMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {

@@ -19,7 +19,7 @@ const GroupPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
     reflectionGroups: {
       type: new GraphQLList(RetroReflectionGroup),
       description: 'a list of updated reflection groups',
-      resolve: ({reflectionGroupIds}, _args, {dataLoader}) => {
+      resolve: ({reflectionGroupIds}, _args: unknown, {dataLoader}) => {
         return reflectionGroupIds
           ? dataLoader.get('retroReflectionGroups').loadMany(reflectionGroupIds)
           : []

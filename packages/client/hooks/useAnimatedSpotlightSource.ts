@@ -1,6 +1,6 @@
 import useAtmosphere from '~/hooks/useAtmosphere'
 import clientTempId from '~/utils/relay/clientTempId'
-import {BezierCurve} from '~/types/constEnums'
+import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import {Times} from 'parabol-client/types/constEnums'
 import {Elevation} from '~/styles/elevation'
 import cloneReflection from '~/utils/retroGroup/cloneReflection'
@@ -10,12 +10,20 @@ import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflection
 
 const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,
-  reflectionId: string | undefined,
+  reflectionId: string | null,
   dragIdRef: MutableRefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()
   const sourceRef = useRef<HTMLDivElement | null>(null)
   const sourceCloneRef = useRef<HTMLDivElement | null>(null)
+
+  const startDrag = (reflectionId: string, dragId: string) => {
+    StartDraggingReflectionMutation(atmosphere, {
+      reflectionId,
+      dragId,
+      isSpotlight: true
+    })
+  }
 
   useLayoutEffect(() => {
     const {current: source} = sourceRef
@@ -36,17 +44,19 @@ const useAnimatedSpotlightSource = (
     cloneStyle.borderRadius = `4px`
     cloneStyle.boxShadow = `${Elevation.CARD_SHADOW}`
     cloneStyle.overflow = `hidden`
+    cloneStyle.paddingTop = `${ElementWidth.REFLECTION_CARD_PADDING}px`
     const transitionTimeout = setTimeout(() => {
       cloneStyle.transform = `translate(${endLeft - startLeft}px,${roundedEndTop - startTop}px)`
       cloneStyle.transition = `transform ${Times.SPOTLIGHT_SOURCE_DURATION}ms ${BezierCurve.DECELERATE}`
     }, 0)
     dragIdRef.current = clientTempId()
     // execute mutation after cloning as the mutation will cause reflection height to change
-    StartDraggingReflectionMutation(atmosphere, {
-      reflectionId,
-      dragId: dragIdRef.current,
-      isSpotlight: true
-    })
+    startDrag(reflectionId, dragIdRef.current)
+    const dragInterval = setInterval(() => {
+      // execute every second so that the remote animation continues when subscribers refresh page
+      if (!dragIdRef.current) return
+      startDrag(reflectionId, dragIdRef.current)
+    }, 1000)
     const removeCloneTimeout = setTimeout(() => {
       if (clone && document.body.contains(clone)) {
         document.body.removeChild(clone)
@@ -58,6 +68,7 @@ const useAnimatedSpotlightSource = (
     return () => {
       clearTimeout(transitionTimeout)
       clearTimeout(removeCloneTimeout)
+      clearTimeout(dragInterval)
     }
   }, [portalStatus])
 

@@ -6,7 +6,7 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
-import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
+import {makeSection} from '../../mutations/helpers/notifications/makeSlackBlocks'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import getPg from '../../../postgres/getPg'
 
@@ -38,9 +38,9 @@ const filterCounts = (domainCount: DomainCount[]) =>
 const addAllTimeTotals = async (domainCount: DomainCount[]): Promise<DomainCountWithAllTime[]> => {
   const pg = getPg()
   const allTimeCount = await pg.query(
-    `SELECT count(*)::float as "allTimeTotal", split_part(email, '@', 2) as domain from "User"
-     WHERE split_part(email, '@', 2) = ANY($1::text[])
-     GROUP BY split_part(email, '@', 2)`,
+    `SELECT count(*)::float as "allTimeTotal", "domain" from "User"
+     WHERE "domain" = ANY($1::text[])
+     GROUP BY "domain"`,
     [domainCount.map((count) => count.domain)]
   )
 
@@ -57,12 +57,11 @@ const makeTopXSection = async (domainCount: DomainCount[]) => {
   let curDomains = ''
   let curTotals = ''
   const fields = [] as TypeField[]
-  for (let i = 0; i < aggregated.length; i++) {
-    const signup = aggregated[i]
+  aggregated.forEach((signup) => {
     const {domain, total, allTimeTotal} = signup
     curDomains += `*${domain}*\n`
     curTotals += `*${total}* (${allTimeTotal} total)\n`
-  }
+  })
   if (aggregated.length === 0) {
     curDomains = 'No Data'
     curTotals = 'Sad Panda'
@@ -79,20 +78,20 @@ const dailyPulse = {
   type: GraphQLBoolean,
   args: {
     after: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the earliest time to run the query'
     },
     email: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'the email that holds the credentials to the channelId'
     },
     channelId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the ID of channel to post to'
     }
   },
   description: 'Post signup and login metrics to slack',
-  async resolve(_source, {after, email, channelId}, {authToken}) {
+  async resolve(_source: unknown, {after, email, channelId}, {authToken}) {
     requireSU(authToken)
     const r = await getRethink()
     const user = await getUserByEmail(email)

@@ -8,6 +8,7 @@ import removeEmptyReflectionGroup from './helpers/removeEmptyReflectionGroup'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   type: RemoveReflectionPayload,
@@ -17,7 +18,11 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {reflectionId}: {reflectionId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

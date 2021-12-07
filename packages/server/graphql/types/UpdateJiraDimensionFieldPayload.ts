@@ -8,13 +8,13 @@ export const UpdateJiraDimensionFieldSuccess = new GraphQLObjectType<any, GQLCon
   name: 'UpdateJiraDimensionFieldSuccess',
   fields: () => ({
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meetingId: {
       type: GraphQLID
     },
     team: {
-      type: GraphQLNonNull(Team),
+      type: new GraphQLNonNull(Team),
       resolve: ({teamId}, _auth, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }

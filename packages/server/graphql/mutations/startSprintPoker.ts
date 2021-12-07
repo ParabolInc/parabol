@@ -17,7 +17,8 @@ import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {startSlackMeeting} from './helpers/notifySlack'
+import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
@@ -68,7 +69,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
@@ -170,6 +171,7 @@ export default {
         .run(),
       updateTeamByTeamId(updates, teamId)
     ])
+    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId: meetingId}

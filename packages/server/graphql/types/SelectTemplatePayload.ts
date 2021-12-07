@@ -11,7 +11,7 @@ const SelectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
     },
     meetingSettings: {
       type: TeamMeetingSettings,
-      resolve: ({meetingSettingsId}, _args, {dataLoader}) => {
+      resolve: ({meetingSettingsId}, _args: unknown, {dataLoader}) => {
         return meetingSettingsId ? dataLoader.get('meetingSettings').load(meetingSettingsId) : null
       }
     }

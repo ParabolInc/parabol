@@ -15,20 +15,21 @@ import {GQLContext} from '../graphql'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifySlack'
+import {endSlackMeeting} from './helpers/notifications/notifySlack'
+import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import getPhase from '../../utils/getPhase'
 
 export default {
-  type: GraphQLNonNull(EndSprintPokerPayload),
+  type: new GraphQLNonNull(EndSprintPokerPayload),
   description: 'Finish a sprint poker meeting',
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The meeting to end'
     }
   },
-  async resolve(_source, {meetingId}, context: GQLContext) {
+  async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -106,9 +107,10 @@ export default {
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').load(templateId)
     ])
+    endMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
-    const isKill = phase.phaseType !== 'ESTIMATE'
+    const isKill = phase && phase.phaseType !== 'ESTIMATE'
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     }

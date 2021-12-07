@@ -19,7 +19,7 @@ const LoginWithGooglePayload = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: User,
       description: 'the newly created user',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return userId ? dataLoader.get('users').load(userId) : null
       }
     }

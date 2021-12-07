@@ -4,10 +4,10 @@ import React, {RefObject, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {ElementHeight, ElementWidth} from '~/types/constEnums'
-import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 import useGroupMatrix from '../hooks/useGroupMatrix'
 import useResultsHeight from '~/hooks/useResultsHeight'
 import SpotlightGroupsEmptyState from './SpotlightGroupsEmptyState'
+import {SpotlightGroupsQuery} from '~/__generated__/SpotlightGroupsQuery.graphql'
 
 const SimilarGroups = styled('div')({
   padding: '40px 0px 24px',
@@ -36,15 +36,20 @@ const Column = styled('div')({
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   queryRef: PreloadedQuery<SpotlightGroupsQuery>
+  isSpotlightEntering: boolean
 }
 
 const SpotlightGroups = (props: Props) => {
-  const {phaseRef, queryRef} = props
+  const {phaseRef, queryRef, isSpotlightEntering} = props
+
   const data = usePreloadedQuery<SpotlightGroupsQuery>(
     graphql`
-      query SpotlightGroupsQuery($reflectionId: ID!, $searchQuery: String!, $meetingId: ID!) {
+      query SpotlightGroupsQuery($reflectionGroupId: ID!, $searchQuery: String!, $meetingId: ID!) {
         viewer {
-          similarReflectionGroups(reflectionId: $reflectionId, searchQuery: $searchQuery) {
+          similarReflectionGroups(
+            reflectionGroupId: $reflectionGroupId
+            searchQuery: $searchQuery
+          ) {
             id
             ...ReflectionGroup_reflectionGroup
           }
@@ -54,6 +59,7 @@ const SpotlightGroups = (props: Props) => {
               ...ReflectionGroup_meeting
               id
               teamId
+              spotlightSearchQuery
               localPhase {
                 phaseType
               }
@@ -68,9 +74,9 @@ const SpotlightGroups = (props: Props) => {
                   phaseType
                 }
               }
-              spotlightReflection {
+              spotlightGroup {
                 id
-                ...DraggableReflectionCard_reflection
+                ...ReflectionGroup_reflectionGroup
               }
             }
           }
@@ -82,9 +88,11 @@ const SpotlightGroups = (props: Props) => {
   )
   const {viewer} = data
   const {meeting, similarReflectionGroups} = viewer
+  const {spotlightSearchQuery} = meeting!
+
   const resultsRef = useRef<HTMLDivElement>(null)
   const groupMatrix = useGroupMatrix(similarReflectionGroups, resultsRef, phaseRef)
-  const scrollHeight = useResultsHeight(resultsRef)
+  const scrollHeight = useResultsHeight(resultsRef, spotlightSearchQuery || '')
 
   if (!similarReflectionGroups.length) return <SpotlightGroupsEmptyState />
   return (
@@ -95,9 +103,11 @@ const SpotlightGroups = (props: Props) => {
             {row.map((group) => (
               <ReflectionGroup
                 key={group.id}
-                meeting={meeting!}
+                meetingRef={meeting!}
                 phaseRef={phaseRef}
-                reflectionGroup={group}
+                reflectionGroupRef={group}
+                expandedReflectionGroupPortalParentId='spotlight'
+                isSpotlightEntering={isSpotlightEntering}
               />
             ))}
           </Column>

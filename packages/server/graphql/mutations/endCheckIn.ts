@@ -21,7 +21,8 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifySlack'
+import {endSlackMeeting} from './helpers/notifications/notifySlack'
+import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
@@ -174,7 +175,7 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve(_source, {meetingId}, context: GQLContext) {
+  async resolve(_source: unknown, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -236,6 +237,7 @@ export default {
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    endMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
@@ -279,7 +281,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType),
+      isKill: phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType),
       updatedTaskIds,
       removedTaskIds,
       timelineEventId

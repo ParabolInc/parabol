@@ -11,19 +11,19 @@ import {GQLContext} from '../graphql'
 import PokerRevealVotesPayload from '../types/PokerRevealVotesPayload'
 
 const pokerRevealVotes = {
-  type: GraphQLNonNull(PokerRevealVotesPayload),
+  type: new GraphQLNonNull(PokerRevealVotesPayload),
   description: 'Progresses the stage dimension to the reveal & discuss step',
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId},
+    _source: unknown,
+    {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

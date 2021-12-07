@@ -31,7 +31,7 @@ const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
     botAccessToken: {
       type: GraphQLID,
       description: 'the parabol bot access token, used as primary communication',
-      resolve: async ({botAccessToken, userId}, _args, {authToken}) => {
+      resolve: async ({botAccessToken, userId}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? botAccessToken : null
       }
@@ -75,7 +75,7 @@ const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
     notifications: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
       description: 'A list of events and the slack channels they get posted to',
-      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
+      resolve: async ({userId, teamId}, _args: unknown, {dataLoader}) => {
         const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
         return slackNotifications.filter((notification) => notification.userId === userId)
       }

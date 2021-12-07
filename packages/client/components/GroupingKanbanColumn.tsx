@@ -72,7 +72,10 @@ const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>
   })
 )
 
-export type OpenSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => void
+export type OpenSpotlight = (
+  reflectionGroupId: string,
+  reflectionRef: RefObject<HTMLDivElement>
+) => void
 
 interface Props {
   columnsRef: RefObject<HTMLDivElement>
@@ -175,10 +178,10 @@ const GroupingKanbanColumn = (props: Props) => {
                     <ReflectionGroup
                       dataCy={`${question}-group-${idx}`}
                       key={reflectionGroup.id}
-                      meeting={meeting}
+                      meetingRef={meeting}
                       openSpotlight={openSpotlight}
                       phaseRef={phaseRef}
-                      reflectionGroup={reflectionGroup}
+                      reflectionGroupRef={reflectionGroup}
                       swipeColumn={swipeColumn}
                     />
                   )

@@ -114,9 +114,11 @@ export const enum ExternalLinks {
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
+  INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
-  TEAM = 'https://www.parabol.co/team/'
+  TEAM = 'https://www.parabol.co/team/',
+  LANDING_PAGE = 'https://www.parabol.co/'
 }
 
 export const enum Filter {
@@ -248,6 +250,8 @@ export const enum Providers {
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
+  MATTERMOST_NAME = 'Mattermost',
+  MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }
@@ -285,8 +289,9 @@ export const enum Security {
 }
 
 export const enum ServerChannel {
-  GQL_EXECUTOR_REQUEST = 'gqlExRreq',
-  GQL_EXECUTOR_RESPONSE = 'gqlExRes'
+  GQL_EXECUTOR_RESPONSE = 'gqlExRes',
+  GQL_EXECUTOR_STREAM = 'gqlStream',
+  GQL_EXECUTOR_CONSUMER_GROUP = 'gqlConsumerGroup'
 }
 
 export const enum SubscriptionChannel {

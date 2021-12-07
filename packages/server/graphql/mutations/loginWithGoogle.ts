@@ -3,8 +3,10 @@ import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
 import AuthToken from '../../database/types/AuthToken'
 import User from '../../database/types/User'
-import db from '../../db'
 import generateUID from '../../generateUID'
+import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import updateUser from '../../postgres/queries/updateUser'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import GoogleServerManager from '../../utils/GoogleServerManager'
 import standardError from '../../utils/standardError'
@@ -12,9 +14,6 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
-import updateUser from '../../postgres/queries/updateUser'
-import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
-import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 
 const loginWithGoogle = {
   type: new GraphQLNonNull(LoginWithGooglePayload),
@@ -34,7 +33,15 @@ const loginWithGoogle = {
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
-    async (_source, {code, invitationToken, segmentId}, context: GQLContext) => {
+    async (
+      _source: unknown,
+      {
+        code,
+        invitationToken,
+        segmentId
+      }: {code: string; segmentId?: string | null; invitationToken?: string | null},
+      context: GQLContext
+    ) => {
       // VALIDATION
       const manager = await GoogleServerManager.init(code)
       const {id} = manager
@@ -75,11 +82,8 @@ const loginWithGoogle = {
             id: sub
           })
           identities.push(googleIdentity) // mutative
-          const updates = {
-            identities,
-            updatedAt: new Date()
-          }
-          await Promise.all([db.write('User', viewerId, updates), updateUser(updates, viewerId)])
+
+          await updateUser({identities}, viewerId)
         }
         // MUTATIVE
         context.authToken = new AuthToken({sub: viewerId, rol, tms: existingUser.tms})

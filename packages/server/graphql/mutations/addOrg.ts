@@ -1,9 +1,8 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import AuthToken from '../../database/types/AuthToken'
-import db from '../../db'
 import generateUID from '../../generateUID'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId} from '../../utils/authorization'
@@ -32,7 +31,7 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 2, perHour: 8})(
-    async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+    async (_source: unknown, args, {authToken, dataLoader, socketId: mutatorId}) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
@@ -47,7 +46,7 @@ export default {
       if (Object.keys(errors).length) {
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
-      const user = await db.read('User', viewerId)
+      const user = await dataLoader.get('users').load(viewerId)
       if (!user) {
         return standardError(new Error('Authorization error'), {userId: viewerId})
       }
@@ -57,7 +56,7 @@ export default {
       const teamId = generateUID()
       const {email} = user
       await createNewOrg(orgId, orgName, viewerId, email)
-      await createTeamAndLeader(viewerId, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
+      await createTeamAndLeader(user, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
 
       const {tms} = authToken
       // MUTATIVE

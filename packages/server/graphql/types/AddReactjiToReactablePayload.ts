@@ -7,9 +7,9 @@ export const AddReactjiToReactableSuccess = new GraphQLObjectType<any, GQLContex
   name: 'AddReactjiToReactableSuccess',
   fields: () => ({
     reactable: {
-      type: GraphQLNonNull(Reactable),
+      type: new GraphQLNonNull(Reactable),
       description: 'the Reactable with the updated list of reactjis',
-      resolve: async ({reactableId, reactableType}, _args, {dataLoader}) => {
+      resolve: async ({reactableId, reactableType}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('reactables').load({id: reactableId, type: reactableType})
       }
     }

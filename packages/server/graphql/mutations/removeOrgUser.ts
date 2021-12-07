@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
 
@@ -19,7 +20,11 @@ const removeOrgUser = {
       description: 'the org that does not want them anymore'
     }
   },
-  async resolve(_source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {orgId, userId}: {orgId: string; userId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 

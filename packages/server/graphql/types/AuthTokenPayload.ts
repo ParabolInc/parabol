@@ -19,7 +19,7 @@ const AuthTokenPayload = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The encoded JWT',
-      resolve: ({tms}, _args, {authToken}) => {
+      resolve: ({tms}, _args: unknown, {authToken}) => {
         return encodeAuthToken(new AuthToken({...authToken, tms}))
       }
     }

@@ -11,33 +11,33 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   description: 'A project fetched from Jira in real time',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       resolve: ({cloudId, key}) => JiraProjectId.join(cloudId, key)
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The parabol teamId this issue was fetched for'
     },
     userId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The parabol userId this issue was fetched for'
     },
     self: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     cloudId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The cloud ID that the project lives on. Does not exist on the Jira object!'
     },
     key: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     name: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     avatar: {
-      type: GraphQLNonNull(GraphQLString),
-      resolve: async ({avatarUrls, teamId, userId}, _args, {dataLoader}) => {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: async ({avatarUrls, teamId, userId}, _args: unknown, {dataLoader}) => {
         const url = avatarUrls['48x48']
         const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
         if (!auth) return null
@@ -48,16 +48,16 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
       }
     },
     avatarUrls: {
-      type: GraphQLNonNull(JiraRemoteAvatarUrls)
+      type: new GraphQLNonNull(JiraRemoteAvatarUrls)
     },
     projectCategory: {
-      type: GraphQLNonNull(JiraRemoteProjectCategory)
+      type: new GraphQLNonNull(JiraRemoteProjectCategory)
     },
     simplified: {
-      type: GraphQLNonNull(GraphQLBoolean)
+      type: new GraphQLNonNull(GraphQLBoolean)
     },
     style: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     }
   })
 })

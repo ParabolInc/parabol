@@ -1,5 +1,6 @@
 import {promises as fsp} from 'fs'
 import mime from 'mime-types'
+import path from 'path'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
 import sleep from '../client/utils/sleep'
@@ -21,7 +22,9 @@ const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
 let jiraPlaceholderBuffer: Buffer | undefined
 const servePlaceholderImage = async (res: HttpResponse) => {
   if (!jiraPlaceholderBuffer) {
-    jiraPlaceholderBuffer = await fsp.readFile(jiraPlaceholder)
+    jiraPlaceholderBuffer = await fsp.readFile(
+      path.join(__dirname, jiraPlaceholder.slice(__webpack_public_path__.length))
+    )
   }
   res.cork(() => {
     res

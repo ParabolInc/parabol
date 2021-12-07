@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
+import {OAuth2Error, OAuth2Success} from '../types/custom'
 
 interface AuthQueryParams {
   grant_type: 'authorization_code'
@@ -14,12 +15,12 @@ interface RefreshQueryParams {
   refresh_token: string
 }
 
-interface OAuth2Response {
-  access_token: string
+interface AtlassianOAuth2Success extends OAuth2Success {
   refresh_token: string
-  error: any
   scope: string
 }
+
+type OAuth2Response = AtlassianOAuth2Success | OAuth2Error
 
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch as any
@@ -38,7 +39,7 @@ class AtlassianServerManager extends AtlassianManager {
     })
   }
 
-  static async fetchToken(partialQueryParams: AuthQueryParams | RefreshQueryParams) {
+  private static async fetchToken(partialQueryParams: AuthQueryParams | RefreshQueryParams) {
     const queryParams = {
       ...partialQueryParams,
       client_id: process.env.ATLASSIAN_CLIENT_ID,
@@ -57,20 +58,13 @@ class AtlassianServerManager extends AtlassianManager {
     })
 
     const tokenJson = (await tokenRes.json()) as OAuth2Response
-
-    const {access_token: accessToken, refresh_token: refreshToken, error} = tokenJson
-    if (error) {
-      throw new Error(`Atlassian: ${error}`)
-    }
-
-    return new AtlassianServerManager(accessToken, refreshToken)
+    if ('error' in tokenJson) return new Error(tokenJson.error)
+    const {access_token: accessToken, refresh_token: refreshToken, scope} = tokenJson
+    return {accessToken, refreshToken, scope}
   }
 
-  refreshToken?: string
-
-  constructor(accessToken: string, refreshToken?: string) {
+  constructor(accessToken: string) {
     super(accessToken)
-    this.refreshToken = refreshToken
   }
 }
 

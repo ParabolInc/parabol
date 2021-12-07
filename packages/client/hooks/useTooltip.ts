@@ -14,7 +14,7 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
   preferredMenuPosition: MenuPosition,
   options: Options = {}
 ) => {
-  const delay = options.delay || Duration.TOOLTIP_DELAY
+  const delay = options.delay ?? Duration.TOOLTIP_DELAY
   const isDisabled = !!options.disabled
   const disabledRef = useRef(isDisabled)
   useEffect(() => {

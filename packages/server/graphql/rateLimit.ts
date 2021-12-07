@@ -18,8 +18,8 @@ const rateLimit = <TSource = any, TContext = GQLContext, TArgs = any>({
   perMinute,
   perHour
 }: Options) => (resolve: GraphQLFieldResolver<TSource, TContext, TArgs>) => (
-  source,
-  args,
+  source: TSource,
+  args: TArgs,
   context: GQLContext,
   info: GraphQLResolveInfo
 ) => {

@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import RemovePokerTemplateScaleValuePayload from '../types/RemovePokerTemplateScaleValuePayload'
 
 const removePokerTemplateScaleValue = {
@@ -17,7 +18,11 @@ const removePokerTemplateScaleValue = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {scaleId, label}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {scaleId, label}: {scaleId: string; label: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

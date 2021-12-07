@@ -35,10 +35,9 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 export type SwipeColumn = (offset: number) => void
-
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
-  const {reflectionGroups, phases, spotlightReflection} = meeting
+  const {reflectionGroups, phases, spotlightReflectionId, spotlightGroup} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
@@ -46,30 +45,28 @@ const GroupingKanban = (props: Props) => {
   useHideBodyScroll()
   const dragIdRef = useRef<string>()
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
-
   const closeSpotlight = () => {
     sourceCloneRef.current = null
     onCloseSpotlight()
   }
-
   const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
     onClose: closeSpotlight,
     id: 'spotlight'
   })
   const {sourceRef, sourceCloneRef} = useAnimatedSpotlightSource(
     portalStatus,
-    spotlightReflection?.id,
+    spotlightReflectionId,
     dragIdRef
   )
 
   // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
   useEffect(() => {
-    if (spotlightReflection) {
+    if (spotlightGroup) {
       openPortal()
     } else {
       closePortal()
     }
-  }, [!spotlightReflection])
+  }, [!spotlightGroup])
 
   const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     sourceCloneRef.current = reflectionRef.current
@@ -79,15 +76,14 @@ const GroupingKanban = (props: Props) => {
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
-    for (let i = 0; i < reflectionGroups.length; i++) {
-      const group = reflectionGroups[i]
+    reflectionGroups.forEach((group) => {
       const {reflections, promptId} = group
-      container[promptId] = container[promptId] || []
-      container[promptId].push(group)
+      container[promptId] = container[promptId] ?? []
+      container[promptId]!.push(group)
       if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }
-    }
+    })
     return {groupsByPrompt: container, isAnyEditing: isEditing}
   }, [reflectionGroups])
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -135,7 +131,7 @@ const GroupingKanban = (props: Props) => {
       {modalPortal(
         <SpotlightModal
           closeSpotlight={onCloseSpotlight}
-          meeting={meeting}
+          meetingRef={meeting}
           sourceRef={sourceRef}
           portalStatus={portalStatus}
         />
@@ -148,7 +144,8 @@ export default createFragmentContainer(GroupingKanban, {
   meeting: graphql`
     fragment GroupingKanban_meeting on RetrospectiveMeeting {
       ...GroupingKanbanColumn_meeting
-      ...DraggableReflectionCard_meeting
+      ...ReflectionGroup_meeting
+      ...SpotlightModal_meeting
       id
       teamId
       phases {
@@ -169,9 +166,13 @@ export default createFragmentContainer(GroupingKanban, {
           isEditing
         }
       }
-      spotlightReflection {
+      spotlightReflectionId
+      spotlightGroup {
+        ...ReflectionGroup_reflectionGroup
         id
-        ...DraggableReflectionCard_reflection
+        reflections {
+          id
+        }
       }
     }
   `

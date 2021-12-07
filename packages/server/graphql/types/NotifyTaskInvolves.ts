@@ -26,7 +26,7 @@ const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext>({
     task: {
       type: Task,
       description: 'The task that now involves the userId',
-      resolve: async ({taskId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({taskId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const task = await dataLoader.get('tasks').load(taskId)
         if (!task) return null
@@ -43,7 +43,7 @@ const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext>({
     changeAuthor: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The TeamMember of the person that made the change',
-      resolve: ({changeAuthorId}, _args, {dataLoader}) => {
+      resolve: ({changeAuthorId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teamMembers').load(changeAuthorId)
       }
     },
@@ -53,7 +53,7 @@ const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext>({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team the task is on',
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     }

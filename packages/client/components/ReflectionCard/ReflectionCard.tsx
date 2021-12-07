@@ -34,6 +34,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import isDemoRoute from '~/utils/isDemoRoute'
+import remountDecorators from '../../utils/draftjs/remountDecorators'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -50,7 +51,7 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
   opacity: 1,
   position: 'absolute',
   right: 2,
-  visibility: showSpotlight ? 'visible' : 'hidden',
+  visibility: showSpotlight ? 'inherit' : 'hidden',
   zIndex: ZIndex.TOOLTIP,
   ':hover': {
     backgroundColor: PALETTE.SLATE_200
@@ -72,9 +73,11 @@ const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
   phaseType: NewMeetingPhaseTypeEnum,
   stackCount: number | undefined,
-  phases: any | null
+  phases: any | null,
+  isSpotlightSource: boolean
 ) => {
   const {isViewerCreator, isEditing, id} = reflection
+  if (isSpotlightSource) return true
   if (phases && isPhaseComplete('group', phases)) return true
   if (!isViewerCreator || isTempId(id)) return true
   if (phaseType === 'reflect') return stackCount && stackCount > 1
@@ -84,12 +87,21 @@ const getReadOnly = (
 
 const ReflectionCard = (props: Props) => {
   const {meeting, reflection, isClipped, openSpotlight, stackCount, showReactji, dataCy} = props
-  const {id: reflectionId, content, promptId, isViewerCreator, meetingId, reactjis} = reflection
+  const {
+    id: reflectionId,
+    content,
+    promptId,
+    isViewerCreator,
+    meetingId,
+    reactjis,
+    reflectionGroupId
+  } = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const isComplete = meeting?.localStage?.isComplete
   const phases = meeting ? meeting.phases : null
-  const spotlightReflectionId = meeting?.spotlightReflection?.id
-  const isSpotlightOpen = !!spotlightReflectionId
+  const spotlightGroupId = meeting?.spotlightGroup?.id
+  const isSpotlightSource = reflectionGroupId === spotlightGroupId
+  const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
   const reflectionRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
@@ -119,6 +131,11 @@ const ReflectionCard = (props: Props) => {
     }
     return () => updateIsEditing(false)
   }, [])
+
+  useEffect(() => {
+    const refreshedState = remountDecorators(() => editorState, meeting?.spotlightSearchQuery)
+    setEditorState(refreshedState)
+  }, [meeting?.spotlightSearchQuery])
 
   const handleContentUpdate = () => {
     if (isAndroid) {
@@ -189,7 +206,13 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
+  const readOnly = getReadOnly(
+    reflection,
+    phaseType as NewMeetingPhaseTypeEnum,
+    stackCount,
+    phases,
+    isSpotlightSource
+  )
   const userSelect = readOnly ? (phaseType === 'discuss' ? 'text' : 'none') : undefined
 
   const onToggleReactji = (emojiId: string) => {
@@ -217,8 +240,7 @@ const ReflectionCard = (props: Props) => {
 
   const handleClickSpotlight = (e: MouseEvent) => {
     e.stopPropagation()
-    const el = reflectionRef.current
-    if (openSpotlight && el) {
+    if (openSpotlight && reflectionRef.current) {
       openSpotlight(reflectionId, reflectionRef)
     }
   }
@@ -311,9 +333,10 @@ export default createFragmentContainer(ReflectionCard, {
           isComplete
         }
       }
-      spotlightReflection {
+      spotlightGroup {
         id
       }
+      spotlightSearchQuery
     }
   `
 })

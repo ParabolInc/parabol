@@ -1,48 +1,44 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {createFragmentContainer, QueryRenderer} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
+import React, {Suspense} from 'react'
+import {useFragment} from 'react-relay'
 import {MenuProps} from '../hooks/useMenu'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import githubScopingSearchFilterMenuQuery, {
+  GitHubScopingSearchFilterMenuQuery
+} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
+import {GitHubScopingSearchFilterMenuRoot_meeting$key} from '../__generated__/GitHubScopingSearchFilterMenuRoot_meeting.graphql'
 import GitHubScopingSearchFilterMenu from './GitHubScopingSearchFilterMenu'
-import {GitHubScopingSearchFilterMenuRoot_meeting} from '../__generated__/GitHubScopingSearchFilterMenuRoot_meeting.graphql'
-
-const query = graphql`
-  query GitHubScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
-    viewer {
-      ...GitHubScopingSearchFilterMenu_viewer
-    }
-  }
-`
+import MockFieldList from './MockFieldList'
 
 interface Props {
   menuProps: MenuProps
   teamId: string
-  meeting: GitHubScopingSearchFilterMenuRoot_meeting
+  meetingRef: GitHubScopingSearchFilterMenuRoot_meeting$key
 }
 
 const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
-  const {menuProps, teamId, meeting} = props
+  const {menuProps, teamId, meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment GitHubScopingSearchFilterMenuRoot_meeting on PokerMeeting {
+        id
+      }
+    `,
+    meetingRef
+  )
   const {id: meetingId} = meeting
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<GitHubScopingSearchFilterMenuQuery>(
+    githubScopingSearchFilterMenuQuery,
+    {meetingId, teamId}
+  )
+
+  if (!meetingId) return null
 
   return (
-    <QueryRenderer
-      variables={{teamId, meetingId}}
-      environment={atmosphere}
-      query={query}
-      fetchPolicy={'store-or-network' as any}
-      render={({props, error}) => {
-        const viewer = (props as any)?.viewer ?? null
-        return <GitHubScopingSearchFilterMenu viewer={viewer} error={error} menuProps={menuProps} />
-      }}
-    />
+    <Suspense fallback={<MockFieldList />}>
+      {queryRef && <GitHubScopingSearchFilterMenu queryRef={queryRef} menuProps={menuProps} />}
+    </Suspense>
   )
 }
 
-export default createFragmentContainer(GitHubScopingSearchFilterMenuRoot, {
-  meeting: graphql`
-    fragment GitHubScopingSearchFilterMenuRoot_meeting on PokerMeeting {
-      id
-    }
-  `
-})
+export default GitHubScopingSearchFilterMenuRoot

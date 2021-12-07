@@ -18,7 +18,7 @@ const UpgradeToProPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: resolveOrganization
     },
     teams: {
-      type: new GraphQLList(GraphQLNonNull(Team)),
+      type: new GraphQLList(new GraphQLNonNull(Team)),
       description: 'The updated teams under the org',
       resolve: resolveTeams
     },
@@ -29,7 +29,7 @@ const UpgradeToProPayload = new GraphQLObjectType<any, GQLContext>({
     meetings: {
       type: new GraphQLList(new GraphQLNonNull(NewMeeting)),
       description: 'the meetings that were showing conversion modals',
-      resolve: ({meetingIds}, _args, {dataLoader}) => {
+      resolve: ({meetingIds}, _args: unknown, {dataLoader}) => {
         return meetingIds ? dataLoader.get('newMeetings').loadMany(meetingIds) : null
       }
     }

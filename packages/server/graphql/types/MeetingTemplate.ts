@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {
   GraphQLID,
   GraphQLNonNull,
@@ -11,7 +12,7 @@ import Team from './Team'
 
 export const meetingTemplateFields = () => ({
   id: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
   createdAt: {
@@ -30,11 +31,11 @@ export const meetingTemplateFields = () => ({
     description: 'The name of the template'
   },
   orgId: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: '*Foreign key. The organization that owns the team that created the template'
   },
   scope: {
-    type: GraphQLNonNull(SharingScopeEnum),
+    type: new GraphQLNonNull(SharingScopeEnum),
     description: 'Who can see this template'
   },
   teamId: {
@@ -44,7 +45,7 @@ export const meetingTemplateFields = () => ({
   team: {
     type: new GraphQLNonNull(Team),
     description: 'The team this template belongs to',
-    resolve: async ({teamId}, _args, {dataLoader}) => {
+    resolve: async ({teamId}: {teamId: string}, _args: unknown, {dataLoader}: GQLContext) => {
       const team = await dataLoader.get('teams').load(teamId)
       return team
     }

@@ -27,7 +27,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {reflectionGroupId, title}: UpdateReflectionGroupTitleMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {

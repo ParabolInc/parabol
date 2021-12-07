@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {Threshold} from '../../../client/types/constEnums'
 import generateUpcomingInvoice from '../../billing/helpers/generateUpcomingInvoice'
@@ -14,7 +15,11 @@ export default {
       description: 'The id of the invoice'
     }
   },
-  async resolve(_source, {invoiceId}, {authToken, dataLoader}) {
+  async resolve(
+    _source: unknown,
+    {invoiceId}: {invoiceId: string},
+    {authToken, dataLoader}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
 
@@ -36,6 +41,6 @@ export default {
     ) {
       return currentInvoice
     }
-    return generateUpcomingInvoice(orgId)
+    return generateUpcomingInvoice(orgId, dataLoader)
   }
 } as any

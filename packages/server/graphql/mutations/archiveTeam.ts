@@ -7,17 +7,22 @@ import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
 export default {
-  type: GraphQLNonNull(ArchiveTeamPayload),
+  type: new GraphQLNonNull(ArchiveTeamPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {teamId}: {teamId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -37,7 +42,7 @@ export default {
         teamId
       }
     })
-    const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId)
+    const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId, dataLoader)
 
     if (!team) {
       return standardError(new Error('Already archived team'), {userId: viewerId})
@@ -65,10 +70,7 @@ export default {
       )
 
     if (notifications.length) {
-      await r
-        .table('Notification')
-        .insert(notifications)
-        .run()
+      await r.table('Notification').insert(notifications).run()
     }
 
     const data = {

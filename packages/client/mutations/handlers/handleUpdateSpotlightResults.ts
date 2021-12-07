@@ -12,13 +12,14 @@ const handleUpdateSpotlightResults = (
   const meeting = store.get(meetingId)
   // reflectionGroup is null if there's no target type
   if (!meeting || !reflectionGroup) return
-  const spotlightReflection = meeting?.getLinkedRecord('spotlightReflection')
-  const spotlightReflectionId = spotlightReflection?.getValue('id')
+  const spotlightSearchQuery = (meeting.getValue('spotlightSearchQuery') || '') as string
+  const spotlightGroup = meeting?.getLinkedRecord('spotlightGroup')
+  const spotlightGroupId = spotlightGroup?.getValue('id')
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  if (!viewer || !spotlightReflectionId) return
+  if (!viewer || !spotlightGroupId) return
   const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
-    reflectionId: spotlightReflectionId,
-    searchQuery: '' // TODO: add search query
+    reflectionGroupId: spotlightGroupId,
+    searchQuery: spotlightSearchQuery
   })
   if (!similarReflectionGroups) return
   const reflectionsCount = reflectionGroup?.getLinkedRecords('reflections')?.length
@@ -28,24 +29,28 @@ const handleUpdateSpotlightResults = (
   const isOldGroupEmpty =
     oldReflections?.length === 1 && oldReflections[0].getValue('id') === reflectionId
   const reflectionGroupId = reflectionGroup.getValue('id')
-  const groupsIds = similarReflectionGroups.map((group) => group.getValue('id'))
+  const groupsIds = similarReflectionGroups
+    .map((group) => group.getValue('id'))
+    .concat(spotlightGroupId)
   const isInSpotlight = groupsIds.includes(reflectionGroupId)
   const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
   // added to another group. Remove old reflection group
-  if (isOldGroupEmpty) {
+  if (isOldGroupEmpty && wasInSpotlight) {
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
-        searchQuery: '' // TODO: add search query
+        reflectionGroupId: spotlightGroupId,
+        searchQuery: spotlightSearchQuery
       }
     })
   }
   // ungrouping created a new group or was added to a group in the kanban
-  if ((reflectionsCount === 1 && wasInSpotlight) || (isOldGroupEmpty && !isInSpotlight)) {
+  // reflectionsCount is undefined when ungrouping
+  // don't use else if: when a result is added to a kanban group, remove old empty group and add new one
+  if (!isInSpotlight && reflectionsCount !== undefined && wasInSpotlight) {
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
-        searchQuery: '' // TODO: add search query
+        reflectionGroupId: spotlightGroupId,
+        searchQuery: spotlightSearchQuery
       }
     })
   }
