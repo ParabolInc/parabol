@@ -6,7 +6,7 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
-import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
+import {makeSection} from '../../mutations/helpers/notifications/makeSlackBlocks'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import getPg from '../../../postgres/getPg'
 

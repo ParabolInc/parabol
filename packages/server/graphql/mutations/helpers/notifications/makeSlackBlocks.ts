@@ -1,4 +1,4 @@
-import generateUID from '../../../generateUID'
+import generateUID from '../../../../generateUID'
 
 export const makeSection = (text: string) => ({
   type: 'section',
