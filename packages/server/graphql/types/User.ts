@@ -619,7 +619,10 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
       },
       resolve: async (_source: unknown, {userId}, {authToken, dataLoader}) => {
-        const userOnTeam = (await dataLoader.get('users').load(userId))!
+        const userOnTeam = await dataLoader.get('users').load(userId)
+        if (!userOnTeam) {
+          return standardError(new Error('Not on team'), {userId})
+        }
         // const teams = new Set(userOnTeam)
         const {tms} = userOnTeam
         if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
