@@ -87,7 +87,14 @@ export default {
       )
     }
     // using teamMembers to get the preferredName as we need the members for the notification part anyways
-    const {preferredName: viewerName} = teamMembers.find(({userId}) => userId === viewerId)!
+    const teamMember = teamMembers.find(({userId}) => userId === viewerId)
+    if (!teamMember) {
+      return standardError(new Error('User is not member of the team'), {
+        userId: viewerId,
+        tags: {teamId}
+      })
+    }
+    const {preferredName: viewerName} = teamMember
     const {preferredName: assigneeName = ''} =
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 

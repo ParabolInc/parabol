@@ -11,6 +11,10 @@ interface MessageSlackUserError {
   error: string
 }
 
+interface Input {
+  message: string
+}
+
 const messageAllSlackUsers = {
   type: new GraphQLNonNull(MessageAllSlackUsersPayload),
   description: 'Send a message to all authorised Slack users',
@@ -20,7 +24,7 @@ const messageAllSlackUsers = {
       description: 'The slack message that will be sent to all Slack users'
     }
   },
-  resolve: async (_source: unknown, {message}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {message}: Input, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     //AUTH
@@ -37,7 +41,14 @@ const messageAllSlackUsers = {
     const errors = [] as MessageSlackUserError[]
     for (const slackAuth of allSlackAuths) {
       const {botAccessToken, defaultTeamChannelId, userId} = slackAuth
-      const manager = new SlackServerManager(botAccessToken!)
+      if (!botAccessToken) {
+        errors.push({
+          userId,
+          error: 'No bot access token'
+        })
+        continue
+      }
+      const manager = new SlackServerManager(botAccessToken)
       if (!messagedTeamChannelIds.has(defaultTeamChannelId)) {
         const postMessageRes = await manager.postMessage(defaultTeamChannelId, message)
         messagedTeamChannelIds.add(defaultTeamChannelId)

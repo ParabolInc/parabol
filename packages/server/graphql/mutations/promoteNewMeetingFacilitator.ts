@@ -40,7 +40,10 @@ export default {
 
     // VALIDATION
     const newFacilitator = await dataLoader.get('users').load(facilitatorUserId)
-    if (!newFacilitator!.tms.includes(teamId)) {
+    if (!newFacilitator) {
+      return standardError(new Error('New facilitator does not exist'), {userId: viewerId})
+    }
+    if (!newFacilitator.tms.includes(teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 

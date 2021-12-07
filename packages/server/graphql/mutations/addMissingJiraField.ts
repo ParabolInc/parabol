@@ -82,7 +82,10 @@ const addMissingJiraField = {
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
-    const {fieldType, fieldId} = dimensionField!
+    if (!dimensionField) {
+      return {error: {message: 'No Jira dimension field found'}}
+    }
+    const {fieldType, fieldId} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
     if (screensResponse instanceof Error) {

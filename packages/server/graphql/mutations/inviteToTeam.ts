@@ -66,6 +66,9 @@ export default {
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])
+      if (!inviter) {
+        return standardError(new Error('User not found'), {userId: viewerId})
+      }
       const {name: teamName, isOnboardTeam, orgId} = team
       const organization = await dataLoader.get('organizations').load(orgId)
       const {tier, name: orgName} = organization
@@ -134,8 +137,8 @@ export default {
             inviteLink: makeAppURL(appOrigin, `team-invitation/${invitation.token}`, options),
             inviteeName: user ? user.preferredName : '',
             inviteeEmail: invitation.email,
-            inviterName: inviter!.preferredName,
-            inviterEmail: inviter!.email,
+            inviterName: inviter.preferredName,
+            inviterEmail: inviter.email,
             teamName,
             meeting: bestMeeting
           })
