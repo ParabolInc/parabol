@@ -31,7 +31,9 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
-export const freshAtlassianAuth = (parent: RootDataLoader) => {
+export const freshAtlassianAuth = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -86,9 +88,9 @@ export const freshAtlassianAuth = (parent: RootDataLoader) => {
   )
 }
 
-export const jiraRemoteProject: (
+export const jiraRemoteProject = (
   parent: RootDataLoader
-) => DataLoader<JiraRemoteProjectKey, JiraProject | null, string> = (parent: RootDataLoader) => {
+): DataLoader<JiraRemoteProjectKey, JiraProject | null, string> => {
   return new DataLoader<JiraRemoteProjectKey, JiraProject | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -114,11 +116,9 @@ export const jiraRemoteProject: (
   )
 }
 
-export const jiraIssue: (
+export const jiraIssue = (
   parent: RootDataLoader
-) => DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string> = (
-  parent: RootDataLoader
-) => {
+): DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string> => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -193,9 +193,9 @@ export const jiraIssue: (
 interface CloudNameLookup {
   [cloudId: string]: string
 }
-export const atlassianCloudNameLookup: (
+export const atlassianCloudNameLookup = (
   parent: RootDataLoader
-) => DataLoader<TeamUserKey, CloudNameLookup, string> = (parent: RootDataLoader) => {
+): DataLoader<TeamUserKey, CloudNameLookup, string> => {
   return new DataLoader<TeamUserKey, CloudNameLookup, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -225,9 +225,9 @@ interface CloudNameKey extends TeamUserKey {
   cloudId: string
 }
 
-export const atlassianCloudName: (
+export const atlassianCloudName = (
   parent: RootDataLoader
-) => DataLoader<CloudNameKey, string, string> = (parent: RootDataLoader) => {
+): DataLoader<CloudNameKey, string, string> => {
   return new DataLoader<CloudNameKey, string, string>(
     async (keys) => {
       const results = await Promise.allSettled(
