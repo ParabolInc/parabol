@@ -117,7 +117,8 @@ export const enum ExternalLinks {
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
-  TEAM = 'https://www.parabol.co/team/'
+  TEAM = 'https://www.parabol.co/team/',
+  LANDING_PAGE = 'https://www.parabol.co/'
 }
 
 export const enum Filter {

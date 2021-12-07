@@ -14,7 +14,8 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
-const publicPath = getWebpackPublicPath()
+
+const publicPath = `${getWebpackPublicPath()}server/dist/`
 
 const getNormalizedWebpackPublicPath = () => {
   let normalizedPath = publicPath
@@ -36,7 +37,7 @@ module.exports = ({isDeploy}) => ({
   },
   output: {
     filename: '[name].js',
-    publicPath: `${publicPath}server/dist/`,
+    publicPath,
     path: path.join(PROJECT_ROOT, 'dist')
   },
   resolve: {
@@ -61,7 +62,7 @@ module.exports = ({isDeploy}) => ({
   plugins: [
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[contenthash].js.map',
-      append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}server/dist/[url]`
+      append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`
     }),
     isDeploy &&
       new S3Plugin({
@@ -84,10 +85,7 @@ module.exports = ({isDeploy}) => ({
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
-            loader: 'file-loader',
-            options: {
-              publicPath: (url) => `${publicPath}${url}`
-            }
+            loader: 'file-loader'
           }
         ]
       }

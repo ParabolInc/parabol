@@ -1,7 +1,6 @@
 import {PALETTE} from '~/styles/paletteV3'
+import {ExternalLinks} from '~/types/constEnums'
 import authorIcon from '../../../../../../static/images/brand/mark-color@3x.png'
-import appOrigin from '../../../../appOrigin'
-import makeAppURL from '../../../../../client/utils/makeAppURL'
 
 export interface ButtonSpec {
   label: string
@@ -28,20 +27,15 @@ interface FieldAttachment extends FieldAttachmentHeader {
   fields: Array<Field>
 }
 
-const isUrlAbsolute = (url) => url.indexOf('://') > 0 || url.indexOf('//') === 0
-
 export const makeFieldsAttachment = (
   fields: Array<Field>,
   header?: FieldAttachmentHeader
 ): FieldAttachment => {
-  const absoluteAuthorIconUri = isUrlAbsolute(authorIcon)
-    ? authorIcon
-    : makeAppURL(appOrigin, authorIcon)
   const defaultHeader = {
     fallback: 'Parabol has a message for you',
-    author_icon: absoluteAuthorIconUri,
+    author_icon: authorIcon,
     author_name: 'Parabol',
-    author_link: 'https://parabol.co/',
+    author_link: ExternalLinks.LANDING_PAGE,
     color: PALETTE.GRAPE_500
   }
   return {

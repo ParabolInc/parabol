@@ -1,3 +1,4 @@
+require('./utils/dotenv')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
@@ -30,7 +31,8 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs'
+    libraryTarget: 'commonjs',
+    publicPath: `http://localhost:${process.env.PORT}/static/`
   },
   resolve: {
     alias: {
@@ -71,10 +73,7 @@ module.exports = {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
-            loader: 'file-loader',
-            options: {
-              publicPath: (url) => `static/${url}`
-            }
+            loader: 'file-loader'
           }
         ]
       }
