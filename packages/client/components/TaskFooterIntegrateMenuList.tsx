@@ -72,7 +72,7 @@ const getValue = (
 ) => {
   const jiraItemName = item?.remoteProject?.name ?? ''
   const githubName = item?.nameWithOwner ?? ''
-  const name = jiraItemName ?? githubName
+  const name = jiraItemName || githubName
   return name.toLowerCase()
 }
 

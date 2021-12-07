@@ -93,16 +93,14 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     )
     const label = 'Push with your credentials.'
     return (
-      <>
-        <TaskFooterIntegrateMenuList
-          menuProps={menuProps}
-          mutationProps={mutationProps}
-          placeholder={placeholder}
-          suggestedIntegrations={viewerSuggestedIntegrations}
-          task={task}
-          label={label}
-        />
-      </>
+      <TaskFooterIntegrateMenuList
+        menuProps={menuProps}
+        mutationProps={mutationProps}
+        placeholder={placeholder}
+        suggestedIntegrations={viewerSuggestedIntegrations}
+        task={task}
+        label={label}
+      />
     )
   }
 
@@ -113,16 +111,14 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     )
     const label = isViewerAssignee ? undefined : `Push as ${assigneeName}.`
     return (
-      <>
-        <TaskFooterIntegrateMenuList
-          menuProps={menuProps}
-          mutationProps={mutationProps}
-          placeholder={placeholder}
-          suggestedIntegrations={assigneeSuggestedIntegrations}
-          task={task}
-          label={label}
-        />
-      </>
+      <TaskFooterIntegrateMenuList
+        menuProps={menuProps}
+        mutationProps={mutationProps}
+        placeholder={placeholder}
+        suggestedIntegrations={assigneeSuggestedIntegrations}
+        task={task}
+        label={label}
+      />
     )
   }
   const label = isViewerAssignee

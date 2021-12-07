@@ -3,7 +3,7 @@ import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegr
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 
-export interface IntegrationByUserId {
+export interface IntegrationByTeamId {
   id: string
   userId: string
   service: 'github' | 'jira'
@@ -17,7 +17,7 @@ export interface IntegrationByUserId {
 
 const MAX_RECENT_INTEGRATIONS = 3
 export const useOnlyUserIntegrations = (
-  teamIntegrationsByUserId: IntegrationByUserId[],
+  teamIntegrationsByUserId: IntegrationByTeamId[],
   userId: string
 ) => {
   const userIntegrationsForTeam = teamIntegrationsByUserId.filter(
@@ -43,26 +43,24 @@ export const useOnlyUserIntegrations = (
     : undefined
 }
 
-export const getTeamIntegrationsByUserId = async (
+export const getTeamIntegrationsByTeamId = async (
   teamId: string
-): Promise<IntegrationByUserId[]> => {
+): Promise<IntegrationByTeamId[]> => {
   const r = await getRethink()
-  const res = await (r
-    .table('Task')
-    .getAll(teamId, {index: 'teamId'})
-    .filter((row) =>
-      row('integration')
-        .ne(null)
-        .default(false)
-    )
-    .group((row) => [
-      row('userId').default(null),
-      row('integration')('service'),
-      row('integration')('nameWithOwner').default(null),
-      row('integration')('projectKey').default(null),
-      row('integration')('avatar').default(null),
-      row('integration')('cloudId').default(null)
-    ]) as any)
+  const res = await (
+    r
+      .table('Task')
+      .getAll(teamId, {index: 'teamId'})
+      .filter((row) => row('integration').ne(null).default(false))
+      .group((row) => [
+        row('userId').default(null),
+        row('integration')('service'),
+        row('integration')('nameWithOwner').default(null),
+        row('integration')('projectKey').default(null),
+        row('integration')('avatar').default(null),
+        row('integration')('cloudId').default(null)
+      ]) as any
+  )
     .max('createdAt')('createdAt')
     .ungroup()
     .orderBy(r.desc('reduction'))
