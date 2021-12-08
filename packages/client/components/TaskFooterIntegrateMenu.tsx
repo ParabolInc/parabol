@@ -107,7 +107,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       isAssigneeIntegrated.hasGitHub,
       isAssigneeIntegrated.hasAtlassian
     )
-    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}.`
+    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (
       <TaskFooterIntegrateMenuList
         menuProps={menuProps}
