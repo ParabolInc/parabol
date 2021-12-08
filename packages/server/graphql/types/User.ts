@@ -52,6 +52,7 @@ import TeamInvitation from '../../database/types/TeamInvitation'
 import OrganizationType from '../../database/types/Organization'
 import SuggestedActionType from '../../database/types/SuggestedAction'
 import MeetingMemberType from '../../database/types/MeetingMember'
+import {UserFeatureFlagEnum} from './UserFlagEnum'
 import Reflection from '../../database/types/Reflection'
 import isValid from '../isValid'
 
@@ -85,9 +86,8 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     featureFlags: {
       type: new GraphQLNonNull(UserFeatureFlags),
       description: 'Any super power given to the user via a super user',
-      resolve: (source: any) => {
-        const featureFlags: string[] = source.featureFlags || []
-        const flagObj: {[key: string]: boolean} = {}
+      resolve: ({featureFlags}: {featureFlags: UserFeatureFlagEnum[]}) => {
+        const flagObj = {} as Record<UserFeatureFlagEnum, boolean>
         featureFlags.forEach((flag) => {
           flagObj[flag] = true
         })

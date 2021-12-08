@@ -61,11 +61,11 @@ const executeGraphQL = async (req: GQLRequest) => {
       ? await queryCache.fromID(docId, schema)
       : queryCache.fromString(source, schema)
     if (compiledQuery) {
-      response = ((await compiledQuery.query(
+      response = (await compiledQuery.query(
         rootValue,
         contextValue,
         variableValues
-      )) as any) as FormattedExecutionResult
+      )) as any as FormattedExecutionResult
     } else {
       response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
     }

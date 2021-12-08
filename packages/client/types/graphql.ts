@@ -51295,20 +51295,15 @@ export const enum TaskStatusEnum {
 }
 
 /**
- * The user account profile
+ * The types of flags that give an individual user super powers
  */
 export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
-   * true if jira is allowed
+   * true if spotlight is allowed
    */
-  jira: boolean;
-
-  /**
-   * true if jira is allowed
-   */
-  poker: boolean;
+  spotlight: boolean;
 }
 
 /**
@@ -57255,8 +57250,7 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  jira = 'jira',
-  poker = 'poker',
+  spotlight = 'spotlight',
 }
 
 export interface IAddGitHubAuthPayload {
