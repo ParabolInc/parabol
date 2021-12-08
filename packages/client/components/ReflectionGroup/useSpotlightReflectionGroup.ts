@@ -1,16 +1,26 @@
 import useSpotlightResults from '~/hooks/useSpotlightResults'
 import {useMemo} from 'react'
 import {ReflectionGroup_reflectionGroup} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {ReflectionGroup_meeting} from '~/__generated__/ReflectionGroup_meeting.graphql'
+import useSpotlightVisibleReflections from './useSpotlightVisibleReflections'
 
 const useSpotlightReflectionGroup = (
-  visibleReflections: ReflectionGroup_reflectionGroup['reflections'],
-  spotlightGroupId: string | undefined,
-  reflectionGroupId: string,
-  isBehindSpotlight: boolean
+  meeting: ReflectionGroup_meeting,
+  reflectionGroup: ReflectionGroup_reflectionGroup,
+  isBehindSpotlight: boolean,
+  reflectionIdsToHide?: string[] | null
 ) => {
+  const {spotlightGroup, spotlightSearchQuery} = meeting
+  const spotlightGroupId = spotlightGroup?.id
+  const {reflections, id: reflectionGroupId} = reflectionGroup
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isSpotlightOpen = !!spotlightGroupId
-  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, '', true) // TODO: add search query
+  const spotlightResultGroups = useSpotlightResults(meeting)
+  const visibleReflections = useSpotlightVisibleReflections(
+    reflections,
+    spotlightSearchQuery,
+    reflectionIdsToHide
+  )
   const isRemoteSpotlightSrc = useMemo(
     () => !!visibleReflections.find(({remoteDrag}) => remoteDrag?.isSpotlight),
     [visibleReflections]
@@ -23,7 +33,7 @@ const useSpotlightReflectionGroup = (
       ? (isViewerDraggingResult && !isSpotlightSrcGroup) || isBehindSpotlight // prevent grouping results into results
       : isRemoteSpotlightSrc // prevent dropping onto animating remote source
   }, [spotlightResultGroups, isSpotlightSrcGroup, isBehindSpotlight, isRemoteSpotlightSrc])
-  return [isRemoteSpotlightSrc, disableDrop]
+  return {isRemoteSpotlightSrc, disableDrop, visibleReflections}
 }
 
 export default useSpotlightReflectionGroup

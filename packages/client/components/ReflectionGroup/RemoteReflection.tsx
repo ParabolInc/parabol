@@ -77,15 +77,8 @@ const OFFSCREEN_PADDING = 16
 const getCoords = (
   remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
 ) => {
-  const {
-    targetId,
-    clientHeight,
-    clientWidth,
-    clientX,
-    clientY,
-    targetOffsetX,
-    targetOffsetY
-  } = remoteDrag
+  const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} =
+    remoteDrag
   const targetEl = targetId
     ? (document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement)
     : null
@@ -164,7 +157,7 @@ interface Props {
 const RemoteReflection = (props: Props) => {
   const {meeting, reflection, style, animation} = props
   const {id: reflectionId, content, isDropping, reflectionGroupId} = reflection
-  const {meetingMembers, spotlightGroup} = meeting
+  const {meetingMembers} = meeting
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection['remoteDrag']
   >
@@ -172,7 +165,7 @@ const RemoteReflection = (props: Props) => {
   const [editorState] = useEditorState(content)
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
-  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, '') // TODO: add search query
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const isInViewerSpotlightResults = useMemo(
     () => !!spotlightResultGroups?.find(({id}) => id === reflectionGroupId),
     [spotlightResultGroups]
@@ -264,15 +257,13 @@ export default createFragmentContainer(RemoteReflection, {
   `,
   meeting: graphql`
     fragment RemoteReflection_meeting on RetrospectiveMeeting {
+      ...useSpotlightResults_meeting
       id
       meetingMembers {
         userId
         user {
           isConnected
         }
-      }
-      spotlightGroup {
-        id
       }
     }
   `
