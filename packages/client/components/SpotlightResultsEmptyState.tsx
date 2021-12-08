@@ -8,7 +8,7 @@ const EmptyState = styled('div')<{height: number | string}>(({height}) => ({
   justifyContent: 'center',
   alignContent: 'center',
   flexWrap: 'wrap',
-  minHeight: 320,
+  minHeight: 160,
   height
 }))
 
