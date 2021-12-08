@@ -69,8 +69,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   )
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
-  // not 100% sure how this could be, maybe if we manually deleted a user?
-  // https://github.com/ParabolInc/parabol/issues/2980
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {
     integrations: viewerIntegrations,
@@ -91,7 +89,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       isViewerIntegrated.hasGitHub,
       isViewerIntegrated.hasAtlassian
     )
-    const label = 'Push with your credentials.'
+    const label = 'Push with your credentials'
     return (
       <TaskFooterIntegrateMenuList
         menuProps={menuProps}

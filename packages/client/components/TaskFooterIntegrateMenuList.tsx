@@ -76,7 +76,7 @@ const getValue = (
   return name.toLowerCase()
 }
 
-const TaskFooterIntegrateMenu = (props: Props) => {
+const TaskFooterIntegrateMenuList = (props: Props) => {
   const {mutationProps, menuProps, placeholder, suggestedIntegrations, task, label} = props
   const {hasMore} = suggestedIntegrations
   const items = suggestedIntegrations.items || []
@@ -186,7 +186,7 @@ graphql`
   }
 `
 
-export default createFragmentContainer(TaskFooterIntegrateMenu, {
+export default createFragmentContainer(TaskFooterIntegrateMenuList, {
   suggestedIntegrations: graphql`
     fragment TaskFooterIntegrateMenuList_suggestedIntegrations on SuggestedIntegrationQueryPayload {
       hasMore
