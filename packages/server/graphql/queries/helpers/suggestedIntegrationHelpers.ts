@@ -18,10 +18,10 @@ export interface IntegrationByTeamId {
 
 const MAX_RECENT_INTEGRATIONS = 3
 export const useOnlyUserIntegrations = (
-  teamIntegrationsByUserId: IntegrationByTeamId[],
+  teamIntegrationsByTeamId: IntegrationByTeamId[],
   userId: string
 ) => {
-  const userIntegrationsForTeam = teamIntegrationsByUserId.filter(
+  const userIntegrationsForTeam = teamIntegrationsByTeamId.filter(
     (integration) => integration.userId === userId
   )
   const aMonthAgo = new Date(Date.now() - ms('30d'))
@@ -36,7 +36,7 @@ export const useOnlyUserIntegrations = (
 
   // at least 1 person has 1 integration on the team
   const integrationSet = new Set()
-  teamIntegrationsByUserId.forEach(({id}) => integrationSet.add(id))
+  teamIntegrationsByTeamId.forEach(({id}) => integrationSet.add(id))
 
   // the user is integrated against every team integration, use those
   return userIntegrationsForTeam.length === integrationSet.size
