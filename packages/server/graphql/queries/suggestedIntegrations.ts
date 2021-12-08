@@ -12,6 +12,11 @@ import {
   useOnlyUserIntegrations
 } from './helpers/suggestedIntegrationHelpers'
 
+export type PermLookup = {
+  jira: boolean
+  github: boolean
+}
+
 export default {
   description: 'The integrations that the user would probably like to use',
   type: new GraphQLNonNull(SuggestedIntegrationQueryPayload),
@@ -33,7 +38,8 @@ export default {
         return standardError(new Error('Not on same team as user'), {userId: viewerId})
       }
     }
-    const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId)
+    const permLookup: PermLookup = await getPermsByTaskService(dataLoader, teamId, userId)
+    const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId, permLookup)
 
     // if the team has no integrations, return every possible integration for the user
     if (!teamIntegrationsByTeamId.length) {
@@ -45,8 +51,6 @@ export default {
       return {items: userIntegrationsForTeam, hasMore: true}
     }
 
-    const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-
     const aMonthAgo = new Date(Date.now() - ms('30d'))
     const recentUserIntegrations = teamIntegrationsByTeamId.filter(
       (integration) => integration.userId === userId && integration.lastUsedAt >= aMonthAgo
@@ -57,9 +61,7 @@ export default {
     const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByTeamId]
     // dedupes for perms, user vs team items, as well as possible name changes
     userAndTeamItems.forEach((integration) => {
-      if (!permLookup[integration.service] || idSet.has(integration.id)) {
-        return
-      }
+      if (idSet.has(integration.id)) return
       idSet.add(integration.id)
       dedupedTeamIntegrations.push(integration)
     })

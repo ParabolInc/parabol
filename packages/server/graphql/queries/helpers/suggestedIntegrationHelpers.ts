@@ -2,6 +2,7 @@ import ms from 'ms'
 import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
+import {PermLookup} from '../suggestedIntegrations'
 
 export interface IntegrationByTeamId {
   id: string
@@ -44,7 +45,8 @@ export const useOnlyUserIntegrations = (
 }
 
 export const getTeamIntegrationsByTeamId = async (
-  teamId: string
+  teamId: string,
+  permLookup: PermLookup
 ): Promise<IntegrationByTeamId[]> => {
   const r = await getRethink()
   const res = await (
@@ -77,7 +79,7 @@ export const getTeamIntegrationsByTeamId = async (
   return (
     res
       // jira integrations are making it through that don't have a projectKey
-      .filter((res) => res.service !== 'jira' || res.projectKey)
+      .filter((res) => permLookup[res.service] && (res.service !== 'jira' || res.projectKey))
       .map((item) => ({
         ...item,
         id: makeSuggestedIntegrationId(item)

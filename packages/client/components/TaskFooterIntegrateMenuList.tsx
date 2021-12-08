@@ -70,7 +70,7 @@ const Label = styled('div')({
 const getValue = (
   item: NonNullable<TaskFooterIntegrateMenuList_suggestedIntegrations['items']>[0]
 ) => {
-  const jiraItemName = item?.remoteProject?.name ?? ''
+  const jiraItemName = item?.projectKey ?? ''
   const githubName = item?.nameWithOwner ?? ''
   const name = jiraItemName || githubName
   return name.toLowerCase()
