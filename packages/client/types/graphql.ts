@@ -51304,6 +51304,11 @@ export interface IUserFeatureFlags {
    * true if spotlight is allowed
    */
   spotlight: boolean;
+
+  /**
+   * true if standups is allowed
+   */
+  standups: boolean;
 }
 
 /**
@@ -57251,6 +57256,7 @@ export interface IAddFeatureFlagPayload {
  */
 export const enum UserFlagEnum {
   spotlight = 'spotlight',
+  standups = 'standups',
 }
 
 export interface IAddGitHubAuthPayload {
