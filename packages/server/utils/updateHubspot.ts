@@ -41,7 +41,7 @@ const contactKeys: Record<string, string> = {
   payLaterClickCount: 'pay_later_click_count',
   preferredName: 'parabol_preferred_name',
   tier: 'highest_tier'
-}
+} as const
 
 const companyKeys: Record<string, string> = {
   lastMetAt: 'last_met_at',
@@ -51,7 +51,7 @@ const companyKeys: Record<string, string> = {
   meetingCount: 'meeting_count',
   monthlyTeamStreakMax: 'monthly_team_streak_max',
   tier: 'highest_tier'
-}
+} as const
 
 const queries: Record<string, string> = {
   'Changed name': `
@@ -223,7 +223,7 @@ query ArchiveTeam($userId: ID!) {
       }
     }
   }`
-}
+} as const
 
 const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
 const hapiKey = process.env.HUBSPOT_API_KEY
@@ -413,7 +413,7 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
   } else if (event === 'Account Removed') {
     const {parabolPayload} = properties
     if (!parabolPayload) return
-    const {user} = parabolPayload as unknown as ParabolPayload
+    const {user} = (parabolPayload as unknown) as ParabolPayload
     const {email, company, ...contact} = user
     await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
   } else if (tierChanges.includes(event)) {

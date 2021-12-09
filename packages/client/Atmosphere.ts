@@ -141,7 +141,7 @@ export default class Atmosphere extends Environment {
       accept: 'application/json',
       'x-application-authorization': this.authToken ? `Bearer ${this.authToken}` : '',
       'x-correlation-id': connectionId || ''
-    }
+    } as const
 
     /* if uploadables, don't set content type bc we want the browser to set it o*/
     if (!uploadables) headers['content-type'] = 'application/json'
