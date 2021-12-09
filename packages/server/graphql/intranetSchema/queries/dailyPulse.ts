@@ -126,7 +126,7 @@ const dailyPulse = {
       makeSection(`*Top Logins*`),
       loginsList
     ]
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(channelId, blocks)
     return res.ok
   }

@@ -75,24 +75,24 @@ export default {
     stage.isComplete = true
     stage.endAt = now
 
-    const completedMeeting = ((await r
+    const completedMeeting = (await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
         {
           endedAt: now,
           phases,
-          commentCount: (r
+          commentCount: r
             .table('Comment')
             .getAll(r.args(discussionIds), {index: 'discussionId'})
             .count()
-            .default(0) as unknown) as number,
+            .default(0) as unknown as number,
           storyCount
         },
         {returnChanges: true, nonAtomic: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run()) as unknown) as MeetingPoker
+      .run()) as unknown as MeetingPoker
     if (!completedMeeting) {
       return standardError(new Error('Completed poker meeting does not exist'), {
         userId: viewerId
@@ -123,10 +123,7 @@ export default {
           meetingId
         })
     )
-    await r
-      .table('TimelineEvent')
-      .insert(events)
-      .run()
+    await r.table('TimelineEvent').insert(events).run()
 
     const data = {
       meetingId,

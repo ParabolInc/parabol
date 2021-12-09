@@ -6,6 +6,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
+import isValid from '../isValid'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -36,14 +37,8 @@ const removeOrgUser = {
       }
     }
 
-    const {
-      tms,
-      taskIds,
-      kickOutNotificationIds,
-      teamIds,
-      teamMemberIds,
-      organizationUserId
-    } = await removeFromOrg(userId, orgId, viewerId, dataLoader)
+    const {tms, taskIds, kickOutNotificationIds, teamIds, teamMemberIds, organizationUserId} =
+      await removeFromOrg(userId, orgId, viewerId, dataLoader)
 
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
 
@@ -64,7 +59,9 @@ const removeOrgUser = {
       publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', teamData, subOptions)
     })
 
-    const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds)
+    const remainingTeamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
+      .filter(isValid)
+      .flat()
     remainingTeamMembers.forEach((teamMember) => {
       if (teamMemberIds.includes(teamMember.id)) return
       publish(SubscriptionChannel.TASK, teamMember.userId, 'RemoveOrgUserPayload', data, subOptions)

@@ -27,10 +27,7 @@ const servePlaceholderImage = async (res: HttpResponse) => {
     )
   }
   res.cork(() => {
-    res
-      .writeStatus('200')
-      .writeHeader('Content-Type', 'image/png')
-      .end(jiraPlaceholderBuffer)
+    res.writeStatus('200').writeHeader('Content-Type', 'image/png').end(jiraPlaceholderBuffer)
   })
 }
 
@@ -54,10 +51,7 @@ const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpReq
   }
 
   res.cork(() => {
-    res
-      .writeStatus('200')
-      .writeHeader('Content-Type', mimeType)
-      .end(imageBuffer)
+    res.writeStatus('200').writeHeader('Content-Type', mimeType).end(imageBuffer)
   })
 })
 

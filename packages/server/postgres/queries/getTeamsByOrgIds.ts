@@ -1,19 +1,18 @@
-import {
-  getTeamsByOrgIdsQuery,
-  IGetTeamsByOrgIdsQueryResult
-} from './generated/getTeamsByOrgIdsQuery'
+import {getTeamsByOrgIdsQuery} from './generated/getTeamsByOrgIdsQuery'
 import getPg from '../getPg'
+import {mapToTeam} from './getTeamsByIds'
 
-const getTeamsByOrgIds = (
+const getTeamsByOrgIds = async (
   orgIds: string[] | readonly string[],
   options: {isArchived?: boolean} = {}
-): Promise<IGetTeamsByOrgIdsQueryResult[]> => {
+) => {
   const {isArchived} = options
   const queryParameters = {
     orgIds,
     isArchived: !!isArchived
   }
-  return getTeamsByOrgIdsQuery.run(queryParameters as any, getPg())
+  const teams = await getTeamsByOrgIdsQuery.run(queryParameters as any, getPg())
+  return mapToTeam(teams)
 }
 
 export default getTeamsByOrgIds

@@ -10,10 +10,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
   const r = await getRethink()
   const now = new Date()
 
-  const organization = await r
-    .table('Organization')
-    .get(orgId)
-    .run()
+  const organization = await r.table('Organization').get(orgId).run()
   if (!organization) throw new Error('Bad orgId')
 
   const {stripeId, stripeSubscriptionId} = organization
@@ -51,14 +48,11 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
           stripeId: customer.id,
           updatedAt: now
         }),
-      teamIds: r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .update({
-          isPaid: true,
-          tier: 'pro',
-          updatedAt: now
-        })
+      teamIds: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
+        isPaid: true,
+        tier: 'pro',
+        updatedAt: now
+      })
     }).run(),
     updateTeamByOrgId(
       {

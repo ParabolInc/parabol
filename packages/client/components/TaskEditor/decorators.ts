@@ -1,17 +1,23 @@
-import {CompositeDecorator, EditorState, ContentBlock} from 'draft-js'
 import EditorLink from './EditorLink'
+import {CompositeDecorator, ContentBlock, ContentState, EditorState} from 'draft-js'
 import Hashtag from './Hashtag'
 import Mention from './Mention'
 import SearchHighlight from './SearchHighlight'
 import TruncatedEllipsis from './TruncatedEllipsis'
 import {SetEditorState} from '../../types/draft'
 
-const findEntity = (entityType) => (contentBlock, callback, contentState) => {
-  contentBlock.findEntityRanges((character) => {
-    const entityKey = character.getEntity()
-    return entityKey !== null && contentState.getEntity(entityKey).getType() === entityType
-  }, callback)
-}
+const findEntity =
+  (entityType: string) =>
+  (
+    contentBlock: ContentBlock,
+    callback: (start: number, end: number) => void,
+    contentState: ContentState
+  ) => {
+    contentBlock.findEntityRanges((character) => {
+      const entityKey = character.getEntity()
+      return entityKey !== null && contentState.getEntity(entityKey).getType() === entityType
+    }, callback)
+  }
 
 const decorators = (
   getEditorState: () => EditorState | undefined,

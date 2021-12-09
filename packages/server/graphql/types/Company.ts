@@ -8,7 +8,6 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import TierEnum from './TierEnum'
 import OrganizationType from '../../database/types/Organization'
-import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 
 const Company = new GraphQLObjectType<any, GQLContext>({
   name: 'Company',
@@ -61,7 +60,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
           errorFilter
         )
         const teams = teamsByOrgId.flat()
-        const teamIds = teams.map(({id}: IGetTeamsByIdsQueryResult) => id)
+        const teamIds = teams.map(({id}) => id)
         if (teamIds.length === 0) return 0
         const lastMetAt = await r
           .table('NewMeeting')
@@ -83,7 +82,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
           errorFilter
         )
         const teams = teamsByOrgId.flat()
-        const teamIds = teams.map(({id}: IGetTeamsByIdsQueryResult) => id)
+        const teamIds = teams.map(({id}) => id)
         if (teamIds.length === 0) return 0
         return r
           .table('NewMeeting')
@@ -105,26 +104,16 @@ const Company = new GraphQLObjectType<any, GQLContext>({
           errorFilter
         )
         const teams = teamsByOrgId.flat()
-        const teamIds = teams.map(({id}: IGetTeamsByIdsQueryResult) => id)
+        const teamIds = teams.map(({id}) => id)
         if (teamIds.length === 0) return 0
         return (
           r
             .table('NewMeeting')
             .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter((row) =>
-              row('endedAt')
-                .default(null)
-                .ne(null)
-            )
+            .filter((row) => row('endedAt').default(null).ne(null))
             // number of months since unix epoch
             .merge((row) => ({
-              epochMonth: row('endedAt')
-                .month()
-                .add(
-                  row('endedAt')
-                    .year()
-                    .mul(12)
-                )
+              epochMonth: row('endedAt').month().add(row('endedAt').year().mul(12))
             }))
             .group((row) => [row('teamId'), row('epochMonth')])
             .count()

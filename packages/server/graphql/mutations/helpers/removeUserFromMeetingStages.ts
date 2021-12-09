@@ -1,5 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
+import {isEstimateStage} from '../../meetingTypePredicates'
 
 /*
  * Removes the following user-specific details from a stage:
@@ -34,7 +35,7 @@ const removeUserFromMeetingStages = async (
             readyToAdvance.splice(userIdIdx, 1)
             isChanged = true
           }
-          if (stage.phaseType === 'ESTIMATE') {
+          if (isEstimateStage(stage)) {
             const userIdIdx = stage.scores.map(({userId}) => userId).indexOf(userId)
             if (userIdIdx !== -1) {
               stage.scores.splice(userIdIdx, 1)

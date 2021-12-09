@@ -8496,9 +8496,7 @@ export type Mutation = {
   /** Pin an issue to a repository */
   pinIssue?: Maybe<PinIssuePayload>
   /** Regenerates the identity provider recovery codes for an enterprise */
-  regenerateEnterpriseIdentityProviderRecoveryCodes?: Maybe<
-    RegenerateEnterpriseIdentityProviderRecoveryCodesPayload
-  >
+  regenerateEnterpriseIdentityProviderRecoveryCodes?: Maybe<RegenerateEnterpriseIdentityProviderRecoveryCodesPayload>
   /** Regenerates a verifiable domain's verification token. */
   regenerateVerifiableDomainToken?: Maybe<RegenerateVerifiableDomainTokenPayload>
   /** Reject all pending deployments under one or more environments */
@@ -8578,61 +8576,35 @@ export type Mutation = {
   /** Updates the role of an enterprise administrator. */
   updateEnterpriseAdministratorRole?: Maybe<UpdateEnterpriseAdministratorRolePayload>
   /** Sets whether private repository forks are enabled for an enterprise. */
-  updateEnterpriseAllowPrivateRepositoryForkingSetting?: Maybe<
-    UpdateEnterpriseAllowPrivateRepositoryForkingSettingPayload
-  >
+  updateEnterpriseAllowPrivateRepositoryForkingSetting?: Maybe<UpdateEnterpriseAllowPrivateRepositoryForkingSettingPayload>
   /** Sets the base repository permission for organizations in an enterprise. */
-  updateEnterpriseDefaultRepositoryPermissionSetting?: Maybe<
-    UpdateEnterpriseDefaultRepositoryPermissionSettingPayload
-  >
+  updateEnterpriseDefaultRepositoryPermissionSetting?: Maybe<UpdateEnterpriseDefaultRepositoryPermissionSettingPayload>
   /** Sets whether organization members with admin permissions on a repository can change repository visibility. */
-  updateEnterpriseMembersCanChangeRepositoryVisibilitySetting?: Maybe<
-    UpdateEnterpriseMembersCanChangeRepositoryVisibilitySettingPayload
-  >
+  updateEnterpriseMembersCanChangeRepositoryVisibilitySetting?: Maybe<UpdateEnterpriseMembersCanChangeRepositoryVisibilitySettingPayload>
   /** Sets the members can create repositories setting for an enterprise. */
-  updateEnterpriseMembersCanCreateRepositoriesSetting?: Maybe<
-    UpdateEnterpriseMembersCanCreateRepositoriesSettingPayload
-  >
+  updateEnterpriseMembersCanCreateRepositoriesSetting?: Maybe<UpdateEnterpriseMembersCanCreateRepositoriesSettingPayload>
   /** Sets the members can delete issues setting for an enterprise. */
-  updateEnterpriseMembersCanDeleteIssuesSetting?: Maybe<
-    UpdateEnterpriseMembersCanDeleteIssuesSettingPayload
-  >
+  updateEnterpriseMembersCanDeleteIssuesSetting?: Maybe<UpdateEnterpriseMembersCanDeleteIssuesSettingPayload>
   /** Sets the members can delete repositories setting for an enterprise. */
-  updateEnterpriseMembersCanDeleteRepositoriesSetting?: Maybe<
-    UpdateEnterpriseMembersCanDeleteRepositoriesSettingPayload
-  >
+  updateEnterpriseMembersCanDeleteRepositoriesSetting?: Maybe<UpdateEnterpriseMembersCanDeleteRepositoriesSettingPayload>
   /** Sets whether members can invite collaborators are enabled for an enterprise. */
-  updateEnterpriseMembersCanInviteCollaboratorsSetting?: Maybe<
-    UpdateEnterpriseMembersCanInviteCollaboratorsSettingPayload
-  >
+  updateEnterpriseMembersCanInviteCollaboratorsSetting?: Maybe<UpdateEnterpriseMembersCanInviteCollaboratorsSettingPayload>
   /** Sets whether or not an organization admin can make purchases. */
-  updateEnterpriseMembersCanMakePurchasesSetting?: Maybe<
-    UpdateEnterpriseMembersCanMakePurchasesSettingPayload
-  >
+  updateEnterpriseMembersCanMakePurchasesSetting?: Maybe<UpdateEnterpriseMembersCanMakePurchasesSettingPayload>
   /** Sets the members can update protected branches setting for an enterprise. */
-  updateEnterpriseMembersCanUpdateProtectedBranchesSetting?: Maybe<
-    UpdateEnterpriseMembersCanUpdateProtectedBranchesSettingPayload
-  >
+  updateEnterpriseMembersCanUpdateProtectedBranchesSetting?: Maybe<UpdateEnterpriseMembersCanUpdateProtectedBranchesSettingPayload>
   /** Sets the members can view dependency insights for an enterprise. */
-  updateEnterpriseMembersCanViewDependencyInsightsSetting?: Maybe<
-    UpdateEnterpriseMembersCanViewDependencyInsightsSettingPayload
-  >
+  updateEnterpriseMembersCanViewDependencyInsightsSetting?: Maybe<UpdateEnterpriseMembersCanViewDependencyInsightsSettingPayload>
   /** Sets whether organization projects are enabled for an enterprise. */
-  updateEnterpriseOrganizationProjectsSetting?: Maybe<
-    UpdateEnterpriseOrganizationProjectsSettingPayload
-  >
+  updateEnterpriseOrganizationProjectsSetting?: Maybe<UpdateEnterpriseOrganizationProjectsSettingPayload>
   /** Updates an enterprise's profile. */
   updateEnterpriseProfile?: Maybe<UpdateEnterpriseProfilePayload>
   /** Sets whether repository projects are enabled for a enterprise. */
-  updateEnterpriseRepositoryProjectsSetting?: Maybe<
-    UpdateEnterpriseRepositoryProjectsSettingPayload
-  >
+  updateEnterpriseRepositoryProjectsSetting?: Maybe<UpdateEnterpriseRepositoryProjectsSettingPayload>
   /** Sets whether team discussions are enabled for an enterprise. */
   updateEnterpriseTeamDiscussionsSetting?: Maybe<UpdateEnterpriseTeamDiscussionsSettingPayload>
   /** Sets whether two factor authentication is required for all users in an enterprise. */
-  updateEnterpriseTwoFactorAuthenticationRequiredSetting?: Maybe<
-    UpdateEnterpriseTwoFactorAuthenticationRequiredSettingPayload
-  >
+  updateEnterpriseTwoFactorAuthenticationRequiredSetting?: Maybe<UpdateEnterpriseTwoFactorAuthenticationRequiredSettingPayload>
   /** Updates an environment. */
   updateEnvironment?: Maybe<UpdateEnvironmentPayload>
   /** Sets whether an IP allow list is enabled on an owner. */
@@ -8640,9 +8612,7 @@ export type Mutation = {
   /** Updates an IP allow list entry. */
   updateIpAllowListEntry?: Maybe<UpdateIpAllowListEntryPayload>
   /** Sets whether IP allow list configuration for installed GitHub Apps is enabled on an owner. */
-  updateIpAllowListForInstalledAppsEnabledSetting?: Maybe<
-    UpdateIpAllowListForInstalledAppsEnabledSettingPayload
-  >
+  updateIpAllowListForInstalledAppsEnabledSetting?: Maybe<UpdateIpAllowListForInstalledAppsEnabledSettingPayload>
   /** Updates an Issue. */
   updateIssue?: Maybe<UpdateIssuePayload>
   /** Updates an IssueComment object. */
