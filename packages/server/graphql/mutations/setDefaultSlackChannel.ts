@@ -37,7 +37,7 @@ const setDefaultSlackChannel = {
       return standardError(new Error('Slack authentication not found'), {userId: viewerId})
     }
     const {id: slackAuthId, botAccessToken, defaultTeamChannelId, slackUserId} = slackAuth
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const channelInfo = await manager.getConversationInfo(slackChannelId)
 
     // should either be a public / private channel or the slackUserId if messaging from @Parabol

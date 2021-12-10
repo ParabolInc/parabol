@@ -15,6 +15,7 @@ import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServ
 import DemoDiscussStage from './DemoDiscussStage'
 import DemoGenericMeetingStage from './DemoGenericMeetingStage'
 import DemoUser from './DemoUser'
+import initBotScript from './initBotScript'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
@@ -156,7 +157,10 @@ const initSlackAuth = (userId: string) => ({
   notifications: [initSlackNotification(userId)]
 })
 
-const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
+const initDemoTeamMember = (
+  {id: userId, preferredName, picture}: {id: string; preferredName: string; picture: string},
+  idx: number
+) => {
   const teamMemberId = toTeamMemberId(demoTeamId, userId)
   return {
     __typename: 'TeamMember',
@@ -189,7 +193,7 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
   }
 }
 
-const initDemoMeetingMember = (user) => {
+const initDemoMeetingMember = (user: DemoUser) => {
   return {
     __typename: 'RetrospectiveMeetingMember',
     id: toTeamMemberId(RetroDemo.MEETING_ID, user.id),
@@ -217,7 +221,11 @@ const initDemoOrg = () => {
   } as const
 }
 
-const initDemoTeam = (organization, teamMembers, newMeeting) => {
+const initDemoTeam = (
+  organization: ReturnType<typeof initDemoOrg>,
+  teamMembers,
+  newMeeting: ReturnType<typeof initNewMeeting>
+) => {
   return {
     __typename: 'Team',
     id: demoTeamId,
@@ -418,7 +426,7 @@ type BaseUser = {
   picture: string
 }
 
-const initDB = (botScript) => {
+const initDB = (botScript: ReturnType<typeof initBotScript>) => {
   const baseUsers = [
     {
       preferredName: 'You',

@@ -1,8 +1,11 @@
 import Redis from 'ioredis'
+import ms from 'ms'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
-const MAX_TIMEOUT = 10000
+const STANDARD_TIMEOUT = ms('10s')
+const ADHOC_TIMEOUT = ms('1m')
+
 interface Job {
   resolve: (payload: any) => void
   timeoutId: NodeJS.Timeout
@@ -12,12 +15,13 @@ const {SERVER_ID, REDIS_URL} = process.env
 
 interface BaseRequest {
   serverChannel?: string
+  isAdHoc?: boolean
 }
 
 export default class PubSubPromise<Request extends BaseRequest, Response> {
   jobs = {} as {[jobId: string]: Job}
-  publisher = new Redis(REDIS_URL)
-  subscriber = new Redis(REDIS_URL)
+  publisher = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_pub'})
+  subscriber = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_sub'})
   subChannel: string
   stream: string
   jobCounter = 0
@@ -45,10 +49,12 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
     return new Promise<Response>((resolve, reject) => {
       const nextJob = numToBase64(this.jobCounter++)
       const jobId = `${SERVER_ID}:${nextJob}`
+      const {isAdHoc} = request
+      const timeout = isAdHoc ? ADHOC_TIMEOUT : STANDARD_TIMEOUT
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
         reject(new Error('TIMEOUT'))
-      }, MAX_TIMEOUT)
+      }, timeout)
       const previousJob = this.jobs[jobId]
       if (previousJob) {
         sendToSentry(new Error('REDIS JOB ALREADY EXISTS'), {tags: {jobId}})

@@ -3,17 +3,12 @@ import {GQLContext} from '../graphql'
 
 const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
   name: 'UserFeatureFlags',
-  description: 'The user account profile',
+  description: 'The types of flags that give an individual user super powers',
   fields: () => ({
-    jira: {
+    spotlight: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if jira is allowed',
-      resolve: ({jira}) => !!jira
-    },
-    poker: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if jira is allowed',
-      resolve: ({poker}) => !!poker
+      description: 'true if spotlight is allowed',
+      resolve: ({spotlight}) => !!spotlight
     }
   })
 })

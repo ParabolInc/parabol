@@ -24,7 +24,7 @@ const RemoteReflectionDrag = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLString,
       resolve: async ({dragUserId}, _args: unknown, {dataLoader}: GQLContext) => {
         const user = await dataLoader.get('users').load(dragUserId)
-        return user.preferredName
+        return user?.preferredName
       }
     },
     isSpotlight: {

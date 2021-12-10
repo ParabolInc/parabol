@@ -4,6 +4,7 @@ import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
+import {ScheduledJobUnion} from '../graphql/intranetSchema/mutations/runScheduledJobs'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import ActionMeetingMember from './types/ActionMeetingMember'
@@ -37,7 +38,6 @@ import ReflectionGroup from './types/ReflectionGroup'
 import RetroMeetingMember from './types/RetroMeetingMember'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
 import SAML from './types/SAML'
-import ScheduledJob from './types/ScheduledJob'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
@@ -153,7 +153,7 @@ export type RethinkSchema = {
     index: 'domains'
   }
   ScheduledJob: {
-    type: ScheduledJob
+    type: ScheduledJobUnion
     index: 'runAt' | 'type'
   }
   SecureDomain: {
@@ -239,7 +239,7 @@ const getRethink = async () => {
   }
   // this is important because pm2 will restart the process & for whatever reason r isn't always healthy
   await r.waitForHealthy()
-  return (r as unknown) as ParabolR
+  return r as unknown as ParabolR
 }
 
 export default getRethink

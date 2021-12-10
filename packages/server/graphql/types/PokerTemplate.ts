@@ -19,10 +19,7 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
       description: 'The dimensions that are part of this template',
       resolve: async ({id: templateId}, _args: unknown, {dataLoader}) => {
         const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
-        const activeDimensions = dimensions.filter(
-          ({removedAt}: {removedAt: Date | undefined}) => !removedAt
-        )
-        return activeDimensions
+        return dimensions.filter(({removedAt}) => !removedAt)
       }
     },
     dimension: {

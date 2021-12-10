@@ -10,7 +10,6 @@ import {
   IGetDiscussionsByIdQueryResult
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -18,28 +17,35 @@ import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
+import getMattermostAuthByUserIdTeamId, {
+  GetMattermostAuthByUserIdTeamIdResult
+} from '../postgres/queries/getMattermostAuthByUserIdTeamId'
+import getMattermostBestAuthByUserIdTeamId, {
+  GetMattermostBestAuthByUserIdTeamIdResult
+} from '../postgres/queries/getMattermostBestAuthByUserIdTeamId'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByIds, {Team} from '../postgres/queries/getTeamsByIds'
 import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
 import getTemplateScaleRefsByIds, {
   TemplateScaleRef
 } from '../postgres/queries/getTemplateScaleRefsByIds'
+import {getUsersByIds} from '../postgres/queries/getUsersByIds'
+import IUser from '../postgres/types/IUser'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
-import ProxiedCache from './ProxiedCache'
 import RootDataLoader from './RootDataLoader'
 
 export interface UserTasksKey {
   first: number
-  after: number | string
-  userIds: string[] | null
+  after?: Date
+  userIds: string[]
   teamIds: string[]
-  archived: boolean
-  includeUnassigned: boolean
-  statusFilters?: TaskStatusEnum[]
+  archived?: boolean
+  statusFilters: TaskStatusEnum[]
   filterQuery?: string
+  includeUnassigned?: boolean
 }
 
 export interface ReactablesKey {
@@ -66,12 +72,20 @@ const reactableLoaders = [
 
 // TODO: refactor if the interface pattern is used a total of 3 times
 
-export const users = () => {
-  return new ProxiedCache('User')
+export const users = (parent: RootDataLoader) => {
+  return new DataLoader<string, IUser | undefined, string>(
+    async (userIds) => {
+      const users = await getUsersByIds(userIds)
+      return normalizeRethinkDbResults(userIds, users)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 }
 
 export const teams = (parent: RootDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
+  new DataLoader<string, Team, string>(
     async (teamIds) => {
       const teams = await getTeamsByIds(teamIds)
       return normalizeRethinkDbResults(teamIds, teams)
@@ -82,7 +96,7 @@ export const teams = (parent: RootDataLoader) =>
   )
 
 export const teamsByOrgIds = (parent: RootDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdsQueryResult[], string>(
+  new DataLoader<string, Team[], string>(
     async (orgIds) => {
       const teamLoader = parent.get('teams')
       const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
@@ -95,7 +109,7 @@ export const teamsByOrgIds = (parent: RootDataLoader) =>
         teamsByOrgId.push(team)
         map[team.orgId] = teamsByOrgId
         return map
-      }, {} as {[key: string]: IGetTeamsByIdsQueryResult[]})
+      }, {} as {[key: string]: Team[]})
       return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
     },
     {
@@ -121,14 +135,16 @@ export const commentCountByDiscussionId = (parent: RootDataLoader) => {
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
       const r = await getRethink()
-      const groups = (await (r
-        .table('Comment')
-        .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-        .group('discussionId') as any)
+      const groups = (await (
+        r
+          .table('Comment')
+          .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+          .group('discussionId') as any
+      )
         .count()
         .ungroup()
         .run()) as {group: string; reduction: number}[]
-      const lookup = {}
+      const lookup: Record<string, number> = {}
       groups.forEach(({group, reduction}) => {
         lookup[group] = reduction
       })
@@ -243,9 +259,7 @@ export const userTasks = (parent: RootDataLoader) => {
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
-                  : task('tags')
-                      .contains('archived')
-                      .not()
+                  : task('tags').contains('archived').not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true
@@ -323,6 +337,46 @@ export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
         `${teamId}:${dimensionName}:${nameWithOwner}`
+    }
+  )
+}
+
+export const mattermostAuthByUserIdTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {userId: string; teamId: string},
+    GetMattermostAuthByUserIdTeamIdResult | null | undefined,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => getMattermostAuthByUserIdTeamId(userId, teamId))
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
+    }
+  )
+}
+
+export const mattermostBestAuthByUserIdTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {userId: string; teamId: string},
+    GetMattermostBestAuthByUserIdTeamIdResult | null | undefined,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => getMattermostBestAuthByUserIdTeamId(userId, teamId))
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
     }
   )
 }

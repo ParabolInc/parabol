@@ -5,6 +5,7 @@ import {resolveGQLStagesFromPhase} from '../resolvers'
 import GenericMeetingStage from './GenericMeetingStage'
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
 import ReflectPrompt from './ReflectPrompt'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 
 const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectPhase',
@@ -27,7 +28,9 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts used during the reflect phase',
       resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const meeting = (await dataLoader
+          .get('newMeetings')
+          .load(meetingId)) as MeetingRetrospective
         const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
         // only show prompts that were created before the meeting and
         // either have not been removed or they were removed after the meeting was created

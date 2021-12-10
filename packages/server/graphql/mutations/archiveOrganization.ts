@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import getRethink from '../../database/rethinkDriver'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
@@ -10,6 +9,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
 import IUser from '../../postgres/types/IUser'
+import isValid from '../isValid'
 
 export default {
   type: new GraphQLNonNull(ArchiveOrganizationPayload),
@@ -54,9 +54,9 @@ export default {
       }
     })
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
-    const teamIds = teams.map(({id}: IGetTeamsByIdsQueryResult) => id)
+    const teamIds = teams.map(({id}) => id)
     const teamArchiveResults = (await Promise.all(
-      teamIds.map((teamId: string) => safeArchiveTeam(teamId))
+      teamIds.map((teamId: string) => safeArchiveTeam(teamId, dataLoader))
     )) as any
     const allRemovedSuggestedActionIds = [] as string[]
     const allUserIds = [] as string[]
@@ -86,7 +86,7 @@ export default {
     }
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'ArchiveOrganizationPayload', data, subOptions)
     const users = await dataLoader.get('users').loadMany(uniqueUserIds)
-    users.forEach((user?: IUser) => {
+    users.filter(isValid).forEach((user?: IUser) => {
       if (!user) return
       const {id, tms} = user
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})

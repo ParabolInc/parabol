@@ -11,6 +11,9 @@ import {GQLContext} from '../graphql'
 import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
+import isValid from '../isValid'
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -41,10 +44,7 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -90,7 +90,7 @@ export default {
           if (task.integration.service === 'jira') {
             await upsertAtlassianAuths([
               {
-                ...sourceTeamAuth,
+                ...(sourceTeamAuth as AtlassianAuth),
                 teamId
               }
             ])
@@ -101,7 +101,7 @@ export default {
           }
           if (task.integration.service === 'github') {
             await upsertGitHubAuth({
-              ...sourceTeamAuth,
+              ...(sourceTeamAuth as GitHubAuth),
               teamId
             })
             // dataLoader does not allow to refresh the value, so clear the updated one
@@ -119,9 +119,9 @@ export default {
     }
 
     // filter mentions of old team members from task content
-    const [oldTeamMembers, newTeamMembers] = await dataLoader
-      .get('teamMembersByTeamId')
-      .loadMany([oldTeamId, teamId])
+    const [oldTeamMembers, newTeamMembers] = (
+      await dataLoader.get('teamMembersByTeamId').loadMany([oldTeamId, teamId])
+    ).filter(isValid)
     const oldTeamUserIds = oldTeamMembers.map(({userId}) => userId)
     const newTeamUserIds = newTeamMembers.map(({userId}) => userId)
     const userIdsOnlyOnOldTeam = oldTeamUserIds.filter((oldTeamUserId) => {
@@ -152,10 +152,7 @@ export default {
           .filter({teamId})
           .delete({returnChanges: true})('changes')(0)('old_val')
           .default(null),
-      newTask: r
-        .table('Task')
-        .get(taskId)
-        .update(updates),
+      newTask: r.table('Task').get(taskId).update(updates),
       taskHistory: r
         .table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {
@@ -175,7 +172,7 @@ export default {
     }).run()
 
     if (deletedConflictingIntegrationTask) {
-      const task = (deletedConflictingIntegrationTask as unknown) as Task
+      const task = deletedConflictingIntegrationTask as unknown as Task
       const isPrivate = task.tags.includes('private')
       const data = {task}
       newTeamMembers.forEach(({userId}) => {

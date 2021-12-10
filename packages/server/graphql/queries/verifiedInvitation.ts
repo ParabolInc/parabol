@@ -2,12 +2,11 @@ import dns, {MxRecord} from 'dns'
 import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
-import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import IUser from '../../postgres/types/IUser'
-import db from '../../db'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
+import IUser from '../../postgres/types/IUser'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
 import {GQLContext} from '../graphql'
@@ -62,7 +61,7 @@ export default {
       } = teamInvitation
       const [teams, inviter] = await Promise.all([
         getTeamsByIds([teamId]),
-        db.read('User', invitedBy)
+        dataLoader.get('users').load(invitedBy)
       ])
       const team = teams[0]!
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)

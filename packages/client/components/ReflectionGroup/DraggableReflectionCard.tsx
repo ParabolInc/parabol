@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
@@ -56,6 +56,7 @@ interface Props {
   staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
+  isSpotlightEntering?: boolean
 }
 
 export interface TargetBBox {
@@ -76,9 +77,10 @@ const DraggableReflectionCard = (props: Props) => {
     openSpotlight,
     isDraggable,
     swipeColumn,
-    dataCy
+    dataCy,
+    isSpotlightEntering
   } = props
-  const {id: meetingId, teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
+  const {teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
   const {id: reflectionId, isDropping, isEditing, remoteDrag} = reflection
   const spotlightGroupId = spotlightGroup?.id
@@ -86,7 +88,7 @@ const DraggableReflectionCard = (props: Props) => {
   const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
-  const spotlightResultGroups = useSpotlightResults(spotlightGroupId, '', true) // TODO: add search query
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const isReflectionIdInSpotlight = useMemo(() => {
     return (
       reflectionId === spotlightReflectionId ||
@@ -103,7 +105,6 @@ const DraggableReflectionCard = (props: Props) => {
     reflection,
     drag,
     staticIdx,
-    meetingId,
     teamId,
     staticReflectionCount,
     swipeColumn
@@ -112,28 +113,17 @@ const DraggableReflectionCard = (props: Props) => {
   const showDragCursor = isDraggable && canHandleDrag && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event
   const handleDrag = canHandleDrag ? onMouseDown : undefined
-  // if spotlight was just opened and card is in the middle of dropping we let it drop into original position
-  const [isFinishingRemoteDragging, setIsFinishingRemoteDragging] = useState(
-    () => isDropping && isSpotlightOpen && !!remoteDrag
-  )
-  // if the card was finishing remote drag and it was dropped into the original position, let it behave normally
-  useEffect(() => {
-    if (isFinishingRemoteDragging && !isDropping) {
-      setIsFinishingRemoteDragging(false)
-    }
-  }, [isFinishingRemoteDragging, isDropping])
 
   return (
     <DragWrapper
       ref={(c) => {
-        if (isFinishingRemoteDragging) {
-          return
-        }
-        // if the spotlight is closed, this card is the single source of truth
+        // If the spotlight is closed, this card is the single source of truth
         // Else, if it's a remote drag that is not in the spotlight
         // Else, if this is the instance in the source or search results
+        // And Spotlight modal isn't entering. This throws off dropping remote card position
         const isPriorityCard =
-          !isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight
+          (!isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight) &&
+          !isSpotlightEntering
         if (isPriorityCard) {
           drag.ref = c
         }
@@ -183,6 +173,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
     fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
       ...RemoteReflection_meeting
+      ...useSpotlightResults_meeting
       id
       teamId
       localStage {

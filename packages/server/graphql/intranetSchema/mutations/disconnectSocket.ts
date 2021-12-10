@@ -1,18 +1,21 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import db from '../../../db'
 import {getUserId} from '../../../utils/authorization'
+import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
+import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
-import getRedis from '../../../utils/getRedis'
 import {UserPresence} from './connectSocket'
-import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 export default {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
   type: DisconnectSocketPayload,
-  resolve: async (_source: unknown, _args: unknown, {authToken, socketId}: GQLContext) => {
+  resolve: async (
+    _source: unknown,
+    _args: unknown,
+    {authToken, dataLoader, socketId}: GQLContext
+  ) => {
     // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
     const redis = getRedis()
 
@@ -21,9 +24,14 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    const user = await db.read('User', userId)
-    const tms = user?.tms ?? []
-    const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    const [user, userPresence] = await Promise.all([
+      dataLoader.get('users').load(userId),
+      redis.lrange(`presence:${userId}`, 0, -1)
+    ])
+    if (!user) {
+      throw new Error('User does not exist')
+    }
+    const tms = user.tms ?? []
     const disconnectingSocket = userPresence.find(
       (socket) => (JSON.parse(socket) as UserPresence).socketId === socketId
     )
