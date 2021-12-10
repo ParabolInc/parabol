@@ -205,8 +205,7 @@ export const makeResolve =
   (source: any, _args: any, {dataLoader}: GQLContext) => {
     const idValue = source[idName]
     const method = isMany ? 'loadMany' : 'load'
-    const dataLoaderMethod = dataLoader.get(dataLoaderName)[method] as any
-    return idValue ? dataLoaderMethod(idValue) : source[docName]
+    return idValue ? (dataLoader.get(dataLoaderName)[method] as any)(idValue) : source[docName]
   }
 
 export const resolveFilterByTeam =
