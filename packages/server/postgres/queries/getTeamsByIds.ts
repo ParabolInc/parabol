@@ -25,12 +25,12 @@ export const mapToTeam = (result: IGetTeamsByIdsQueryResult[] | IGetTeamsByOrgId
         .filter(isNotNull)
         .map((jiraDimensionField: any) => ({
           dimensionName: jiraDimensionField.dimensionName,
-          cloudId: jiraDimensionField.dimensionName,
+          cloudId: jiraDimensionField.cloudId,
+          projectKey: jiraDimensionField.projectKey,
           issueKey: jiraDimensionField.issueKey,
-          projectKey: jiraDimensionField.dimensionName,
           fieldName: jiraDimensionField.fieldName,
-          fieldType: jiraDimensionField.dimensionName,
-          fieldId: jiraDimensionField.dimensionName
+          fieldType: jiraDimensionField.fieldType,
+          fieldId: jiraDimensionField.fieldId
         }))
     } as Team
   })
