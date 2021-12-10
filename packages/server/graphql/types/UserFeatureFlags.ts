@@ -9,6 +9,11 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if spotlight is allowed',
       resolve: ({spotlight}) => !!spotlight
+    },
+    standups: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if standups is allowed',
+      resolve: ({standups}) => !!standups
     }
   })
 })
