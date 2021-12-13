@@ -72,17 +72,6 @@ const useTrebuchetEvents = () => {
 
         if (isReconnect) {
           atmosphere.retries.clear()
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            autoDismiss: 0,
-            message: 'You’re offline, Please refresh to continue',
-            key: 'offlineRefresh',
-            action: {
-              label: 'Refresh',
-              callback: () => {
-                window.location.reload()
-              }
-            }
-          })
           atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
         }
       } else if (isReconnect) {
