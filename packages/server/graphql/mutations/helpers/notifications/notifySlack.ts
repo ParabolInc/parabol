@@ -14,12 +14,12 @@ import sendToSentry from '../../../../utils/sendToSentry'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import errorFilter from '../../../errorFilter'
 import {DataLoaderWorker} from '../../../graphql'
-import appOrigin from '../../../../appOrigin'
 import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import MeetingAction from '../../../../database/types/MeetingAction'
 import MeetingPoker from '../../../../database/types/MeetingPoker'
 import {makeSection, makeSections, makeButtons} from './makeSlackBlocks'
 import getSummaryText from './getSummaryText'
+import appOrigin from '../../../../appOrigin'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -62,7 +62,7 @@ const notifySlack = async (
     const {notification, auth} = slackDetails[i]
     const {channelId} = notification
     const {botAccessToken, userId} = auth
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(channelId!, slackMessage, notificationText)
     segmentIo.track({
       userId,
@@ -203,7 +203,7 @@ export const notifySlackTimeLimitStart = async (
     const {auth, notification} = slackDetail
     const {channelId} = notification
     const {botAccessToken} = auth
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const fallbackDate = formatWeekday(scheduledEndTime)
     const fallbackTime = formatTime(scheduledEndTime)
     const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
@@ -220,6 +220,6 @@ export const notifySlackTimeLimitStart = async (
       makeSection(`*Link:*\n<${meetingUrl}|${maybeMeetingShortLink}>`),
       makeButtons([button])
     ]
-    await manager.postMessage(channelId, blocks, title)
+    await manager.postMessage(channelId!, blocks, title)
   })
 }

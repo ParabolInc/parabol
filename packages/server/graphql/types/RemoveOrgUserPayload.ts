@@ -33,12 +33,12 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
     teams: {
       type: new GraphQLList(new GraphQLNonNull(Team)),
       description: 'The teams the user was removed from',
-      resolve: resolveFilterByTeam(resolveTeams, ({id}) => id)
+      resolve: resolveFilterByTeam(resolveTeams as any, ({id}) => id)
     },
     teamMembers: {
       type: new GraphQLList(new GraphQLNonNull(TeamMember)),
       description: 'The teamMembers removed',
-      resolve: resolveFilterByTeam(resolveTeamMembers, ({teamId}) => teamId)
+      resolve: resolveFilterByTeam(resolveTeamMembers as any, ({teamId}) => teamId)
     },
     updatedTasks: {
       type: new GraphQLList(new GraphQLNonNull(Task)),

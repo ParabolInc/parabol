@@ -28,14 +28,12 @@ import removeEmptyTasks from './helpers/removeEmptyTasks'
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
   const r = await getRethink()
-  const taskMax = await (r
-    .table('Task')
-    .getAll(r.args(userIds), {index: 'userId'})
-    .filter((task) =>
-      task('tags')
-        .contains('archived')
-        .not()
-    ) as any)
+  const taskMax = await (
+    r
+      .table('Task')
+      .getAll(r.args(userIds), {index: 'userId'})
+      .filter((task) => task('tags').contains('archived').not()) as any
+  )
     .max('sortOrder')('sortOrder')
     .default(0)
     .run()
@@ -53,7 +51,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
         .table('Task')
         .get(task('id'))
         .update({
-          sortOrder: (task('sortOrder') as unknown) as number
+          sortOrder: task('sortOrder') as unknown as number
         })
     })
     .run()
@@ -94,10 +92,7 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
       teamMemberId: agendaItem.teamMemberId
     })
   })
-  await r
-    .table('AgendaItem')
-    .insert(clonedPins)
-    .run()
+  await r.table('AgendaItem').insert(clonedPins).run()
 }
 
 const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
@@ -120,17 +115,9 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
       .filter({status: DONE})
-      .filter((task) =>
-        task('tags')
-          .contains('archived')
-          .not()
-      )
+      .filter((task) => task('tags').contains('archived').not())
       .run(),
-    r
-      .table('AgendaItem')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})
-      .run()
+    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run()
   ])
 
   const agendaItemPhase = getPhase(phases, 'agendaitems')
@@ -151,11 +138,11 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .update(
         {
           agendaItemCount: activeAgendaItems.length,
-          commentCount: (r
+          commentCount: r
             .table('Comment')
             .getAll(r.args(discussionIds), {index: 'discussionId'})
             .count()
-            .default(0) as unknown) as number,
+            .default(0) as unknown as number,
           taskCount: tasks.length
         },
         {nonAtomic: true}
@@ -208,7 +195,7 @@ export default {
     stage.isComplete = true
     stage.endAt = now
 
-    const completedCheckIn = ((await r
+    const completedCheckIn = (await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
@@ -219,7 +206,7 @@ export default {
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run()) as unknown) as MeetingAction
+      .run()) as unknown as MeetingAction
 
     if (!completedCheckIn) {
       return standardError(new Error('Completed check-in meeting does not exist'), {
@@ -251,10 +238,7 @@ export default {
         })
     )
     const timelineEventId = events[0].id as string
-    await r
-      .table('TimelineEvent')
-      .insert(events)
-      .run()
+    await r.table('TimelineEvent').insert(events).run()
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')

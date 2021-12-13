@@ -1,11 +1,14 @@
 import {GraphQLEnumType} from 'graphql'
 
+export type UserFeatureFlagEnum = 'spotlight' | 'standups' | 'gitlab'
+
 const UserFlagEnum = new GraphQLEnumType({
   name: 'UserFlagEnum',
   description: 'A flag to give an individual user super powers',
   values: {
-    gitlab: {},
-    video: {}
+    spotlight: {},
+    standups: {},
+    gitlab: {}
   }
 })
 

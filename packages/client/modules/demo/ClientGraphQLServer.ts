@@ -152,7 +152,7 @@ const makeReflectionGroupThread = () => ({
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
   db: RetroDemoDB
-  getTempId = (prefix) => `${prefix}${this.db._tempID++}`
+  getTempId = (prefix: string) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
   isNew = true

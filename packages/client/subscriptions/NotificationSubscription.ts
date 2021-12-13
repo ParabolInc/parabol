@@ -108,7 +108,7 @@ const subscription = graphql`
           id
           featureFlags {
             gitlab
-            video
+            spotlight
           }
         }
       }

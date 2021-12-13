@@ -22,16 +22,16 @@ import {toEpochSeconds} from '../../../../utils/epochTime'
 
 const notifyMattermost = async (
   event: EventEnum,
-  webhookUri: string,
+  webhookUrl: string,
   userId: string,
   teamId: string,
   textOrAttachmentsArray: string | unknown[],
   notificationText?: string
 ) => {
-  const manager = new MattermostServerManager(webhookUri)
+  const manager = new MattermostServerManager(webhookUrl)
   const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
-    sendToSentry(result, {userId, tags: {teamId, event, webhookUri}})
+    sendToSentry(result, {userId, tags: {teamId, event, webhookUrl}})
     return result
   }
   segmentIo.track({
@@ -47,7 +47,7 @@ const notifyMattermost = async (
 }
 
 export const notifyWebhookConfigUpdated = async (
-  webhookUri: string,
+  webhookUrl: string,
   userId: string,
   teamId: string
 ) => {
@@ -66,7 +66,7 @@ export const notifyWebhookConfigUpdated = async (
       }
     )
   ]
-  return await notifyMattermost('meetingEnd', webhookUri, userId, teamId, attachments)
+  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
 }
 
 export const startMattermostMeeting = async (
@@ -75,12 +75,12 @@ export const startMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const webhookUri = await MattermostServerManager.getBestWebhook(
+  const webhookUrl = await MattermostServerManager.getBestWebhook(
     meeting.facilitatorUserId,
     teamId,
     dataLoader
   )
-  if (!webhookUri) return null
+  if (!webhookUrl) return null
 
   const searchParams = {
     utm_source: 'mattermost meeting start',
@@ -116,7 +116,7 @@ export const startMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingStart', webhookUri, userId, teamId, attachments)
+  return await notifyMattermost('meetingStart', webhookUrl, userId, teamId, attachments)
 }
 
 const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
@@ -161,12 +161,12 @@ export const endMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const webhookUri = await MattermostServerManager.getBestWebhook(
+  const webhookUrl = await MattermostServerManager.getBestWebhook(
     meeting.facilitatorUserId,
     teamId,
     dataLoader
   )
-  if (!webhookUri) return null
+  if (!webhookUrl) return null
   const team = await dataLoader.get('teams').load(teamId)
   const {facilitatorUserId: userId} = meeting
   const summaryText = getSummaryText(meeting)
@@ -198,7 +198,7 @@ export const endMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingEnd', webhookUri, userId, teamId, attachments)
+  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
 }
 
 export const notifyMattermostTimeLimitStart = async (
@@ -208,12 +208,12 @@ export const notifyMattermostTimeLimitStart = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const webhookUri = await MattermostServerManager.getBestWebhook(
+  const webhookUrl = await MattermostServerManager.getBestWebhook(
     meeting.facilitatorUserId,
     teamId,
     dataLoader
   )
-  if (!webhookUri) return null
+  if (!webhookUrl) return null
 
   const team = await dataLoader.get('teams').load(teamId)
   const {name: meetingName, phases, facilitatorStageId, facilitatorUserId: userId} = meeting
@@ -273,7 +273,7 @@ export const notifyMattermostTimeLimitStart = async (
 
   return await notifyMattermost(
     'MEETING_STAGE_TIME_LIMIT_START',
-    webhookUri,
+    webhookUrl,
     userId,
     teamId,
     attachments
@@ -287,19 +287,19 @@ export const notifyMattermostTimeLimitEnd = async (
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {facilitatorUserId: userId} = meeting
-  const webhookUri = await MattermostServerManager.getBestWebhook(
+  const webhookUrl = await MattermostServerManager.getBestWebhook(
     meeting.facilitatorUserId,
     teamId,
     dataLoader
   )
-  if (!webhookUri) return null
+  if (!webhookUrl) return null
 
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
 
   return await notifyMattermost(
     'MEETING_STAGE_TIME_LIMIT_END',
-    webhookUri,
+    webhookUrl,
     teamId,
     userId,
     messageText

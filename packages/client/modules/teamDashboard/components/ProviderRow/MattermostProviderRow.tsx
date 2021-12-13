@@ -13,7 +13,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Breakpoint, Layout} from '../../../../types/constEnums'
+import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import MattermostPanel from './MattermostPanel'
@@ -109,9 +109,7 @@ const MattermostProviderRow = (props: Props) => {
   const {mattermost} = integrations
   const [isConnectClicked, setConnectClicked] = useState(false)
   const isActive = mattermost?.isActive
-  const {togglePortal, originRef, menuPortal, menuProps, terminatePortal} = useMenu(
-    MenuPosition.UPPER_RIGHT
-  )
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   return (
@@ -119,8 +117,8 @@ const MattermostProviderRow = (props: Props) => {
       <CardTop>
         <MattermostProviderLogo />
         <RowInfo>
-          <ProviderName>Mattermost</ProviderName>
-          <RowInfoCopy>Push notifications to Mattermost</RowInfoCopy>
+          <ProviderName>{Providers.MATTERMOST_NAME}</ProviderName>
+          <RowInfoCopy>{Providers.MATTERMOST_DESC}</RowInfoCopy>
         </RowInfo>
         {isActive ? (
           <ListAndMenu>

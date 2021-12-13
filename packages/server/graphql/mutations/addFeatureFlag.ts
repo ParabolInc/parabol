@@ -1,15 +1,17 @@
+import {isSuperUser} from './../../utils/authorization'
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import standardError from '../../utils/standardError'
 import getPg from '../../postgres/getPg'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import IUser from '../../postgres/types/IUser'
-import {requireSU} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
-import UserFlagEnum from '../types/UserFlagEnum'
+import UserFlagEnum, {UserFeatureFlagEnum} from '../types/UserFlagEnum'
 
 export default {
   type: new GraphQLNonNull(AddFeatureFlagPayload),
@@ -31,14 +33,24 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {emails, domain, flag}: {emails: string[] | null; domain: string | null; flag: string},
+    {
+      emails,
+      domain,
+      flag
+    }: {emails: string[] | null; domain: string | null; flag: UserFeatureFlagEnum},
     {authToken, dataLoader}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId}
 
     // AUTH
-    requireSU(authToken)
+    const viewerId = getUserId(authToken)
+    const isAddingFlagToViewer = !emails?.length && !domain
+    if (!isAddingFlagToViewer && !isSuperUser(authToken)) {
+      return standardError(new Error('Not authorised to add feature flag'), {
+        userId: viewerId
+      })
+    }
 
     // RESOLUTION
     const users = [] as IUser[]
@@ -55,7 +67,7 @@ export default {
       return {error: {message: 'No users found matching the email or domain'}}
     }
 
-    const userIds = users.map(({id}) => id)
+    const userIds = isAddingFlagToViewer ? [viewerId] : users.map(({id}) => id)
     await appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
     userIds.forEach((userId) => {
       const data = {userId}

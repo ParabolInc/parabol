@@ -30,7 +30,8 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
-    libraryTarget: 'commonjs'
+    libraryTarget: 'commonjs',
+    publicPath: `http://localhost:${process.env.PORT}/static/`
   },
   resolve: {
     alias: {
@@ -71,10 +72,7 @@ module.exports = {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
-            loader: 'file-loader',
-            options: {
-              publicPath: (url) => `static/${url}`
-            }
+            loader: 'file-loader'
           }
         ]
       }

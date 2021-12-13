@@ -51461,20 +51461,25 @@ export const enum TaskStatusEnum {
 }
 
 /**
- * The user account profile
+ * The types of flags that give an individual user super powers
  */
 export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
+   * true if spotlight is allowed
+   */
+  spotlight: boolean;
+
+  /**
+   * true if standups is allowed
+   */
+  standups: boolean;
+
+  /**
    * true if gitlab is allowed
    */
   gitlab: boolean;
-
-  /**
-   * true if the user has access to retro meeting video
-   */
-  video: boolean;
 }
 
 /**
@@ -57441,8 +57446,9 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
+  spotlight = 'spotlight',
+  standups = 'standups',
   gitlab = 'gitlab',
-  video = 'video',
 }
 
 export interface IAddGitHubAuthPayload {

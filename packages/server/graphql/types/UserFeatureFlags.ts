@@ -3,17 +3,22 @@ import {GQLContext} from '../graphql'
 
 const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
   name: 'UserFeatureFlags',
-  description: 'The user account profile',
+  description: 'The types of flags that give an individual user super powers',
   fields: () => ({
+    spotlight: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if spotlight is allowed',
+      resolve: ({spotlight}) => !!spotlight
+    },
+    standups: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if standups is allowed',
+      resolve: ({standups}) => !!standups
+    },
     gitlab: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if gitlab is allowed',
       resolve: ({gitlab}) => !!gitlab
-    },
-    video: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the user has access to retro meeting video',
-      resolve: ({video}) => !!video
     }
   })
 })

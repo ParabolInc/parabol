@@ -1,11 +1,12 @@
 import {promises as fsp} from 'fs'
 import mime from 'mime-types'
+import path from 'path'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
 import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getRedis from './utils/getRedis'
 
-const jiraPlaceholderPath = 'static/images/illustrations/imageNotFound.png'
 
 const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
   const redis = getRedis()
@@ -22,7 +23,9 @@ const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
 let jiraPlaceholderBuffer: Buffer | undefined
 const servePlaceholderImage = async (res: HttpResponse) => {
   if (!jiraPlaceholderBuffer) {
-    jiraPlaceholderBuffer = await fsp.readFile(jiraPlaceholderPath)
+    jiraPlaceholderBuffer = await fsp.readFile(
+      path.join(__dirname, jiraPlaceholder.slice(__webpack_public_path__.length))
+    )
   }
   res.cork(() => {
     res.writeStatus('200').writeHeader('Content-Type', 'image/png').end(jiraPlaceholderBuffer)

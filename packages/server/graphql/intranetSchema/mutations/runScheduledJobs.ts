@@ -11,9 +11,9 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import appOrigin from '../../../appOrigin'
-import {ValueOf} from '../../../../client/types/generics'
-import MattermostServerManager from '../../../utils/MattermostServerManager'
 import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
+import MattermostServerManager from '../../../utils/MattermostServerManager'
+import {ValueOf} from '../../../../client/types/generics'
 
 const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
   const r = await getRethink()
