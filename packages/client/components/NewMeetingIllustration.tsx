@@ -4,9 +4,9 @@ import SwipeableViews from 'react-swipeable-views'
 import {mod} from 'react-swipeable-views-core'
 import {virtualize} from 'react-swipeable-views-utils'
 import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
-import checkinSvg from '../../../static/images/illustrations/checkin.svg'
-import retrospectiveSvg from '../../../static/images/illustrations/retrospective.svg'
-import pokerSvg from '../../../static/images/illustrations/sprintPoker.svg'
+import action from '../../../static/images/illustrations/action.png'
+import retrospective from '../../../static/images/illustrations/retrospective.png'
+import poker from '../../../static/images/illustrations/sprintPoker.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
@@ -23,9 +23,9 @@ interface Props {
 }
 
 const ILLUSTRATIONS = {
-  retrospective: retrospectiveSvg,
-  action: checkinSvg,
-  poker: pokerSvg
+  retrospective,
+  action,
+  poker
 } as Record<MeetingTypeEnum, string>
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews)
