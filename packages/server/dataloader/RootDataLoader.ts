@@ -41,7 +41,14 @@ type ForeignLoaders = keyof ForeignLoaderMakers
 type Unforeign<T> = T extends RethinkForeignKeyLoaderMaker<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
-type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof pollLoaders
+/**
+ * When adding a new loaders file like {@link atlassianLoaders} or {@link githubLoaders}
+ * this type has to include a typeof of newly added loaders
+ */
+type CustomLoaderMakers = typeof customLoaderMakers &
+  typeof atlassianLoaders &
+  typeof pollLoaders &
+  typeof integrationAuthLoaders
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
