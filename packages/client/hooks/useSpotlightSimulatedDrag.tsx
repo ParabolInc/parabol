@@ -5,7 +5,6 @@ import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.gra
 import {commitLocalUpdate} from 'react-relay'
 import {Times} from '~/types/constEnums'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
-import getEventIdFromTempId from '~/utils/getEventIdFromTempId'
 
 const useSpotlightSimulatedDrag = (
   meeting: GroupingKanban_meeting,
@@ -55,9 +54,7 @@ const useSpotlightSimulatedDrag = (
       dropTargetId: null,
       dragId: dragIdRef.current
     })
-    const eventId = getEventIdFromTempId(dragIdRef.current)
     SendClientSegmentEventMutation(atmosphere, 'Closed Spotlight', {
-      eventId,
       viewerId,
       reflectionsCount,
       meetingId,
