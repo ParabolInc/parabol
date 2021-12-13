@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
+import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
@@ -24,6 +25,7 @@ const ProviderList = (props: Props) => {
   return (
     <StyledWrapper>
       <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
+      <JiraServerProviderRow teamId={teamId} viewerRef={viewer} />
       <GitHubProviderRow teamId={teamId} viewer={viewer} />
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
@@ -35,6 +37,7 @@ export default createFragmentContainer(ProviderList, {
   viewer: graphql`
     fragment ProviderList_viewer on User {
       ...AtlassianProviderRow_viewer
+      ...JiraServerProviderRow_viewer
       ...GitHubProviderRow_viewer
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
