@@ -12,7 +12,10 @@ import RootDataLoader from './RootDataLoader'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 
-type TeamUserKey = {teamId: string; userId: string}
+type TeamUserKey = {
+  teamId: string
+  userId: string
+}
 export interface JiraRemoteProjectKey {
   userId: string
   teamId: string
@@ -28,7 +31,9 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
-export const freshAtlassianAuth = (parent: RootDataLoader) => {
+export const freshAtlassianAuth = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -63,6 +68,12 @@ export const freshAtlassianAuth = (parent: RootDataLoader) => {
                 refreshToken: updatedRefreshToken
               }))
             await upsertAtlassianAuths(updatedSameJiraAccountAtlassianAuths)
+
+            return {
+              ...atlassianAuthToRefresh,
+              accessToken,
+              refreshToken: updatedRefreshToken
+            }
           }
 
           return atlassianAuthToRefresh
@@ -77,7 +88,9 @@ export const freshAtlassianAuth = (parent: RootDataLoader) => {
   )
 }
 
-export const jiraRemoteProject = (parent: RootDataLoader) => {
+export const jiraRemoteProject = (
+  parent: RootDataLoader
+): DataLoader<JiraRemoteProjectKey, JiraProject | null, string> => {
   return new DataLoader<JiraRemoteProjectKey, JiraProject | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -103,7 +116,9 @@ export const jiraRemoteProject = (parent: RootDataLoader) => {
   )
 }
 
-export const jiraIssue = (parent: RootDataLoader) => {
+export const jiraIssue = (
+  parent: RootDataLoader
+): DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string> => {
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -136,6 +151,9 @@ export const jiraIssue = (parent: RootDataLoader) => {
           await Promise.all(
             estimates.map((estimate) => {
               const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
+              if (!jiraFieldId) {
+                return undefined
+              }
               const freshEstimate = String(fields[jiraFieldId])
               if (freshEstimate === label) return undefined
               // mutate current dataloader
@@ -175,7 +193,9 @@ export const jiraIssue = (parent: RootDataLoader) => {
 interface CloudNameLookup {
   [cloudId: string]: string
 }
-export const atlassianCloudNameLookup = (parent: RootDataLoader) => {
+export const atlassianCloudNameLookup = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, CloudNameLookup, string> => {
   return new DataLoader<TeamUserKey, CloudNameLookup, string>(
     async (keys) => {
       const results = await Promise.allSettled(
@@ -205,7 +225,9 @@ interface CloudNameKey extends TeamUserKey {
   cloudId: string
 }
 
-export const atlassianCloudName = (parent: RootDataLoader) => {
+export const atlassianCloudName = (
+  parent: RootDataLoader
+): DataLoader<CloudNameKey, string, string> => {
   return new DataLoader<CloudNameKey, string, string>(
     async (keys) => {
       const results = await Promise.allSettled(

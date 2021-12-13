@@ -9,6 +9,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerRevealVotesPayload from '../types/PokerRevealVotesPayload'
+import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 
 const pokerRevealVotes = {
   type: new GraphQLNonNull(PokerRevealVotesPayload),
@@ -77,7 +78,7 @@ const pokerRevealVotes = {
     // add a pass card for everyone who was present but did not vote
     const {scores} = stage
     meetingMembers.forEach((meetingMember) => {
-      const {userId, isSpectating} = meetingMember
+      const {userId, isSpectating} = meetingMember as PokerMeetingMember
       if (isSpectating) return
       const userScore = scores.find((score) => score.userId === userId)
       if (!userScore) {

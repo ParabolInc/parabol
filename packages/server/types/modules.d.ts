@@ -11,6 +11,7 @@ declare module '*.graphql' {
 
 declare const __PRODUCTION__: string
 declare const __SOCKET_PORT__: string
+declare const __webpack_public_path__: string
 interface Window {
   __ACTION__: any
 }

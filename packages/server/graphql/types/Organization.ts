@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import OrganizationUser from '../../database/types/OrganizationUser'
-import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForBillingLeaders} from '../resolvers'
@@ -78,9 +77,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
         return isSuperUser(authToken)
           ? allTeamsOnOrg
-          : allTeamsOnOrg.filter((team: IGetTeamsByIdsQueryResult) =>
-              authToken.tms.includes(team.id)
-            )
+          : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       }
     },
     tier: {

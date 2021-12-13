@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from 'react'
+import React, {useContext, useEffect, useState, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
@@ -18,10 +18,14 @@ import cloneReflection from '../utils/retroGroup/cloneReflection'
 import getIsDrag from '../utils/retroGroup/getIsDrag'
 import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
 import handleDrop from '../utils/retroGroup/handleDrop'
-import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
+import updateClonePosition, {
+  getDroppingStyles,
+  getSpotlightAnimation
+} from '../utils/retroGroup/updateClonePosition'
 import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
+import useSpotlightResults from './useSpotlightResults'
 
 const windowDims = {
   clientHeight: window.innerHeight,
@@ -37,6 +41,13 @@ const useRemotelyDraggedCard = (
 ) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
+  const [lastZIndex, setLastZIndex] = useState<number | undefined>()
+  const {spotlightGroup} = meeting
+  const spotlightGroupId = spotlightGroup?.id ?? ''
+  const spotlightResultGroups = useSpotlightResults(meeting)
+  const groupIdsInSpotlight = spotlightResultGroups
+    ? [...spotlightResultGroups.map(({id}) => id), spotlightGroupId]
+    : []
   const spotlightAnimRef = useRef<number | null>(null)
   const setRemoteCard = (
     isClose: boolean,
@@ -48,12 +59,39 @@ const useRemotelyDraggedCard = (
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
+      const targetId = remoteDrag?.targetId
       // performance only
-      const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight, timeRemaining)
+      const style = getDroppingStyles(
+        drag.ref,
+        bbox,
+        windowDims.clientHeight,
+        timeRemaining,
+        targetId,
+        groupIdsInSpotlight
+      )
+
+      const animation = getSpotlightAnimation(
+        drag.ref,
+        targetId,
+        groupIdsInSpotlight,
+        isClose,
+        lastZIndex
+      )
+
+      setLastZIndex(style.zIndex)
+
       setPortal(
         `clone-${reflection.id}`,
         <RemoteReflection
-          style={isClose ? style : {transform: style.transform, zIndex: style.zIndex}}
+          style={
+            isClose
+              ? style
+              : {
+                  transform: style.transform,
+                  zIndex: style.zIndex
+                }
+          }
+          animation={animation}
           reflection={reflection}
           meeting={meeting}
         />
@@ -193,13 +231,14 @@ const useDragAndDrop = (
   drag: ReflectionDragState,
   reflection: DraggableReflectionCard_reflection,
   staticIdx: number,
-  meetingId: string,
+  meeting: DraggableReflectionCard_meeting,
   teamId: string,
   reflectionCount: number,
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-
+  const {id: meetingId} = meeting
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -214,10 +253,13 @@ const useDragAndDrop = (
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
+    const isReflectionInSpotlightResults = !!spotlightResultGroups?.find(
+      ({id}) => id === reflectionGroupId
+    )
     const targetType: DragReflectionDropTargetTypeEnum | null =
       targetGroupId && reflectionGroupId !== targetGroupId
         ? 'REFLECTION_GROUP'
-        : !targetGroupId && reflectionCount > 0
+        : !targetGroupId && reflectionCount > 0 && !isReflectionInSpotlightResults
         ? 'REFLECTION_GRID'
         : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
@@ -384,7 +426,6 @@ const useDraggableReflectionCard = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
-  meetingId: string,
   teamId: string,
   staticReflectionCount: number,
   swipeColumn?: SwipeColumn
@@ -396,7 +437,7 @@ const useDraggableReflectionCard = (
     drag,
     reflection,
     staticIdx,
-    meetingId,
+    meeting,
     teamId,
     staticReflectionCount,
     swipeColumn

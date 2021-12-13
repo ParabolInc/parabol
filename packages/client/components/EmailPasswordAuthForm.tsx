@@ -12,6 +12,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {LocalStorageKey} from '../types/constEnums'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
 import getAnonymousId from '../utils/getAnonymousId'
+import getOAuthPopupFeatures from '../utils/getOAuthPopupFeatures'
 import getSAMLIdP from '../utils/getSAMLIdP'
 import getSSODomainFromEmail from '../utils/getSSODomainFromEmail'
 import getTokenFromSSO from '../utils/getTokenFromSSO'
@@ -142,9 +143,30 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
 
   const tryLoginWithSSO = async (email: string) => {
     const domain = getSSODomainFromEmail(email)!
-    const url = domain === ssoDomain ? ssoURL : await getSSOUrl(atmosphere, email)
-    if (!url) return false
+    const validSSOURL = domain === ssoDomain && ssoURL
+    const isProbablySSO = isSSO || !fields.password.value || validSSOURL
+    let optimisticPopup
+    if (isProbablySSO) {
+      // Safari blocks all calls to window.open that are not triggered SYNCHRONOUSLY from an event
+      // To mitigate that, we open a window synchronously and change the URL asynchronously
+      // https://stackoverflow.com/a/39387533
 
+      // Only 1 case where this is a false positive:
+      // 1. Enter a valid SSO email address
+      // 2. Type in a password
+      // 3. Go back to the email & change it to a non-SSO email
+      // 4. submit without blurring the email input
+      optimisticPopup = window.open(
+        '',
+        'SSO',
+        getOAuthPopupFeatures({width: 385, height: 550, top: 64})
+      )
+    }
+    const url = validSSOURL || (await getSSOUrl(atmosphere, email))
+    if (!url) {
+      optimisticPopup?.close()
+      return false
+    }
     submitMutation()
     const {token, error} = await getTokenFromSSO(url)
     if (!token) {

@@ -34,6 +34,7 @@ extend type RetrospectiveMeeting {
   showSidebar: Boolean!
   spotlightGroup: RetroReflectionGroup
   spotlightReflectionId: String
+  spotlightSearchQuery: String
 }
 
 extend type Team {

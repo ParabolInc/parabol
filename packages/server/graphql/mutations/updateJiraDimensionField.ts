@@ -2,7 +2,6 @@ import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import JiraDimensionField from '../../database/types/JiraDimensionField'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -10,6 +9,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
+import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
+import MeetingPoker from '../../database/types/MeetingPoker'
 
 const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
   // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled
@@ -84,7 +85,7 @@ const updateJiraDimensionField = {
     if (!meeting) {
       return {error: {message: 'Invalid meetingId'}}
     }
-    const {teamId, templateRefId} = meeting
+    const {teamId, templateRefId} = meeting as MeetingPoker
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }
@@ -116,14 +117,14 @@ const updateJiraDimensionField = {
     if (!selectedField) return {error: {message: 'Invalid field name'}}
     const {fieldId, type} = selectedField
 
-    const newField = new JiraDimensionField({
+    const newField = {
       dimensionName,
       fieldName,
       fieldId,
       cloudId,
       fieldType: type,
       projectKey
-    })
+    } as JiraDimensionField
     if (existingDimensionField) {
       // mutate the existing record
       Object.assign(existingDimensionField, newField)
@@ -140,11 +141,7 @@ const updateJiraDimensionField = {
       updatedAt: new Date()
     }
     await Promise.all([
-      r
-        .table('Team')
-        .get(teamId)
-        .update(updates)
-        .run(),
+      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
 

@@ -34,6 +34,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import isDemoRoute from '~/utils/isDemoRoute'
+import remountDecorators from '../../utils/draftjs/remountDecorators'
 
 const StyledReacjis = styled(ReactjiSection)({
   padding: '0 14px 12px'
@@ -60,7 +61,7 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
 interface Props {
   isClipped?: boolean
   reflection: ReflectionCard_reflection
-  meeting: ReflectionCard_meeting | null
+  meeting: ReflectionCard_meeting
   openSpotlight?: OpenSpotlight
   stackCount?: number
   showOriginFooter?: boolean
@@ -95,10 +96,18 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const phaseType = meeting ? meeting.localPhase.phaseType : null
-  const isComplete = meeting?.localStage?.isComplete
-  const phases = meeting ? meeting.phases : null
-  const spotlightGroupId = meeting?.spotlightGroup?.id
+  const {
+    localPhase,
+    localStage,
+    spotlightGroup,
+    viewerMeetingMember,
+    phases,
+    spotlightSearchQuery
+  } = meeting
+  const {phaseType} = localPhase
+  const {isComplete} = localStage
+  const spotlightGroupId = spotlightGroup?.id
+  const isSpotlightFlagActive = !!viewerMeetingMember?.user?.featureFlags?.spotlight
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
@@ -108,9 +117,12 @@ const ReflectionCard = (props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.UPPER_CENTER)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -130,6 +142,11 @@ const ReflectionCard = (props: Props) => {
     }
     return () => updateIsEditing(false)
   }, [])
+
+  useEffect(() => {
+    const refreshedState = remountDecorators(() => editorState, spotlightSearchQuery)
+    setEditorState(refreshedState)
+  }, [spotlightSearchQuery])
 
   const handleContentUpdate = () => {
     if (isAndroid) {
@@ -240,7 +257,7 @@ const ReflectionCard = (props: Props) => {
   }
 
   const showSpotlight =
-    !__PRODUCTION__ &&
+    (!__PRODUCTION__ || isSpotlightFlagActive) &&
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&
@@ -330,6 +347,14 @@ export default createFragmentContainer(ReflectionCard, {
       spotlightGroup {
         id
       }
+      viewerMeetingMember {
+        user {
+          featureFlags {
+            spotlight
+          }
+        }
+      }
+      spotlightSearchQuery
     }
   `
 })

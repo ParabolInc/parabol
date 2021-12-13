@@ -1,20 +1,26 @@
 import {
   IUpdateTeamByTeamIdQueryParams,
   updateTeamByTeamIdQuery
-} from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
+} from './generated/updateTeamByTeamIdQuery'
 import getPg from '../../postgres/getPg'
 import {OptionalExceptFor} from '../../utils/TypeUtil'
+import {JiraDimensionField} from './getTeamsByIds'
 
-const updateTeamByTeamId = async (
-  teamUpdates: OptionalExceptFor<IUpdateTeamByTeamIdQueryParams, 'updatedAt'>,
-  teamIds: string | string[]
-) => {
+export interface UpdateTeamParams
+  extends OptionalExceptFor<
+    Omit<IUpdateTeamByTeamIdQueryParams, 'jiraDimensionFields'>,
+    'updatedAt'
+  > {
+  jiraDimensionFields?: JiraDimensionField[]
+}
+
+const updateTeamByTeamId = async (teamUpdates: UpdateTeamParams, teamIds: string | string[]) => {
   teamIds = typeof teamIds === 'string' ? [teamIds] : teamIds
   return updateTeamByTeamIdQuery.run(
     {
       ...teamUpdates,
       ids: teamIds
-    } as IUpdateTeamByTeamIdQueryParams,
+    } as any,
     getPg()
   )
 }

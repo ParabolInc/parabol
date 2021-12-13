@@ -1,11 +1,9 @@
 import {GraphQLNonNull} from 'graphql'
-import db from '../../db'
-import {getUserId} from '../../utils/authorization'
-import DismissNewFeaturePayload from '../types/DismissNewFeaturePayload'
-import {dismissNewFeatureQuery} from '../../postgres/queries/generated/dismissNewFeatureQuery'
-import catchAndLog from '../../postgres/utils/catchAndLog'
 import getPg from '../../postgres/getPg'
+import {dismissNewFeatureQuery} from '../../postgres/queries/generated/dismissNewFeatureQuery'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import DismissNewFeaturePayload from '../types/DismissNewFeaturePayload'
 
 export default {
   type: new GraphQLNonNull(DismissNewFeaturePayload),
@@ -14,11 +12,7 @@ export default {
   resolve: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
     // AUTH
     const viewerId = getUserId(authToken)
-    const update = {newFeatureId: null, updatedAt: new Date()}
-    await Promise.all([
-      catchAndLog(() => dismissNewFeatureQuery.run({ids: [viewerId]}, getPg())),
-      db.write('User', viewerId, update)
-    ])
+    await dismissNewFeatureQuery.run({ids: [viewerId]}, getPg())
     return {}
   }
 }
