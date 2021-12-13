@@ -17,9 +17,7 @@ import linkify from '~/utils/linkify'
 import useTooltip from '~/hooks/useTooltip'
 import {MenuPosition} from '~/hooks/useCoords'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
-import {AddIntegrationProviderInputT} from 'parabol-server/graphql/types/AddIntegrationProviderInput'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
-import {IntegrationProviderTokenInputT} from 'parabol-server/graphql/types/AddIntegrationTokenInput'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key
@@ -129,7 +127,7 @@ const MattermostPanel = (props: Props) => {
     if (updateDisabled(error, webhookUrl)) return
     setDirtyField()
     submitMutation()
-    const provider: AddIntegrationProviderInputT = {
+    const provider = {
       type: 'mattermost',
       scope: 'team',
       tokenType: 'webhook',
@@ -137,8 +135,8 @@ const MattermostPanel = (props: Props) => {
       serverBaseUri: webhookUrl,
       orgId,
       teamId
-    }
-    const token: IntegrationProviderTokenInputT = {}
+    } as const
+    const token = {}
     if (mattermost?.activeProvider) {
       UpdateIntegrationProviderMutation(
         atmosphere,
