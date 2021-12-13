@@ -100,7 +100,7 @@ interface Props {
 const OrgBillingReassuranceQuote = (props: Props) => {
   const {className} = props
   const [quoteNumber] = useState(() => Math.floor(Math.random() * quotes.length))
-  const {text, picture, name, title} = quotes[quoteNumber]
+  const {text, picture, name, title} = quotes[quoteNumber]!
   return (
     <Quote className={className}>
       <Text>

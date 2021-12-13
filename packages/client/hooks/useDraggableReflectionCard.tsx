@@ -298,8 +298,8 @@ const useDragAndDrop = (
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     // required to prevent address bar scrolling & other strange browser things on mobile view
     e.preventDefault()
-    const isTouchMove = e.type === 'touchmove'
-    const {clientX, clientY} = isTouchMove ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+    const isTouchMove = e instanceof TouchEvent
+    const {clientX, clientY} = isTouchMove ? e.touches[0]! : e
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       const isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
@@ -337,7 +337,7 @@ const useDragAndDrop = (
       }
     }
     if (isTouchMove && swipeColumn) {
-      const {clientX} = (e as TouchEvent).touches[0]
+      const {clientX} = e.touches[0]!
       const minThresh = windowDims.clientWidth * 0.1
       if (clientX <= minThresh) {
         swipeColumn(-1)
@@ -366,7 +366,7 @@ const useDragAndDrop = (
         document.addEventListener('mouseup', onMouseUp)
       }
       const {clientX, clientY} = isTouchStart
-        ? (e as React.TouchEvent<HTMLDivElement>).touches[0]
+        ? (e as React.TouchEvent<HTMLDivElement>).touches[0]!
         : (e as React.MouseEvent<HTMLDivElement>)
       drag.startX = clientX
       drag.startY = clientY

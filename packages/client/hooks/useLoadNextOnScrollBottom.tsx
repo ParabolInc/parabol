@@ -14,7 +14,7 @@ const useLoadNextOnScrollBottom = (
   const [intersectionObserver] = useState(() => {
     return new IntersectionObserver((entries) => {
       const [entry] = entries
-      if (entry.intersectionRatio > 0) {
+      if (entry && entry.intersectionRatio > 0) {
         const {current} = ref
         const {hasNext, isLoadingNext, loadNext} = current
         if (!hasNext || isLoadingNext) return

@@ -62,18 +62,19 @@ const PokerSidebarEstimateSection = (props: Props) => {
 
   const onDragEnd = (result) => {
     const {source, destination} = result
+    const sourceTopic = stageSummaries[source.index]
+    const destinationTopic = stageSummaries[destination.index]
 
     if (
       !destination ||
       destination.droppableId !== 'TASK' ||
       source.droppableId !== 'TASK' ||
-      destination.index === source.index
+      destination.index === source.index ||
+      !sourceTopic ||
+      !destinationTopic
     ) {
       return
     }
-
-    const sourceTopic = stageSummaries![source.index]
-    const destinationTopic = stageSummaries![destination.index]
 
     let sortOrder
     if (destination.index === 0) {
@@ -83,7 +84,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stageSummaries![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 +
+        (stageSummaries[destination.index + offset]!.sortOrder + destinationTopic.sortOrder) / 2 +
         dndNoise()
     }
 
@@ -107,7 +108,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
         gotoStageId(unvotedStage.id)
       } else {
         // goto the last stage
-        const lastStageId = stageIds[stageIds.length - 1]
+        const lastStageId = stageIds[stageIds.length - 1]!
         gotoStageId(lastStageId)
       }
     }
@@ -122,14 +123,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
-                  const {
-                    stageIds,
-                    title,
-                    subtitle,
-                    isActive,
-                    isNavigable,
-                    finalScores
-                  } = summary
+                  const {stageIds, title, subtitle, isActive, isNavigable, finalScores} = summary
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage =
