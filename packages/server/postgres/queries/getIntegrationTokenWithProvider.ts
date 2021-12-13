@@ -1,10 +1,12 @@
 import getPg from '../getPg'
 import {
-  IntegrationProviderTypesEnum,
   getIntegrationTokensWithProviderQuery,
   IGetIntegrationTokensWithProviderQueryResult
 } from './generated/getIntegrationTokensWithProviderQuery'
-import {IntegrationTokenWithProvider} from 'parabol-server/types/IntegrationProviderAndTokenT'
+import {
+  IntegrationProviderTypesEnum,
+  IntegrationTokenWithProvider
+} from '../types/IIntegrationProviderAndToken'
 
 export const nestProviderOnDbToken = (
   flatDbToken: IGetIntegrationTokensWithProviderQueryResult

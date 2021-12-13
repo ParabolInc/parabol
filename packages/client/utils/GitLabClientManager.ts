@@ -3,7 +3,7 @@ import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddIntegrationTokenMutation from '../mutations/AddIntegrationTokenMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
-import {IntegrationProvider} from 'parabol-server/types/IntegrationProviderAndTokenT'
+import {IntegrationProvider} from 'parabol-server/postgres/types/IIntegrationProviderAndToken'
 
 interface AbridgedProvider
   extends Pick<IntegrationProvider, 'oauthClientId' | 'name' | 'serverBaseUri'> {
@@ -26,9 +26,8 @@ class GitLabClientManager {
     const {id: providerId, oauthClientId, serverBaseUri, oauthScopes: oauthScopesList} = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const oauthScopes = oauthScopesList ? oauthScopesList.join(' ') : ''
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
+    const providerState = Math.random().toString(36).substring(5)
+
     const redirect_uri = makeHref('/auth/gitlab')
     const uri = `${serverBaseUri}/oauth/authorize?client_id=${oauthClientId}&scope=${oauthScopes}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
 

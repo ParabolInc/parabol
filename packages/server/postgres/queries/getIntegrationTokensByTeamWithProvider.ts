@@ -1,8 +1,6 @@
 import getPg from '../getPg'
-import {
-  IntegrationProviderTypesEnum,
-  getIntegrationTokensWithProviderQuery
-} from './generated/getIntegrationTokensWithProviderQuery'
+import {IntegrationProviderTypesEnum} from '../types/IIntegrationProviderAndToken'
+import {getIntegrationTokensWithProviderQuery} from './generated/getIntegrationTokensWithProviderQuery'
 import {nestProviderOnDbToken} from './getIntegrationTokenWithProvider'
 
 const getIntegrationTokensByTeamWithProvider = async (

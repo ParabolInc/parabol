@@ -3,9 +3,9 @@ import {
   IntegrationProviderTypesEnum as _IntegrationProviderTypesEnum,
   IntegrationProviderScopesEnum as _IntegrationProviderScopesEnum,
   IntegrationProviderTokenTypeEnum as _IntegrationProviderTokenTypeEnum
-} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
+} from '../queries/generated/getIntegrationProvidersByIdsQuery'
 
-import {IUpsertIntegrationTokenQueryResult as _IntegrationToken} from '../postgres/queries/generated/upsertIntegrationTokenQuery'
+import {IUpsertIntegrationTokenQueryResult as _IntegrationToken} from '../queries/generated/upsertIntegrationTokenQuery'
 
 export type IntegrationProviderTypesEnum = _IntegrationProviderTypesEnum
 export type IntegrationProviderScopesEnum = _IntegrationProviderScopesEnum

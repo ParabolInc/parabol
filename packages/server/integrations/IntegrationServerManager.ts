@@ -1,7 +1,7 @@
 import {GraphQLResolveInfo} from 'graphql'
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
-import {IntegrationProvider, IntegrationToken} from '../types/IntegrationProviderAndTokenT'
+import {IntegrationProvider, IntegrationToken} from '../postgres/types/IIntegrationProviderAndToken'
 
 interface OAuth2ServerResponse {
   access_token: string

@@ -2,7 +2,7 @@ import {
   IntegrationTokenInputT,
   IntegrationProviderTokenInputT
 } from '../../types/AddIntegrationTokenInput'
-import {IntegrationProvider as IntegrationProviderT} from '../../../types/IntegrationProviderAndTokenT'
+import {IntegrationProvider as IntegrationProviderT} from '../../../postgres/types/IIntegrationProviderAndToken'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import plural from 'parabol-client/utils/plural'
 

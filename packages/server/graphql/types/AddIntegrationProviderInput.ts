@@ -15,7 +15,7 @@ import {
   IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
   IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
   IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
-} from '../../types/IntegrationProviderAndTokenT'
+} from '../../postgres/types/IIntegrationProviderAndToken'
 
 export interface AddIntegrationProviderInputT {
   type: Lowercase<IntegrationProviderTypesEnumT>

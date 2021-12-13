@@ -1,5 +1,3 @@
-import ClientActionVarsT from 'parabol-client/types/ClientActionVarsT'
-
 // this is just to get typescript to stop complaining about imports
 // declare module '*'
 declare module '*.png'
@@ -16,7 +14,16 @@ declare const __SOCKET_PORT__: string
 declare const __webpack_public_path__: string
 
 interface Window {
-  __ACTION__: ClientActionVarsT
+  __ACTION__: {
+    atlassian: string | undefined
+    github: string | undefined
+    google: string | undefined
+    segment: string | undefined
+    sentry: string | undefined
+    slack: string | undefined
+    stripe: string | undefined
+    prblIn: string | undefined
+  }
 }
 
 declare namespace NodeJS {

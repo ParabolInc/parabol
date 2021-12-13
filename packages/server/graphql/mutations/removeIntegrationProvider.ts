@@ -11,11 +11,11 @@ import standardError from '../../utils/standardError'
 
 const removeIntegrationProvider = {
   name: 'RemoveIntegrationProvider',
-  type: GraphQLNonNull(RemoveIntegrationProviderPayload),
+  type: new GraphQLNonNull(RemoveIntegrationProviderPayload),
   description: 'Remove an Integration Provider, and any associated tokens',
   args: {
     providerId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'Id of the Integration Provider to remove'
     }
   },

@@ -14,7 +14,7 @@ import {
   IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
   IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
   IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
-} from 'parabol-server/types/IntegrationProviderAndTokenT'
+} from 'parabol-server/postgres/types/IIntegrationProviderAndToken'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 
 export const IntegrationProviderTypeEnum = new GraphQLEnumType({

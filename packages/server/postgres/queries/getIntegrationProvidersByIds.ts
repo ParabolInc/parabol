@@ -1,15 +1,11 @@
-import {
-  IntegrationProviderTypesEnum as _IntegrationProviderTypesEnum,
-  getIntegrationProvidersByIdsQuery,
-  IGetIntegrationProvidersByIdsQueryResult
-} from './generated/getIntegrationProvidersByIdsQuery'
+import {getIntegrationProvidersByIdsQuery} from './generated/getIntegrationProvidersByIdsQuery'
 import getPg from '../getPg'
+import {IntegrationProvider} from '../types/IIntegrationProviderAndToken'
 
-export type IntegrationProviderTypesEnum = _IntegrationProviderTypesEnum
-export interface IntegrationProvider extends IGetIntegrationProvidersByIdsQueryResult {}
-
-const getIntegrationProvidersByIds = async (ids: readonly number[]) => {
-  return await getIntegrationProvidersByIdsQuery.run({ids}, getPg())
+const getIntegrationProvidersByIds = async (
+  ids: readonly number[]
+): Promise<IntegrationProvider[]> => {
+  return getIntegrationProvidersByIdsQuery.run({ids}, getPg())
 }
 
 export default getIntegrationProvidersByIds

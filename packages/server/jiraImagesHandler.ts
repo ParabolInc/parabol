@@ -7,7 +7,6 @@ import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getRedis from './utils/getRedis'
 
-
 const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
   const redis = getRedis()
   const imageBuffer = await redis.getBuffer(fileName)

@@ -11,7 +11,7 @@ import MakeIntegrationServerManager from '../../integrations/MakeIntegrationServ
 
 const addIntegrationToken = {
   name: 'AddIntegrationToken',
-  type: GraphQLNonNull(AddIntegrationTokenPayload),
+  type: new GraphQLNonNull(AddIntegrationTokenPayload),
   description: 'Add integration token material to the team, supported by the GitLab integration',
   args: {
     providerId: {

@@ -2,7 +2,7 @@ import {DataLoaderWorker} from '../graphql/graphql'
 import {
   IntegrationProvider,
   IntegrationProviderTypesEnum
-} from '../types/IntegrationProviderAndTokenT'
+} from '../postgres/types/IIntegrationProviderAndToken'
 import IntegrationProviderId, {
   IntegrationProviderIdT
 } from 'parabol-client/shared/gqlIds/IntegrationProviderId'

@@ -11,7 +11,7 @@ import {
   IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
   IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
   IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
-} from '../../../types/IntegrationProviderAndTokenT'
+} from '../../../postgres/types/IIntegrationProviderAndToken'
 import {AddIntegrationProviderInputT} from '../../types/AddIntegrationProviderInput'
 import {UpdateIntegrationProviderInputT} from '../../types/UpdateIntegrationProviderInput'
 

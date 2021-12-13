@@ -1,7 +1,7 @@
-import {GlobalIntegrationProviderInput} from '../types/IntegrationProviderAndTokenT'
+import {GlobalIntegrationProviderInput} from '../postgres/types/IIntegrationProviderAndToken'
 
 const makeGlobalIntegrationProvidersFromEnv = (): GlobalIntegrationProviderInput[] => {
-  let integrationProviders: GlobalIntegrationProviderInput[] = []
+  const integrationProviders: GlobalIntegrationProviderInput[] = []
   if (process.env.GITLAB_CLIENT_ID && process.env.GITLAB_CLIENT_SECRET) {
     integrationProviders.push({
       type: 'GITLAB',

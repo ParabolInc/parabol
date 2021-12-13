@@ -1,21 +1,27 @@
 import DataLoader from 'dataloader'
 import RootDataLoader from './RootDataLoader'
-import getIntegrationProvidersByIds, {
-  IntegrationProviderTypesEnum,
-  IntegrationProvider
-} from '../postgres/queries/getIntegrationProvidersByIds'
+import getIntegrationProvidersByIds from '../postgres/queries/getIntegrationProvidersByIds'
 import getIntegrationProviders from '../postgres/queries/getIntegrationProviders'
 import getIntegrationTokenWithProvider from '../postgres/queries/getIntegrationTokenWithProvider'
 import getIntegrationTokensByTeamWithProvider from '../postgres/queries/getIntegrationTokensByTeamWithProvider'
-import {IntegrationTokenWithProvider} from '../types/IntegrationProviderAndTokenT'
+import {
+  IntegrationProvider,
+  IntegrationProviderTypesEnum,
+  IntegrationTokenWithProvider
+} from '../postgres/types/IIntegrationProviderAndToken'
 
-interface IntegrationProviderKey {
+export interface IntegrationProviderTeamKey {
+  type: IntegrationProviderTypesEnum
+  teamId: string
+}
+
+export interface IntegrationProviderKey {
   type: IntegrationProviderTypesEnum
   teamId: string
   orgId: string
 }
 
-interface IntegrationTokenPrimaryKey {
+export interface IntegrationTokenPrimaryKey {
   type: IntegrationProviderTypesEnum
   teamId: string
   userId: string
@@ -68,11 +74,7 @@ export const integrationTokenWithProvider = (parent: RootDataLoader) => {
 }
 
 export const integrationTokensByTeamWithProvider = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {type: IntegrationProviderTypesEnum; teamId: string},
-    IntegrationTokenWithProvider[] | null,
-    string
-  >(
+  return new DataLoader<IntegrationProviderTeamKey, IntegrationTokenWithProvider[] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({type, teamId}) => getIntegrationTokensByTeamWithProvider(type, teamId))

@@ -25,11 +25,11 @@ type AddIntegrationProviderVariables = {
 
 const addIntegrationProvider = {
   name: 'AddIntegrationProvider',
-  type: GraphQLNonNull(AddIntegrationProviderPayload),
+  type: new GraphQLNonNull(AddIntegrationProviderPayload),
   description: 'Adds a new Integration Provider configuration',
   args: {
     provider: {
-      type: GraphQLNonNull(AddIntegrationProviderInput),
+      type: new GraphQLNonNull(AddIntegrationProviderInput),
       description: 'The new Integration Provider'
     },
     token: {

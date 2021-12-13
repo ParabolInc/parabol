@@ -1,6 +1,5 @@
 import fetch from 'node-fetch'
 import {DataLoaderWorker} from '../graphql/graphql'
-import {IntegrationTokenWithProvider} from '../types/IntegrationProviderAndTokenT'
 
 // Mattermost is a server-only integration for now, unlike the Slack integration
 
@@ -95,9 +94,12 @@ class MattermostServerManager extends MattermostManager {
   }
 
   static async getBestWebhook(userId: string, teamId: string, dataLoader: DataLoaderWorker) {
-    const tokensAndProvider: IntegrationTokenWithProvider[] = await dataLoader
+    const tokensAndProvider = await dataLoader
       .get('integrationTokensByTeamWithProvider')
       .load({type: 'MATTERMOST', teamId})
+    if (!tokensAndProvider) {
+      return null
+    }
 
     const bestTokenAndProvider = tokensAndProvider.sort((a, b) => {
       const userIdCompare = (b.userId != userId ? 0 : 1) - (a.userId != userId ? 0 : 1)

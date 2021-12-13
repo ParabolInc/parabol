@@ -1,6 +1,6 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {TaskIntegrationServerManager} from './IntegrationServerManager'
-import {IntegrationProvider} from '../types/IntegrationProviderAndTokenT'
+import {IntegrationProvider} from '../postgres/types/IIntegrationProviderAndToken'
 import {GetProfileQuery} from '../types/gitlabTypes'
 import {GitLabRequest} from '../graphql/rootSchema'
 import getProfile from '../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
