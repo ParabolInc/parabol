@@ -1,6 +1,4 @@
-import graphql from 'babel-plugin-relay/macro'
-import React, {useContext, useEffect, useRef, useState} from 'react'
-import {useLazyLoadQuery} from 'react-relay'
+import React, {useContext, useEffect, useState, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
@@ -26,7 +24,6 @@ import updateClonePosition, {
   getSpotlightAnimation
 } from '../utils/retroGroup/updateClonePosition'
 import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
-import {useDraggableReflectionCardLocalQuery} from '../__generated__/useDraggableReflectionCardLocalQuery.graphql'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 import useSpotlightResults from './useSpotlightResults'
@@ -48,28 +45,9 @@ const useRemotelyDraggedCard = (
   const [lastZIndex, setLastZIndex] = useState<number | undefined>()
   const {spotlightGroup} = meeting
   const spotlightGroupId = spotlightGroup?.id ?? ''
-
-  const spotlightSearchResults = useLazyLoadQuery<useDraggableReflectionCardLocalQuery>(
-    graphql`
-      query useDraggableReflectionCardLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
-        viewer {
-          similarReflectionGroups(
-            reflectionGroupId: $reflectionGroupId
-            searchQuery: $searchQuery
-          ) {
-            id
-          }
-        }
-      }
-    `,
-    // TODO: add search query
-    {reflectionGroupId: spotlightGroupId, searchQuery: ''},
-    {fetchPolicy: 'store-only'}
-  )
-  const {viewer} = spotlightSearchResults
-  const {similarReflectionGroups} = viewer
-  const groupIdsInSpotlight = similarReflectionGroups
-    ? [...similarReflectionGroups.map(({id}) => id), spotlightGroupId]
+  const spotlightResultGroups = useSpotlightResults(meeting)
+  const groupIdsInSpotlight = spotlightResultGroups
+    ? [...spotlightResultGroups.map(({id}) => id), spotlightGroupId]
     : []
   const spotlightAnimRef = useRef<number | null>(null)
   const setRemoteCard = (
@@ -237,10 +215,7 @@ const useDroppingDrag = (
               removeClone(reflectionId, setPortal)
             }
             commitLocalUpdate(atmosphere, (store) => {
-              store
-                .get(reflectionId)!
-                .setValue(false, 'isDropping')
-                .setValue(null, 'remoteDrag')
+              store.get(reflectionId)!.setValue(false, 'isDropping').setValue(null, 'remoteDrag')
             })
           },
           remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
@@ -265,7 +240,7 @@ const useDragAndDrop = (
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {id: meetingId, spotlightGroup} = meeting
-  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, '') // TODO: add search query
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -361,8 +336,9 @@ const useDragAndDrop = (
     }
     if (!drag.clone) return
     drag.clientY = clientY
-    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
-      drag.cardOffsetY}px)`
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${
+      clientY - drag.cardOffsetY
+    }px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl

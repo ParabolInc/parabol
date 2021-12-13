@@ -39,7 +39,9 @@ export default {
     const evictorUserId = isSelf ? undefined : viewerId
     const res = await removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
-
+    if (!user) {
+      return standardError(new Error('Could not remove given team member'), {userId})
+    }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const {tms} = user
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
@@ -53,7 +55,7 @@ export default {
     }
     // messages to the rest of the team reporting the kick out
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)
-    teamMembers.forEach(({teamMemberUserId}) => {
+    teamMembers.forEach(({userId: teamMemberUserId}) => {
       // don't send updated tasks to the person being kicked out
       if (teamMemberUserId === userId) return
       publish(

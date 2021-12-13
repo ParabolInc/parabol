@@ -2,13 +2,13 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
-import Team from '../database/types/Team'
 import generateUID from '../generateUID'
 import {getUserById} from '../postgres/queries/getUsersByIds'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
+import {Team} from '../postgres/queries/getTeamsByIds'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = await getRethink()

@@ -4,9 +4,7 @@ import {
   IGetGitHubAuthByUserIdTeamIdQueryResult
 } from './generated/getGitHubAuthByUserIdTeamIdQuery'
 
-// this table has a composite primary key (userId, teamId),
-// which cannot use the index with a WHERE IN or JOIN on VALUES
-// so if we want to query multiple userIds/teamIds, just call this multiple times
+// if we want to query multiple userIds/teamIds, just call this multiple times
 
 export interface GitHubSearchQuery {
   id: string
@@ -25,6 +23,6 @@ const getGitHubAuthByUserIdTeamId = async (userId: string, teamId: string) => {
   res.githubSearchQueries.forEach((query) => {
     ;(query as any).lastUsedAt = new Date((query as any).lastUsedAt)
   })
-  return (res as any) as GitHubAuth
+  return res as any as GitHubAuth
 }
 export default getGitHubAuthByUserIdTeamId

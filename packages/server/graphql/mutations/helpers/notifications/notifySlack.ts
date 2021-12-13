@@ -1,24 +1,25 @@
 import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
-import getRethink from '../../../database/rethinkDriver'
-import SlackAuth from '../../../database/types/SlackAuth'
-import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
-import {toEpochSeconds} from '../../../utils/epochTime'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import segmentIo from '../../../utils/segmentIo'
-import sendToSentry from '../../../utils/sendToSentry'
-import SlackServerManager from '../../../utils/SlackServerManager'
-import errorFilter from '../../errorFilter'
-import {DataLoaderWorker} from '../../graphql'
-import appOrigin from '../../../appOrigin'
-import relativeDate from 'parabol-client/utils/date/relativeDate'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
-import MeetingAction from '../../../database/types/MeetingAction'
-import MeetingPoker from '../../../database/types/MeetingPoker'
-import plural from 'parabol-client/utils/plural'
-import {makeSection, makeSections, makeButtons} from './makeSlackBlocks'
+import appOrigin from '../../../../appOrigin'
+import getRethink from '../../../../database/rethinkDriver'
+import MeetingAction from '../../../../database/types/MeetingAction'
+import MeetingPoker from '../../../../database/types/MeetingPoker'
+import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
+import SlackAuth from '../../../../database/types/SlackAuth'
+import SlackNotification, {
+  SlackNotificationEvent
+} from '../../../../database/types/SlackNotification'
+import {toEpochSeconds} from '../../../../utils/epochTime'
+import segmentIo from '../../../../utils/segmentIo'
+import sendToSentry from '../../../../utils/sendToSentry'
+import SlackServerManager from '../../../../utils/SlackServerManager'
+import errorFilter from '../../../errorFilter'
+import {DataLoaderWorker} from '../../../graphql'
+import getSummaryText from './getSummaryText'
+import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -61,7 +62,7 @@ const notifySlack = async (
     const {notification, auth} = slackDetails[i]
     const {channelId} = notification
     const {botAccessToken, userId} = auth
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(channelId!, slackMessage, notificationText)
     segmentIo.track({
       userId,
@@ -116,41 +117,6 @@ export const startSlackMeeting = async (
     makeButtons([button])
   ]
   notifySlack('meetingStart', dataLoader, teamId, blocks, title).catch(console.log)
-}
-
-const getSummaryText = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
-  if (meeting.meetingType === 'retrospective') {
-    const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
-    return `Your team shared ${reflectionCount} ${plural(
-      reflectionCount,
-      'reflection'
-    )} and grouped them into ${topicCount} topics.\nYou added ${commentCount} ${plural(
-      commentCount,
-      'comment'
-    )} and created ${taskCount} ${plural(taskCount, 'task')}.`
-  } else if (meeting.meetingType === 'action') {
-    const {createdAt, endedAt, agendaItemCount = 0, commentCount = 0, taskCount = 0} = meeting
-    const meetingDuration = relativeDate(createdAt, {
-      now: endedAt,
-      max: 2,
-      suffix: false,
-      smallDiff: 'less than a minute'
-    })
-    return `It lasted ${meetingDuration} and generated ${taskCount} ${plural(
-      taskCount,
-      'task'
-    )}, ${agendaItemCount} ${plural(agendaItemCount, 'agenda item')} and ${commentCount} ${plural(
-      commentCount,
-      'comment'
-    )}.`
-  } else {
-    const {storyCount = 0, commentCount = 0} = meeting
-    return `You voted on ${storyCount} ${plural(
-      storyCount,
-      'story',
-      'stories'
-    )} and added ${commentCount} ${plural(commentCount, 'comment')}.`
-  }
 }
 
 const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
@@ -225,6 +191,7 @@ export const notifySlackTimeLimitStart = async (
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
+  const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meetingId}`)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const {phaseType} = stage
   const phaseLabel = phaseLabelLookup[phaseType]
@@ -233,7 +200,7 @@ export const notifySlackTimeLimitStart = async (
     const {auth, notification} = slackDetail
     const {channelId} = notification
     const {botAccessToken} = auth
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const fallbackDate = formatWeekday(scheduledEndTime)
     const fallbackTime = formatTime(scheduledEndTime)
     const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
@@ -247,9 +214,9 @@ export const notifySlackTimeLimitStart = async (
       makeSection(title),
       makeSections([`*Team:*\n${teamName}`, `*Meeting:*\n${meetingName}`]),
       makeSection(constraint),
-      makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
+      makeSection(`*Link:*\n<${meetingUrl}|${maybeMeetingShortLink}>`),
       makeButtons([button])
     ]
-    await manager.postMessage(channelId, blocks, title)
+    await manager.postMessage(channelId!, blocks, title)
   })
 }

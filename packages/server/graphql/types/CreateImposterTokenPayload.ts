@@ -18,7 +18,7 @@ const CreateImposterTokenPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: async (source, args, context) => {
         const user = await resolveUser(source, args, context)
         const {userId} = source
-        const {tms} = user
+        const {tms} = user!
         return encodeAuthToken(new AuthToken({sub: userId, tms}))
       }
     },

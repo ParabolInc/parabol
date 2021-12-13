@@ -31,6 +31,7 @@ import makeScoreGitHubComment from '../../../utils/makeScoreGitHubComment'
 import {isNotNull} from '../../../utils/predicates'
 import {GQLContext} from '../../graphql'
 import {ITaskEstimateInput} from '../../types/TaskEstimateInput'
+import MeetingPoker from '../../../database/types/MeetingPoker'
 
 const pushEstimateToGitHub = async (
   taskEstimate: ITaskEstimateInput,
@@ -146,7 +147,7 @@ const pushEstimateToGitHub = async (
   if (!matchingLabel) {
     let color = PALETTE.GRAPE_500.slice(1)
     if (meeting) {
-      const {templateRefId} = meeting
+      const {templateRefId} = meeting as MeetingPoker
       const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
       const {dimensions} = templateRef
       const dimensionRef = dimensions.find((dimension) => dimension.name === dimensionName)
