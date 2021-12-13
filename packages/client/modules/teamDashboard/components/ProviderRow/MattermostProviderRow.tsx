@@ -109,7 +109,9 @@ const MattermostProviderRow = (props: Props) => {
   const {mattermost} = integrations
   const [isConnectClicked, setConnectClicked] = useState(false)
   const isActive = mattermost?.isActive
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, originRef, menuPortal, menuProps, terminatePortal} = useMenu(
+    MenuPosition.UPPER_RIGHT
+  )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   return (
