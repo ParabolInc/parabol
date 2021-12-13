@@ -55,6 +55,7 @@ const useTrebuchetEvents = () => {
 
     const onReconnected = () => {
       setConnectedStatus(true)
+      atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
     }
 
     const onData = async (payload: string | object) => {
@@ -72,11 +73,9 @@ const useTrebuchetEvents = () => {
 
         if (isReconnect) {
           atmosphere.retries.clear()
-          atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
         }
       } else if (isReconnect) {
         atmosphere.retries.forEach((retry) => retry())
-        atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
       }
       if (obj.authToken) {
         atmosphere.setAuthToken(obj.authToken)
