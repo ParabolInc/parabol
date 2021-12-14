@@ -15,12 +15,14 @@ import {BezierCurve, PokerCards} from '../types/constEnums'
 import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
 import PokerCard from './PokerCard'
 
-const Deck = styled('div')<{left: number}>(({left}) => ({
+const Deck = styled('div')<{left: number; isSpectating: boolean}>(({left, isSpectating}) => ({
   bottom: 0,
   display: 'flex',
   left,
+  opacity: isSpectating ? 0 : 1,
   position: 'fixed',
   transition: `200ms ${BezierCurve.DECELERATE}`,
+  visibility: isSpectating ? 'hidden' : 'visible',
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
 }))
 
@@ -182,11 +184,11 @@ const PokerCardDeck = (props: Props) => {
     }
   }, [maxSlide, isCollapsed])
   // const transform = maxSlide > 0 && !isCollapsed ? `translateX(${swipe.translateX}px)` : undefined
-  if (isSpectating) return null
   return (
     <Deck
       ref={deckRef}
       left={left}
+      isSpectating={!!isSpectating}
       // style={{transform}}
       onMouseDown={onMouseDown}
       onTouchStart={onMouseDown}

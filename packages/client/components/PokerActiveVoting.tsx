@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
@@ -100,8 +100,11 @@ const PokerActiveVoting = (props: Props) => {
   const {id: stageId, scores} = stage
   const hasVotes = scores.length > 0
   const isFacilitator = viewerId === facilitatorUserId
-  const viewerHasVoted = Boolean(scores.find(({userId}) => userId === viewerId))
-  const checkedInCount = meetingMembers.length
+  const viewerHasVoted = useMemo(() => !!scores.find(({userId}) => userId === viewerId), [scores])
+  const checkedInCount = useMemo(
+    () => meetingMembers.filter(({isSpectating}) => !isSpectating).length,
+    [meetingMembers]
+  )
   const votePercent = scores.length / checkedInCount
   const allVotesIn = scores.length === checkedInCount
   // Show the facilitator a tooltip if nobody has voted yet
@@ -176,6 +179,7 @@ export default createFragmentContainer(PokerActiveVoting, {
       id
       meetingMembers {
         id
+        isSpectating
       }
     }
   `
