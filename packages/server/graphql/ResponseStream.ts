@@ -37,7 +37,7 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
         serverChannel
       })
       if (result.errors) {
-        sendToSentry(new Error(result.errors[0].message))
+        sendToSentry(new Error(result.errors[0]?.message))
         return this.next()
       }
       return {done: false, value: result}

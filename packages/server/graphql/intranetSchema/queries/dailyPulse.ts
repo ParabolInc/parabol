@@ -6,7 +6,7 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
-import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
+import {makeSection} from '../../mutations/helpers/notifications/makeSlackBlocks'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import getPg from '../../../postgres/getPg'
 
@@ -100,11 +100,7 @@ const dailyPulse = {
     const slackAuth = await r
       .table('SlackAuth')
       .getAll(userId, {index: 'userId'})
-      .filter((row) =>
-        row('botAccessToken')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row) => row('botAccessToken').default(null).ne(null))
       .nth(0)
       .default(null)
       .run()
@@ -130,7 +126,7 @@ const dailyPulse = {
       makeSection(`*Top Logins*`),
       loginsList
     ]
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(channelId, blocks)
     return res.ok
   }

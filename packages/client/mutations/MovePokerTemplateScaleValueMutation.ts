@@ -46,17 +46,21 @@ const MovePokerTemplateScaleValueMutation: StandardMutation<TMovePokerTemplateSc
       if (fromIndex < toIndex) {
         for (let ii = toIndex; ii > fromIndex; ii--) {
           const value = values[ii]
-          value.setValue(value.getValue('sortOrder') as number - 1, 'sortOrder')
+          value?.setValue((value.getValue('sortOrder') as number) - 1, 'sortOrder')
         }
-        values[fromIndex].setValue(toIndex, 'sortOrder')
-      } else { // fromIndex > toIndex
+        values[fromIndex]?.setValue(toIndex, 'sortOrder')
+      } else {
+        // fromIndex > toIndex
         for (let ii = toIndex; ii < fromIndex; ii++) {
           const value = values[ii]
-          value.setValue(value.getValue('sortOrder') as number + 1, 'sortOrder')
+          value?.setValue((value.getValue('sortOrder') as number) + 1, 'sortOrder')
         }
-        values[fromIndex].setValue(toIndex, 'sortOrder')
+        values[fromIndex]?.setValue(toIndex, 'sortOrder')
       }
-      scale.setLinkedRecords(values.sort((a, b) => (a.getValue('sortOrder')! < b.getValue('sortOrder')! ? -1 : 1)), "values")
+      scale.setLinkedRecords(
+        values.sort((a, b) => (a.getValue('sortOrder')! < b.getValue('sortOrder')! ? -1 : 1)),
+        'values'
+      )
     },
     onCompleted,
     onError

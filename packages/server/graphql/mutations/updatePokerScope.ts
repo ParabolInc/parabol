@@ -18,6 +18,7 @@ import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import getNextFacilitatorStageAfterStageRemoved from './helpers/getNextFacilitatorStageAfterStageRemoved'
 import importTasksForPoker from './helpers/importTasksForPoker'
+import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
 
 export interface TUpdatePokerScopeItemInput {
   service: TaskServiceEnum
@@ -126,7 +127,7 @@ const updatePokerScope = {
           issueKey,
           projectKey,
           dimensionName: firstDimensionName
-        }
+        } as JiraDimensionField
       })
     await ensureJiraDimensionField(requiredJiraMappers, teamId, viewerId, dataLoader)
 

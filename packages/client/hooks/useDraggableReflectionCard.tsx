@@ -1,10 +1,7 @@
 import React, {useContext, useEffect, useState, useRef} from 'react'
-import {useLazyLoadQuery} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
-import {useDraggableReflectionCardLocalQuery} from '../__generated__/useDraggableReflectionCardLocalQuery.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
@@ -47,28 +44,9 @@ const useRemotelyDraggedCard = (
   const [lastZIndex, setLastZIndex] = useState<number | undefined>()
   const {spotlightGroup} = meeting
   const spotlightGroupId = spotlightGroup?.id ?? ''
-
-  const spotlightSearchResults = useLazyLoadQuery<useDraggableReflectionCardLocalQuery>(
-    graphql`
-      query useDraggableReflectionCardLocalQuery($reflectionGroupId: ID!, $searchQuery: String!) {
-        viewer {
-          similarReflectionGroups(
-            reflectionGroupId: $reflectionGroupId
-            searchQuery: $searchQuery
-          ) {
-            id
-          }
-        }
-      }
-    `,
-    // TODO: add search query
-    {reflectionGroupId: spotlightGroupId, searchQuery: ''},
-    {fetchPolicy: 'store-only'}
-  )
-  const {viewer} = spotlightSearchResults
-  const {similarReflectionGroups} = viewer
-  const groupIdsInSpotlight = similarReflectionGroups
-    ? [...similarReflectionGroups.map(({id}) => id), spotlightGroupId]
+  const spotlightResultGroups = useSpotlightResults(meeting)
+  const groupIdsInSpotlight = spotlightResultGroups
+    ? [...spotlightResultGroups.map(({id}) => id), spotlightGroupId]
     : []
   const spotlightAnimRef = useRef<number | null>(null)
   const setRemoteCard = (
@@ -236,10 +214,7 @@ const useDroppingDrag = (
               removeClone(reflectionId, setPortal)
             }
             commitLocalUpdate(atmosphere, (store) => {
-              store
-                .get(reflectionId)!
-                .setValue(false, 'isDropping')
-                .setValue(null, 'remoteDrag')
+              store.get(reflectionId)!.setValue(false, 'isDropping').setValue(null, 'remoteDrag')
             })
           },
           remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
@@ -262,8 +237,8 @@ const useDragAndDrop = (
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-  const {id: meetingId, spotlightGroup} = meeting
-  const spotlightResultGroups = useSpotlightResults(spotlightGroup?.id, '') // TODO: add search query
+  const {id: meetingId} = meeting
+  const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -323,8 +298,8 @@ const useDragAndDrop = (
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     // required to prevent address bar scrolling & other strange browser things on mobile view
     e.preventDefault()
-    const isTouchMove = e.type === 'touchmove'
-    const {clientX, clientY} = isTouchMove ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+    const isTouchMove = e instanceof TouchEvent
+    const {clientX, clientY} = isTouchMove ? e.touches[0]! : e
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       const isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
@@ -349,8 +324,9 @@ const useDragAndDrop = (
     }
     if (!drag.clone) return
     drag.clientY = clientY
-    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
-      drag.cardOffsetY}px)`
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${
+      clientY - drag.cardOffsetY
+    }px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl
@@ -361,7 +337,7 @@ const useDragAndDrop = (
       }
     }
     if (isTouchMove && swipeColumn) {
-      const {clientX} = (e as TouchEvent).touches[0]
+      const {clientX} = e.touches[0]!
       const minThresh = windowDims.clientWidth * 0.1
       if (clientX <= minThresh) {
         swipeColumn(-1)
@@ -390,7 +366,7 @@ const useDragAndDrop = (
         document.addEventListener('mouseup', onMouseUp)
       }
       const {clientX, clientY} = isTouchStart
-        ? (e as React.TouchEvent<HTMLDivElement>).touches[0]
+        ? (e as React.TouchEvent<HTMLDivElement>).touches[0]!
         : (e as React.MouseEvent<HTMLDivElement>)
       drag.startX = clientX
       drag.startY = clientY

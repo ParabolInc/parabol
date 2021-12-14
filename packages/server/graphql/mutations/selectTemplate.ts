@@ -7,6 +7,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import SelectTemplatePayload from '../types/SelectTemplatePayload'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 
 const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -44,9 +45,9 @@ const selectTemplate = {
       if (!isTeamMember(authToken, template.teamId))
         return standardError(new Error('Template is scoped to team'), {userId: viewerId})
     } else if (scope === 'ORGANIZATION') {
-      const [viewerTeam, templateTeam] = await dataLoader
-        .get('teams')
-        .loadMany([teamId, template.teamId])
+      const [viewerTeam, templateTeam] = (
+        await dataLoader.get('teams').loadMany([teamId, template.teamId])
+      ).filter(isValid)
       if (viewerTeam.orgId !== templateTeam.orgId) {
         return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
       }

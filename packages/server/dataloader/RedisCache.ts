@@ -51,7 +51,7 @@ export default class RedisCache<T extends keyof CacheType> {
   // }
   private getRedis() {
     if (!this.redis) {
-      this.redis = new Redis(process.env.REDIS_URL)
+      this.redis = new Redis(process.env.REDIS_URL, {connectionName: 'redisCache'})
     }
     return this.redis
   }

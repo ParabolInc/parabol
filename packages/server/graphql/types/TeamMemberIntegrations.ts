@@ -4,6 +4,7 @@ import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
 import GitHubIntegration from './GitHubIntegration'
+import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
 
 const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
@@ -29,6 +30,14 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('githubAuth').load({teamId, userId})
+      }
+    },
+    mattermost: {
+      type: MattermostIntegration,
+      description: 'All things associated with a Mattermost integration for a team member',
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return null
+        return dataLoader.get('mattermostAuthByUserIdTeamId').load({userId, teamId})
       }
     },
     slack: {

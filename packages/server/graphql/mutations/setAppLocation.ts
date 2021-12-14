@@ -8,6 +8,7 @@ import {GQLContext} from '../graphql'
 import {UserPresence} from '../intranetSchema/mutations/connectSocket'
 import rateLimit from '../rateLimit'
 import SetAppLocationPayload from '../types/SetAppLocationPayload'
+import {isNotNull} from '../../utils/predicates'
 
 export default {
   type: new GraphQLNonNull(SetAppLocationPayload),
@@ -47,8 +48,8 @@ export default {
       if (connectedSocketIdx === -1) {
         return {error: {message: "Socket doesn't exist"}}
       }
-      const connectedSocketStr = userPresence[connectedSocketIdx]
-      const connectedSocket = connections[connectedSocketIdx]
+      const connectedSocketStr = userPresence[connectedSocketIdx]!
+      const connectedSocket = connections[connectedSocketIdx]!
 
       // RESOLUTION
       const {lastSeenAtURL, socketId, serverId} = connectedSocket
@@ -76,7 +77,7 @@ export default {
 
         const meetings = [lastMeeting, nextMeeting]
         const uniqueTeamIds = Array.from(
-          new Set(meetings.filter(Boolean).map(({teamId}) => teamId))
+          new Set(meetings.filter(isNotNull).map(({teamId}) => teamId))
         )
         uniqueTeamIds.forEach((teamId) => {
           publish(SubscriptionChannel.TEAM, teamId, 'SetAppLocationSuccess', data, subOptions)

@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.40.0 2021-Dec-09
+
+### Added
+
+- Add mattermost notification integration (#5550)
+- Add datadog tracing to compiled graphql queries (#5681)
+- Add hardDeleteUser mutation (#5475)
+- Add spotlightSearchQuery to similarReflectionGroups queries (#5735)
+- Spotlight — highlight search keyword (#5716)
+- Spotlight feature flag (#5699)
+- Add calculated domain field to User (#5719)
+
+### Changed
+
+- Extend GQL Timeout for GraphiQL Queries (#5577)
+
+### Fixed
+
+- Prevent ungrouping Spotlight results (#5704)
+- Fix spotlight not loading similar reflections (#5728)
+- Mitigate safari popups on SSO (#5617)
+- Fix more implicit any errors (#5740)
+
 ## 6.39.0 2021-Dec-02
 
 ### Added

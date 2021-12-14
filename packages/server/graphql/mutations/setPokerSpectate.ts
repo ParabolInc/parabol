@@ -41,16 +41,12 @@ const setPokerSpectate = {
     const {teamId} = meetingMember
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     await r({
-      meetingMember: r
-        .table('MeetingMember')
-        .get(meetingMemberId)
-        .update({isSpectating}),
+      meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating}),
       teamMember: r
         .table('TeamMember')
         .get(teamMemberId)
         .update({isSpectatingPoker: isSpectating, updatedAt: now})
     }).run()
-    meetingMember.isSpectating = isSpectating
     const data = {meetingId, userId: viewerId}
     publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectateSuccess', data, subOptions)
     return data

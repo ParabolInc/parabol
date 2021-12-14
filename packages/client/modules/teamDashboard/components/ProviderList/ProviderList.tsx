@@ -6,6 +6,7 @@ import graphql from 'babel-plugin-relay/macro'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
+import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
 
 interface Props {
@@ -24,6 +25,7 @@ const ProviderList = (props: Props) => {
     <StyledWrapper>
       <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
       <GitHubProviderRow teamId={teamId} viewer={viewer} />
+      <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
     </StyledWrapper>
   )
@@ -34,6 +36,7 @@ export default createFragmentContainer(ProviderList, {
     fragment ProviderList_viewer on User {
       ...AtlassianProviderRow_viewer
       ...GitHubProviderRow_viewer
+      ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
     }
   `
