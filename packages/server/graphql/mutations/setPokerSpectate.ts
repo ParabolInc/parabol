@@ -1,3 +1,4 @@
+import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
@@ -32,7 +33,9 @@ const setPokerSpectate = {
 
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+    const meetingMember = (await dataLoader
+      .get('meetingMembers')
+      .load(meetingMemberId)) as PokerMeetingMember
 
     if (!meetingMember) {
       return {error: {message: 'Not in meeting'}}
@@ -47,6 +50,9 @@ const setPokerSpectate = {
         .get(teamMemberId)
         .update({isSpectatingPoker: isSpectating, updatedAt: now})
     }).run()
+
+    // mutate the dataLoader cache
+    meetingMember.isSpectating = isSpectating
     const data = {meetingId, userId: viewerId}
     publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectateSuccess', data, subOptions)
     return data
