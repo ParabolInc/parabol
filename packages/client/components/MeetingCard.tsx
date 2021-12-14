@@ -4,9 +4,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
-import poker from '../../../static/images/illustrations/poker-mtg-color-bg.svg'
-import retrospective from '../../../static/images/illustrations/retro-mtg-color-bg.svg'
-import action from '../../../static/images/illustrations/standup-mtg-color-bg.svg'
+import poker from '../../../static/images/illustrations/sprintPoker.png'
+import retrospective from '../../../static/images/illustrations/retrospective.png'
+import action from '../../../static/images/illustrations/action.png'
 import useAnimatedMeetingCard from '../hooks/useAnimatedMeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
@@ -24,7 +24,6 @@ import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
-
 
 const CardWrapper = styled('div')<{
   maybeTabletPlus: boolean
@@ -73,12 +72,20 @@ const Meta = styled('span')({
   wordBreak: 'break-word'
 })
 
-const MeetingImgWrapper = styled('div')({
-  background: PALETTE.GRAPE_700,
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'relative'
-})
+const BACKGROUND_COLORS = {
+  retrospective: PALETTE.GRAPE_700,
+  action: PALETTE.SKY_500,
+  poker: PALETTE.TOMATO_500
+}
+
+const MeetingImgWrapper = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
+  ({meetingType}) => ({
+    background: BACKGROUND_COLORS[meetingType],
+    borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
+    display: 'block',
+    position: 'relative'
+  })
+)
 
 const MeetingTypeLabel = styled('span')({
   color: PALETTE.WHITE,
@@ -95,7 +102,9 @@ const MeetingImg = styled('img')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
   display: 'block',
   overflow: 'hidden',
-  width: '100%'
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  height: '180px'
 })
 
 const TopLine = styled('div')({
@@ -127,7 +136,6 @@ const ILLUSTRATIONS = {
   action,
   poker
 }
-
 const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
   action: 'Check-in',
@@ -170,7 +178,7 @@ const MeetingCard = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <MeetingImgWrapper>
+      <MeetingImgWrapper meetingType={meetingType}>
         <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
         <Link to={`/meet/${meetingId}`}>
           <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
