@@ -49,11 +49,11 @@ const addIntegrationProvider = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const authResult = auth(provider, authToken, teamId, orgId, dataLoader)
+    const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
     if (authResult instanceof Error) return authResult
 
     // VALIDATION
-    const validationResult = validate(provider, teamId, orgId, dataLoader)
+    const validationResult = await validate(provider, teamId, orgId, dataLoader)
     if (validationResult instanceof Error) return authResult
 
     const dbProvider = makeDbIntegrationProvider(provider)
@@ -66,7 +66,7 @@ const addIntegrationProvider = {
     // RESOLUTION
     switch (provider.scope) {
       case 'global':
-        upsertGlobalIntegrationProvider(dbProvider)
+        await upsertGlobalIntegrationProvider(dbProvider)
         break
       case 'org':
       case 'team':
@@ -87,6 +87,7 @@ const addIntegrationProvider = {
         }
     }
 
+    //TODO: add proper scopes handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProvider', data, subOptions)
     return data

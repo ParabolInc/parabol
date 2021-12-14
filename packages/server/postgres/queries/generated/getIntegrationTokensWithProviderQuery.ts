@@ -1,9 +1,9 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getIntegrationTokensWithProviderQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderScopesEnum = 'GLOBAL' | 'ORG' | 'TEAM';
+export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderTypesEnum = 'GITLAB' | 'MATTERMOST';
+export type IntegrationProviderTypesEnum = 'gitlab' | 'mattermost';
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 

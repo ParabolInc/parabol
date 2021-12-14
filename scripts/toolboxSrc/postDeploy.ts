@@ -69,7 +69,7 @@ const storePersistedQueries = async () => {
 }
 
 const upsertGlobalIntegrationProvidersFromEnv = async () => {
-  let providers = []
+  const providers = []
   await Promise.all(
     makeGlobalIntegrationProvidersFromEnv().map((provider) => {
       providers.push(provider.type)

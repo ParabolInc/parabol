@@ -18,9 +18,9 @@ import {
 } from '../../postgres/types/IIntegrationProviderAndToken'
 
 export interface AddIntegrationProviderInputT {
-  type: Lowercase<IntegrationProviderTypesEnumT>
-  tokenType: Lowercase<IntegrationProviderTokenTypeEnumT>
-  scope: Lowercase<IntegrationProviderScopesEnumT>
+  type: IntegrationProviderTypesEnumT
+  tokenType: IntegrationProviderTokenTypeEnumT
+  scope: IntegrationProviderScopesEnumT
   name: string
   oauthScopes?: string[] | null
   serverBaseUri: string

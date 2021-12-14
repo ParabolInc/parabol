@@ -3,6 +3,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     // "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": false,
     "baseUrl": "../",
     "paths": {
       "server/*": [""],

@@ -15,8 +15,8 @@ export interface IntegrationProvider extends _IntegrationProvider {}
 export interface IntegrationToken extends _IntegrationToken {}
 
 export interface GlobalIntegrationProvider extends Omit<IntegrationProvider, 'orgId' | 'teamId'> {
-  scope: Extract<IntegrationProviderScopesEnum, 'GLOBAL'>
-  tokenType: Extract<IntegrationProviderTokenTypeEnum, 'OAUTH2'>
+  scope: Extract<IntegrationProviderScopesEnum, 'global'>
+  tokenType: Extract<IntegrationProviderTokenTypeEnum, 'oauth2'>
 }
 
 export type GlobalIntegrationProviderInput = Omit<

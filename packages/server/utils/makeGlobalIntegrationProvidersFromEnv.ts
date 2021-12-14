@@ -4,9 +4,9 @@ const makeGlobalIntegrationProvidersFromEnv = (): GlobalIntegrationProviderInput
   const integrationProviders: GlobalIntegrationProviderInput[] = []
   if (process.env.GITLAB_CLIENT_ID && process.env.GITLAB_CLIENT_SECRET) {
     integrationProviders.push({
-      type: 'GITLAB',
-      tokenType: 'OAUTH2',
-      scope: 'GLOBAL',
+      type: 'gitlab',
+      tokenType: 'oauth2',
+      scope: 'global',
       isActive: true,
       name: 'GitLab.com',
       serverBaseUri: 'https://gitlab.com',

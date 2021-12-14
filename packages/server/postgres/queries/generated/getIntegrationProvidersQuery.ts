@@ -1,11 +1,11 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getIntegrationProvidersQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderScopesEnum = 'GLOBAL' | 'ORG' | 'TEAM';
+export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderTokenTypeEnum = 'OAUTH2' | 'PAT' | 'WEBHOOK';
+export type IntegrationProviderTokenTypeEnum = 'oauth2' | 'pat' | 'webhook';
 
-export type IntegrationProviderTypesEnum = 'GITLAB' | 'MATTERMOST';
+export type IntegrationProviderTypesEnum = 'gitlab' | 'mattermost';
 
 export type stringArray = (string)[];
 
@@ -41,7 +41,7 @@ export interface IGetIntegrationProvidersQueryQuery {
   result: IGetIntegrationProvidersQueryResult;
 }
 
-const getIntegrationProvidersQueryIR: any = {"name":"getIntegrationProvidersQuery","params":[{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":97,"b":100,"line":5,"col":18}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":204,"b":208,"line":9,"col":39}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":252,"b":257,"line":10,"col":41}]}}],"usedParamSet":{"type":true,"orgId":true,"teamId":true},"statement":{"body":"SELECT * FROM \"IntegrationProvider\"\n  WHERE \"type\" = :type\n    AND \"isActive\" = TRUE\n    AND (\n        \"scope\" = 'GLOBAL'\n    OR (\"scope\" = 'ORG' AND \"orgId\" = :orgId)\n    OR (\"scope\" = 'TEAM' AND \"teamId\" = :teamId)\t\n)","loc":{"a":43,"b":261,"line":4,"col":0}}};
+const getIntegrationProvidersQueryIR: any = {"name":"getIntegrationProvidersQuery","params":[{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":97,"b":100,"line":5,"col":18}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":204,"b":208,"line":9,"col":39}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":252,"b":257,"line":10,"col":41}]}}],"usedParamSet":{"type":true,"orgId":true,"teamId":true},"statement":{"body":"SELECT * FROM \"IntegrationProvider\"\n  WHERE \"type\" = :type\n    AND \"isActive\" = TRUE\n    AND (\n        \"scope\" = 'global'\n    OR (\"scope\" = 'org' AND \"orgId\" = :orgId)\n    OR (\"scope\" = 'team' AND \"teamId\" = :teamId)\n)","loc":{"a":43,"b":260,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -50,9 +50,9 @@ const getIntegrationProvidersQueryIR: any = {"name":"getIntegrationProvidersQuer
  *   WHERE "type" = :type
  *     AND "isActive" = TRUE
  *     AND (
- *         "scope" = 'GLOBAL'
- *     OR ("scope" = 'ORG' AND "orgId" = :orgId)
- *     OR ("scope" = 'TEAM' AND "teamId" = :teamId)	
+ *         "scope" = 'global'
+ *     OR ("scope" = 'org' AND "orgId" = :orgId)
+ *     OR ("scope" = 'team' AND "teamId" = :teamId)
  * )
  * ```
  */

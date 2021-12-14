@@ -9,22 +9,22 @@ export async function up() {
   BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'IntegrationProviderTypesEnum') THEN
       CREATE TYPE "IntegrationProviderTypesEnum" AS ENUM (
-        'GITLAB',
-        'MATTERMOST'
+        'gitlab',
+        'mattermost'
       );
     END IF;
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'IntegrationProviderTokenTypeEnum') THEN
       CREATE TYPE "IntegrationProviderTokenTypeEnum" AS ENUM (
-        'PAT',
-        'OAUTH2',
-        'WEBHOOK'
+        'pat',
+        'oauth2',
+        'webhook'
       );
     END IF;
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'IntegrationProviderScopesEnum') THEN
       CREATE TYPE "IntegrationProviderScopesEnum" AS ENUM (
-        'GLOBAL',
-        'ORG',
-        'TEAM'
+        'global',
+        'org',
+        'team'
       );
     END IF;
     CREATE TABLE IF NOT EXISTS "IntegrationProvider" (
@@ -34,7 +34,7 @@ export async function up() {
       "scope" "IntegrationProviderScopesEnum" NOT NULL,
       "scopeGlobal" BOOLEAN GENERATED ALWAYS AS (
         CASE
-          WHEN "scope" = 'GLOBAL' THEN TRUE
+          WHEN "scope" = 'global' THEN TRUE
           ELSE NULL
         END
       ) STORED,
@@ -50,7 +50,7 @@ export async function up() {
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       UNIQUE("scopeGlobal", "type"),
       CONSTRAINT global_provider_must_be_oauth2 CHECK (
-        "scopeGlobal" IS NULL OR ("scopeGlobal" = TRUE AND "tokenType" = 'OAUTH2')
+        "scopeGlobal" IS NULL OR ("scopeGlobal" = TRUE AND "tokenType" = 'oauth2')
       )
     );
     CREATE INDEX IF NOT EXISTS "idx_IntegrationProvider_typeAndScope"

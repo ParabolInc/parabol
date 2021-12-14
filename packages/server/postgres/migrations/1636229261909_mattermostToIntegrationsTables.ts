@@ -47,9 +47,9 @@ export async function up() {
   const mattermostAuthsToInsert = mattermostAuths.map((mattermostAuth) => {
     return insertIntegrationProviderWithToken(
       {
-        type: 'MATTERMOST',
-        tokenType: 'WEBHOOK',
-        scope: 'TEAM',
+        type: 'mattermost',
+        tokenType: 'webhook',
+        scope: 'team',
         name: 'mattermost',
         serverBaseUri: mattermostAuth.webhookUrl,
         oauthClientId: null,
@@ -101,7 +101,7 @@ export async function down() {
     JOIN "IntegrationProvider"
     ON ("IntegrationToken"."providerId" = "IntegrationProvider"."id") 
     WHERE (
-      "IntegrationProvider"."type" = 'MATTERMOST'
+      "IntegrationProvider"."type" = 'mattermost'
       AND "IntegrationToken"."isActive" = TRUE
       AND "IntegrationProvider"."isActive" = TRUE
     );

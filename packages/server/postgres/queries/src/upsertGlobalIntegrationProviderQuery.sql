@@ -13,8 +13,8 @@ INSERT INTO "IntegrationProvider" (
 	"oauthClientSecret"
   ) VALUES (
 	  :type,
-		'OAUTH2'::"IntegrationProviderTokenTypeEnum",
-		'GLOBAL'::"IntegrationProviderScopesEnum",
+		'oauth2'::"IntegrationProviderTokenTypeEnum",
+		'global'::"IntegrationProviderScopesEnum",
 		TRUE,
 		:name,
 		:serverBaseUri,
@@ -36,8 +36,8 @@ INSERT INTO "IntegrationProvider" (
 			"oauthClientSecret",
 			"updatedAt") = (
 			EXCLUDED."type",
-		  'OAUTH2'::"IntegrationProviderTokenTypeEnum",
-		  'GLOBAL'::"IntegrationProviderScopesEnum",
+		  'oauth2'::"IntegrationProviderTokenTypeEnum",
+		  'global'::"IntegrationProviderScopesEnum",
 			TRUE,
 			EXCLUDED."name",
 			EXCLUDED."serverBaseUri",

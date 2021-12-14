@@ -23,7 +23,7 @@ export const IntegrationProviderTypeEnum = new GraphQLEnumType({
   values: {
     gitlab: {},
     mattermost: {}
-  } as {[P in Lowercase<IntegrationProviderTypesEnumT>]: any}
+  } as {[P in IntegrationProviderTypesEnumT]: any}
 })
 
 export const IntegrationProviderTokenTypeEnum = new GraphQLEnumType({
@@ -33,7 +33,7 @@ export const IntegrationProviderTokenTypeEnum = new GraphQLEnumType({
     oauth2: {},
     pat: {},
     webhook: {}
-  } as {[P in Lowercase<IntegrationProviderTokenTypeEnumT>]: any}
+  } as {[P in IntegrationProviderTokenTypeEnumT]: any}
 })
 
 export const IntegrationProviderScopesEnum = new GraphQLEnumType({
@@ -43,7 +43,7 @@ export const IntegrationProviderScopesEnum = new GraphQLEnumType({
     global: {},
     org: {},
     team: {}
-  } as {[P in Lowercase<IntegrationProviderScopesEnumT>]: any}
+  } as {[P in IntegrationProviderScopesEnumT]: any}
 })
 
 const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({

@@ -1,11 +1,11 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/insertIntegrationProviderQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderScopesEnum = 'GLOBAL' | 'ORG' | 'TEAM';
+export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderTokenTypeEnum = 'OAUTH2' | 'PAT' | 'WEBHOOK';
+export type IntegrationProviderTokenTypeEnum = 'oauth2' | 'pat' | 'webhook';
 
-export type IntegrationProviderTypesEnum = 'GITLAB' | 'MATTERMOST';
+export type IntegrationProviderTypesEnum = 'gitlab' | 'mattermost';
 
 export type stringArray = (string)[];
 

@@ -29,17 +29,15 @@ const removeIntegrationProvider = {
     const provider = await dataLoader.get('integrationProviders').load(providerDbId)
     if (!provider) return standardError(new Error('Integration Provider not found'))
     const {teamId, orgId} = provider
-    const authResult = auth(provider, authToken, teamId, orgId, dataLoader)
+    const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
     if (authResult instanceof Error) return standardError(authResult)
-
-    // VALIDATION
-    // nothing futher to validate
 
     // RESOLUTION
     await removeIntegrationProviderQuery(providerDbId)
 
+    //TODO: add proper scopes handling here, teamId only exists in provider with team scope
     const data = {userId: getUserId(authToken), teamId}
-    publish(SubscriptionChannel.TEAM, teamId, 'RemoveIntegrationProvider', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId!, 'RemoveIntegrationProvider', data, subOptions)
     return data
   }
 }

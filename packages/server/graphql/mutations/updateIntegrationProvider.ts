@@ -33,12 +33,12 @@ const updateIntegrationProvider = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const authResult = auth(provider, authToken, teamId, orgId, dataLoader)
+    const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
     if (authResult instanceof Error) return authResult
 
     // VALIDATION
     const providerDbId = IntegrationProviderId.split(provider.id)
-    const validationResult = validate(provider, teamId, orgId, dataLoader)
+    const validationResult = await validate(provider, teamId, orgId, dataLoader)
     if (validationResult instanceof Error) return authResult
 
     // RESOLUTION
@@ -48,6 +48,7 @@ const updateIntegrationProvider = {
     }
     await updateIntegrationProviderQuery(dbProvider)
 
+    //TODO: add proper scopes handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateIntegrationProvider', data, subOptions)
     return data

@@ -43,11 +43,11 @@ const addIntegrationTokenValidation = (
   }
 
   switch (providerInfo.tokenType) {
-    case 'OAUTH2':
-    case 'PAT':
+    case 'oauth2':
+    case 'pat':
       !maybeInputToken.oauthCodeOrPat && errors.push('oauthCodeOrPat is required')
       break
-    case 'WEBHOOK':
+    case 'webhook':
     // nothing to verify
   }
 
