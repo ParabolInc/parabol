@@ -4,10 +4,10 @@ import legitify from './legitify'
 export default function makeUpdateAgendaItemSchema() {
   return legitify({
     id: compositeId,
-    content: (value) => value.trim().max(63, 'Try something a little shorter'),
-    isActive: (value) => value.boolean(),
-    pinned: (value) => value.boolean(),
-    sortOrder: (value) => value.float(),
+    content: (value: any) => value.trim().max(63, 'Try something a little shorter'),
+    isActive: (value: any) => value.boolean(),
+    pinned: (value: any) => value.boolean(),
+    sortOrder: (value: any) => value.float(),
     teamId: id,
     teamMemberId: compositeId
   })

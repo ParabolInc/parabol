@@ -3663,6 +3663,13 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.52.tgz#03c13be70b9031baaed79481c0c0cfb0045e53f7"
   integrity sha512-s3nugnZumCC//n4moGGe6tkNMyYEdaDBitVjwPxXmR5lnMG5dHePinH2EdxkG3Rh1ghFHHixAG4NJhpJW1rthQ==
 
+"@types/nodemailer@^6.4.4":
+  version "6.4.4"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.4.tgz#c265f7e7a51df587597b3a49a023acaf0c741f4b"
+  integrity sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz#d3357479a0fdfdd5907fe67e17e0a85c906e1301"
@@ -3773,6 +3780,13 @@
   version "0.0.31"
   resolved "https://registry.yarnpkg.com/@types/segment-analytics/-/segment-analytics-0.0.31.tgz#1f2936afe4f33e2ffb4e9d9c922b99567ffd524b"
   integrity sha512-R6/78NeRPuIZTa2epCfLySnGN4HL2KSIUGQzty0RLujFHspfShJsQ3XkNKtFs7D5V+vNBAl7+UDyArGtkjuH0A==
+
+"@types/sharp@^0.29.4":
+  version "0.29.4"
+  resolved "https://registry.yarnpkg.com/@types/sharp/-/sharp-0.29.4.tgz#e47d8677befc9944d4b9d76ed837452814166de0"
+  integrity sha512-asrPef2LYenr76zBzyy+Fw40yGzq/q/CY77mUP5n43DnuWjQoOB+8vxnzFcqccz+LF+A7mbnknGCfpVWSG82Bw==
+  dependencies:
+    "@types/node" "*"
 
 "@types/source-list-map@*":
   version "0.1.2"
