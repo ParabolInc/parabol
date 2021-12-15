@@ -8,7 +8,10 @@ const Content = styled('div')({
   paddingLeft: 16,
   paddingRight: 16,
   maxHeight: 320,
-  overflow: 'auto'
+  overflow: 'auto',
+  img: {
+    height: 'auto'
+  }
 })
 const Summary = styled('div')({
   fontWeight: 600
