@@ -54,7 +54,8 @@ const TemplateImage = styled('img')({
   maxWidth: 360,
   maxHeight: 200,
   padding: '16px 0 0',
-  width: '100%'
+  width: '100%',
+  objectFit: 'contain'
 })
 
 const Description = styled('div')({
