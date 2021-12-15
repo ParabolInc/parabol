@@ -25,7 +25,7 @@ const company = {
   ) {
     requireSU(authToken)
     if (domain) return {id: domain}
-    const user = await dataLoader.get('users').load(userId)
+    const user = userId && (await dataLoader.get('users').load(userId))
     if (!user) throw new Error('User not found')
     const {email} = user
     const userDomain = getDomainFromEmail(email)

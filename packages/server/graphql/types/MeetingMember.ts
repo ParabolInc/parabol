@@ -1,5 +1,12 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInterfaceType,
+  GraphQLNonNull,
+  GraphQLObjectType
+} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {MeetingTypeEnum as TMeetingTypeEnum} from '../../database/types/Meeting'
 import {GQLContext} from '../graphql'
 import {resolveUser} from '../resolvers'
 import ActionMeetingMember from './ActionMeetingMember'
@@ -58,12 +65,12 @@ const MeetingMember: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'MeetingMember',
   description: 'All the user details for a specific meeting',
   fields: meetingMemberFields,
-  resolveType: ({meetingType}) => {
+  resolveType: ({meetingType}: {meetingType: TMeetingTypeEnum}) => {
     const resolveTypeLookup = {
       retrospective: RetrospectiveMeetingMember,
       action: ActionMeetingMember,
       poker: PokerMeetingMember
-    }
+    } as Record<TMeetingTypeEnum, GraphQLObjectType<any, GQLContext>>
     return resolveTypeLookup[meetingType]
   }
 })

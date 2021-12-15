@@ -15,7 +15,7 @@ import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
 
 const getBillingLeaderUser = async (
-  email: string | null,
+  email: string | null | undefined,
   orgId: string,
   dataLoader: DataLoaderWorker
 ) => {
@@ -82,7 +82,13 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {orgId, quantity, email, apEmail, plan},
+    {
+      orgId,
+      quantity,
+      email,
+      apEmail,
+      plan
+    }: {orgId: string; quantity: number; email?: string; apEmail?: string; plan?: string},
     {authToken, dataLoader}: GQLContext
   ) {
     const r = await getRethink()

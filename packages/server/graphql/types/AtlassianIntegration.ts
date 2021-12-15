@@ -98,7 +98,12 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async (
         {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
-        {first, queryString, isJQL, projectKeyFilters},
+        {
+          first,
+          queryString,
+          isJQL,
+          projectKeyFilters
+        }: {first: number; queryString: string; isJQL: boolean; projectKeyFilters: string[]},
         context
       ) => {
         const {authToken} = context
@@ -109,7 +114,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromTasks([], 0, err)
         }
         const manager = new AtlassianServerManager(accessToken)
-        const projectKeyFiltersByCloudId = {}
+        const projectKeyFiltersByCloudId = {} as {[cloudId: string]: string[]}
         if (projectKeyFilters?.length > 0) {
           projectKeyFilters.forEach((globalProjectKey) => {
             const [cloudId, projectKey] = globalProjectKey.split(':')
@@ -175,7 +180,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'Filter the fields to single cloudId'
         }
       },
-      resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
+      resolve: async ({accessToken}: AtlassianAuth, {cloudId}: {cloudId: string}) => {
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
         if (fields instanceof Error) return []
