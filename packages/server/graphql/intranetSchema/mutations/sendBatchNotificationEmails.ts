@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLList, GraphQLString} from 'graphql'
 import ms from 'ms'
 import getPg from '../../../postgres/getPg'
@@ -11,7 +12,7 @@ const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),
   description:
     'Send summary emails of unread notifications to all users who have not been seen within the last 24 hours',
-  async resolve(_source: unknown, _args: unknown, {authToken}) {
+  async resolve(_source: unknown, _args: unknown, {authToken}: GQLContext) {
     // AUTH
     requireSU(authToken)
 
@@ -22,12 +23,14 @@ const sendBatchNotificationEmails = {
     const r = await getRethink()
     const now = Date.now()
     const yesterday = new Date(now - ms('1d'))
-    const userNotificationCount = (await (r
-      .table('Notification')
-      // Only include notifications which occurred within the last day
-      .filter((row) => row('createdAt').gt(yesterday))
-      // de-dup users
-      .group('userId') as any)
+    const userNotificationCount = (await (
+      r
+        .table('Notification')
+        // Only include notifications which occurred within the last day
+        .filter((row) => row('createdAt').gt(yesterday))
+        // de-dup users
+        .group('userId') as any
+    )
       .count()
       .ungroup()
       .map((group) => ({

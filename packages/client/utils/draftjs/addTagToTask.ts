@@ -23,7 +23,7 @@ const addTagToTask = (contentState, tag) => {
   const contentStateWithEntity = contentStateWithNewBlock.createEntity('TAG', 'IMMUTABLE', {value})
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
 
-  return Modifier.replaceText(contentStateWithEntity, lastSelection, tag, null, entityKey)
+  return Modifier.replaceText(contentStateWithEntity, lastSelection, tag, undefined, entityKey)
 }
 
 export default addTagToTask

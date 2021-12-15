@@ -44,7 +44,7 @@ export const suggestedActionInterfaceFields = () => ({
   }
 })
 
-const SuggestedAction = new GraphQLInterfaceType({
+const SuggestedAction: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'SuggestedAction',
   description: 'A past event that is important to the viewer',
   fields: suggestedActionInterfaceFields,

@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLID} from 'graphql'
 import {requireSU} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -17,7 +18,11 @@ const company = {
     }
   },
   description: 'All the info about a specific company',
-  async resolve(_source: unknown, {domain, userId}, {authToken, dataLoader}) {
+  async resolve(
+    _source: unknown,
+    {domain, userId}: {domain?: string; userId?: string},
+    {authToken, dataLoader}: GQLContext
+  ) {
     requireSU(authToken)
     if (domain) return {id: domain}
     const user = await dataLoader.get('users').load(userId)

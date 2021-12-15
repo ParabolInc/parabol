@@ -1,3 +1,3 @@
-const getUpcomingInvoiceId = (orgId) => `upcoming_${orgId}`
+const getUpcomingInvoiceId = (orgId: string) => `upcoming_${orgId}`
 
 export default getUpcomingInvoiceId

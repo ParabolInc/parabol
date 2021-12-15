@@ -1,4 +1,4 @@
-import { optionalUrl } from 'parabol-client/validation/templates'
+import {optionalUrl} from 'parabol-client/validation/templates'
 import legitify from './legitify'
 
 export default function makeUserServerSchema() {

@@ -15,7 +15,11 @@ export default {
       description: 'The stripe customer ID, or stripeId'
     }
   },
-  resolve: async (_source: unknown, {customerId}, {authToken}: InternalContext) => {
+  resolve: async (
+    _source: unknown,
+    {customerId}: {customerId: string},
+    {authToken}: InternalContext
+  ) => {
     // AUTH
     if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
@@ -27,11 +31,7 @@ export default {
     const {
       metadata: {orgId}
     } = customer
-    await r
-      .table('Organization')
-      .get(orgId)
-      .update({creditCard})
-      .run()
+    await r.table('Organization').get(orgId).update({creditCard}).run()
     return true
   }
 }

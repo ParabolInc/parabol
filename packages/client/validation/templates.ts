@@ -1,5 +1,5 @@
 import {TASK_MAX_CHARS} from '../utils/constants'
-import {compositeIdRegex, emailRegex, idRegex} from './regex'
+import {compositeIdRegex, idRegex} from './regex'
 import linkify from '../utils/linkify'
 
 export const avatar = {
@@ -18,25 +18,6 @@ export const compositeId = (value) => value.matches(compositeIdRegex)
 export const id = (value) => value.matches(idRegex)
 
 export const requiredId = (value) => value.required().matches(idRegex)
-
-export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingApprovalEmails = []) => {
-  return (value) =>
-    value
-      .trim()
-      .required('You should enter an email here.')
-      .matches(emailRegex, 'That doesn’t look like an email address.')
-      .test((inviteTeamMember) => {
-        return inviteEmails.includes(inviteTeamMember) && 'That person has already been invited!'
-      })
-      .test(
-        (inviteTeamMember) =>
-          teamMemberEmails.includes(inviteTeamMember) && 'That person is already on your team!'
-      )
-      .test(
-        (inviteTeamMember) =>
-          pendingApprovalEmails.includes(inviteTeamMember) && 'That person is awaiting org approval'
-      )
-}
 
 export const orgName = (value) =>
   value
@@ -84,7 +65,9 @@ export const optionalUrl = (value) =>
         try {
           new URL(value)
         } catch (e) {
-          return e.message
+          const error =
+            e instanceof Error ? e : new Error('Failed to create new URL with optionalURL value')
+          return error.message
         }
       }
     }, 'that url doesn’t look quite right')

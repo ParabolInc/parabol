@@ -54,7 +54,7 @@ export const meetingMemberFields = () => ({
   }
 })
 
-const MeetingMember = new GraphQLInterfaceType({
+const MeetingMember: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'MeetingMember',
   description: 'All the user details for a specific meeting',
   fields: meetingMemberFields,

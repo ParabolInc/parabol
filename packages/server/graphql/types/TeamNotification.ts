@@ -5,7 +5,7 @@ import NotifyTaskInvolves from './NotifyTaskInvolves'
 import NotifyTeamArchived from './NotifyTeamArchived'
 import NotificationTeamInvitation from './NotificationTeamInvitation'
 
-const TeamNotification = new GraphQLInterfaceType({
+const TeamNotification: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'TeamNotification',
   fields: {
     id: {
@@ -15,7 +15,7 @@ const TeamNotification = new GraphQLInterfaceType({
       type: NotificationEnum
     }
   },
-  resolveType ({type}) {
+  resolveType({type}) {
     const resolveTypeLookup = {
       KICKED_OUT: NotifyKickedOut,
       TASK_INVOLVES: NotifyTaskInvolves,

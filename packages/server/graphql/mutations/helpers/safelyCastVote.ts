@@ -1,14 +1,15 @@
+import {AuthToken} from './../../../../client/types/AuthToken'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import {getUserId} from '../../../utils/authorization'
 
 const safelyCastVote = async (
-  authToken,
-  meetingId,
-  userId,
-  reflectionGroupId,
-  maxVotesPerGroup
+  authToken: AuthToken,
+  meetingId: string,
+  userId: string,
+  reflectionGroupId: string,
+  maxVotesPerGroup: number
 ) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   const r = await getRethink()

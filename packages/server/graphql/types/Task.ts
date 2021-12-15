@@ -28,7 +28,7 @@ import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
 import getRethink from '../../database/rethinkDriver'
 
-const Task = new GraphQLObjectType<any, GQLContext>({
+const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
   interfaces: () => [Threadable],

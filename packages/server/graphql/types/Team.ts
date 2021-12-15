@@ -33,7 +33,7 @@ import TeamMember from './TeamMember'
 import TemplateScale from './TemplateScale'
 import TierEnum from './TierEnum'
 
-const Team = new GraphQLObjectType<ITeam, GQLContext>({
+const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
   description: 'A team',
   fields: () => ({
@@ -96,10 +96,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
             .run()
         }
         const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r
-          .table('MassInvitation')
-          .insert(massInvitation, {conflict: 'replace'})
-          .run()
+        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation

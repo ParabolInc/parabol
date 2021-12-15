@@ -39,7 +39,7 @@ export const notificationInterfaceFields = {
   }
 }
 
-const Notification = new GraphQLInterfaceType({
+const Notification: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'Notification',
   fields: () => notificationInterfaceFields,
   resolveType(value) {
