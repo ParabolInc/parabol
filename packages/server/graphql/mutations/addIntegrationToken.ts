@@ -53,6 +53,7 @@ const addIntegrationToken = {
         }
       )
     }
+    // TODO: support pat, webhooks, etc. Not just oauth2
     const maybeSetupOauth2Response = await ServerManager.setupOauth2Provider({
       code: oauthCodeOrPat,
       redirectUri

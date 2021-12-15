@@ -1,5 +1,6 @@
 import {GraphQLNonNull} from 'graphql'
 import {getUserId} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import publish from '../../utils/publish'
 import UpdateIntegrationProviderPayload from '../types/UpdateIntegrationProviderPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -34,12 +35,12 @@ const updateIntegrationProvider = {
 
     // AUTH
     const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
-    if (authResult instanceof Error) return authResult
+    if (authResult instanceof Error) return standardError(authResult)
 
     // VALIDATION
     const providerDbId = IntegrationProviderId.split(provider.id)
-    const validationResult = await validate(provider, teamId, orgId, dataLoader)
-    if (validationResult instanceof Error) return authResult
+    const validationResult = await validate(provider, viewerId, teamId, orgId, dataLoader)
+    if (validationResult instanceof Error) return standardError(validationResult)
 
     // RESOLUTION
     const dbProvider = {

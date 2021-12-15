@@ -50,11 +50,11 @@ const addIntegrationProvider = {
 
     // AUTH
     const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
-    if (authResult instanceof Error) return authResult
+    if (authResult instanceof Error) return standardError(authResult)
 
     // VALIDATION
-    const validationResult = await validate(provider, teamId, orgId, dataLoader)
-    if (validationResult instanceof Error) return authResult
+    const validationResult = await validate(provider, viewerId, teamId, orgId, dataLoader)
+    if (validationResult instanceof Error) return standardError(validationResult)
 
     const dbProvider = makeDbIntegrationProvider(provider)
 
@@ -87,7 +87,8 @@ const addIntegrationProvider = {
         }
     }
 
-    //TODO: add proper scopes handling here, teamId only exists in provider with team scope
+    //TODO: add proper subscription scope handling here,
+    //      teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProvider', data, subOptions)
     return data

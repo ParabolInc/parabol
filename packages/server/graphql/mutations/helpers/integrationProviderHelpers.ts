@@ -9,6 +9,8 @@ import {DataLoaderWorker} from '../../graphql'
 import {IntegrationProviderScopesEnum} from '../../../postgres/types/IIntegrationProviderAndToken'
 import {AddIntegrationProviderInputT} from '../../types/AddIntegrationProviderInput'
 import {UpdateIntegrationProviderInputT} from '../../types/UpdateIntegrationProviderInput'
+import linkify from 'parabol-client/utils/linkify'
+import {notifyWebhookConfigUpdated} from '../helpers/notifications/notifyMattermost'
 
 export const auth = (
   dataLoader: DataLoaderWorker,
@@ -40,6 +42,7 @@ export const auth = (
 
 export const validate = async (
   provider: AddIntegrationProviderInputT,
+  viewerId: string,
   teamId: string,
   orgId: string,
   dataLoader: DataLoaderWorker
@@ -49,15 +52,18 @@ export const validate = async (
       if (provider.tokenType !== 'oauth2')
         return new Error('globally-scoped token provider must be OAuth2 provider')
       break
+    // @ts-ignore no-fallthrough
     case 'org':
       if (provider.tokenType !== 'oauth2')
         return new Error('org-scoped token provider must be OAuth2 provider')
+    // fall-through and verify team and org
     case 'team':
       const checkTeam = await dataLoader.get('teams').load(teamId)
       if (!checkTeam) return new Error('team not found')
       const checkOrg = await dataLoader.get('organizations').load(orgId)
       if (!checkOrg) return new Error('organization not found')
   }
+
   switch (provider.tokenType) {
     case 'oauth2':
       if (!provider.oauthScopes) return new Error('scopes required for OAuth2 provider')
@@ -68,6 +74,19 @@ export const validate = async (
     case 'pat':
       // nothing to validate
       break
+    case 'webhook':
+      const links = linkify.match(provider.serverBaseUri)
+      if (!links || links.length === 0) return new Error('invalid webhook url')
+  }
+
+  // TODO: refactor to use MakeIntegrationServerManager.fromProviderId(...)
+  //       and support pat, oauth2, and webhooks here. Method should be shared
+  //       with addIntegrationToken implementation. See addIntegrationToken for
+  //       inspriation.
+  switch (provider.type) {
+    case 'mattermost':
+      const result = await notifyWebhookConfigUpdated(provider.serverBaseUri, viewerId, teamId)
+      if (result instanceof Error) return result
   }
 
   return
