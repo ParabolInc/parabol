@@ -7,6 +7,15 @@ import {
   GraphQLString
 } from 'graphql'
 
+export type CreateAgendaItemInputType = {
+  content: string
+  pinned: boolean
+  teamId: string
+  teamMemberId: string
+  sortOrder?: number
+  meetingId?: string
+}
+
 const CreateAgendaItemInput = new GraphQLInputObjectType({
   name: 'CreateAgendaItemInput',
   fields: () => ({
@@ -32,7 +41,7 @@ const CreateAgendaItemInput = new GraphQLInputObjectType({
     meetingId: {
       type: GraphQLString,
       description: 'The meeting ID of the agenda item'
-    },
+    }
   })
 })
 

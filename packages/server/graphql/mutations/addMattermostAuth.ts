@@ -25,8 +25,8 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {webhookUrl, teamId},
+    _source: unknown,
+    {webhookUrl, teamId}: {webhookUrl: string; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

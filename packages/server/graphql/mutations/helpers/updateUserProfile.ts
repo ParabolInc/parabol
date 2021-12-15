@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import {JSDOM} from 'jsdom'
 import fetch from 'node-fetch'
@@ -16,7 +17,7 @@ import {UpdateUserProfileInputType} from '../../types/UpdateUserProfileInput'
 const updateUserProfile = async (
   _source: unknown,
   {updatedUser}: {updatedUser: UpdateUserProfileInputType},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, dataLoader, socketId: mutatorId}: GQLContext
 ) => {
   const r = await getRethink()
   const operationId = dataLoader.share()
@@ -28,8 +29,10 @@ const updateUserProfile = async (
 
   // VALIDATION
   const schema = makeUserServerSchema()
-  const {data: validUpdatedUser, errors}: {data: UpdateUserProfileInputType; errors: any[]} =
-    schema(updatedUser) as any
+  const {
+    data: validUpdatedUser,
+    errors
+  }: {data: UpdateUserProfileInputType; errors: any[]} = schema(updatedUser) as any
   if (Object.keys(errors).length) {
     return standardError(new Error('Failed input validation'), {userId})
   }
@@ -60,12 +63,12 @@ const updateUserProfile = async (
     preferredName: validUpdatedUser.preferredName ?? undefined
   }
   const [teamMembers] = await Promise.all([
-    r
+    (r
       .table('TeamMember')
       .getAll(userId, {index: 'userId'})
       .update(updateObj, {returnChanges: true})('changes')('new_val')
       .default([])
-      .run() as unknown as TeamMember[],
+      .run() as unknown) as TeamMember[],
     updateUser(updateObj, userId)
   ])
   //

@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
@@ -24,9 +25,8 @@ export default {
   },
   async resolve(
     _source: unknown,
-    // FIXME type mismatch, dueDate is Date | undefined
-    {taskId, dueDate}, //: {taskId: string; dueDate?: Date | null},
-    {authToken, dataLoader, socketId: mutatorId}
+    {taskId, dueDate}: {taskId: string; dueDate?: Date},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -36,7 +36,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // VALIDATION
-    const formattedDueDate = new Date(dueDate)
+    const formattedDueDate = dueDate && new Date(dueDate)
     const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
     const task = await r
       .table('Task')

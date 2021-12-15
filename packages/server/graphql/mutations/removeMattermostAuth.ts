@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import RemoveMattermostAuthPayload from '../types/RemoveMattermostAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -16,7 +17,11 @@ export default {
       description: 'the teamId to disconnect from Mattermost'
     }
   },
-  resolve: async (_source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {teamId}: {teamId: string},
+    {authToken, socketId: mutatorId, dataLoader}: GQLContext
+  ) => {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
