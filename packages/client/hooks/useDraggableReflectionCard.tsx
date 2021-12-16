@@ -239,7 +239,7 @@ const useDragAndDrop = (
 ) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, spotlightGroup} = meeting
+  const {id: meetingId, spotlightGroup, spotlightSearchQuery} = meeting
   const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
@@ -272,7 +272,8 @@ const useDragAndDrop = (
       SendClientSegmentEventMutation(atmosphere, event, {
         viewerId,
         reflectionId,
-        meetingId
+        meetingId,
+        spotlightSearchQuery
       })
     }
   })

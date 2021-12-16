@@ -13,7 +13,7 @@ const useSpotlightSimulatedDrag = (
   const atmosphere = useAtmosphere()
   const reflectionIdRef = useRef<string>()
   const timeoutRef = useRef(0)
-  const {id: meetingId, spotlightGroup, reflectionGroups} = meeting
+  const {id: meetingId, spotlightGroup, reflectionGroups, spotlightSearchQuery} = meeting
   const reflectionsCount = useMemo(
     () => reflectionGroups.map(({reflections}) => reflections).length,
     [reflectionGroups]
@@ -58,7 +58,8 @@ const useSpotlightSimulatedDrag = (
       viewerId,
       reflectionsCount,
       meetingId,
-      reflectionId
+      reflectionId,
+      spotlightSearchQuery
     })
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)

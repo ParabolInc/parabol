@@ -177,6 +177,7 @@ export default createFragmentContainer(GroupingKanban, {
           id
         }
       }
+      spotlightSearchQuery
     }
   `
 })
