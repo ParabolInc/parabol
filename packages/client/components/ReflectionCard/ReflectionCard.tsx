@@ -96,18 +96,10 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const {
-    localPhase,
-    localStage,
-    spotlightGroup,
-    viewerMeetingMember,
-    phases,
-    spotlightSearchQuery
-  } = meeting
+  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
-  const isSpotlightFlagActive = !!viewerMeetingMember?.user?.featureFlags?.spotlight
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
@@ -257,7 +249,6 @@ const ReflectionCard = (props: Props) => {
   }
 
   const showSpotlight =
-    (!__PRODUCTION__ || isSpotlightFlagActive) &&
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&
@@ -346,13 +337,6 @@ export default createFragmentContainer(ReflectionCard, {
       }
       spotlightGroup {
         id
-      }
-      viewerMeetingMember {
-        user {
-          featureFlags {
-            spotlight
-          }
-        }
       }
       spotlightSearchQuery
     }
