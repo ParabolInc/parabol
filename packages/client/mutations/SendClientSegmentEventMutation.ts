@@ -9,7 +9,7 @@ const mutation = graphql`
 `
 
 interface Options {
-  eventId: number
+  eventId?: number
   [key: string]: any
 }
 

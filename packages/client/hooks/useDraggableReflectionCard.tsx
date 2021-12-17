@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 import {DraggableReflectionCard_meeting} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
@@ -237,7 +238,8 @@ const useDragAndDrop = (
   swipeColumn?: SwipeColumn
 ) => {
   const atmosphere = useAtmosphere()
-  const {id: meetingId} = meeting
+  const {viewerId} = atmosphere
+  const {id: meetingId, spotlightGroup, spotlightSearchQuery} = meeting
   const spotlightResultGroups = useSpotlightResults(meeting)
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
@@ -263,6 +265,17 @@ const useDragAndDrop = (
         ? 'REFLECTION_GRID'
         : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
+    if (spotlightGroup?.id) {
+      const event = isReflectionInSpotlightResults
+        ? `Spotlight result to ${targetType === 'REFLECTION_GROUP' ? 'source' : 'result'}`
+        : `Spotlight source to ${targetType === 'REFLECTION_GROUP' ? 'result' : 'grid'}`
+      SendClientSegmentEventMutation(atmosphere, event, {
+        viewerId,
+        reflectionId,
+        meetingId,
+        spotlightSearchQuery
+      })
+    }
   })
 
   const announceDragUpdate = (cursorX: number, cursorY: number) => {
@@ -298,8 +311,8 @@ const useDragAndDrop = (
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     // required to prevent address bar scrolling & other strange browser things on mobile view
     e.preventDefault()
-    const isTouchMove = e instanceof TouchEvent
-    const {clientX, clientY} = isTouchMove ? e.touches[0]! : e
+    const isTouchMove = e.type === 'touchmove'
+    const {clientX, clientY} = isTouchMove ? (e as TouchEvent).touches[0]! : (e as MouseEvent)
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       const isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
@@ -337,7 +350,7 @@ const useDragAndDrop = (
       }
     }
     if (isTouchMove && swipeColumn) {
-      const {clientX} = e.touches[0]!
+      const {clientX} = (e as TouchEvent).touches[0]!
       const minThresh = windowDims.clientWidth * 0.1
       if (clientX <= minThresh) {
         swipeColumn(-1)

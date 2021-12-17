@@ -190,6 +190,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
         id
       }
       spotlightReflectionId
+      spotlightSearchQuery
     }
   `
 })
