@@ -11,6 +11,7 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import {SpotlightSearchBar_meeting$key} from '../__generated__/SpotlightSearchBar_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import React, {useRef} from 'react'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 const SearchWrapper = styled('div')({
   width: ElementWidth.REFLECTION_CARD
@@ -66,20 +67,31 @@ interface Props {
 
 const SpotlightSearchBar = (props: Props) => {
   const {meetingRef} = props
+  const hasSearchedRef = useRef(false)
   const meeting = useFragment(
     graphql`
       fragment SpotlightSearchBar_meeting on RetrospectiveMeeting {
         id
         spotlightSearchQuery
+        spotlightReflectionId
       }
     `,
     meetingRef
   )
-  const {id: meetingId, spotlightSearchQuery} = meeting
+  const {id: meetingId, spotlightSearchQuery, spotlightReflectionId} = meeting
   const atmosphere = useAtmosphere()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSpotlightSearch(atmosphere, meetingId, e.currentTarget.value)
+    if (!hasSearchedRef.current) {
+      const {viewerId} = atmosphere
+      SendClientSegmentEventMutation(atmosphere, 'Searched in Spotlight', {
+        viewerId,
+        reflectionId: spotlightReflectionId,
+        meetingId
+      })
+      hasSearchedRef.current = true
+    }
   }
 
   const inputRef = useRef<HTMLInputElement>(null)
