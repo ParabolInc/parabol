@@ -13,6 +13,7 @@ const useTrebuchetEvents = () => {
   const {history} = useRouter()
   const firewallMessageSentRef = useRef(false)
   const recentDisconnectsRef = useRef([] as number[])
+  const serverVersion = useRef(__APP_VERSION__)
 
   useEffect(() => {
     const setConnectedStatus = (isConnected: boolean) => {
@@ -65,7 +66,8 @@ const useTrebuchetEvents = () => {
       // obj.version is sent once on connection, if we have disconnects logged, it's reconnect
       const isReconnect = obj.version && recentDisconnectsRef.current.length > 0
 
-      if (obj.version && obj.version !== __APP_VERSION__) {
+      if (obj.version && obj.version !== serverVersion.current) {
+        serverVersion.current = obj.version
         if ('serviceWorker' in navigator) {
           const registration = await navigator.serviceWorker.getRegistration()
           registration?.update().catch()
