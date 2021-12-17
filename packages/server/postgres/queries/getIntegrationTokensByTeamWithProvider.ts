@@ -1,17 +1,34 @@
 import getPg from '../getPg'
-import {IntegrationProviderTypesEnum} from '../types/IIntegrationProviderAndToken'
+import {
+  IntegrationProviderTypesEnum,
+  mapToIntegrationProviderMetadata
+} from '../types/IntegrationProvider'
+import {
+  IntegrationTokenWithProvider,
+  nestIntegrationProviderOnIntegrationToken
+} from '../types/IntegrationTokenWithProvider'
 import {getIntegrationTokensWithProviderQuery} from './generated/getIntegrationTokensWithProviderQuery'
-import {nestProviderOnDbToken} from './getIntegrationTokenWithProvider'
 
 const getIntegrationTokensByTeamWithProvider = async (
   type: IntegrationProviderTypesEnum,
   teamId: string
-) =>
+): Promise<IntegrationTokenWithProvider[]> =>
   (
     await getIntegrationTokensWithProviderQuery.run(
       {type, teamId, userId: null, byUserId: false},
       getPg()
     )
-  ).map(nestProviderOnDbToken)
+  )
+    .map(nestIntegrationProviderOnIntegrationToken)
+    .map((integrationTokenWithProvider) => ({
+      ...integrationTokenWithProvider,
+      provider: {
+        ...integrationTokenWithProvider.provider,
+        providerMetadata: mapToIntegrationProviderMetadata(
+          integrationTokenWithProvider.provider.tokenType,
+          integrationTokenWithProvider.provider.providerMetadata
+        )
+      }
+    }))
 
 export default getIntegrationTokensByTeamWithProvider

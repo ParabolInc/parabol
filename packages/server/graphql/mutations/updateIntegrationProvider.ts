@@ -5,12 +5,17 @@ import publish from '../../utils/publish'
 import UpdateIntegrationProviderPayload from '../types/UpdateIntegrationProviderPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
-import UpdateIntegrationProviderInput, {
-  UpdateIntegrationProviderInputT
-} from '../types/UpdateIntegrationProviderInput'
-import {auth, validate, makeDbIntegrationProvider} from './helpers/integrationProviderHelpers'
+import UpdateIntegrationProviderInput from '../types/UpdateIntegrationProviderInput'
+import {
+  checkAuthPermissions,
+  validateIntegrationProvider
+} from './helpers/integrationProviderHelpers'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import updateIntegrationProviderQuery from '../../postgres/queries/updateIntegrationProvider'
+import {
+  createIntegrationProviderInsertParams,
+  IntegrationProviderInput
+} from '../../postgres/types/IntegrationProvider'
 
 const updateIntegrationProvider = {
   name: 'UpdateIntegrationProvider',
@@ -24,7 +29,7 @@ const updateIntegrationProvider = {
   },
   resolve: async (
     _source,
-    {provider}: {provider: UpdateIntegrationProviderInputT},
+    {provider}: {provider: IntegrationProviderInput},
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
@@ -34,17 +39,18 @@ const updateIntegrationProvider = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
+    const authResult = checkAuthPermissions(dataLoader, provider.scope, authToken, teamId, orgId)
     if (authResult instanceof Error) return standardError(authResult)
 
     // VALIDATION
     const providerDbId = IntegrationProviderId.split(provider.id)
-    const validationResult = await validate(provider, viewerId, teamId, orgId, dataLoader)
+    const validationResult = await validateIntegrationProvider(provider, viewerId, dataLoader)
+
     if (validationResult instanceof Error) return standardError(validationResult)
 
     // RESOLUTION
     const dbProvider = {
-      ...makeDbIntegrationProvider(provider),
+      ...createIntegrationProviderInsertParams(provider),
       ids: [providerDbId]
     }
     await updateIntegrationProviderQuery(dbProvider)

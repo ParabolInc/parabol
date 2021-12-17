@@ -11,24 +11,6 @@ import {
   IntegrationProviderTokenTypeEnum,
   IntegrationProviderScopesEnum
 } from './IntegrationProvider'
-import {
-  IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
-  IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
-  IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
-} from '../../postgres/types/IIntegrationProviderAndToken'
-
-export interface AddIntegrationProviderInputT {
-  type: IntegrationProviderTypesEnumT
-  tokenType: IntegrationProviderTokenTypeEnumT
-  scope: IntegrationProviderScopesEnumT
-  name: string
-  oauthScopes?: string[] | null
-  serverBaseUri: string
-  oauthClientId?: string | null
-  oauthClientSecret?: string | null
-  orgId: string
-  teamId: string
-}
 
 const AddIntegrationProviderInput = new GraphQLInputObjectType({
   name: 'AddIntegrationProviderInput',

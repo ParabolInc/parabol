@@ -5,7 +5,7 @@ import RemoveIntegrationProviderPayload from '../types/RemoveIntegrationProvider
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
-import {auth} from './helpers/integrationProviderHelpers'
+import {checkAuthPermissions} from './helpers/integrationProviderHelpers'
 import removeIntegrationProviderQuery from '../../postgres/queries/removeIntegrationProvider'
 import standardError from '../../utils/standardError'
 
@@ -29,7 +29,7 @@ const removeIntegrationProvider = {
     const provider = await dataLoader.get('integrationProviders').load(providerDbId)
     if (!provider) return standardError(new Error('Integration Provider not found'))
     const {teamId, orgId} = provider
-    const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
+    const authResult = checkAuthPermissions(dataLoader, provider.scope, authToken, teamId, orgId)
     if (authResult instanceof Error) return standardError(authResult)
 
     // RESOLUTION

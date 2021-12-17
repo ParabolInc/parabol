@@ -7,10 +7,7 @@ UPDATE "IntegrationProvider" SET
   "tokenType" = COALESCE(:tokenType, "tokenType"),
   "scope" = COALESCE(:scope, "scope"),
   "name" = COALESCE(:name, "name"),
-  "serverBaseUri" = COALESCE(:serverBaseUri, "serverBaseUri"),
-  "oauthClientId" = COALESCE(:oauthClientId, "oauthClientId"),
-  "oauthClientSecret" = COALESCE(:oauthClientSecret, "oauthClientSecret"),
-  "oauthScopes" = COALESCE(:oauthScopes, "oauthScopes"),
+  "providerMetadata" = COALESCE(:providerMetadata, "providerMetadata"),
   "orgId" = COALESCE(:orgId, "orgId"),
   "teamId" = COALESCE(:teamId, "teamId")
  WHERE id IN :ids;

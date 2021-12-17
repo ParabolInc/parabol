@@ -1,43 +1,35 @@
 import getPg from '../getPg'
-import {
-  getIntegrationTokensWithProviderQuery,
-  IGetIntegrationTokensWithProviderQueryResult
-} from './generated/getIntegrationTokensWithProviderQuery'
+import {getIntegrationTokensWithProviderQuery} from './generated/getIntegrationTokensWithProviderQuery'
 import {
   IntegrationProviderTypesEnum,
-  IntegrationTokenWithProvider
-} from '../types/IIntegrationProviderAndToken'
-
-export const nestProviderOnDbToken = (
-  flatDbToken: IGetIntegrationTokensWithProviderQueryResult
-) => {
-  return Object.keys(flatDbToken).reduce(
-    (obj, key) => {
-      if (key.startsWith('IntegrationProvider_')) {
-        return {
-          ...obj,
-          provider: {
-            ...obj.provider,
-            [key.replace('IntegrationProvider_', '')]: flatDbToken[key]
-          }
-        }
-      }
-      return {...obj, [key]: flatDbToken[key]}
-    },
-    {provider: {}}
-  ) as IntegrationTokenWithProvider
-}
+  mapToIntegrationProviderMetadata
+} from '../types/IntegrationProvider'
+import {
+  IntegrationTokenWithProvider,
+  nestIntegrationProviderOnIntegrationToken
+} from '../types/IntegrationTokenWithProvider'
 
 const getIntegrationTokenWithProvider = async (
   type: IntegrationProviderTypesEnum,
   teamId: string,
   userId: string
-) => {
+): Promise<IntegrationTokenWithProvider> => {
   const [res] = await getIntegrationTokensWithProviderQuery.run(
     {type, teamId, userId, byUserId: true},
     getPg()
   )
-  return nestProviderOnDbToken(res)
+  const tokenWithProvider = nestIntegrationProviderOnIntegrationToken(res)
+  const {provider} = tokenWithProvider
+  return {
+    ...tokenWithProvider,
+    provider: {
+      ...provider,
+      providerMetadata: mapToIntegrationProviderMetadata(
+        provider.tokenType,
+        provider.providerMetadata
+      )
+    }
+  }
 }
 
 export default getIntegrationTokenWithProvider

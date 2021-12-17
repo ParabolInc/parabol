@@ -6,9 +6,9 @@ import getIntegrationTokenWithProvider from '../postgres/queries/getIntegrationT
 import getIntegrationTokensByTeamWithProvider from '../postgres/queries/getIntegrationTokensByTeamWithProvider'
 import {
   IntegrationProvider,
-  IntegrationProviderTypesEnum,
-  IntegrationTokenWithProvider
-} from '../postgres/types/IIntegrationProviderAndToken'
+  IntegrationProviderTypesEnum
+} from '../postgres/types/IntegrationProvider'
+import {IntegrationTokenWithProvider} from '../postgres/types/IntegrationTokenWithProvider'
 
 export interface IntegrationProviderTeamKey {
   type: IntegrationProviderTypesEnum

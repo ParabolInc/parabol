@@ -2,7 +2,7 @@ import {
   IntegrationTokenInputT,
   IntegrationProviderTokenInputT
 } from '../../types/AddIntegrationTokenInput'
-import {IntegrationProvider as IntegrationProviderT} from '../../../postgres/types/IIntegrationProviderAndToken'
+import {IntegrationProvider as IntegrationProviderT} from '../../../postgres/types/IntegrationProvider'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import plural from 'parabol-client/utils/plural'
 
@@ -28,7 +28,7 @@ const validateTokenInput = (
   return errors
 }
 
-const addIntegrationTokenValidation = (
+const validateNewIntegrationAuthToken = (
   maybeInputToken: TokenInputTypes,
   providerInfo: {
     id?: IntegrationProviderT['id']
@@ -57,4 +57,4 @@ const addIntegrationTokenValidation = (
   return true
 }
 
-export default addIntegrationTokenValidation
+export default validateNewIntegrationAuthToken

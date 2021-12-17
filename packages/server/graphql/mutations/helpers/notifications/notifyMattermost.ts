@@ -66,7 +66,7 @@ export const notifyWebhookConfigUpdated = async (
       }
     )
   ]
-  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
+  return notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
 }
 
 export const startMattermostMeeting = async (
@@ -116,7 +116,7 @@ export const startMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingStart', webhookUrl, userId, teamId, attachments)
+  return notifyMattermost('meetingStart', webhookUrl, userId, teamId, attachments)
 }
 
 const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {

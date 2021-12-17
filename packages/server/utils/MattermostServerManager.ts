@@ -108,10 +108,11 @@ class MattermostServerManager extends MattermostManager {
     })[0]
 
     const {
-      provider: {serverBaseUri: webhookUri}
+      provider: {providerMetadata}
     } = bestTokenAndProvider
 
-    return webhookUri
+    //TODO: make it nicer when mattermost is aligned to new patterns
+    return (providerMetadata as any).webhookUrl
   }
 }
 

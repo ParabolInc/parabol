@@ -7,7 +7,7 @@ export type IntegrationProviderTokenTypeEnum = 'oauth2' | 'pat' | 'webhook';
 
 export type IntegrationProviderTypesEnum = 'gitlab' | 'mattermost';
 
-export type stringArray = (string)[];
+export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
 /** 'GetIntegrationProvidersQuery' parameters type */
 export interface IGetIntegrationProvidersQueryParams {
@@ -19,6 +19,8 @@ export interface IGetIntegrationProvidersQueryParams {
 /** 'GetIntegrationProvidersQuery' return type */
 export interface IGetIntegrationProvidersQueryResult {
   id: number;
+  createdAt: Date;
+  updatedAt: Date;
   type: IntegrationProviderTypesEnum;
   tokenType: IntegrationProviderTokenTypeEnum;
   scope: IntegrationProviderScopesEnum;
@@ -27,12 +29,7 @@ export interface IGetIntegrationProvidersQueryResult {
   teamId: string | null;
   isActive: boolean;
   name: string;
-  serverBaseUri: string;
-  oauthScopes: stringArray | null;
-  oauthClientId: string | null;
-  oauthClientSecret: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  providerMetadata: Json;
 }
 
 /** 'GetIntegrationProvidersQuery' query type */

@@ -1,34 +1,39 @@
-import {DataLoaderWorker} from '../graphql/graphql'
 import {
   IntegrationProvider,
   IntegrationProviderTypesEnum
-} from '../postgres/types/IIntegrationProviderAndToken'
-import IntegrationProviderId, {
-  IntegrationProviderIdT
-} from 'parabol-client/shared/gqlIds/IntegrationProviderId'
-import IntegrationServerManager from './IntegrationServerManager'
-import GitLabServerManager from './GitLabServerManager'
+} from '../postgres/types/IntegrationProvider'
+import GitLabServerManager from './gitlab/GitLabServerManager'
+import {
+  AuthorizationManager,
+  IntegrationServerManager,
+  NoopWebHookAuthorizationManager
+} from './IntegrationServerManager'
+import {GitLabAuthorizationManager} from './gitlab/GitLabAuthorizationManager'
+import MattermostServerManager from '../utils/MattermostServerManager'
 
-// TODO: make Mattermost fit this pattern!
-
-const taskIntegrationProviderClassMap: {
-  [K in Exclude<IntegrationProviderTypesEnum, 'mattermost'>]: new (...args: any[]) => any
+const authorizationManagerLookup: {
+  [K in IntegrationProviderTypesEnum]: new (...args: any[]) => AuthorizationManager
 } = {
-  gitlab: GitLabServerManager
+  gitlab: GitLabAuthorizationManager,
+  mattermost: NoopWebHookAuthorizationManager
 }
 
-class MakeIntegrationServerManager {
-  static async fromProviderId(
-    id: IntegrationProviderIdT,
-    dataLoader: DataLoaderWorker
-  ): Promise<IntegrationServerManager> {
-    const providerDbId = IntegrationProviderId.split(id)
-    const provider = (await dataLoader
-      .get('integrationProviders')
-      .load(providerDbId)) as IntegrationProvider
-
-    return new taskIntegrationProviderClassMap[provider.type](provider)
-  }
+export const createAuthorizationManager = async <T extends AuthorizationManager>(
+  provider: IntegrationProvider
+) => {
+  return new authorizationManagerLookup[provider.type](provider) as T
 }
 
-export default MakeIntegrationServerManager
+//TODO: Fix any after aligning mattermost the the proper interface
+const integrationProviderClassMap: {
+  [K in IntegrationProviderTypesEnum]: new (...args: any[]) => IntegrationServerManager | any
+} = {
+  gitlab: GitLabServerManager,
+  mattermost: MattermostServerManager
+}
+
+export const createIntegrationServerManager = async <T extends IntegrationServerManager>(
+  provider: IntegrationProvider
+) => {
+  return new integrationProviderClassMap[provider.type](provider) as T
+}

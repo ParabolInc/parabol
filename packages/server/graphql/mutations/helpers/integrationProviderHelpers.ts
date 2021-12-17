@@ -6,13 +6,16 @@ import {
 } from '../../../utils/authorization'
 import AuthToken from '../../../database/types/AuthToken'
 import {DataLoaderWorker} from '../../graphql'
-import {IntegrationProviderScopesEnum} from '../../../postgres/types/IIntegrationProviderAndToken'
-import {AddIntegrationProviderInputT} from '../../types/AddIntegrationProviderInput'
-import {UpdateIntegrationProviderInputT} from '../../types/UpdateIntegrationProviderInput'
 import linkify from 'parabol-client/utils/linkify'
-import {notifyWebhookConfigUpdated} from '../helpers/notifications/notifyMattermost'
+import {notifyWebhookConfigUpdated} from './notifications/notifyMattermost'
+import {
+  IntegrationProviderScopesEnum,
+  isOAuth2ProviderMetadata,
+  isWebHookProviderMetadata
+} from '../../../postgres/types/IntegrationProvider'
+import {AddIntegrationProviderInput} from '../addIntegrationProvider'
 
-export const auth = (
+export const checkAuthPermissions = (
   dataLoader: DataLoaderWorker,
   scope: IntegrationProviderScopesEnum,
   authToken: AuthToken,
@@ -40,11 +43,9 @@ export const auth = (
   return
 }
 
-export const validate = async (
-  provider: AddIntegrationProviderInputT,
+export const validateIntegrationProvider = async (
+  provider: AddIntegrationProviderInput,
   viewerId: string,
-  teamId: string,
-  orgId: string,
   dataLoader: DataLoaderWorker
 ) => {
   switch (provider.scope) {
@@ -52,31 +53,30 @@ export const validate = async (
       if (provider.tokenType !== 'oauth2')
         return new Error('globally-scoped token provider must be OAuth2 provider')
       break
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore no-fallthrough
     case 'org':
       if (provider.tokenType !== 'oauth2')
         return new Error('org-scoped token provider must be OAuth2 provider')
     // fall-through and verify team and org
     case 'team':
-      const checkTeam = await dataLoader.get('teams').load(teamId)
+      const checkTeam = await dataLoader.get('teams').load(provider.teamId)
       if (!checkTeam) return new Error('team not found')
-      const checkOrg = await dataLoader.get('organizations').load(orgId)
+      const checkOrg = await dataLoader.get('organizations').load(provider.orgId)
       if (!checkOrg) return new Error('organization not found')
   }
 
-  switch (provider.tokenType) {
-    case 'oauth2':
-      if (!provider.oauthScopes) return new Error('scopes required for OAuth2 provider')
-      if (!provider.oauthClientId) return new Error('oauthClientId required for OAuth2 provider')
-      if (!provider.oauthClientSecret)
-        return new Error('oauthClientSecret required for OAuth2 provider')
-      break
-    case 'pat':
-      // nothing to validate
-      break
-    case 'webhook':
-      const links = linkify.match(provider.serverBaseUri)
-      if (!links || links.length === 0) return new Error('invalid webhook url')
+  const {providerMetadata} = provider
+  if (isOAuth2ProviderMetadata(providerMetadata)) {
+    if (!providerMetadata.scopes) return new Error('scopes required for OAuth2 provider')
+    if (!providerMetadata.clientId) return new Error('oauthClientId required for OAuth2 provider')
+    if (!providerMetadata.clientSecret)
+      return new Error('oauthClientSecret required for OAuth2 provider')
+  }
+
+  if (isWebHookProviderMetadata(providerMetadata)) {
+    const links = linkify.match(providerMetadata.webhookUrl)
+    if (!links || links.length === 0) return new Error('invalid webhook url')
   }
 
   // TODO: refactor to use MakeIntegrationServerManager.fromProviderId(...)
@@ -85,24 +85,17 @@ export const validate = async (
   //       inspriation.
   switch (provider.type) {
     case 'mattermost':
-      const result = await notifyWebhookConfigUpdated(provider.serverBaseUri, viewerId, teamId)
+      if (!isWebHookProviderMetadata(providerMetadata)) {
+        return
+      }
+
+      const result = await notifyWebhookConfigUpdated(
+        providerMetadata.webhookUrl,
+        viewerId,
+        provider.teamId
+      )
       if (result instanceof Error) return result
   }
 
   return
 }
-
-export const makeDbIntegrationProvider = (
-  provider: AddIntegrationProviderInputT | UpdateIntegrationProviderInputT
-) => ({
-  oauthScopes: [],
-  oauthClientId: null,
-  oauthClientSecret: null,
-  ...('id' in provider
-    ? (({id: _, ...providerWithoutId}) => providerWithoutId)(provider)
-    : provider),
-  type: provider.type,
-  scope: provider.scope,
-  tokenType: provider.tokenType,
-  isActive: true
-})

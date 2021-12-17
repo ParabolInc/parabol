@@ -3,11 +3,11 @@ import { PreparedQuery } from '@pgtyped/query';
 
 export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
 
+export type IntegrationProviderTokenTypeEnum = 'oauth2' | 'pat' | 'webhook';
+
 export type IntegrationProviderTypesEnum = 'gitlab' | 'mattermost';
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-
-export type stringArray = (string)[];
 
 /** 'GetIntegrationTokensWithProviderQuery' parameters type */
 export interface IGetIntegrationTokensWithProviderQueryParams {
@@ -19,27 +19,22 @@ export interface IGetIntegrationTokensWithProviderQueryParams {
 
 /** 'GetIntegrationTokensWithProviderQuery' return type */
 export interface IGetIntegrationTokensWithProviderQueryResult {
+  createdAt: Date;
+  updatedAt: Date;
   teamId: string;
   userId: string;
   providerId: number;
   isActive: boolean;
-  accessToken: string | null;
-  expiresAt: Date | null;
-  oauthRefreshToken: string | null;
-  oauthScopes: stringArray | null;
-  attributes: Json | null;
-  createdAt: Date;
-  updatedAt: Date;
+  tokenMetadata: Json;
   IntegrationProvider_id: number;
   IntegrationProvider_type: IntegrationProviderTypesEnum;
+  IntegrationProvider_tokenType: IntegrationProviderTokenTypeEnum;
   IntegrationProvider_scope: IntegrationProviderScopesEnum;
   IntegrationProvider_orgId: string | null;
   IntegrationProvider_teamId: string | null;
   IntegrationProvider_isActive: boolean;
   IntegrationProvider_name: string;
-  IntegrationProvider_serverBaseUri: string;
-  IntegrationProvider_oauthScopes: stringArray | null;
-  IntegrationProvider_oauthClientId: string | null;
+  IntegrationProvider_providerMetadata: Json;
   IntegrationProvider_createdAt: Date;
   IntegrationProvider_updatedAt: Date;
 }
@@ -50,7 +45,7 @@ export interface IGetIntegrationTokensWithProviderQueryQuery {
   result: IGetIntegrationTokensWithProviderQueryResult;
 }
 
-const getIntegrationTokensWithProviderQueryIR: any = {"name":"getIntegrationTokensWithProviderQuery","params":[{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":1075,"b":1080,"line":22,"col":34}]}},{"name":"byUserId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":1099,"b":1106,"line":23,"col":17},{"a":1120,"b":1127,"line":23,"col":38}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":1164,"b":1169,"line":23,"col":82}]}},{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":1213,"b":1216,"line":24,"col":40}]}}],"usedParamSet":{"teamId":true,"byUserId":true,"userId":true,"type":true},"statement":{"body":"SELECT\n  \"IntegrationToken\".*,\n  \"IntegrationProvider\".\"id\" AS \"IntegrationProvider_id\",\n  \"IntegrationProvider\".\"type\" AS \"IntegrationProvider_type\",\n  \"IntegrationProvider\".\"scope\" AS \"IntegrationProvider_scope\",\n  \"IntegrationProvider\".\"orgId\" AS \"IntegrationProvider_orgId\",\n  \"IntegrationProvider\".\"teamId\" AS \"IntegrationProvider_teamId\",\n  \"IntegrationProvider\".\"isActive\" AS \"IntegrationProvider_isActive\",\n  \"IntegrationProvider\".\"name\" AS \"IntegrationProvider_name\",\n  \"IntegrationProvider\".\"serverBaseUri\" AS \"IntegrationProvider_serverBaseUri\",\n  \"IntegrationProvider\".\"oauthScopes\" AS \"IntegrationProvider_oauthScopes\",\n  \"IntegrationProvider\".\"oauthClientId\" AS \"IntegrationProvider_oauthClientId\",\n  \"IntegrationProvider\".\"createdAt\" AS \"IntegrationProvider_createdAt\",\n  \"IntegrationProvider\".\"updatedAt\" AS \"IntegrationProvider_updatedAt\"\nFROM \"IntegrationToken\" \n  JOIN \"IntegrationProvider\"\n  ON (\"IntegrationToken\".\"providerId\" = \"IntegrationProvider\".\"id\") \n  WHERE (\n\t  \"IntegrationToken\".\"teamId\" = :teamId\n\t  AND (FALSE = :byUserId OR (TRUE = :byUserId AND \"IntegrationToken\".\"userId\" = :userId))\n    AND \"IntegrationProvider\".\"type\" = :type\n    AND \"IntegrationToken\".\"isActive\" = TRUE\n    AND \"IntegrationProvider\".\"isActive\" = TRUE\n  )","loc":{"a":52,"b":1313,"line":4,"col":0}}};
+const getIntegrationTokensWithProviderQueryIR: any = {"name":"getIntegrationTokensWithProviderQuery","params":[{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":995,"b":1000,"line":21,"col":34}]}},{"name":"byUserId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":1019,"b":1026,"line":22,"col":17},{"a":1040,"b":1047,"line":22,"col":38}]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":1084,"b":1089,"line":22,"col":82}]}},{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":1133,"b":1136,"line":23,"col":40}]}}],"usedParamSet":{"teamId":true,"byUserId":true,"userId":true,"type":true},"statement":{"body":"SELECT\n  \"IntegrationToken\".*,\n  \"IntegrationProvider\".\"id\" AS \"IntegrationProvider_id\",\n  \"IntegrationProvider\".\"type\" AS \"IntegrationProvider_type\",\n  \"IntegrationProvider\".\"tokenType\" AS \"IntegrationProvider_tokenType\",\n  \"IntegrationProvider\".\"scope\" AS \"IntegrationProvider_scope\",\n  \"IntegrationProvider\".\"orgId\" AS \"IntegrationProvider_orgId\",\n  \"IntegrationProvider\".\"teamId\" AS \"IntegrationProvider_teamId\",\n  \"IntegrationProvider\".\"isActive\" AS \"IntegrationProvider_isActive\",\n  \"IntegrationProvider\".\"name\" AS \"IntegrationProvider_name\",\n  \"IntegrationProvider\".\"providerMetadata\" AS \"IntegrationProvider_providerMetadata\",\n  \"IntegrationProvider\".\"createdAt\" AS \"IntegrationProvider_createdAt\",\n  \"IntegrationProvider\".\"updatedAt\" AS \"IntegrationProvider_updatedAt\"\nFROM \"IntegrationToken\"\n  JOIN \"IntegrationProvider\"\n  ON (\"IntegrationToken\".\"providerId\" = \"IntegrationProvider\".\"id\")\n  WHERE (\n\t  \"IntegrationToken\".\"teamId\" = :teamId\n\t  AND (FALSE = :byUserId OR (TRUE = :byUserId AND \"IntegrationToken\".\"userId\" = :userId))\n    AND \"IntegrationProvider\".\"type\" = :type\n    AND \"IntegrationToken\".\"isActive\" = TRUE\n    AND \"IntegrationProvider\".\"isActive\" = TRUE\n  )","loc":{"a":52,"b":1233,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -59,19 +54,18 @@ const getIntegrationTokensWithProviderQueryIR: any = {"name":"getIntegrationToke
  *   "IntegrationToken".*,
  *   "IntegrationProvider"."id" AS "IntegrationProvider_id",
  *   "IntegrationProvider"."type" AS "IntegrationProvider_type",
+ *   "IntegrationProvider"."tokenType" AS "IntegrationProvider_tokenType",
  *   "IntegrationProvider"."scope" AS "IntegrationProvider_scope",
  *   "IntegrationProvider"."orgId" AS "IntegrationProvider_orgId",
  *   "IntegrationProvider"."teamId" AS "IntegrationProvider_teamId",
  *   "IntegrationProvider"."isActive" AS "IntegrationProvider_isActive",
  *   "IntegrationProvider"."name" AS "IntegrationProvider_name",
- *   "IntegrationProvider"."serverBaseUri" AS "IntegrationProvider_serverBaseUri",
- *   "IntegrationProvider"."oauthScopes" AS "IntegrationProvider_oauthScopes",
- *   "IntegrationProvider"."oauthClientId" AS "IntegrationProvider_oauthClientId",
+ *   "IntegrationProvider"."providerMetadata" AS "IntegrationProvider_providerMetadata",
  *   "IntegrationProvider"."createdAt" AS "IntegrationProvider_createdAt",
  *   "IntegrationProvider"."updatedAt" AS "IntegrationProvider_updatedAt"
- * FROM "IntegrationToken" 
+ * FROM "IntegrationToken"
  *   JOIN "IntegrationProvider"
- *   ON ("IntegrationToken"."providerId" = "IntegrationProvider"."id") 
+ *   ON ("IntegrationToken"."providerId" = "IntegrationProvider"."id")
  *   WHERE (
  * 	  "IntegrationToken"."teamId" = :teamId
  * 	  AND (FALSE = :byUserId OR (TRUE = :byUserId AND "IntegrationToken"."userId" = :userId))

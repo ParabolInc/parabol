@@ -6,10 +6,7 @@ INSERT INTO "IntegrationProvider" (
   "tokenType",
   "scope",
   "name",
-  "serverBaseUri",
-  "oauthClientId",
-  "oauthClientSecret",
-  "oauthScopes",
+  "providerMetadata",
   "orgId",
   "teamId"
 ) VALUES (
@@ -17,10 +14,7 @@ INSERT INTO "IntegrationProvider" (
   :tokenType,
   :scope,
   :name,
-  :serverBaseUri,
-  :oauthClientId,
-  :oauthClientSecret,
-  :oauthScopes,
+  :providerMetadata,
   :orgId,
   :teamId
 );

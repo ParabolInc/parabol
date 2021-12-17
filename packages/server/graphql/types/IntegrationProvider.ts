@@ -10,12 +10,12 @@ import {
 import GraphQLURLType from './GraphQLURLType'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {
-  IntegrationProviderTypesEnum as IntegrationProviderTypesEnumT,
-  IntegrationProviderScopesEnum as IntegrationProviderScopesEnumT,
-  IntegrationProviderTokenTypeEnum as IntegrationProviderTokenTypeEnumT
-} from 'parabol-server/postgres/types/IIntegrationProviderAndToken'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import {
+  IntegrationProviderTypesEnum as DBIntegrationProviderTypesEnum,
+  IntegrationProviderScopesEnum as DBIntegrationProviderScopesEnum,
+  IntegrationProviderTokenTypeEnum as DBIntegrationProviderTokenTypeEnum
+} from '../../postgres/types/IntegrationProvider'
 
 export const IntegrationProviderTypeEnum = new GraphQLEnumType({
   name: 'IntegrationProviderTypeEnum',
@@ -23,7 +23,7 @@ export const IntegrationProviderTypeEnum = new GraphQLEnumType({
   values: {
     gitlab: {},
     mattermost: {}
-  } as {[P in IntegrationProviderTypesEnumT]: any}
+  } as {[P in DBIntegrationProviderTypesEnum]: any}
 })
 
 export const IntegrationProviderTokenTypeEnum = new GraphQLEnumType({
@@ -33,7 +33,7 @@ export const IntegrationProviderTokenTypeEnum = new GraphQLEnumType({
     oauth2: {},
     pat: {},
     webhook: {}
-  } as {[P in IntegrationProviderTokenTypeEnumT]: any}
+  } as {[P in DBIntegrationProviderTokenTypeEnum]: any}
 })
 
 export const IntegrationProviderScopesEnum = new GraphQLEnumType({
@@ -43,7 +43,7 @@ export const IntegrationProviderScopesEnum = new GraphQLEnumType({
     global: {},
     org: {},
     team: {}
-  } as {[P in IntegrationProviderScopesEnumT]: any}
+  } as {[P in DBIntegrationProviderScopesEnum]: any}
 })
 
 const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({

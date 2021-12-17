@@ -11,11 +11,6 @@ import {
   IntegrationProviderTokenTypeEnum,
   IntegrationProviderScopesEnum
 } from './IntegrationProvider'
-import {AddIntegrationProviderInputT} from './AddIntegrationProviderInput'
-
-export interface UpdateIntegrationProviderInputT extends AddIntegrationProviderInputT {
-  id: string
-}
 
 const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
   name: 'UpdateIntegrationProviderInput',

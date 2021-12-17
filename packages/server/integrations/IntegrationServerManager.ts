@@ -1,82 +1,70 @@
 import {GraphQLResolveInfo} from 'graphql'
-import fetch from 'node-fetch'
-import {stringify} from 'querystring'
-import {IntegrationProvider, IntegrationToken} from '../postgres/types/IIntegrationProviderAndToken'
+import {IntegrationProvider} from '../postgres/types/IntegrationProvider'
+import {OAuth2Error, OAuth2Success} from '../types/custom'
+import {OAuth2IntegrationTokenMetadata} from '../postgres/types/IntegrationToken'
 
-interface OAuth2ServerResponse {
-  access_token: string
-  created_at?: string
-  error?: any
-  refresh_token?: string
-  scope: string
-}
+export type OAuth2GrantType = 'authorization_code' | 'refresh_token'
 
-export interface SetupOAuth2ProviderParams {
+export interface OAuthAuthorizationParams {
+  grant_type: 'authorization_code'
   code: string
-  redirectUri: string
+  redirect_uri: string
 }
 
-interface IntegrationTokenState
-  extends Pick<IntegrationToken, 'accessToken' | 'oauthRefreshToken' | 'oauthScopes'> {
-  createdAt?: IntegrationToken['createdAt'] | null
+export interface OAuthRefreshAuthorizationParams {
+  grant_type: 'refresh_token'
+  refresh_token: string
 }
 
-abstract class IntegrationServerManager {
+export type OAuth2Response = OAuth2Success | OAuth2Error
+
+export interface OAuth2AuthorizationManager {
   provider: IntegrationProvider
-  token: IntegrationTokenState | null
+  authorize(code: string, redirectUri: string): Promise<OAuth2IntegrationTokenMetadata | Error>
+  refresh(refreshToken: string): Promise<OAuth2IntegrationTokenMetadata | Error>
+}
 
+export const isOAuth2AuthorizationManager = (
+  authorizationManager: AuthorizationManager
+): authorizationManager is OAuth2AuthorizationManager =>
+  authorizationManager.provider.tokenType === 'oauth2'
+
+/**
+ * Are webhooks ever require authorization?
+ */
+export interface WebHookAuthorizationManager {
+  provider: IntegrationProvider
+  authorize(): any
+}
+
+export const isWebHookAuthorizationManager = (
+  authorizationManager: AuthorizationManager
+): authorizationManager is OAuth2AuthorizationManager =>
+  authorizationManager.provider.tokenType === 'webhook'
+
+export class NoopWebHookAuthorizationManager implements WebHookAuthorizationManager {
+  provider: IntegrationProvider
   constructor(provider: IntegrationProvider) {
     this.provider = provider
-    this.token = null
   }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  authorize() {}
+}
 
-  /**
-   * Retrieve an access token from an oauth2 given a code and redirect_uri
-   * @param params
-   * @returns access token materials
-   */
-  async setupOauth2Provider(params: SetupOAuth2ProviderParams) {
-    const {code, redirectUri} = params
-    const queryParams = {
-      client_id: this.provider.oauthClientId,
-      client_secret: this.provider.oauthClientSecret,
-      code,
-      grant_type: 'authorization_code',
-      redirect_uri: redirectUri
-    }
+export type AuthorizationManager = OAuth2AuthorizationManager | WebHookAuthorizationManager
 
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    }
+export interface WebHookIntegrationServerManager {
+  provider: IntegrationProvider
+}
 
-    const uri = `${this.provider.serverBaseUri}/oauth/token?${stringify(queryParams)}`
+export const isWebHookIntegrationServerManager = (
+  integrationServerManager: IntegrationServerManager
+): integrationServerManager is WebHookIntegrationServerManager =>
+  integrationServerManager.provider.tokenType === 'webhook'
 
-    const tokenRes = await fetch(uri, {
-      method: 'POST',
-      headers
-    })
-    const tokenJson = (await tokenRes.json()) as OAuth2ServerResponse
-    const {
-      access_token: accessToken,
-      created_at: maybeCreatedAt,
-      refresh_token: oauthRefreshToken,
-      error,
-      scope
-    } = tokenJson
-    if (error) {
-      return new Error(`setupOauth2Provider: ${error}`)
-    }
-
-    this.token = {
-      accessToken,
-      createdAt: maybeCreatedAt ? new Date(maybeCreatedAt) : null,
-      oauthRefreshToken: oauthRefreshToken || null,
-      oauthScopes: scope.split(',')
-    }
-
-    return this.token
-  }
+export interface OAuth2IntegrationServerManager {
+  provider: IntegrationProvider
+  accessToken: string
 
   /**
    * Generic method to test if token is valid
@@ -84,19 +72,17 @@ abstract class IntegrationServerManager {
    * @param context GraphQL resolver context
    * @returns promise of boolean result and Error, if error occured
    */
-  abstract isTokenValid(
+  isTokenValid(
     info: GraphQLResolveInfo,
     context: Record<any, any>
   ): Promise<[boolean, Error | null]>
 }
 
-abstract class TaskIntegrationServerManager extends IntegrationServerManager {}
+export const isOAuth2IntegrationServerManager = (
+  integrationServerManager: IntegrationServerManager
+): integrationServerManager is OAuth2IntegrationServerManager =>
+  integrationServerManager.provider.tokenType === 'oauth2'
 
-/*
-export abstract class NotificationIntegrationServerManager extends IntegrationServerManager {
-  // FUTURE: perhaps for things like Slack, Mattermost, Teams & the like
-}
-*/
-
-export {TaskIntegrationServerManager}
-export default IntegrationServerManager
+export type IntegrationServerManager =
+  | WebHookIntegrationServerManager
+  | OAuth2IntegrationServerManager

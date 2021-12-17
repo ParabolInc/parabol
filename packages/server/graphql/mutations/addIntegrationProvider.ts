@@ -5,9 +5,7 @@ import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import publish from '../../utils/publish'
-import AddIntegrationProviderInput, {
-  AddIntegrationProviderInputT
-} from '../types/AddIntegrationProviderInput'
+import AddIntegrationProviderInput from '../types/AddIntegrationProviderInput'
 import {
   IntegrationProviderTokenInput,
   IntegrationProviderTokenInputT
@@ -15,11 +13,21 @@ import {
 import upsertGlobalIntegrationProvider from '../../postgres/queries/upsertGlobalIntegrationProvider'
 import insertIntegrationProvider from '../../postgres/queries/insertIntegrationProvider'
 import insertIntegrationProviderWithToken from '../../postgres/queries/insertIntegrationProviderWithToken'
-import addIntegrationTokenValidation from './helpers/addIntegrationTokenValidation'
-import {auth, validate, makeDbIntegrationProvider} from './helpers/integrationProviderHelpers'
+import validateNewIntegrationAuthToken from './helpers/addIntegrationTokenValidation'
+import {
+  checkAuthPermissions,
+  validateIntegrationProvider
+} from './helpers/integrationProviderHelpers'
+import {
+  createGlobalIntegrationProviderUpsertParams,
+  createIntegrationProviderInsertParams,
+  IntegrationProviderInput
+} from '../../postgres/types/IntegrationProvider'
+
+export type AddIntegrationProviderInput = Omit<IntegrationProviderInput, 'id'>
 
 type AddIntegrationProviderVariables = {
-  provider: AddIntegrationProviderInputT
+  provider: AddIntegrationProviderInput
   token?: IntegrationProviderTokenInputT
 }
 
@@ -38,57 +46,66 @@ const addIntegrationProvider = {
     }
   },
   resolve: async (
-    _source,
-    {provider, token: maybeToken}: AddIntegrationProviderVariables,
+    _source: unknown,
+    {
+      provider: integrationProviderInput,
+      token: integrationTokenInput
+    }: AddIntegrationProviderVariables,
+
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const viewerId = getUserId(authToken)
-    const {teamId, orgId} = provider
+    const {teamId, orgId} = integrationProviderInput
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const authResult = auth(dataLoader, provider.scope, authToken, teamId, orgId)
-    if (authResult instanceof Error) return standardError(authResult)
+    const permissionsCheckResult = checkAuthPermissions(
+      dataLoader,
+      integrationProviderInput.scope,
+      authToken,
+      teamId,
+      orgId
+    )
+    if (permissionsCheckResult instanceof Error) return standardError(permissionsCheckResult)
 
     // VALIDATION
-    const validationResult = await validate(provider, viewerId, teamId, orgId, dataLoader)
+    const validationResult = await validateIntegrationProvider(
+      integrationProviderInput,
+      viewerId,
+      dataLoader
+    )
     if (validationResult instanceof Error) return standardError(validationResult)
 
-    const dbProvider = makeDbIntegrationProvider(provider)
-
-    if (maybeToken) {
-      const maybeTokenError = addIntegrationTokenValidation(maybeToken, dbProvider)
-      if (maybeTokenError instanceof Error) return standardError(maybeTokenError)
-    }
-
     // RESOLUTION
-    switch (provider.scope) {
-      case 'global':
-        await upsertGlobalIntegrationProvider(dbProvider)
-        break
-      case 'org':
-      case 'team':
-        if (maybeToken) {
-          const dbToken = {
-            teamId: provider.teamId,
-            userId: viewerId,
-            accessToken: null,
-            expiresAt: null,
-            oauthRefreshToken: null,
-            oauthScopes: [],
-            attributes: {},
-            ...maybeToken
-          }
-          await insertIntegrationProviderWithToken(dbProvider, dbToken)
-        } else {
-          await insertIntegrationProvider(dbProvider)
-        }
+    const {scope} = integrationProviderInput
+    if (scope === 'global') {
+      const upsertParams = createGlobalIntegrationProviderUpsertParams(integrationProviderInput)
+      await upsertGlobalIntegrationProvider(upsertParams)
     }
 
-    //TODO: add proper subscription scope handling here,
-    //      teamId only exists in provider with team scope
+    if (scope === 'org' || scope === 'team') {
+      const newIntegrationProvider = createIntegrationProviderInsertParams(integrationProviderInput)
+      if (!integrationTokenInput) {
+        await insertIntegrationProvider(newIntegrationProvider)
+        return
+      }
+
+      const tokenValidationResult = validateNewIntegrationAuthToken(
+        integrationTokenInput,
+        newIntegrationProvider
+      )
+      if (tokenValidationResult instanceof Error) return standardError(tokenValidationResult)
+
+      await insertIntegrationProviderWithToken({
+        provider: newIntegrationProvider,
+        userId: viewerId,
+        tokenMetadata: integrationTokenInput
+      })
+    }
+
+    //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProvider', data, subOptions)
     return data

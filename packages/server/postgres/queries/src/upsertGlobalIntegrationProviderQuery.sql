@@ -7,20 +7,14 @@ INSERT INTO "IntegrationProvider" (
 	"scope",
 	"isActive",
 	"name",
-	"serverBaseUri",
-	"oauthScopes",
-	"oauthClientId",
-	"oauthClientSecret"
+	"providerMetadata"
   ) VALUES (
 	  :type,
 		'oauth2'::"IntegrationProviderTokenTypeEnum",
 		'global'::"IntegrationProviderScopesEnum",
 		TRUE,
 		:name,
-		:serverBaseUri,
-		:oauthScopes,
-		:oauthClientId,
-		:oauthClientSecret
+		:providerMetadata
 	)
 	ON CONFLICT ("scopeGlobal", "type")
   DO UPDATE
@@ -30,19 +24,13 @@ INSERT INTO "IntegrationProvider" (
 		  "scope",
 			"isActive",
 			"name",
-			"serverBaseUri",
-			"oauthScopes",
-			"oauthClientId",
-			"oauthClientSecret",
+			"providerMetadata",
 			"updatedAt") = (
 			EXCLUDED."type",
 		  'oauth2'::"IntegrationProviderTokenTypeEnum",
 		  'global'::"IntegrationProviderScopesEnum",
 			TRUE,
 			EXCLUDED."name",
-			EXCLUDED."serverBaseUri",
-			EXCLUDED."oauthScopes",
-			EXCLUDED."oauthClientId",
-			EXCLUDED."oauthClientSecret",
+			EXCLUDED."providerMetadata",
 			CURRENT_TIMESTAMP
 		);
