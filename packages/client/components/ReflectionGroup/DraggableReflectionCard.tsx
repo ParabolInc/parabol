@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useSpotlightResults from '~/hooks/useSpotlightResults'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
@@ -39,8 +40,8 @@ const makeDragState = () => ({
   timeout: null as null | number
 })
 
-const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDraggable}) => ({
-  cursor: isDraggable ? 'grab' : undefined
+const DragWrapper = styled('div')<{showDragCursor: boolean | undefined}>(({showDragCursor}) => ({
+  cursor: showDragCursor ? 'grab' : undefined
 }))
 
 export type ReflectionDragState = ReturnType<typeof makeDragState>
@@ -55,6 +56,7 @@ interface Props {
   staticReflections: DraggableReflectionCard_staticReflections | null
   swipeColumn?: SwipeColumn
   dataCy?: string
+  isSpotlightEntering?: boolean
 }
 
 export interface TargetBBox {
@@ -75,32 +77,60 @@ const DraggableReflectionCard = (props: Props) => {
     openSpotlight,
     isDraggable,
     swipeColumn,
-    dataCy
+    dataCy,
+    isSpotlightEntering
   } = props
-  const {id: meetingId, teamId, localStage} = meeting
+  const {teamId, localStage, spotlightGroup, spotlightReflectionId} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing} = reflection
-  const [drag] = useState(makeDragState)
+  const {id: reflectionId, isDropping, isEditing, remoteDrag} = reflection
+  const spotlightGroupId = spotlightGroup?.id
+  const isSpotlightOpen = !!spotlightGroupId
+  const isInSpotlight = !openSpotlight
   const staticReflectionCount = staticReflections?.length || 0
+  const [drag] = useState(makeDragState)
+  const spotlightResultGroups = useSpotlightResults(meeting)
+  const isReflectionIdInSpotlight = useMemo(() => {
+    return (
+      reflectionId === spotlightReflectionId ||
+      !!(
+        reflectionId &&
+        spotlightResultGroups?.find(({reflections}) =>
+          reflections?.find(({id}) => id === reflectionId)
+        )
+      )
+    )
+  }, [spotlightResultGroups, reflectionId, spotlightReflectionId])
   const {onMouseDown} = useDraggableReflectionCard(
+    meeting,
     reflection,
     drag,
     staticIdx,
-    meetingId,
     teamId,
     staticReflectionCount,
     swipeColumn
   )
-  const isDragPhase = phaseType === 'group' && !isComplete
-  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
-  // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
-  const handleDrag = isDragPhase ? onMouseDown : undefined
+  const canHandleDrag = phaseType === 'group' && !isComplete && isDraggable
+  const showDragCursor = isDraggable && canHandleDrag && !isEditing && !isDropping
+  // slow state updates can mean we miss an onMouseDown event
+  const handleDrag = canHandleDrag ? onMouseDown : undefined
+
   return (
     <DragWrapper
-      ref={(c) => (drag.ref = c)}
+      ref={(c) => {
+        // If the spotlight is closed, this card is the single source of truth
+        // Else, if it's a remote drag that is not in the spotlight
+        // Else, if this is the instance in the source or search results
+        // And Spotlight modal isn't entering. This throws off dropping remote card position
+        const isPriorityCard =
+          (!isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight) &&
+          !isSpotlightEntering
+        if (isPriorityCard) {
+          drag.ref = c
+        }
+      }}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
-      isDraggable={canDrag}
+      showDragCursor={showDragCursor}
     >
       <ReflectionCard
         dataCy={dataCy}
@@ -126,20 +156,24 @@ export default createFragmentContainer(DraggableReflectionCard, {
       ...RemoteReflection_reflection
       id
       isEditing
-      reflectionGroupId
       promptId
       isViewerDragging
       isViewerCreator
       isDropping
+      reflectionGroupId
       remoteDrag {
         dragUserId
         dragUserName
+        isSpotlight
+        targetId
       }
     }
   `,
   meeting: graphql`
     fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
       ...ReflectionCard_meeting
+      ...RemoteReflection_meeting
+      ...useSpotlightResults_meeting
       id
       teamId
       localStage {
@@ -152,6 +186,11 @@ export default createFragmentContainer(DraggableReflectionCard, {
           phaseType
         }
       }
+      spotlightGroup {
+        id
+      }
+      spotlightReflectionId
+      spotlightSearchQuery
     }
   `
 })

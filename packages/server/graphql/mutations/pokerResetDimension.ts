@@ -13,19 +13,19 @@ import PokerResetDimensionPayload from '../types/PokerResetDimensionPayload'
 import sendPokerMeetingRevoteToSegment from './helpers/sendPokerMeetingRevoteToSegment'
 
 const pokerResetDimension = {
-  type: GraphQLNonNull(PokerResetDimensionPayload),
+  type: new GraphQLNonNull(PokerResetDimensionPayload),
   description: `Remove all votes, the final vote, and reset the stage`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId},
+    _source: unknown,
+    {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

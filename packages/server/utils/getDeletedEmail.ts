@@ -1,2 +1,2 @@
-const getDeletedEmail = (userId) => `DELETED:${userId}:${Date.now()}`
+const getDeletedEmail = (userId: string) => `DELETED:${userId}:${Date.now()}`
 export default getDeletedEmail

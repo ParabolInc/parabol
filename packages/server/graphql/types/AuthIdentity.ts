@@ -14,11 +14,11 @@ export const authStrategyFields = () => ({
   }
 })
 
-const AuthIdentity = new GraphQLInterfaceType({
+const AuthIdentity: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'AuthIdentity',
   description: 'An authentication strategy to log in to Parabol',
   fields: authStrategyFields,
-  resolveType: ({type}) => {
+  resolveType: ({type}: {type: EAuthIdentityTypeEnum}) => {
     const resolveTypeLookup = {
       [EAuthIdentityTypeEnum.LOCAL]: AuthIdentityLocal,
       [EAuthIdentityTypeEnum.GOOGLE]: AuthIdentityGoogle

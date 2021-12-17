@@ -6,6 +6,7 @@ import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
+import addMattermostAuth from './mutations/addMattermostAuth'
 import addMissingJiraField from './mutations/addMissingJiraField'
 import addOrg from './mutations/addOrg'
 import addPokerTemplate from './mutations/addPokerTemplate'
@@ -65,7 +66,6 @@ import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerResetDimension from './mutations/pokerResetDimension'
 import pokerRevealVotes from './mutations/pokerRevealVotes'
-import pokerSetFinalScore from './mutations/pokerSetFinalScore'
 import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
 import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from './mutations/promoteToTeamLead'
@@ -83,6 +83,7 @@ import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleV
 import removeReflection from './mutations/removeReflection'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
+import removeMattermostAuth from './mutations/removeMattermostAuth'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
 import renameMeeting from './mutations/renameMeeting'
@@ -109,7 +110,7 @@ import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
-import toggleAgendaList from './mutations/toggleAgendaList'
+import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
@@ -146,6 +147,7 @@ export default new GraphQLObjectType<any, Context>({
       addAgendaItem,
       addAtlassianAuth,
       addComment,
+      addMattermostAuth,
       addPokerTemplate,
       addPokerTemplateDimension,
       addPokerTemplateScale,
@@ -221,6 +223,7 @@ export default new GraphQLObjectType<any, Context>({
       renamePokerTemplateScale,
       removePokerTemplateScale,
       removePokerTemplateScaleValue,
+      removeMattermostAuth,
       removeReflection,
       removeSlackAuth,
       removeTeamMember,
@@ -240,7 +243,6 @@ export default new GraphQLObjectType<any, Context>({
       startCheckIn,
       startRetrospective,
       startSprintPoker,
-      toggleAgendaList,
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,
@@ -267,7 +269,6 @@ export default new GraphQLObjectType<any, Context>({
       pokerRevealVotes,
       pokerResetDimension,
       pokerAnnounceDeckHover,
-      pokerSetFinalScore,
       movePokerTemplateScaleValue,
       updateJiraDimensionField,
       joinMeeting,
@@ -275,6 +276,7 @@ export default new GraphQLObjectType<any, Context>({
       setPokerSpectate,
       persistGitHubSearchQuery,
       setTaskEstimate,
+      toggleTeamDrawer,
       updateGitHubDimensionField,
       createPoll
     } as any)

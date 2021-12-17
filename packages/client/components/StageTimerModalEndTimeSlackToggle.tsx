@@ -22,7 +22,6 @@ const ButtonRow = styled(PlainButton)({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'space-between',
-  paddingBottom: 8,
   width: '100%'
 })
 
@@ -31,6 +30,14 @@ const Label = styled('div')({
   fontSize: 14,
   minWidth: 160,
   padding: '8px 0 8px 8px',
+  userSelect: 'none'
+})
+
+const Note = styled('div')({
+  fontSize: 12,
+  fontStyle: 'italic',
+  padding: '8px 0 8px 0px',
+  textAlign: 'center',
   userSelect: 'none'
 })
 
@@ -44,13 +51,18 @@ const StyledCheckbox = styled(Checkbox)({
 
 const Block = styled('div')({
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  width: '100%'
+})
+
+const StyledNotificationErrorMessage = styled(NotificationErrorMessage)({
+  paddingBottom: 8
 })
 
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {facilitator} = props
   const {integrations, teamId} = facilitator
-  const {slack} = integrations
+  const {mattermost, slack} = integrations
   const notifications = slack?.notifications ?? []
   const timeLimitEvent = notifications.find(
     (notification) => notification.event === 'MEETING_STAGE_TIME_LIMIT_START'
@@ -59,6 +71,8 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
+
+  const noActiveIntegrations = !slack?.isActive && !mattermost?.isActive
 
   const onClick = () => {
     if (slack?.isActive) {
@@ -77,11 +91,14 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   }
   return (
     <Block>
-      <ButtonRow onClick={onClick}>
-        <StyledCheckbox active={slackToggleActive} />
-        <Label>{'Notify team via Slack'}</Label>
-      </ButtonRow>
-      <NotificationErrorMessage error={error} />
+      {(slack?.isActive || noActiveIntegrations) && (
+        <ButtonRow onClick={onClick}>
+          <StyledCheckbox active={slackToggleActive} />
+          <Label>{'Notify team via Slack'}</Label>
+        </ButtonRow>
+      )}
+      {mattermost?.isActive && <Note>{'Notifying via Mattermost'}</Note>}
+      <StyledNotificationErrorMessage error={error} />
     </Block>
   )
 }
@@ -91,6 +108,9 @@ export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
     fragment StageTimerModalEndTimeSlackToggle_facilitator on TeamMember {
       teamId
       integrations {
+        mattermost {
+          isActive
+        }
         slack {
           isActive
           defaultTeamChannelId

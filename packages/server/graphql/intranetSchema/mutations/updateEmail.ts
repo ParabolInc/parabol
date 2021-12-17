@@ -1,26 +1,26 @@
 import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
-import updateUser from '../../../postgres/queries/updateUser'
 import GraphQLEmailType from '../../types/GraphQLEmailType'
-import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const updateEmail = {
-  type: GraphQLNonNull(GraphQLBoolean),
+  type: new GraphQLNonNull(GraphQLBoolean),
   description: `Updates the user email`,
   args: {
     oldEmail: {
-      type: GraphQLNonNull(GraphQLEmailType),
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'User current email'
     },
     newEmail: {
-      type: GraphQLNonNull(GraphQLEmailType),
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'User new email'
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {oldEmail, newEmail}: {oldEmail: string; newEmail: string},
     {authToken}: InternalContext
   ) => {
@@ -46,11 +46,7 @@ const updateEmail = {
       updatedAt: new Date()
     }
     await Promise.all([
-      r
-        .table('User')
-        .get(userId)
-        .update(updates)
-        .run(),
+      r.table('User').get(userId).update(updates).run(),
       r
         .table('TeamMember')
         .getAll(userId, {index: 'userId'})

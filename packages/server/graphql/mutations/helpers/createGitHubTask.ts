@@ -1,47 +1,46 @@
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLResolveInfo} from 'graphql'
 import splitDraftContent from '../../../../client/utils/draftjs/splitDraftContent'
-import {GetGitHubAuthByUserIdTeamIdResult} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {GitHubAuth} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {
+  AddCommentMutation,
+  AddCommentMutationVariables,
   CreateIssueMutation,
   CreateIssueMutationVariables,
   GetRepoInfoQuery,
   GetRepoInfoQueryVariables
 } from '../../../types/githubTypes'
 import createIssueMutation from '../../../utils/githubQueries/createIssue.graphql'
+import addComment from '../../../utils/githubQueries/addComment.graphql'
 import getRepoInfo from '../../../utils/githubQueries/getRepoInfo.graphql'
 import {GQLContext} from '../../graphql'
-import {GitHubRequest} from '../../rootSchema'
+import getGitHubRequest from '../../../utils/getGitHubRequest'
 
 const createGitHubTask = async (
   rawContent: string,
   repoOwner: string,
   repoName: string,
-  githubAuth: GetGitHubAuthByUserIdTeamIdResult,
+  githubAuth: GitHubAuth,
   context: GQLContext,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
+  comment?: string
 ) => {
   const {accessToken, login} = githubAuth
   const {title, contentState} = splitDraftContent(rawContent)
   const body = stateToMarkdown(contentState)
-  const githubRequest = (info.schema as any).githubRequest as GitHubRequest
-  const endpointContext = {accessToken}
-  const {data: repoInfo, errors} = await githubRequest<GetRepoInfoQuery, GetRepoInfoQueryVariables>(
+  const githubRequest = getGitHubRequest(info, context, {
+    accessToken
+  })
+  const [repoInfo, repoError] = await githubRequest<GetRepoInfoQuery, GetRepoInfoQueryVariables>(
+    getRepoInfo,
     {
-      query: getRepoInfo,
-      variables: {
-        assigneeLogin: login,
-        repoName,
-        repoOwner
-      },
-      info,
-      endpointContext,
-      batchRef: context
+      assigneeLogin: login,
+      repoName,
+      repoOwner
     }
   )
-
-  if (errors) {
-    return {error: new Error(errors[0].message)}
+  if (repoError) {
+    return {error: repoError}
   }
 
   const {repository, user} = repoInfo
@@ -53,25 +52,19 @@ const createGitHubTask = async (
 
   const {id: repositoryId} = repository
   const {id: ghAssigneeId} = user
-  const {data: createIssueData, errors: createIssueErrors} = await githubRequest<
+  const [createIssueData, createIssueError] = await githubRequest<
     CreateIssueMutation,
     CreateIssueMutationVariables
-  >({
-    query: createIssueMutation,
-    variables: {
-      input: {
-        title,
-        body,
-        repositoryId,
-        assigneeIds: [ghAssigneeId]
-      }
-    },
-    info,
-    endpointContext,
-    batchRef: context
+  >(createIssueMutation, {
+    input: {
+      title,
+      body,
+      repositoryId,
+      assigneeIds: [ghAssigneeId]
+    }
   })
-  if (createIssueErrors instanceof Error) {
-    return {error: new Error(createIssueErrors[0].message)}
+  if (createIssueError) {
+    return {error: createIssueError}
   }
 
   const {createIssue} = createIssueData
@@ -83,7 +76,15 @@ const createGitHubTask = async (
     return {error: new Error('GitHub create issue failed')}
   }
 
-  const {number: issueNumber} = issue
+  const {number: issueNumber, id} = issue
+  if (comment) {
+    await githubRequest<AddCommentMutation, AddCommentMutationVariables>(addComment, {
+      input: {
+        body: comment,
+        subjectId: id
+      }
+    })
+  }
   return {issueNumber}
 }
 

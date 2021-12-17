@@ -1,5 +1,6 @@
 import {GraphQLList, GraphQLString} from 'graphql'
 import ms from 'ms'
+import getPg from '../../../postgres/getPg'
 import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import getMailManager from '../../../email/getMailManager'
@@ -10,7 +11,7 @@ const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),
   description:
     'Send summary emails of unread notifications to all users who have not been seen within the last 24 hours',
-  async resolve(_source, _args, {authToken}) {
+  async resolve(_source: unknown, _args: unknown, {authToken}) {
     // AUTH
     requireSU(authToken)
 
@@ -21,36 +22,41 @@ const sendBatchNotificationEmails = {
     const r = await getRethink()
     const now = Date.now()
     const yesterday = new Date(now - ms('1d'))
-    const userNotifications = ((await r
+    const userNotificationCount = (await (r
       .table('Notification')
       // Only include notifications which occurred within the last day
       .filter((row) => row('createdAt').gt(yesterday))
-      // join with the users table
-      .eqJoin('userId', r.table('User'))
-      // filter to active users not seen within the last day
-      .filter((row) =>
-        r.and(row('right')('inactive').eq(false), row('right')('lastSeenAt').lt(yesterday))
-      )
-      // clean up the join
-      .map((join) => ({
-        userId: join('right')('id'),
-        email: join('right')('email'),
-        preferredName: join('right')('preferredName'),
-        notification: join('left')
-      }))
       // de-dup users
-      .group('userId')
+      .group('userId') as any)
+      .count()
       .ungroup()
       .map((group) => ({
-        email: group('reduction')(0)('email'),
-        preferredName: group('reduction')(0)('preferredName'),
-        notificationCount: group('reduction').count()
+        userId: group('group'),
+        notificationCount: group('reduction')
       }))
-      .run()) as unknown) as {email: string; preferredName: string; notificationCount: number}[]
+      .run()) as {userId: string; notificationCount: number}[]
+
+    const userNotificationMap = new Map(
+      userNotificationCount.map((value) => [value.userId, value.notificationCount])
+    )
+    const pg = getPg()
+    const users = await pg.query<{id: string; email: string; preferredName: string}>(
+      `SELECT id, email, "preferredName" FROM "User"
+      WHERE "id" = ANY($1::text[])
+      AND NOT inactive
+      AND "lastSeenAt" <= $2`,
+      [[...userNotificationMap.keys()], yesterday]
+    )
+
     await Promise.all(
-      userNotifications.map((notification) => {
-        const {email, preferredName, notificationCount} = notification
-        const {subject, html, body} = notificationSummaryCreator({preferredName, notificationCount, appOrigin})
+      users.rows.map((user) => {
+        const {email, preferredName} = user
+        const notificationCount = userNotificationMap.get(user.id)!
+        const {subject, html, body} = notificationSummaryCreator({
+          preferredName,
+          notificationCount,
+          appOrigin
+        })
         return getMailManager().sendEmail({
           to: email,
           subject,
@@ -60,7 +66,7 @@ const sendBatchNotificationEmails = {
         })
       })
     )
-    return userNotifications.map(({email}) => email)
+    return users.rows.map(({email}) => email)
   }
 }
 

@@ -23,14 +23,11 @@ export const enum BezierCurve {
 
 export const enum Breakpoint {
   INVOICE = 512,
-  INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 1024,
-  MEETING_FACILITATOR_BAR = 480,
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
-  WIDER_SCREEN = 1600,
   VOTE_PHASE = 800,
   FUZZY_TABLET = 700,
   BIG_DISPLAY = 1900
@@ -88,6 +85,8 @@ export const enum Duration {
 export const enum ElementWidth {
   CONTROL_BAR_BUTTON = 90,
   CONTROL_BAR_PADDING = 8,
+  DASHBOARD_AVATAR = 28,
+  DASHBOARD_AVATAR_OVERLAPPED = 20,
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6,
@@ -100,6 +99,7 @@ export const enum ElementWidth {
 }
 
 export const enum ElementHeight {
+  DASHBOARD_AVATAR = 28,
   MEETING_CARD_AVATARS = 32,
   REFLECTION_CARD = 44,
   REFLECTION_CARD_MAX = 104, // 4 lines (20px each) + (2 * 12px) vertical gutter
@@ -114,9 +114,11 @@ export const enum ExternalLinks {
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
+  INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
-  TEAM = 'https://www.parabol.co/team/'
+  TEAM = 'https://www.parabol.co/team/',
+  LANDING_PAGE = 'https://www.parabol.co/'
 }
 
 export const enum Filter {
@@ -248,6 +250,8 @@ export const enum Providers {
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
+  MATTERMOST_NAME = 'Mattermost',
+  MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }
@@ -285,8 +289,9 @@ export const enum Security {
 }
 
 export const enum ServerChannel {
-  GQL_EXECUTOR_REQUEST = 'gqlExRreq',
-  GQL_EXECUTOR_RESPONSE = 'gqlExRes'
+  GQL_EXECUTOR_RESPONSE = 'gqlExRes',
+  GQL_EXECUTOR_STREAM = 'gqlStream',
+  GQL_EXECUTOR_CONSUMER_GROUP = 'gqlConsumerGroup'
 }
 
 export const enum SubscriptionChannel {
@@ -372,8 +377,11 @@ export const enum Times {
   REFLECTION_COLLAPSE_DURATION = 300,
   REFLECTION_DROP_DURATION = 1000,
   REFLECTION_REMOTE_DROP_DURATION = 2000,
-  REFLECTION_STALE_LIMIT = 5000,
+  REFLECTION_DRAG_STALE_TIMEOUT = 10000,
+  REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT = 120000,
   REFLECTION_COLUMN_SWIPE_THRESH = 600,
+  SPOTLIGHT_SOURCE_DURATION = 300,
+  SPOTLIGHT_MODAL_DURATION = 300,
   TOUCH_LONGPRESS = 120,
   WEBSOCKET_KEEP_ALIVE = 10000
 }
@@ -391,9 +399,9 @@ export const enum ZIndex {
   SIDEBAR = 16,
   SIDE_SHEET = 8,
   SNACKBAR = 24 /* snackbar is kind of dialog */,
-  SPOTLIGHT_MODAL = 25, // above the tooltip
   REFLECTION_IN_FLIGHT = 8,
-  REFLECTION_IN_FLIGHT_LOCAL = 26, // keep it above the dialog
+  REFLECTION_IN_FLIGHT_LOCAL = 28, // keep it above the dialog
+  REFLECTION_IN_FLIGHT_SPOTLIGHT = 26,
   TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
 }
 
@@ -423,5 +431,15 @@ export const enum Polls {
   MAX_OPTIONS = 4,
   MIN_OPTIONS = 2,
   MAX_TITLE_LENGTH = 100,
-  MIN_TITLE_LENGTH = 2
+  MIN_TITLE_LENGTH = 2,
+  MIN_OPTION_TITLE_LENGTH = 1,
+  MAX_OPTION_TITLE_LENGTH = 30
+}
+
+export const enum PollsAriaLabels {
+  POLL_TITLE_EDITOR = 'Poll Editor',
+  POLL_OPTION_EDITOR = 'Poll Option Editor',
+  POLL_SUBMIT_VOTE = 'Submit poll vote',
+  POLL_START = 'Start a poll',
+  POLL_ADD_OPTION = 'Add a poll option'
 }

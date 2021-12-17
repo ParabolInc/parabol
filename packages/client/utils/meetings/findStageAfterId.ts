@@ -7,10 +7,10 @@ const findStageAfterId = <T extends FindStageByIdPhase>(
   if (!phases) return undefined
   let stageFound = false
   for (let ii = 0; ii < phases.length; ii++) {
-    const phase = phases[ii]
+    const phase = phases[ii]!
     const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
-      const stage = stages[jj]
+      const stage = stages[jj]!
       if (stageFound) {
         return {phase, stage}
       }

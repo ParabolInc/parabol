@@ -5,7 +5,6 @@ import getRethink from '../../database/rethinkDriver'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
-import getTemplateScaleRefById from '../../postgres/queries/getTemplateScaleRefById'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -47,14 +46,14 @@ const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: s
 }
 
 const voteForPokerStory = {
-  type: GraphQLNonNull(VoteForPokerStoryPayload),
+  type: new GraphQLNonNull(VoteForPokerStoryPayload),
   description: 'Cast a vote for the estimated points for a given dimension',
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The stage that contains the dimension to vote for'
     },
     score: {
@@ -63,8 +62,8 @@ const voteForPokerStory = {
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId, score},
+    _source: unknown,
+    {meetingId, stageId, score}: {meetingId: string; stageId: string; score?: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
@@ -104,7 +103,7 @@ const voteForPokerStory = {
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {scaleRefId} = dimensionRef
-    const scaleRef = await getTemplateScaleRefById(scaleRefId)
+    const scaleRef = await dataLoader.get('templateScaleRefs').load(scaleRefId)
     const {values} = scaleRef
     if (score) {
       // validate the score is a value on the scale

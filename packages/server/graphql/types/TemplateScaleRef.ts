@@ -22,7 +22,7 @@ const TemplateScaleRef = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScaleValue))),
       description: 'The values used in this scale',
       resolve: ({id, values}) => {
-        return values.map(({color, label}, index) => ({
+        return values.map(({color, label}: {color: string; label: string}, index: number) => ({
           color,
           label,
           scaleId: id,

@@ -12,14 +12,14 @@ const RemovePokerTemplateDimensionPayload = new GraphQLObjectType<any, GQLContex
     },
     pokerTemplate: {
       type: PokerTemplate,
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         if (!templateId) return null
         return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
     dimension: {
       type: TemplateDimension,
-      resolve: ({dimensionId}, _args, {dataLoader}) => {
+      resolve: ({dimensionId}, _args: unknown, {dataLoader}) => {
         if (!dimensionId) return null
         return dataLoader.get('templateDimensions').load(dimensionId)
       }

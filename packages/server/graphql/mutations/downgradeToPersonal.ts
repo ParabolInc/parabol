@@ -17,7 +17,11 @@ export default {
       description: 'the org requesting the upgrade'
     }
   },
-  async resolve(_source, {orgId}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
+  async resolve(
+    _source: unknown,
+    {orgId}: {orgId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

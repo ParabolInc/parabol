@@ -11,7 +11,13 @@ import {NewGitHubIssueInput_meeting$key} from '~/__generated__/NewGitHubIssueInp
 import {NewGitHubIssueInput_viewer$key} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
+import CreateTaskMutation from '../mutations/CreateTaskMutation'
+import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
+import {CompletedHandler} from '../types/relayMutations'
+import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
+import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
 import NewGitHubIssueMenu from './NewGitHubIssueMenu'
@@ -165,24 +171,52 @@ const NewGitHubIssueInput = (props: Props) => {
     e.preventDefault()
     if (portalStatus !== PortalStatus.Exited || !selectedNameWithOwner) return
     const {newIssue: newIssueRes} = validateField()
-    const newIssue = newIssueRes.value as string
-    if (newIssueRes.error) {
+    const {value: newIssueTitle, error} = newIssueRes
+    if (error) {
       setDirtyField()
       return
     }
     setIsEditing(false)
     fields.newIssue.resetValue()
-    if (!newIssue.length) {
+    if (!newIssueTitle.length) {
       fields.newIssue.dirty = false
       return
     }
-    const variables = {
-      nameWithOwner: selectedNameWithOwner,
-      title: newIssue,
+    const newTask = {
       teamId,
-      meetingId
+      userId,
+      meetingId,
+      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      plaintextContent: newIssueTitle,
+      status: 'active' as const,
+      integration: {
+        service: 'github' as const,
+        serviceProjectHash: selectedNameWithOwner
+      }
     }
-    console.log('TODO create task with integration', variables, atmosphere, onCompleted, onError)
+    const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
+      const integration = res.createTask?.task?.integration ?? null
+      if (!integration) return
+      if (integration.__typename !== '_xGitHubIssue') return
+      const {number: issueNumber, repository} = integration
+      const {nameWithOwner} = repository
+      const pokerScopeVariables = {
+        meetingId,
+        updates: [
+          {
+            service: 'github',
+            serviceTaskId: GitHubIssueId.join(nameWithOwner, issueNumber),
+            action: 'ADD'
+          } as const
+        ]
+      }
+      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
+        onError,
+        onCompleted,
+        contents: [newIssueTitle]
+      })
+    }
+    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
   if (!isEditing) return null

@@ -50,9 +50,6 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
     await client.query(`CREATE SCHEMA "orgBackup";`)
     await client.query(`CREATE TABLE "orgBackup"."PgMigrations" AS (SELECT * FROM "PgMigrations");`)
     await client.query(
-      `CREATE TABLE "orgBackup"."PgPostDeployMigrations" AS (SELECT * FROM "PgPostDeployMigrations");`
-    )
-    await client.query(
       `CREATE TABLE "orgBackup"."OrganizationUserAudit" AS (SELECT * FROM "OrganizationUserAudit" WHERE "orgId" = ANY ($1));`,
       [orgIds]
     )
@@ -118,14 +115,14 @@ const backupPgOrganization = async (orgIds: string[]) => {
 }
 
 const backupOrganization = {
-  type: GraphQLNonNull(GraphQLString),
+  type: new GraphQLNonNull(GraphQLString),
   description: 'copies all the records from RethinkDB for a list of organizations',
   args: {
     orgIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
     }
   },
-  resolve: async (_source, {orgIds}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {orgIds}, {authToken}: GQLContext) => {
     // AUTH
     requireSU(authToken)
 

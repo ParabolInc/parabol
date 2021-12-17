@@ -1,6 +1,5 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import TemplateDimensionRefId from '../../../client/shared/gqlIds/TemplateDimensionRefId'
-import getTemplateScaleRefById from '../../postgres/queries/getTemplateScaleRefById'
 import {GQLContext} from '../graphql'
 import TemplateScaleRef from './TemplateScaleRef'
 
@@ -23,14 +22,14 @@ const TemplateDimensionRef = new GraphQLObjectType<any, GQLContext>({
       description: 'The name of the dimension'
     },
     scaleRefId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The md5 hash to resolve the immutable selected scale ref'
     },
     scale: {
       type: new GraphQLNonNull(TemplateScaleRef),
       description: 'scale used in this dimension',
-      resolve: async ({scaleRefId}) => {
-        const scaleFromPg = await getTemplateScaleRefById(scaleRefId)
+      resolve: async ({scaleRefId}, _args: unknown, {dataLoader}) => {
+        const scaleFromPg = await dataLoader.get('templateScaleRefs').load(scaleRefId)
         return scaleFromPg
       }
     }

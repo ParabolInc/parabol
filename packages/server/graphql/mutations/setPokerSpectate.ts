@@ -8,20 +8,20 @@ import {GQLContext} from '../graphql'
 import SetPokerSpectatePayload from '../types/SetPokerSpectatePayload'
 
 const setPokerSpectate = {
-  type: GraphQLNonNull(SetPokerSpectatePayload),
+  type: new GraphQLNonNull(SetPokerSpectatePayload),
   description: `Set whether the user is spectating poker meeting`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     isSpectating: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is spectating poker and does not want to vote. else false'
     }
   },
   resolve: async (
-    _source,
-    {meetingId, isSpectating},
+    _source: unknown,
+    {meetingId, isSpectating}: {meetingId: string; isSpectating: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -41,16 +41,12 @@ const setPokerSpectate = {
     const {teamId} = meetingMember
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     await r({
-      meetingMember: r
-        .table('MeetingMember')
-        .get(meetingMemberId)
-        .update({isSpectating}),
+      meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating}),
       teamMember: r
         .table('TeamMember')
         .get(teamMemberId)
         .update({isSpectatingPoker: isSpectating, updatedAt: now})
     }).run()
-    meetingMember.isSpectating = isSpectating
     const data = {meetingId, userId: viewerId}
     publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectateSuccess', data, subOptions)
     return data

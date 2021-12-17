@@ -1,5 +1,5 @@
 import tracer from 'dd-trace'
-
+import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
@@ -9,10 +9,11 @@ import webhookGraphQLHandler from './graphql/webhookGraphQLHandler'
 import ICSHandler from './ICSHandler'
 import './initSentry'
 import githubWebhookHandler from './integrations/githubWebhookHandler'
+import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
+import PROD from './PROD'
 import PWAHandler from './PWAHandler'
 import selfHostedHandler from './selfHostedHandler'
-import jiraImagesHandler from './jiraImagesHandler'
 import handleClose from './socketHandlers/handleClose'
 import handleMessage from './socketHandlers/handleMessage'
 import handleOpen from './socketHandlers/handleOpen'
@@ -21,12 +22,12 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
-import PROD from './PROD'
-import {r} from 'rethinkdb-ts'
 
-if (PROD) {
-  tracer.init()
-}
+tracer.init({
+  enabled: process.env.DD_TRACE_ENABLED === 'true',
+  service: `Web ${process.env.SERVER_ID}`,
+  plugins: false
+})
 
 const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
 if (!PROD) {

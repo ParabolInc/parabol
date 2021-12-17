@@ -8,7 +8,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import UpdateAgendaItemInput from '../types/UpdateAgendaItemInput'
+import UpdateAgendaItemInput, {UpdateAgendaItemInputType} from '../types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from '../types/UpdateAgendaItemPayload'
 
 export default {
@@ -21,8 +21,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {updatedAgendaItem},
+    _source: unknown,
+    {updatedAgendaItem}: {updatedAgendaItem: UpdateAgendaItemInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const now = new Date()
@@ -33,7 +33,7 @@ export default {
 
     // AUTH
     const {id: agendaItemId} = updatedAgendaItem
-    const [teamId] = agendaItemId.split('::')
+    const [teamId] = agendaItemId.split('::') as [string]
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }

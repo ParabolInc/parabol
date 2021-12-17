@@ -13,19 +13,19 @@ import {GQLContext} from '../graphql'
 import AddMissingJiraFieldPayload from '../types/AddMissingJiraFieldPayload'
 
 const addMissingJiraField = {
-  type: GraphQLNonNull(AddMissingJiraFieldPayload),
+  type: new GraphQLNonNull(AddMissingJiraFieldPayload),
   description: `Adds a missing Jira field to a screen currently assigned to a Jira project`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
-    _source,
-    {meetingId, stageId},
+    _source: unknown,
+    {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
@@ -77,11 +77,14 @@ const addMissingJiraField = {
     const team = await dataLoader.get('teams').load(teamId)
     const jiraDimensionFields = team.jiraDimensionFields || []
     const dimensionField = jiraDimensionFields.find(
-      (dimensionField) =>
+      (dimensionField: {dimensionName: string; cloudId: string; projectKey: string}) =>
         dimensionField.dimensionName === dimensionName &&
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
+    if (!dimensionField) {
+      return {error: {message: 'No Jira dimension field found'}}
+    }
     const {fieldType, fieldId} = dimensionField
 
     const screensResponse = await manager.getScreens(cloudId)
@@ -124,7 +127,7 @@ const addMissingJiraField = {
     const screensToCleanup: Array<{screenId: string; tabId: string}> = []
     // iterate over all the screens sorted by probability, try to update the given field
     for (let i = 0; i < possibleScreens.length; i++) {
-      const screen = possibleScreens[i]
+      const screen = possibleScreens[i]!
       const {screenId, tabId} = screen
       const addFieldResponse = await manager.addFieldToScreenTab(cloudId, screenId, tabId, fieldId)
       if (addFieldResponse instanceof Error) {

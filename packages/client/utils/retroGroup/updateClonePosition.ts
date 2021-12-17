@@ -1,12 +1,41 @@
+import {keyframes} from '@emotion/core'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, DragAttribute, Times} from '../../types/constEnums'
+import {BezierCurve, DragAttribute, Times, ZIndex} from '../../types/constEnums'
 import getDeCasteljau from '../getDeCasteljau'
+
+const reflectionSpotlightFadeIn = keyframes`
+  0% {
+    opacity: 0.1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+  100% {
+    opacity: 1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+`
+
+const reflectionSpotlightFadeOut = keyframes`
+  0% {
+    opacity: 1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+  99% {
+    opacity: 0.1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
+  }
+  100% {
+    opacity: 1;
+    z-index: ${ZIndex.REFLECTION_IN_FLIGHT};
+  }
+`
 
 export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
   if (top >= 0) return top
   let dropzone = targetEl
   while (dropzone && dropzone.hasAttribute) {
-    if (dropzone.hasAttribute(DragAttribute.DROPZONE)) return dropzone.getBoundingClientRect().top
+    if (dropzone.hasAttribute(DragAttribute.DROPZONE)) {
+      return dropzone.getBoundingClientRect().top
+    }
     dropzone = dropzone.parentElement
   }
   return top
@@ -22,20 +51,65 @@ const getTransition = (isClipped: boolean, timeRemaining: number) => {
     : transition
 }
 
+export const getSpotlightAnimation = (
+  element: HTMLDivElement,
+  targetId: string | null | undefined,
+  groupIdsInSpotlight: string[],
+  isClose: boolean,
+  lastZIndex: number | undefined
+) => {
+  const spotlightEl = document.getElementById('spotlight')
+  const isTargetInSpotlight = targetId && groupIdsInSpotlight.includes(targetId)
+  const isInSpotlight = spotlightEl?.contains(element) ?? false
+  const notInSpotlight = spotlightEl ? !isInSpotlight : false
+  const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
+  const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s ${BezierCurve.DECELERATE} 0s forwards`
+  const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s ${BezierCurve.DECELERATE} 0s forwards`
+
+  const isCurrentlyBehindSpotlight = lastZIndex !== ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
+  const isFadingIn =
+    // Spotlight is open and the element is not a part of the spotlight
+    notInSpotlight &&
+    // Element is hovering any spotlight element
+    isTargetInSpotlight &&
+    // Element is not released and not returning to its place behind the spotlight
+    !isClose
+
+  const isFadingOut =
+    // Spotlight is open and the element is not a part of the spotlight
+    notInSpotlight &&
+    // The element is not behind the spotlight already
+    // make sense when the remote reflection first appears in the background
+    !isCurrentlyBehindSpotlight &&
+    // Element is not hovering any spotlight element
+    // or element is released and moving back to its place behind the spotlight
+    (!showAboveSpotlight || isClose)
+
+  return isFadingIn ? fadeInAnimation : isFadingOut ? fadeOutAnimation : undefined
+}
+
 export const getDroppingStyles = (
-  targetEl: HTMLDivElement,
+  element: HTMLDivElement,
   bbox: ClientRect,
   maxTop: number,
-  timeRemaining: number
+  timeRemaining: number,
+  targetId?: string | null,
+  groupIdsInSpotlight?: string[]
 ) => {
+  const spotlightEl = document.getElementById('spotlight')
+  const isTargetInSpotlight = !!(targetId && groupIdsInSpotlight?.includes(targetId))
+  const isInSpotlight = spotlightEl && spotlightEl.contains(element)
+  const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
   const {top, left} = bbox
-  const minTop = getMinTop(top, targetEl)
+  const minTop = getMinTop(top, element)
   const clippedTop = Math.min(Math.max(minTop, top), maxTop - bbox.height)
   const isClipped = clippedTop !== top
+
   return {
     transform: `translate(${left}px,${clippedTop}px)`,
     transition: getTransition(isClipped, timeRemaining),
-    opacity: isClipped ? 0 : 1
+    opacity: isClipped ? 0 : 1,
+    zIndex: showAboveSpotlight ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT : ZIndex.REFLECTION_IN_FLIGHT
   }
 }
 

@@ -19,6 +19,7 @@ const getProjectRoot = () => {
 const PROJECT_ROOT = getProjectRoot()
 const staticPaths = {
   [path.join(PROJECT_ROOT, 'build')]: true,
+  [path.join(PROJECT_ROOT, 'dist')]: true,
   [path.join(PROJECT_ROOT, 'static')]: true,
   [path.join(PROJECT_ROOT, 'dev', 'dll')]: !PROD
 }

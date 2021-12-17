@@ -7,7 +7,7 @@ const {promisify} = require('util')
 const webpack = require('webpack')
 const getProjectRoot = require('./webpack/utils/getProjectRoot')
 const Redis = require('ioredis')
-const rmdir = promisify(fs.rmdir)
+const rm = promisify(fs.rm)
 const unlink = promisify(fs.unlink)
 const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
@@ -30,7 +30,7 @@ const removeArtifacts = async () => {
   const generated = path.join(PROJECT_ROOT, 'packages/client/__generated__')
   const queryMap = path.join(PROJECT_ROOT, 'queryMap.json')
   try {
-    await Promise.all([rmdir(generated, {recursive: true}), unlink(schemaPath), unlink(queryMap)])
+    await Promise.all([rm(generated, {recursive: true}), unlink(schemaPath), unlink(queryMap)])
   } catch (_) {
     // probably didn't exist, noop
   }
@@ -38,7 +38,7 @@ const removeArtifacts = async () => {
 
 const dev = async (maybeInit) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
-  const redis = new Redis(process.env.REDIS_URL)
+  const redis = new Redis(process.env.REDIS_URL, {connectionName: 'devRedis'})
   const toolboxPromise = compileToolbox()
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')

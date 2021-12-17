@@ -1,9 +1,11 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {GQLContext} from '../graphql'
 import {resolveGQLStagesFromPhase} from '../resolvers'
 import GenericMeetingStage from './GenericMeetingStage'
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
 import ReflectPrompt from './ReflectPrompt'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 
 const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectPhase',
@@ -18,20 +20,22 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
     focusedPrompt: {
       type: ReflectPrompt,
       description: 'the Prompt that the facilitator wants the group to focus on',
-      resolve: ({focusedPromptId}, _args, {dataLoader}) => {
+      resolve: ({focusedPromptId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('reflectPrompts').load(focusedPromptId)
       }
     },
     reflectPrompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts used during the reflect phase',
-      resolve: async ({meetingId}, _args, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+      resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
+        const meeting = (await dataLoader
+          .get('newMeetings')
+          .load(meetingId)) as MeetingRetrospective
         const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
         // only show prompts that were created before the meeting and
         // either have not been removed or they were removed after the meeting was created
         return prompts.filter(
-          (prompt) =>
+          (prompt: RetrospectivePrompt) =>
             prompt.createdAt < meeting.createdAt &&
             (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
         )

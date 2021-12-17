@@ -24,7 +24,7 @@ type CreatePollInputVariables = {
 }
 
 const createPoll = {
-  type: GraphQLNonNull(CreatePollPayload),
+  type: new GraphQLNonNull(CreatePollPayload),
   args: {
     newPoll: {
       type: new GraphQLNonNull(CreatePollInput),
@@ -32,7 +32,7 @@ const createPoll = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {newPoll}: CreatePollInputVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -105,7 +105,8 @@ const createPoll = {
     if (insertPollResult.length === 0) {
       return {error: {message: `Couldn't create a poll`}}
     }
-    const [{pollId}] = insertPollResult
+
+    const {pollId} = insertPollResult[0]!
 
     const data = {pollId}
     segmentIo.track({
@@ -116,7 +117,7 @@ const createPoll = {
         teamId
       }
     })
-    publish(SubscriptionChannel.MEETING, meetingId, 'AddPollSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
     return data
   }
 }

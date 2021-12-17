@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -6,13 +5,6 @@ import {Providers} from '../types/constEnums'
 import {ScopePhaseAreaGitHub_meeting$key} from '../__generated__/ScopePhaseAreaGitHub_meeting.graphql'
 import ScopePhaseAreaAddGitHub from './ScopePhaseAreaAddGitHub'
 import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
-
-const ComingSoon = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  height: '100%'
-})
 
 interface Props {
   isActive: boolean
@@ -51,12 +43,8 @@ const ScopePhaseAreaGitHub = (props: Props) => {
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const hasAuth = integrations?.github?.scope === Providers.GITHUB_SCOPE
-  if (!__PRODUCTION__) {
-    if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
-    return <ScopePhaseAreaGitHubScoping meetingRef={meeting} />
-  } else {
-    return <ComingSoon>Coming Soon!</ComingSoon>
-  }
+  if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meetingRef={meeting} />
+  return <ScopePhaseAreaGitHubScoping meetingRef={meeting} />
 }
 
 export default ScopePhaseAreaGitHub

@@ -6,8 +6,9 @@ import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
-import {makeSection} from '../../mutations/helpers/makeSlackBlocks'
+import {makeSection} from '../../mutations/helpers/notifications/makeSlackBlocks'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import getPg from '../../../postgres/getPg'
 
 interface TypeField {
   type: 'mrkdwn'
@@ -34,17 +35,20 @@ const getTotal = (domainCount: DomainCount[]) =>
 const filterCounts = (domainCount: DomainCount[]) =>
   domainCount.filter(({domain, total}) => isCompanyDomain(domain) && total > 1).slice(0, TOP_X)
 
-const addAllTimeTotals = async (domainCount: DomainCount[]) => {
-  const r = await getRethink()
-  const result = await r(domainCount)
-    .merge((item) => ({
-      allTimeTotal: r
-        .table('User')
-        .filter((row) => row('email').match(item('domain').add('$')) as any)
-        .count()
-    }))
-    .run()
-  return result as DomainCountWithAllTime[]
+const addAllTimeTotals = async (domainCount: DomainCount[]): Promise<DomainCountWithAllTime[]> => {
+  const pg = getPg()
+  const allTimeCount = await pg.query(
+    `SELECT count(*)::float as "allTimeTotal", "domain" from "User"
+     WHERE "domain" = ANY($1::text[])
+     GROUP BY "domain"`,
+    [domainCount.map((count) => count.domain)]
+  )
+
+  const mergedCount = domainCount.map((count) => ({
+    ...count,
+    allTimeTotal: allTimeCount.rows.find((allTime) => allTime.domain === count.domain)?.allTimeTotal
+  }))
+  return mergedCount
 }
 
 const makeTopXSection = async (domainCount: DomainCount[]) => {
@@ -53,12 +57,11 @@ const makeTopXSection = async (domainCount: DomainCount[]) => {
   let curDomains = ''
   let curTotals = ''
   const fields = [] as TypeField[]
-  for (let i = 0; i < aggregated.length; i++) {
-    const signup = aggregated[i]
+  aggregated.forEach((signup) => {
     const {domain, total, allTimeTotal} = signup
     curDomains += `*${domain}*\n`
     curTotals += `*${total}* (${allTimeTotal} total)\n`
-  }
+  })
   if (aggregated.length === 0) {
     curDomains = 'No Data'
     curTotals = 'Sad Panda'
@@ -75,20 +78,20 @@ const dailyPulse = {
   type: GraphQLBoolean,
   args: {
     after: {
-      type: GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the earliest time to run the query'
     },
     email: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'the email that holds the credentials to the channelId'
     },
     channelId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the ID of channel to post to'
     }
   },
   description: 'Post signup and login metrics to slack',
-  async resolve(_source, {after, email, channelId}, {authToken}) {
+  async resolve(_source: unknown, {after, email, channelId}, {authToken}) {
     requireSU(authToken)
     const r = await getRethink()
     const user = await getUserByEmail(email)
@@ -97,11 +100,7 @@ const dailyPulse = {
     const slackAuth = await r
       .table('SlackAuth')
       .getAll(userId, {index: 'userId'})
-      .filter((row) =>
-        row('botAccessToken')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row) => row('botAccessToken').default(null).ne(null))
       .nth(0)
       .default(null)
       .run()
@@ -127,7 +126,7 @@ const dailyPulse = {
       makeSection(`*Top Logins*`),
       loginsList
     ]
-    const manager = new SlackServerManager(botAccessToken)
+    const manager = new SlackServerManager(botAccessToken!)
     const res = await manager.postMessage(channelId, blocks)
     return res.ok
   }

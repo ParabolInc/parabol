@@ -42,8 +42,12 @@ export default {
   },
   resolve: rateLimit({perMinute: 10, perHour: 100})(
     async (
-      _source,
-      {invitees, meetingId, teamId}: {invitees: string[]; meetingId?: string; teamId: string},
+      _source: unknown,
+      {
+        invitees,
+        meetingId,
+        teamId
+      }: {invitees: string[]; meetingId?: string | null; teamId: string},
       {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
       const operationId = dataLoader.share()
@@ -62,6 +66,9 @@ export default {
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])
+      if (!inviter) {
+        return standardError(new Error('User not found'), {userId: viewerId})
+      }
       const {name: teamName, isOnboardTeam, orgId} = team
       const organization = await dataLoader.get('organizations').load(orgId)
       const {tier, name: orgName} = organization
@@ -80,15 +87,12 @@ export default {
           expiresAt,
           email,
           invitedBy: viewerId,
-          meetingId,
+          meetingId: meetingId ?? undefined,
           teamId,
           token: tokens[idx]
         })
       })
-      await r
-        .table('TeamInvitation')
-        .insert(teamInvitationsToInsert)
-        .run()
+      await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
 
       // remove suggested action, if any
       let removedSuggestedActionId
@@ -113,13 +117,10 @@ export default {
         }
       })
       if (notificationsToInsert.length > 0) {
-        await r
-          .table('Notification')
-          .insert(notificationsToInsert)
-          .run()
+        await r.table('Notification').insert(notificationsToInsert).run()
       }
 
-      const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)
+      const bestMeeting = await getBestInvitationMeeting(teamId, meetingId ?? undefined, dataLoader)
 
       // send emails
       const searchParams = {

@@ -1,18 +1,18 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
-import User from '../../../database/types/User'
-import db from '../../../db'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import IUser from '../../../postgres/types/IUser'
 import {requireSU} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import segmentIo from '../../../utils/segmentIo'
+import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import StripeManager from '../../../utils/StripeManager'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
+import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
-import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const getBillingLeaderUser = async (
   email: string | null,
@@ -45,8 +45,11 @@ const getBillingLeaderUser = async (
   const billingLeaders = organizationUsers.filter(
     (organizationUser) => organizationUser.role === 'BILLING_LEADER'
   )
+
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
-  const billingLeaderUsers = await db.readMany('User', billingLeaderUserIds)
+  const billingLeaderUsers = (await dataLoader.get('users').loadMany(billingLeaderUserIds)).filter(
+    isValid
+  )
   return billingLeaderUsers[0]
 }
 
@@ -78,7 +81,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {orgId, quantity, email, apEmail, plan},
     {authToken, dataLoader}: GQLContext
   ) {
@@ -112,7 +115,7 @@ export default {
     }
 
     // RESOLUTION
-    let user: User | null
+    let user: IUser | undefined
     try {
       user = await getBillingLeaderUser(email, orgId, dataLoader)
     } catch (e) {
@@ -127,11 +130,7 @@ export default {
     if (!stripeId) {
       // create the customer
       const customer = await manager.createCustomer(orgId, apEmail || user.email)
-      await r
-        .table('Organization')
-        .get(orgId)
-        .update({stripeId: customer.id})
-        .run()
+      await r.table('Organization').get(orgId).update({stripeId: customer.id}).run()
       customerId = customer.id
     } else {
       customerId = stripeId
@@ -156,14 +155,11 @@ export default {
             tier: 'enterprise',
             updatedAt: now
           }),
-        teamIds: r
-          .table('Team')
-          .getAll(orgId, {index: 'orgId'})
-          .update({
-            isPaid: true,
-            tier: 'enterprise',
-            updatedAt: now
-          })
+        teamIds: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
+          isPaid: true,
+          tier: 'enterprise',
+          updatedAt: now
+        })
       }).run(),
       updateTeamByOrgId(
         {

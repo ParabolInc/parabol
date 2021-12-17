@@ -17,7 +17,7 @@ const findStageById = <T extends FindStageByIdPhase>(
 ) => {
   if (!phases) return undefined
   for (let ii = 0; ii < phases.length; ii++) {
-    const phase = phases[ii]
+    const phase = phases[ii]!
     const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
       const stage = stages[jj] as T['stages'][0] & FindStageByIdStage

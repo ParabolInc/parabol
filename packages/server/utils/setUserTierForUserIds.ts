@@ -1,8 +1,8 @@
 import getRethink from '../database/rethinkDriver'
-import db from '../db'
+import {updateUserTiersQuery} from '../postgres//queries/generated/updateUserTiersQuery'
 import getPg from '../postgres/getPg'
 import {TierEnum} from '../postgres/queries/generated/updateUserQuery'
-import {updateUserTiersQuery} from '../postgres//queries/generated/updateUserTiersQuery'
+import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import catchAndLog from '../postgres/utils/catchAndLog'
 import segmentIo from './segmentIo'
 
@@ -20,11 +20,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
           .coerceTo('array')
           .distinct()
           .do((orgIds) =>
-            r
-              .table('Organization')
-              .getAll(r.args(orgIds))('tier')
-              .distinct()
-              .coerceTo('array')
+            r.table('Organization').getAll(r.args(orgIds))('tier').distinct().coerceTo('array')
           )
           .do((tiers) => {
             return r.branch(
@@ -45,10 +41,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({removedAt: null})
     .merge((orgUser) => ({
-      tier: r
-        .table('Organization')
-        .get(orgUser('orgId'))('tier')
-        .default('personal')
+      tier: r.table('Organization').get(orgUser('orgId'))('tier').default('personal')
     }))
     .group('userId')('tier')
     .ungroup()
@@ -65,15 +58,15 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .run()) as {id: string; tier: TierEnum}[]
   await catchAndLog(() => updateUserTiersQuery.run({users: userTiers}, getPg()))
 
-  await Promise.all(userIds.map((userId) => db.clear('User', userId)))
-  const users = await db.readMany('User', userIds)
+  const users = await getUsersByIds(userIds)
   users.forEach((user) => {
-    segmentIo.identify({
-      userId: user.id,
-      traits: {
-        highestTier: user.tier
-      }
-    })
+    user &&
+      segmentIo.identify({
+        userId: user.id,
+        traits: {
+          highestTier: user.tier
+        }
+      })
   })
 }
 

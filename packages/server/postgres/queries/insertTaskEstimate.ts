@@ -4,8 +4,13 @@ import {
   insertTaskEstimateQuery
 } from './generated/insertTaskEstimateQuery'
 
-const insertTaskEstimate = async (estimate: IInsertTaskEstimateQueryParams) => {
-  await insertTaskEstimateQuery.run(estimate, getPg())
+interface Input extends Omit<IInsertTaskEstimateQueryParams, 'githubLabelName' | 'jiraFieldId'> {
+  githubLabelName?: string
+  jiraFieldId?: string
+}
+
+const insertTaskEstimate = async (estimate: Input) => {
+  await insertTaskEstimateQuery.run(estimate as any, getPg())
 }
 
 export default insertTaskEstimate

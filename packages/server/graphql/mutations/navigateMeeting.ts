@@ -7,6 +7,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
@@ -29,9 +30,13 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {completedStageId, facilitatorStageId, meetingId},
-    {authToken, socketId: mutatorId, dataLoader}
+    _source: unknown,
+    {
+      completedStageId,
+      facilitatorStageId,
+      meetingId
+    }: {completedStageId: string | null; facilitatorStageId: string | null; meetingId: string},
+    {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()
     const now = new Date()
@@ -110,7 +115,7 @@ export default {
       .get(meetingId)
       .update(
         {
-          facilitatorStageId,
+          facilitatorStageId: facilitatorStageId ?? undefined,
           phases,
           updatedAt: now
         },

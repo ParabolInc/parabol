@@ -6,6 +6,7 @@ import Discussion from './Discussion'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 
 const DUMMY_DISCUSSION = {
   id: 'dummy-discussion-id',
@@ -29,23 +30,25 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
     ...newMeetingStageFields(),
     ...discussionThreadStageFields(),
     discussion: {
-      type: GraphQLNonNull(Discussion),
+      type: new GraphQLNonNull(Discussion),
       description: 'The discussion about the stage or a dummy data when there is no disscussion',
-      resolve: async ({discussionId, reflectionGroupId}, _args, {dataLoader}) => {
+      resolve: async ({discussionId, reflectionGroupId}, _args: unknown, {dataLoader}) => {
         const isDummy = reflectionGroupId === ''
         return isDummy ? DUMMY_DISCUSSION : dataLoader.get('discussions').load(discussionId)
       }
     },
     reflectionGroupId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'foreign key. use reflectionGroup'
     },
     reflectionGroup: {
-      type: GraphQLNonNull(RetroReflectionGroup),
+      type: new GraphQLNonNull(RetroReflectionGroup),
       description: 'the group that is the focal point of the discussion',
-      resolve: async ({reflectionGroupId, meetingId}, _args, {dataLoader}) => {
+      resolve: async ({reflectionGroupId, meetingId}, _args: unknown, {dataLoader}) => {
         if (!reflectionGroupId) {
-          const meeting = await dataLoader.get('newMeetings').load(meetingId)
+          const meeting = (await dataLoader
+            .get('newMeetings')
+            .load(meetingId)) as MeetingRetrospective
           const prompts = await dataLoader
             .get('reflectPromptsByTemplateId')
             .load(meeting.templateId)

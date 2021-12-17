@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
@@ -7,12 +8,16 @@ export default {
   type: new GraphQLList(new GraphQLNonNull(Organization)),
   args: {
     includeInactive: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       defaultValue: false,
       description: 'should organizations without active users be included?'
     }
   },
-  async resolve(_source, {includeInactive}, {authToken}) {
+  async resolve(
+    _source: unknown,
+    {includeInactive}: {includeInactive: boolean},
+    {authToken}: GQLContext
+  ) {
     const r = await getRethink()
 
     // AUTH

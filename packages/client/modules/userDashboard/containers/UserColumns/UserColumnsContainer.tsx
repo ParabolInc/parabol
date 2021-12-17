@@ -80,12 +80,13 @@ const UserColumnsContainer = (props: Props) => {
     ? teams.filter(({id}) => teamIds.includes(id))
     : teams
 
-  if (filteredTeams.length) {
+  const firstTeam = filteredTeams[0]
+  if (firstTeam) {
     return (
       <TaskColumns
         area={areaForTaskCard}
         tasks={filteredTasks}
-        myTeamMemberId={toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)}
+        myTeamMemberId={toTeamMemberId(firstTeam.id, userIds ? userIds[0]! : viewer.id)}
         teams={filteredTeams}
       />
     )

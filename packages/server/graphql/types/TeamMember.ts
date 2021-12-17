@@ -18,6 +18,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import {TaskConnection} from './Task'
 import Team from './Team'
+import TeamDrawerEnum from './TeamDrawerEnum'
 import TeamMemberIntegrations from './TeamMemberIntegrations'
 import User from './User'
 
@@ -39,16 +40,19 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLBoolean,
       description: 'true if the user is a part of the team, false if they no longer are'
     },
-    isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
+    isLead: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'Is user a team lead?',
+      resolve: ({isLead}) => !!isLead
+    },
     isSpectatingPoker: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user prefers to not vote during a poker meeting',
       resolve: ({isSpectatingPoker}) => !!isSpectatingPoker
     },
-    hideAgenda: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'hide the agenda list on the dashboard',
-      resolve: ({hideAgenda}) => !!hideAgenda
+    openDrawer: {
+      type: TeamDrawerEnum,
+      description: 'the type of drawer that is open in the team dash. Null if the drawer is closed'
     },
     /* denormalized from User */
     email: {
@@ -62,13 +66,13 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if this team member belongs to the user that queried it',
-      resolve: (source, _args, {authToken}) => {
+      resolve: (source, _args: unknown, {authToken}) => {
         const userId = getUserId(authToken)
         return source.userId === userId
       }
     },
     integrations: {
-      type: GraphQLNonNull(TeamMemberIntegrations),
+      type: new GraphQLNonNull(TeamMemberIntegrations),
       description: 'The integrations that the team member has authorized. accessible by all',
       resolve: ({teamId, userId}) => {
         return {teamId, userId}
@@ -104,7 +108,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
           description: 'the datetime cursor'
         }
       },
-      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         const publicTasksForUserId = allTasks.filter((task) => {
           if (task.userId !== userId) return false
@@ -126,7 +130,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve({userId}, _args, {dataLoader}) {
+      resolve({userId}, _args: unknown, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },

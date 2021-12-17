@@ -8,22 +8,22 @@ export const StartSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'StartSprintPokerSuccess',
   fields: () => ({
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     },
     meeting: {
-      type: GraphQLNonNull(PokerMeeting),
-      resolve: ({meetingId}, _args, {dataLoader}) => {
+      type: new GraphQLNonNull(PokerMeeting),
+      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     team: {
-      type: GraphQLNonNull(Team),
-      resolve: ({teamId}, _args, {dataLoader}) => {
+      type: new GraphQLNonNull(Team),
+      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID)
     }
   })
 })

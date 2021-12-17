@@ -2,8 +2,9 @@ import ms from 'ms'
 
 // fromNow is true for the current streak, else falsy for max streak within series
 const getMonthlyStreak = (descendingTimestamps: number[], fromNow?: boolean) => {
-  if (descendingTimestamps.length === 0) return 0
-  const start = fromNow ? Date.now() : descendingTimestamps[0]
+  const firstTimestamp = descendingTimestamps[0]
+  if (!firstTimestamp) return 0
+  const start = fromNow ? Date.now() : firstTimestamp
   const dates = descendingTimestamps.slice(fromNow ? 1 : 0)
   const DAYS_PER_MONTH = 365.25 / 12
   const msPerMonth = DAYS_PER_MONTH * ms('1d')
@@ -13,7 +14,7 @@ const getMonthlyStreak = (descendingTimestamps: number[], fromNow?: boolean) => 
   let minDate = start
   let streakHit = false
   for (let i = 0; i < dates.length; i++) {
-    const nextDate = dates[i]
+    const nextDate = dates[i]!
     if (nextDate >= lowThresh) {
       minDate = nextDate
       streakHit = true

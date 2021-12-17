@@ -3,17 +3,21 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import VideoAvatar from '../../../../components/Avatar/VideoAvatar'
-import AudioAvatar from '../../../../components/Avatar/AudioAvatar'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
-import MediaRoom from '../../../../utils/mediaRoom/MediaRoom'
-import {ProducerState, ConsumerState} from '../../../../utils/mediaRoom/reducerMediaRoom'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
 
 const Item = styled('div')({
   position: 'relative'
+})
+
+const Picture = styled('img')({
+  borderRadius: '100%',
+  height: '100%',
+  objectFit: 'cover', // fill will squish it, cover cuts off the edges
+  minHeight: '100%', // needed to not pancake in firefox
+  width: '100%'
 })
 
 const AvatarBlock = styled('div')<{status: TransitionStatus}>(({status}) => ({
@@ -39,34 +43,15 @@ interface Props {
   onTransitionEnd: () => void
   status: TransitionStatus
   teamMember: NewMeetingAvatar_teamMember
-  mediaRoom: MediaRoom | null
-  peerProducers: ProducerState[]
-  peerConsumers: ConsumerState[]
-  isSelf: boolean
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {
-    teamMember,
-    mediaRoom,
-    onTransitionEnd,
-    status,
-    peerProducers,
-    peerConsumers,
-    isSelf
-  } = props
-  const videoSource = isSelf
-    ? peerProducers.find((producer) => producer.track.kind === 'video')
-    : peerConsumers.find((consumer) => consumer.track.kind === 'video')
-  const audioSource = isSelf
-    ? peerProducers.find((producer) => producer.track.kind === 'audio')
-    : peerConsumers.find((consumer) => consumer.track.kind === 'audio')
+  const {onTransitionEnd, status, teamMember} = props
   return (
     <ErrorBoundary>
       <Item>
         <AvatarBlock status={status} onTransitionEnd={onTransitionEnd}>
-          <VideoAvatar teamMember={teamMember} mediaRoom={mediaRoom} videoSource={videoSource} />
-          <AudioAvatar isSelf={isSelf} mediaRoom={mediaRoom} audioSource={audioSource} />
+          <Picture src={teamMember.picture} />
         </AvatarBlock>
       </Item>
     </ErrorBoundary>
@@ -76,7 +61,7 @@ const NewMeetingAvatar = (props: Props) => {
 export default createFragmentContainer(NewMeetingAvatar, {
   teamMember: graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
-      ...VideoAvatar_teamMember
+      picture
     }
   `
 })

@@ -22,8 +22,8 @@ const addPokerTemplate = {
     }
   },
   async resolve(
-    _source,
-    {parentTemplateId, teamId},
+    _source: unknown,
+    {parentTemplateId, teamId}: {parentTemplateId?: string | null; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -85,8 +85,8 @@ const addPokerTemplate = {
       const dimensions = await dataLoader
         .get('templateDimensionsByTemplateId')
         .load(parentTemplate.id)
-      const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
-      const newTemplateDimensions = activeDimensions.map((dimension) => {
+      const activeDimensions = dimensions.filter(({removedAt}: TemplateDimension) => !removedAt)
+      const newTemplateDimensions = activeDimensions.map((dimension: TemplateDimension) => {
         return new TemplateDimension({
           ...dimension,
           teamId,

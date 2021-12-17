@@ -10,4 +10,6 @@ const SharingScopeEnum = new GraphQLEnumType({
   }
 })
 
+export type SharingScopeEnumType = 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
+
 export default SharingScopeEnum

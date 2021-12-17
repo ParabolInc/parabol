@@ -38,11 +38,11 @@ const loginSAML = {
       description: 'The querystring provided by the IdP including SAMLResponse and RelayState'
     },
     samlName: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The name of the SAML identifier. The slug used in the redirect URL'
     }
   },
-  async resolve(_source, {samlName, queryString}) {
+  async resolve(_source: unknown, {samlName, queryString}) {
     const r = await getRethink()
     const now = new Date()
     const body = querystring.parse(queryString)
@@ -93,9 +93,7 @@ const loginSAML = {
     const user = await getUserByEmail(email)
     if (user) {
       return {
-        authToken: encodeAuthToken(
-          new AuthToken({sub: user.id, tms: user.tms, rol: user.rol ?? undefined})
-        )
+        authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol}))
       }
     }
 

@@ -13,23 +13,27 @@ const removeStagesFromMeetings = async (
 ) => {
   const now = new Date()
   const r = await getRethink()
-  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  const [activeMeetings, completedMeetings] = await Promise.all([
+    dataLoader.get('activeMeetingsByTeamId').load(teamId),
+    dataLoader.get('completedMeetingsByTeamId').load(teamId)
+  ])
+  const meetings = activeMeetings.concat(completedMeetings)
+
   await Promise.all(
-    activeMeetings.map((meeting) => {
+    meetings.map((meeting) => {
       const {id: meetingId, phases} = meeting
       phases.forEach((phase) => {
         // do this inside the loop since it's mutative
-        const {facilitatorStageId} = meeting
         const {stages} = phase
         for (let i = stages.length - 1; i >= 0; i--) {
           const stage = stages[i]
           if (filterFn(stage)) {
             const nextStage = getNextFacilitatorStageAfterStageRemoved(
-              facilitatorStageId,
+              meeting.facilitatorStageId,
               stage.id,
               phases
             )
-            if (nextStage.id !== facilitatorStageId) {
+            if (nextStage.id !== meeting.facilitatorStageId) {
               // mutative
               meeting.facilitatorStageId = nextStage.id
               nextStage.startAt = now
@@ -52,7 +56,7 @@ const removeStagesFromMeetings = async (
         .run()
     })
   )
-  return activeMeetings.map((activeMeeting) => activeMeeting.id)
+  return meetings.map((meeting) => meeting.id)
 }
 
 export default removeStagesFromMeetings

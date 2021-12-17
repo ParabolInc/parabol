@@ -4,7 +4,7 @@ import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {DataLoaderWorker} from '../graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql'
 import SegmentEventTrackOptions from '../types/SegmentEventTrackOptions'
 
 const extraOptionsCreator = {
@@ -43,16 +43,16 @@ export default {
   type: GraphQLBoolean,
   args: {
     event: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     options: {
       type: SegmentEventTrackOptions
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {event, options}: SendClientSegmentEventMutationVariables,
-    {authToken, dataLoader}
+    {authToken, dataLoader}: GQLContext
   ) => {
     // AUTH
     const viewerId = getUserId(authToken)

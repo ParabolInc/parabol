@@ -16,7 +16,6 @@ import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
 import {PokerResetDimensionSuccess} from './PokerResetDimensionPayload'
 import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
-import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
 import ResetRetroMeetingToGroupStagePayload from './ResetRetroMeetingToGroupStagePayload'
@@ -34,9 +33,11 @@ import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
 import {SetTaskEstimateSuccess} from './SetTaskEstimatePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {CreatePollSuccess} from './CreatePollPayload'
 
 const types = [
   AddCommentSuccess,
+  CreatePollSuccess,
   AddReactjiToReflectionSuccess,
   AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
@@ -67,7 +68,6 @@ const types = [
   PokerRevealVotesSuccess,
   PokerResetDimensionSuccess,
   PokerAnnounceDeckHoverSuccess,
-  PokerSetFinalScoreSuccess,
   JoinMeetingSuccess,
   SetPokerSpectateSuccess,
   SetTaskEstimateSuccess

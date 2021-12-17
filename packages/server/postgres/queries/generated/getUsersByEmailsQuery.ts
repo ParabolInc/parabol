@@ -1,17 +1,17 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getUsersByEmailsQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
-
 export type AuthTokenRole = 'su';
 
-export type stringArray = (string)[];
+export type TierEnum = 'enterprise' | 'personal' | 'pro';
 
 export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
 
+export type stringArray = (string)[];
+
 /** 'GetUsersByEmailsQuery' parameters type */
 export interface IGetUsersByEmailsQueryParams {
-  emails: Array<string | null | void>;
+  emails: readonly (string | null | void)[];
 }
 
 /** 'GetUsersByEmailsQuery' return type */
@@ -37,6 +37,7 @@ export interface IGetUsersByEmailsQueryResult {
   rol: AuthTokenRole | null;
   payLaterClickCount: number;
   isWatched: boolean;
+  domain: string | null;
 }
 
 /** 'GetUsersByEmailsQuery' query type */

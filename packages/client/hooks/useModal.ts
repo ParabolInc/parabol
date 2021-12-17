@@ -9,6 +9,9 @@ interface Options extends UsePortalOptions {
   noClose?: boolean
 }
 
+/**
+ * Wrapper around {@link usePortal} for displaying dialogs
+ */
 const useModal = (options: Options = {}) => {
   const {background, onOpen, onClose, noClose, id, parentId} = options
   const targetRef = useRef<HTMLDivElement>(null)
@@ -28,7 +31,7 @@ const useModal = (options: Options = {}) => {
     noClose ? undefined : closePortal,
     background
   )
-  return {togglePortal, modalPortal, closePortal, loadingDelay, openPortal}
+  return {togglePortal, modalPortal, closePortal, loadingDelay, openPortal, portalStatus}
 }
 
 export default useModal

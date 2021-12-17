@@ -1,17 +1,22 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {GQLContext} from '../graphql'
 import Discussion from './Discussion'
 
 export const discussionThreadStageFields = () => ({
   discussionId: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'The ID to find the discussion that goes in the stage',
     // fix for the dummy stage
-    resolve: ({discussionId}) => discussionId || ''
+    resolve: ({discussionId}: {discussionId: string}) => discussionId || ''
   },
   discussion: {
-    type: GraphQLNonNull(Discussion),
+    type: new GraphQLNonNull(Discussion),
     description: 'The discussion about the stage',
-    resolve: async ({discussionId}, _args, {dataLoader}) => {
+    resolve: async (
+      {discussionId}: {discussionId: string},
+      _args: unknown,
+      {dataLoader}: GQLContext
+    ) => {
       return dataLoader.get('discussions').load(discussionId)
     }
   }

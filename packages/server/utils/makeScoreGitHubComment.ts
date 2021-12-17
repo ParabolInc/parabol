@@ -8,7 +8,7 @@ const makeScoreGitHubComment = (
   discussionURL: string
 ) =>
   `**${dimensionName}: ${finalScore}**
-  [See the discussion](${discussionURL}) in ${meetingName.replace(/(#\d+)/g, '`$1`')}
+  [See the discussion](${discussionURL}) in ${meetingName.replace(/#(\d+)/g, '#​\u200b$1')}
 
   *Powered by [Parabol](${ExternalLinks.GETTING_STARTED_SPRINT_POKER})*`
 

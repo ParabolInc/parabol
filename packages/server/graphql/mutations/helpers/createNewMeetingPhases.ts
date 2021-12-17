@@ -26,14 +26,15 @@ import {DataLoaderWorker} from '../../graphql'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
-  firstPhase.stages[0].startAt = new Date()
-  firstPhase.stages.forEach((stage) => {
-    stage.isNavigable = true
-    stage.isNavigableByFacilitator = true
-  })
-  const phaseTwoStageOne = secondPhase.stages[0]
-  if (phaseTwoStageOne) {
-    phaseTwoStageOne.isNavigableByFacilitator = true
+  if (firstPhase && firstPhase.stages[0]) {
+    firstPhase.stages[0].startAt = new Date()
+    firstPhase.stages.forEach((stage) => {
+      stage.isNavigable = true
+      stage.isNavigableByFacilitator = true
+    })
+  }
+  if (secondPhase?.stages[0]) {
+    secondPhase.stages[0].isNavigableByFacilitator = true
   }
 }
 

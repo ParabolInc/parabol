@@ -106,7 +106,7 @@ const PokerCardDeck = (props: Props) => {
     setIsCollapsed(true)
   })
   useEffect(() => {
-    document.addEventListener('touchstart', handleDocumentClick)
+    document.addEventListener('touchstart', handleDocumentClick as any)
     document.addEventListener('click', handleDocumentClick)
   }, [])
 

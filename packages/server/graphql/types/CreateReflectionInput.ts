@@ -26,4 +26,11 @@ const CreateReflectionInput = new GraphQLInputObjectType({
   })
 })
 
+export type CreateReflectionInputType = {
+  content?: string
+  meetingId: string
+  promptId?: string
+  sortOrder: number
+}
+
 export default CreateReflectionInput

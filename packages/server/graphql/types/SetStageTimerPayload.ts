@@ -13,7 +13,7 @@ const SetStageTimerPayload = new GraphQLObjectType<any, GQLContext>({
     stage: {
       type: NewMeetingStage,
       description: 'The updated stage',
-      resolve: async ({meetingId, stageId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId, stageId}, _args: unknown, {dataLoader}) => {
         if (!meetingId || !stageId) return null
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const stageRes = findStageById(meeting.phases, stageId)

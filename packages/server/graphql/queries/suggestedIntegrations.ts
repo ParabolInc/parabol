@@ -1,4 +1,4 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import ms from 'ms'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -15,14 +15,19 @@ import {
 export default {
   description: 'The integrations that the user would probably like to use',
   type: new GraphQLNonNull(SuggestedIntegrationQueryPayload),
-  resolve: async ({teamId, userId}, _args, context: GQLContext, info) => {
+  resolve: async (
+    {teamId, userId}: {teamId: string; userId: string},
+    _args: unknown,
+    context: GQLContext,
+    info: GraphQLResolveInfo
+  ) => {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
 
     // AUTH
     if (userId !== viewerId) {
       const user = await dataLoader.get('users').load(userId)
-      const {tms} = user
+      const {tms} = user!
       const onTeam = authToken.tms.find((teamId) => tms!.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {userId: viewerId})
@@ -51,14 +56,13 @@ export default {
     const dedupedTeamIntegrations = [] as IntegrationByUserId[]
     const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByUserId]
     // dedupes for perms, user vs team items, as well as possible name changes
-    for (let i = 0; i < userAndTeamItems.length; i++) {
-      const integration = userAndTeamItems[i]
+    userAndTeamItems.forEach((integration) => {
       if (!permLookup[integration.service] || idSet.has(integration.id)) {
-        continue
+        return
       }
       idSet.add(integration.id)
       dedupedTeamIntegrations.push(integration)
-    }
+    })
 
     // if other users have items that the viewer can't access, revert back to fetching everything
     if (userAndTeamItems.length === 0) {

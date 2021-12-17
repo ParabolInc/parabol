@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLInt} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {TierEnum as ETierEnum} from '../../database/types/Invoice'
@@ -19,7 +20,11 @@ export default {
     }
   },
   // Only counts organizations with active users
-  async resolve(_source, {minOrgSize, tier}, {authToken}) {
+  async resolve(
+    _source: unknown,
+    {minOrgSize, tier}: {minOrgSize?: number; tier: ETierEnum},
+    {authToken}: GQLContext
+  ) {
     const r = await getRethink()
 
     // AUTH

@@ -25,14 +25,14 @@ export interface IGraphQLResponseErrorLocation {
  */
 export interface IXGitHubAcceptEnterpriseAdministratorInvitationInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The id of the invitation being accepted
    */
   invitationId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -62,9 +62,9 @@ export interface IXGitHubAcceptEnterpriseAdministratorInvitationPayload {
  */
 export interface IXGitHubAcceptTopicSuggestionInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the repository.
    */
-  clientMutationId?: string | null;
+  repositoryId: string;
 
   /**
    * The name of the suggested topic.
@@ -72,9 +72,9 @@ export interface IXGitHubAcceptTopicSuggestionInput {
   name: string;
 
   /**
-   * The Node ID of the repository.
+   * A unique identifier for the client performing the mutation.
    */
-  repositoryId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -212,6 +212,11 @@ export interface IXGitHubAddAssigneesToAssignablePayload {
  */
 export interface IXGitHubAddCommentInput {
   /**
+   * The Node ID of the subject to modify.
+   */
+  subjectId: string;
+
+  /**
    * The contents of the comment.
    */
   body: string;
@@ -220,11 +225,6 @@ export interface IXGitHubAddCommentInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the subject to modify.
-   */
-  subjectId: string;
 }
 
 /**
@@ -259,16 +259,6 @@ export interface IXGitHubAddCommentPayload {
  */
 export interface IXGitHubAddDiscussionCommentInput {
   /**
-   * The contents of the comment.
-   */
-  body: string;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the discussion to comment on.
    */
   discussionId: string;
@@ -277,6 +267,16 @@ export interface IXGitHubAddDiscussionCommentInput {
    * The Node ID of the discussion comment within this discussion to reply to.
    */
   replyToId?: string | null;
+
+  /**
+   * The contents of the comment.
+   */
+  body: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -301,11 +301,6 @@ export interface IXGitHubAddDiscussionCommentPayload {
  */
 export interface IXGitHubAddEnterpriseSupportEntitlementInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the Enterprise which the admin belongs to.
    */
   enterpriseId: string;
@@ -314,6 +309,11 @@ export interface IXGitHubAddEnterpriseSupportEntitlementInput {
    * The login of a member who will receive the support entitlement.
    */
   login: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -338,9 +338,9 @@ export interface IXGitHubAddEnterpriseSupportEntitlementPayload {
  */
 export interface IXGitHubAddLabelsToLabelableInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The id of the labelable object to add labels to.
    */
-  clientMutationId?: string | null;
+  labelableId: string;
 
   /**
    * The ids of the labels to add.
@@ -348,9 +348,9 @@ export interface IXGitHubAddLabelsToLabelableInput {
   labelIds: Array<string>;
 
   /**
-   * The id of the labelable object to add labels to.
+   * A unique identifier for the client performing the mutation.
    */
-  labelableId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -375,9 +375,9 @@ export interface IXGitHubAddLabelsToLabelablePayload {
  */
 export interface IXGitHubAddProjectCardInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the ProjectColumn.
    */
-  clientMutationId?: string | null;
+  projectColumnId: string;
 
   /**
    * The content of the card. Must be a member of the ProjectCardItem union
@@ -390,9 +390,9 @@ export interface IXGitHubAddProjectCardInput {
   note?: string | null;
 
   /**
-   * The Node ID of the ProjectColumn.
+   * A unique identifier for the client performing the mutation.
    */
-  projectColumnId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -422,9 +422,9 @@ export interface IXGitHubAddProjectCardPayload {
  */
 export interface IXGitHubAddProjectColumnInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the project.
    */
-  clientMutationId?: string | null;
+  projectId: string;
 
   /**
    * The name of the column.
@@ -432,9 +432,9 @@ export interface IXGitHubAddProjectColumnInput {
   name: string;
 
   /**
-   * The Node ID of the project.
+   * A unique identifier for the client performing the mutation.
    */
-  projectId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -464,14 +464,14 @@ export interface IXGitHubAddProjectColumnPayload {
  */
 export interface IXGitHubAddPullRequestReviewCommentInput {
   /**
-   * The text of the comment.
+   * The node ID of the pull request reviewing
    */
-  body: string;
+  pullRequestId?: string | null;
 
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the review to modify.
    */
-  clientMutationId?: string | null;
+  pullRequestReviewId?: string | null;
 
   /**
    * The SHA of the commit to comment on.
@@ -479,9 +479,9 @@ export interface IXGitHubAddPullRequestReviewCommentInput {
   commitOID?: any | null;
 
   /**
-   * The comment id to reply to.
+   * The text of the comment.
    */
-  inReplyTo?: string | null;
+  body: string;
 
   /**
    * The relative path of the file to comment on.
@@ -494,14 +494,14 @@ export interface IXGitHubAddPullRequestReviewCommentInput {
   position?: number | null;
 
   /**
-   * The node ID of the pull request reviewing
+   * The comment id to reply to.
    */
-  pullRequestId?: string | null;
+  inReplyTo?: string | null;
 
   /**
-   * The Node ID of the review to modify.
+   * A unique identifier for the client performing the mutation.
    */
-  pullRequestReviewId?: string | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -531,19 +531,9 @@ export interface IXGitHubAddPullRequestReviewCommentPayload {
  */
 export interface IXGitHubAddPullRequestReviewInput {
   /**
-   * The contents of the review body comment.
+   * The Node ID of the pull request to modify.
    */
-  body?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The review line comments.
-   */
-  comments?: Array<IXGitHubDraftPullRequestReviewComment | null> | null;
+  pullRequestId: string;
 
   /**
    * The commit OID the review pertains to.
@@ -551,19 +541,29 @@ export interface IXGitHubAddPullRequestReviewInput {
   commitOID?: any | null;
 
   /**
+   * The contents of the review body comment.
+   */
+  body?: string | null;
+
+  /**
    * The event to perform on the pull request review.
    */
   event?: XGitHubPullRequestReviewEvent | null;
 
   /**
-   * The Node ID of the pull request to modify.
+   * The review line comments.
    */
-  pullRequestId: string;
+  comments?: Array<IXGitHubDraftPullRequestReviewComment | null> | null;
 
   /**
    * The review line comment threads.
    */
   threads?: Array<IXGitHubDraftPullRequestReviewThread | null> | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -593,24 +593,14 @@ export interface IXGitHubAddPullRequestReviewPayload {
  */
 export interface IXGitHubAddPullRequestReviewThreadInput {
   /**
-   * Body of the thread's first comment.
-   */
-  body: string;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The line of the blob to which the thread refers. The end of the line range for multi-line comments.
-   */
-  line: number;
-
-  /**
    * Path to the file being commented on.
    */
   path: string;
+
+  /**
+   * Body of the thread's first comment.
+   */
+  body: string;
 
   /**
    * The node ID of the pull request reviewing
@@ -621,6 +611,11 @@ export interface IXGitHubAddPullRequestReviewThreadInput {
    * The Node ID of the review to modify.
    */
   pullRequestReviewId?: string | null;
+
+  /**
+   * The line of the blob to which the thread refers. The end of the line range for multi-line comments.
+   */
+  line: number;
 
   /**
    * The side of the diff on which the line resides. For multi-line comments, this is the side for the end of the line range.
@@ -638,6 +633,11 @@ export interface IXGitHubAddPullRequestReviewThreadInput {
    * @default "RIGHT"
    */
   startSide?: XGitHubDiffSide | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -662,9 +662,9 @@ export interface IXGitHubAddPullRequestReviewThreadPayload {
  */
 export interface IXGitHubAddReactionInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the subject to modify.
    */
-  clientMutationId?: string | null;
+  subjectId: string;
 
   /**
    * The name of the emoji to react with.
@@ -672,9 +672,9 @@ export interface IXGitHubAddReactionInput {
   content: XGitHubReactionContent;
 
   /**
-   * The Node ID of the subject to modify.
+   * A unique identifier for the client performing the mutation.
    */
-  subjectId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -704,14 +704,14 @@ export interface IXGitHubAddReactionPayload {
  */
 export interface IXGitHubAddStarInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Starrable ID to star.
    */
   starrableId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -736,14 +736,14 @@ export interface IXGitHubAddStarPayload {
  */
 export interface IXGitHubAddUpvoteInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the discussion or comment to upvote.
    */
   subjectId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -768,9 +768,9 @@ export interface IXGitHubAddUpvotePayload {
  */
 export interface IXGitHubAddVerifiableDomainInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ID of the owner to add the domain to
    */
-  clientMutationId?: string | null;
+  ownerId: string;
 
   /**
    * The URL of the domain
@@ -778,9 +778,9 @@ export interface IXGitHubAddVerifiableDomainInput {
   domain: any;
 
   /**
-   * The ID of the owner to add the domain to
+   * A unique identifier for the client performing the mutation.
    */
-  ownerId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -904,7 +904,7 @@ export interface IIpAllowListEntriesOnXGitHubAppArguments {
 
   /**
    * Ordering options for IP allow list entries returned.
-   * @default {"direction":"ASC","field":"ALLOW_LIST_VALUE"}
+   * @default {"field":"ALLOW_LIST_VALUE","direction":"ASC"}
    */
   orderBy?: IXGitHubIpAllowListEntryOrder | null;
 }
@@ -921,9 +921,14 @@ export interface ILogoUrlOnXGitHubAppArguments {
  */
 export interface IXGitHubApproveDeploymentsInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The node ID of the workflow run containing the pending deployments.
    */
-  clientMutationId?: string | null;
+  workflowRunId: string;
+
+  /**
+   * The ids of environments to reject deployments
+   */
+  environmentIds: Array<string>;
 
   /**
    * Optional comment for approving deployments
@@ -932,14 +937,9 @@ export interface IXGitHubApproveDeploymentsInput {
   comment?: string | null;
 
   /**
-   * The ids of environments to reject deployments
+   * A unique identifier for the client performing the mutation.
    */
-  environmentIds: Array<string>;
-
-  /**
-   * The node ID of the workflow run containing the pending deployments.
-   */
-  workflowRunId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -964,14 +964,14 @@ export interface IXGitHubApproveDeploymentsPayload {
  */
 export interface IXGitHubApproveVerifiableDomainInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the verifiable domain to approve.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -996,14 +996,14 @@ export interface IXGitHubApproveVerifiableDomainPayload {
  */
 export interface IXGitHubArchiveRepositoryInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the repository to mark as archived.
    */
   repositoryId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -1253,14 +1253,14 @@ export type _xGitHubAuditEntryActor =
  */
 export interface IXGitHubAuditLogOrder {
   /**
-   * The ordering direction.
-   */
-  direction?: XGitHubOrderDirection | null;
-
-  /**
    * The field to order Audit Logs by.
    */
   field?: XGitHubAuditLogOrderField | null;
+
+  /**
+   * The ordering direction.
+   */
+  direction?: XGitHubOrderDirection | null;
 }
 
 /**
@@ -1270,7 +1270,7 @@ export const enum XGitHubAuditLogOrderField {
   /**
    * Order audit log entries by timestamp
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -1626,10 +1626,7 @@ export interface IXGitHubBlameRange {
   __typename: '_xGitHubBlameRange';
 
   /**
-   * Identifies the recency of the change, from 1 (new) to 10 (old). This is
-   * calculated as a 2-quantile and determines the length of distance between the
-   * median age of all the changes in the file and the recency of the current
-   * range's change.
+   * Identifies the recency of the change, from 1 (new) to 10 (old). This is calculated as a 2-quantile and determines the length of distance between the median age of all the changes in the file and the recency of the current range's change.
    */
   age: number;
 
@@ -1899,6 +1896,11 @@ export interface IBranchProtectionRuleConflictsOnXGitHubBranchProtectionRuleArgu
 
 export interface IMatchingRefsOnXGitHubBranchProtectionRuleArguments {
   /**
+   * Filters refs with query on name
+   */
+  query?: string | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -1917,11 +1919,6 @@ export interface IMatchingRefsOnXGitHubBranchProtectionRuleArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filters refs with query on name
-   */
-  query?: string | null;
 }
 
 export interface IPushAllowancesOnXGitHubBranchProtectionRuleArguments {
@@ -2167,14 +2164,14 @@ export interface IXGitHubCWEEdge {
  */
 export interface IXGitHubCancelEnterpriseAdminInvitationInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the pending enterprise administrator invitation.
    */
   invitationId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -2200,23 +2197,70 @@ export interface IXGitHubCancelEnterpriseAdminInvitationPayload {
 }
 
 /**
- * Autogenerated input type of ChangeUserStatus
+ * Autogenerated input type of CancelSponsorship
  */
-export interface IXGitHubChangeUserStatusInput {
+export interface IXGitHubCancelSponsorshipInput {
+  /**
+   * The ID of the user or organization who is acting as the sponsor, paying for the sponsorship. Required if sponsorLogin is not given.
+   */
+  sponsorId?: string | null;
+
+  /**
+   * The username of the user or organization who is acting as the sponsor, paying for the sponsorship. Required if sponsorId is not given.
+   */
+  sponsorLogin?: string | null;
+
+  /**
+   * The ID of the user or organization who is receiving the sponsorship. Required if sponsorableLogin is not given.
+   */
+  sponsorableId?: string | null;
+
+  /**
+   * The username of the user or organization who is receiving the sponsorship. Required if sponsorableId is not given.
+   */
+  sponsorableLogin?: string | null;
+
   /**
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
+}
 
+/**
+ * Autogenerated return type of CancelSponsorship
+ */
+export interface IXGitHubCancelSponsorshipPayload {
+  __typename: '_xGitHubCancelSponsorshipPayload';
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId: string | null;
+
+  /**
+   * The tier that was being used at the time of cancellation.
+   */
+  sponsorsTier: IXGitHubSponsorsTier | null;
+}
+
+/**
+ * Autogenerated input type of ChangeUserStatus
+ */
+export interface IXGitHubChangeUserStatusInput {
   /**
    * The emoji to represent your status. Can either be a native Unicode emoji or an emoji name with colons, e.g., :grinning:.
    */
   emoji?: string | null;
 
   /**
-   * If set, the user status will not be shown after this date.
+   * A short description of your current status.
    */
-  expiresAt?: any | null;
+  message?: string | null;
+
+  /**
+   * The ID of the organization whose members will be allowed to see the status. If omitted, the status will be publicly visible.
+   */
+  organizationId?: string | null;
 
   /**
    * Whether this status should indicate you are not fully available on GitHub, e.g., you are away.
@@ -2225,15 +2269,14 @@ export interface IXGitHubChangeUserStatusInput {
   limitedAvailability?: boolean | null;
 
   /**
-   * A short description of your current status.
+   * If set, the user status will not be shown after this date.
    */
-  message?: string | null;
+  expiresAt?: any | null;
 
   /**
-   * The ID of the organization whose members will be allowed to see the status. If
-   * omitted, the status will be publicly visible.
+   * A unique identifier for the client performing the mutation.
    */
-  organizationId?: string | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -2332,9 +2375,9 @@ export interface IXGitHubCheckAnnotationConnection {
  */
 export interface IXGitHubCheckAnnotationData {
   /**
-   * Represents an annotation's information level
+   * The path of the file to add an annotation to.
    */
-  annotationLevel: XGitHubCheckAnnotationLevel;
+  path: string;
 
   /**
    * The location of the annotation
@@ -2342,24 +2385,24 @@ export interface IXGitHubCheckAnnotationData {
   location: IXGitHubCheckAnnotationRange;
 
   /**
+   * Represents an annotation's information level
+   */
+  annotationLevel: XGitHubCheckAnnotationLevel;
+
+  /**
    * A short description of the feedback for these lines of code.
    */
   message: string;
 
   /**
-   * The path of the file to add an annotation to.
+   * The title that represents the annotation.
    */
-  path: string;
+  title?: string | null;
 
   /**
    * Details about this annotation.
    */
   rawDetails?: string | null;
-
-  /**
-   * The title that represents the annotation.
-   */
-  title?: string | null;
 }
 
 /**
@@ -2396,7 +2439,7 @@ export const enum XGitHubCheckAnnotationLevel {
   /**
    * An annotation indicating an ignorable error.
    */
-  WARNING = 'WARNING'
+  WARNING = 'WARNING',
 }
 
 /**
@@ -2421,14 +2464,9 @@ export interface IXGitHubCheckAnnotationPosition {
  */
 export interface IXGitHubCheckAnnotationRange {
   /**
-   * The ending column of the range.
+   * The starting line of the range.
    */
-  endColumn?: number | null;
-
-  /**
-   * The ending line of the range.
-   */
-  endLine: number;
+  startLine: number;
 
   /**
    * The starting column of the range.
@@ -2436,9 +2474,14 @@ export interface IXGitHubCheckAnnotationRange {
   startColumn?: number | null;
 
   /**
-   * The starting line of the range.
+   * The ending line of the range.
    */
-  startLine: number;
+  endLine: number;
+
+  /**
+   * The ending column of the range.
+   */
+  endColumn?: number | null;
 }
 
 /**
@@ -2468,6 +2511,11 @@ export const enum XGitHubCheckConclusionState {
   ACTION_REQUIRED = 'ACTION_REQUIRED',
 
   /**
+   * The check suite or run has timed out.
+   */
+  TIMED_OUT = 'TIMED_OUT',
+
+  /**
    * The check suite or run has been cancelled.
    */
   CANCELLED = 'CANCELLED',
@@ -2476,6 +2524,11 @@ export const enum XGitHubCheckConclusionState {
    * The check suite or run has failed.
    */
   FAILURE = 'FAILURE',
+
+  /**
+   * The check suite or run has succeeded.
+   */
+  SUCCESS = 'SUCCESS',
 
   /**
    * The check suite or run was neutral.
@@ -2488,24 +2541,14 @@ export const enum XGitHubCheckConclusionState {
   SKIPPED = 'SKIPPED',
 
   /**
-   * The check suite or run was marked stale by GitHub. Only GitHub can use this conclusion.
-   */
-  STALE = 'STALE',
-
-  /**
    * The check suite or run has failed at startup.
    */
   STARTUP_FAILURE = 'STARTUP_FAILURE',
 
   /**
-   * The check suite or run has succeeded.
+   * The check suite or run was marked stale by GitHub. Only GitHub can use this conclusion.
    */
-  SUCCESS = 'SUCCESS',
-
-  /**
-   * The check suite or run has timed out.
-   */
-  TIMED_OUT = 'TIMED_OUT'
+  STALE = 'STALE',
 }
 
 /**
@@ -2687,6 +2730,11 @@ export interface IStepsOnXGitHubCheckRunArguments {
  */
 export interface IXGitHubCheckRunAction {
   /**
+   * The text to be displayed on a button in the web UI.
+   */
+  label: string;
+
+  /**
    * A short explanation of what this action would do.
    */
   description: string;
@@ -2695,11 +2743,6 @@ export interface IXGitHubCheckRunAction {
    * A reference for the action on the integrator's system.
    */
   identifier: string;
-
-  /**
-   * The text to be displayed on a button in the web UI.
-   */
-  label: string;
 }
 
 /**
@@ -2751,6 +2794,11 @@ export interface IXGitHubCheckRunEdge {
  */
 export interface IXGitHubCheckRunFilter {
   /**
+   * Filters the check runs by this type.
+   */
+  checkType?: XGitHubCheckRunType | null;
+
+  /**
    * Filters the check runs created by this application ID.
    */
   appId?: number | null;
@@ -2759,11 +2807,6 @@ export interface IXGitHubCheckRunFilter {
    * Filters the check runs by this name.
    */
   checkName?: string | null;
-
-  /**
-   * Filters the check runs by this type.
-   */
-  checkType?: XGitHubCheckRunType | null;
 
   /**
    * Filters the check runs by this status.
@@ -2776,14 +2819,9 @@ export interface IXGitHubCheckRunFilter {
  */
 export interface IXGitHubCheckRunOutput {
   /**
-   * The annotations that are made as part of the check run.
+   * A title to provide for this check run.
    */
-  annotations?: Array<IXGitHubCheckAnnotationData> | null;
-
-  /**
-   * Images attached to the check run output displayed in the GitHub pull request UI.
-   */
-  images?: Array<IXGitHubCheckRunOutputImage> | null;
+  title: string;
 
   /**
    * The summary of the check run (supports Commonmark).
@@ -2796,9 +2834,14 @@ export interface IXGitHubCheckRunOutput {
   text?: string | null;
 
   /**
-   * A title to provide for this check run.
+   * The annotations that are made as part of the check run.
    */
-  title: string;
+  annotations?: Array<IXGitHubCheckAnnotationData> | null;
+
+  /**
+   * Images attached to the check run output displayed in the GitHub pull request UI.
+   */
+  images?: Array<IXGitHubCheckRunOutputImage> | null;
 }
 
 /**
@@ -2811,14 +2854,14 @@ export interface IXGitHubCheckRunOutputImage {
   alt: string;
 
   /**
-   * A short image description.
-   */
-  caption?: string | null;
-
-  /**
    * The full URL of the image.
    */
   imageUrl: any;
+
+  /**
+   * A short image description.
+   */
+  caption?: string | null;
 }
 
 /**
@@ -2833,7 +2876,7 @@ export const enum XGitHubCheckRunType {
   /**
    * The latest check run.
    */
-  LATEST = 'LATEST'
+  LATEST = 'LATEST',
 }
 
 /**
@@ -2841,9 +2884,9 @@ export const enum XGitHubCheckRunType {
  */
 export const enum XGitHubCheckStatusState {
   /**
-   * The check suite or run has been completed.
+   * The check suite or run has been queued.
    */
-  COMPLETED = 'COMPLETED',
+  QUEUED = 'QUEUED',
 
   /**
    * The check suite or run is in progress.
@@ -2851,24 +2894,24 @@ export const enum XGitHubCheckStatusState {
   IN_PROGRESS = 'IN_PROGRESS',
 
   /**
+   * The check suite or run has been completed.
+   */
+  COMPLETED = 'COMPLETED',
+
+  /**
+   * The check suite or run is in waiting state.
+   */
+  WAITING = 'WAITING',
+
+  /**
    * The check suite or run is in pending state.
    */
   PENDING = 'PENDING',
 
   /**
-   * The check suite or run has been queued.
-   */
-  QUEUED = 'QUEUED',
-
-  /**
    * The check suite or run has been requested.
    */
   REQUESTED = 'REQUESTED',
-
-  /**
-   * The check suite or run is in waiting state.
-   */
-  WAITING = 'WAITING'
 }
 
 /**
@@ -3062,11 +3105,6 @@ export interface ICheckRunsOnXGitHubCheckSuiteArguments {
   before?: string | null;
 
   /**
-   * Filters the check runs by this type.
-   */
-  filterBy?: IXGitHubCheckRunFilter | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -3075,18 +3113,43 @@ export interface ICheckRunsOnXGitHubCheckSuiteArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Filters the check runs by this type.
+   */
+  filterBy?: IXGitHubCheckRunFilter | null;
 }
 
 export interface IMatchingPullRequestsOnXGitHubCheckSuiteArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * A list of states to filter the pull requests by.
    */
-  after?: string | null;
+  states?: Array<XGitHubPullRequestState> | null;
+
+  /**
+   * A list of label names to filter the pull requests by.
+   */
+  labels?: Array<string> | null;
+
+  /**
+   * The head ref name to filter the pull requests by.
+   */
+  headRefName?: string | null;
 
   /**
    * The base ref name to filter the pull requests by.
    */
   baseRefName?: string | null;
+
+  /**
+   * Ordering options for pull requests returned from the connection.
+   */
+  orderBy?: IXGitHubIssueOrder | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
 
   /**
    * Returns the elements in the list that come before the specified cursor.
@@ -3099,29 +3162,9 @@ export interface IMatchingPullRequestsOnXGitHubCheckSuiteArguments {
   first?: number | null;
 
   /**
-   * The head ref name to filter the pull requests by.
-   */
-  headRefName?: string | null;
-
-  /**
-   * A list of label names to filter the pull requests by.
-   */
-  labels?: Array<string> | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for pull requests returned from the connection.
-   */
-  orderBy?: IXGitHubIssueOrder | null;
-
-  /**
-   * A list of states to filter the pull requests by.
-   */
-  states?: Array<XGitHubPullRequestState> | null;
 }
 
 /**
@@ -3203,14 +3246,14 @@ export interface IXGitHubCheckSuiteFilter {
  */
 export interface IXGitHubClearLabelsFromLabelableInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The id of the labelable object to clear the labels from.
    */
   labelableId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -3235,14 +3278,14 @@ export interface IXGitHubClearLabelsFromLabelablePayload {
  */
 export interface IXGitHubCloneProjectInput {
   /**
-   * The description of the project.
+   * The owner ID to create the project under.
    */
-  body?: string | null;
+  targetOwnerId: string;
 
   /**
-   * A unique identifier for the client performing the mutation.
+   * The source project to clone.
    */
-  clientMutationId?: string | null;
+  sourceId: string;
 
   /**
    * Whether or not to clone the source project's workflows.
@@ -3255,19 +3298,19 @@ export interface IXGitHubCloneProjectInput {
   name: string;
 
   /**
+   * The description of the project.
+   */
+  body?: string | null;
+
+  /**
    * The visibility of the project, defaults to false (private).
    */
   public?: boolean | null;
 
   /**
-   * The source project to clone.
+   * A unique identifier for the client performing the mutation.
    */
-  sourceId: string;
-
-  /**
-   * The owner ID to create the project under.
-   */
-  targetOwnerId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -3297,21 +3340,9 @@ export interface IXGitHubCloneProjectPayload {
  */
 export interface IXGitHubCloneTemplateRepositoryInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the template repository.
    */
-  clientMutationId?: string | null;
-
-  /**
-   * A short description of the new repository.
-   */
-  description?: string | null;
-
-  /**
-   * Whether to copy all branches from the template to the new repository. Defaults
-   * to copying only the default branch of the template.
-   * @default false
-   */
-  includeAllBranches?: boolean | null;
+  repositoryId: string;
 
   /**
    * The name of the new repository.
@@ -3324,14 +3355,25 @@ export interface IXGitHubCloneTemplateRepositoryInput {
   ownerId: string;
 
   /**
-   * The Node ID of the template repository.
+   * A short description of the new repository.
    */
-  repositoryId: string;
+  description?: string | null;
 
   /**
    * Indicates the repository's visibility level.
    */
   visibility: XGitHubRepositoryVisibility;
+
+  /**
+   * Whether to copy all branches from the template to the new repository. Defaults to copying only the default branch of the template.
+   * @default false
+   */
+  includeAllBranches?: boolean | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -3382,14 +3424,14 @@ export interface IXGitHubClosable {
  */
 export interface IXGitHubCloseIssueInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the issue to be closed.
    */
   issueId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -3414,14 +3456,14 @@ export interface IXGitHubCloseIssuePayload {
  */
 export interface IXGitHubClosePullRequestInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the pull request to be closed.
    */
   pullRequestId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -3522,9 +3564,9 @@ export interface IXGitHubCodeOfConduct {
  */
 export const enum XGitHubCollaboratorAffiliation {
   /**
-   * All collaborators the authenticated user can see.
+   * All outside collaborators of an organization-owned subject.
    */
-  ALL = 'ALL',
+  OUTSIDE = 'OUTSIDE',
 
   /**
    * All collaborators with permissions to an organization-owned subject, regardless of organization membership status.
@@ -3532,9 +3574,9 @@ export const enum XGitHubCollaboratorAffiliation {
   DIRECT = 'DIRECT',
 
   /**
-   * All outside collaborators of an organization-owned subject.
+   * All collaborators the authenticated user can see.
    */
-  OUTSIDE = 'OUTSIDE'
+  ALL = 'ALL',
 }
 
 /**
@@ -3658,6 +3700,21 @@ export interface IUserContentEditsOnXGitHubCommentArguments {
  */
 export const enum XGitHubCommentAuthorAssociation {
   /**
+   * Author is a member of the organization that owns the repository.
+   */
+  MEMBER = 'MEMBER',
+
+  /**
+   * Author is the owner of the repository.
+   */
+  OWNER = 'OWNER',
+
+  /**
+   * Author is a placeholder for an unclaimed user.
+   */
+  MANNEQUIN = 'MANNEQUIN',
+
+  /**
    * Author has been invited to collaborate on the repository.
    */
   COLLABORATOR = 'COLLABORATOR',
@@ -3668,34 +3725,19 @@ export const enum XGitHubCommentAuthorAssociation {
   CONTRIBUTOR = 'CONTRIBUTOR',
 
   /**
-   * Author has not previously committed to GitHub.
-   */
-  FIRST_TIMER = 'FIRST_TIMER',
-
-  /**
    * Author has not previously committed to the repository.
    */
   FIRST_TIME_CONTRIBUTOR = 'FIRST_TIME_CONTRIBUTOR',
 
   /**
-   * Author is a placeholder for an unclaimed user.
+   * Author has not previously committed to GitHub.
    */
-  MANNEQUIN = 'MANNEQUIN',
-
-  /**
-   * Author is a member of the organization that owns the repository.
-   */
-  MEMBER = 'MEMBER',
+  FIRST_TIMER = 'FIRST_TIMER',
 
   /**
    * Author has no association with the repository.
    */
   NONE = 'NONE',
-
-  /**
-   * Author is the owner of the repository.
-   */
-  OWNER = 'OWNER'
 }
 
 /**
@@ -3706,11 +3748,6 @@ export const enum XGitHubCommentCannotUpdateReason {
    * Unable to create comment because repository is archived.
    */
   ARCHIVED = 'ARCHIVED',
-
-  /**
-   * You cannot update this comment
-   */
-  DENIED = 'DENIED',
 
   /**
    * You must be the author or have write access to this repository to update this comment.
@@ -3735,7 +3772,12 @@ export const enum XGitHubCommentCannotUpdateReason {
   /**
    * At least one email address must be verified to update this comment.
    */
-  VERIFIED_EMAIL_REQUIRED = 'VERIFIED_EMAIL_REQUIRED'
+  VERIFIED_EMAIL_REQUIRED = 'VERIFIED_EMAIL_REQUIRED',
+
+  /**
+   * You cannot update this comment
+   */
+  DENIED = 'DENIED',
 }
 
 /**
@@ -3783,9 +3825,7 @@ export interface IXGitHubCommit {
   additions: number;
 
   /**
-   * The merged Pull Request that introduced the commit to the repository. If the
-   * commit is not present in the default branch, additionally returns open Pull
-   * Requests associated with the commit
+   * The merged Pull Request that introduced the commit to the repository. If the commit is not present in the default branch, additionally returns open Pull Requests associated with the commit
    */
   associatedPullRequests: IXGitHubPullRequestConnection | null;
 
@@ -4017,7 +4057,7 @@ export interface IAssociatedPullRequestsOnXGitHubCommitArguments {
 
   /**
    * Ordering options for pull requests.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"ASC"}
    */
   orderBy?: IXGitHubPullRequestOrder | null;
 }
@@ -4063,11 +4103,6 @@ export interface ICheckSuitesOnXGitHubCommitArguments {
   before?: string | null;
 
   /**
-   * Filters the check suites by this type.
-   */
-  filterBy?: IXGitHubCheckSuiteFilter | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -4076,6 +4111,11 @@ export interface ICheckSuitesOnXGitHubCommitArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Filters the check suites by this type.
+   */
+  filterBy?: IXGitHubCheckSuiteFilter | null;
 }
 
 export interface ICommentsOnXGitHubCommitArguments {
@@ -4102,6 +4142,17 @@ export interface ICommentsOnXGitHubCommitArguments {
 
 export interface IDeploymentsOnXGitHubCommitArguments {
   /**
+   * Environments to list deployments for
+   */
+  environments?: Array<string> | null;
+
+  /**
+   * Ordering options for deployments returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubDeploymentOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -4112,11 +4163,6 @@ export interface IDeploymentsOnXGitHubCommitArguments {
   before?: string | null;
 
   /**
-   * Environments to list deployments for
-   */
-  environments?: Array<string> | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -4125,12 +4171,6 @@ export interface IDeploymentsOnXGitHubCommitArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for deployments returned from the connection.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubDeploymentOrder | null;
 }
 
 export interface IFileOnXGitHubCommitArguments {
@@ -4145,11 +4185,6 @@ export interface IHistoryOnXGitHubCommitArguments {
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
-
-  /**
-   * If non-null, filters history to only show commits with matching authorship.
-   */
-  author?: IXGitHubCommitAuthor | null;
 
   /**
    * Returns the elements in the list that come before the specified cursor.
@@ -4170,6 +4205,11 @@ export interface IHistoryOnXGitHubCommitArguments {
    * If non-null, filters history to only show commits touching files under this path.
    */
   path?: string | null;
+
+  /**
+   * If non-null, filters history to only show commits with matching authorship.
+   */
+  author?: IXGitHubCommitAuthor | null;
 
   /**
    * Allows specifying a beginning time or date for fetching commits.
@@ -4231,15 +4271,14 @@ export interface ISubmodulesOnXGitHubCommitArguments {
  */
 export interface IXGitHubCommitAuthor {
   /**
+   * ID of a User to filter by. If non-null, only commits authored by this user will be returned. This field takes precedence over emails.
+   */
+  id?: string | null;
+
+  /**
    * Email addresses to filter by. Commits authored by any of the specified email addresses will be returned.
    */
   emails?: Array<string> | null;
-
-  /**
-   * ID of a User to filter by. If non-null, only commits authored by this user
-   * will be returned. This field takes precedence over emails.
-   */
-  id?: string | null;
 }
 
 /**
@@ -4412,11 +4451,6 @@ export interface IReactionsOnXGitHubCommitCommentArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -4425,6 +4459,11 @@ export interface IReactionsOnXGitHubCommitCommentArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -4585,14 +4624,14 @@ export interface IXGitHubCommitConnection {
  */
 export interface IXGitHubCommitContributionOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field by which to order commit contributions.
    */
   field: XGitHubCommitContributionOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -4600,14 +4639,14 @@ export interface IXGitHubCommitContributionOrder {
  */
 export const enum XGitHubCommitContributionOrderField {
   /**
+   * Order commit contributions by when they were made.
+   */
+  OCCURRED_AT = 'OCCURRED_AT',
+
+  /**
    * Order commit contributions by how many commits they represent.
    */
   COMMIT_COUNT = 'COMMIT_COUNT',
-
-  /**
-   * Order commit contributions by when they were made.
-   */
-  OCCURRED_AT = 'OCCURRED_AT'
 }
 
 /**
@@ -4660,7 +4699,7 @@ export interface IContributionsOnXGitHubCommitContributionsByRepositoryArguments
 
   /**
    * Ordering options for commit contributions returned from the connection.
-   * @default {"direction":"DESC","field":"OCCURRED_AT"}
+   * @default {"field":"OCCURRED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubCommitContributionOrder | null;
 }
@@ -4707,6 +4746,61 @@ export interface IXGitHubCommitHistoryConnection {
    * Identifies the total count of items in the connection.
    */
   totalCount: number;
+}
+
+/**
+ * A message to include with a new commit
+ */
+export interface IXGitHubCommitMessage {
+  /**
+   * The headline of the message.
+   */
+  headline: string;
+
+  /**
+   * The body of the message.
+   */
+  body?: string | null;
+}
+
+/**
+ * A git ref for a commit to be appended to.
+ *
+ * The ref must be a branch, i.e. its fully qualified name must start
+ * with `refs/heads/` (although the input is not required to be fully
+ * qualified).
+ *
+ * The Ref may be specified by its global node ID or by the
+ * repository nameWithOwner and branch name.
+ *
+ * ### Examples
+ *
+ * Specify a branch using a global node ID:
+ *
+ *     { "id": "MDM6UmVmMTpyZWZzL2hlYWRzL21haW4=" }
+ *
+ * Specify a branch using nameWithOwner and branch name:
+ *
+ *     {
+ *       "nameWithOwner": "github/graphql-client",
+ *       "branchName": "main"
+ *     }
+ */
+export interface IXGitHubCommittableBranch {
+  /**
+   * The Node ID of the Ref to be updated.
+   */
+  id?: string | null;
+
+  /**
+   * The nameWithOwner of the repository to commit to.
+   */
+  repositoryNameWithOwner?: string | null;
+
+  /**
+   * The unqualified name of the branch to append the commit to.
+   */
+  branchName?: string | null;
 }
 
 /**
@@ -4837,8 +4931,7 @@ export interface IXGitHubContributionCalendarDay {
   contributionCount: number;
 
   /**
-   * Indication of contributions, relative to other days. Can be used to indicate
-   * which color to represent this day on a calendar.
+   * Indication of contributions, relative to other days. Can be used to indicate which color to represent this day on a calendar.
    */
   contributionLevel: XGitHubContributionLevel;
 
@@ -4902,19 +4995,14 @@ export interface IXGitHubContributionCalendarWeek {
  */
 export const enum XGitHubContributionLevel {
   /**
-   * Lowest 25% of days of contributions.
-   */
-  FIRST_QUARTILE = 'FIRST_QUARTILE',
-
-  /**
-   * Highest 25% of days of contributions. More contributions than the third quartile.
-   */
-  FOURTH_QUARTILE = 'FOURTH_QUARTILE',
-
-  /**
    * No contributions occurred.
    */
   NONE = 'NONE',
+
+  /**
+   * Lowest 25% of days of contributions.
+   */
+  FIRST_QUARTILE = 'FIRST_QUARTILE',
 
   /**
    * Second lowest 25% of days of contributions. More contributions than the first quartile.
@@ -4924,7 +5012,12 @@ export const enum XGitHubContributionLevel {
   /**
    * Second highest 25% of days of contributions. More contributions than second quartile, less than the fourth quartile.
    */
-  THIRD_QUARTILE = 'THIRD_QUARTILE'
+  THIRD_QUARTILE = 'THIRD_QUARTILE',
+
+  /**
+   * Highest 25% of days of contributions. More contributions than the third quartile.
+   */
+  FOURTH_QUARTILE = 'FOURTH_QUARTILE',
 }
 
 /**
@@ -4946,9 +5039,7 @@ export interface IXGitHubContributionsCollection {
   /**
    * Commit contributions made by the user, grouped by repository.
    */
-  commitContributionsByRepository: Array<
-    IXGitHubCommitContributionsByRepository
-  >;
+  commitContributionsByRepository: Array<IXGitHubCommitContributionsByRepository>;
 
   /**
    * A calendar of this user's contributions on GitHub.
@@ -4966,8 +5057,7 @@ export interface IXGitHubContributionsCollection {
   doesEndInCurrentMonth: boolean;
 
   /**
-   * The date of the first restricted contribution the user made in this time
-   * period. Can only be non-null when the user has enabled private contribution counts.
+   * The date of the first restricted contribution the user made in this time period. Can only be non-null when the user has enabled private contribution counts.
    */
   earliestRestrictedContributionDate: any | null;
 
@@ -4977,26 +5067,17 @@ export interface IXGitHubContributionsCollection {
   endedAt: any;
 
   /**
-   * The first issue the user opened on GitHub. This will be null if that issue was
-   * opened outside the collection's time range and ignoreTimeRange is false. If
-   * the issue is not visible but the user has opted to show private contributions,
-   * a RestrictedContribution will be returned.
+   * The first issue the user opened on GitHub. This will be null if that issue was opened outside the collection's time range and ignoreTimeRange is false. If the issue is not visible but the user has opted to show private contributions, a RestrictedContribution will be returned.
    */
   firstIssueContribution: _xGitHubCreatedIssueOrRestrictedContribution | null;
 
   /**
-   * The first pull request the user opened on GitHub. This will be null if that
-   * pull request was opened outside the collection's time range and
-   * ignoreTimeRange is not true. If the pull request is not visible but the user
-   * has opted to show private contributions, a RestrictedContribution will be returned.
+   * The first pull request the user opened on GitHub. This will be null if that pull request was opened outside the collection's time range and ignoreTimeRange is not true. If the pull request is not visible but the user has opted to show private contributions, a RestrictedContribution will be returned.
    */
   firstPullRequestContribution: _xGitHubCreatedPullRequestOrRestrictedContribution | null;
 
   /**
-   * The first repository the user created on GitHub. This will be null if that
-   * first repository was created outside the collection's time range and
-   * ignoreTimeRange is false. If the repository is not visible, then a
-   * RestrictedContribution is returned.
+   * The first repository the user created on GitHub. This will be null if that first repository was created outside the collection's time range and ignoreTimeRange is false. If the repository is not visible, then a RestrictedContribution is returned.
    */
   firstRepositoryContribution: _xGitHubCreatedRepositoryOrRestrictedContribution | null;
 
@@ -5011,9 +5092,7 @@ export interface IXGitHubContributionsCollection {
   hasAnyContributions: boolean;
 
   /**
-   * Determine if the user made any contributions in this time frame whose details
-   * are not visible because they were made in a private repository. Can only be
-   * true if the user enabled private contribution counts.
+   * Determine if the user made any contributions in this time frame whose details are not visible because they were made in a private repository. Can only be true if the user enabled private contribution counts.
    */
   hasAnyRestrictedContributions: boolean;
 
@@ -5033,14 +5112,12 @@ export interface IXGitHubContributionsCollection {
   issueContributionsByRepository: Array<IXGitHubIssueContributionsByRepository>;
 
   /**
-   * When the user signed up for GitHub. This will be null if that sign up date
-   * falls outside the collection's time range and ignoreTimeRange is false.
+   * When the user signed up for GitHub. This will be null if that sign up date falls outside the collection's time range and ignoreTimeRange is false.
    */
   joinedGitHubContribution: IXGitHubJoinedGitHubContribution | null;
 
   /**
-   * The date of the most recent restricted contribution the user made in this time
-   * period. Can only be non-null when the user has enabled private contribution counts.
+   * The date of the most recent restricted contribution the user made in this time period. Can only be non-null when the user has enabled private contribution counts.
    */
   latestRestrictedContributionDate: any | null;
 
@@ -5076,9 +5153,7 @@ export interface IXGitHubContributionsCollection {
   /**
    * Pull request contributions made by the user, grouped by repository.
    */
-  pullRequestContributionsByRepository: Array<
-    IXGitHubPullRequestContributionsByRepository
-  >;
+  pullRequestContributionsByRepository: Array<IXGitHubPullRequestContributionsByRepository>;
 
   /**
    * Pull request review contributions made by the user.
@@ -5088,9 +5163,7 @@ export interface IXGitHubContributionsCollection {
   /**
    * Pull request review contributions made by the user, grouped by repository.
    */
-  pullRequestReviewContributionsByRepository: Array<
-    IXGitHubPullRequestReviewContributionsByRepository
-  >;
+  pullRequestReviewContributionsByRepository: Array<IXGitHubPullRequestReviewContributionsByRepository>;
 
   /**
    * A list of repositories owned by the user that the user created in this time range.
@@ -5098,8 +5171,7 @@ export interface IXGitHubContributionsCollection {
   repositoryContributions: IXGitHubCreatedRepositoryContributionConnection;
 
   /**
-   * A count of contributions made by the user that the viewer cannot access. Only
-   * non-zero when the user has chosen to share their private contribution counts.
+   * A count of contributions made by the user that the viewer cannot access. Only non-zero when the user has chosen to share their private contribution counts.
    */
   restrictedContributionsCount: number;
 
@@ -5179,18 +5251,6 @@ export interface IIssueContributionsOnXGitHubContributionsCollectionArguments {
   before?: string | null;
 
   /**
-   * Should the user's first issue ever be excluded from the result.
-   * @default false
-   */
-  excludeFirst?: boolean | null;
-
-  /**
-   * Should the user's most commented issue be excluded from the result.
-   * @default false
-   */
-  excludePopular?: boolean | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -5201,14 +5261,6 @@ export interface IIssueContributionsOnXGitHubContributionsCollectionArguments {
   last?: number | null;
 
   /**
-   * Ordering options for contributions returned from the connection.
-   * @default {"direction":"DESC"}
-   */
-  orderBy?: IXGitHubContributionOrder | null;
-}
-
-export interface IIssueContributionsByRepositoryOnXGitHubContributionsCollectionArguments {
-  /**
    * Should the user's first issue ever be excluded from the result.
    * @default false
    */
@@ -5221,10 +5273,30 @@ export interface IIssueContributionsByRepositoryOnXGitHubContributionsCollection
   excludePopular?: boolean | null;
 
   /**
+   * Ordering options for contributions returned from the connection.
+   * @default {"direction":"DESC"}
+   */
+  orderBy?: IXGitHubContributionOrder | null;
+}
+
+export interface IIssueContributionsByRepositoryOnXGitHubContributionsCollectionArguments {
+  /**
    * How many repositories should be included.
    * @default 25
    */
   maxRepositories?: number | null;
+
+  /**
+   * Should the user's first issue ever be excluded from the result.
+   * @default false
+   */
+  excludeFirst?: boolean | null;
+
+  /**
+   * Should the user's most commented issue be excluded from the result.
+   * @default false
+   */
+  excludePopular?: boolean | null;
 }
 
 export interface IPullRequestContributionsOnXGitHubContributionsCollectionArguments {
@@ -5239,18 +5311,6 @@ export interface IPullRequestContributionsOnXGitHubContributionsCollectionArgume
   before?: string | null;
 
   /**
-   * Should the user's first pull request ever be excluded from the result.
-   * @default false
-   */
-  excludeFirst?: boolean | null;
-
-  /**
-   * Should the user's most commented pull request be excluded from the result.
-   * @default false
-   */
-  excludePopular?: boolean | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -5261,14 +5321,6 @@ export interface IPullRequestContributionsOnXGitHubContributionsCollectionArgume
   last?: number | null;
 
   /**
-   * Ordering options for contributions returned from the connection.
-   * @default {"direction":"DESC"}
-   */
-  orderBy?: IXGitHubContributionOrder | null;
-}
-
-export interface IPullRequestContributionsByRepositoryOnXGitHubContributionsCollectionArguments {
-  /**
    * Should the user's first pull request ever be excluded from the result.
    * @default false
    */
@@ -5281,10 +5333,30 @@ export interface IPullRequestContributionsByRepositoryOnXGitHubContributionsColl
   excludePopular?: boolean | null;
 
   /**
+   * Ordering options for contributions returned from the connection.
+   * @default {"direction":"DESC"}
+   */
+  orderBy?: IXGitHubContributionOrder | null;
+}
+
+export interface IPullRequestContributionsByRepositoryOnXGitHubContributionsCollectionArguments {
+  /**
    * How many repositories should be included.
    * @default 25
    */
   maxRepositories?: number | null;
+
+  /**
+   * Should the user's first pull request ever be excluded from the result.
+   * @default false
+   */
+  excludeFirst?: boolean | null;
+
+  /**
+   * Should the user's most commented pull request be excluded from the result.
+   * @default false
+   */
+  excludePopular?: boolean | null;
 }
 
 export interface IPullRequestReviewContributionsOnXGitHubContributionsCollectionArguments {
@@ -5335,12 +5407,6 @@ export interface IRepositoryContributionsOnXGitHubContributionsCollectionArgumen
   before?: string | null;
 
   /**
-   * Should the user's first repository ever be excluded from the result.
-   * @default false
-   */
-  excludeFirst?: boolean | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -5349,6 +5415,12 @@ export interface IRepositoryContributionsOnXGitHubContributionsCollectionArgumen
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Should the user's first repository ever be excluded from the result.
+   * @default false
+   */
+  excludeFirst?: boolean | null;
 
   /**
    * Ordering options for contributions returned from the connection.
@@ -5426,16 +5498,6 @@ export interface ITotalRepositoryContributionsOnXGitHubContributionsCollectionAr
  */
 export interface IXGitHubConvertProjectCardNoteToIssueInput {
   /**
-   * The body of the newly created issue.
-   */
-  body?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ProjectCard ID to convert.
    */
   projectCardId: string;
@@ -5449,6 +5511,16 @@ export interface IXGitHubConvertProjectCardNoteToIssueInput {
    * The title of the newly created issue. Defaults to the card's note text.
    */
   title?: string | null;
+
+  /**
+   * The body of the newly created issue.
+   */
+  body?: string | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5473,14 +5545,14 @@ export interface IXGitHubConvertProjectCardNoteToIssuePayload {
  */
 export interface IXGitHubConvertPullRequestToDraftInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the pull request to convert to draft
    */
   pullRequestId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5561,29 +5633,9 @@ export interface IXGitHubConvertedNoteToIssueEvent {
  */
 export interface IXGitHubCreateBranchProtectionRuleInput {
   /**
-   * Can this branch be deleted.
+   * The global relay id of the repository in which a new branch protection rule should be created in.
    */
-  allowsDeletions?: boolean | null;
-
-  /**
-   * Are force pushes allowed on this branch.
-   */
-  allowsForcePushes?: boolean | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * Will new commits pushed to matching branches dismiss pull request review approvals.
-   */
-  dismissesStaleReviews?: boolean | null;
-
-  /**
-   * Can admins overwrite branch protection.
-   */
-  isAdminEnforced?: boolean | null;
+  repositoryId: string;
 
   /**
    * The glob-like pattern used to determine matching branches.
@@ -5591,14 +5643,9 @@ export interface IXGitHubCreateBranchProtectionRuleInput {
   pattern: string;
 
   /**
-   * A list of User, Team or App IDs allowed to push to matching branches.
+   * Are approving reviews required to update matching branches.
    */
-  pushActorIds?: Array<string> | null;
-
-  /**
-   * The global relay id of the repository in which a new branch protection rule should be created in.
-   */
-  repositoryId: string;
+  requiresApprovingReviews?: boolean | null;
 
   /**
    * Number of approving reviews required to update matching branches.
@@ -5606,34 +5653,29 @@ export interface IXGitHubCreateBranchProtectionRuleInput {
   requiredApprovingReviewCount?: number | null;
 
   /**
-   * List of required status check contexts that must pass for commits to be accepted to matching branches.
-   */
-  requiredStatusCheckContexts?: Array<string> | null;
-
-  /**
-   * Are approving reviews required to update matching branches.
-   */
-  requiresApprovingReviews?: boolean | null;
-
-  /**
-   * Are reviews from code owners required to update matching branches.
-   */
-  requiresCodeOwnerReviews?: boolean | null;
-
-  /**
    * Are commits required to be signed.
    */
   requiresCommitSignatures?: boolean | null;
 
   /**
-   * Are conversations required to be resolved before merging.
-   */
-  requiresConversationResolution?: boolean | null;
-
-  /**
    * Are merge commits prohibited from being pushed to this branch.
    */
   requiresLinearHistory?: boolean | null;
+
+  /**
+   * Are force pushes allowed on this branch.
+   */
+  allowsForcePushes?: boolean | null;
+
+  /**
+   * Can this branch be deleted.
+   */
+  allowsDeletions?: boolean | null;
+
+  /**
+   * Can admins overwrite branch protection.
+   */
+  isAdminEnforced?: boolean | null;
 
   /**
    * Are status checks required to update matching branches.
@@ -5646,9 +5688,14 @@ export interface IXGitHubCreateBranchProtectionRuleInput {
   requiresStrictStatusChecks?: boolean | null;
 
   /**
-   * Is pushing to matching branches restricted.
+   * Are reviews from code owners required to update matching branches.
    */
-  restrictsPushes?: boolean | null;
+  requiresCodeOwnerReviews?: boolean | null;
+
+  /**
+   * Will new commits pushed to matching branches dismiss pull request review approvals.
+   */
+  dismissesStaleReviews?: boolean | null;
 
   /**
    * Is dismissal of pull request reviews restricted.
@@ -5659,6 +5706,31 @@ export interface IXGitHubCreateBranchProtectionRuleInput {
    * A list of User or Team IDs allowed to dismiss reviews on pull requests targeting matching branches.
    */
   reviewDismissalActorIds?: Array<string> | null;
+
+  /**
+   * Is pushing to matching branches restricted.
+   */
+  restrictsPushes?: boolean | null;
+
+  /**
+   * A list of User, Team or App IDs allowed to push to matching branches.
+   */
+  pushActorIds?: Array<string> | null;
+
+  /**
+   * List of required status check contexts that must pass for commits to be accepted to matching branches.
+   */
+  requiredStatusCheckContexts?: Array<string> | null;
+
+  /**
+   * Are conversations required to be resolved before merging.
+   */
+  requiresConversationResolution?: boolean | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5683,24 +5755,19 @@ export interface IXGitHubCreateBranchProtectionRulePayload {
  */
 export interface IXGitHubCreateCheckRunInput {
   /**
-   * Possible further actions the integrator can perform, which a user may trigger.
+   * The node ID of the repository.
    */
-  actions?: Array<IXGitHubCheckRunAction> | null;
+  repositoryId: string;
 
   /**
-   * A unique identifier for the client performing the mutation.
+   * The name of the check.
    */
-  clientMutationId?: string | null;
+  name: string;
 
   /**
-   * The time that the check run finished.
+   * The SHA of the head commit.
    */
-  completedAt?: any | null;
-
-  /**
-   * The final conclusion of the check.
-   */
-  conclusion?: XGitHubCheckConclusionState | null;
+  headSha: any;
 
   /**
    * The URL of the integrator's site that has the full details of the check.
@@ -5713,24 +5780,9 @@ export interface IXGitHubCreateCheckRunInput {
   externalId?: string | null;
 
   /**
-   * The SHA of the head commit.
+   * The current status.
    */
-  headSha: any;
-
-  /**
-   * The name of the check.
-   */
-  name: string;
-
-  /**
-   * Descriptive details about the run.
-   */
-  output?: IXGitHubCheckRunOutput | null;
-
-  /**
-   * The node ID of the repository.
-   */
-  repositoryId: string;
+  status?: XGitHubRequestableCheckStatusState | null;
 
   /**
    * The time that the check run began.
@@ -5738,9 +5790,29 @@ export interface IXGitHubCreateCheckRunInput {
   startedAt?: any | null;
 
   /**
-   * The current status.
+   * The final conclusion of the check.
    */
-  status?: XGitHubRequestableCheckStatusState | null;
+  conclusion?: XGitHubCheckConclusionState | null;
+
+  /**
+   * The time that the check run finished.
+   */
+  completedAt?: any | null;
+
+  /**
+   * Descriptive details about the run.
+   */
+  output?: IXGitHubCheckRunOutput | null;
+
+  /**
+   * Possible further actions the integrator can perform, which a user may trigger.
+   */
+  actions?: Array<IXGitHubCheckRunAction> | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5765,9 +5837,9 @@ export interface IXGitHubCreateCheckRunPayload {
  */
 export interface IXGitHubCreateCheckSuiteInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the repository.
    */
-  clientMutationId?: string | null;
+  repositoryId: string;
 
   /**
    * The SHA of the head commit.
@@ -5775,9 +5847,9 @@ export interface IXGitHubCreateCheckSuiteInput {
   headSha: any;
 
   /**
-   * The Node ID of the repository.
+   * A unique identifier for the client performing the mutation.
    */
-  repositoryId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5798,9 +5870,71 @@ export interface IXGitHubCreateCheckSuitePayload {
 }
 
 /**
+ * Autogenerated input type of CreateCommitOnBranch
+ */
+export interface IXGitHubCreateCommitOnBranchInput {
+  /**
+   * The Ref to be updated.  Must be a branch.
+   */
+  branch: IXGitHubCommittableBranch;
+
+  /**
+   * A description of changes to files in this commit.
+   */
+  fileChanges?: IXGitHubFileChanges | null;
+
+  /**
+   * The commit message the be included with the commit.
+   */
+  message: IXGitHubCommitMessage;
+
+  /**
+   * The git commit oid expected at the head of the branch prior to the commit
+   */
+  expectedHeadOid: any;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
+}
+
+/**
+ * Autogenerated return type of CreateCommitOnBranch
+ */
+export interface IXGitHubCreateCommitOnBranchPayload {
+  __typename: '_xGitHubCreateCommitOnBranchPayload';
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId: string | null;
+
+  /**
+   * The new commit.
+   */
+  commit: IXGitHubCommit | null;
+
+  /**
+   * The ref which has been updated to point to the new commit.
+   */
+  ref: IXGitHubRef | null;
+}
+
+/**
  * Autogenerated input type of CreateDiscussion
  */
 export interface IXGitHubCreateDiscussionInput {
+  /**
+   * The id of the repository on which to create the discussion.
+   */
+  repositoryId: string;
+
+  /**
+   * The title of the discussion.
+   */
+  title: string;
+
   /**
    * The body of the discussion.
    */
@@ -5815,16 +5949,6 @@ export interface IXGitHubCreateDiscussionInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The id of the repository on which to create the discussion.
-   */
-  repositoryId: string;
-
-  /**
-   * The title of the discussion.
-   */
-  title: string;
 }
 
 /**
@@ -5849,21 +5973,6 @@ export interface IXGitHubCreateDiscussionPayload {
  */
 export interface IXGitHubCreateEnterpriseOrganizationInput {
   /**
-   * The logins for the administrators of the new organization.
-   */
-  adminLogins: Array<string>;
-
-  /**
-   * The email used for sending billing receipts.
-   */
-  billingEmail: string;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise owning the new organization.
    */
   enterpriseId: string;
@@ -5877,6 +5986,21 @@ export interface IXGitHubCreateEnterpriseOrganizationInput {
    * The profile name of the new organization.
    */
   profileName: string;
+
+  /**
+   * The email used for sending billing receipts.
+   */
+  billingEmail: string;
+
+  /**
+   * The logins for the administrators of the new organization.
+   */
+  adminLogins: Array<string>;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5906,9 +6030,9 @@ export interface IXGitHubCreateEnterpriseOrganizationPayload {
  */
 export interface IXGitHubCreateEnvironmentInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The node ID of the repository.
    */
-  clientMutationId?: string | null;
+  repositoryId: string;
 
   /**
    * The name of the environment.
@@ -5916,9 +6040,9 @@ export interface IXGitHubCreateEnvironmentInput {
   name: string;
 
   /**
-   * The node ID of the repository.
+   * A unique identifier for the client performing the mutation.
    */
-  repositoryId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5943,19 +6067,14 @@ export interface IXGitHubCreateEnvironmentPayload {
  */
 export interface IXGitHubCreateIpAllowListEntryInput {
   /**
+   * The ID of the owner for which to create the new IP allow list entry.
+   */
+  ownerId: string;
+
+  /**
    * An IP address or range of addresses in CIDR notation.
    */
   allowListValue: string;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * Whether the IP allow list entry is active when an IP allow list is enabled.
-   */
-  isActive: boolean;
 
   /**
    * An optional name for the IP allow list entry.
@@ -5963,9 +6082,14 @@ export interface IXGitHubCreateIpAllowListEntryInput {
   name?: string | null;
 
   /**
-   * The ID of the owner for which to create the new IP allow list entry.
+   * Whether the IP allow list entry is active when an IP allow list is enabled.
    */
-  ownerId: string;
+  isActive: boolean;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -5990,41 +6114,6 @@ export interface IXGitHubCreateIpAllowListEntryPayload {
  */
 export interface IXGitHubCreateIssueInput {
   /**
-   * The Node ID for the user assignee for this issue.
-   */
-  assigneeIds?: Array<string> | null;
-
-  /**
-   * The body for the issue description.
-   */
-  body?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The name of an issue template in the repository, assigns labels and assignees from the template to the issue
-   */
-  issueTemplate?: string | null;
-
-  /**
-   * An array of Node IDs of labels for this issue.
-   */
-  labelIds?: Array<string> | null;
-
-  /**
-   * The Node ID of the milestone for this issue.
-   */
-  milestoneId?: string | null;
-
-  /**
-   * An array of Node IDs for projects associated with this issue.
-   */
-  projectIds?: Array<string> | null;
-
-  /**
    * The Node ID of the repository.
    */
   repositoryId: string;
@@ -6033,6 +6122,41 @@ export interface IXGitHubCreateIssueInput {
    * The title for the issue.
    */
   title: string;
+
+  /**
+   * The body for the issue description.
+   */
+  body?: string | null;
+
+  /**
+   * The Node ID for the user assignee for this issue.
+   */
+  assigneeIds?: Array<string> | null;
+
+  /**
+   * The Node ID of the milestone for this issue.
+   */
+  milestoneId?: string | null;
+
+  /**
+   * An array of Node IDs of labels for this issue.
+   */
+  labelIds?: Array<string> | null;
+
+  /**
+   * An array of Node IDs for projects associated with this issue.
+   */
+  projectIds?: Array<string> | null;
+
+  /**
+   * The name of an issue template in the repository, assigns labels and assignees from the template to the issue
+   */
+  issueTemplate?: string | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -6053,18 +6177,60 @@ export interface IXGitHubCreateIssuePayload {
 }
 
 /**
- * Autogenerated input type of CreateProject
+ * Autogenerated input type of CreateLabel
  */
-export interface IXGitHubCreateProjectInput {
+export interface IXGitHubCreateLabelInput {
   /**
-   * The description of project.
+   * The Node ID of the repository.
    */
-  body?: string | null;
+  repositoryId: string;
+
+  /**
+   * A 6 character hex code, without the leading #, identifying the color of the label.
+   */
+  color: string;
+
+  /**
+   * The name of the label.
+   */
+  name: string;
+
+  /**
+   * A brief description of the label, such as its purpose.
+   */
+  description?: string | null;
 
   /**
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
+}
+
+/**
+ * Autogenerated return type of CreateLabel
+ */
+export interface IXGitHubCreateLabelPayload {
+  __typename: '_xGitHubCreateLabelPayload';
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId: string | null;
+
+  /**
+   * The new label.
+   */
+  label: IXGitHubLabel | null;
+}
+
+/**
+ * Autogenerated input type of CreateProject
+ */
+export interface IXGitHubCreateProjectInput {
+  /**
+   * The owner ID to create the project under.
+   */
+  ownerId: string;
 
   /**
    * The name of project.
@@ -6072,9 +6238,14 @@ export interface IXGitHubCreateProjectInput {
   name: string;
 
   /**
-   * The owner ID to create the project under.
+   * The description of project.
    */
-  ownerId: string;
+  body?: string | null;
+
+  /**
+   * The name of the GitHub-provided template.
+   */
+  template?: XGitHubProjectTemplate | null;
 
   /**
    * A list of repository IDs to create as linked repositories for the project
@@ -6082,9 +6253,9 @@ export interface IXGitHubCreateProjectInput {
   repositoryIds?: Array<string> | null;
 
   /**
-   * The name of the GitHub-provided template.
+   * A unique identifier for the client performing the mutation.
    */
-  template?: XGitHubProjectTemplate | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -6109,27 +6280,16 @@ export interface IXGitHubCreateProjectPayload {
  */
 export interface IXGitHubCreatePullRequestInput {
   /**
+   * The Node ID of the repository.
+   */
+  repositoryId: string;
+
+  /**
    * The name of the branch you want your changes pulled into. This should be an existing branch
    * on the current repository. You cannot update the base branch on a pull request to point
    * to another repository.
    */
   baseRefName: string;
-
-  /**
-   * The contents of the pull request.
-   */
-  body?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * Indicates whether this pull request should be a draft.
-   * @default false
-   */
-  draft?: boolean | null;
 
   /**
    * The name of the branch where your changes are implemented. For cross-repository pull requests
@@ -6138,20 +6298,31 @@ export interface IXGitHubCreatePullRequestInput {
   headRefName: string;
 
   /**
+   * The title of the pull request.
+   */
+  title: string;
+
+  /**
+   * The contents of the pull request.
+   */
+  body?: string | null;
+
+  /**
    * Indicates whether maintainers can modify the pull request.
    * @default true
    */
   maintainerCanModify?: boolean | null;
 
   /**
-   * The Node ID of the repository.
+   * Indicates whether this pull request should be a draft.
+   * @default false
    */
-  repositoryId: string;
+  draft?: boolean | null;
 
   /**
-   * The title of the pull request.
+   * A unique identifier for the client performing the mutation.
    */
-  title: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -6176,9 +6347,9 @@ export interface IXGitHubCreatePullRequestPayload {
  */
 export interface IXGitHubCreateRefInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the Repository to create the Ref in.
    */
-  clientMutationId?: string | null;
+  repositoryId: string;
 
   /**
    * The fully qualified name of the new Ref (ie: `refs/heads/my_new_branch`).
@@ -6191,9 +6362,9 @@ export interface IXGitHubCreateRefInput {
   oid: any;
 
   /**
-   * The Node ID of the Repository to create the Ref in.
+   * A unique identifier for the client performing the mutation.
    */
-  repositoryId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -6218,33 +6389,6 @@ export interface IXGitHubCreateRefPayload {
  */
 export interface IXGitHubCreateRepositoryInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * A short description of the new repository.
-   */
-  description?: string | null;
-
-  /**
-   * Indicates if the repository should have the issues feature enabled.
-   * @default true
-   */
-  hasIssuesEnabled?: boolean | null;
-
-  /**
-   * Indicates if the repository should have the wiki feature enabled.
-   * @default false
-   */
-  hasWikiEnabled?: boolean | null;
-
-  /**
-   * The URL for a web page about this repository.
-   */
-  homepageUrl?: any | null;
-
-  /**
    * The name of the new repository.
    */
   name: string;
@@ -6255,22 +6399,47 @@ export interface IXGitHubCreateRepositoryInput {
   ownerId?: string | null;
 
   /**
-   * When an organization is specified as the owner, this ID identifies the team
-   * that should be granted access to the new repository.
+   * A short description of the new repository.
    */
-  teamId?: string | null;
-
-  /**
-   * Whether this repository should be marked as a template such that anyone who
-   * can access it can create new repositories with the same files and directory structure.
-   * @default false
-   */
-  template?: boolean | null;
+  description?: string | null;
 
   /**
    * Indicates the repository's visibility level.
    */
   visibility: XGitHubRepositoryVisibility;
+
+  /**
+   * Whether this repository should be marked as a template such that anyone who can access it can create new repositories with the same files and directory structure.
+   * @default false
+   */
+  template?: boolean | null;
+
+  /**
+   * The URL for a web page about this repository.
+   */
+  homepageUrl?: any | null;
+
+  /**
+   * Indicates if the repository should have the wiki feature enabled.
+   * @default false
+   */
+  hasWikiEnabled?: boolean | null;
+
+  /**
+   * Indicates if the repository should have the issues feature enabled.
+   * @default true
+   */
+  hasIssuesEnabled?: boolean | null;
+
+  /**
+   * When an organization is specified as the owner, this ID identifies the team that should be granted access to the new repository.
+   */
+  teamId?: string | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -6295,42 +6464,12 @@ export interface IXGitHubCreateRepositoryPayload {
  */
 export interface IXGitHubCreateSponsorshipInput {
   /**
-   * The amount to pay to the sponsorable in US dollars. Required if a tierId is not specified. Valid values: 1-12000.
-   */
-  amount?: number | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * Whether the sponsorship should happen monthly/yearly or just this one time. Required if a tierId is not specified.
-   */
-  isRecurring?: boolean | null;
-
-  /**
-   * Specify whether others should be able to see that the sponsor is sponsoring
-   * the sponsorable. Public visibility still does not reveal which tier is used.
-   * @default "PUBLIC"
-   */
-  privacyLevel?: XGitHubSponsorshipPrivacy | null;
-
-  /**
-   * Whether the sponsor should receive email updates from the sponsorable.
-   * @default true
-   */
-  receiveEmails?: boolean | null;
-
-  /**
-   * The ID of the user or organization who is acting as the sponsor, paying for
-   * the sponsorship. Required if sponsorLogin is not given.
+   * The ID of the user or organization who is acting as the sponsor, paying for the sponsorship. Required if sponsorLogin is not given.
    */
   sponsorId?: string | null;
 
   /**
-   * The username of the user or organization who is acting as the sponsor, paying
-   * for the sponsorship. Required if sponsorId is not given.
+   * The username of the user or organization who is acting as the sponsor, paying for the sponsorship. Required if sponsorId is not given.
    */
   sponsorLogin?: string | null;
 
@@ -6348,6 +6487,33 @@ export interface IXGitHubCreateSponsorshipInput {
    * The ID of one of sponsorable's existing tiers to sponsor at. Required if amount is not specified.
    */
   tierId?: string | null;
+
+  /**
+   * The amount to pay to the sponsorable in US dollars. Required if a tierId is not specified. Valid values: 1-12000.
+   */
+  amount?: number | null;
+
+  /**
+   * Whether the sponsorship should happen monthly/yearly or just this one time. Required if a tierId is not specified.
+   */
+  isRecurring?: boolean | null;
+
+  /**
+   * Whether the sponsor should receive email updates from the sponsorable.
+   * @default true
+   */
+  receiveEmails?: boolean | null;
+
+  /**
+   * Specify whether others should be able to see that the sponsor is sponsoring the sponsorable. Public visibility still does not reveal which tier is used.
+   * @default "PUBLIC"
+   */
+  privacyLevel?: XGitHubSponsorshipPrivacy | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -6372,6 +6538,11 @@ export interface IXGitHubCreateSponsorshipPayload {
  */
 export interface IXGitHubCreateTeamDiscussionCommentInput {
   /**
+   * The ID of the discussion to which the comment belongs.
+   */
+  discussionId: string;
+
+  /**
    * The content of the comment.
    */
   body: string;
@@ -6380,11 +6551,6 @@ export interface IXGitHubCreateTeamDiscussionCommentInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The ID of the discussion to which the comment belongs.
-   */
-  discussionId: string;
 }
 
 /**
@@ -6409,23 +6575,6 @@ export interface IXGitHubCreateTeamDiscussionCommentPayload {
  */
 export interface IXGitHubCreateTeamDiscussionInput {
   /**
-   * The content of the discussion.
-   */
-  body: string;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * If true, restricts the visibility of this discussion to team members and
-   * organization admins. If false or not specified, allows any organization member
-   * to view this discussion.
-   */
-  private?: boolean | null;
-
-  /**
    * The ID of the team to which the discussion belongs.
    */
   teamId: string;
@@ -6434,6 +6583,21 @@ export interface IXGitHubCreateTeamDiscussionInput {
    * The title of the discussion.
    */
   title: string;
+
+  /**
+   * The content of the discussion.
+   */
+  body: string;
+
+  /**
+   * If true, restricts the visibility of this discussion to team members and organization admins. If false or not specified, allows any organization member to view this discussion.
+   */
+  private?: boolean | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -6962,9 +7126,9 @@ export interface IXGitHubCrossReferencedEvent {
  */
 export interface IXGitHubDeclineTopicSuggestionInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the repository.
    */
-  clientMutationId?: string | null;
+  repositoryId: string;
 
   /**
    * The name of the suggested topic.
@@ -6977,9 +7141,9 @@ export interface IXGitHubDeclineTopicSuggestionInput {
   reason: XGitHubTopicSuggestionDeclineReason;
 
   /**
-   * The Node ID of the repository.
+   * A unique identifier for the client performing the mutation.
    */
-  repositoryId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7004,11 +7168,6 @@ export interface IXGitHubDeclineTopicSuggestionPayload {
  */
 export const enum XGitHubDefaultRepositoryPermissionField {
   /**
-   * Can read, write, and administrate repos by default
-   */
-  ADMIN = 'ADMIN',
-
-  /**
    * No access
    */
   NONE = 'NONE',
@@ -7021,7 +7180,12 @@ export const enum XGitHubDefaultRepositoryPermissionField {
   /**
    * Can read and write repos by default
    */
-  WRITE = 'WRITE'
+  WRITE = 'WRITE',
+
+  /**
+   * Can read, write, and administrate repos by default
+   */
+  ADMIN = 'ADMIN',
 }
 
 /**
@@ -7082,14 +7246,14 @@ export interface IXGitHubDeleteBranchProtectionRulePayload {
  */
 export interface IXGitHubDeleteDeploymentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the deployment to be deleted.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7109,14 +7273,14 @@ export interface IXGitHubDeleteDeploymentPayload {
  */
 export interface IXGitHubDeleteDiscussionCommentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node id of the discussion comment to delete.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7141,14 +7305,14 @@ export interface IXGitHubDeleteDiscussionCommentPayload {
  */
 export interface IXGitHubDeleteDiscussionInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The id of the discussion to delete.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7173,14 +7337,14 @@ export interface IXGitHubDeleteDiscussionPayload {
  */
 export interface IXGitHubDeleteEnvironmentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the environment to be deleted.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7200,14 +7364,14 @@ export interface IXGitHubDeleteEnvironmentPayload {
  */
 export interface IXGitHubDeleteIpAllowListEntryInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the IP allow list entry to delete.
    */
   ipAllowListEntryId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7232,14 +7396,14 @@ export interface IXGitHubDeleteIpAllowListEntryPayload {
  */
 export interface IXGitHubDeleteIssueCommentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the comment to delete.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7259,14 +7423,14 @@ export interface IXGitHubDeleteIssueCommentPayload {
  */
 export interface IXGitHubDeleteIssueInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the issue to delete.
    */
   issueId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7284,6 +7448,33 @@ export interface IXGitHubDeleteIssuePayload {
    * The repository the issue belonged to
    */
   repository: IXGitHubRepository | null;
+}
+
+/**
+ * Autogenerated input type of DeleteLabel
+ */
+export interface IXGitHubDeleteLabelInput {
+  /**
+   * The Node ID of the label to be deleted.
+   */
+  id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
+}
+
+/**
+ * Autogenerated return type of DeleteLabel
+ */
+export interface IXGitHubDeleteLabelPayload {
+  __typename: '_xGitHubDeleteLabelPayload';
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId: string | null;
 }
 
 /**
@@ -7328,14 +7519,14 @@ export interface IXGitHubDeleteProjectCardPayload {
  */
 export interface IXGitHubDeleteProjectColumnInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The id of the column to delete.
    */
   columnId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7365,14 +7556,14 @@ export interface IXGitHubDeleteProjectColumnPayload {
  */
 export interface IXGitHubDeleteProjectInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Project ID to update.
    */
   projectId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7397,14 +7588,14 @@ export interface IXGitHubDeleteProjectPayload {
  */
 export interface IXGitHubDeletePullRequestReviewCommentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the comment to delete.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7429,14 +7620,14 @@ export interface IXGitHubDeletePullRequestReviewCommentPayload {
  */
 export interface IXGitHubDeletePullRequestReviewInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the pull request review to delete.
    */
   pullRequestReviewId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7461,14 +7652,14 @@ export interface IXGitHubDeletePullRequestReviewPayload {
  */
 export interface IXGitHubDeleteRefInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the Ref to be deleted.
    */
   refId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7488,14 +7679,14 @@ export interface IXGitHubDeleteRefPayload {
  */
 export interface IXGitHubDeleteTeamDiscussionCommentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the comment to delete.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7515,14 +7706,14 @@ export interface IXGitHubDeleteTeamDiscussionCommentPayload {
  */
 export interface IXGitHubDeleteTeamDiscussionInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The discussion ID to delete.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7542,14 +7733,14 @@ export interface IXGitHubDeleteTeamDiscussionPayload {
  */
 export interface IXGitHubDeleteVerifiableDomainInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the verifiable domain to delete.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -7904,14 +8095,14 @@ export interface IXGitHubDeploymentEnvironmentChangedEvent {
  */
 export interface IXGitHubDeploymentOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order deployments by.
    */
   field: XGitHubDeploymentOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -7921,7 +8112,7 @@ export const enum XGitHubDeploymentOrderField {
   /**
    * Order collection by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -8029,7 +8220,7 @@ export const enum XGitHubDeploymentProtectionRuleType {
   /**
    * Wait timer
    */
-  WAIT_TIMER = 'WAIT_TIMER'
+  WAIT_TIMER = 'WAIT_TIMER',
 }
 
 /**
@@ -8241,7 +8432,7 @@ export const enum XGitHubDeploymentReviewState {
   /**
    * The deployment was rejected.
    */
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
 }
 
 /**
@@ -8328,11 +8519,6 @@ export const enum XGitHubDeploymentState {
   INACTIVE = 'INACTIVE',
 
   /**
-   * The deployment is in progress.
-   */
-  IN_PROGRESS = 'IN_PROGRESS',
-
-  /**
    * The deployment is pending.
    */
   PENDING = 'PENDING',
@@ -8343,9 +8529,14 @@ export const enum XGitHubDeploymentState {
   QUEUED = 'QUEUED',
 
   /**
+   * The deployment is in progress.
+   */
+  IN_PROGRESS = 'IN_PROGRESS',
+
+  /**
    * The deployment is waiting.
    */
-  WAITING = 'WAITING'
+  WAITING = 'WAITING',
 }
 
 /**
@@ -8445,9 +8636,14 @@ export interface IXGitHubDeploymentStatusEdge {
  */
 export const enum XGitHubDeploymentStatusState {
   /**
-   * The deployment experienced an error.
+   * The deployment is pending.
    */
-  ERROR = 'ERROR',
+  PENDING = 'PENDING',
+
+  /**
+   * The deployment was successful.
+   */
+  SUCCESS = 'SUCCESS',
 
   /**
    * The deployment has failed.
@@ -8460,14 +8656,9 @@ export const enum XGitHubDeploymentStatusState {
   INACTIVE = 'INACTIVE',
 
   /**
-   * The deployment is in progress.
+   * The deployment experienced an error.
    */
-  IN_PROGRESS = 'IN_PROGRESS',
-
-  /**
-   * The deployment is pending.
-   */
-  PENDING = 'PENDING',
+  ERROR = 'ERROR',
 
   /**
    * The deployment is queued
@@ -8475,14 +8666,14 @@ export const enum XGitHubDeploymentStatusState {
   QUEUED = 'QUEUED',
 
   /**
-   * The deployment was successful.
+   * The deployment is in progress.
    */
-  SUCCESS = 'SUCCESS',
+  IN_PROGRESS = 'IN_PROGRESS',
 
   /**
    * The deployment is waiting.
    */
-  WAITING = 'WAITING'
+  WAITING = 'WAITING',
 }
 
 /**
@@ -8497,7 +8688,7 @@ export const enum XGitHubDiffSide {
   /**
    * The right side of the diff.
    */
-  RIGHT = 'RIGHT'
+  RIGHT = 'RIGHT',
 }
 
 /**
@@ -8505,14 +8696,14 @@ export const enum XGitHubDiffSide {
  */
 export interface IXGitHubDisablePullRequestAutoMergeInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the pull request to disable auto merge on.
    */
   pullRequestId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -8792,6 +8983,12 @@ export interface ICommentsOnXGitHubDiscussionArguments {
 
 export interface ILabelsOnXGitHubDiscussionArguments {
   /**
+   * Ordering options for labels returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubLabelOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -8810,12 +9007,6 @@ export interface ILabelsOnXGitHubDiscussionArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for labels returned from the connection.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubLabelOrder | null;
 }
 
 export interface IReactionsOnXGitHubDiscussionArguments {
@@ -8830,11 +9021,6 @@ export interface IReactionsOnXGitHubDiscussionArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -8843,6 +9029,11 @@ export interface IReactionsOnXGitHubDiscussionArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -9164,11 +9355,6 @@ export interface IReactionsOnXGitHubDiscussionCommentArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -9177,6 +9363,11 @@ export interface IReactionsOnXGitHubDiscussionCommentArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -9321,14 +9512,14 @@ export interface IXGitHubDiscussionEdge {
  */
 export interface IXGitHubDiscussionOrder {
   /**
-   * The direction in which to order discussions by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field by which to order discussions.
    */
   field: XGitHubDiscussionOrderField;
+
+  /**
+   * The direction in which to order discussions by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -9343,7 +9534,7 @@ export const enum XGitHubDiscussionOrderField {
   /**
    * Order discussions by most recent modification time.
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -9351,9 +9542,9 @@ export const enum XGitHubDiscussionOrderField {
  */
 export interface IXGitHubDismissPullRequestReviewInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the pull request review to modify.
    */
-  clientMutationId?: string | null;
+  pullRequestReviewId: string;
 
   /**
    * The contents of the pull request review dismissal message.
@@ -9361,9 +9552,9 @@ export interface IXGitHubDismissPullRequestReviewInput {
   message: string;
 
   /**
-   * The Node ID of the pull request review to modify.
+   * A unique identifier for the client performing the mutation.
    */
-  pullRequestReviewId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -9388,11 +9579,6 @@ export interface IXGitHubDismissPullRequestReviewPayload {
  */
 export interface IXGitHubDraftPullRequestReviewComment {
   /**
-   * Body of the comment to leave.
-   */
-  body: string;
-
-  /**
    * Path to the file being commented on.
    */
   path: string;
@@ -9401,6 +9587,11 @@ export interface IXGitHubDraftPullRequestReviewComment {
    * Position in the file to leave a comment on.
    */
   position: number;
+
+  /**
+   * Body of the comment to leave.
+   */
+  body: string;
 }
 
 /**
@@ -9408,19 +9599,14 @@ export interface IXGitHubDraftPullRequestReviewComment {
  */
 export interface IXGitHubDraftPullRequestReviewThread {
   /**
-   * Body of the comment to leave.
+   * Path to the file being commented on.
    */
-  body: string;
+  path: string;
 
   /**
    * The line of the blob to which the thread refers. The end of the line range for multi-line comments.
    */
   line: number;
-
-  /**
-   * Path to the file being commented on.
-   */
-  path: string;
 
   /**
    * The side of the diff on which the line resides. For multi-line comments, this is the side for the end of the line range.
@@ -9438,12 +9624,38 @@ export interface IXGitHubDraftPullRequestReviewThread {
    * @default "RIGHT"
    */
   startSide?: XGitHubDiffSide | null;
+
+  /**
+   * Body of the comment to leave.
+   */
+  body: string;
 }
 
 /**
  * Autogenerated input type of EnablePullRequestAutoMerge
  */
 export interface IXGitHubEnablePullRequestAutoMergeInput {
+  /**
+   * ID of the pull request to enable auto-merge on.
+   */
+  pullRequestId: string;
+
+  /**
+   * Commit headline to use for the commit when the PR is mergable; if omitted, a default message will be used.
+   */
+  commitHeadline?: string | null;
+
+  /**
+   * Commit body to use for the commit when the PR is mergable; if omitted, a default message will be used.
+   */
+  commitBody?: string | null;
+
+  /**
+   * The merge method to use. If omitted, defaults to 'MERGE'
+   * @default "MERGE"
+   */
+  mergeMethod?: XGitHubPullRequestMergeMethod | null;
+
   /**
    * The email address to associate with this merge.
    */
@@ -9453,27 +9665,6 @@ export interface IXGitHubEnablePullRequestAutoMergeInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * Commit body to use for the commit when the PR is mergable; if omitted, a default message will be used.
-   */
-  commitBody?: string | null;
-
-  /**
-   * Commit headline to use for the commit when the PR is mergable; if omitted, a default message will be used.
-   */
-  commitHeadline?: string | null;
-
-  /**
-   * The merge method to use. If omitted, defaults to 'MERGE'
-   * @default "MERGE"
-   */
-  mergeMethod?: XGitHubPullRequestMergeMethod | null;
-
-  /**
-   * ID of the pull request to enable auto-merge on.
-   */
-  pullRequestId: string;
 }
 
 /**
@@ -9600,37 +9791,6 @@ export interface IAvatarUrlOnXGitHubEnterpriseArguments {
 
 export interface IMembersOnXGitHubEnterpriseArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
-   */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Only return members within the selected GitHub Enterprise deployment
-   */
-  deployment?: XGitHubEnterpriseUserDeployment | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for members returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubEnterpriseMemberOrder | null;
-
-  /**
    * Only return members within the organizations with these logins
    */
   organizationLogins?: Array<string> | null;
@@ -9641,12 +9801,21 @@ export interface IMembersOnXGitHubEnterpriseArguments {
   query?: string | null;
 
   /**
+   * Ordering options for members returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubEnterpriseMemberOrder | null;
+
+  /**
    * The role of the user in the enterprise organization or server.
    */
   role?: XGitHubEnterpriseUserAccountMembershipRole | null;
-}
 
-export interface IOrganizationsOnXGitHubEnterpriseArguments {
+  /**
+   * Only return members within the selected GitHub Enterprise deployment
+   */
+  deployment?: XGitHubEnterpriseUserDeployment | null;
+
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -9666,17 +9835,39 @@ export interface IOrganizationsOnXGitHubEnterpriseArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+}
 
-  /**
-   * Ordering options for organizations returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
+export interface IOrganizationsOnXGitHubEnterpriseArguments {
   /**
    * The search string to look for.
    */
   query?: string | null;
+
+  /**
+   * Ordering options for organizations returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IUserAccountsOnXGitHubEnterpriseArguments {
@@ -9837,14 +10028,14 @@ export interface IXGitHubEnterpriseAdministratorInvitationEdge {
  */
 export interface IXGitHubEnterpriseAdministratorInvitationOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order enterprise administrator invitations by.
    */
   field: XGitHubEnterpriseAdministratorInvitationOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -9854,7 +10045,7 @@ export const enum XGitHubEnterpriseAdministratorInvitationOrderField {
   /**
    * Order enterprise administrator member invitations by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -9862,14 +10053,14 @@ export const enum XGitHubEnterpriseAdministratorInvitationOrderField {
  */
 export const enum XGitHubEnterpriseAdministratorRole {
   /**
+   * Represents an owner of the enterprise account.
+   */
+  OWNER = 'OWNER',
+
+  /**
    * Represents a billing manager of the enterprise account.
    */
   BILLING_MANAGER = 'BILLING_MANAGER',
-
-  /**
-   * Represents an owner of the enterprise account.
-   */
-  OWNER = 'OWNER'
 }
 
 /**
@@ -9981,19 +10172,19 @@ export interface IXGitHubEnterpriseBillingInfo {
  */
 export const enum XGitHubEnterpriseDefaultRepositoryPermissionSettingValue {
   /**
+   * Organizations in the enterprise choose base repository permissions for their members.
+   */
+  NO_POLICY = 'NO_POLICY',
+
+  /**
    * Organization members will be able to clone, pull, push, and add new collaborators to all organization repositories.
    */
   ADMIN = 'ADMIN',
 
   /**
-   * Organization members will only be able to clone and pull public repositories.
+   * Organization members will be able to clone, pull, and push all organization repositories.
    */
-  NONE = 'NONE',
-
-  /**
-   * Organizations in the enterprise choose base repository permissions for their members.
-   */
-  NO_POLICY = 'NO_POLICY',
+  WRITE = 'WRITE',
 
   /**
    * Organization members will be able to clone and pull all organization repositories.
@@ -10001,9 +10192,9 @@ export const enum XGitHubEnterpriseDefaultRepositoryPermissionSettingValue {
   READ = 'READ',
 
   /**
-   * Organization members will be able to clone, pull, and push all organization repositories.
+   * Organization members will only be able to clone and pull public repositories.
    */
-  WRITE = 'WRITE'
+  NONE = 'NONE',
 }
 
 /**
@@ -10011,19 +10202,19 @@ export const enum XGitHubEnterpriseDefaultRepositoryPermissionSettingValue {
  */
 export const enum XGitHubEnterpriseEnabledDisabledSettingValue {
   /**
-   * The setting is disabled for organizations in the enterprise.
-   */
-  DISABLED = 'DISABLED',
-
-  /**
    * The setting is enabled for organizations in the enterprise.
    */
   ENABLED = 'ENABLED',
 
   /**
+   * The setting is disabled for organizations in the enterprise.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
    * There is no policy set for organizations in the enterprise.
    */
-  NO_POLICY = 'NO_POLICY'
+  NO_POLICY = 'NO_POLICY',
 }
 
 /**
@@ -10038,7 +10229,7 @@ export const enum XGitHubEnterpriseEnabledSettingValue {
   /**
    * There is no policy set for organizations in the enterprise.
    */
-  NO_POLICY = 'NO_POLICY'
+  NO_POLICY = 'NO_POLICY',
 }
 
 /**
@@ -10091,6 +10282,11 @@ export interface IXGitHubEnterpriseIdentityProvider {
 
 export interface IExternalIdentitiesOnXGitHubEnterpriseIdentityProviderArguments {
   /**
+   * Filter to external identities with valid org membership only
+   */
+  membersOnly?: boolean | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -10109,11 +10305,6 @@ export interface IExternalIdentitiesOnXGitHubEnterpriseIdentityProviderArguments
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter to external identities with valid org membership only
-   */
-  membersOnly?: boolean | null;
 }
 
 /**
@@ -10178,14 +10369,14 @@ export interface IXGitHubEnterpriseMemberEdge {
  */
 export interface IXGitHubEnterpriseMemberOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order enterprise members by.
    */
   field: XGitHubEnterpriseMemberOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -10193,14 +10384,14 @@ export interface IXGitHubEnterpriseMemberOrder {
  */
 export const enum XGitHubEnterpriseMemberOrderField {
   /**
+   * Order enterprise members by login
+   */
+  LOGIN = 'LOGIN',
+
+  /**
    * Order enterprise members by creation time
    */
   CREATED_AT = 'CREATED_AT',
-
-  /**
-   * Order enterprise members by login
-   */
-  LOGIN = 'LOGIN'
 }
 
 /**
@@ -10208,19 +10399,19 @@ export const enum XGitHubEnterpriseMemberOrderField {
  */
 export const enum XGitHubEnterpriseMembersCanCreateRepositoriesSettingValue {
   /**
+   * Organization administrators choose whether to allow members to create repositories.
+   */
+  NO_POLICY = 'NO_POLICY',
+
+  /**
    * Members will be able to create public and private repositories.
    */
   ALL = 'ALL',
 
   /**
-   * Members will not be able to create public or private repositories.
+   * Members will be able to create only public repositories.
    */
-  DISABLED = 'DISABLED',
-
-  /**
-   * Organization administrators choose whether to allow members to create repositories.
-   */
-  NO_POLICY = 'NO_POLICY',
+  PUBLIC = 'PUBLIC',
 
   /**
    * Members will be able to create only private repositories.
@@ -10228,9 +10419,9 @@ export const enum XGitHubEnterpriseMembersCanCreateRepositoriesSettingValue {
   PRIVATE = 'PRIVATE',
 
   /**
-   * Members will be able to create only public repositories.
+   * Members will not be able to create public or private repositories.
    */
-  PUBLIC = 'PUBLIC'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -10238,14 +10429,14 @@ export const enum XGitHubEnterpriseMembersCanCreateRepositoriesSettingValue {
  */
 export const enum XGitHubEnterpriseMembersCanMakePurchasesSettingValue {
   /**
+   * The setting is enabled for organizations in the enterprise.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
    * The setting is disabled for organizations in the enterprise.
    */
   DISABLED = 'DISABLED',
-
-  /**
-   * The setting is enabled for organizations in the enterprise.
-   */
-  ENABLED = 'ENABLED'
 }
 
 /**
@@ -10375,7 +10566,7 @@ export interface IRepositoriesOnXGitHubEnterpriseOutsideCollaboratorEdgeArgument
 
   /**
    * Ordering options for repositories.
-   * @default {"direction":"ASC","field":"NAME"}
+   * @default {"field":"NAME","direction":"ASC"}
    */
   orderBy?: IXGitHubRepositoryOrder | null;
 }
@@ -10457,8 +10648,7 @@ export interface IXGitHubEnterpriseOwnerInfo {
   isUpdatingTwoFactorRequirement: boolean;
 
   /**
-   * The setting value for whether organization members with admin permissions on a
-   * repository can change repository visibility.
+   * The setting value for whether organization members with admin permissions on a repository can change repository visibility.
    */
   membersCanChangeRepositoryVisibilitySetting: XGitHubEnterpriseEnabledDisabledSettingValue;
 
@@ -10636,6 +10826,22 @@ export interface IXGitHubEnterpriseOwnerInfo {
 
 export interface IAdminsOnXGitHubEnterpriseOwnerInfoArguments {
   /**
+   * The search string to look for.
+   */
+  query?: string | null;
+
+  /**
+   * The role to filter by.
+   */
+  role?: XGitHubEnterpriseAdministratorRole | null;
+
+  /**
+   * Ordering options for administrators returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubEnterpriseMemberOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -10654,22 +10860,6 @@ export interface IAdminsOnXGitHubEnterpriseOwnerInfoArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for administrators returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubEnterpriseMemberOrder | null;
-
-  /**
-   * The search string to look for.
-   */
-  query?: string | null;
-
-  /**
-   * The role to filter by.
-   */
-  role?: XGitHubEnterpriseAdministratorRole | null;
 }
 
 export interface IAffiliatedUsersWithTwoFactorDisabledOnXGitHubEnterpriseOwnerInfoArguments {
@@ -10716,15 +10906,15 @@ export interface IAllowPrivateRepositoryForkingSettingOrganizationsOnXGitHubEnte
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IDefaultRepositoryPermissionSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -10749,15 +10939,15 @@ export interface IDefaultRepositoryPermissionSettingOrganizationsOnXGitHubEnterp
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The permission to find organizations for.
    */
   value: XGitHubDefaultRepositoryPermissionField;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IDomainsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -10777,10 +10967,9 @@ export interface IDomainsOnXGitHubEnterpriseOwnerInfoArguments {
   first?: number | null;
 
   /**
-   * Filter whether or not the domain is approved.
-   * @default null
+   * Returns the last _n_ elements from the list.
    */
-  isApproved?: boolean | null;
+  last?: number | null;
 
   /**
    * Filter whether or not the domain is verified.
@@ -10789,13 +10978,14 @@ export interface IDomainsOnXGitHubEnterpriseOwnerInfoArguments {
   isVerified?: boolean | null;
 
   /**
-   * Returns the last _n_ elements from the list.
+   * Filter whether or not the domain is approved.
+   * @default null
    */
-  last?: number | null;
+  isApproved?: boolean | null;
 
   /**
    * Ordering options for verifiable domains returned.
-   * @default {"direction":"ASC","field":"DOMAIN"}
+   * @default {"field":"DOMAIN","direction":"ASC"}
    */
   orderBy?: IXGitHubVerifiableDomainOrder | null;
 }
@@ -10812,12 +11002,6 @@ export interface IEnterpriseServerInstallationsOnXGitHubEnterpriseOwnerInfoArgum
   before?: string | null;
 
   /**
-   * Whether or not to only return installations discovered via GitHub Connect.
-   * @default false
-   */
-  connectedOnly?: boolean | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -10828,8 +11012,14 @@ export interface IEnterpriseServerInstallationsOnXGitHubEnterpriseOwnerInfoArgum
   last?: number | null;
 
   /**
+   * Whether or not to only return installations discovered via GitHub Connect.
+   * @default false
+   */
+  connectedOnly?: boolean | null;
+
+  /**
    * Ordering options for Enterprise Server installations returned.
-   * @default {"direction":"ASC","field":"HOST_NAME"}
+   * @default {"field":"HOST_NAME","direction":"ASC"}
    */
   orderBy?: IXGitHubEnterpriseServerInstallationOrder | null;
 }
@@ -10857,7 +11047,7 @@ export interface IIpAllowListEntriesOnXGitHubEnterpriseOwnerInfoArguments {
 
   /**
    * Ordering options for IP allow list entries returned.
-   * @default {"direction":"ASC","field":"ALLOW_LIST_VALUE"}
+   * @default {"field":"ALLOW_LIST_VALUE","direction":"ASC"}
    */
   orderBy?: IXGitHubIpAllowListEntryOrder | null;
 }
@@ -10884,15 +11074,15 @@ export interface IMembersCanChangeRepositoryVisibilitySettingOrganizationsOnXGit
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IMembersCanCreateRepositoriesSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -10917,15 +11107,15 @@ export interface IMembersCanCreateRepositoriesSettingOrganizationsOnXGitHubEnter
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting to find organizations for.
    */
   value: XGitHubOrganizationMembersCanCreateRepositoriesSettingValue;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IMembersCanDeleteIssuesSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -10950,15 +11140,15 @@ export interface IMembersCanDeleteIssuesSettingOrganizationsOnXGitHubEnterpriseO
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IMembersCanDeleteRepositoriesSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -10983,15 +11173,15 @@ export interface IMembersCanDeleteRepositoriesSettingOrganizationsOnXGitHubEnter
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IMembersCanInviteCollaboratorsSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11016,15 +11206,15 @@ export interface IMembersCanInviteCollaboratorsSettingOrganizationsOnXGitHubEnte
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IMembersCanUpdateProtectedBranchesSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11049,15 +11239,15 @@ export interface IMembersCanUpdateProtectedBranchesSettingOrganizationsOnXGitHub
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IMembersCanViewDependencyInsightsSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11082,15 +11272,15 @@ export interface IMembersCanViewDependencyInsightsSettingOrganizationsOnXGitHubE
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IOrganizationProjectsSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11115,61 +11305,39 @@ export interface IOrganizationProjectsSettingOrganizationsOnXGitHubEnterpriseOwn
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface IOutsideCollaboratorsOnXGitHubEnterpriseOwnerInfoArguments {
-  /**
-   * Returns the elements in the list that come after the specified cursor.
-   */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
   /**
    * The login of one specific outside collaborator.
    */
   login?: string | null;
 
   /**
-   * Ordering options for outside collaborators returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubEnterpriseMemberOrder | null;
-
-  /**
    * The search string to look for.
    */
   query?: string | null;
+
+  /**
+   * Ordering options for outside collaborators returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubEnterpriseMemberOrder | null;
 
   /**
    * Only return outside collaborators on repositories with this visibility.
    */
   visibility?: XGitHubRepositoryVisibility | null;
-}
 
-export interface IPendingAdminInvitationsOnXGitHubEnterpriseOwnerInfoArguments {
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -11189,26 +11357,59 @@ export interface IPendingAdminInvitationsOnXGitHubEnterpriseOwnerInfoArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+}
 
-  /**
-   * Ordering options for pending enterprise administrator invitations returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubEnterpriseAdministratorInvitationOrder | null;
-
+export interface IPendingAdminInvitationsOnXGitHubEnterpriseOwnerInfoArguments {
   /**
    * The search string to look for.
    */
   query?: string | null;
+
+  /**
+   * Ordering options for pending enterprise administrator invitations returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
+   */
+  orderBy?: IXGitHubEnterpriseAdministratorInvitationOrder | null;
 
   /**
    * The role to filter by.
    */
   role?: XGitHubEnterpriseAdministratorRole | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IPendingCollaboratorInvitationsOnXGitHubEnterpriseOwnerInfoArguments {
   /**
+   * The search string to look for.
+   */
+  query?: string | null;
+
+  /**
+   * Ordering options for pending repository collaborator invitations returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
+   */
+  orderBy?: IXGitHubRepositoryInvitationOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -11227,53 +11428,47 @@ export interface IPendingCollaboratorInvitationsOnXGitHubEnterpriseOwnerInfoArgu
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for pending repository collaborator invitations returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubRepositoryInvitationOrder | null;
-
-  /**
-   * The search string to look for.
-   */
-  query?: string | null;
 }
 
 export interface IPendingCollaboratorsOnXGitHubEnterpriseOwnerInfoArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * The search string to look for.
    */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
+  query?: string | null;
 
   /**
    * Ordering options for pending repository collaborator invitations returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubRepositoryInvitationOrder | null;
 
   /**
-   * The search string to look for.
+   * Returns the elements in the list that come after the specified cursor.
    */
-  query?: string | null;
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IPendingMemberInvitationsOnXGitHubEnterpriseOwnerInfoArguments {
+  /**
+   * The search string to look for.
+   */
+  query?: string | null;
+
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -11293,11 +11488,6 @@ export interface IPendingMemberInvitationsOnXGitHubEnterpriseOwnerInfoArguments 
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * The search string to look for.
-   */
-  query?: string | null;
 }
 
 export interface IRepositoryProjectsSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11322,15 +11512,15 @@ export interface IRepositoryProjectsSettingOrganizationsOnXGitHubEnterpriseOwner
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface ISamlIdentityProviderSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11355,18 +11545,24 @@ export interface ISamlIdentityProviderSettingOrganizationsOnXGitHubEnterpriseOwn
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: XGitHubIdentityProviderConfigurationState;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface ISupportEntitlementsOnXGitHubEnterpriseOwnerInfoArguments {
+  /**
+   * Ordering options for support entitlement users returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubEnterpriseMemberOrder | null;
+
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -11386,12 +11582,6 @@ export interface ISupportEntitlementsOnXGitHubEnterpriseOwnerInfoArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for support entitlement users returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubEnterpriseMemberOrder | null;
 }
 
 export interface ITeamDiscussionsSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11416,15 +11606,15 @@ export interface ITeamDiscussionsSettingOrganizationsOnXGitHubEnterpriseOwnerInf
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 export interface ITwoFactorRequiredSettingOrganizationsOnXGitHubEnterpriseOwnerInfoArguments {
@@ -11449,15 +11639,15 @@ export interface ITwoFactorRequiredSettingOrganizationsOnXGitHubEnterpriseOwnerI
   last?: number | null;
 
   /**
-   * Ordering options for organizations with this setting.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
    * The setting value to find organizations for.
    */
   value: boolean;
+
+  /**
+   * Ordering options for organizations with this setting.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
 }
 
 /**
@@ -11538,7 +11728,7 @@ export interface IRepositoriesOnXGitHubEnterprisePendingCollaboratorEdgeArgument
 
   /**
    * Ordering options for repositories.
-   * @default {"direction":"ASC","field":"NAME"}
+   * @default {"field":"NAME","direction":"ASC"}
    */
   orderBy?: IXGitHubRepositoryOrder | null;
 }
@@ -11710,6 +11900,12 @@ export interface IXGitHubEnterpriseServerInstallation {
 
 export interface IUserAccountsOnXGitHubEnterpriseServerInstallationArguments {
   /**
+   * Ordering options for Enterprise Server user accounts returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubEnterpriseServerUserAccountOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -11728,16 +11924,16 @@ export interface IUserAccountsOnXGitHubEnterpriseServerInstallationArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for Enterprise Server user accounts returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubEnterpriseServerUserAccountOrder | null;
 }
 
 export interface IUserAccountsUploadsOnXGitHubEnterpriseServerInstallationArguments {
   /**
+   * Ordering options for Enterprise Server user accounts uploads returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
+   */
+  orderBy?: IXGitHubEnterpriseServerUserAccountsUploadOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -11756,12 +11952,6 @@ export interface IUserAccountsUploadsOnXGitHubEnterpriseServerInstallationArgume
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for Enterprise Server user accounts uploads returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubEnterpriseServerUserAccountsUploadOrder | null;
 }
 
 /**
@@ -11813,14 +12003,14 @@ export interface IXGitHubEnterpriseServerInstallationEdge {
  */
 export interface IXGitHubEnterpriseServerInstallationOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order Enterprise Server installations by.
    */
   field: XGitHubEnterpriseServerInstallationOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -11828,9 +12018,9 @@ export interface IXGitHubEnterpriseServerInstallationOrder {
  */
 export const enum XGitHubEnterpriseServerInstallationOrderField {
   /**
-   * Order Enterprise Server installations by creation time
+   * Order Enterprise Server installations by host name
    */
-  CREATED_AT = 'CREATED_AT',
+  HOST_NAME = 'HOST_NAME',
 
   /**
    * Order Enterprise Server installations by customer name
@@ -11838,9 +12028,9 @@ export const enum XGitHubEnterpriseServerInstallationOrderField {
   CUSTOMER_NAME = 'CUSTOMER_NAME',
 
   /**
-   * Order Enterprise Server installations by host name
+   * Order Enterprise Server installations by creation time
    */
-  HOST_NAME = 'HOST_NAME'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -11898,6 +12088,12 @@ export interface IXGitHubEnterpriseServerUserAccount {
 
 export interface IEmailsOnXGitHubEnterpriseServerUserAccountArguments {
   /**
+   * Ordering options for Enterprise Server user account emails returned from the connection.
+   * @default {"field":"EMAIL","direction":"ASC"}
+   */
+  orderBy?: IXGitHubEnterpriseServerUserAccountEmailOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -11916,12 +12112,6 @@ export interface IEmailsOnXGitHubEnterpriseServerUserAccountArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for Enterprise Server user account emails returned from the connection.
-   * @default {"direction":"ASC","field":"EMAIL"}
-   */
-  orderBy?: IXGitHubEnterpriseServerUserAccountEmailOrder | null;
 }
 
 /**
@@ -12050,14 +12240,14 @@ export interface IXGitHubEnterpriseServerUserAccountEmailEdge {
  */
 export interface IXGitHubEnterpriseServerUserAccountEmailOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order emails by.
    */
   field: XGitHubEnterpriseServerUserAccountEmailOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -12067,7 +12257,7 @@ export const enum XGitHubEnterpriseServerUserAccountEmailOrderField {
   /**
    * Order emails by email
    */
-  EMAIL = 'EMAIL'
+  EMAIL = 'EMAIL',
 }
 
 /**
@@ -12075,14 +12265,14 @@ export const enum XGitHubEnterpriseServerUserAccountEmailOrderField {
  */
 export interface IXGitHubEnterpriseServerUserAccountOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order user accounts by.
    */
   field: XGitHubEnterpriseServerUserAccountOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -12097,7 +12287,7 @@ export const enum XGitHubEnterpriseServerUserAccountOrderField {
   /**
    * Order user accounts by creation time on the Enterprise Server installation
    */
-  REMOTE_CREATED_AT = 'REMOTE_CREATED_AT'
+  REMOTE_CREATED_AT = 'REMOTE_CREATED_AT',
 }
 
 /**
@@ -12187,14 +12377,14 @@ export interface IXGitHubEnterpriseServerUserAccountsUploadEdge {
  */
 export interface IXGitHubEnterpriseServerUserAccountsUploadOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order user accounts uploads by.
    */
   field: XGitHubEnterpriseServerUserAccountsUploadOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -12204,18 +12394,13 @@ export const enum XGitHubEnterpriseServerUserAccountsUploadOrderField {
   /**
    * Order user accounts uploads by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
  * Synchronization state of the Enterprise Server user accounts upload
  */
 export const enum XGitHubEnterpriseServerUserAccountsUploadSyncState {
-  /**
-   * The synchronization of the upload failed.
-   */
-  FAILURE = 'FAILURE',
-
   /**
    * The synchronization of the upload is pending.
    */
@@ -12224,7 +12409,12 @@ export const enum XGitHubEnterpriseServerUserAccountsUploadSyncState {
   /**
    * The synchronization of the upload succeeded.
    */
-  SUCCESS = 'SUCCESS'
+  SUCCESS = 'SUCCESS',
+
+  /**
+   * The synchronization of the upload failed.
+   */
+  FAILURE = 'FAILURE',
 }
 
 /**
@@ -12294,6 +12484,22 @@ export interface IAvatarUrlOnXGitHubEnterpriseUserAccountArguments {
 
 export interface IOrganizationsOnXGitHubEnterpriseUserAccountArguments {
   /**
+   * The search string to look for.
+   */
+  query?: string | null;
+
+  /**
+   * Ordering options for organizations returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubOrganizationOrder | null;
+
+  /**
+   * The role of the user in the enterprise organization.
+   */
+  role?: XGitHubEnterpriseUserAccountMembershipRole | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -12312,22 +12518,6 @@ export interface IOrganizationsOnXGitHubEnterpriseUserAccountArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for organizations returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubOrganizationOrder | null;
-
-  /**
-   * The search string to look for.
-   */
-  query?: string | null;
-
-  /**
-   * The role of the user in the enterprise organization.
-   */
-  role?: XGitHubEnterpriseUserAccountMembershipRole | null;
 }
 
 /**
@@ -12386,7 +12576,7 @@ export const enum XGitHubEnterpriseUserAccountMembershipRole {
   /**
    * The user is an owner of the enterprise membership.
    */
-  OWNER = 'OWNER'
+  OWNER = 'OWNER',
 }
 
 /**
@@ -12401,7 +12591,7 @@ export const enum XGitHubEnterpriseUserDeployment {
   /**
    * The user is part of a GitHub Enterprise Server deployment.
    */
-  SERVER = 'SERVER'
+  SERVER = 'SERVER',
 }
 
 /**
@@ -12640,6 +12830,171 @@ export interface IXGitHubExternalIdentityScimAttributes {
 }
 
 /**
+ * A command to add a file at the given path with the given contents as part of a commit.  Any existing file at that that path will be replaced.
+ */
+export interface IXGitHubFileAddition {
+  /**
+   * The path in the repository where the file will be located
+   */
+  path: string;
+
+  /**
+   * The base64 encoded contents of the file
+   */
+  contents: any;
+}
+
+/**
+ * A description of a set of changes to a file tree to be made as part of
+* a git commit, modeled as zero or more file `additions` and zero or more
+* file `deletions`.
+* 
+* Both fields are optional; omitting both will produce a commit with no
+* file changes.
+* 
+* `deletions` and `additions` describe changes to files identified
+* by their path in the git tree using unix-style path separators, i.e.
+* `/`.  The root of a git tree is an empty string, so paths are not
+* slash-prefixed.
+* 
+* `path` values must be unique across all `additions` and `deletions`
+* provided.  Any duplication will result in a validation error.
+* 
+* ### Encoding
+* 
+* File contents must be provided in full for each `FileAddition`.
+* 
+* The `contents` of a `FileAddition` must be encoded using RFC 4648
+* compliant base64, i.e. correct padding is required and no characters
+* outside the standard alphabet may be used.  Invalid base64
+* encoding will be rejected with a validation error.
+* 
+* The encoded contents may be binary.
+* 
+* For text files, no assumptions are made about the character encoding of
+* the file contents (after base64 decoding).  No charset transcoding or
+* line-ending normalization will be performed; it is the client's
+* responsibility to manage the character encoding of files they provide.
+* However, for maximum compatibility we recommend using UTF-8 encoding
+* and ensuring that all files in a repository use a consistent
+* line-ending convention (`
+` or `\r
+`), and that all files end
+* with a newline.
+* 
+* ### Modeling file changes
+* 
+* Each of the the five types of conceptual changes that can be made in a
+* git commit can be described using the `FileChanges` type as follows:
+* 
+* 1. New file addition: create file `hello world
+` at path `docs/README.txt`:
+* 
+*        {
+*          "additions" [
+*            {
+*              "path": "docs/README.txt",
+*              "contents": base64encode("hello world
+")
+*            }
+*          ]
+*        }
+* 
+* 2. Existing file modification: change existing `docs/README.txt` to have new
+*    content `new content here
+`:
+* 
+*        {
+*          "additions" [
+*            {
+*              "path": "docs/README.txt",
+*              "contents": base64encode("new content here
+")
+*            }
+*          ]
+*        }
+* 
+* 3. Existing file deletion: remove existing file `docs/README.txt`.
+*    Note that the path is required to exist -- specifying a
+*    path that does not exist on the given branch will abort the
+*    commit and return an error.
+* 
+*        {
+*          "deletions" [
+*            {
+*              "path": "docs/README.txt"
+*            }
+*          ]
+*        }
+* 
+* 
+* 4. File rename with no changes: rename `docs/README.txt` with
+*    previous content `hello world
+` to the same content at
+*    `newdocs/README.txt`:
+* 
+*        {
+*          "deletions" [
+*            {
+*              "path": "docs/README.txt",
+*            }
+*          ],
+*          "additions" [
+*            {
+*              "path": "newdocs/README.txt",
+*              "contents": base64encode("hello world
+")
+*            }
+*          ]
+*        }
+* 
+* 
+* 5. File rename with changes: rename `docs/README.txt` with
+*    previous content `hello world
+` to a file at path
+*    `newdocs/README.txt` with content `new contents
+`:
+* 
+*        {
+*          "deletions" [
+*            {
+*              "path": "docs/README.txt",
+*            }
+*          ],
+*          "additions" [
+*            {
+*              "path": "newdocs/README.txt",
+*              "contents": base64encode("new contents
+")
+*            }
+*          ]
+*        }
+ */
+export interface IXGitHubFileChanges {
+  /**
+   * Files to delete.
+   * @default []
+   */
+  deletions?: Array<IXGitHubFileDeletion> | null;
+
+  /**
+   * File to add or change.
+   * @default []
+   */
+  additions?: Array<IXGitHubFileAddition> | null;
+}
+
+/**
+ * A command to delete the file at the given path as part of a commit.
+ */
+export interface IXGitHubFileDeletion {
+  /**
+   * The path to delete
+   */
+  path: string;
+}
+
+/**
  * The possible viewed states of a file .
  */
 export const enum XGitHubFileViewedState {
@@ -12649,14 +13004,14 @@ export const enum XGitHubFileViewedState {
   DISMISSED = 'DISMISSED',
 
   /**
+   * The file has been marked as viewed.
+   */
+  VIEWED = 'VIEWED',
+
+  /**
    * The file has not been marked as viewed.
    */
   UNVIEWED = 'UNVIEWED',
-
-  /**
-   * The file has been marked as viewed.
-   */
-  VIEWED = 'VIEWED'
 }
 
 /**
@@ -12664,14 +13019,14 @@ export const enum XGitHubFileViewedState {
  */
 export interface IXGitHubFollowUserInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the user to follow.
    */
   userId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -12767,44 +13122,9 @@ export interface IXGitHubFundingLink {
  */
 export const enum XGitHubFundingPlatform {
   /**
-   * Community Bridge funding platform.
-   */
-  COMMUNITY_BRIDGE = 'COMMUNITY_BRIDGE',
-
-  /**
-   * Custom funding platform.
-   */
-  CUSTOM = 'CUSTOM',
-
-  /**
    * GitHub funding platform.
    */
   GITHUB = 'GITHUB',
-
-  /**
-   * IssueHunt funding platform.
-   */
-  ISSUEHUNT = 'ISSUEHUNT',
-
-  /**
-   * Ko-fi funding platform.
-   */
-  KO_FI = 'KO_FI',
-
-  /**
-   * Liberapay funding platform.
-   */
-  LIBERAPAY = 'LIBERAPAY',
-
-  /**
-   * Open Collective funding platform.
-   */
-  OPEN_COLLECTIVE = 'OPEN_COLLECTIVE',
-
-  /**
-   * Otechie funding platform.
-   */
-  OTECHIE = 'OTECHIE',
 
   /**
    * Patreon funding platform.
@@ -12812,9 +13132,44 @@ export const enum XGitHubFundingPlatform {
   PATREON = 'PATREON',
 
   /**
+   * Open Collective funding platform.
+   */
+  OPEN_COLLECTIVE = 'OPEN_COLLECTIVE',
+
+  /**
+   * Ko-fi funding platform.
+   */
+  KO_FI = 'KO_FI',
+
+  /**
    * Tidelift funding platform.
    */
-  TIDELIFT = 'TIDELIFT'
+  TIDELIFT = 'TIDELIFT',
+
+  /**
+   * Community Bridge funding platform.
+   */
+  COMMUNITY_BRIDGE = 'COMMUNITY_BRIDGE',
+
+  /**
+   * Liberapay funding platform.
+   */
+  LIBERAPAY = 'LIBERAPAY',
+
+  /**
+   * IssueHunt funding platform.
+   */
+  ISSUEHUNT = 'ISSUEHUNT',
+
+  /**
+   * Otechie funding platform.
+   */
+  OTECHIE = 'OTECHIE',
+
+  /**
+   * Custom funding platform.
+   */
+  CUSTOM = 'CUSTOM',
 }
 
 /**
@@ -13303,14 +13658,14 @@ export interface ITextOnXGitHubGistFileArguments {
  */
 export interface IXGitHubGistOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order repositories by.
    */
   field: XGitHubGistOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -13323,25 +13678,20 @@ export const enum XGitHubGistOrderField {
   CREATED_AT = 'CREATED_AT',
 
   /**
+   * Order gists by update time
+   */
+  UPDATED_AT = 'UPDATED_AT',
+
+  /**
    * Order gists by push time
    */
   PUSHED_AT = 'PUSHED_AT',
-
-  /**
-   * Order gists by update time
-   */
-  UPDATED_AT = 'UPDATED_AT'
 }
 
 /**
  * The privacy of a Gist
  */
 export const enum XGitHubGistPrivacy {
-  /**
-   * Gists that are public and secret
-   */
-  ALL = 'ALL',
-
   /**
    * Public
    */
@@ -13350,7 +13700,12 @@ export const enum XGitHubGistPrivacy {
   /**
    * Secret
    */
-  SECRET = 'SECRET'
+  SECRET = 'SECRET',
+
+  /**
+   * Gists that are public and secret
+   */
+  ALL = 'ALL',
 }
 
 /**
@@ -13555,8 +13910,7 @@ export interface IXGitHubGitSignature {
   signer: IXGitHubUser | null;
 
   /**
-   * The state of this signature. `VALID` if signature is valid and verified by
-   * GitHub, otherwise represents reason why signature is considered invalid.
+   * The state of this signature. `VALID` if signature is valid and verified by GitHub, otherwise represents reason why signature is considered invalid.
    */
   state: XGitHubGitSignatureState;
 
@@ -13571,29 +13925,9 @@ export interface IXGitHubGitSignature {
  */
 export const enum XGitHubGitSignatureState {
   /**
-   * The signing certificate or its chain could not be verified
+   * Valid signature and verified by GitHub
    */
-  BAD_CERT = 'BAD_CERT',
-
-  /**
-   * Invalid email used for signing
-   */
-  BAD_EMAIL = 'BAD_EMAIL',
-
-  /**
-   * Signing key expired
-   */
-  EXPIRED_KEY = 'EXPIRED_KEY',
-
-  /**
-   * Internal error - the GPG verification service misbehaved
-   */
-  GPGVERIFY_ERROR = 'GPGVERIFY_ERROR',
-
-  /**
-   * Internal error - the GPG verification service is unavailable at the moment
-   */
-  GPGVERIFY_UNAVAILABLE = 'GPGVERIFY_UNAVAILABLE',
+  VALID = 'VALID',
 
   /**
    * Invalid signature
@@ -13606,34 +13940,24 @@ export const enum XGitHubGitSignatureState {
   MALFORMED_SIG = 'MALFORMED_SIG',
 
   /**
-   * The usage flags for the key that signed this don't allow signing
+   * Key used for signing not known to GitHub
    */
-  NOT_SIGNING_KEY = 'NOT_SIGNING_KEY',
+  UNKNOWN_KEY = 'UNKNOWN_KEY',
+
+  /**
+   * Invalid email used for signing
+   */
+  BAD_EMAIL = 'BAD_EMAIL',
+
+  /**
+   * Email used for signing unverified on GitHub
+   */
+  UNVERIFIED_EMAIL = 'UNVERIFIED_EMAIL',
 
   /**
    * Email used for signing not known to GitHub
    */
   NO_USER = 'NO_USER',
-
-  /**
-   * Valid signature, though certificate revocation check failed
-   */
-  OCSP_ERROR = 'OCSP_ERROR',
-
-  /**
-   * Valid signature, pending certificate revocation checking
-   */
-  OCSP_PENDING = 'OCSP_PENDING',
-
-  /**
-   * One or more certificates in chain has been revoked
-   */
-  OCSP_REVOKED = 'OCSP_REVOKED',
-
-  /**
-   * Key used for signing not known to GitHub
-   */
-  UNKNOWN_KEY = 'UNKNOWN_KEY',
 
   /**
    * Unknown signature type
@@ -13646,14 +13970,44 @@ export const enum XGitHubGitSignatureState {
   UNSIGNED = 'UNSIGNED',
 
   /**
-   * Email used for signing unverified on GitHub
+   * Internal error - the GPG verification service is unavailable at the moment
    */
-  UNVERIFIED_EMAIL = 'UNVERIFIED_EMAIL',
+  GPGVERIFY_UNAVAILABLE = 'GPGVERIFY_UNAVAILABLE',
 
   /**
-   * Valid signature and verified by GitHub
+   * Internal error - the GPG verification service misbehaved
    */
-  VALID = 'VALID'
+  GPGVERIFY_ERROR = 'GPGVERIFY_ERROR',
+
+  /**
+   * The usage flags for the key that signed this don't allow signing
+   */
+  NOT_SIGNING_KEY = 'NOT_SIGNING_KEY',
+
+  /**
+   * Signing key expired
+   */
+  EXPIRED_KEY = 'EXPIRED_KEY',
+
+  /**
+   * Valid signature, pending certificate revocation checking
+   */
+  OCSP_PENDING = 'OCSP_PENDING',
+
+  /**
+   * Valid signature, though certificate revocation check failed
+   */
+  OCSP_ERROR = 'OCSP_ERROR',
+
+  /**
+   * The signing certificate or its chain could not be verified
+   */
+  BAD_CERT = 'BAD_CERT',
+
+  /**
+   * One or more certificates in chain has been revoked
+   */
+  OCSP_REVOKED = 'OCSP_REVOKED',
 }
 
 /**
@@ -13693,8 +14047,7 @@ export interface IXGitHubGpgSignature {
   signer: IXGitHubUser | null;
 
   /**
-   * The state of this signature. `VALID` if signature is valid and verified by
-   * GitHub, otherwise represents reason why signature is considered invalid.
+   * The state of this signature. `VALID` if signature is valid and verified by GitHub, otherwise represents reason why signature is considered invalid.
    */
   state: XGitHubGitSignatureState;
 
@@ -13842,35 +14195,25 @@ export interface IXGitHubHovercardContext {
  */
 export const enum XGitHubIdentityProviderConfigurationState {
   /**
-   * Authentication with an identity provider is configured but not enforced.
-   */
-  CONFIGURED = 'CONFIGURED',
-
-  /**
    * Authentication with an identity provider is configured and enforced.
    */
   ENFORCED = 'ENFORCED',
 
   /**
+   * Authentication with an identity provider is configured but not enforced.
+   */
+  CONFIGURED = 'CONFIGURED',
+
+  /**
    * Authentication with an identity provider is not configured.
    */
-  UNCONFIGURED = 'UNCONFIGURED'
+  UNCONFIGURED = 'UNCONFIGURED',
 }
 
 /**
  * Autogenerated input type of InviteEnterpriseAdmin
  */
 export interface IXGitHubInviteEnterpriseAdminInput {
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The email of the person to invite as an administrator.
-   */
-  email?: string | null;
-
   /**
    * The ID of the enterprise to which you want to invite an administrator.
    */
@@ -13882,9 +14225,19 @@ export interface IXGitHubInviteEnterpriseAdminInput {
   invitee?: string | null;
 
   /**
+   * The email of the person to invite as an administrator.
+   */
+  email?: string | null;
+
+  /**
    * The role of the administrator.
    */
   role?: XGitHubEnterpriseAdministratorRole | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -13909,14 +14262,14 @@ export interface IXGitHubInviteEnterpriseAdminPayload {
  */
 export const enum XGitHubIpAllowListEnabledSettingValue {
   /**
+   * The setting is enabled for the owner.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
    * The setting is disabled for the owner.
    */
   DISABLED = 'DISABLED',
-
-  /**
-   * The setting is enabled for the owner.
-   */
-  ENABLED = 'ENABLED'
 }
 
 /**
@@ -14006,14 +14359,14 @@ export interface IXGitHubIpAllowListEntryEdge {
  */
 export interface IXGitHubIpAllowListEntryOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order IP allow list entries by.
    */
   field: XGitHubIpAllowListEntryOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -14021,14 +14374,14 @@ export interface IXGitHubIpAllowListEntryOrder {
  */
 export const enum XGitHubIpAllowListEntryOrderField {
   /**
+   * Order IP allow list entries by creation time.
+   */
+  CREATED_AT = 'CREATED_AT',
+
+  /**
    * Order IP allow list entries by the allow list value.
    */
   ALLOW_LIST_VALUE = 'ALLOW_LIST_VALUE',
-
-  /**
-   * Order IP allow list entries by creation time.
-   */
-  CREATED_AT = 'CREATED_AT'
 }
 
 /**
@@ -14036,14 +14389,14 @@ export const enum XGitHubIpAllowListEntryOrderField {
  */
 export const enum XGitHubIpAllowListForInstalledAppsEnabledSettingValue {
   /**
+   * The setting is enabled for the owner.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
    * The setting is disabled for the owner.
    */
   DISABLED = 'DISABLED',
-
-  /**
-   * The setting is enabled for the owner.
-   */
-  ENABLED = 'ENABLED'
 }
 
 /**
@@ -14317,6 +14670,11 @@ export interface IAssigneesOnXGitHubIssueArguments {
 
 export interface ICommentsOnXGitHubIssueArguments {
   /**
+   * Ordering options for issue comments returned from the connection.
+   */
+  orderBy?: IXGitHubIssueCommentOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -14335,11 +14693,6 @@ export interface ICommentsOnXGitHubIssueArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for issue comments returned from the connection.
-   */
-  orderBy?: IXGitHubIssueCommentOrder | null;
 }
 
 export interface IHovercardOnXGitHubIssueArguments {
@@ -14352,6 +14705,12 @@ export interface IHovercardOnXGitHubIssueArguments {
 
 export interface ILabelsOnXGitHubIssueArguments {
   /**
+   * Ordering options for labels returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubLabelOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -14370,12 +14729,6 @@ export interface ILabelsOnXGitHubIssueArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for labels returned from the connection.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubLabelOrder | null;
 }
 
 export interface IParticipantsOnXGitHubIssueArguments {
@@ -14407,12 +14760,6 @@ export interface IProjectCardsOnXGitHubIssueArguments {
   after?: string | null;
 
   /**
-   * A list of archived states to filter the cards by
-   * @default ["ARCHIVED","NOT_ARCHIVED"]
-   */
-  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
-
-  /**
    * Returns the elements in the list that come before the specified cursor.
    */
   before?: string | null;
@@ -14426,6 +14773,12 @@ export interface IProjectCardsOnXGitHubIssueArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * A list of archived states to filter the cards by
+   * @default ["ARCHIVED","NOT_ARCHIVED"]
+   */
+  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
 }
 
 export interface IReactionsOnXGitHubIssueArguments {
@@ -14440,11 +14793,6 @@ export interface IReactionsOnXGitHubIssueArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -14453,6 +14801,11 @@ export interface IReactionsOnXGitHubIssueArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -14462,32 +14815,10 @@ export interface IReactionsOnXGitHubIssueArguments {
 
 export interface ITimelineOnXGitHubIssueArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
-   */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
    * Allows filtering timeline events by a `since` timestamp.
    */
   since?: any | null;
-}
 
-export interface ITimelineItemsOnXGitHubIssueArguments {
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -14504,15 +14835,12 @@ export interface ITimelineItemsOnXGitHubIssueArguments {
   first?: number | null;
 
   /**
-   * Filter timeline items by type.
-   */
-  itemTypes?: Array<XGitHubIssueTimelineItemsItemType> | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+}
 
+export interface ITimelineItemsOnXGitHubIssueArguments {
   /**
    * Filter timeline items by a `since` timestamp.
    */
@@ -14522,6 +14850,31 @@ export interface ITimelineItemsOnXGitHubIssueArguments {
    * Skips the first _n_ elements in the list.
    */
   skip?: number | null;
+
+  /**
+   * Filter timeline items by type.
+   */
+  itemTypes?: Array<XGitHubIssueTimelineItemsItemType> | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IUserContentEditsOnXGitHubIssueArguments {
@@ -14712,11 +15065,6 @@ export interface IReactionsOnXGitHubIssueCommentArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -14725,6 +15073,11 @@ export interface IReactionsOnXGitHubIssueCommentArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -14803,14 +15156,14 @@ export interface IXGitHubIssueCommentEdge {
  */
 export interface IXGitHubIssueCommentOrder {
   /**
-   * The direction in which to order issue comments by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order issue comments by.
    */
   field: XGitHubIssueCommentOrderField;
+
+  /**
+   * The direction in which to order issue comments by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -14820,7 +15173,7 @@ export const enum XGitHubIssueCommentOrderField {
   /**
    * Order issue comments by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -14917,8 +15270,7 @@ export interface IXGitHubIssueEdge {
  */
 export interface IXGitHubIssueFilters {
   /**
-   * List issues assigned to given name. Pass in `null` for issues with no assigned
-   * user, and `*` for issues assigned to any user.
+   * List issues assigned to given name. Pass in `null` for issues with no assigned user, and `*` for issues assigned to any user.
    */
   assignee?: string | null;
 
@@ -14938,9 +15290,7 @@ export interface IXGitHubIssueFilters {
   mentioned?: string | null;
 
   /**
-   * List issues by given milestone argument. If an string representation of an
-   * integer is passed, it should refer to a milestone by its number field. Pass in
-   * `null` for issues with no milestone, and `*` for issues that are assigned to any milestone.
+   * List issues by given milestone argument. If an string representation of an integer is passed, it should refer to a milestone by its number field. Pass in `null` for issues with no milestone, and `*` for issues that are assigned to any milestone.
    */
   milestone?: string | null;
 
@@ -14971,25 +15321,20 @@ export type _xGitHubIssueOrPullRequest = IXGitHubIssue | IXGitHubPullRequest;
  */
 export interface IXGitHubIssueOrder {
   /**
-   * The direction in which to order issues by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order issues by.
    */
   field: XGitHubIssueOrderField;
+
+  /**
+   * The direction in which to order issues by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
  * Properties by which issue connections can be ordered.
  */
 export const enum XGitHubIssueOrderField {
-  /**
-   * Order issues by comment count
-   */
-  COMMENTS = 'COMMENTS',
-
   /**
    * Order issues by creation time
    */
@@ -14998,7 +15343,12 @@ export const enum XGitHubIssueOrderField {
   /**
    * Order issues by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
+
+  /**
+   * Order issues by comment count
+   */
+  COMMENTS = 'COMMENTS',
 }
 
 /**
@@ -15006,14 +15356,14 @@ export const enum XGitHubIssueOrderField {
  */
 export const enum XGitHubIssueState {
   /**
+   * An issue that is still open
+   */
+  OPEN = 'OPEN',
+
+  /**
    * An issue that has been closed
    */
   CLOSED = 'CLOSED',
-
-  /**
-   * An issue that is still open
-   */
-  OPEN = 'OPEN'
 }
 
 /**
@@ -15210,6 +15560,16 @@ export interface IXGitHubIssueTimelineItemsEdge {
  */
 export const enum XGitHubIssueTimelineItemsItemType {
   /**
+   * Represents a comment on an Issue.
+   */
+  ISSUE_COMMENT = 'ISSUE_COMMENT',
+
+  /**
+   * Represents a mention made by one issue or pull request to another.
+   */
+  CROSS_REFERENCED_EVENT = 'CROSS_REFERENCED_EVENT',
+
+  /**
    * Represents a 'added_to_project' event on a given issue or pull request.
    */
   ADDED_TO_PROJECT_EVENT = 'ADDED_TO_PROJECT_EVENT',
@@ -15240,11 +15600,6 @@ export const enum XGitHubIssueTimelineItemsItemType {
   CONVERTED_NOTE_TO_ISSUE_EVENT = 'CONVERTED_NOTE_TO_ISSUE_EVENT',
 
   /**
-   * Represents a mention made by one issue or pull request to another.
-   */
-  CROSS_REFERENCED_EVENT = 'CROSS_REFERENCED_EVENT',
-
-  /**
    * Represents a 'demilestoned' event on a given issue or pull request.
    */
   DEMILESTONED_EVENT = 'DEMILESTONED_EVENT',
@@ -15253,11 +15608,6 @@ export const enum XGitHubIssueTimelineItemsItemType {
    * Represents a 'disconnected' event on a given issue or pull request.
    */
   DISCONNECTED_EVENT = 'DISCONNECTED_EVENT',
-
-  /**
-   * Represents a comment on an Issue.
-   */
-  ISSUE_COMMENT = 'ISSUE_COMMENT',
 
   /**
    * Represents a 'labeled' event on a given issue or pull request.
@@ -15340,6 +15690,11 @@ export const enum XGitHubIssueTimelineItemsItemType {
   UNLOCKED_EVENT = 'UNLOCKED_EVENT',
 
   /**
+   * Represents a 'user_blocked' event on a given user.
+   */
+  USER_BLOCKED_EVENT = 'USER_BLOCKED_EVENT',
+
+  /**
    * Represents an 'unmarked_as_duplicate' event on a given issue or pull request.
    */
   UNMARKED_AS_DUPLICATE_EVENT = 'UNMARKED_AS_DUPLICATE_EVENT',
@@ -15353,11 +15708,6 @@ export const enum XGitHubIssueTimelineItemsItemType {
    * Represents an 'unsubscribed' event on a given `Subscribable`.
    */
   UNSUBSCRIBED_EVENT = 'UNSUBSCRIBED_EVENT',
-
-  /**
-   * Represents a 'user_blocked' event on a given user.
-   */
-  USER_BLOCKED_EVENT = 'USER_BLOCKED_EVENT'
 }
 
 /**
@@ -15459,14 +15809,19 @@ export interface IXGitHubLabel {
 
 export interface IIssuesOnXGitHubLabelArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * Ordering options for issues returned from the connection.
    */
-  after?: string | null;
+  orderBy?: IXGitHubIssueOrder | null;
 
   /**
-   * Returns the elements in the list that come before the specified cursor.
+   * A list of label names to filter the pull requests by.
    */
-  before?: string | null;
+  labels?: Array<string> | null;
+
+  /**
+   * A list of states to filter the issues by.
+   */
+  states?: Array<XGitHubIssueState> | null;
 
   /**
    * Filtering options for issues returned from the connection.
@@ -15474,41 +15829,9 @@ export interface IIssuesOnXGitHubLabelArguments {
   filterBy?: IXGitHubIssueFilters | null;
 
   /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * A list of label names to filter the pull requests by.
-   */
-  labels?: Array<string> | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for issues returned from the connection.
-   */
-  orderBy?: IXGitHubIssueOrder | null;
-
-  /**
-   * A list of states to filter the issues by.
-   */
-  states?: Array<XGitHubIssueState> | null;
-}
-
-export interface IPullRequestsOnXGitHubLabelArguments {
-  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
-
-  /**
-   * The base ref name to filter the pull requests by.
-   */
-  baseRefName?: string | null;
 
   /**
    * Returns the elements in the list that come before the specified cursor.
@@ -15521,9 +15844,16 @@ export interface IPullRequestsOnXGitHubLabelArguments {
   first?: number | null;
 
   /**
-   * The head ref name to filter the pull requests by.
+   * Returns the last _n_ elements from the list.
    */
-  headRefName?: string | null;
+  last?: number | null;
+}
+
+export interface IPullRequestsOnXGitHubLabelArguments {
+  /**
+   * A list of states to filter the pull requests by.
+   */
+  states?: Array<XGitHubPullRequestState> | null;
 
   /**
    * A list of label names to filter the pull requests by.
@@ -15531,9 +15861,14 @@ export interface IPullRequestsOnXGitHubLabelArguments {
   labels?: Array<string> | null;
 
   /**
-   * Returns the last _n_ elements from the list.
+   * The head ref name to filter the pull requests by.
    */
-  last?: number | null;
+  headRefName?: string | null;
+
+  /**
+   * The base ref name to filter the pull requests by.
+   */
+  baseRefName?: string | null;
 
   /**
    * Ordering options for pull requests returned from the connection.
@@ -15541,9 +15876,24 @@ export interface IPullRequestsOnXGitHubLabelArguments {
   orderBy?: IXGitHubIssueOrder | null;
 
   /**
-   * A list of states to filter the pull requests by.
+   * Returns the elements in the list that come after the specified cursor.
    */
-  states?: Array<XGitHubPullRequestState> | null;
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 /**
@@ -15595,14 +15945,14 @@ export interface IXGitHubLabelEdge {
  */
 export interface IXGitHubLabelOrder {
   /**
-   * The direction in which to order labels by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order labels by.
    */
   field: XGitHubLabelOrderField;
+
+  /**
+   * The direction in which to order labels by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -15610,14 +15960,14 @@ export interface IXGitHubLabelOrder {
  */
 export const enum XGitHubLabelOrderField {
   /**
+   * Order labels by name
+   */
+  NAME = 'NAME',
+
+  /**
    * Order labels by creation time
    */
   CREATED_AT = 'CREATED_AT',
-
-  /**
-   * Order labels by name
-   */
-  NAME = 'NAME'
 }
 
 /**
@@ -15642,6 +15992,12 @@ export interface IXGitHubLabelable {
 
 export interface ILabelsOnXGitHubLabelableArguments {
   /**
+   * Ordering options for labels returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubLabelOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -15660,12 +16016,6 @@ export interface ILabelsOnXGitHubLabelableArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for labels returned from the connection.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubLabelOrder | null;
 }
 
 /**
@@ -15765,14 +16115,14 @@ export interface IXGitHubLanguageEdge {
  */
 export interface IXGitHubLanguageOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order languages by.
    */
   field: XGitHubLanguageOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -15782,7 +16132,7 @@ export const enum XGitHubLanguageOrderField {
   /**
    * Order languages by the size of all files containing the language
    */
-  SIZE = 'SIZE'
+  SIZE = 'SIZE',
 }
 
 /**
@@ -15890,11 +16240,6 @@ export interface IXGitHubLicenseRule {
  */
 export interface IXGitHubLinkRepositoryToProjectInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the Project to link to a Repository
    */
   projectId: string;
@@ -15903,6 +16248,11 @@ export interface IXGitHubLinkRepositoryToProjectInput {
    * The ID of the Repository to link to a Project.
    */
   repositoryId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -15932,9 +16282,9 @@ export interface IXGitHubLinkRepositoryToProjectPayload {
  */
 export interface IXGitHubLockLockableInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * ID of the item to be locked.
    */
-  clientMutationId?: string | null;
+  lockableId: string;
 
   /**
    * A reason for why the item will be locked.
@@ -15942,9 +16292,9 @@ export interface IXGitHubLockLockableInput {
   lockReason?: XGitHubLockReason | null;
 
   /**
-   * ID of the item to be locked.
+   * A unique identifier for the client performing the mutation.
    */
-  lockableId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -15979,6 +16329,11 @@ export const enum XGitHubLockReason {
   OFF_TOPIC = 'OFF_TOPIC',
 
   /**
+   * The issue or pull request was locked because the conversation was too heated.
+   */
+  TOO_HEATED = 'TOO_HEATED',
+
+  /**
    * The issue or pull request was locked because the conversation was resolved.
    */
   RESOLVED = 'RESOLVED',
@@ -15987,11 +16342,6 @@ export const enum XGitHubLockReason {
    * The issue or pull request was locked because the conversation was spam.
    */
   SPAM = 'SPAM',
-
-  /**
-   * The issue or pull request was locked because the conversation was too heated.
-   */
-  TOO_HEATED = 'TOO_HEATED'
 }
 
 /**
@@ -16112,14 +16462,14 @@ export interface IAvatarUrlOnXGitHubMannequinArguments {
  */
 export interface IXGitHubMarkDiscussionCommentAsAnswerInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the discussion comment to mark as an answer.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -16144,9 +16494,9 @@ export interface IXGitHubMarkDiscussionCommentAsAnswerPayload {
  */
 export interface IXGitHubMarkFileAsViewedInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the pull request.
    */
-  clientMutationId?: string | null;
+  pullRequestId: string;
 
   /**
    * The path of the file to mark as viewed
@@ -16154,9 +16504,9 @@ export interface IXGitHubMarkFileAsViewedInput {
   path: string;
 
   /**
-   * The Node ID of the pull request.
+   * A unique identifier for the client performing the mutation.
    */
-  pullRequestId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -16181,14 +16531,14 @@ export interface IXGitHubMarkFileAsViewedPayload {
  */
 export interface IXGitHubMarkPullRequestReadyForReviewInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the pull request to be marked as ready for review.
    */
   pullRequestId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -16382,8 +16732,7 @@ export interface IXGitHubMarketplaceListing {
   isArchived: boolean;
 
   /**
-   * Whether this listing is still an editable draft that has not been submitted
-   * for review and is not publicly visible in the Marketplace.
+   * Whether this listing is still an editable draft that has not been submitted for review and is not publicly visible in the Marketplace.
    */
   isDraft: boolean;
 
@@ -16498,8 +16847,7 @@ export interface IXGitHubMarketplaceListing {
   supportEmail: string | null;
 
   /**
-   * Either a URL or an email address for support for this listing's app, may
-   * return an empty string for listings that do not require a support URL.
+   * Either a URL or an email address for support for this listing's app, may return an empty string for listings that do not require a support URL.
    */
   supportUrl: any;
 
@@ -16671,7 +17019,7 @@ export interface IMemberStatusesOnXGitHubMemberStatusableArguments {
 
   /**
    * Ordering options for user statuses returned from the connection.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubUserStatusOrder | null;
 }
@@ -17028,9 +17376,9 @@ export interface IXGitHubMentionedEvent {
  */
 export interface IXGitHubMergeBranchInput {
   /**
-   * The email address to associate with this commit.
+   * The Node ID of the Repository containing the base branch that will be modified.
    */
-  authorEmail?: string | null;
+  repositoryId: string;
 
   /**
    * The name of the base branch that the provided head will be merged into.
@@ -17038,9 +17386,9 @@ export interface IXGitHubMergeBranchInput {
   base: string;
 
   /**
-   * A unique identifier for the client performing the mutation.
+   * The head to merge into the base branch. This can be a branch name or a commit GitObjectID.
    */
-  clientMutationId?: string | null;
+  head: string;
 
   /**
    * Message to use for the merge commit. If omitted, a default will be used.
@@ -17048,14 +17396,14 @@ export interface IXGitHubMergeBranchInput {
   commitMessage?: string | null;
 
   /**
-   * The head to merge into the base branch. This can be a branch name or a commit GitObjectID.
+   * The email address to associate with this commit.
    */
-  head: string;
+  authorEmail?: string | null;
 
   /**
-   * The Node ID of the Repository containing the base branch that will be modified.
+   * A unique identifier for the client performing the mutation.
    */
-  repositoryId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -17080,24 +17428,19 @@ export interface IXGitHubMergeBranchPayload {
  */
 export interface IXGitHubMergePullRequestInput {
   /**
-   * The email address to associate with this merge.
+   * ID of the pull request to be merged.
    */
-  authorEmail?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * Commit body to use for the merge commit; if omitted, a default message will be used
-   */
-  commitBody?: string | null;
+  pullRequestId: string;
 
   /**
    * Commit headline to use for the merge commit; if omitted, a default message will be used.
    */
   commitHeadline?: string | null;
+
+  /**
+   * Commit body to use for the merge commit; if omitted, a default message will be used
+   */
+  commitBody?: string | null;
 
   /**
    * OID that the pull request head ref must match to allow merge; if omitted, no check is performed.
@@ -17111,9 +17454,14 @@ export interface IXGitHubMergePullRequestInput {
   mergeMethod?: XGitHubPullRequestMergeMethod | null;
 
   /**
-   * ID of the pull request to be merged.
+   * The email address to associate with this merge.
    */
-  pullRequestId: string;
+  authorEmail?: string | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -17143,19 +17491,19 @@ export interface IXGitHubMergePullRequestPayload {
  */
 export const enum XGitHubMergeableState {
   /**
-   * The pull request cannot be merged due to merge conflicts.
-   */
-  CONFLICTING = 'CONFLICTING',
-
-  /**
    * The pull request can be merged.
    */
   MERGEABLE = 'MERGEABLE',
 
   /**
+   * The pull request cannot be merged due to merge conflicts.
+   */
+  CONFLICTING = 'CONFLICTING',
+
+  /**
    * The mergeability of the pull request is still being calculated.
    */
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 /**
@@ -17296,14 +17644,19 @@ export interface IXGitHubMilestone {
 
 export interface IIssuesOnXGitHubMilestoneArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * Ordering options for issues returned from the connection.
    */
-  after?: string | null;
+  orderBy?: IXGitHubIssueOrder | null;
 
   /**
-   * Returns the elements in the list that come before the specified cursor.
+   * A list of label names to filter the pull requests by.
    */
-  before?: string | null;
+  labels?: Array<string> | null;
+
+  /**
+   * A list of states to filter the issues by.
+   */
+  states?: Array<XGitHubIssueState> | null;
 
   /**
    * Filtering options for issues returned from the connection.
@@ -17311,41 +17664,9 @@ export interface IIssuesOnXGitHubMilestoneArguments {
   filterBy?: IXGitHubIssueFilters | null;
 
   /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * A list of label names to filter the pull requests by.
-   */
-  labels?: Array<string> | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for issues returned from the connection.
-   */
-  orderBy?: IXGitHubIssueOrder | null;
-
-  /**
-   * A list of states to filter the issues by.
-   */
-  states?: Array<XGitHubIssueState> | null;
-}
-
-export interface IPullRequestsOnXGitHubMilestoneArguments {
-  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
-
-  /**
-   * The base ref name to filter the pull requests by.
-   */
-  baseRefName?: string | null;
 
   /**
    * Returns the elements in the list that come before the specified cursor.
@@ -17358,9 +17679,16 @@ export interface IPullRequestsOnXGitHubMilestoneArguments {
   first?: number | null;
 
   /**
-   * The head ref name to filter the pull requests by.
+   * Returns the last _n_ elements from the list.
    */
-  headRefName?: string | null;
+  last?: number | null;
+}
+
+export interface IPullRequestsOnXGitHubMilestoneArguments {
+  /**
+   * A list of states to filter the pull requests by.
+   */
+  states?: Array<XGitHubPullRequestState> | null;
 
   /**
    * A list of label names to filter the pull requests by.
@@ -17368,9 +17696,14 @@ export interface IPullRequestsOnXGitHubMilestoneArguments {
   labels?: Array<string> | null;
 
   /**
-   * Returns the last _n_ elements from the list.
+   * The head ref name to filter the pull requests by.
    */
-  last?: number | null;
+  headRefName?: string | null;
+
+  /**
+   * The base ref name to filter the pull requests by.
+   */
+  baseRefName?: string | null;
 
   /**
    * Ordering options for pull requests returned from the connection.
@@ -17378,9 +17711,24 @@ export interface IPullRequestsOnXGitHubMilestoneArguments {
   orderBy?: IXGitHubIssueOrder | null;
 
   /**
-   * A list of states to filter the pull requests by.
+   * Returns the elements in the list that come after the specified cursor.
    */
-  states?: Array<XGitHubPullRequestState> | null;
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 /**
@@ -17437,14 +17785,14 @@ export type _xGitHubMilestoneItem = IXGitHubIssue | IXGitHubPullRequest;
  */
 export interface IXGitHubMilestoneOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order milestones by.
    */
   field: XGitHubMilestoneOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -17452,24 +17800,24 @@ export interface IXGitHubMilestoneOrder {
  */
 export const enum XGitHubMilestoneOrderField {
   /**
-   * Order milestones by when they were created.
-   */
-  CREATED_AT = 'CREATED_AT',
-
-  /**
    * Order milestones by when they are due.
    */
   DUE_DATE = 'DUE_DATE',
 
   /**
-   * Order milestones by their number.
+   * Order milestones by when they were created.
    */
-  NUMBER = 'NUMBER',
+  CREATED_AT = 'CREATED_AT',
 
   /**
    * Order milestones by when they were last updated.
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
+
+  /**
+   * Order milestones by their number.
+   */
+  NUMBER = 'NUMBER',
 }
 
 /**
@@ -17477,14 +17825,14 @@ export const enum XGitHubMilestoneOrderField {
  */
 export const enum XGitHubMilestoneState {
   /**
+   * A milestone that is still open.
+   */
+  OPEN = 'OPEN',
+
+  /**
    * A milestone that has been closed.
    */
   CLOSED = 'CLOSED',
-
-  /**
-   * A milestone that is still open.
-   */
-  OPEN = 'OPEN'
 }
 
 /**
@@ -17552,6 +17900,11 @@ export interface IXGitHubMinimizable {
  */
 export interface IXGitHubMinimizeCommentInput {
   /**
+   * The Node ID of the subject to modify.
+   */
+  subjectId: string;
+
+  /**
    * The classification of comment
    */
   classifier: XGitHubReportedContentClassifiers;
@@ -17560,11 +17913,6 @@ export interface IXGitHubMinimizeCommentInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the subject to modify.
-   */
-  subjectId: string;
 }
 
 /**
@@ -17589,24 +17937,24 @@ export interface IXGitHubMinimizeCommentPayload {
  */
 export interface IXGitHubMoveProjectCardInput {
   /**
-   * Place the new card after the card with this id. Pass null to place it at the top.
-   */
-  afterCardId?: string | null;
-
-  /**
    * The id of the card to move.
    */
   cardId: string;
 
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The id of the column to move it into.
    */
   columnId: string;
+
+  /**
+   * Place the new card after the card with this id. Pass null to place it at the top.
+   */
+  afterCardId?: string | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -17631,6 +17979,11 @@ export interface IXGitHubMoveProjectCardPayload {
  */
 export interface IXGitHubMoveProjectColumnInput {
   /**
+   * The id of the column to move.
+   */
+  columnId: string;
+
+  /**
    * Place the new column after the column with this id. Pass null to place it at the front.
    */
   afterColumnId?: string | null;
@@ -17639,11 +17992,6 @@ export interface IXGitHubMoveProjectColumnInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The id of the column to move.
-   */
-  columnId: string;
 }
 
 /**
@@ -17793,6 +18141,11 @@ export interface IXGitHubMutation {
   cancelEnterpriseAdminInvitation: IXGitHubCancelEnterpriseAdminInvitationPayload | null;
 
   /**
+   * Cancel an active sponsorship.
+   */
+  cancelSponsorship: IXGitHubCancelSponsorshipPayload | null;
+
+  /**
    * Update your status on GitHub.
    */
   changeUserStatus: IXGitHubChangeUserStatusPayload | null;
@@ -17848,6 +18201,52 @@ export interface IXGitHubMutation {
   createCheckSuite: IXGitHubCreateCheckSuitePayload | null;
 
   /**
+   * Appends a commit to the given branch as the authenticated user.
+   *
+   * This mutation creates a commit whose parent is the HEAD of the provided
+   * branch and also updates that branch to point to the new commit.
+   * It can be thought of as similar to `git commit`.
+   *
+   * ### Locating a Branch
+   *
+   * Commits are appended to a `branch` of type `Ref`.
+   * This must refer to a git branch (i.e.  the fully qualified path must
+   * begin with `refs/heads/`, although including this prefix is optional.
+   *
+   * Callers may specify the `branch` to commit to either by its global node
+   * ID or by passing both of `repositoryNameWithOwner` and `refName`.  For
+   * more details see the documentation for `CommittableBranch`.
+   *
+   * ### Describing Changes
+   *
+   * `fileChanges` are specified as a `FilesChanges` object describing
+   * `FileAdditions` and `FileDeletions`.
+   *
+   * Please see the documentation for `FileChanges` for more information on
+   * how to use this argument to describe any set of file changes.
+   *
+   * ### Authorship
+   *
+   * Similar to the web commit interface, this mutation does not support
+   * specifying the author or committer of the commit and will not add
+   * support for this in the future.
+   *
+   * A commit created by a successful execution of this mutation will be
+   * authored by the owner of the credential which authenticates the API
+   * request.  The committer will be identical to that of commits authored
+   * using the web interface.
+   *
+   * If you need full control over author and committer information, please
+   * use the Git Database REST API instead.
+   *
+   * ### Commit Signing
+   *
+   * Commits made using this mutation are automatically signed by GitHub if
+   * supported and will be marked as verified in the user interface.
+   */
+  createCommitOnBranch: IXGitHubCreateCommitOnBranchPayload | null;
+
+  /**
    * Create a discussion.
    */
   createDiscussion: IXGitHubCreateDiscussionPayload | null;
@@ -17871,6 +18270,11 @@ export interface IXGitHubMutation {
    * Creates a new issue.
    */
   createIssue: IXGitHubCreateIssuePayload | null;
+
+  /**
+   * Creates a new label.
+   */
+  createLabel: IXGitHubCreateLabelPayload | null;
 
   /**
    * Creates a new project.
@@ -17951,6 +18355,11 @@ export interface IXGitHubMutation {
    * Deletes an IssueComment object.
    */
   deleteIssueComment: IXGitHubDeleteIssueCommentPayload | null;
+
+  /**
+   * Deletes a label.
+   */
+  deleteLabel: IXGitHubDeleteLabelPayload | null;
 
   /**
    * Deletes a project.
@@ -18383,6 +18792,11 @@ export interface IXGitHubMutation {
   updateIssueComment: IXGitHubUpdateIssueCommentPayload | null;
 
   /**
+   * Updates an existing label.
+   */
+  updateLabel: IXGitHubUpdateLabelPayload | null;
+
+  /**
    * Update the setting to restrict notifications to only verified or approved domains available to an owner.
    */
   updateNotificationRestrictionSetting: IXGitHubUpdateNotificationRestrictionSettingPayload | null;
@@ -18426,6 +18840,11 @@ export interface IXGitHubMutation {
    * Update information about a repository.
    */
   updateRepository: IXGitHubUpdateRepositoryPayload | null;
+
+  /**
+   * Change visibility of your sponsorship and opt in or out of email updates from the maintainer.
+   */
+  updateSponsorshipPreferences: IXGitHubUpdateSponsorshipPreferencesPayload | null;
 
   /**
    * Updates the state for subscribable subjects.
@@ -18593,6 +19012,13 @@ export interface ICancelEnterpriseAdminInvitationOnXGitHubMutationArguments {
   input: IXGitHubCancelEnterpriseAdminInvitationInput;
 }
 
+export interface ICancelSponsorshipOnXGitHubMutationArguments {
+  /**
+   * Parameters for CancelSponsorship
+   */
+  input: IXGitHubCancelSponsorshipInput;
+}
+
 export interface IChangeUserStatusOnXGitHubMutationArguments {
   /**
    * Parameters for ChangeUserStatus
@@ -18670,6 +19096,13 @@ export interface ICreateCheckSuiteOnXGitHubMutationArguments {
   input: IXGitHubCreateCheckSuiteInput;
 }
 
+export interface ICreateCommitOnBranchOnXGitHubMutationArguments {
+  /**
+   * Parameters for CreateCommitOnBranch
+   */
+  input: IXGitHubCreateCommitOnBranchInput;
+}
+
 export interface ICreateDiscussionOnXGitHubMutationArguments {
   /**
    * Parameters for CreateDiscussion
@@ -18703,6 +19136,13 @@ export interface ICreateIssueOnXGitHubMutationArguments {
    * Parameters for CreateIssue
    */
   input: IXGitHubCreateIssueInput;
+}
+
+export interface ICreateLabelOnXGitHubMutationArguments {
+  /**
+   * Parameters for CreateLabel
+   */
+  input: IXGitHubCreateLabelInput;
 }
 
 export interface ICreateProjectOnXGitHubMutationArguments {
@@ -18815,6 +19255,13 @@ export interface IDeleteIssueCommentOnXGitHubMutationArguments {
    * Parameters for DeleteIssueComment
    */
   input: IXGitHubDeleteIssueCommentInput;
+}
+
+export interface IDeleteLabelOnXGitHubMutationArguments {
+  /**
+   * Parameters for DeleteLabel
+   */
+  input: IXGitHubDeleteLabelInput;
 }
 
 export interface IDeleteProjectOnXGitHubMutationArguments {
@@ -19419,6 +19866,13 @@ export interface IUpdateIssueCommentOnXGitHubMutationArguments {
   input: IXGitHubUpdateIssueCommentInput;
 }
 
+export interface IUpdateLabelOnXGitHubMutationArguments {
+  /**
+   * Parameters for UpdateLabel
+   */
+  input: IXGitHubUpdateLabelInput;
+}
+
 export interface IUpdateNotificationRestrictionSettingOnXGitHubMutationArguments {
   /**
    * Parameters for UpdateNotificationRestrictionSetting
@@ -19480,6 +19934,13 @@ export interface IUpdateRepositoryOnXGitHubMutationArguments {
    * Parameters for UpdateRepository
    */
   input: IXGitHubUpdateRepositoryInput;
+}
+
+export interface IUpdateSponsorshipPreferencesOnXGitHubMutationArguments {
+  /**
+   * Parameters for UpdateSponsorshipPreferences
+   */
+  input: IXGitHubUpdateSponsorshipPreferencesInput;
 }
 
 export interface IUpdateSubscriptionOnXGitHubMutationArguments {
@@ -19740,14 +20201,14 @@ export interface IXGitHubNode {
  */
 export const enum XGitHubNotificationRestrictionSettingValue {
   /**
+   * The setting is enabled for the owner.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
    * The setting is disabled for the owner.
    */
   DISABLED = 'DISABLED',
-
-  /**
-   * The setting is enabled for the owner.
-   */
-  ENABLED = 'ENABLED'
 }
 
 /**
@@ -19919,14 +20380,14 @@ export const enum XGitHubOauthApplicationCreateAuditEntryState {
   ACTIVE = 'ACTIVE',
 
   /**
+   * The OAuth Application was suspended from generating OAuth Accesses due to abuse or security concerns.
+   */
+  SUSPENDED = 'SUSPENDED',
+
+  /**
    * The OAuth Application was in the process of being deleted.
    */
   PENDING_DELETION = 'PENDING_DELETION',
-
-  /**
-   * The OAuth Application was suspended from generating OAuth Accesses due to abuse or security concerns.
-   */
-  SUSPENDED = 'SUSPENDED'
 }
 
 /**
@@ -19966,7 +20427,7 @@ export const enum XGitHubOperationType {
   /**
    * An existing resource was transferred between multiple resources
    */
-  TRANSFER = 'TRANSFER'
+  TRANSFER = 'TRANSFER',
 }
 
 /**
@@ -19981,7 +20442,7 @@ export const enum XGitHubOrderDirection {
   /**
    * Specifies a descending order for a given `orderBy` argument.
    */
-  DESC = 'DESC'
+  DESC = 'DESC',
 }
 
 /**
@@ -20185,14 +20646,14 @@ export interface IXGitHubOrgAddMemberAuditEntry {
  */
 export const enum XGitHubOrgAddMemberAuditEntryPermission {
   /**
+   * Can read and clone repositories.
+   */
+  READ = 'READ',
+
+  /**
    * Can read, clone, push, and add collaborators to repositories.
    */
   ADMIN = 'ADMIN',
-
-  /**
-   * Can read and clone repositories.
-   */
-  READ = 'READ'
 }
 
 /**
@@ -20597,6 +21058,11 @@ export interface IXGitHubOrgCreateAuditEntry {
  */
 export const enum XGitHubOrgCreateAuditEntryBillingPlan {
   /**
+   * Free Plan
+   */
+  FREE = 'FREE',
+
+  /**
    * Team Plan
    */
   BUSINESS = 'BUSINESS',
@@ -20607,19 +21073,14 @@ export const enum XGitHubOrgCreateAuditEntryBillingPlan {
   BUSINESS_PLUS = 'BUSINESS_PLUS',
 
   /**
-   * Free Plan
+   * Legacy Unlimited Plan
    */
-  FREE = 'FREE',
+  UNLIMITED = 'UNLIMITED',
 
   /**
    * Tiered Per Seat Plan
    */
   TIERED_PER_SEAT = 'TIERED_PER_SEAT',
-
-  /**
-   * Legacy Unlimited Plan
-   */
-  UNLIMITED = 'UNLIMITED'
 }
 
 /**
@@ -21858,6 +22319,11 @@ export interface IXGitHubOrgRemoveBillingManagerAuditEntry {
  */
 export const enum XGitHubOrgRemoveBillingManagerAuditEntryReason {
   /**
+   * The organization required 2FA of its billing managers and this user did not have 2FA enabled.
+   */
+  TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE = 'TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE',
+
+  /**
    * SAML external identity missing
    */
   SAML_EXTERNAL_IDENTITY_MISSING = 'SAML_EXTERNAL_IDENTITY_MISSING',
@@ -21866,11 +22332,6 @@ export const enum XGitHubOrgRemoveBillingManagerAuditEntryReason {
    * SAML SSO enforcement requires an external identity
    */
   SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY = 'SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY',
-
-  /**
-   * The organization required 2FA of its billing managers and this user did not have 2FA enabled.
-   */
-  TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE = 'TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE'
 }
 
 /**
@@ -21981,10 +22442,12 @@ export interface IXGitHubOrgRemoveMemberAuditEntry {
  */
 export const enum XGitHubOrgRemoveMemberAuditEntryMembershipType {
   /**
-   * Organization administrators have full access and can change several settings,
-   * including the names of repositories that belong to the Organization and Owners
-   * team membership. In addition, organization admins can delete the organization
-   * and all of its repositories.
+   * A direct member is a user that is a member of the Organization.
+   */
+  DIRECT_MEMBER = 'DIRECT_MEMBER',
+
+  /**
+   * Organization administrators have full access and can change several settings, including the names of repositories that belong to the Organization and Owners team membership. In addition, organization admins can delete the organization and all of its repositories.
    */
   ADMIN = 'ADMIN',
 
@@ -21994,28 +22457,25 @@ export const enum XGitHubOrgRemoveMemberAuditEntryMembershipType {
   BILLING_MANAGER = 'BILLING_MANAGER',
 
   /**
-   * A direct member is a user that is a member of the Organization.
+   * An unaffiliated collaborator is a person who is not a member of the Organization and does not have access to any repositories in the Organization.
    */
-  DIRECT_MEMBER = 'DIRECT_MEMBER',
+  UNAFFILIATED = 'UNAFFILIATED',
 
   /**
-   * An outside collaborator is a person who isn't explicitly a member of the
-   * Organization, but who has Read, Write, or Admin permissions to one or more
-   * repositories in the organization.
+   * An outside collaborator is a person who isn't explicitly a member of the Organization, but who has Read, Write, or Admin permissions to one or more repositories in the organization.
    */
   OUTSIDE_COLLABORATOR = 'OUTSIDE_COLLABORATOR',
-
-  /**
-   * An unaffiliated collaborator is a person who is not a member of the
-   * Organization and does not have access to any repositories in the Organization.
-   */
-  UNAFFILIATED = 'UNAFFILIATED'
 }
 
 /**
  * The reason a member was removed from an Organization.
  */
 export const enum XGitHubOrgRemoveMemberAuditEntryReason {
+  /**
+   * The organization required 2FA of its billing managers and this user did not have 2FA enabled.
+   */
+  TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE = 'TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE',
+
   /**
    * SAML external identity missing
    */
@@ -22027,19 +22487,14 @@ export const enum XGitHubOrgRemoveMemberAuditEntryReason {
   SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY = 'SAML_SSO_ENFORCEMENT_REQUIRES_EXTERNAL_IDENTITY',
 
   /**
+   * User account has been deleted
+   */
+  USER_ACCOUNT_DELETED = 'USER_ACCOUNT_DELETED',
+
+  /**
    * User was removed from organization during account recovery
    */
   TWO_FACTOR_ACCOUNT_RECOVERY = 'TWO_FACTOR_ACCOUNT_RECOVERY',
-
-  /**
-   * The organization required 2FA of its billing managers and this user did not have 2FA enabled.
-   */
-  TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE = 'TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE',
-
-  /**
-   * User account has been deleted
-   */
-  USER_ACCOUNT_DELETED = 'USER_ACCOUNT_DELETED'
 }
 
 /**
@@ -22092,9 +22547,7 @@ export interface IXGitHubOrgRemoveOutsideCollaboratorAuditEntry {
   /**
    * The types of membership the outside collaborator has with the organization.
    */
-  membershipTypes: Array<
-    XGitHubOrgRemoveOutsideCollaboratorAuditEntryMembershipType
-  > | null;
+  membershipTypes: Array<XGitHubOrgRemoveOutsideCollaboratorAuditEntryMembershipType> | null;
 
   /**
    * The corresponding operation type for the action
@@ -22152,22 +22605,19 @@ export interface IXGitHubOrgRemoveOutsideCollaboratorAuditEntry {
  */
 export const enum XGitHubOrgRemoveOutsideCollaboratorAuditEntryMembershipType {
   /**
-   * A billing manager is a user who manages the billing settings for the Organization, such as updating payment information.
-   */
-  BILLING_MANAGER = 'BILLING_MANAGER',
-
-  /**
-   * An outside collaborator is a person who isn't explicitly a member of the
-   * Organization, but who has Read, Write, or Admin permissions to one or more
-   * repositories in the organization.
+   * An outside collaborator is a person who isn't explicitly a member of the Organization, but who has Read, Write, or Admin permissions to one or more repositories in the organization.
    */
   OUTSIDE_COLLABORATOR = 'OUTSIDE_COLLABORATOR',
 
   /**
-   * An unaffiliated collaborator is a person who is not a member of the
-   * Organization and does not have access to any repositories in the organization.
+   * An unaffiliated collaborator is a person who is not a member of the Organization and does not have access to any repositories in the organization.
    */
-  UNAFFILIATED = 'UNAFFILIATED'
+  UNAFFILIATED = 'UNAFFILIATED',
+
+  /**
+   * A billing manager is a user who manages the billing settings for the Organization, such as updating payment information.
+   */
+  BILLING_MANAGER = 'BILLING_MANAGER',
 }
 
 /**
@@ -22175,14 +22625,14 @@ export const enum XGitHubOrgRemoveOutsideCollaboratorAuditEntryMembershipType {
  */
 export const enum XGitHubOrgRemoveOutsideCollaboratorAuditEntryReason {
   /**
+   * The organization required 2FA of its billing managers and this user did not have 2FA enabled.
+   */
+  TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE = 'TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE',
+
+  /**
    * SAML external identity missing
    */
   SAML_EXTERNAL_IDENTITY_MISSING = 'SAML_EXTERNAL_IDENTITY_MISSING',
-
-  /**
-   * The organization required 2FA of its billing managers and this user did not have 2FA enabled.
-   */
-  TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE = 'TWO_FACTOR_REQUIREMENT_NON_COMPLIANCE'
 }
 
 /**
@@ -22270,9 +22720,7 @@ export interface IXGitHubOrgRestoreMemberAuditEntry {
   /**
    * Restored organization membership objects.
    */
-  restoredMemberships: Array<
-    _xGitHubOrgRestoreMemberAuditEntryMembership
-  > | null;
+  restoredMemberships: Array<_xGitHubOrgRestoreMemberAuditEntryMembership> | null;
 
   /**
    * The number of restored memberships.
@@ -22625,6 +23073,16 @@ export interface IXGitHubOrgUpdateDefaultRepositoryPermissionAuditEntry {
  */
 export const enum XGitHubOrgUpdateDefaultRepositoryPermissionAuditEntryPermission {
   /**
+   * Can read and clone repositories.
+   */
+  READ = 'READ',
+
+  /**
+   * Can read, clone and push to repositories.
+   */
+  WRITE = 'WRITE',
+
+  /**
    * Can read, clone, push, and add collaborators to repositories.
    */
   ADMIN = 'ADMIN',
@@ -22633,16 +23091,6 @@ export const enum XGitHubOrgUpdateDefaultRepositoryPermissionAuditEntryPermissio
    * No default permission value.
    */
   NONE = 'NONE',
-
-  /**
-   * Can read and clone repositories.
-   */
-  READ = 'READ',
-
-  /**
-   * Can read, clone and push to repositories.
-   */
-  WRITE = 'WRITE'
 }
 
 /**
@@ -22753,14 +23201,14 @@ export interface IXGitHubOrgUpdateMemberAuditEntry {
  */
 export const enum XGitHubOrgUpdateMemberAuditEntryPermission {
   /**
+   * Can read and clone repositories.
+   */
+  READ = 'READ',
+
+  /**
    * Can read, clone, push, and add collaborators to repositories.
    */
   ADMIN = 'ADMIN',
-
-  /**
-   * Can read and clone repositories.
-   */
-  READ = 'READ'
 }
 
 /**
@@ -22876,9 +23324,9 @@ export const enum XGitHubOrgUpdateMemberRepositoryCreationPermissionAuditEntryVi
   ALL = 'ALL',
 
   /**
-   * All organization members are restricted from creating internal repositories.
+   * All organization members are restricted from creating public repositories.
    */
-  INTERNAL = 'INTERNAL',
+  PUBLIC = 'PUBLIC',
 
   /**
    * All organization members are allowed to create any repositories.
@@ -22891,14 +23339,9 @@ export const enum XGitHubOrgUpdateMemberRepositoryCreationPermissionAuditEntryVi
   PRIVATE = 'PRIVATE',
 
   /**
-   * All organization members are restricted from creating private or internal repositories.
+   * All organization members are restricted from creating internal repositories.
    */
-  PRIVATE_INTERNAL = 'PRIVATE_INTERNAL',
-
-  /**
-   * All organization members are restricted from creating public repositories.
-   */
-  PUBLIC = 'PUBLIC',
+  INTERNAL = 'INTERNAL',
 
   /**
    * All organization members are restricted from creating public or internal repositories.
@@ -22906,9 +23349,14 @@ export const enum XGitHubOrgUpdateMemberRepositoryCreationPermissionAuditEntryVi
   PUBLIC_INTERNAL = 'PUBLIC_INTERNAL',
 
   /**
+   * All organization members are restricted from creating private or internal repositories.
+   */
+  PRIVATE_INTERNAL = 'PRIVATE_INTERNAL',
+
+  /**
    * All organization members are restricted from creating public or private repositories.
    */
-  PUBLIC_PRIVATE = 'PUBLIC_PRIVATE'
+  PUBLIC_PRIVATE = 'PUBLIC_PRIVATE',
 }
 
 /**
@@ -23107,8 +23555,7 @@ export interface IXGitHubOrganization {
   isVerified: boolean;
 
   /**
-   * Showcases a selection of repositories and gists that the profile owner has
-   * either curated or that have been selected automatically based on popularity.
+   * Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
    */
   itemShowcase: IXGitHubProfileItemShowcase;
 
@@ -23228,8 +23675,7 @@ export interface IXGitHubOrganization {
   repositoryDiscussions: IXGitHubDiscussionConnection;
 
   /**
-   * When true the organization requires all members, billing managers, and outside
-   * collaborators to enable two-factor authentication.
+   * When true the organization requires all members, billing managers, and outside collaborators to enable two-factor authentication.
    */
   requiresTwoFactorAuthentication: boolean | null;
 
@@ -23264,9 +23710,14 @@ export interface IXGitHubOrganization {
   sponsorsListing: IXGitHubSponsorsListing | null;
 
   /**
-   * The viewer's sponsorship of this entity.
+   * The sponsorship from the viewer to this user/organization; that is, the sponsorship where you're the sponsor. Only returns a sponsorship if it is active.
    */
   sponsorshipForViewerAsSponsor: IXGitHubSponsorship | null;
+
+  /**
+   * The sponsorship from this user/organization to the viewer; that is, the sponsorship you're receiving. Only returns a sponsorship if it is active.
+   */
+  sponsorshipForViewerAsSponsorable: IXGitHubSponsorship | null;
 
   /**
    * List of sponsorship updates sent from this sponsorable to sponsors.
@@ -23393,15 +23844,15 @@ export interface IAuditLogOnXGitHubOrganizationArguments {
   last?: number | null;
 
   /**
-   * Ordering options for the returned audit log entries.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubAuditLogOrder | null;
-
-  /**
    * The query string to filter audit entries
    */
   query?: string | null;
+
+  /**
+   * Ordering options for the returned audit log entries.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
+   */
+  orderBy?: IXGitHubAuditLogOrder | null;
 }
 
 export interface IAvatarUrlOnXGitHubOrganizationArguments {
@@ -23428,10 +23879,9 @@ export interface IDomainsOnXGitHubOrganizationArguments {
   first?: number | null;
 
   /**
-   * Filter by if the domain is approved.
-   * @default null
+   * Returns the last _n_ elements from the list.
    */
-  isApproved?: boolean | null;
+  last?: number | null;
 
   /**
    * Filter by if the domain is verified.
@@ -23440,13 +23890,14 @@ export interface IDomainsOnXGitHubOrganizationArguments {
   isVerified?: boolean | null;
 
   /**
-   * Returns the last _n_ elements from the list.
+   * Filter by if the domain is approved.
+   * @default null
    */
-  last?: number | null;
+  isApproved?: boolean | null;
 
   /**
    * Ordering options for verifiable domains returned.
-   * @default {"direction":"ASC","field":"DOMAIN"}
+   * @default {"field":"DOMAIN","direction":"ASC"}
    */
   orderBy?: IXGitHubVerifiableDomainOrder | null;
 }
@@ -23474,7 +23925,7 @@ export interface IIpAllowListEntriesOnXGitHubOrganizationArguments {
 
   /**
    * Ordering options for IP allow list entries returned.
-   * @default {"direction":"ASC","field":"ALLOW_LIST_VALUE"}
+   * @default {"field":"ALLOW_LIST_VALUE","direction":"ASC"}
    */
   orderBy?: IXGitHubIpAllowListEntryOrder | null;
 }
@@ -23509,7 +23960,7 @@ export interface IMemberStatusesOnXGitHubOrganizationArguments {
 
   /**
    * Ordering options for user statuses returned from the connection.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubUserStatusOrder | null;
 }
@@ -23563,10 +24014,9 @@ export interface IPackagesOnXGitHubOrganizationArguments {
   names?: Array<string | null> | null;
 
   /**
-   * Ordering of the returned packages.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * Find packages in a repository by ID.
    */
-  orderBy?: IXGitHubPackageOrder | null;
+  repositoryId?: string | null;
 
   /**
    * Filter registry package by type.
@@ -23574,9 +24024,10 @@ export interface IPackagesOnXGitHubOrganizationArguments {
   packageType?: XGitHubPackageType | null;
 
   /**
-   * Find packages in a repository by ID.
+   * Ordering of the returned packages.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
-  repositoryId?: string | null;
+  orderBy?: IXGitHubPackageOrder | null;
 }
 
 export interface IPendingMembersOnXGitHubOrganizationArguments {
@@ -23603,6 +24054,11 @@ export interface IPendingMembersOnXGitHubOrganizationArguments {
 
 export interface IPinnableItemsOnXGitHubOrganizationArguments {
   /**
+   * Filter the types of pinnable items that are returned.
+   */
+  types?: Array<XGitHubPinnableItemType> | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -23621,15 +24077,15 @@ export interface IPinnableItemsOnXGitHubOrganizationArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter the types of pinnable items that are returned.
-   */
-  types?: Array<XGitHubPinnableItemType> | null;
 }
 
 export interface IPinnedItemsOnXGitHubOrganizationArguments {
   /**
+   * Filter the types of pinned items that are returned.
+   */
+  types?: Array<XGitHubPinnableItemType> | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -23648,11 +24104,6 @@ export interface IPinnedItemsOnXGitHubOrganizationArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter the types of pinned items that are returned.
-   */
-  types?: Array<XGitHubPinnableItemType> | null;
 }
 
 export interface IProjectOnXGitHubOrganizationArguments {
@@ -23663,26 +24114,6 @@ export interface IProjectOnXGitHubOrganizationArguments {
 }
 
 export interface IProjectsOnXGitHubOrganizationArguments {
-  /**
-   * Returns the elements in the list that come after the specified cursor.
-   */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
   /**
    * Ordering options for projects returned from the connection
    */
@@ -23697,15 +24128,6 @@ export interface IProjectsOnXGitHubOrganizationArguments {
    * A list of states to filter the projects by.
    */
   states?: Array<XGitHubProjectState> | null;
-}
-
-export interface IRepositoriesOnXGitHubOrganizationArguments {
-  /**
-   * Array of viewer's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * current viewer owns.
-   */
-  affiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -23723,19 +24145,16 @@ export interface IRepositoriesOnXGitHubOrganizationArguments {
   first?: number | null;
 
   /**
-   * If non-null, filters repositories according to whether they are forks of another repository
-   */
-  isFork?: boolean | null;
-
-  /**
-   * If non-null, filters repositories according to whether they have been locked
-   */
-  isLocked?: boolean | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+}
+
+export interface IRepositoriesOnXGitHubOrganizationArguments {
+  /**
+   * If non-null, filters repositories according to privacy
+   */
+  privacy?: XGitHubRepositoryPrivacy | null;
 
   /**
    * Ordering options for repositories returned from the connection
@@ -23743,17 +24162,45 @@ export interface IRepositoriesOnXGitHubOrganizationArguments {
   orderBy?: IXGitHubRepositoryOrder | null;
 
   /**
-   * Array of owner's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * organization or user being viewed owns.
+   * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
+   */
+  affiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    * @default ["OWNER","COLLABORATOR"]
    */
   ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
 
   /**
-   * If non-null, filters repositories according to privacy
+   * If non-null, filters repositories according to whether they have been locked
    */
-  privacy?: XGitHubRepositoryPrivacy | null;
+  isLocked?: boolean | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
+
+  /**
+   * If non-null, filters repositories according to whether they are forks of another repository
+   */
+  isFork?: boolean | null;
 }
 
 export interface IRepositoryOnXGitHubOrganizationArguments {
@@ -23785,15 +24232,15 @@ export interface IRepositoryDiscussionCommentsOnXGitHubOrganizationArguments {
   last?: number | null;
 
   /**
+   * Filter discussion comments to only those in a specific repository.
+   */
+  repositoryId?: string | null;
+
+  /**
    * Filter discussion comments to only those that were marked as the answer
    * @default false
    */
   onlyAnswers?: boolean | null;
-
-  /**
-   * Filter discussion comments to only those in a specific repository.
-   */
-  repositoryId?: string | null;
 }
 
 export interface IRepositoryDiscussionsOnXGitHubOrganizationArguments {
@@ -23801,13 +24248,6 @@ export interface IRepositoryDiscussionsOnXGitHubOrganizationArguments {
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
-
-  /**
-   * Filter discussions to only those that have been answered or not. Defaults to
-   * including both answered and unanswered discussions.
-   * @default null
-   */
-  answered?: boolean | null;
 
   /**
    * Returns the elements in the list that come before the specified cursor.
@@ -23826,7 +24266,7 @@ export interface IRepositoryDiscussionsOnXGitHubOrganizationArguments {
 
   /**
    * Ordering options for discussions returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubDiscussionOrder | null;
 
@@ -23834,6 +24274,12 @@ export interface IRepositoryDiscussionsOnXGitHubOrganizationArguments {
    * Filter discussions to only those in a specific repository.
    */
   repositoryId?: string | null;
+
+  /**
+   * Filter discussions to only those that have been answered or not. Defaults to including both answered and unanswered discussions.
+   * @default null
+   */
+  answered?: boolean | null;
 }
 
 export interface ISponsoringOnXGitHubOrganizationArguments {
@@ -23859,7 +24305,7 @@ export interface ISponsoringOnXGitHubOrganizationArguments {
 
   /**
    * Ordering options for the users and organizations returned from the connection.
-   * @default {"direction":"DESC","field":"RELEVANCE"}
+   * @default {"field":"RELEVANCE","direction":"DESC"}
    */
   orderBy?: IXGitHubSponsorOrder | null;
 }
@@ -23886,16 +24332,15 @@ export interface ISponsorsOnXGitHubOrganizationArguments {
   last?: number | null;
 
   /**
-   * Ordering options for sponsors returned from the connection.
-   * @default {"direction":"DESC","field":"RELEVANCE"}
-   */
-  orderBy?: IXGitHubSponsorOrder | null;
-
-  /**
-   * If given, will filter for sponsors at the given tier. Will only return
-   * sponsors whose tier the viewer is permitted to see.
+   * If given, will filter for sponsors at the given tier. Will only return sponsors whose tier the viewer is permitted to see.
    */
   tierId?: string | null;
+
+  /**
+   * Ordering options for sponsors returned from the connection.
+   * @default {"field":"RELEVANCE","direction":"DESC"}
+   */
+  orderBy?: IXGitHubSponsorOrder | null;
 }
 
 export interface ISponsorsActivitiesOnXGitHubOrganizationArguments {
@@ -23920,16 +24365,16 @@ export interface ISponsorsActivitiesOnXGitHubOrganizationArguments {
   last?: number | null;
 
   /**
-   * Ordering options for activity returned from the connection.
-   * @default {"direction":"DESC","field":"TIMESTAMP"}
-   */
-  orderBy?: IXGitHubSponsorsActivityOrder | null;
-
-  /**
    * Filter activities returned to only those that occurred in a given time range.
    * @default "MONTH"
    */
   period?: XGitHubSponsorsActivityPeriod | null;
+
+  /**
+   * Ordering options for activity returned from the connection.
+   * @default {"field":"TIMESTAMP","direction":"DESC"}
+   */
+  orderBy?: IXGitHubSponsorsActivityOrder | null;
 }
 
 export interface ISponsorshipNewslettersOnXGitHubOrganizationArguments {
@@ -23955,7 +24400,7 @@ export interface ISponsorshipNewslettersOnXGitHubOrganizationArguments {
 
   /**
    * Ordering options for sponsorship updates returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubSponsorshipNewsletterOrder | null;
 }
@@ -23977,19 +24422,18 @@ export interface ISponsorshipsAsMaintainerOnXGitHubOrganizationArguments {
   first?: number | null;
 
   /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
+
+  /**
    * Whether or not to include private sponsorships in the result set
    * @default false
    */
   includePrivate?: boolean | null;
 
   /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for sponsorships returned from this connection. If left
-   * blank, the sponsorships will be ordered based on relevancy to the viewer.
+   * Ordering options for sponsorships returned from this connection. If left blank, the sponsorships will be ordered based on relevancy to the viewer.
    */
   orderBy?: IXGitHubSponsorshipOrder | null;
 }
@@ -24016,8 +24460,7 @@ export interface ISponsorshipsAsSponsorOnXGitHubOrganizationArguments {
   last?: number | null;
 
   /**
-   * Ordering options for sponsorships returned from this connection. If left
-   * blank, the sponsorships will be ordered based on relevancy to the viewer.
+   * Ordering options for sponsorships returned from this connection. If left blank, the sponsorships will be ordered based on relevancy to the viewer.
    */
   orderBy?: IXGitHubSponsorshipOrder | null;
 }
@@ -24030,6 +24473,42 @@ export interface ITeamOnXGitHubOrganizationArguments {
 }
 
 export interface ITeamsOnXGitHubOrganizationArguments {
+  /**
+   * If non-null, filters teams according to privacy
+   */
+  privacy?: XGitHubTeamPrivacy | null;
+
+  /**
+   * If non-null, filters teams according to whether the viewer is an admin or member on team
+   */
+  role?: XGitHubTeamRole | null;
+
+  /**
+   * If non-null, filters teams with query on team name and team slug
+   */
+  query?: string | null;
+
+  /**
+   * User logins to filter by
+   */
+  userLogins?: Array<string> | null;
+
+  /**
+   * Ordering options for teams returned from the connection
+   */
+  orderBy?: IXGitHubTeamOrder | null;
+
+  /**
+   * If true, filters teams that are mapped to an LDAP Group (Enterprise only)
+   */
+  ldapMapped?: boolean | null;
+
+  /**
+   * If true, restrict to only root teams
+   * @default false
+   */
+  rootTeamsOnly?: boolean | null;
+
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -24049,42 +24528,6 @@ export interface ITeamsOnXGitHubOrganizationArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * If true, filters teams that are mapped to an LDAP Group (Enterprise only)
-   */
-  ldapMapped?: boolean | null;
-
-  /**
-   * Ordering options for teams returned from the connection
-   */
-  orderBy?: IXGitHubTeamOrder | null;
-
-  /**
-   * If non-null, filters teams according to privacy
-   */
-  privacy?: XGitHubTeamPrivacy | null;
-
-  /**
-   * If non-null, filters teams with query on team name and team slug
-   */
-  query?: string | null;
-
-  /**
-   * If non-null, filters teams according to whether the viewer is an admin or member on team
-   */
-  role?: XGitHubTeamRole | null;
-
-  /**
-   * If true, restrict to only root teams
-   * @default false
-   */
-  rootTeamsOnly?: boolean | null;
-
-  /**
-   * User logins to filter by
-   */
-  userLogins?: Array<string> | null;
 }
 
 /**
@@ -24374,6 +24817,11 @@ export interface IXGitHubOrganizationIdentityProvider {
 
 export interface IExternalIdentitiesOnXGitHubOrganizationIdentityProviderArguments {
   /**
+   * Filter to external identities with valid org membership only
+   */
+  membersOnly?: boolean | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -24392,11 +24840,6 @@ export interface IExternalIdentitiesOnXGitHubOrganizationIdentityProviderArgumen
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter to external identities with valid org membership only
-   */
-  membersOnly?: boolean | null;
 }
 
 /**
@@ -24491,6 +24934,11 @@ export interface IXGitHubOrganizationInvitationEdge {
  */
 export const enum XGitHubOrganizationInvitationRole {
   /**
+   * The user is invited to be a direct member of the organization.
+   */
+  DIRECT_MEMBER = 'DIRECT_MEMBER',
+
+  /**
    * The user is invited to be an admin of the organization.
    */
   ADMIN = 'ADMIN',
@@ -24501,14 +24949,9 @@ export const enum XGitHubOrganizationInvitationRole {
   BILLING_MANAGER = 'BILLING_MANAGER',
 
   /**
-   * The user is invited to be a direct member of the organization.
-   */
-  DIRECT_MEMBER = 'DIRECT_MEMBER',
-
-  /**
    * The user's previous role will be reinstated.
    */
-  REINSTATE = 'REINSTATE'
+  REINSTATE = 'REINSTATE',
 }
 
 /**
@@ -24516,14 +24959,14 @@ export const enum XGitHubOrganizationInvitationRole {
  */
 export const enum XGitHubOrganizationInvitationType {
   /**
+   * The invitation was to an existing user.
+   */
+  USER = 'USER',
+
+  /**
    * The invitation was to an email address.
    */
   EMAIL = 'EMAIL',
-
-  /**
-   * The invitation was to an existing user.
-   */
-  USER = 'USER'
 }
 
 /**
@@ -24585,14 +25028,14 @@ export interface IXGitHubOrganizationMemberEdge {
  */
 export const enum XGitHubOrganizationMemberRole {
   /**
+   * The user is a member of the organization.
+   */
+  MEMBER = 'MEMBER',
+
+  /**
    * The user is an administrator of the organization.
    */
   ADMIN = 'ADMIN',
-
-  /**
-   * The user is a member of the organization.
-   */
-  MEMBER = 'MEMBER'
 }
 
 /**
@@ -24605,9 +25048,9 @@ export const enum XGitHubOrganizationMembersCanCreateRepositoriesSettingValue {
   ALL = 'ALL',
 
   /**
-   * Members will not be able to create public or private repositories.
+   * Members will be able to create only private repositories.
    */
-  DISABLED = 'DISABLED',
+  PRIVATE = 'PRIVATE',
 
   /**
    * Members will be able to create only internal repositories.
@@ -24615,9 +25058,9 @@ export const enum XGitHubOrganizationMembersCanCreateRepositoriesSettingValue {
   INTERNAL = 'INTERNAL',
 
   /**
-   * Members will be able to create only private repositories.
+   * Members will not be able to create public or private repositories.
    */
-  PRIVATE = 'PRIVATE'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -24625,14 +25068,14 @@ export const enum XGitHubOrganizationMembersCanCreateRepositoriesSettingValue {
  */
 export interface IXGitHubOrganizationOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order organizations by.
    */
   field: XGitHubOrganizationOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -24647,7 +25090,7 @@ export const enum XGitHubOrganizationOrderField {
   /**
    * Order organizations by login
    */
-  LOGIN = 'LOGIN'
+  LOGIN = 'LOGIN',
 }
 
 /**
@@ -24810,6 +25253,12 @@ export interface IVersionOnXGitHubPackageArguments {
 
 export interface IVersionsOnXGitHubPackageArguments {
   /**
+   * Ordering of the returned packages.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
+   */
+  orderBy?: IXGitHubPackageVersionOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -24828,12 +25277,6 @@ export interface IVersionsOnXGitHubPackageArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering of the returned packages.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubPackageVersionOrder | null;
 }
 
 /**
@@ -24977,14 +25420,14 @@ export interface IXGitHubPackageFileEdge {
  */
 export interface IXGitHubPackageFileOrder {
   /**
-   * The direction in which to order package files by the specified field.
-   */
-  direction?: XGitHubOrderDirection | null;
-
-  /**
    * The field in which to order package files by.
    */
   field?: XGitHubPackageFileOrderField | null;
+
+  /**
+   * The direction in which to order package files by the specified field.
+   */
+  direction?: XGitHubOrderDirection | null;
 }
 
 /**
@@ -24994,7 +25437,7 @@ export const enum XGitHubPackageFileOrderField {
   /**
    * Order package files by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -25002,14 +25445,14 @@ export const enum XGitHubPackageFileOrderField {
  */
 export interface IXGitHubPackageOrder {
   /**
-   * The direction in which to order packages by the specified field.
-   */
-  direction?: XGitHubOrderDirection | null;
-
-  /**
    * The field in which to order packages by.
    */
   field?: XGitHubPackageOrderField | null;
+
+  /**
+   * The direction in which to order packages by the specified field.
+   */
+  direction?: XGitHubOrderDirection | null;
 }
 
 /**
@@ -25019,7 +25462,7 @@ export const enum XGitHubPackageOrderField {
   /**
    * Order packages by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -25070,10 +25513,9 @@ export interface IPackagesOnXGitHubPackageOwnerArguments {
   names?: Array<string | null> | null;
 
   /**
-   * Ordering of the returned packages.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * Find packages in a repository by ID.
    */
-  orderBy?: IXGitHubPackageOrder | null;
+  repositoryId?: string | null;
 
   /**
    * Filter registry package by type.
@@ -25081,9 +25523,10 @@ export interface IPackagesOnXGitHubPackageOwnerArguments {
   packageType?: XGitHubPackageType | null;
 
   /**
-   * Find packages in a repository by ID.
+   * Ordering of the returned packages.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
-  repositoryId?: string | null;
+  orderBy?: IXGitHubPackageOrder | null;
 }
 
 /**
@@ -25121,9 +25564,19 @@ export interface IXGitHubPackageTag {
  */
 export const enum XGitHubPackageType {
   /**
-   * A debian package.
+   * An npm package.
    */
-  DEBIAN = 'DEBIAN',
+  NPM = 'NPM',
+
+  /**
+   * A rubygems package.
+   */
+  RUBYGEMS = 'RUBYGEMS',
+
+  /**
+   * A maven package.
+   */
+  MAVEN = 'MAVEN',
 
   /**
    * A docker image.
@@ -25132,14 +25585,9 @@ export const enum XGitHubPackageType {
   DOCKER = 'DOCKER',
 
   /**
-   * A maven package.
+   * A debian package.
    */
-  MAVEN = 'MAVEN',
-
-  /**
-   * An npm package.
-   */
-  NPM = 'NPM',
+  DEBIAN = 'DEBIAN',
 
   /**
    * A nuget package.
@@ -25150,11 +25598,6 @@ export const enum XGitHubPackageType {
    * A python package.
    */
   PYPI = 'PYPI',
-
-  /**
-   * A rubygems package.
-   */
-  RUBYGEMS = 'RUBYGEMS'
 }
 
 /**
@@ -25212,6 +25655,12 @@ export interface IXGitHubPackageVersion {
 
 export interface IFilesOnXGitHubPackageVersionArguments {
   /**
+   * Ordering of the returned package files.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubPackageFileOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -25230,12 +25679,6 @@ export interface IFilesOnXGitHubPackageVersionArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering of the returned package files.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubPackageFileOrder | null;
 }
 
 /**
@@ -25287,14 +25730,14 @@ export interface IXGitHubPackageVersionEdge {
  */
 export interface IXGitHubPackageVersionOrder {
   /**
-   * The direction in which to order package versions by the specified field.
-   */
-  direction?: XGitHubOrderDirection | null;
-
-  /**
    * The field in which to order package versions by.
    */
   field?: XGitHubPackageVersionOrderField | null;
+
+  /**
+   * The direction in which to order package versions by the specified field.
+   */
+  direction?: XGitHubOrderDirection | null;
 }
 
 /**
@@ -25304,7 +25747,7 @@ export const enum XGitHubPackageVersionOrderField {
   /**
    * Order package versions by creation time
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -25381,14 +25824,14 @@ export interface IXGitHubPermissionSource {
  */
 export interface IXGitHubPinIssueInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the issue to be pinned
    */
   issueId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -25462,6 +25905,11 @@ export interface IXGitHubPinnableItemEdge {
  */
 export const enum XGitHubPinnableItemType {
   /**
+   * A repository.
+   */
+  REPOSITORY = 'REPOSITORY',
+
+  /**
    * A gist.
    */
   GIST = 'GIST',
@@ -25470,11 +25918,6 @@ export const enum XGitHubPinnableItemType {
    * An issue.
    */
   ISSUE = 'ISSUE',
-
-  /**
-   * An organization.
-   */
-  ORGANIZATION = 'ORGANIZATION',
 
   /**
    * A project.
@@ -25487,19 +25930,19 @@ export const enum XGitHubPinnableItemType {
   PULL_REQUEST = 'PULL_REQUEST',
 
   /**
-   * A repository.
+   * A user.
    */
-  REPOSITORY = 'REPOSITORY',
+  USER = 'USER',
+
+  /**
+   * An organization.
+   */
+  ORGANIZATION = 'ORGANIZATION',
 
   /**
    * A team.
    */
   TEAM = 'TEAM',
-
-  /**
-   * A user.
-   */
-  USER = 'USER'
 }
 
 /**
@@ -25604,6 +26047,11 @@ export interface IXGitHubPinnedDiscussionEdge {
  */
 export const enum XGitHubPinnedDiscussionGradient {
   /**
+   * A gradient of red to orange
+   */
+  RED_ORANGE = 'RED_ORANGE',
+
+  /**
    * A gradient of blue to mint
    */
   BLUE_MINT = 'BLUE_MINT',
@@ -25622,17 +26070,27 @@ export const enum XGitHubPinnedDiscussionGradient {
    * A gradient of purple to coral
    */
   PURPLE_CORAL = 'PURPLE_CORAL',
-
-  /**
-   * A gradient of red to orange
-   */
-  RED_ORANGE = 'RED_ORANGE'
 }
 
 /**
  * Preconfigured background patterns that may be used to style discussions pinned within a repository.
  */
 export const enum XGitHubPinnedDiscussionPattern {
+  /**
+   * A solid dot pattern
+   */
+  DOT_FILL = 'DOT_FILL',
+
+  /**
+   * A plus sign pattern
+   */
+  PLUS = 'PLUS',
+
+  /**
+   * A lightning bolt pattern
+   */
+  ZAP = 'ZAP',
+
   /**
    * An upward-facing chevron pattern
    */
@@ -25644,24 +26102,9 @@ export const enum XGitHubPinnedDiscussionPattern {
   DOT = 'DOT',
 
   /**
-   * A solid dot pattern
-   */
-  DOT_FILL = 'DOT_FILL',
-
-  /**
    * A heart pattern
    */
   HEART_FILL = 'HEART_FILL',
-
-  /**
-   * A plus sign pattern
-   */
-  PLUS = 'PLUS',
-
-  /**
-   * A lightning bolt pattern
-   */
-  ZAP = 'ZAP'
 }
 
 /**
@@ -26016,8 +26459,7 @@ export interface IXGitHubPrivateRepositoryForkingEnableAuditEntry {
 }
 
 /**
- * A curatable list of repositories relating to a repository owner, which defaults
- * to showing the most popular repositories they own.
+ * A curatable list of repositories relating to a repository owner, which defaults to showing the most popular repositories they own.
  */
 export interface IXGitHubProfileItemShowcase {
   __typename: '_xGitHubProfileItemShowcase';
@@ -26028,9 +26470,7 @@ export interface IXGitHubProfileItemShowcase {
   hasPinnedItems: boolean;
 
   /**
-   * The repositories and gists in the showcase. If the profile owner has any
-   * pinned items, those will be returned. Otherwise, the profile owner's popular
-   * repositories will be returned.
+   * The repositories and gists in the showcase. If the profile owner has any pinned items, those will be returned. Otherwise, the profile owner's popular repositories will be returned.
    */
   items: IXGitHubPinnableItemConnection;
 }
@@ -26080,8 +26520,7 @@ export interface IXGitHubProfileOwner {
   id: string;
 
   /**
-   * Showcases a selection of repositories and gists that the profile owner has
-   * either curated or that have been selected automatically based on popularity.
+   * Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
    */
   itemShowcase: IXGitHubProfileItemShowcase;
 
@@ -26135,6 +26574,11 @@ export interface IAnyPinnableItemsOnXGitHubProfileOwnerArguments {
 
 export interface IPinnableItemsOnXGitHubProfileOwnerArguments {
   /**
+   * Filter the types of pinnable items that are returned.
+   */
+  types?: Array<XGitHubPinnableItemType> | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -26153,15 +26597,15 @@ export interface IPinnableItemsOnXGitHubProfileOwnerArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter the types of pinnable items that are returned.
-   */
-  types?: Array<XGitHubPinnableItemType> | null;
 }
 
 export interface IPinnedItemsOnXGitHubProfileOwnerArguments {
   /**
+   * Filter the types of pinned items that are returned.
+   */
+  types?: Array<XGitHubPinnableItemType> | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -26180,11 +26624,6 @@ export interface IPinnedItemsOnXGitHubProfileOwnerArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter the types of pinned items that are returned.
-   */
-  types?: Array<XGitHubPinnableItemType> | null;
 }
 
 /**
@@ -26314,12 +26753,6 @@ export interface IPendingCardsOnXGitHubProjectArguments {
   after?: string | null;
 
   /**
-   * A list of archived states to filter the cards by
-   * @default ["ARCHIVED","NOT_ARCHIVED"]
-   */
-  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
-
-  /**
    * Returns the elements in the list that come before the specified cursor.
    */
   before?: string | null;
@@ -26333,6 +26766,12 @@ export interface IPendingCardsOnXGitHubProjectArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * A list of archived states to filter the cards by
+   * @default ["ARCHIVED","NOT_ARCHIVED"]
+   */
+  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
 }
 
 /**
@@ -26418,7 +26857,7 @@ export const enum XGitHubProjectCardArchivedState {
   /**
    * A project card that is not archived
    */
-  NOT_ARCHIVED = 'NOT_ARCHIVED'
+  NOT_ARCHIVED = 'NOT_ARCHIVED',
 }
 
 /**
@@ -26487,7 +26926,7 @@ export const enum XGitHubProjectCardState {
   /**
    * The card is redacted.
    */
-  REDACTED = 'REDACTED'
+  REDACTED = 'REDACTED',
 }
 
 /**
@@ -26550,12 +26989,6 @@ export interface ICardsOnXGitHubProjectColumnArguments {
   after?: string | null;
 
   /**
-   * A list of archived states to filter the cards by
-   * @default ["ARCHIVED","NOT_ARCHIVED"]
-   */
-  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
-
-  /**
    * Returns the elements in the list that come before the specified cursor.
    */
   before?: string | null;
@@ -26569,6 +27002,12 @@ export interface ICardsOnXGitHubProjectColumnArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * A list of archived states to filter the cards by
+   * @default ["ARCHIVED","NOT_ARCHIVED"]
+   */
+  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
 }
 
 /**
@@ -26620,9 +27059,9 @@ export interface IXGitHubProjectColumnEdge {
  */
 export const enum XGitHubProjectColumnPurpose {
   /**
-   * The column contains cards which are complete
+   * The column contains cards still to be worked on
    */
-  DONE = 'DONE',
+  TODO = 'TODO',
 
   /**
    * The column contains cards which are currently being worked on
@@ -26630,9 +27069,9 @@ export const enum XGitHubProjectColumnPurpose {
   IN_PROGRESS = 'IN_PROGRESS',
 
   /**
-   * The column contains cards still to be worked on
+   * The column contains cards which are complete
    */
-  TODO = 'TODO'
+  DONE = 'DONE',
 }
 
 /**
@@ -26684,14 +27123,14 @@ export interface IXGitHubProjectEdge {
  */
 export interface IXGitHubProjectOrder {
   /**
-   * The direction in which to order projects by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order projects by.
    */
   field: XGitHubProjectOrderField;
+
+  /**
+   * The direction in which to order projects by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -26704,14 +27143,14 @@ export const enum XGitHubProjectOrderField {
   CREATED_AT = 'CREATED_AT',
 
   /**
+   * Order projects by update time
+   */
+  UPDATED_AT = 'UPDATED_AT',
+
+  /**
    * Order projects by name
    */
   NAME = 'NAME',
-
-  /**
-   * Order projects by update time
-   */
-  UPDATED_AT = 'UPDATED_AT'
 }
 
 /**
@@ -26764,6 +27203,21 @@ export interface IProjectOnXGitHubProjectOwnerArguments {
 
 export interface IProjectsOnXGitHubProjectOwnerArguments {
   /**
+   * Ordering options for projects returned from the connection
+   */
+  orderBy?: IXGitHubProjectOrder | null;
+
+  /**
+   * Query to search projects by, currently only searching by name.
+   */
+  search?: string | null;
+
+  /**
+   * A list of states to filter the projects by.
+   */
+  states?: Array<XGitHubProjectState> | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -26782,21 +27236,6 @@ export interface IProjectsOnXGitHubProjectOwnerArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for projects returned from the connection
-   */
-  orderBy?: IXGitHubProjectOrder | null;
-
-  /**
-   * Query to search projects by, currently only searching by name.
-   */
-  search?: string | null;
-
-  /**
-   * A list of states to filter the projects by.
-   */
-  states?: Array<XGitHubProjectState> | null;
 }
 
 /**
@@ -26846,20 +27285,25 @@ export interface IXGitHubProjectProgress {
  */
 export const enum XGitHubProjectState {
   /**
+   * The project is open.
+   */
+  OPEN = 'OPEN',
+
+  /**
    * The project is closed.
    */
   CLOSED = 'CLOSED',
-
-  /**
-   * The project is open.
-   */
-  OPEN = 'OPEN'
 }
 
 /**
  * GitHub-provided templates for Projects
  */
 export const enum XGitHubProjectTemplate {
+  /**
+   * Create a board with columns for To do, In progress and Done.
+   */
+  BASIC_KANBAN = 'BASIC_KANBAN',
+
   /**
    * Create a board with v2 triggers to automatically move cards across To do, In progress and Done columns.
    */
@@ -26871,14 +27315,9 @@ export const enum XGitHubProjectTemplate {
   AUTOMATED_REVIEWS_KANBAN = 'AUTOMATED_REVIEWS_KANBAN',
 
   /**
-   * Create a board with columns for To do, In progress and Done.
-   */
-  BASIC_KANBAN = 'BASIC_KANBAN',
-
-  /**
    * Create a board to triage and prioritize bugs with To do, priority, and Done columns.
    */
-  BUG_TRIAGE = 'BUG_TRIAGE'
+  BUG_TRIAGE = 'BUG_TRIAGE',
 }
 
 /**
@@ -26893,8 +27332,7 @@ export interface IXGitHubPublicKey {
   accessedAt: any | null;
 
   /**
-   * Identifies the date and time when the key was created. Keys created before
-   * March 5th, 2014 have inaccurate values. Values will be null for keys not owned by the user.
+   * Identifies the date and time when the key was created. Keys created before March 5th, 2014 have inaccurate values. Values will be null for keys not owned by the user.
    */
   createdAt: any | null;
 
@@ -26915,9 +27353,7 @@ export interface IXGitHubPublicKey {
   key: string;
 
   /**
-   * Identifies the date and time when the key was updated. Keys created before
-   * March 5th, 2014 may have inaccurate values. Values will be null for keys not
-   * owned by the user.
+   * Identifies the date and time when the key was updated. Keys created before March 5th, 2014 may have inaccurate values. Values will be null for keys not owned by the user.
    */
   updatedAt: any | null;
 }
@@ -27234,10 +27670,7 @@ export interface IXGitHubPullRequest {
   permalink: any;
 
   /**
-   * The commit that GitHub automatically generated to test if this pull request
-   * could be merged. This field will not return a value if the pull request is
-   * merged, or if the test merge commit is still being generated. See the
-   * `mergeable` field for more details on the mergeability of the pull request.
+   * The commit that GitHub automatically generated to test if this pull request could be merged. This field will not return a value if the pull request is merged, or if the test merge commit is still being generated. See the `mergeable` field for more details on the mergeability of the pull request.
    */
   potentialMergeCommit: IXGitHubCommit | null;
 
@@ -27469,6 +27902,11 @@ export interface IClosingIssuesReferencesOnXGitHubPullRequestArguments {
 
 export interface ICommentsOnXGitHubPullRequestArguments {
   /**
+   * Ordering options for issue comments returned from the connection.
+   */
+  orderBy?: IXGitHubIssueCommentOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -27487,11 +27925,6 @@ export interface ICommentsOnXGitHubPullRequestArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for issue comments returned from the connection.
-   */
-  orderBy?: IXGitHubIssueCommentOrder | null;
 }
 
 export interface ICommitsOnXGitHubPullRequestArguments {
@@ -27548,6 +27981,12 @@ export interface IHovercardOnXGitHubPullRequestArguments {
 
 export interface ILabelsOnXGitHubPullRequestArguments {
   /**
+   * Ordering options for labels returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubLabelOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -27566,12 +28005,6 @@ export interface ILabelsOnXGitHubPullRequestArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for labels returned from the connection.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubLabelOrder | null;
 }
 
 export interface ILatestOpinionatedReviewsOnXGitHubPullRequestArguments {
@@ -27653,12 +28086,6 @@ export interface IProjectCardsOnXGitHubPullRequestArguments {
   after?: string | null;
 
   /**
-   * A list of archived states to filter the cards by
-   * @default ["ARCHIVED","NOT_ARCHIVED"]
-   */
-  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
-
-  /**
    * Returns the elements in the list that come before the specified cursor.
    */
   before?: string | null;
@@ -27672,6 +28099,12 @@ export interface IProjectCardsOnXGitHubPullRequestArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * A list of archived states to filter the cards by
+   * @default ["ARCHIVED","NOT_ARCHIVED"]
+   */
+  archivedStates?: Array<XGitHubProjectCardArchivedState | null> | null;
 }
 
 export interface IReactionsOnXGitHubPullRequestArguments {
@@ -27686,11 +28119,6 @@ export interface IReactionsOnXGitHubPullRequestArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -27699,6 +28127,11 @@ export interface IReactionsOnXGitHubPullRequestArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -27757,11 +28190,6 @@ export interface IReviewsOnXGitHubPullRequestArguments {
   after?: string | null;
 
   /**
-   * Filter by author of the review.
-   */
-  author?: string | null;
-
-  /**
    * Returns the elements in the list that come before the specified cursor.
    */
   before?: string | null;
@@ -27780,36 +28208,19 @@ export interface IReviewsOnXGitHubPullRequestArguments {
    * A list of states to filter the reviews.
    */
   states?: Array<XGitHubPullRequestReviewState> | null;
+
+  /**
+   * Filter by author of the review.
+   */
+  author?: string | null;
 }
 
 export interface ITimelineOnXGitHubPullRequestArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
-   */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
    * Allows filtering timeline events by a `since` timestamp.
    */
   since?: any | null;
-}
 
-export interface ITimelineItemsOnXGitHubPullRequestArguments {
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -27826,15 +28237,12 @@ export interface ITimelineItemsOnXGitHubPullRequestArguments {
   first?: number | null;
 
   /**
-   * Filter timeline items by type.
-   */
-  itemTypes?: Array<XGitHubPullRequestTimelineItemsItemType> | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+}
 
+export interface ITimelineItemsOnXGitHubPullRequestArguments {
   /**
    * Filter timeline items by a `since` timestamp.
    */
@@ -27844,6 +28252,31 @@ export interface ITimelineItemsOnXGitHubPullRequestArguments {
    * Skips the first _n_ elements in the list.
    */
   skip?: number | null;
+
+  /**
+   * Filter timeline items by type.
+   */
+  itemTypes?: Array<XGitHubPullRequestTimelineItemsItemType> | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IUserContentEditsOnXGitHubPullRequestArguments {
@@ -28184,14 +28617,14 @@ export const enum XGitHubPullRequestMergeMethod {
   MERGE = 'MERGE',
 
   /**
+   * Combine all commits from the head branch into a single commit in the base branch.
+   */
+  SQUASH = 'SQUASH',
+
+  /**
    * Add all commits from the head branch onto the base branch individually.
    */
   REBASE = 'REBASE',
-
-  /**
-   * Combine all commits from the head branch into a single commit in the base branch.
-   */
-  SQUASH = 'SQUASH'
 }
 
 /**
@@ -28199,14 +28632,14 @@ export const enum XGitHubPullRequestMergeMethod {
  */
 export interface IXGitHubPullRequestOrder {
   /**
-   * The direction in which to order pull requests by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order pull requests by.
    */
   field: XGitHubPullRequestOrderField;
+
+  /**
+   * The direction in which to order pull requests by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -28221,7 +28654,7 @@ export const enum XGitHubPullRequestOrderField {
   /**
    * Order pull_requests by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -28443,11 +28876,6 @@ export interface IReactionsOnXGitHubPullRequestReviewArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -28456,6 +28884,11 @@ export interface IReactionsOnXGitHubPullRequestReviewArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -28700,11 +29133,6 @@ export interface IReactionsOnXGitHubPullRequestReviewCommentArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -28713,6 +29141,11 @@ export interface IReactionsOnXGitHubPullRequestReviewCommentArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -28798,7 +29231,7 @@ export const enum XGitHubPullRequestReviewCommentState {
   /**
    * A comment that is part of a submitted review
    */
-  SUBMITTED = 'SUBMITTED'
+  SUBMITTED = 'SUBMITTED',
 }
 
 /**
@@ -28878,19 +29311,19 @@ export interface IContributionsOnXGitHubPullRequestReviewContributionsByReposito
  */
 export const enum XGitHubPullRequestReviewDecision {
   /**
-   * The pull request has received an approving review.
-   */
-  APPROVED = 'APPROVED',
-
-  /**
    * Changes have been requested on the pull request.
    */
   CHANGES_REQUESTED = 'CHANGES_REQUESTED',
 
   /**
+   * The pull request has received an approving review.
+   */
+  APPROVED = 'APPROVED',
+
+  /**
    * A review is required before the pull request can be merged.
    */
-  REVIEW_REQUIRED = 'REVIEW_REQUIRED'
+  REVIEW_REQUIRED = 'REVIEW_REQUIRED',
 }
 
 /**
@@ -28915,30 +29348,40 @@ export interface IXGitHubPullRequestReviewEdge {
  */
 export const enum XGitHubPullRequestReviewEvent {
   /**
-   * Submit feedback and approve merging these changes.
-   */
-  APPROVE = 'APPROVE',
-
-  /**
    * Submit general feedback without explicit approval.
    */
   COMMENT = 'COMMENT',
 
   /**
-   * Dismiss review so it now longer effects merging.
+   * Submit feedback and approve merging these changes.
    */
-  DISMISS = 'DISMISS',
+  APPROVE = 'APPROVE',
 
   /**
    * Submit feedback that must be addressed before merging.
    */
-  REQUEST_CHANGES = 'REQUEST_CHANGES'
+  REQUEST_CHANGES = 'REQUEST_CHANGES',
+
+  /**
+   * Dismiss review so it now longer effects merging.
+   */
+  DISMISS = 'DISMISS',
 }
 
 /**
  * The possible states of a pull request review.
  */
 export const enum XGitHubPullRequestReviewState {
+  /**
+   * A review that has not yet been submitted.
+   */
+  PENDING = 'PENDING',
+
+  /**
+   * An informational review.
+   */
+  COMMENTED = 'COMMENTED',
+
   /**
    * A review allowing the pull request to merge.
    */
@@ -28950,19 +29393,9 @@ export const enum XGitHubPullRequestReviewState {
   CHANGES_REQUESTED = 'CHANGES_REQUESTED',
 
   /**
-   * An informational review.
-   */
-  COMMENTED = 'COMMENTED',
-
-  /**
    * A review that has been dismissed.
    */
   DISMISSED = 'DISMISSED',
-
-  /**
-   * A review that has not yet been submitted.
-   */
-  PENDING = 'PENDING'
 }
 
 /**
@@ -29156,6 +29589,11 @@ export interface IXGitHubPullRequestRevisionMarker {
  */
 export const enum XGitHubPullRequestState {
   /**
+   * A pull request that is still open.
+   */
+  OPEN = 'OPEN',
+
+  /**
    * A pull request that has been closed without being merged.
    */
   CLOSED = 'CLOSED',
@@ -29164,11 +29602,6 @@ export const enum XGitHubPullRequestState {
    * A pull request that has been closed by being merged.
    */
   MERGED = 'MERGED',
-
-  /**
-   * A pull request that is still open.
-   */
-  OPEN = 'OPEN'
 }
 
 /**
@@ -29399,14 +29832,29 @@ export interface IXGitHubPullRequestTimelineItemsEdge {
  */
 export const enum XGitHubPullRequestTimelineItemsItemType {
   /**
-   * Represents a 'added_to_project' event on a given issue or pull request.
+   * Represents a Git commit part of a pull request.
    */
-  ADDED_TO_PROJECT_EVENT = 'ADDED_TO_PROJECT_EVENT',
+  PULL_REQUEST_COMMIT = 'PULL_REQUEST_COMMIT',
 
   /**
-   * Represents an 'assigned' event on any assignable object.
+   * Represents a commit comment thread part of a pull request.
    */
-  ASSIGNED_EVENT = 'ASSIGNED_EVENT',
+  PULL_REQUEST_COMMIT_COMMENT_THREAD = 'PULL_REQUEST_COMMIT_COMMENT_THREAD',
+
+  /**
+   * A review object for a given pull request.
+   */
+  PULL_REQUEST_REVIEW = 'PULL_REQUEST_REVIEW',
+
+  /**
+   * A threaded list of comments for a given pull request.
+   */
+  PULL_REQUEST_REVIEW_THREAD = 'PULL_REQUEST_REVIEW_THREAD',
+
+  /**
+   * Represents the latest point in the pull request timeline for which the viewer has seen the pull request's commits.
+   */
+  PULL_REQUEST_REVISION_MARKER = 'PULL_REQUEST_REVISION_MARKER',
 
   /**
    * Represents a 'automatic_base_change_failed' event on a given pull request.
@@ -29444,14 +29892,89 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
   BASE_REF_CHANGED_EVENT = 'BASE_REF_CHANGED_EVENT',
 
   /**
+   * Represents a 'base_ref_force_pushed' event on a given pull request.
+   */
+  BASE_REF_FORCE_PUSHED_EVENT = 'BASE_REF_FORCE_PUSHED_EVENT',
+
+  /**
    * Represents a 'base_ref_deleted' event on a given pull request.
    */
   BASE_REF_DELETED_EVENT = 'BASE_REF_DELETED_EVENT',
 
   /**
-   * Represents a 'base_ref_force_pushed' event on a given pull request.
+   * Represents a 'deployed' event on a given pull request.
    */
-  BASE_REF_FORCE_PUSHED_EVENT = 'BASE_REF_FORCE_PUSHED_EVENT',
+  DEPLOYED_EVENT = 'DEPLOYED_EVENT',
+
+  /**
+   * Represents a 'deployment_environment_changed' event on a given pull request.
+   */
+  DEPLOYMENT_ENVIRONMENT_CHANGED_EVENT = 'DEPLOYMENT_ENVIRONMENT_CHANGED_EVENT',
+
+  /**
+   * Represents a 'head_ref_deleted' event on a given pull request.
+   */
+  HEAD_REF_DELETED_EVENT = 'HEAD_REF_DELETED_EVENT',
+
+  /**
+   * Represents a 'head_ref_force_pushed' event on a given pull request.
+   */
+  HEAD_REF_FORCE_PUSHED_EVENT = 'HEAD_REF_FORCE_PUSHED_EVENT',
+
+  /**
+   * Represents a 'head_ref_restored' event on a given pull request.
+   */
+  HEAD_REF_RESTORED_EVENT = 'HEAD_REF_RESTORED_EVENT',
+
+  /**
+   * Represents a 'merged' event on a given pull request.
+   */
+  MERGED_EVENT = 'MERGED_EVENT',
+
+  /**
+   * Represents a 'review_dismissed' event on a given issue or pull request.
+   */
+  REVIEW_DISMISSED_EVENT = 'REVIEW_DISMISSED_EVENT',
+
+  /**
+   * Represents an 'review_requested' event on a given pull request.
+   */
+  REVIEW_REQUESTED_EVENT = 'REVIEW_REQUESTED_EVENT',
+
+  /**
+   * Represents an 'review_request_removed' event on a given pull request.
+   */
+  REVIEW_REQUEST_REMOVED_EVENT = 'REVIEW_REQUEST_REMOVED_EVENT',
+
+  /**
+   * Represents a 'ready_for_review' event on a given pull request.
+   */
+  READY_FOR_REVIEW_EVENT = 'READY_FOR_REVIEW_EVENT',
+
+  /**
+   * Represents a 'convert_to_draft' event on a given pull request.
+   */
+  CONVERT_TO_DRAFT_EVENT = 'CONVERT_TO_DRAFT_EVENT',
+
+  /**
+   * Represents a comment on an Issue.
+   */
+  ISSUE_COMMENT = 'ISSUE_COMMENT',
+
+  /**
+   * Represents a mention made by one issue or pull request to another.
+   */
+  CROSS_REFERENCED_EVENT = 'CROSS_REFERENCED_EVENT',
+
+  /**
+   * Represents a 'added_to_project' event on a given issue or pull request.
+   */
+  ADDED_TO_PROJECT_EVENT = 'ADDED_TO_PROJECT_EVENT',
+
+  /**
+   * Represents an 'assigned' event on any assignable object.
+   */
+  ASSIGNED_EVENT = 'ASSIGNED_EVENT',
 
   /**
    * Represents a 'closed' event on any `Closable`.
@@ -29474,54 +29997,14 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
   CONVERTED_NOTE_TO_ISSUE_EVENT = 'CONVERTED_NOTE_TO_ISSUE_EVENT',
 
   /**
-   * Represents a 'convert_to_draft' event on a given pull request.
-   */
-  CONVERT_TO_DRAFT_EVENT = 'CONVERT_TO_DRAFT_EVENT',
-
-  /**
-   * Represents a mention made by one issue or pull request to another.
-   */
-  CROSS_REFERENCED_EVENT = 'CROSS_REFERENCED_EVENT',
-
-  /**
    * Represents a 'demilestoned' event on a given issue or pull request.
    */
   DEMILESTONED_EVENT = 'DEMILESTONED_EVENT',
 
   /**
-   * Represents a 'deployed' event on a given pull request.
-   */
-  DEPLOYED_EVENT = 'DEPLOYED_EVENT',
-
-  /**
-   * Represents a 'deployment_environment_changed' event on a given pull request.
-   */
-  DEPLOYMENT_ENVIRONMENT_CHANGED_EVENT = 'DEPLOYMENT_ENVIRONMENT_CHANGED_EVENT',
-
-  /**
    * Represents a 'disconnected' event on a given issue or pull request.
    */
   DISCONNECTED_EVENT = 'DISCONNECTED_EVENT',
-
-  /**
-   * Represents a 'head_ref_deleted' event on a given pull request.
-   */
-  HEAD_REF_DELETED_EVENT = 'HEAD_REF_DELETED_EVENT',
-
-  /**
-   * Represents a 'head_ref_force_pushed' event on a given pull request.
-   */
-  HEAD_REF_FORCE_PUSHED_EVENT = 'HEAD_REF_FORCE_PUSHED_EVENT',
-
-  /**
-   * Represents a 'head_ref_restored' event on a given pull request.
-   */
-  HEAD_REF_RESTORED_EVENT = 'HEAD_REF_RESTORED_EVENT',
-
-  /**
-   * Represents a comment on an Issue.
-   */
-  ISSUE_COMMENT = 'ISSUE_COMMENT',
 
   /**
    * Represents a 'labeled' event on a given issue or pull request.
@@ -29544,11 +30027,6 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
   MENTIONED_EVENT = 'MENTIONED_EVENT',
 
   /**
-   * Represents a 'merged' event on a given pull request.
-   */
-  MERGED_EVENT = 'MERGED_EVENT',
-
-  /**
    * Represents a 'milestoned' event on a given issue or pull request.
    */
   MILESTONED_EVENT = 'MILESTONED_EVENT',
@@ -29562,36 +30040,6 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
    * Represents a 'pinned' event on a given issue or pull request.
    */
   PINNED_EVENT = 'PINNED_EVENT',
-
-  /**
-   * Represents a Git commit part of a pull request.
-   */
-  PULL_REQUEST_COMMIT = 'PULL_REQUEST_COMMIT',
-
-  /**
-   * Represents a commit comment thread part of a pull request.
-   */
-  PULL_REQUEST_COMMIT_COMMENT_THREAD = 'PULL_REQUEST_COMMIT_COMMENT_THREAD',
-
-  /**
-   * A review object for a given pull request.
-   */
-  PULL_REQUEST_REVIEW = 'PULL_REQUEST_REVIEW',
-
-  /**
-   * A threaded list of comments for a given pull request.
-   */
-  PULL_REQUEST_REVIEW_THREAD = 'PULL_REQUEST_REVIEW_THREAD',
-
-  /**
-   * Represents the latest point in the pull request timeline for which the viewer has seen the pull request's commits.
-   */
-  PULL_REQUEST_REVISION_MARKER = 'PULL_REQUEST_REVISION_MARKER',
-
-  /**
-   * Represents a 'ready_for_review' event on a given pull request.
-   */
-  READY_FOR_REVIEW_EVENT = 'READY_FOR_REVIEW_EVENT',
 
   /**
    * Represents a 'referenced' event on a given `ReferencedSubject`.
@@ -29612,21 +30060,6 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
    * Represents a 'reopened' event on any `Closable`.
    */
   REOPENED_EVENT = 'REOPENED_EVENT',
-
-  /**
-   * Represents a 'review_dismissed' event on a given issue or pull request.
-   */
-  REVIEW_DISMISSED_EVENT = 'REVIEW_DISMISSED_EVENT',
-
-  /**
-   * Represents an 'review_requested' event on a given pull request.
-   */
-  REVIEW_REQUESTED_EVENT = 'REVIEW_REQUESTED_EVENT',
-
-  /**
-   * Represents an 'review_request_removed' event on a given pull request.
-   */
-  REVIEW_REQUEST_REMOVED_EVENT = 'REVIEW_REQUEST_REMOVED_EVENT',
 
   /**
    * Represents a 'subscribed' event on a given `Subscribable`.
@@ -29654,6 +30087,11 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
   UNLOCKED_EVENT = 'UNLOCKED_EVENT',
 
   /**
+   * Represents a 'user_blocked' event on a given user.
+   */
+  USER_BLOCKED_EVENT = 'USER_BLOCKED_EVENT',
+
+  /**
    * Represents an 'unmarked_as_duplicate' event on a given issue or pull request.
    */
   UNMARKED_AS_DUPLICATE_EVENT = 'UNMARKED_AS_DUPLICATE_EVENT',
@@ -29667,11 +30105,6 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
    * Represents an 'unsubscribed' event on a given `Subscribable`.
    */
   UNSUBSCRIBED_EVENT = 'UNSUBSCRIBED_EVENT',
-
-  /**
-   * Represents a 'user_blocked' event on a given user.
-   */
-  USER_BLOCKED_EVENT = 'USER_BLOCKED_EVENT'
 }
 
 /**
@@ -29679,14 +30112,14 @@ export const enum XGitHubPullRequestTimelineItemsItemType {
  */
 export const enum XGitHubPullRequestUpdateState {
   /**
+   * A pull request that is still open.
+   */
+  OPEN = 'OPEN',
+
+  /**
    * A pull request that has been closed without being merged.
    */
   CLOSED = 'CLOSED',
-
-  /**
-   * A pull request that is still open.
-   */
-  OPEN = 'OPEN'
 }
 
 /**
@@ -29924,12 +30357,6 @@ export interface IXGitHubQuery {
   sponsorables: IXGitHubSponsorableItemConnection;
 
   /**
-   * Look up a single Sponsors Listing
-   * @deprecated "`Query.sponsorsListing` will be removed. Use `Sponsorable.sponsorsListing` instead. Removal on 2020-04-01 UTC."
-   */
-  sponsorsListing: IXGitHubSponsorsListing | null;
-
-  /**
    * Look up a topic by name.
    */
   topic: IXGitHubTopic | null;
@@ -29954,17 +30381,22 @@ export interface ICodeOfConductOnXGitHubQueryArguments {
 
 export interface IEnterpriseOnXGitHubQueryArguments {
   /**
-   * The enterprise invitation token.
-   */
-  invitationToken?: string | null;
-
-  /**
    * The enterprise URL slug.
    */
   slug: string;
+
+  /**
+   * The enterprise invitation token.
+   */
+  invitationToken?: string | null;
 }
 
 export interface IEnterpriseAdministratorInvitationOnXGitHubQueryArguments {
+  /**
+   * The login of the user invited to join the business.
+   */
+  userLogin: string;
+
   /**
    * The slug of the enterprise the user was invited to join.
    */
@@ -29974,11 +30406,6 @@ export interface IEnterpriseAdministratorInvitationOnXGitHubQueryArguments {
    * The role for the business member invitation.
    */
   role: XGitHubEnterpriseAdministratorRole;
-
-  /**
-   * The login of the user invited to join the business.
-   */
-  userLogin: string;
 }
 
 export interface IEnterpriseAdministratorInvitationByTokenOnXGitHubQueryArguments {
@@ -29997,6 +30424,11 @@ export interface ILicenseOnXGitHubQueryArguments {
 
 export interface IMarketplaceCategoriesOnXGitHubQueryArguments {
   /**
+   * Return only the specified categories.
+   */
+  includeCategories?: Array<string> | null;
+
+  /**
    * Exclude categories with no listings.
    */
   excludeEmpty?: boolean | null;
@@ -30005,11 +30437,6 @@ export interface IMarketplaceCategoriesOnXGitHubQueryArguments {
    * Returns top level categories only, excluding any subcategories.
    */
   excludeSubcategories?: boolean | null;
-
-  /**
-   * Return only the specified categories.
-   */
-  includeCategories?: Array<string> | null;
 }
 
 export interface IMarketplaceCategoryOnXGitHubQueryArguments {
@@ -30033,30 +30460,14 @@ export interface IMarketplaceListingOnXGitHubQueryArguments {
 
 export interface IMarketplaceListingsOnXGitHubQueryArguments {
   /**
-   * Select listings that can be administered by the specified user.
-   */
-  adminId?: string | null;
-
-  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
 
   /**
-   * Select listings visible to the viewer even if they are not approved. If omitted or
-   * false, only approved listings will be returned.
-   */
-  allStates?: boolean | null;
-
-  /**
    * Returns the elements in the list that come before the specified cursor.
    */
   before?: string | null;
-
-  /**
-   * Select only listings with the given category.
-   */
-  categorySlug?: string | null;
 
   /**
    * Returns the first _n_ elements from the list.
@@ -30069,20 +30480,9 @@ export interface IMarketplaceListingsOnXGitHubQueryArguments {
   last?: number | null;
 
   /**
-   * Select listings for products owned by the specified organization.
+   * Select only listings with the given category.
    */
-  organizationId?: string | null;
-
-  /**
-   * Select only listings where the primary category matches the given category slug.
-   * @default false
-   */
-  primaryCategoryOnly?: boolean | null;
-
-  /**
-   * Select the listings with these slugs, if they are visible to the viewer.
-   */
-  slugs?: Array<string | null> | null;
+  categorySlug?: string | null;
 
   /**
    * Also check topic aliases for the category slug
@@ -30094,6 +30494,33 @@ export interface IMarketplaceListingsOnXGitHubQueryArguments {
    * viewer are returned.
    */
   viewerCanAdmin?: boolean | null;
+
+  /**
+   * Select listings that can be administered by the specified user.
+   */
+  adminId?: string | null;
+
+  /**
+   * Select listings for products owned by the specified organization.
+   */
+  organizationId?: string | null;
+
+  /**
+   * Select listings visible to the viewer even if they are not approved. If omitted or
+   * false, only approved listings will be returned.
+   */
+  allStates?: boolean | null;
+
+  /**
+   * Select the listings with these slugs, if they are visible to the viewer.
+   */
+  slugs?: Array<string | null> | null;
+
+  /**
+   * Select only listings where the primary category matches the given category slug.
+   * @default false
+   */
+  primaryCategoryOnly?: boolean | null;
 
   /**
    * Select only listings that offer a free trial.
@@ -30133,14 +30560,14 @@ export interface IRateLimitOnXGitHubQueryArguments {
 
 export interface IRepositoryOnXGitHubQueryArguments {
   /**
-   * The name of the repository
-   */
-  name: string;
-
-  /**
    * The login field of a user or organization
    */
   owner: string;
+
+  /**
+   * The name of the repository
+   */
+  name: string;
 }
 
 export interface IRepositoryOwnerOnXGitHubQueryArguments {
@@ -30191,6 +30618,27 @@ export interface ISearchOnXGitHubQueryArguments {
 
 export interface ISecurityAdvisoriesOnXGitHubQueryArguments {
   /**
+   * Ordering options for the returned topics.
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
+   */
+  orderBy?: IXGitHubSecurityAdvisoryOrder | null;
+
+  /**
+   * Filter advisories by identifier, e.g. GHSA or CVE.
+   */
+  identifier?: IXGitHubSecurityAdvisoryIdentifierFilter | null;
+
+  /**
+   * Filter advisories to those published since a time in the past.
+   */
+  publishedSince?: any | null;
+
+  /**
+   * Filter advisories to those updated since a time in the past.
+   */
+  updatedSince?: any | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -30206,30 +30654,9 @@ export interface ISecurityAdvisoriesOnXGitHubQueryArguments {
   first?: number | null;
 
   /**
-   * Filter advisories by identifier, e.g. GHSA or CVE.
-   */
-  identifier?: IXGitHubSecurityAdvisoryIdentifierFilter | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for the returned topics.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
-   */
-  orderBy?: IXGitHubSecurityAdvisoryOrder | null;
-
-  /**
-   * Filter advisories to those published since a time in the past.
-   */
-  publishedSince?: any | null;
-
-  /**
-   * Filter advisories to those updated since a time in the past.
-   */
-  updatedSince?: any | null;
 }
 
 export interface ISecurityAdvisoryOnXGitHubQueryArguments {
@@ -30241,35 +30668,15 @@ export interface ISecurityAdvisoryOnXGitHubQueryArguments {
 
 export interface ISecurityVulnerabilitiesOnXGitHubQueryArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * Ordering options for the returned topics.
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
    */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
+  orderBy?: IXGitHubSecurityVulnerabilityOrder | null;
 
   /**
    * An ecosystem to filter vulnerabilities by.
    */
   ecosystem?: XGitHubSecurityAdvisoryEcosystem | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for the returned topics.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
-   */
-  orderBy?: IXGitHubSecurityVulnerabilityOrder | null;
 
   /**
    * A package name to filter vulnerabilities by.
@@ -30280,6 +30687,26 @@ export interface ISecurityVulnerabilitiesOnXGitHubQueryArguments {
    * A list of severities to filter vulnerabilities by.
    */
   severities?: Array<XGitHubSecurityAdvisorySeverity> | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface ISponsorablesOnXGitHubQueryArguments {
@@ -30294,13 +30721,6 @@ export interface ISponsorablesOnXGitHubQueryArguments {
   before?: string | null;
 
   /**
-   * Optional filter for which dependencies should be checked for sponsorable
-   * owners. Only sponsorable owners of dependencies in this ecosystem will be
-   * included. Used when onlyDependencies = true.
-   */
-  dependencyEcosystem?: XGitHubSecurityAdvisoryEcosystem | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -30311,34 +30731,26 @@ export interface ISponsorablesOnXGitHubQueryArguments {
   last?: number | null;
 
   /**
-   * Whether only sponsorables who own the viewer's dependencies will be
-   * returned. Must be authenticated to use. Can check an organization instead
-   * for their dependencies owned by sponsorables by passing
-   * orgLoginForDependencies.
+   * Ordering options for users and organizations returned from the connection.
+   * @default {"field":"LOGIN","direction":"ASC"}
+   */
+  orderBy?: IXGitHubSponsorableOrder | null;
+
+  /**
+   * Whether only sponsorables who own the viewer's dependencies will be returned. Must be authenticated to use. Can check an organization instead for their dependencies owned by sponsorables by passing orgLoginForDependencies.
    * @default false
    */
   onlyDependencies?: boolean | null;
 
   /**
-   * Ordering options for users and organizations returned from the connection.
-   * @default {"direction":"ASC","field":"LOGIN"}
-   */
-  orderBy?: IXGitHubSponsorableOrder | null;
-
-  /**
-   * Optional organization username for whose dependencies should be checked.
-   * Used when onlyDependencies = true. Omit to check your own dependencies. If
-   * you are not an administrator of the organization, only dependencies from its
-   * public repositories will be considered.
+   * Optional organization username for whose dependencies should be checked. Used when onlyDependencies = true. Omit to check your own dependencies. If you are not an administrator of the organization, only dependencies from its public repositories will be considered.
    */
   orgLoginForDependencies?: string | null;
-}
 
-export interface ISponsorsListingOnXGitHubQueryArguments {
   /**
-   * Select the Sponsors listing which matches this slug
+   * Optional filter for which dependencies should be checked for sponsorable owners. Only sponsorable owners of dependencies in this ecosystem will be included. Used when onlyDependencies = true.
    */
-  slug: string;
+  dependencyEcosystem?: XGitHubSecurityAdvisoryEcosystem | null;
 }
 
 export interface ITopicOnXGitHubQueryArguments {
@@ -30448,11 +30860,6 @@ export interface IReactionsOnXGitHubReactableArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -30461,6 +30868,11 @@ export interface IReactionsOnXGitHubReactableArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -30583,34 +30995,9 @@ export interface IXGitHubReactionConnection {
  */
 export const enum XGitHubReactionContent {
   /**
-   * Represents the `:confused:` emoji.
+   * Represents the `:+1:` emoji.
    */
-  CONFUSED = 'CONFUSED',
-
-  /**
-   * Represents the `:eyes:` emoji.
-   */
-  EYES = 'EYES',
-
-  /**
-   * Represents the `:heart:` emoji.
-   */
-  HEART = 'HEART',
-
-  /**
-   * Represents the `:hooray:` emoji.
-   */
-  HOORAY = 'HOORAY',
-
-  /**
-   * Represents the `:laugh:` emoji.
-   */
-  LAUGH = 'LAUGH',
-
-  /**
-   * Represents the `:rocket:` emoji.
-   */
-  ROCKET = 'ROCKET',
+  THUMBS_UP = 'THUMBS_UP',
 
   /**
    * Represents the `:-1:` emoji.
@@ -30618,9 +31005,34 @@ export const enum XGitHubReactionContent {
   THUMBS_DOWN = 'THUMBS_DOWN',
 
   /**
-   * Represents the `:+1:` emoji.
+   * Represents the `:laugh:` emoji.
    */
-  THUMBS_UP = 'THUMBS_UP'
+  LAUGH = 'LAUGH',
+
+  /**
+   * Represents the `:hooray:` emoji.
+   */
+  HOORAY = 'HOORAY',
+
+  /**
+   * Represents the `:confused:` emoji.
+   */
+  CONFUSED = 'CONFUSED',
+
+  /**
+   * Represents the `:heart:` emoji.
+   */
+  HEART = 'HEART',
+
+  /**
+   * Represents the `:rocket:` emoji.
+   */
+  ROCKET = 'ROCKET',
+
+  /**
+   * Represents the `:eyes:` emoji.
+   */
+  EYES = 'EYES',
 }
 
 /**
@@ -30727,14 +31139,14 @@ export interface IUsersOnXGitHubReactionGroupArguments {
  */
 export interface IXGitHubReactionOrder {
   /**
-   * The direction in which to order reactions by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order reactions by.
    */
   field: XGitHubReactionOrderField;
+
+  /**
+   * The direction in which to order reactions by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -30744,7 +31156,7 @@ export const enum XGitHubReactionOrderField {
   /**
    * Allows ordering a list of reactions by when they were created.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -30883,14 +31295,34 @@ export interface IXGitHubRef {
 
 export interface IAssociatedPullRequestsOnXGitHubRefArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * A list of states to filter the pull requests by.
    */
-  after?: string | null;
+  states?: Array<XGitHubPullRequestState> | null;
+
+  /**
+   * A list of label names to filter the pull requests by.
+   */
+  labels?: Array<string> | null;
+
+  /**
+   * The head ref name to filter the pull requests by.
+   */
+  headRefName?: string | null;
 
   /**
    * The base ref name to filter the pull requests by.
    */
   baseRefName?: string | null;
+
+  /**
+   * Ordering options for pull requests returned from the connection.
+   */
+  orderBy?: IXGitHubIssueOrder | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
 
   /**
    * Returns the elements in the list that come before the specified cursor.
@@ -30903,29 +31335,9 @@ export interface IAssociatedPullRequestsOnXGitHubRefArguments {
   first?: number | null;
 
   /**
-   * The head ref name to filter the pull requests by.
-   */
-  headRefName?: string | null;
-
-  /**
-   * A list of label names to filter the pull requests by.
-   */
-  labels?: Array<string> | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for pull requests returned from the connection.
-   */
-  orderBy?: IXGitHubIssueOrder | null;
-
-  /**
-   * A list of states to filter the pull requests by.
-   */
-  states?: Array<XGitHubPullRequestState> | null;
 }
 
 /**
@@ -30977,14 +31389,14 @@ export interface IXGitHubRefEdge {
  */
 export interface IXGitHubRefOrder {
   /**
-   * The direction in which to order refs by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order refs by.
    */
   field: XGitHubRefOrderField;
+
+  /**
+   * The direction in which to order refs by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -30992,14 +31404,14 @@ export interface IXGitHubRefOrder {
  */
 export const enum XGitHubRefOrderField {
   /**
+   * Order refs by underlying commit date if the ref prefix is refs/tags/
+   */
+  TAG_COMMIT_DATE = 'TAG_COMMIT_DATE',
+
+  /**
    * Order refs by their alphanumeric name
    */
   ALPHABETICAL = 'ALPHABETICAL',
-
-  /**
-   * Order refs by underlying commit date if the ref prefix is refs/tags/
-   */
-  TAG_COMMIT_DATE = 'TAG_COMMIT_DATE'
 }
 
 /**
@@ -31117,14 +31529,14 @@ export type _xGitHubReferencedSubject = IXGitHubIssue | IXGitHubPullRequest;
  */
 export interface IXGitHubRegenerateEnterpriseIdentityProviderRecoveryCodesInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set an identity provider.
    */
   enterpriseId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31149,14 +31561,14 @@ export interface IXGitHubRegenerateEnterpriseIdentityProviderRecoveryCodesPayloa
  */
 export interface IXGitHubRegenerateVerifiableDomainTokenInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the verifiable domain to regenerate the verification token of.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31181,9 +31593,14 @@ export interface IXGitHubRegenerateVerifiableDomainTokenPayload {
  */
 export interface IXGitHubRejectDeploymentsInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The node ID of the workflow run containing the pending deployments.
    */
-  clientMutationId?: string | null;
+  workflowRunId: string;
+
+  /**
+   * The ids of environments to reject deployments
+   */
+  environmentIds: Array<string>;
 
   /**
    * Optional comment for rejecting deployments
@@ -31192,14 +31609,9 @@ export interface IXGitHubRejectDeploymentsInput {
   comment?: string | null;
 
   /**
-   * The ids of environments to reject deployments
+   * A unique identifier for the client performing the mutation.
    */
-  environmentIds: Array<string>;
-
-  /**
-   * The node ID of the workflow run containing the pending deployments.
-   */
-  workflowRunId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31376,11 +31788,6 @@ export interface IReactionsOnXGitHubReleaseArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -31389,6 +31796,11 @@ export interface IReactionsOnXGitHubReleaseArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -31582,14 +31994,14 @@ export interface IXGitHubReleaseEdge {
  */
 export interface IXGitHubReleaseOrder {
   /**
-   * The direction in which to order releases by the specified field.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order releases by.
    */
   field: XGitHubReleaseOrderField;
+
+  /**
+   * The direction in which to order releases by the specified field.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -31604,7 +32016,7 @@ export const enum XGitHubReleaseOrderField {
   /**
    * Order releases alphabetically by name
    */
-  NAME = 'NAME'
+  NAME = 'NAME',
 }
 
 /**
@@ -31649,11 +32061,6 @@ export interface IXGitHubRemoveAssigneesFromAssignablePayload {
  */
 export interface IXGitHubRemoveEnterpriseAdminInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Enterprise ID from which to remove the administrator.
    */
   enterpriseId: string;
@@ -31662,6 +32069,11 @@ export interface IXGitHubRemoveEnterpriseAdminInput {
    * The login of the user to remove as an administrator.
    */
   login: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31701,14 +32113,14 @@ export interface IXGitHubRemoveEnterpriseAdminPayload {
  */
 export interface IXGitHubRemoveEnterpriseIdentityProviderInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise from which to remove the identity provider.
    */
   enterpriseId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31733,11 +32145,6 @@ export interface IXGitHubRemoveEnterpriseIdentityProviderPayload {
  */
 export interface IXGitHubRemoveEnterpriseOrganizationInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise from which the organization should be removed.
    */
   enterpriseId: string;
@@ -31746,6 +32153,11 @@ export interface IXGitHubRemoveEnterpriseOrganizationInput {
    * The ID of the organization to remove from the enterprise.
    */
   organizationId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31780,11 +32192,6 @@ export interface IXGitHubRemoveEnterpriseOrganizationPayload {
  */
 export interface IXGitHubRemoveEnterpriseSupportEntitlementInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the Enterprise which the admin belongs to.
    */
   enterpriseId: string;
@@ -31793,6 +32200,11 @@ export interface IXGitHubRemoveEnterpriseSupportEntitlementInput {
    * The login of a member who will lose the support entitlement.
    */
   login: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31817,9 +32229,9 @@ export interface IXGitHubRemoveEnterpriseSupportEntitlementPayload {
  */
 export interface IXGitHubRemoveLabelsFromLabelableInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The id of the Labelable to remove labels from.
    */
-  clientMutationId?: string | null;
+  labelableId: string;
 
   /**
    * The ids of labels to remove.
@@ -31827,9 +32239,9 @@ export interface IXGitHubRemoveLabelsFromLabelableInput {
   labelIds: Array<string>;
 
   /**
-   * The id of the Labelable to remove labels from.
+   * A unique identifier for the client performing the mutation.
    */
-  labelableId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31854,9 +32266,9 @@ export interface IXGitHubRemoveLabelsFromLabelablePayload {
  */
 export interface IXGitHubRemoveOutsideCollaboratorInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ID of the outside collaborator to remove.
    */
-  clientMutationId?: string | null;
+  userId: string;
 
   /**
    * The ID of the organization to remove the outside collaborator from.
@@ -31864,9 +32276,9 @@ export interface IXGitHubRemoveOutsideCollaboratorInput {
   organizationId: string;
 
   /**
-   * The ID of the outside collaborator to remove.
+   * A unique identifier for the client performing the mutation.
    */
-  userId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31891,9 +32303,9 @@ export interface IXGitHubRemoveOutsideCollaboratorPayload {
  */
 export interface IXGitHubRemoveReactionInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the subject to modify.
    */
-  clientMutationId?: string | null;
+  subjectId: string;
 
   /**
    * The name of the emoji reaction to remove.
@@ -31901,9 +32313,9 @@ export interface IXGitHubRemoveReactionInput {
   content: XGitHubReactionContent;
 
   /**
-   * The Node ID of the subject to modify.
+   * A unique identifier for the client performing the mutation.
    */
-  subjectId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31933,14 +32345,14 @@ export interface IXGitHubRemoveReactionPayload {
  */
 export interface IXGitHubRemoveStarInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Starrable ID to unstar.
    */
   starrableId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -31965,14 +32377,14 @@ export interface IXGitHubRemoveStarPayload {
  */
 export interface IXGitHubRemoveUpvoteInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the discussion or comment to remove upvote.
    */
   subjectId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -32058,14 +32470,14 @@ export type _xGitHubRenamedTitleSubject = IXGitHubIssue | IXGitHubPullRequest;
  */
 export interface IXGitHubReopenIssueInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the issue to be opened.
    */
   issueId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -32090,14 +32502,14 @@ export interface IXGitHubReopenIssuePayload {
  */
 export interface IXGitHubReopenPullRequestInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the pull request to be reopened.
    */
   pullRequestId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -32275,7 +32687,7 @@ export const enum XGitHubRepoAccessAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -32413,7 +32825,7 @@ export const enum XGitHubRepoAddMemberAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -32674,7 +33086,7 @@ export const enum XGitHubRepoArchivedAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -32817,7 +33229,7 @@ export const enum XGitHubRepoChangeMergeSettingAuditEntryMergeType {
   /**
    * The pull request's commits are squashed into a single commit before they are merged to the base branch.
    */
-  SQUASH = 'SQUASH'
+  SQUASH = 'SQUASH',
 }
 
 /**
@@ -34095,7 +34507,7 @@ export const enum XGitHubRepoCreateAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -34233,7 +34645,7 @@ export const enum XGitHubRepoDestroyAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -34371,7 +34783,7 @@ export const enum XGitHubRepoRemoveMemberAuditEntryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -34502,14 +34914,14 @@ export interface IXGitHubRepoRemoveTopicAuditEntry {
  */
 export const enum XGitHubReportedContentClassifiers {
   /**
+   * A spammy piece of content
+   */
+  SPAM = 'SPAM',
+
+  /**
    * An abusive or harassing piece of content
    */
   ABUSE = 'ABUSE',
-
-  /**
-   * A duplicated piece of content
-   */
-  DUPLICATE = 'DUPLICATE',
 
   /**
    * An irrelevant piece of content
@@ -34522,14 +34934,14 @@ export const enum XGitHubReportedContentClassifiers {
   OUTDATED = 'OUTDATED',
 
   /**
+   * A duplicated piece of content
+   */
+  DUPLICATE = 'DUPLICATE',
+
+  /**
    * The content has been resolved
    */
   RESOLVED = 'RESOLVED',
-
-  /**
-   * A spammy piece of content
-   */
-  SPAM = 'SPAM'
 }
 
 /**
@@ -34647,6 +35059,11 @@ export interface IXGitHubRepository {
    * Returns how many forks there are of this repository in the whole network.
    */
   forkCount: number;
+
+  /**
+   * Whether this repository allows forks.
+   */
+  forkingAllowed: boolean;
 
   /**
    * A list of direct forked repositories.
@@ -34975,8 +35392,7 @@ export interface IXGitHubRepository {
   stargazers: IXGitHubStargazerConnection;
 
   /**
-   * Returns a list of all submodules in this repository parsed from the
-   * .gitmodules file as of the default branch's HEAD commit.
+   * Returns a list of all submodules in this repository parsed from the .gitmodules file as of the default branch's HEAD commit.
    */
   submodules: IXGitHubSubmoduleConnection;
 
@@ -35073,6 +35489,11 @@ export interface IXGitHubRepository {
 
 export interface IAssignableUsersOnXGitHubRepositoryArguments {
   /**
+   * Filters users with query on user name and login
+   */
+  query?: string | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -35091,11 +35512,6 @@ export interface IAssignableUsersOnXGitHubRepositoryArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filters users with query on user name and login
-   */
-  query?: string | null;
 }
 
 export interface IBranchProtectionRulesOnXGitHubRepositoryArguments {
@@ -35127,6 +35543,11 @@ export interface ICollaboratorsOnXGitHubRepositoryArguments {
   affiliation?: XGitHubCollaboratorAffiliation | null;
 
   /**
+   * Filters users with query on user name and login
+   */
+  query?: string | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -35145,11 +35566,6 @@ export interface ICollaboratorsOnXGitHubRepositoryArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filters users with query on user name and login
-   */
-  query?: string | null;
 }
 
 export interface ICommitCommentsOnXGitHubRepositoryArguments {
@@ -35198,6 +35614,17 @@ export interface IDeployKeysOnXGitHubRepositoryArguments {
 
 export interface IDeploymentsOnXGitHubRepositoryArguments {
   /**
+   * Environments to list deployments for
+   */
+  environments?: Array<string> | null;
+
+  /**
+   * Ordering options for deployments returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubDeploymentOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -35208,11 +35635,6 @@ export interface IDeploymentsOnXGitHubRepositoryArguments {
   before?: string | null;
 
   /**
-   * Environments to list deployments for
-   */
-  environments?: Array<string> | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -35221,12 +35643,6 @@ export interface IDeploymentsOnXGitHubRepositoryArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for deployments returned from the connection.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubDeploymentOrder | null;
 }
 
 export interface IDiscussionOnXGitHubRepositoryArguments {
@@ -35270,12 +35686,6 @@ export interface IDiscussionsOnXGitHubRepositoryArguments {
   before?: string | null;
 
   /**
-   * Only include discussions that belong to the category with this ID.
-   * @default null
-   */
-  categoryId?: string | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -35286,8 +35696,14 @@ export interface IDiscussionsOnXGitHubRepositoryArguments {
   last?: number | null;
 
   /**
+   * Only include discussions that belong to the category with this ID.
+   * @default null
+   */
+  categoryId?: string | null;
+
+  /**
    * Ordering options for discussions returned from the connection.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubDiscussionOrder | null;
 }
@@ -35323,11 +35739,30 @@ export interface IEnvironmentsOnXGitHubRepositoryArguments {
 
 export interface IForksOnXGitHubRepositoryArguments {
   /**
-   * Array of viewer's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * current viewer owns.
+   * If non-null, filters repositories according to privacy
+   */
+  privacy?: XGitHubRepositoryPrivacy | null;
+
+  /**
+   * Ordering options for repositories returned from the connection
+   */
+  orderBy?: IXGitHubRepositoryOrder | null;
+
+  /**
+   * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
   affiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
+   * @default ["OWNER","COLLABORATOR"]
+   */
+  ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * If non-null, filters repositories according to whether they have been locked
+   */
+  isLocked?: boolean | null;
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -35345,32 +35780,9 @@ export interface IForksOnXGitHubRepositoryArguments {
   first?: number | null;
 
   /**
-   * If non-null, filters repositories according to whether they have been locked
-   */
-  isLocked?: boolean | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for repositories returned from the connection
-   */
-  orderBy?: IXGitHubRepositoryOrder | null;
-
-  /**
-   * Array of owner's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * organization or user being viewed owns.
-   * @default ["OWNER","COLLABORATOR"]
-   */
-  ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
-
-  /**
-   * If non-null, filters repositories according to privacy
-   */
-  privacy?: XGitHubRepositoryPrivacy | null;
 }
 
 export interface IIssueOnXGitHubRepositoryArguments {
@@ -35389,6 +35801,26 @@ export interface IIssueOrPullRequestOnXGitHubRepositoryArguments {
 
 export interface IIssuesOnXGitHubRepositoryArguments {
   /**
+   * Ordering options for issues returned from the connection.
+   */
+  orderBy?: IXGitHubIssueOrder | null;
+
+  /**
+   * A list of label names to filter the pull requests by.
+   */
+  labels?: Array<string> | null;
+
+  /**
+   * A list of states to filter the issues by.
+   */
+  states?: Array<XGitHubIssueState> | null;
+
+  /**
+   * Filtering options for issues returned from the connection.
+   */
+  filterBy?: IXGitHubIssueFilters | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -35399,34 +35831,14 @@ export interface IIssuesOnXGitHubRepositoryArguments {
   before?: string | null;
 
   /**
-   * Filtering options for issues returned from the connection.
-   */
-  filterBy?: IXGitHubIssueFilters | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
 
   /**
-   * A list of label names to filter the pull requests by.
-   */
-  labels?: Array<string> | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for issues returned from the connection.
-   */
-  orderBy?: IXGitHubIssueOrder | null;
-
-  /**
-   * A list of states to filter the issues by.
-   */
-  states?: Array<XGitHubIssueState> | null;
 }
 
 export interface ILabelOnXGitHubRepositoryArguments {
@@ -35438,6 +35850,12 @@ export interface ILabelOnXGitHubRepositoryArguments {
 
 export interface ILabelsOnXGitHubRepositoryArguments {
   /**
+   * Ordering options for labels returned from the connection.
+   * @default {"field":"CREATED_AT","direction":"ASC"}
+   */
+  orderBy?: IXGitHubLabelOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -35456,12 +35874,6 @@ export interface ILabelsOnXGitHubRepositoryArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for labels returned from the connection.
-   * @default {"direction":"ASC","field":"CREATED_AT"}
-   */
-  orderBy?: IXGitHubLabelOrder | null;
 
   /**
    * If provided, searches labels by name and description.
@@ -35498,6 +35910,11 @@ export interface ILanguagesOnXGitHubRepositoryArguments {
 
 export interface IMentionableUsersOnXGitHubRepositoryArguments {
   /**
+   * Filters users with query on user name and login
+   */
+  query?: string | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -35516,11 +35933,6 @@ export interface IMentionableUsersOnXGitHubRepositoryArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filters users with query on user name and login
-   */
-  query?: string | null;
 }
 
 export interface IMilestoneOnXGitHubRepositoryArguments {
@@ -35552,6 +35964,11 @@ export interface IMilestonesOnXGitHubRepositoryArguments {
   last?: number | null;
 
   /**
+   * Filter by the state of the milestones.
+   */
+  states?: Array<XGitHubMilestoneState> | null;
+
+  /**
    * Ordering options for milestones.
    */
   orderBy?: IXGitHubMilestoneOrder | null;
@@ -35560,23 +35977,18 @@ export interface IMilestonesOnXGitHubRepositoryArguments {
    * Filters milestones with a query on the title
    */
   query?: string | null;
-
-  /**
-   * Filter by the state of the milestones.
-   */
-  states?: Array<XGitHubMilestoneState> | null;
 }
 
 export interface IObjectOnXGitHubRepositoryArguments {
   /**
-   * A Git revision expression suitable for rev-parse
-   */
-  expression?: string | null;
-
-  /**
    * The Git object ID
    */
   oid?: any | null;
+
+  /**
+   * A Git revision expression suitable for rev-parse
+   */
+  expression?: string | null;
 }
 
 export interface IPackagesOnXGitHubRepositoryArguments {
@@ -35606,10 +36018,9 @@ export interface IPackagesOnXGitHubRepositoryArguments {
   names?: Array<string | null> | null;
 
   /**
-   * Ordering of the returned packages.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * Find packages in a repository by ID.
    */
-  orderBy?: IXGitHubPackageOrder | null;
+  repositoryId?: string | null;
 
   /**
    * Filter registry package by type.
@@ -35617,9 +36028,10 @@ export interface IPackagesOnXGitHubRepositoryArguments {
   packageType?: XGitHubPackageType | null;
 
   /**
-   * Find packages in a repository by ID.
+   * Ordering of the returned packages.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
-  repositoryId?: string | null;
+  orderBy?: IXGitHubPackageOrder | null;
 }
 
 export interface IPinnedDiscussionsOnXGitHubRepositoryArguments {
@@ -35675,26 +36087,6 @@ export interface IProjectOnXGitHubRepositoryArguments {
 
 export interface IProjectsOnXGitHubRepositoryArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
-   */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
    * Ordering options for projects returned from the connection
    */
   orderBy?: IXGitHubProjectOrder | null;
@@ -35708,6 +36100,26 @@ export interface IProjectsOnXGitHubRepositoryArguments {
    * A list of states to filter the projects by.
    */
   states?: Array<XGitHubProjectState> | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IPullRequestOnXGitHubRepositoryArguments {
@@ -35719,29 +36131,9 @@ export interface IPullRequestOnXGitHubRepositoryArguments {
 
 export interface IPullRequestsOnXGitHubRepositoryArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * A list of states to filter the pull requests by.
    */
-  after?: string | null;
-
-  /**
-   * The base ref name to filter the pull requests by.
-   */
-  baseRefName?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * The head ref name to filter the pull requests by.
-   */
-  headRefName?: string | null;
+  states?: Array<XGitHubPullRequestState> | null;
 
   /**
    * A list of label names to filter the pull requests by.
@@ -35749,30 +36141,20 @@ export interface IPullRequestsOnXGitHubRepositoryArguments {
   labels?: Array<string> | null;
 
   /**
-   * Returns the last _n_ elements from the list.
+   * The head ref name to filter the pull requests by.
    */
-  last?: number | null;
+  headRefName?: string | null;
+
+  /**
+   * The base ref name to filter the pull requests by.
+   */
+  baseRefName?: string | null;
 
   /**
    * Ordering options for pull requests returned from the connection.
    */
   orderBy?: IXGitHubIssueOrder | null;
 
-  /**
-   * A list of states to filter the pull requests by.
-   */
-  states?: Array<XGitHubPullRequestState> | null;
-}
-
-export interface IRefOnXGitHubRepositoryArguments {
-  /**
-   * The ref to retrieve. Fully qualified matches are checked in order
-   * (`refs/heads/master`) before falling back onto checks for short name matches (`master`).
-   */
-  qualifiedName: string;
-}
-
-export interface IRefsOnXGitHubRepositoryArguments {
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -35784,9 +36166,38 @@ export interface IRefsOnXGitHubRepositoryArguments {
   before?: string | null;
 
   /**
-   * DEPRECATED: use orderBy. The ordering direction.
+   * Returns the first _n_ elements from the list.
    */
-  direction?: XGitHubOrderDirection | null;
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
+}
+
+export interface IRefOnXGitHubRepositoryArguments {
+  /**
+   * The ref to retrieve. Fully qualified matches are checked in order (`refs/heads/master`) before falling back onto checks for short name matches (`master`).
+   */
+  qualifiedName: string;
+}
+
+export interface IRefsOnXGitHubRepositoryArguments {
+  /**
+   * Filters refs with query on name
+   */
+  query?: string | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
 
   /**
    * Returns the first _n_ elements from the list.
@@ -35799,19 +36210,19 @@ export interface IRefsOnXGitHubRepositoryArguments {
   last?: number | null;
 
   /**
-   * Ordering options for refs returned from the connection.
-   */
-  orderBy?: IXGitHubRefOrder | null;
-
-  /**
-   * Filters refs with query on name
-   */
-  query?: string | null;
-
-  /**
    * A ref name prefix like `refs/heads/`, `refs/tags/`, etc.
    */
   refPrefix: string;
+
+  /**
+   * DEPRECATED: use orderBy. The ordering direction.
+   */
+  direction?: XGitHubOrderDirection | null;
+
+  /**
+   * Ordering options for refs returned from the connection.
+   */
+  orderBy?: IXGitHubRefOrder | null;
 }
 
 export interface IReleaseOnXGitHubRepositoryArguments {
@@ -35976,20 +36387,19 @@ export interface IWatchersOnXGitHubRepositoryArguments {
  */
 export const enum XGitHubRepositoryAffiliation {
   /**
+   * Repositories that are owned by the authenticated user.
+   */
+  OWNER = 'OWNER',
+
+  /**
    * Repositories that the user has been added to as a collaborator.
    */
   COLLABORATOR = 'COLLABORATOR',
 
   /**
-   * Repositories that the user has access to through being a member of an
-   * organization. This includes every repository on every team that the user is on.
+   * Repositories that the user has access to through being a member of an organization. This includes every repository on every team that the user is on.
    */
   ORGANIZATION_MEMBER = 'ORGANIZATION_MEMBER',
-
-  /**
-   * Repositories that are owned by the authenticated user.
-   */
-  OWNER = 'OWNER'
 }
 
 /**
@@ -36172,14 +36582,14 @@ export const enum XGitHubRepositoryContributionType {
   PULL_REQUEST = 'PULL_REQUEST',
 
   /**
+   * Created the repository
+   */
+  REPOSITORY = 'REPOSITORY',
+
+  /**
    * Reviewed a pull request
    */
   PULL_REQUEST_REVIEW = 'PULL_REQUEST_REVIEW',
-
-  /**
-   * Created the repository
-   */
-  REPOSITORY = 'REPOSITORY'
 }
 
 /**
@@ -36208,13 +36618,6 @@ export interface IRepositoryDiscussionsOnXGitHubRepositoryDiscussionAuthorArgume
   after?: string | null;
 
   /**
-   * Filter discussions to only those that have been answered or not. Defaults to
-   * including both answered and unanswered discussions.
-   * @default null
-   */
-  answered?: boolean | null;
-
-  /**
    * Returns the elements in the list that come before the specified cursor.
    */
   before?: string | null;
@@ -36231,7 +36634,7 @@ export interface IRepositoryDiscussionsOnXGitHubRepositoryDiscussionAuthorArgume
 
   /**
    * Ordering options for discussions returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubDiscussionOrder | null;
 
@@ -36239,6 +36642,12 @@ export interface IRepositoryDiscussionsOnXGitHubRepositoryDiscussionAuthorArgume
    * Filter discussions to only those in a specific repository.
    */
   repositoryId?: string | null;
+
+  /**
+   * Filter discussions to only those that have been answered or not. Defaults to including both answered and unanswered discussions.
+   * @default null
+   */
+  answered?: boolean | null;
 }
 
 /**
@@ -36282,15 +36691,15 @@ export interface IRepositoryDiscussionCommentsOnXGitHubRepositoryDiscussionComme
   last?: number | null;
 
   /**
+   * Filter discussion comments to only those in a specific repository.
+   */
+  repositoryId?: string | null;
+
+  /**
    * Filter discussion comments to only those that were marked as the answer
    * @default false
    */
   onlyAnswers?: boolean | null;
-
-  /**
-   * Filter discussion comments to only those in a specific repository.
-   */
-  repositoryId?: string | null;
 }
 
 /**
@@ -36502,9 +36911,9 @@ export interface IXGitHubRepositoryInteractionAbility {
  */
 export const enum XGitHubRepositoryInteractionLimit {
   /**
-   * Users that are not collaborators will not be able to interact with the repository.
+   * Users that have recently created their account will be unable to interact with the repository.
    */
-  COLLABORATORS_ONLY = 'COLLABORATORS_ONLY',
+  EXISTING_USERS = 'EXISTING_USERS',
 
   /**
    * Users that have not previously committed to a repository’s default branch will be unable to interact with the repository.
@@ -36512,14 +36921,14 @@ export const enum XGitHubRepositoryInteractionLimit {
   CONTRIBUTORS_ONLY = 'CONTRIBUTORS_ONLY',
 
   /**
-   * Users that have recently created their account will be unable to interact with the repository.
+   * Users that are not collaborators will not be able to interact with the repository.
    */
-  EXISTING_USERS = 'EXISTING_USERS',
+  COLLABORATORS_ONLY = 'COLLABORATORS_ONLY',
 
   /**
    * No interaction limits are enabled.
    */
-  NO_LIMIT = 'NO_LIMIT'
+  NO_LIMIT = 'NO_LIMIT',
 }
 
 /**
@@ -36532,9 +36941,9 @@ export const enum XGitHubRepositoryInteractionLimitExpiry {
   ONE_DAY = 'ONE_DAY',
 
   /**
-   * The interaction limit will expire after 1 month.
+   * The interaction limit will expire after 3 days.
    */
-  ONE_MONTH = 'ONE_MONTH',
+  THREE_DAYS = 'THREE_DAYS',
 
   /**
    * The interaction limit will expire after 1 week.
@@ -36542,14 +36951,14 @@ export const enum XGitHubRepositoryInteractionLimitExpiry {
   ONE_WEEK = 'ONE_WEEK',
 
   /**
+   * The interaction limit will expire after 1 month.
+   */
+  ONE_MONTH = 'ONE_MONTH',
+
+  /**
    * The interaction limit will expire after 6 months.
    */
   SIX_MONTHS = 'SIX_MONTHS',
-
-  /**
-   * The interaction limit will expire after 3 days.
-   */
-  THREE_DAYS = 'THREE_DAYS'
 }
 
 /**
@@ -36557,19 +36966,19 @@ export const enum XGitHubRepositoryInteractionLimitExpiry {
  */
 export const enum XGitHubRepositoryInteractionLimitOrigin {
   /**
-   * A limit that is configured at the organization level.
-   */
-  ORGANIZATION = 'ORGANIZATION',
-
-  /**
    * A limit that is configured at the repository level.
    */
   REPOSITORY = 'REPOSITORY',
 
   /**
+   * A limit that is configured at the organization level.
+   */
+  ORGANIZATION = 'ORGANIZATION',
+
+  /**
    * A limit that is configured at the user-wide level.
    */
-  USER = 'USER'
+  USER = 'USER',
 }
 
 /**
@@ -36659,14 +37068,14 @@ export interface IXGitHubRepositoryInvitationEdge {
  */
 export interface IXGitHubRepositoryInvitationOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order repository invitations by.
    */
   field: XGitHubRepositoryInvitationOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -36682,7 +37091,7 @@ export const enum XGitHubRepositoryInvitationOrderField {
    * Order repository invitations by invitee login
    * @deprecated "`INVITEE_LOGIN` is no longer a valid field value. Repository invitations can now be associated with an email, not only an invitee. Removal on 2020-10-01 UTC."
    */
-  INVITEE_LOGIN = 'INVITEE_LOGIN'
+  INVITEE_LOGIN = 'INVITEE_LOGIN',
 }
 
 /**
@@ -36690,24 +37099,24 @@ export const enum XGitHubRepositoryInvitationOrderField {
  */
 export const enum XGitHubRepositoryLockReason {
   /**
-   * The repository is locked due to a billing related reason.
-   */
-  BILLING = 'BILLING',
-
-  /**
-   * The repository is locked due to a migration.
-   */
-  MIGRATING = 'MIGRATING',
-
-  /**
    * The repository is locked due to a move.
    */
   MOVING = 'MOVING',
 
   /**
+   * The repository is locked due to a billing related reason.
+   */
+  BILLING = 'BILLING',
+
+  /**
    * The repository is locked due to a rename.
    */
-  RENAME = 'RENAME'
+  RENAME = 'RENAME',
+
+  /**
+   * The repository is locked due to a migration.
+   */
+  MIGRATING = 'MIGRATING',
 }
 
 /**
@@ -36744,14 +37153,14 @@ export interface IXGitHubRepositoryNode {
  */
 export interface IXGitHubRepositoryOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order repositories by.
    */
   field: XGitHubRepositoryOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -36764,9 +37173,9 @@ export const enum XGitHubRepositoryOrderField {
   CREATED_AT = 'CREATED_AT',
 
   /**
-   * Order repositories by name
+   * Order repositories by update time
    */
-  NAME = 'NAME',
+  UPDATED_AT = 'UPDATED_AT',
 
   /**
    * Order repositories by push time
@@ -36774,14 +37183,14 @@ export const enum XGitHubRepositoryOrderField {
   PUSHED_AT = 'PUSHED_AT',
 
   /**
+   * Order repositories by name
+   */
+  NAME = 'NAME',
+
+  /**
    * Order repositories by number of stargazers
    */
   STARGAZERS = 'STARGAZERS',
-
-  /**
-   * Order repositories by update time
-   */
-  UPDATED_AT = 'UPDATED_AT'
 }
 
 /**
@@ -36836,11 +37245,30 @@ export interface IAvatarUrlOnXGitHubRepositoryOwnerArguments {
 
 export interface IRepositoriesOnXGitHubRepositoryOwnerArguments {
   /**
-   * Array of viewer's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * current viewer owns.
+   * If non-null, filters repositories according to privacy
+   */
+  privacy?: XGitHubRepositoryPrivacy | null;
+
+  /**
+   * Ordering options for repositories returned from the connection
+   */
+  orderBy?: IXGitHubRepositoryOrder | null;
+
+  /**
+   * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
   affiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
+   * @default ["OWNER","COLLABORATOR"]
+   */
+  ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * If non-null, filters repositories according to whether they have been locked
+   */
+  isLocked?: boolean | null;
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -36858,37 +37286,14 @@ export interface IRepositoriesOnXGitHubRepositoryOwnerArguments {
   first?: number | null;
 
   /**
-   * If non-null, filters repositories according to whether they are forks of another repository
-   */
-  isFork?: boolean | null;
-
-  /**
-   * If non-null, filters repositories according to whether they have been locked
-   */
-  isLocked?: boolean | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
 
   /**
-   * Ordering options for repositories returned from the connection
+   * If non-null, filters repositories according to whether they are forks of another repository
    */
-  orderBy?: IXGitHubRepositoryOrder | null;
-
-  /**
-   * Array of owner's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * organization or user being viewed owns.
-   * @default ["OWNER","COLLABORATOR"]
-   */
-  ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
-
-  /**
-   * If non-null, filters repositories according to privacy
-   */
-  privacy?: XGitHubRepositoryPrivacy | null;
+  isFork?: boolean | null;
 }
 
 export interface IRepositoryOnXGitHubRepositoryOwnerArguments {
@@ -36903,8 +37308,7 @@ export interface IRepositoryOnXGitHubRepositoryOwnerArguments {
  */
 export const enum XGitHubRepositoryPermission {
   /**
-   * Can read, clone, and push to this repository. Can also manage issues, pull
-   * requests, and repository settings, including adding collaborators
+   * Can read, clone, and push to this repository. Can also manage issues, pull requests, and repository settings, including adding collaborators
    */
   ADMIN = 'ADMIN',
 
@@ -36914,9 +37318,9 @@ export const enum XGitHubRepositoryPermission {
   MAINTAIN = 'MAINTAIN',
 
   /**
-   * Can read and clone this repository. Can also open and comment on issues and pull requests
+   * Can read, clone, and push to this repository. Can also manage issues and pull requests
    */
-  READ = 'READ',
+  WRITE = 'WRITE',
 
   /**
    * Can read and clone this repository. Can also manage issues and pull requests
@@ -36924,9 +37328,9 @@ export const enum XGitHubRepositoryPermission {
   TRIAGE = 'TRIAGE',
 
   /**
-   * Can read, clone, and push to this repository. Can also manage issues and pull requests
+   * Can read and clone this repository. Can also open and comment on issues and pull requests
    */
-  WRITE = 'WRITE'
+  READ = 'READ',
 }
 
 /**
@@ -36934,14 +37338,14 @@ export const enum XGitHubRepositoryPermission {
  */
 export const enum XGitHubRepositoryPrivacy {
   /**
+   * Public
+   */
+  PUBLIC = 'PUBLIC',
+
+  /**
    * Private
    */
   PRIVATE = 'PRIVATE',
-
-  /**
-   * Public
-   */
-  PUBLIC = 'PUBLIC'
 }
 
 /**
@@ -37016,11 +37420,6 @@ export interface IXGitHubRepositoryTopicEdge {
  */
 export const enum XGitHubRepositoryVisibility {
   /**
-   * The repository is visible only to users in the same business.
-   */
-  INTERNAL = 'INTERNAL',
-
-  /**
    * The repository is visible only to those with explicit access.
    */
   PRIVATE = 'PRIVATE',
@@ -37028,7 +37427,12 @@ export const enum XGitHubRepositoryVisibility {
   /**
    * The repository is visible to everyone.
    */
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
+
+  /**
+   * The repository is visible only to users in the same business.
+   */
+  INTERNAL = 'INTERNAL',
 }
 
 /**
@@ -37354,14 +37758,14 @@ export interface IXGitHubRepositoryVulnerabilityAlertEdge {
  */
 export interface IXGitHubRequestReviewsInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the pull request to modify.
    */
   pullRequestId: string;
+
+  /**
+   * The Node IDs of the user to request.
+   */
+  userIds?: Array<string> | null;
 
   /**
    * The Node IDs of the team to request.
@@ -37374,9 +37778,9 @@ export interface IXGitHubRequestReviewsInput {
   union?: boolean | null;
 
   /**
-   * The Node IDs of the user to request.
+   * A unique identifier for the client performing the mutation.
    */
-  userIds?: Array<string> | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -37411,9 +37815,9 @@ export interface IXGitHubRequestReviewsPayload {
  */
 export const enum XGitHubRequestableCheckStatusState {
   /**
-   * The check suite or run has been completed.
+   * The check suite or run has been queued.
    */
-  COMPLETED = 'COMPLETED',
+  QUEUED = 'QUEUED',
 
   /**
    * The check suite or run is in progress.
@@ -37421,19 +37825,19 @@ export const enum XGitHubRequestableCheckStatusState {
   IN_PROGRESS = 'IN_PROGRESS',
 
   /**
-   * The check suite or run is in pending state.
+   * The check suite or run has been completed.
    */
-  PENDING = 'PENDING',
-
-  /**
-   * The check suite or run has been queued.
-   */
-  QUEUED = 'QUEUED',
+  COMPLETED = 'COMPLETED',
 
   /**
    * The check suite or run is in waiting state.
    */
-  WAITING = 'WAITING'
+  WAITING = 'WAITING',
+
+  /**
+   * The check suite or run is in pending state.
+   */
+  PENDING = 'PENDING',
 }
 
 /**
@@ -37480,6 +37884,11 @@ export interface IIsRequiredOnXGitHubRequirableByPullRequestArguments {
  */
 export interface IXGitHubRerequestCheckSuiteInput {
   /**
+   * The Node ID of the repository.
+   */
+  repositoryId: string;
+
+  /**
    * The Node ID of the check suite.
    */
   checkSuiteId: string;
@@ -37488,11 +37897,6 @@ export interface IXGitHubRerequestCheckSuiteInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the repository.
-   */
-  repositoryId: string;
 }
 
 /**
@@ -37517,14 +37921,14 @@ export interface IXGitHubRerequestCheckSuitePayload {
  */
 export interface IXGitHubResolveReviewThreadInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the thread to resolve
    */
   threadId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -37881,7 +38285,7 @@ export const enum XGitHubSamlDigestAlgorithm {
   /**
    * SHA512
    */
-  SHA512 = 'SHA512'
+  SHA512 = 'SHA512',
 }
 
 /**
@@ -37906,7 +38310,7 @@ export const enum XGitHubSamlSignatureAlgorithm {
   /**
    * RSA-SHA512
    */
-  RSA_SHA512 = 'RSA_SHA512'
+  RSA_SHA512 = 'RSA_SHA512',
 }
 
 /**
@@ -37991,14 +38395,14 @@ export interface IXGitHubSavedReplyEdge {
  */
 export interface IXGitHubSavedReplyOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order saved replies by.
    */
   field: XGitHubSavedReplyOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -38008,7 +38412,7 @@ export const enum XGitHubSavedReplyOrderField {
   /**
    * Order saved reply by when they were updated.
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -38103,11 +38507,6 @@ export interface IXGitHubSearchResultItemEdge {
  */
 export const enum XGitHubSearchType {
   /**
-   * Returns matching discussions in repositories.
-   */
-  DISCUSSION = 'DISCUSSION',
-
-  /**
    * Returns results matching issues in repositories.
    */
   ISSUE = 'ISSUE',
@@ -38120,7 +38519,12 @@ export const enum XGitHubSearchType {
   /**
    * Returns results matching users and organizations on GitHub.
    */
-  USER = 'USER'
+  USER = 'USER',
+
+  /**
+   * Returns matching discussions in repositories.
+   */
+  DISCUSSION = 'DISCUSSION',
 }
 
 /**
@@ -38235,35 +38639,15 @@ export interface ICwesOnXGitHubSecurityAdvisoryArguments {
 
 export interface IVulnerabilitiesOnXGitHubSecurityAdvisoryArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * Ordering options for the returned topics.
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
    */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
+  orderBy?: IXGitHubSecurityVulnerabilityOrder | null;
 
   /**
    * An ecosystem to filter vulnerabilities by.
    */
   ecosystem?: XGitHubSecurityAdvisoryEcosystem | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for the returned topics.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
-   */
-  orderBy?: IXGitHubSecurityVulnerabilityOrder | null;
 
   /**
    * A package name to filter vulnerabilities by.
@@ -38274,6 +38658,26 @@ export interface IVulnerabilitiesOnXGitHubSecurityAdvisoryArguments {
    * A list of severities to filter vulnerabilities by.
    */
   severities?: Array<XGitHubSecurityAdvisorySeverity> | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 /**
@@ -38340,7 +38744,7 @@ export const enum XGitHubSecurityAdvisoryEcosystem {
   /**
    * Ruby gems hosted at RubyGems.org
    */
-  RUBYGEMS = 'RUBYGEMS'
+  RUBYGEMS = 'RUBYGEMS',
 }
 
 /**
@@ -38404,7 +38808,7 @@ export const enum XGitHubSecurityAdvisoryIdentifierType {
   /**
    * GitHub Security Advisory ID.
    */
-  GHSA = 'GHSA'
+  GHSA = 'GHSA',
 }
 
 /**
@@ -38412,14 +38816,14 @@ export const enum XGitHubSecurityAdvisoryIdentifierType {
  */
 export interface IXGitHubSecurityAdvisoryOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order security advisories by.
    */
   field: XGitHubSecurityAdvisoryOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -38434,7 +38838,7 @@ export const enum XGitHubSecurityAdvisoryOrderField {
   /**
    * Order advisories by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -38483,16 +38887,6 @@ export interface IXGitHubSecurityAdvisoryReference {
  */
 export const enum XGitHubSecurityAdvisorySeverity {
   /**
-   * Critical.
-   */
-  CRITICAL = 'CRITICAL',
-
-  /**
-   * High.
-   */
-  HIGH = 'HIGH',
-
-  /**
    * Low.
    */
   LOW = 'LOW',
@@ -38500,7 +38894,17 @@ export const enum XGitHubSecurityAdvisorySeverity {
   /**
    * Moderate.
    */
-  MODERATE = 'MODERATE'
+  MODERATE = 'MODERATE',
+
+  /**
+   * High.
+   */
+  HIGH = 'HIGH',
+
+  /**
+   * Critical.
+   */
+  CRITICAL = 'CRITICAL',
 }
 
 /**
@@ -38595,14 +38999,14 @@ export interface IXGitHubSecurityVulnerabilityEdge {
  */
 export interface IXGitHubSecurityVulnerabilityOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order security vulnerabilities by.
    */
   field: XGitHubSecurityVulnerabilityOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -38612,7 +39016,7 @@ export const enum XGitHubSecurityVulnerabilityOrderField {
   /**
    * Order vulnerability by update time
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -38620,24 +39024,14 @@ export const enum XGitHubSecurityVulnerabilityOrderField {
  */
 export interface IXGitHubSetEnterpriseIdentityProviderInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The digest algorithm used to sign SAML requests for the identity provider.
-   */
-  digestMethod: XGitHubSamlDigestAlgorithm;
-
-  /**
    * The ID of the enterprise on which to set an identity provider.
    */
   enterpriseId: string;
 
   /**
-   * The x509 certificate used by the identity provider to sign assertions and responses.
+   * The URL endpoint for the identity provider's SAML SSO.
    */
-  idpCertificate: string;
+  ssoUrl: any;
 
   /**
    * The Issuer Entity ID for the SAML identity provider
@@ -38645,14 +39039,24 @@ export interface IXGitHubSetEnterpriseIdentityProviderInput {
   issuer?: string | null;
 
   /**
+   * The x509 certificate used by the identity provider to sign assertions and responses.
+   */
+  idpCertificate: string;
+
+  /**
    * The signature algorithm used to sign SAML requests for the identity provider.
    */
   signatureMethod: XGitHubSamlSignatureAlgorithm;
 
   /**
-   * The URL endpoint for the identity provider's SAML SSO.
+   * The digest algorithm used to sign SAML requests for the identity provider.
    */
-  ssoUrl: any;
+  digestMethod: XGitHubSamlDigestAlgorithm;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -38677,14 +39081,9 @@ export interface IXGitHubSetEnterpriseIdentityProviderPayload {
  */
 export interface IXGitHubSetOrganizationInteractionLimitInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ID of the organization to set a limit for.
    */
-  clientMutationId?: string | null;
-
-  /**
-   * When this limit should expire.
-   */
-  expiry?: XGitHubRepositoryInteractionLimitExpiry | null;
+  organizationId: string;
 
   /**
    * The limit to set.
@@ -38692,9 +39091,14 @@ export interface IXGitHubSetOrganizationInteractionLimitInput {
   limit: XGitHubRepositoryInteractionLimit;
 
   /**
-   * The ID of the organization to set a limit for.
+   * When this limit should expire.
    */
-  organizationId: string;
+  expiry?: XGitHubRepositoryInteractionLimitExpiry | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -38719,14 +39123,9 @@ export interface IXGitHubSetOrganizationInteractionLimitPayload {
  */
 export interface IXGitHubSetRepositoryInteractionLimitInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ID of the repository to set a limit for.
    */
-  clientMutationId?: string | null;
-
-  /**
-   * When this limit should expire.
-   */
-  expiry?: XGitHubRepositoryInteractionLimitExpiry | null;
+  repositoryId: string;
 
   /**
    * The limit to set.
@@ -38734,9 +39133,14 @@ export interface IXGitHubSetRepositoryInteractionLimitInput {
   limit: XGitHubRepositoryInteractionLimit;
 
   /**
-   * The ID of the repository to set a limit for.
+   * When this limit should expire.
    */
-  repositoryId: string;
+  expiry?: XGitHubRepositoryInteractionLimitExpiry | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -38761,14 +39165,9 @@ export interface IXGitHubSetRepositoryInteractionLimitPayload {
  */
 export interface IXGitHubSetUserInteractionLimitInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ID of the user to set a limit for.
    */
-  clientMutationId?: string | null;
-
-  /**
-   * When this limit should expire.
-   */
-  expiry?: XGitHubRepositoryInteractionLimitExpiry | null;
+  userId: string;
 
   /**
    * The limit to set.
@@ -38776,9 +39175,14 @@ export interface IXGitHubSetUserInteractionLimitInput {
   limit: XGitHubRepositoryInteractionLimit;
 
   /**
-   * The ID of the user to set a limit for.
+   * When this limit should expire.
    */
-  userId: string;
+  expiry?: XGitHubRepositoryInteractionLimitExpiry | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -38830,8 +39234,7 @@ export interface IXGitHubSmimeSignature {
   signer: IXGitHubUser | null;
 
   /**
-   * The state of this signature. `VALID` if signature is valid and verified by
-   * GitHub, otherwise represents reason why signature is considered invalid.
+   * The state of this signature. `VALID` if signature is valid and verified by GitHub, otherwise represents reason why signature is considered invalid.
    */
   state: XGitHubGitSignatureState;
 
@@ -38895,14 +39298,14 @@ export interface IXGitHubSponsorEdge {
  */
 export interface IXGitHubSponsorOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order sponsor entities by.
    */
   field: XGitHubSponsorOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -38917,7 +39320,7 @@ export const enum XGitHubSponsorOrderField {
   /**
    * Order sponsors by their relevance to the viewer.
    */
-  RELEVANCE = 'RELEVANCE'
+  RELEVANCE = 'RELEVANCE',
 }
 
 /**
@@ -38977,9 +39380,14 @@ export interface IXGitHubSponsorable {
   sponsorsListing: IXGitHubSponsorsListing | null;
 
   /**
-   * The viewer's sponsorship of this entity.
+   * The sponsorship from the viewer to this user/organization; that is, the sponsorship where you're the sponsor. Only returns a sponsorship if it is active.
    */
   sponsorshipForViewerAsSponsor: IXGitHubSponsorship | null;
+
+  /**
+   * The sponsorship from this user/organization to the viewer; that is, the sponsorship you're receiving. Only returns a sponsorship if it is active.
+   */
+  sponsorshipForViewerAsSponsorable: IXGitHubSponsorship | null;
 
   /**
    * List of sponsorship updates sent from this sponsorable to sponsors.
@@ -39037,7 +39445,7 @@ export interface ISponsoringOnXGitHubSponsorableArguments {
 
   /**
    * Ordering options for the users and organizations returned from the connection.
-   * @default {"direction":"DESC","field":"RELEVANCE"}
+   * @default {"field":"RELEVANCE","direction":"DESC"}
    */
   orderBy?: IXGitHubSponsorOrder | null;
 }
@@ -39064,16 +39472,15 @@ export interface ISponsorsOnXGitHubSponsorableArguments {
   last?: number | null;
 
   /**
-   * Ordering options for sponsors returned from the connection.
-   * @default {"direction":"DESC","field":"RELEVANCE"}
-   */
-  orderBy?: IXGitHubSponsorOrder | null;
-
-  /**
-   * If given, will filter for sponsors at the given tier. Will only return
-   * sponsors whose tier the viewer is permitted to see.
+   * If given, will filter for sponsors at the given tier. Will only return sponsors whose tier the viewer is permitted to see.
    */
   tierId?: string | null;
+
+  /**
+   * Ordering options for sponsors returned from the connection.
+   * @default {"field":"RELEVANCE","direction":"DESC"}
+   */
+  orderBy?: IXGitHubSponsorOrder | null;
 }
 
 export interface ISponsorsActivitiesOnXGitHubSponsorableArguments {
@@ -39098,16 +39505,16 @@ export interface ISponsorsActivitiesOnXGitHubSponsorableArguments {
   last?: number | null;
 
   /**
-   * Ordering options for activity returned from the connection.
-   * @default {"direction":"DESC","field":"TIMESTAMP"}
-   */
-  orderBy?: IXGitHubSponsorsActivityOrder | null;
-
-  /**
    * Filter activities returned to only those that occurred in a given time range.
    * @default "MONTH"
    */
   period?: XGitHubSponsorsActivityPeriod | null;
+
+  /**
+   * Ordering options for activity returned from the connection.
+   * @default {"field":"TIMESTAMP","direction":"DESC"}
+   */
+  orderBy?: IXGitHubSponsorsActivityOrder | null;
 }
 
 export interface ISponsorshipNewslettersOnXGitHubSponsorableArguments {
@@ -39133,7 +39540,7 @@ export interface ISponsorshipNewslettersOnXGitHubSponsorableArguments {
 
   /**
    * Ordering options for sponsorship updates returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubSponsorshipNewsletterOrder | null;
 }
@@ -39155,19 +39562,18 @@ export interface ISponsorshipsAsMaintainerOnXGitHubSponsorableArguments {
   first?: number | null;
 
   /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
+
+  /**
    * Whether or not to include private sponsorships in the result set
    * @default false
    */
   includePrivate?: boolean | null;
 
   /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for sponsorships returned from this connection. If left
-   * blank, the sponsorships will be ordered based on relevancy to the viewer.
+   * Ordering options for sponsorships returned from this connection. If left blank, the sponsorships will be ordered based on relevancy to the viewer.
    */
   orderBy?: IXGitHubSponsorshipOrder | null;
 }
@@ -39194,8 +39600,7 @@ export interface ISponsorshipsAsSponsorOnXGitHubSponsorableArguments {
   last?: number | null;
 
   /**
-   * Ordering options for sponsorships returned from this connection. If left
-   * blank, the sponsorships will be ordered based on relevancy to the viewer.
+   * Ordering options for sponsorships returned from this connection. If left blank, the sponsorships will be ordered based on relevancy to the viewer.
    */
   orderBy?: IXGitHubSponsorshipOrder | null;
 }
@@ -39254,14 +39659,14 @@ export interface IXGitHubSponsorableItemEdge {
  */
 export interface IXGitHubSponsorableOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order sponsorable entities by.
    */
   field: XGitHubSponsorableOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -39271,7 +39676,7 @@ export const enum XGitHubSponsorableOrderField {
   /**
    * Order sponsorable entities by login (username).
    */
-  LOGIN = 'LOGIN'
+  LOGIN = 'LOGIN',
 }
 
 /**
@@ -39317,19 +39722,19 @@ export interface IXGitHubSponsorsActivity {
  */
 export const enum XGitHubSponsorsActivityAction {
   /**
-   * The activity was cancelling a sponsorship.
-   */
-  CANCELLED_SPONSORSHIP = 'CANCELLED_SPONSORSHIP',
-
-  /**
    * The activity was starting a sponsorship.
    */
   NEW_SPONSORSHIP = 'NEW_SPONSORSHIP',
 
   /**
-   * The activity was scheduling a downgrade or cancellation.
+   * The activity was cancelling a sponsorship.
    */
-  PENDING_CHANGE = 'PENDING_CHANGE',
+  CANCELLED_SPONSORSHIP = 'CANCELLED_SPONSORSHIP',
+
+  /**
+   * The activity was changing the sponsorship tier, either directly by the sponsor or by a scheduled/pending change.
+   */
+  TIER_CHANGE = 'TIER_CHANGE',
 
   /**
    * The activity was funds being refunded to the sponsor or GitHub.
@@ -39337,14 +39742,14 @@ export const enum XGitHubSponsorsActivityAction {
   REFUND = 'REFUND',
 
   /**
+   * The activity was scheduling a downgrade or cancellation.
+   */
+  PENDING_CHANGE = 'PENDING_CHANGE',
+
+  /**
    * The activity was disabling matching for a previously matched sponsorship.
    */
   SPONSOR_MATCH_DISABLED = 'SPONSOR_MATCH_DISABLED',
-
-  /**
-   * The activity was changing the sponsorship tier, either directly by the sponsor or by a scheduled/pending change.
-   */
-  TIER_CHANGE = 'TIER_CHANGE'
 }
 
 /**
@@ -39396,14 +39801,14 @@ export interface IXGitHubSponsorsActivityEdge {
  */
 export interface IXGitHubSponsorsActivityOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order activity by.
    */
   field: XGitHubSponsorsActivityOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -39413,7 +39818,7 @@ export const enum XGitHubSponsorsActivityOrderField {
   /**
    * Order activities by when they happened.
    */
-  TIMESTAMP = 'TIMESTAMP'
+  TIMESTAMP = 'TIMESTAMP',
 }
 
 /**
@@ -39421,14 +39826,14 @@ export const enum XGitHubSponsorsActivityOrderField {
  */
 export const enum XGitHubSponsorsActivityPeriod {
   /**
-   * Don't restrict the activity to any date range, include all activity.
-   */
-  ALL = 'ALL',
-
-  /**
    * The previous calendar day.
    */
   DAY = 'DAY',
+
+  /**
+   * The previous seven days.
+   */
+  WEEK = 'WEEK',
 
   /**
    * The previous thirty days.
@@ -39436,9 +39841,9 @@ export const enum XGitHubSponsorsActivityPeriod {
   MONTH = 'MONTH',
 
   /**
-   * The previous seven days.
+   * Don't restrict the activity to any date range, include all activity.
    */
-  WEEK = 'WEEK'
+  ALL = 'ALL',
 }
 
 /**
@@ -39463,8 +39868,7 @@ export interface IXGitHubSponsorsGoal {
   percentComplete: number;
 
   /**
-   * What the goal amount is. Represents an amount in USD for monthly sponsorship
-   * amount goals. Represents a count of unique sponsors for total sponsors count goals.
+   * What the goal amount is. Represents an amount in USD for monthly sponsorship amount goals. Represents a count of unique sponsors for total sponsors count goals.
    */
   targetValue: number;
 
@@ -39479,14 +39883,14 @@ export interface IXGitHubSponsorsGoal {
  */
 export const enum XGitHubSponsorsGoalKind {
   /**
+   * The goal is about reaching a certain number of sponsors.
+   */
+  TOTAL_SPONSORS_COUNT = 'TOTAL_SPONSORS_COUNT',
+
+  /**
    * The goal is about getting a certain amount in USD from sponsorships each month.
    */
   MONTHLY_SPONSORSHIP_AMOUNT = 'MONTHLY_SPONSORSHIP_AMOUNT',
-
-  /**
-   * The goal is about reaching a certain number of sponsors.
-   */
-  TOTAL_SPONSORS_COUNT = 'TOTAL_SPONSORS_COUNT'
 }
 
 /**
@@ -39575,7 +39979,7 @@ export interface ITiersOnXGitHubSponsorsListingArguments {
 
   /**
    * Ordering options for Sponsors tiers returned from the connection.
-   * @default {"direction":"ASC","field":"MONTHLY_PRICE_IN_CENTS"}
+   * @default {"field":"MONTHLY_PRICE_IN_CENTS","direction":"ASC"}
    */
   orderBy?: IXGitHubSponsorsTierOrder | null;
 }
@@ -39592,9 +39996,7 @@ export interface IXGitHubSponsorsTier {
   adminInfo: IXGitHubSponsorsTierAdminInfo | null;
 
   /**
-   * Get a different tier for this tier's maintainer that is at the same frequency
-   * as this tier but with an equal or lesser cost. Returns the published tier with
-   * the monthly price closest to this tier's without going over.
+   * Get a different tier for this tier's maintainer that is at the same frequency as this tier but with an equal or lesser cost. Returns the published tier with the monthly price closest to this tier's without going over.
    */
   closestLesserValueTier: IXGitHubSponsorsTier | null;
 
@@ -39615,8 +40017,7 @@ export interface IXGitHubSponsorsTier {
   id: string;
 
   /**
-   * Whether this tier was chosen at checkout time by the sponsor rather than
-   * defined ahead of time by the maintainer who manages the Sponsors listing.
+   * Whether this tier was chosen at checkout time by the sponsor rather than defined ahead of time by the maintainer who manages the Sponsors listing.
    */
   isCustomAmount: boolean;
 
@@ -39680,19 +40081,18 @@ export interface ISponsorshipsOnXGitHubSponsorsTierAdminInfoArguments {
   first?: number | null;
 
   /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
+
+  /**
    * Whether or not to include private sponsorships in the result set
    * @default false
    */
   includePrivate?: boolean | null;
 
   /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for sponsorships returned from this connection. If left
-   * blank, the sponsorships will be ordered based on relevancy to the viewer.
+   * Ordering options for sponsorships returned from this connection. If left blank, the sponsorships will be ordered based on relevancy to the viewer.
    */
   orderBy?: IXGitHubSponsorshipOrder | null;
 }
@@ -39746,14 +40146,14 @@ export interface IXGitHubSponsorsTierEdge {
  */
 export interface IXGitHubSponsorsTierOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order tiers by.
    */
   field: XGitHubSponsorsTierOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -39768,7 +40168,7 @@ export const enum XGitHubSponsorsTierOrderField {
   /**
    * Order tiers by their monthly price in cents
    */
-  MONTHLY_PRICE_IN_CENTS = 'MONTHLY_PRICE_IN_CENTS'
+  MONTHLY_PRICE_IN_CENTS = 'MONTHLY_PRICE_IN_CENTS',
 }
 
 /**
@@ -39787,6 +40187,11 @@ export interface IXGitHubSponsorship {
    * Whether this sponsorship represents a one-time payment versus a recurring sponsorship.
    */
   isOneTimePayment: boolean;
+
+  /**
+   * Check if the sponsor has chosen to receive sponsorship update emails sent from the sponsorable. Only returns a non-null value when the viewer has permission to know this.
+   */
+  isSponsorOptedIntoEmail: boolean | null;
 
   /**
    * The entity that is being sponsored
@@ -39853,14 +40258,12 @@ export interface IXGitHubSponsorshipConnection {
   totalCount: number;
 
   /**
-   * The total amount in cents of all recurring sponsorships in the connection
-   * whose amount you can view. Does not include one-time sponsorships.
+   * The total amount in cents of all recurring sponsorships in the connection whose amount you can view. Does not include one-time sponsorships.
    */
   totalRecurringMonthlyPriceInCents: number;
 
   /**
-   * The total amount in USD of all recurring sponsorships in the connection whose
-   * amount you can view. Does not include one-time sponsorships.
+   * The total amount in USD of all recurring sponsorships in the connection whose amount you can view. Does not include one-time sponsorships.
    */
   totalRecurringMonthlyPriceInDollars: number;
 }
@@ -39969,14 +40372,14 @@ export interface IXGitHubSponsorshipNewsletterEdge {
  */
 export interface IXGitHubSponsorshipNewsletterOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order sponsorship newsletters by.
    */
   field: XGitHubSponsorshipNewsletterOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -39986,7 +40389,7 @@ export const enum XGitHubSponsorshipNewsletterOrderField {
   /**
    * Order sponsorship newsletters by when they were created.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -39994,14 +40397,14 @@ export const enum XGitHubSponsorshipNewsletterOrderField {
  */
 export interface IXGitHubSponsorshipOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order sponsorship by.
    */
   field: XGitHubSponsorshipOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -40011,7 +40414,7 @@ export const enum XGitHubSponsorshipOrderField {
   /**
    * Order sponsorship by creation time.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -40019,14 +40422,14 @@ export const enum XGitHubSponsorshipOrderField {
  */
 export const enum XGitHubSponsorshipPrivacy {
   /**
+   * Public
+   */
+  PUBLIC = 'PUBLIC',
+
+  /**
    * Private
    */
   PRIVATE = 'PRIVATE',
-
-  /**
-   * Public
-   */
-  PUBLIC = 'PUBLIC'
 }
 
 /**
@@ -40034,14 +40437,14 @@ export const enum XGitHubSponsorshipPrivacy {
  */
 export interface IXGitHubStarOrder {
   /**
-   * The direction in which to order nodes.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order nodes by.
    */
   field: XGitHubStarOrderField;
+
+  /**
+   * The direction in which to order nodes.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -40051,7 +40454,7 @@ export const enum XGitHubStarOrderField {
   /**
    * Allows ordering a list of stars by when they were created.
    */
-  STARRED_AT = 'STARRED_AT'
+  STARRED_AT = 'STARRED_AT',
 }
 
 /**
@@ -40443,14 +40846,14 @@ export interface IIsRequiredOnXGitHubStatusContextArguments {
  */
 export const enum XGitHubStatusState {
   /**
-   * Status is errored.
-   */
-  ERROR = 'ERROR',
-
-  /**
    * Status is expected.
    */
   EXPECTED = 'EXPECTED',
+
+  /**
+   * Status is errored.
+   */
+  ERROR = 'ERROR',
 
   /**
    * Status is failing.
@@ -40465,28 +40868,13 @@ export const enum XGitHubStatusState {
   /**
    * Status is successful.
    */
-  SUCCESS = 'SUCCESS'
+  SUCCESS = 'SUCCESS',
 }
 
 /**
  * Autogenerated input type of SubmitPullRequestReview
  */
 export interface IXGitHubSubmitPullRequestReviewInput {
-  /**
-   * The text field to set on the Pull Request Review.
-   */
-  body?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The event to send to the Pull Request Review.
-   */
-  event: XGitHubPullRequestReviewEvent;
-
   /**
    * The Pull Request ID to submit any pending reviews.
    */
@@ -40496,6 +40884,21 @@ export interface IXGitHubSubmitPullRequestReviewInput {
    * The Pull Request Review ID to submit.
    */
   pullRequestReviewId?: string | null;
+
+  /**
+   * The event to send to the Pull Request Review.
+   */
+  event: XGitHubPullRequestReviewEvent;
+
+  /**
+   * The text field to set on the Pull Request Review.
+   */
+  body?: string | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -40649,9 +41052,9 @@ export interface IXGitHubSubscribedEvent {
  */
 export const enum XGitHubSubscriptionState {
   /**
-   * The User is never notified.
+   * The User is only notified when participating or @mentioned.
    */
-  IGNORED = 'IGNORED',
+  UNSUBSCRIBED = 'UNSUBSCRIBED',
 
   /**
    * The User is notified of all conversations.
@@ -40659,9 +41062,9 @@ export const enum XGitHubSubscriptionState {
   SUBSCRIBED = 'SUBSCRIBED',
 
   /**
-   * The User is only notified when participating or @mentioned.
+   * The User is never notified.
    */
-  UNSUBSCRIBED = 'UNSUBSCRIBED'
+  IGNORED = 'IGNORED',
 }
 
 /**
@@ -40959,6 +41362,22 @@ export interface IAvatarUrlOnXGitHubTeamArguments {
 
 export interface IChildTeamsOnXGitHubTeamArguments {
   /**
+   * Order for connection
+   */
+  orderBy?: IXGitHubTeamOrder | null;
+
+  /**
+   * User logins to filter by
+   */
+  userLogins?: Array<string> | null;
+
+  /**
+   * Whether to list immediate child teams or all descendant child teams.
+   * @default true
+   */
+  immediateOnly?: boolean | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -40974,25 +41393,9 @@ export interface IChildTeamsOnXGitHubTeamArguments {
   first?: number | null;
 
   /**
-   * Whether to list immediate child teams or all descendant child teams.
-   * @default true
-   */
-  immediateOnly?: boolean | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Order for connection
-   */
-  orderBy?: IXGitHubTeamOrder | null;
-
-  /**
-   * User logins to filter by
-   */
-  userLogins?: Array<string> | null;
 }
 
 export interface IDiscussionOnXGitHubTeamArguments {
@@ -41019,14 +41422,14 @@ export interface IDiscussionsOnXGitHubTeamArguments {
   first?: number | null;
 
   /**
-   * If provided, filters discussions according to whether or not they are pinned.
-   */
-  isPinned?: boolean | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * If provided, filters discussions according to whether or not they are pinned.
+   */
+  isPinned?: boolean | null;
 
   /**
    * Order for connection
@@ -41079,7 +41482,7 @@ export interface IMemberStatusesOnXGitHubTeamArguments {
 
   /**
    * Ordering options for user statuses returned from the connection.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubUserStatusOrder | null;
 }
@@ -41106,25 +41509,25 @@ export interface IMembersOnXGitHubTeamArguments {
   last?: number | null;
 
   /**
+   * The search string to look for.
+   */
+  query?: string | null;
+
+  /**
    * Filter by membership type
    * @default "ALL"
    */
   membership?: XGitHubTeamMembershipType | null;
 
   /**
-   * Order for the connection.
-   */
-  orderBy?: IXGitHubTeamMemberOrder | null;
-
-  /**
-   * The search string to look for.
-   */
-  query?: string | null;
-
-  /**
    * Filter by team member role
    */
   role?: XGitHubTeamMemberRole | null;
+
+  /**
+   * Order for the connection.
+   */
+  orderBy?: IXGitHubTeamMemberOrder | null;
 }
 
 export interface IRepositoriesOnXGitHubTeamArguments {
@@ -41149,14 +41552,14 @@ export interface IRepositoriesOnXGitHubTeamArguments {
   last?: number | null;
 
   /**
-   * Order for the connection.
-   */
-  orderBy?: IXGitHubTeamRepositoryOrder | null;
-
-  /**
    * The search string to look for.
    */
   query?: string | null;
+
+  /**
+   * Order for the connection.
+   */
+  orderBy?: IXGitHubTeamRepositoryOrder | null;
 }
 
 /**
@@ -41838,11 +42241,6 @@ export interface ICommentsOnXGitHubTeamDiscussionArguments {
   first?: number | null;
 
   /**
-   * When provided, filters the connection such that results begin with the comment with this number.
-   */
-  fromComment?: number | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
@@ -41851,6 +42249,11 @@ export interface ICommentsOnXGitHubTeamDiscussionArguments {
    * Order for connection
    */
   orderBy?: IXGitHubTeamDiscussionCommentOrder | null;
+
+  /**
+   * When provided, filters the connection such that results begin with the comment with this number.
+   */
+  fromComment?: number | null;
 }
 
 export interface IReactionsOnXGitHubTeamDiscussionArguments {
@@ -41865,11 +42268,6 @@ export interface IReactionsOnXGitHubTeamDiscussionArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -41878,6 +42276,11 @@ export interface IReactionsOnXGitHubTeamDiscussionArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -42057,11 +42460,6 @@ export interface IReactionsOnXGitHubTeamDiscussionCommentArguments {
   before?: string | null;
 
   /**
-   * Allows filtering Reactions by emoji.
-   */
-  content?: XGitHubReactionContent | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
@@ -42070,6 +42468,11 @@ export interface IReactionsOnXGitHubTeamDiscussionCommentArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+
+  /**
+   * Allows filtering Reactions by emoji.
+   */
+  content?: XGitHubReactionContent | null;
 
   /**
    * Allows specifying the order in which reactions are returned.
@@ -42148,14 +42551,14 @@ export interface IXGitHubTeamDiscussionCommentEdge {
  */
 export interface IXGitHubTeamDiscussionCommentOrder {
   /**
-   * The direction in which to order nodes.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field by which to order nodes.
    */
   field: XGitHubTeamDiscussionCommentOrderField;
+
+  /**
+   * The direction in which to order nodes.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -42165,7 +42568,7 @@ export const enum XGitHubTeamDiscussionCommentOrderField {
   /**
    * Allows sequential ordering of team discussion comments (which is equivalent to chronological ordering).
    */
-  NUMBER = 'NUMBER'
+  NUMBER = 'NUMBER',
 }
 
 /**
@@ -42217,14 +42620,14 @@ export interface IXGitHubTeamDiscussionEdge {
  */
 export interface IXGitHubTeamDiscussionOrder {
   /**
-   * The direction in which to order nodes.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field by which to order nodes.
    */
   field: XGitHubTeamDiscussionOrderField;
+
+  /**
+   * The direction in which to order nodes.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -42234,7 +42637,7 @@ export const enum XGitHubTeamDiscussionOrderField {
   /**
    * Allows chronological ordering of team discussions.
    */
-  CREATED_AT = 'CREATED_AT'
+  CREATED_AT = 'CREATED_AT',
 }
 
 /**
@@ -42314,14 +42717,14 @@ export interface IXGitHubTeamMemberEdge {
  */
 export interface IXGitHubTeamMemberOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order team members by.
    */
   field: XGitHubTeamMemberOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -42329,14 +42732,14 @@ export interface IXGitHubTeamMemberOrder {
  */
 export const enum XGitHubTeamMemberOrderField {
   /**
+   * Order team members by login
+   */
+  LOGIN = 'LOGIN',
+
+  /**
    * Order team members by creation time
    */
   CREATED_AT = 'CREATED_AT',
-
-  /**
-   * Order team members by login
-   */
-  LOGIN = 'LOGIN'
 }
 
 /**
@@ -42351,7 +42754,7 @@ export const enum XGitHubTeamMemberRole {
   /**
    * A team member has no administrative permissions on the team.
    */
-  MEMBER = 'MEMBER'
+  MEMBER = 'MEMBER',
 }
 
 /**
@@ -42359,9 +42762,9 @@ export const enum XGitHubTeamMemberRole {
  */
 export const enum XGitHubTeamMembershipType {
   /**
-   * Includes immediate and child team members for the team.
+   * Includes only immediate members of the team.
    */
-  ALL = 'ALL',
+  IMMEDIATE = 'IMMEDIATE',
 
   /**
    * Includes only child team members for the team.
@@ -42369,9 +42772,9 @@ export const enum XGitHubTeamMembershipType {
   CHILD_TEAM = 'CHILD_TEAM',
 
   /**
-   * Includes only immediate members of the team.
+   * Includes immediate and child team members for the team.
    */
-  IMMEDIATE = 'IMMEDIATE'
+  ALL = 'ALL',
 }
 
 /**
@@ -42379,14 +42782,14 @@ export const enum XGitHubTeamMembershipType {
  */
 export interface IXGitHubTeamOrder {
   /**
-   * The direction in which to order nodes.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field in which to order nodes by.
    */
   field: XGitHubTeamOrderField;
+
+  /**
+   * The direction in which to order nodes.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -42396,7 +42799,7 @@ export const enum XGitHubTeamOrderField {
   /**
    * Allows ordering a list of teams by name.
    */
-  NAME = 'NAME'
+  NAME = 'NAME',
 }
 
 /**
@@ -42411,7 +42814,7 @@ export const enum XGitHubTeamPrivacy {
   /**
    * A visible team can be seen and @mentioned by every member of the organization.
    */
-  VISIBLE = 'VISIBLE'
+  VISIBLE = 'VISIBLE',
 }
 
 /**
@@ -42720,14 +43123,14 @@ export interface IXGitHubTeamRepositoryEdge {
  */
 export interface IXGitHubTeamRepositoryOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order repositories by.
    */
   field: XGitHubTeamRepositoryOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -42740,6 +43143,16 @@ export const enum XGitHubTeamRepositoryOrderField {
   CREATED_AT = 'CREATED_AT',
 
   /**
+   * Order repositories by update time
+   */
+  UPDATED_AT = 'UPDATED_AT',
+
+  /**
+   * Order repositories by push time
+   */
+  PUSHED_AT = 'PUSHED_AT',
+
+  /**
    * Order repositories by name
    */
   NAME = 'NAME',
@@ -42750,19 +43163,9 @@ export const enum XGitHubTeamRepositoryOrderField {
   PERMISSION = 'PERMISSION',
 
   /**
-   * Order repositories by push time
-   */
-  PUSHED_AT = 'PUSHED_AT',
-
-  /**
    * Order repositories by number of stargazers
    */
   STARGAZERS = 'STARGAZERS',
-
-  /**
-   * Order repositories by update time
-   */
-  UPDATED_AT = 'UPDATED_AT'
 }
 
 /**
@@ -42777,7 +43180,7 @@ export const enum XGitHubTeamRole {
   /**
    * User is a member of the team.
    */
-  MEMBER = 'MEMBER'
+  MEMBER = 'MEMBER',
 }
 
 /**
@@ -42927,6 +43330,11 @@ export const enum XGitHubTopicSuggestionDeclineReason {
   NOT_RELEVANT = 'NOT_RELEVANT',
 
   /**
+   * The suggested topic is too specific for the repository (e.g. #ruby-on-rails-version-4-2-1).
+   */
+  TOO_SPECIFIC = 'TOO_SPECIFIC',
+
+  /**
    * The viewer does not like the suggested topic.
    */
   PERSONAL_PREFERENCE = 'PERSONAL_PREFERENCE',
@@ -42935,22 +43343,12 @@ export const enum XGitHubTopicSuggestionDeclineReason {
    * The suggested topic is too general for the repository.
    */
   TOO_GENERAL = 'TOO_GENERAL',
-
-  /**
-   * The suggested topic is too specific for the repository (e.g. #ruby-on-rails-version-4-2-1).
-   */
-  TOO_SPECIFIC = 'TOO_SPECIFIC'
 }
 
 /**
  * Autogenerated input type of TransferIssue
  */
 export interface IXGitHubTransferIssueInput {
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
   /**
    * The Node ID of the issue to be transferred
    */
@@ -42960,6 +43358,11 @@ export interface IXGitHubTransferIssueInput {
    * The Node ID of the repository the issue should be transferred to
    */
   repositoryId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43107,14 +43510,14 @@ export interface IXGitHubTreeEntry {
  */
 export interface IXGitHubUnarchiveRepositoryInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the repository to unarchive.
    */
   repositoryId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43173,14 +43576,14 @@ export interface IXGitHubUnassignedEvent {
  */
 export interface IXGitHubUnfollowUserInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the user to unfollow.
    */
   userId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43276,8 +43679,7 @@ export interface IXGitHubUnknownSignature {
   signer: IXGitHubUser | null;
 
   /**
-   * The state of this signature. `VALID` if signature is valid and verified by
-   * GitHub, otherwise represents reason why signature is considered invalid.
+   * The state of this signature. `VALID` if signature is valid and verified by GitHub, otherwise represents reason why signature is considered invalid.
    */
   state: XGitHubGitSignatureState;
 
@@ -43320,11 +43722,6 @@ export interface IXGitHubUnlabeledEvent {
  */
 export interface IXGitHubUnlinkRepositoryFromProjectInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the Project linked to the Repository.
    */
   projectId: string;
@@ -43333,6 +43730,11 @@ export interface IXGitHubUnlinkRepositoryFromProjectInput {
    * The ID of the Repository linked to the Project.
    */
   repositoryId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43362,14 +43764,14 @@ export interface IXGitHubUnlinkRepositoryFromProjectPayload {
  */
 export interface IXGitHubUnlockLockableInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * ID of the item to be unlocked.
    */
   lockableId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43422,14 +43824,14 @@ export interface IXGitHubUnlockedEvent {
  */
 export interface IXGitHubUnmarkDiscussionCommentAsAnswerInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the discussion comment to unmark as an answer.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43454,9 +43856,9 @@ export interface IXGitHubUnmarkDiscussionCommentAsAnswerPayload {
  */
 export interface IXGitHubUnmarkFileAsViewedInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the pull request.
    */
-  clientMutationId?: string | null;
+  pullRequestId: string;
 
   /**
    * The path of the file to mark as unviewed
@@ -43464,9 +43866,9 @@ export interface IXGitHubUnmarkFileAsViewedInput {
   path: string;
 
   /**
-   * The Node ID of the pull request.
+   * A unique identifier for the client performing the mutation.
    */
-  pullRequestId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43491,6 +43893,11 @@ export interface IXGitHubUnmarkFileAsViewedPayload {
  */
 export interface IXGitHubUnmarkIssueAsDuplicateInput {
   /**
+   * ID of the issue or pull request currently marked as a duplicate.
+   */
+  duplicateId: string;
+
+  /**
    * ID of the issue or pull request currently considered canonical/authoritative/original.
    */
   canonicalId: string;
@@ -43499,11 +43906,6 @@ export interface IXGitHubUnmarkIssueAsDuplicateInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * ID of the issue or pull request currently marked as a duplicate.
-   */
-  duplicateId: string;
 }
 
 /**
@@ -43561,14 +43963,14 @@ export interface IXGitHubUnmarkedAsDuplicateEvent {
  */
 export interface IXGitHubUnminimizeCommentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the subject to modify.
    */
   subjectId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43593,14 +43995,14 @@ export interface IXGitHubUnminimizeCommentPayload {
  */
 export interface IXGitHubUnpinIssueInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the issue to be unpinned
    */
   issueId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43648,14 +44050,14 @@ export interface IXGitHubUnpinnedEvent {
  */
 export interface IXGitHubUnresolveReviewThreadInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the thread to unresolve
    */
   threadId: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43759,34 +44161,9 @@ export interface IXGitHubUpdatableComment {
  */
 export interface IXGitHubUpdateBranchProtectionRuleInput {
   /**
-   * Can this branch be deleted.
-   */
-  allowsDeletions?: boolean | null;
-
-  /**
-   * Are force pushes allowed on this branch.
-   */
-  allowsForcePushes?: boolean | null;
-
-  /**
    * The global relay id of the branch protection rule to be updated.
    */
   branchProtectionRuleId: string;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * Will new commits pushed to matching branches dismiss pull request review approvals.
-   */
-  dismissesStaleReviews?: boolean | null;
-
-  /**
-   * Can admins overwrite branch protection.
-   */
-  isAdminEnforced?: boolean | null;
 
   /**
    * The glob-like pattern used to determine matching branches.
@@ -43794,9 +44171,9 @@ export interface IXGitHubUpdateBranchProtectionRuleInput {
   pattern?: string | null;
 
   /**
-   * A list of User, Team or App IDs allowed to push to matching branches.
+   * Are approving reviews required to update matching branches.
    */
-  pushActorIds?: Array<string> | null;
+  requiresApprovingReviews?: boolean | null;
 
   /**
    * Number of approving reviews required to update matching branches.
@@ -43804,34 +44181,29 @@ export interface IXGitHubUpdateBranchProtectionRuleInput {
   requiredApprovingReviewCount?: number | null;
 
   /**
-   * List of required status check contexts that must pass for commits to be accepted to matching branches.
-   */
-  requiredStatusCheckContexts?: Array<string> | null;
-
-  /**
-   * Are approving reviews required to update matching branches.
-   */
-  requiresApprovingReviews?: boolean | null;
-
-  /**
-   * Are reviews from code owners required to update matching branches.
-   */
-  requiresCodeOwnerReviews?: boolean | null;
-
-  /**
    * Are commits required to be signed.
    */
   requiresCommitSignatures?: boolean | null;
 
   /**
-   * Are conversations required to be resolved before merging.
-   */
-  requiresConversationResolution?: boolean | null;
-
-  /**
    * Are merge commits prohibited from being pushed to this branch.
    */
   requiresLinearHistory?: boolean | null;
+
+  /**
+   * Are force pushes allowed on this branch.
+   */
+  allowsForcePushes?: boolean | null;
+
+  /**
+   * Can this branch be deleted.
+   */
+  allowsDeletions?: boolean | null;
+
+  /**
+   * Can admins overwrite branch protection.
+   */
+  isAdminEnforced?: boolean | null;
 
   /**
    * Are status checks required to update matching branches.
@@ -43844,9 +44216,14 @@ export interface IXGitHubUpdateBranchProtectionRuleInput {
   requiresStrictStatusChecks?: boolean | null;
 
   /**
-   * Is pushing to matching branches restricted.
+   * Are reviews from code owners required to update matching branches.
    */
-  restrictsPushes?: boolean | null;
+  requiresCodeOwnerReviews?: boolean | null;
+
+  /**
+   * Will new commits pushed to matching branches dismiss pull request review approvals.
+   */
+  dismissesStaleReviews?: boolean | null;
 
   /**
    * Is dismissal of pull request reviews restricted.
@@ -43857,6 +44234,31 @@ export interface IXGitHubUpdateBranchProtectionRuleInput {
    * A list of User or Team IDs allowed to dismiss reviews on pull requests targeting matching branches.
    */
   reviewDismissalActorIds?: Array<string> | null;
+
+  /**
+   * Is pushing to matching branches restricted.
+   */
+  restrictsPushes?: boolean | null;
+
+  /**
+   * A list of User, Team or App IDs allowed to push to matching branches.
+   */
+  pushActorIds?: Array<string> | null;
+
+  /**
+   * List of required status check contexts that must pass for commits to be accepted to matching branches.
+   */
+  requiredStatusCheckContexts?: Array<string> | null;
+
+  /**
+   * Are conversations required to be resolved before merging.
+   */
+  requiresConversationResolution?: boolean | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43881,9 +44283,9 @@ export interface IXGitHubUpdateBranchProtectionRulePayload {
  */
 export interface IXGitHubUpdateCheckRunInput {
   /**
-   * Possible further actions the integrator can perform, which a user may trigger.
+   * The node ID of the repository.
    */
-  actions?: Array<IXGitHubCheckRunAction> | null;
+  repositoryId: string;
 
   /**
    * The node of the check.
@@ -43891,19 +44293,9 @@ export interface IXGitHubUpdateCheckRunInput {
   checkRunId: string;
 
   /**
-   * A unique identifier for the client performing the mutation.
+   * The name of the check.
    */
-  clientMutationId?: string | null;
-
-  /**
-   * The time that the check run finished.
-   */
-  completedAt?: any | null;
-
-  /**
-   * The final conclusion of the check.
-   */
-  conclusion?: XGitHubCheckConclusionState | null;
+  name?: string | null;
 
   /**
    * The URL of the integrator's site that has the full details of the check.
@@ -43916,19 +44308,9 @@ export interface IXGitHubUpdateCheckRunInput {
   externalId?: string | null;
 
   /**
-   * The name of the check.
+   * The current status.
    */
-  name?: string | null;
-
-  /**
-   * Descriptive details about the run.
-   */
-  output?: IXGitHubCheckRunOutput | null;
-
-  /**
-   * The node ID of the repository.
-   */
-  repositoryId: string;
+  status?: XGitHubRequestableCheckStatusState | null;
 
   /**
    * The time that the check run began.
@@ -43936,9 +44318,29 @@ export interface IXGitHubUpdateCheckRunInput {
   startedAt?: any | null;
 
   /**
-   * The current status.
+   * The final conclusion of the check.
    */
-  status?: XGitHubRequestableCheckStatusState | null;
+  conclusion?: XGitHubCheckConclusionState | null;
+
+  /**
+   * The time that the check run finished.
+   */
+  completedAt?: any | null;
+
+  /**
+   * Descriptive details about the run.
+   */
+  output?: IXGitHubCheckRunOutput | null;
+
+  /**
+   * Possible further actions the integrator can perform, which a user may trigger.
+   */
+  actions?: Array<IXGitHubCheckRunAction> | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -43963,6 +44365,11 @@ export interface IXGitHubUpdateCheckRunPayload {
  */
 export interface IXGitHubUpdateCheckSuitePreferencesInput {
   /**
+   * The Node ID of the repository.
+   */
+  repositoryId: string;
+
+  /**
    * The check suite preferences to modify.
    */
   autoTriggerPreferences: Array<IXGitHubCheckSuiteAutoTriggerPreference>;
@@ -43971,11 +44378,6 @@ export interface IXGitHubUpdateCheckSuitePreferencesInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the repository.
-   */
-  repositoryId: string;
 }
 
 /**
@@ -44000,6 +44402,11 @@ export interface IXGitHubUpdateCheckSuitePreferencesPayload {
  */
 export interface IXGitHubUpdateDiscussionCommentInput {
   /**
+   * The Node ID of the discussion comment to update.
+   */
+  commentId: string;
+
+  /**
    * The new contents of the comment body.
    */
   body: string;
@@ -44008,11 +44415,6 @@ export interface IXGitHubUpdateDiscussionCommentInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the discussion comment to update.
-   */
-  commentId: string;
 }
 
 /**
@@ -44037,6 +44439,16 @@ export interface IXGitHubUpdateDiscussionCommentPayload {
  */
 export interface IXGitHubUpdateDiscussionInput {
   /**
+   * The Node ID of the discussion to update.
+   */
+  discussionId: string;
+
+  /**
+   * The new discussion title.
+   */
+  title?: string | null;
+
+  /**
    * The new contents of the discussion body.
    */
   body?: string | null;
@@ -44050,16 +44462,6 @@ export interface IXGitHubUpdateDiscussionInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the discussion to update.
-   */
-  discussionId: string;
-
-  /**
-   * The new discussion title.
-   */
-  title?: string | null;
 }
 
 /**
@@ -44084,11 +44486,6 @@ export interface IXGitHubUpdateDiscussionPayload {
  */
 export interface IXGitHubUpdateEnterpriseAdministratorRoleInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the Enterprise which the admin belongs to.
    */
   enterpriseId: string;
@@ -44102,6 +44499,11 @@ export interface IXGitHubUpdateEnterpriseAdministratorRoleInput {
    * The new role for the Enterprise administrator.
    */
   role: XGitHubEnterpriseAdministratorRole;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44126,11 +44528,6 @@ export interface IXGitHubUpdateEnterpriseAdministratorRolePayload {
  */
 export interface IXGitHubUpdateEnterpriseAllowPrivateRepositoryForkingSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the allow private repository forking setting.
    */
   enterpriseId: string;
@@ -44139,6 +44536,11 @@ export interface IXGitHubUpdateEnterpriseAllowPrivateRepositoryForkingSettingInp
    * The value for the allow private repository forking setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44168,11 +44570,6 @@ export interface IXGitHubUpdateEnterpriseAllowPrivateRepositoryForkingSettingPay
  */
 export interface IXGitHubUpdateEnterpriseDefaultRepositoryPermissionSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the base repository permission setting.
    */
   enterpriseId: string;
@@ -44181,6 +44578,11 @@ export interface IXGitHubUpdateEnterpriseDefaultRepositoryPermissionSettingInput
    * The value for the base repository permission setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseDefaultRepositoryPermissionSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44210,11 +44612,6 @@ export interface IXGitHubUpdateEnterpriseDefaultRepositoryPermissionSettingPaylo
  */
 export interface IXGitHubUpdateEnterpriseMembersCanChangeRepositoryVisibilitySettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can change repository visibility setting.
    */
   enterpriseId: string;
@@ -44223,6 +44620,11 @@ export interface IXGitHubUpdateEnterpriseMembersCanChangeRepositoryVisibilitySet
    * The value for the members can change repository visibility setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44252,29 +44654,14 @@ export interface IXGitHubUpdateEnterpriseMembersCanChangeRepositoryVisibilitySet
  */
 export interface IXGitHubUpdateEnterpriseMembersCanCreateRepositoriesSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can create repositories setting.
    */
   enterpriseId: string;
 
   /**
-   * Allow members to create internal repositories. Defaults to current value.
+   * Value for the members can create repositories setting on the enterprise. This or the granular public/private/internal allowed fields (but not both) must be provided.
    */
-  membersCanCreateInternalRepositories?: boolean | null;
-
-  /**
-   * Allow members to create private repositories. Defaults to current value.
-   */
-  membersCanCreatePrivateRepositories?: boolean | null;
-
-  /**
-   * Allow members to create public repositories. Defaults to current value.
-   */
-  membersCanCreatePublicRepositories?: boolean | null;
+  settingValue?: XGitHubEnterpriseMembersCanCreateRepositoriesSettingValue | null;
 
   /**
    * When false, allow member organizations to set their own repository creation member privileges.
@@ -44282,10 +44669,24 @@ export interface IXGitHubUpdateEnterpriseMembersCanCreateRepositoriesSettingInpu
   membersCanCreateRepositoriesPolicyEnabled?: boolean | null;
 
   /**
-   * Value for the members can create repositories setting on the enterprise. This
-   * or the granular public/private/internal allowed fields (but not both) must be provided.
+   * Allow members to create public repositories. Defaults to current value.
    */
-  settingValue?: XGitHubEnterpriseMembersCanCreateRepositoriesSettingValue | null;
+  membersCanCreatePublicRepositories?: boolean | null;
+
+  /**
+   * Allow members to create private repositories. Defaults to current value.
+   */
+  membersCanCreatePrivateRepositories?: boolean | null;
+
+  /**
+   * Allow members to create internal repositories. Defaults to current value.
+   */
+  membersCanCreateInternalRepositories?: boolean | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44315,11 +44716,6 @@ export interface IXGitHubUpdateEnterpriseMembersCanCreateRepositoriesSettingPayl
  */
 export interface IXGitHubUpdateEnterpriseMembersCanDeleteIssuesSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can delete issues setting.
    */
   enterpriseId: string;
@@ -44328,6 +44724,11 @@ export interface IXGitHubUpdateEnterpriseMembersCanDeleteIssuesSettingInput {
    * The value for the members can delete issues setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44357,11 +44758,6 @@ export interface IXGitHubUpdateEnterpriseMembersCanDeleteIssuesSettingPayload {
  */
 export interface IXGitHubUpdateEnterpriseMembersCanDeleteRepositoriesSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can delete repositories setting.
    */
   enterpriseId: string;
@@ -44370,6 +44766,11 @@ export interface IXGitHubUpdateEnterpriseMembersCanDeleteRepositoriesSettingInpu
    * The value for the members can delete repositories setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44399,11 +44800,6 @@ export interface IXGitHubUpdateEnterpriseMembersCanDeleteRepositoriesSettingPayl
  */
 export interface IXGitHubUpdateEnterpriseMembersCanInviteCollaboratorsSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can invite collaborators setting.
    */
   enterpriseId: string;
@@ -44412,6 +44808,11 @@ export interface IXGitHubUpdateEnterpriseMembersCanInviteCollaboratorsSettingInp
    * The value for the members can invite collaborators setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44441,11 +44842,6 @@ export interface IXGitHubUpdateEnterpriseMembersCanInviteCollaboratorsSettingPay
  */
 export interface IXGitHubUpdateEnterpriseMembersCanMakePurchasesSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can make purchases setting.
    */
   enterpriseId: string;
@@ -44454,6 +44850,11 @@ export interface IXGitHubUpdateEnterpriseMembersCanMakePurchasesSettingInput {
    * The value for the members can make purchases setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseMembersCanMakePurchasesSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44483,11 +44884,6 @@ export interface IXGitHubUpdateEnterpriseMembersCanMakePurchasesSettingPayload {
  */
 export interface IXGitHubUpdateEnterpriseMembersCanUpdateProtectedBranchesSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can update protected branches setting.
    */
   enterpriseId: string;
@@ -44496,6 +44892,11 @@ export interface IXGitHubUpdateEnterpriseMembersCanUpdateProtectedBranchesSettin
    * The value for the members can update protected branches setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44525,11 +44926,6 @@ export interface IXGitHubUpdateEnterpriseMembersCanUpdateProtectedBranchesSettin
  */
 export interface IXGitHubUpdateEnterpriseMembersCanViewDependencyInsightsSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the members can view dependency insights setting.
    */
   enterpriseId: string;
@@ -44538,6 +44934,11 @@ export interface IXGitHubUpdateEnterpriseMembersCanViewDependencyInsightsSetting
    * The value for the members can view dependency insights setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44567,11 +44968,6 @@ export interface IXGitHubUpdateEnterpriseMembersCanViewDependencyInsightsSetting
  */
 export interface IXGitHubUpdateEnterpriseOrganizationProjectsSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the organization projects setting.
    */
   enterpriseId: string;
@@ -44580,6 +44976,11 @@ export interface IXGitHubUpdateEnterpriseOrganizationProjectsSettingInput {
    * The value for the organization projects setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44609,24 +45010,9 @@ export interface IXGitHubUpdateEnterpriseOrganizationProjectsSettingPayload {
  */
 export interface IXGitHubUpdateEnterpriseProfileInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The description of the enterprise.
-   */
-  description?: string | null;
-
-  /**
    * The Enterprise ID to update.
    */
   enterpriseId: string;
-
-  /**
-   * The location of the enterprise.
-   */
-  location?: string | null;
 
   /**
    * The name of the enterprise.
@@ -44634,9 +45020,24 @@ export interface IXGitHubUpdateEnterpriseProfileInput {
   name?: string | null;
 
   /**
+   * The description of the enterprise.
+   */
+  description?: string | null;
+
+  /**
    * The URL of the enterprise's website.
    */
   websiteUrl?: string | null;
+
+  /**
+   * The location of the enterprise.
+   */
+  location?: string | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44661,11 +45062,6 @@ export interface IXGitHubUpdateEnterpriseProfilePayload {
  */
 export interface IXGitHubUpdateEnterpriseRepositoryProjectsSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the repository projects setting.
    */
   enterpriseId: string;
@@ -44674,6 +45070,11 @@ export interface IXGitHubUpdateEnterpriseRepositoryProjectsSettingInput {
    * The value for the repository projects setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44703,11 +45104,6 @@ export interface IXGitHubUpdateEnterpriseRepositoryProjectsSettingPayload {
  */
 export interface IXGitHubUpdateEnterpriseTeamDiscussionsSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the team discussions setting.
    */
   enterpriseId: string;
@@ -44716,6 +45112,11 @@ export interface IXGitHubUpdateEnterpriseTeamDiscussionsSettingInput {
    * The value for the team discussions setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledDisabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44745,11 +45146,6 @@ export interface IXGitHubUpdateEnterpriseTeamDiscussionsSettingPayload {
  */
 export interface IXGitHubUpdateEnterpriseTwoFactorAuthenticationRequiredSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the enterprise on which to set the two factor authentication required setting.
    */
   enterpriseId: string;
@@ -44758,6 +45154,11 @@ export interface IXGitHubUpdateEnterpriseTwoFactorAuthenticationRequiredSettingI
    * The value for the two factor authentication required setting on the enterprise.
    */
   settingValue: XGitHubEnterpriseEnabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44787,14 +45188,14 @@ export interface IXGitHubUpdateEnterpriseTwoFactorAuthenticationRequiredSettingP
  */
 export interface IXGitHubUpdateEnvironmentInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The node ID of the environment.
    */
   environmentId: string;
+
+  /**
+   * The wait timer in minutes.
+   */
+  waitTimer?: number | null;
 
   /**
    * The ids of users or teams that can approve deployments to this environment
@@ -44802,9 +45203,9 @@ export interface IXGitHubUpdateEnvironmentInput {
   reviewers?: Array<string> | null;
 
   /**
-   * The wait timer in minutes.
+   * A unique identifier for the client performing the mutation.
    */
-  waitTimer?: number | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44829,11 +45230,6 @@ export interface IXGitHubUpdateEnvironmentPayload {
  */
 export interface IXGitHubUpdateIpAllowListEnabledSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the owner on which to set the IP allow list enabled setting.
    */
   ownerId: string;
@@ -44842,6 +45238,11 @@ export interface IXGitHubUpdateIpAllowListEnabledSettingInput {
    * The value for the IP allow list enabled setting.
    */
   settingValue: XGitHubIpAllowListEnabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44866,19 +45267,19 @@ export interface IXGitHubUpdateIpAllowListEnabledSettingPayload {
  */
 export interface IXGitHubUpdateIpAllowListEntryInput {
   /**
+   * The ID of the IP allow list entry to update.
+   */
+  ipAllowListEntryId: string;
+
+  /**
    * An IP address or range of addresses in CIDR notation.
    */
   allowListValue: string;
 
   /**
-   * A unique identifier for the client performing the mutation.
+   * An optional name for the IP allow list entry.
    */
-  clientMutationId?: string | null;
-
-  /**
-   * The ID of the IP allow list entry to update.
-   */
-  ipAllowListEntryId: string;
+  name?: string | null;
 
   /**
    * Whether the IP allow list entry is active when an IP allow list is enabled.
@@ -44886,9 +45287,9 @@ export interface IXGitHubUpdateIpAllowListEntryInput {
   isActive: boolean;
 
   /**
-   * An optional name for the IP allow list entry.
+   * A unique identifier for the client performing the mutation.
    */
-  name?: string | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44913,11 +45314,6 @@ export interface IXGitHubUpdateIpAllowListEntryPayload {
  */
 export interface IXGitHubUpdateIpAllowListForInstalledAppsEnabledSettingInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the owner.
    */
   ownerId: string;
@@ -44926,6 +45322,11 @@ export interface IXGitHubUpdateIpAllowListForInstalledAppsEnabledSettingInput {
    * The value for the IP allow list configuration for installed GitHub Apps setting.
    */
   settingValue: XGitHubIpAllowListForInstalledAppsEnabledSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -44950,6 +45351,11 @@ export interface IXGitHubUpdateIpAllowListForInstalledAppsEnabledSettingPayload 
  */
 export interface IXGitHubUpdateIssueCommentInput {
   /**
+   * The ID of the IssueComment to modify.
+   */
+  id: string;
+
+  /**
    * The updated text of the comment.
    */
   body: string;
@@ -44958,11 +45364,6 @@ export interface IXGitHubUpdateIssueCommentInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The ID of the IssueComment to modify.
-   */
-  id: string;
 }
 
 /**
@@ -44987,9 +45388,14 @@ export interface IXGitHubUpdateIssueCommentPayload {
  */
 export interface IXGitHubUpdateIssueInput {
   /**
-   * An array of Node IDs of users for this issue.
+   * The ID of the Issue to modify.
    */
-  assigneeIds?: Array<string> | null;
+  id: string;
+
+  /**
+   * The title for the issue.
+   */
+  title?: string | null;
 
   /**
    * The body for the issue description.
@@ -44997,19 +45403,9 @@ export interface IXGitHubUpdateIssueInput {
   body?: string | null;
 
   /**
-   * A unique identifier for the client performing the mutation.
+   * An array of Node IDs of users for this issue.
    */
-  clientMutationId?: string | null;
-
-  /**
-   * The ID of the Issue to modify.
-   */
-  id: string;
-
-  /**
-   * An array of Node IDs of labels for this issue.
-   */
-  labelIds?: Array<string> | null;
+  assigneeIds?: Array<string> | null;
 
   /**
    * The Node ID of the milestone for this issue.
@@ -45017,9 +45413,9 @@ export interface IXGitHubUpdateIssueInput {
   milestoneId?: string | null;
 
   /**
-   * An array of Node IDs for projects associated with this issue.
+   * An array of Node IDs of labels for this issue.
    */
-  projectIds?: Array<string> | null;
+  labelIds?: Array<string> | null;
 
   /**
    * The desired issue state.
@@ -45027,9 +45423,14 @@ export interface IXGitHubUpdateIssueInput {
   state?: XGitHubIssueState | null;
 
   /**
-   * The title for the issue.
+   * An array of Node IDs for projects associated with this issue.
    */
-  title?: string | null;
+  projectIds?: Array<string> | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45055,14 +45456,56 @@ export interface IXGitHubUpdateIssuePayload {
 }
 
 /**
- * Autogenerated input type of UpdateNotificationRestrictionSetting
+ * Autogenerated input type of UpdateLabel
  */
-export interface IXGitHubUpdateNotificationRestrictionSettingInput {
+export interface IXGitHubUpdateLabelInput {
+  /**
+   * The Node ID of the label to be updated.
+   */
+  id: string;
+
+  /**
+   * A 6 character hex code, without the leading #, identifying the updated color of the label.
+   */
+  color?: string | null;
+
+  /**
+   * A brief description of the label, such as its purpose.
+   */
+  description?: string | null;
+
+  /**
+   * The updated name of the label.
+   */
+  name?: string | null;
+
   /**
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
+}
 
+/**
+ * Autogenerated return type of UpdateLabel
+ */
+export interface IXGitHubUpdateLabelPayload {
+  __typename: '_xGitHubUpdateLabelPayload';
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId: string | null;
+
+  /**
+   * The updated label.
+   */
+  label: IXGitHubLabel | null;
+}
+
+/**
+ * Autogenerated input type of UpdateNotificationRestrictionSetting
+ */
+export interface IXGitHubUpdateNotificationRestrictionSettingInput {
   /**
    * The ID of the owner on which to set the restrict notifications setting.
    */
@@ -45072,6 +45515,11 @@ export interface IXGitHubUpdateNotificationRestrictionSettingInput {
    * The value for the restrict notifications setting.
    */
   settingValue: XGitHubNotificationRestrictionSettingValue;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45096,9 +45544,9 @@ export interface IXGitHubUpdateNotificationRestrictionSettingPayload {
  */
 export interface IXGitHubUpdateProjectCardInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ProjectCard ID to update.
    */
-  clientMutationId?: string | null;
+  projectCardId: string;
 
   /**
    * Whether or not the ProjectCard should be archived
@@ -45111,9 +45559,9 @@ export interface IXGitHubUpdateProjectCardInput {
   note?: string | null;
 
   /**
-   * The ProjectCard ID to update.
+   * A unique identifier for the client performing the mutation.
    */
-  projectCardId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45138,9 +45586,9 @@ export interface IXGitHubUpdateProjectCardPayload {
  */
 export interface IXGitHubUpdateProjectColumnInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ProjectColumn ID to update.
    */
-  clientMutationId?: string | null;
+  projectColumnId: string;
 
   /**
    * The name of project column.
@@ -45148,9 +45596,9 @@ export interface IXGitHubUpdateProjectColumnInput {
   name: string;
 
   /**
-   * The ProjectColumn ID to update.
+   * A unique identifier for the client performing the mutation.
    */
-  projectColumnId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45175,14 +45623,9 @@ export interface IXGitHubUpdateProjectColumnPayload {
  */
 export interface IXGitHubUpdateProjectInput {
   /**
-   * The description of project.
+   * The Project ID to update.
    */
-  body?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
+  projectId: string;
 
   /**
    * The name of project.
@@ -45190,9 +45633,14 @@ export interface IXGitHubUpdateProjectInput {
   name?: string | null;
 
   /**
-   * The Project ID to update.
+   * The description of project.
    */
-  projectId: string;
+  body?: string | null;
+
+  /**
+   * Whether the project is open or closed.
+   */
+  state?: XGitHubProjectState | null;
 
   /**
    * Whether the project is public or not.
@@ -45200,9 +45648,9 @@ export interface IXGitHubUpdateProjectInput {
   public?: boolean | null;
 
   /**
-   * Whether the project is open or closed.
+   * A unique identifier for the client performing the mutation.
    */
-  state?: XGitHubProjectState | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45227,9 +45675,9 @@ export interface IXGitHubUpdateProjectPayload {
  */
 export interface IXGitHubUpdatePullRequestInput {
   /**
-   * An array of Node IDs of users for this pull request.
+   * The Node ID of the pull request.
    */
-  assigneeIds?: Array<string> | null;
+  pullRequestId: string;
 
   /**
    * The name of the branch you want your changes pulled into. This should be an existing branch
@@ -45238,39 +45686,14 @@ export interface IXGitHubUpdatePullRequestInput {
   baseRefName?: string | null;
 
   /**
+   * The title of the pull request.
+   */
+  title?: string | null;
+
+  /**
    * The contents of the pull request.
    */
   body?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * An array of Node IDs of labels for this pull request.
-   */
-  labelIds?: Array<string> | null;
-
-  /**
-   * Indicates whether maintainers can modify the pull request.
-   */
-  maintainerCanModify?: boolean | null;
-
-  /**
-   * The Node ID of the milestone for this pull request.
-   */
-  milestoneId?: string | null;
-
-  /**
-   * An array of Node IDs for projects associated with this pull request.
-   */
-  projectIds?: Array<string> | null;
-
-  /**
-   * The Node ID of the pull request.
-   */
-  pullRequestId: string;
 
   /**
    * The target state of the pull request.
@@ -45278,9 +45701,34 @@ export interface IXGitHubUpdatePullRequestInput {
   state?: XGitHubPullRequestUpdateState | null;
 
   /**
-   * The title of the pull request.
+   * Indicates whether maintainers can modify the pull request.
    */
-  title?: string | null;
+  maintainerCanModify?: boolean | null;
+
+  /**
+   * An array of Node IDs of users for this pull request.
+   */
+  assigneeIds?: Array<string> | null;
+
+  /**
+   * The Node ID of the milestone for this pull request.
+   */
+  milestoneId?: string | null;
+
+  /**
+   * An array of Node IDs of labels for this pull request.
+   */
+  labelIds?: Array<string> | null;
+
+  /**
+   * An array of Node IDs for projects associated with this pull request.
+   */
+  projectIds?: Array<string> | null;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45310,6 +45758,11 @@ export interface IXGitHubUpdatePullRequestPayload {
  */
 export interface IXGitHubUpdatePullRequestReviewCommentInput {
   /**
+   * The Node ID of the comment to modify.
+   */
+  pullRequestReviewCommentId: string;
+
+  /**
    * The text of the comment.
    */
   body: string;
@@ -45318,11 +45771,6 @@ export interface IXGitHubUpdatePullRequestReviewCommentInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the comment to modify.
-   */
-  pullRequestReviewCommentId: string;
 }
 
 /**
@@ -45347,6 +45795,11 @@ export interface IXGitHubUpdatePullRequestReviewCommentPayload {
  */
 export interface IXGitHubUpdatePullRequestReviewInput {
   /**
+   * The Node ID of the pull request review to modify.
+   */
+  pullRequestReviewId: string;
+
+  /**
    * The contents of the pull request review body.
    */
   body: string;
@@ -45355,11 +45808,6 @@ export interface IXGitHubUpdatePullRequestReviewInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the pull request review to modify.
-   */
-  pullRequestReviewId: string;
 }
 
 /**
@@ -45384,9 +45832,14 @@ export interface IXGitHubUpdatePullRequestReviewPayload {
  */
 export interface IXGitHubUpdateRefInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The Node ID of the Ref to be updated.
    */
-  clientMutationId?: string | null;
+  refId: string;
+
+  /**
+   * The GitObjectID that the Ref shall be updated to target.
+   */
+  oid: any;
 
   /**
    * Permit updates of branch Refs that are not fast-forwards?
@@ -45395,14 +45848,9 @@ export interface IXGitHubUpdateRefInput {
   force?: boolean | null;
 
   /**
-   * The GitObjectID that the Ref shall be updated to target.
+   * A unique identifier for the client performing the mutation.
    */
-  oid: any;
-
-  /**
-   * The Node ID of the Ref to be updated.
-   */
-  refId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45427,14 +45875,34 @@ export interface IXGitHubUpdateRefPayload {
  */
 export interface IXGitHubUpdateRepositoryInput {
   /**
-   * A unique identifier for the client performing the mutation.
+   * The ID of the repository to update.
    */
-  clientMutationId?: string | null;
+  repositoryId: string;
+
+  /**
+   * The new name of the repository.
+   */
+  name?: string | null;
 
   /**
    * A new description for the repository. Pass an empty string to erase the existing description.
    */
   description?: string | null;
+
+  /**
+   * Whether this repository should be marked as a template such that anyone who can access it can create new repositories with the same files and directory structure.
+   */
+  template?: boolean | null;
+
+  /**
+   * The URL for a web page about this repository. Pass an empty string to erase the existing URL.
+   */
+  homepageUrl?: any | null;
+
+  /**
+   * Indicates if the repository should have the wiki feature enabled.
+   */
+  hasWikiEnabled?: boolean | null;
 
   /**
    * Indicates if the repository should have the issues feature enabled.
@@ -45447,30 +45915,9 @@ export interface IXGitHubUpdateRepositoryInput {
   hasProjectsEnabled?: boolean | null;
 
   /**
-   * Indicates if the repository should have the wiki feature enabled.
+   * A unique identifier for the client performing the mutation.
    */
-  hasWikiEnabled?: boolean | null;
-
-  /**
-   * The URL for a web page about this repository. Pass an empty string to erase the existing URL.
-   */
-  homepageUrl?: any | null;
-
-  /**
-   * The new name of the repository.
-   */
-  name?: string | null;
-
-  /**
-   * The ID of the repository to update.
-   */
-  repositoryId: string;
-
-  /**
-   * Whether this repository should be marked as a template such that anyone who
-   * can access it can create new repositories with the same files and directory structure.
-   */
-  template?: boolean | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45491,13 +45938,72 @@ export interface IXGitHubUpdateRepositoryPayload {
 }
 
 /**
- * Autogenerated input type of UpdateSubscription
+ * Autogenerated input type of UpdateSponsorshipPreferences
  */
-export interface IXGitHubUpdateSubscriptionInput {
+export interface IXGitHubUpdateSponsorshipPreferencesInput {
+  /**
+   * The ID of the user or organization who is acting as the sponsor, paying for the sponsorship. Required if sponsorLogin is not given.
+   */
+  sponsorId?: string | null;
+
+  /**
+   * The username of the user or organization who is acting as the sponsor, paying for the sponsorship. Required if sponsorId is not given.
+   */
+  sponsorLogin?: string | null;
+
+  /**
+   * The ID of the user or organization who is receiving the sponsorship. Required if sponsorableLogin is not given.
+   */
+  sponsorableId?: string | null;
+
+  /**
+   * The username of the user or organization who is receiving the sponsorship. Required if sponsorableId is not given.
+   */
+  sponsorableLogin?: string | null;
+
+  /**
+   * Whether the sponsor should receive email updates from the sponsorable.
+   * @default true
+   */
+  receiveEmails?: boolean | null;
+
+  /**
+   * Specify whether others should be able to see that the sponsor is sponsoring the sponsorable. Public visibility still does not reveal which tier is used.
+   * @default "PUBLIC"
+   */
+  privacyLevel?: XGitHubSponsorshipPrivacy | null;
+
   /**
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
+}
+
+/**
+ * Autogenerated return type of UpdateSponsorshipPreferences
+ */
+export interface IXGitHubUpdateSponsorshipPreferencesPayload {
+  __typename: '_xGitHubUpdateSponsorshipPreferencesPayload';
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId: string | null;
+
+  /**
+   * The sponsorship that was updated.
+   */
+  sponsorship: IXGitHubSponsorship | null;
+}
+
+/**
+ * Autogenerated input type of UpdateSubscription
+ */
+export interface IXGitHubUpdateSubscriptionInput {
+  /**
+   * The Node ID of the subscribable object to modify.
+   */
+  subscribableId: string;
 
   /**
    * The new state of the subscription.
@@ -45505,9 +46011,9 @@ export interface IXGitHubUpdateSubscriptionInput {
   state: XGitHubSubscriptionState;
 
   /**
-   * The Node ID of the subscribable object to modify.
+   * A unique identifier for the client performing the mutation.
    */
-  subscribableId: string;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45532,6 +46038,11 @@ export interface IXGitHubUpdateSubscriptionPayload {
  */
 export interface IXGitHubUpdateTeamDiscussionCommentInput {
   /**
+   * The ID of the comment to modify.
+   */
+  id: string;
+
+  /**
    * The updated text of the comment.
    */
   body: string;
@@ -45545,11 +46056,6 @@ export interface IXGitHubUpdateTeamDiscussionCommentInput {
    * A unique identifier for the client performing the mutation.
    */
   clientMutationId?: string | null;
-
-  /**
-   * The ID of the comment to modify.
-   */
-  id: string;
 }
 
 /**
@@ -45574,25 +46080,24 @@ export interface IXGitHubUpdateTeamDiscussionCommentPayload {
  */
 export interface IXGitHubUpdateTeamDiscussionInput {
   /**
+   * The Node ID of the discussion to modify.
+   */
+  id: string;
+
+  /**
+   * The updated title of the discussion.
+   */
+  title?: string | null;
+
+  /**
    * The updated text of the discussion.
    */
   body?: string | null;
 
   /**
-   * The current version of the body content. If provided, this update operation
-   * will be rejected if the given version does not match the latest version on the server.
+   * The current version of the body content. If provided, this update operation will be rejected if the given version does not match the latest version on the server.
    */
   bodyVersion?: string | null;
-
-  /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
-   * The Node ID of the discussion to modify.
-   */
-  id: string;
 
   /**
    * If provided, sets the pinned state of the updated discussion.
@@ -45600,9 +46105,9 @@ export interface IXGitHubUpdateTeamDiscussionInput {
   pinned?: boolean | null;
 
   /**
-   * The updated title of the discussion.
+   * A unique identifier for the client performing the mutation.
    */
-  title?: string | null;
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45627,11 +46132,6 @@ export interface IXGitHubUpdateTeamDiscussionPayload {
  */
 export interface IXGitHubUpdateTopicsInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The Node ID of the repository.
    */
   repositoryId: string;
@@ -45640,6 +46140,11 @@ export interface IXGitHubUpdateTopicsInput {
    * An array of topic names.
    */
   topicNames: Array<string>;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -45842,8 +46347,7 @@ export interface IXGitHubUser {
   issues: IXGitHubIssueConnection;
 
   /**
-   * Showcases a selection of repositories and gists that the profile owner has
-   * either curated or that have been selected automatically based on popularity.
+   * Showcases a selection of repositories and gists that the profile owner has either curated or that have been selected automatically based on popularity.
    */
   itemShowcase: IXGitHubProfileItemShowcase;
 
@@ -45988,9 +46492,14 @@ export interface IXGitHubUser {
   sponsorsListing: IXGitHubSponsorsListing | null;
 
   /**
-   * The viewer's sponsorship of this entity.
+   * The sponsorship from the viewer to this user/organization; that is, the sponsorship where you're the sponsor. Only returns a sponsorship if it is active.
    */
   sponsorshipForViewerAsSponsor: IXGitHubSponsorship | null;
+
+  /**
+   * The sponsorship from this user/organization to the viewer; that is, the sponsorship you're receiving. Only returns a sponsorship if it is active.
+   */
+  sponsorshipForViewerAsSponsorable: IXGitHubSponsorship | null;
 
   /**
    * List of sponsorship updates sent from this sponsorable to sponsors.
@@ -46123,19 +46632,17 @@ export interface ICommitCommentsOnXGitHubUserArguments {
 
 export interface IContributionsCollectionOnXGitHubUserArguments {
   /**
-   * Only contributions made at this time or later will be counted. If omitted, defaults to a year ago.
-   */
-  from?: any | null;
-
-  /**
    * The ID of the organization used to filter contributions.
    */
   organizationID?: string | null;
 
   /**
-   * Only contributions made before and up to (including) this time will be
-   * counted. If omitted, defaults to the current time or one year from the
-   * provided from argument.
+   * Only contributions made at this time or later will be counted. If omitted, defaults to a year ago.
+   */
+  from?: any | null;
+
+  /**
+   * Only contributions made before and up to (including) this time will be counted. If omitted, defaults to the current time or one year from the provided from argument.
    */
   to?: any | null;
 }
@@ -46215,6 +46722,16 @@ export interface IGistCommentsOnXGitHubUserArguments {
 
 export interface IGistsOnXGitHubUserArguments {
   /**
+   * Filters Gists according to privacy.
+   */
+  privacy?: XGitHubGistPrivacy | null;
+
+  /**
+   * Ordering options for gists returned from the connection
+   */
+  orderBy?: IXGitHubGistOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -46233,16 +46750,6 @@ export interface IGistsOnXGitHubUserArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for gists returned from the connection
-   */
-  orderBy?: IXGitHubGistOrder | null;
-
-  /**
-   * Filters Gists according to privacy.
-   */
-  privacy?: XGitHubGistPrivacy | null;
 }
 
 export interface IHovercardOnXGitHubUserArguments {
@@ -46261,6 +46768,11 @@ export interface IIsSponsoredByOnXGitHubUserArguments {
 
 export interface IIssueCommentsOnXGitHubUserArguments {
   /**
+   * Ordering options for issue comments returned from the connection.
+   */
+  orderBy?: IXGitHubIssueCommentOrder | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -46279,33 +46791,13 @@ export interface IIssueCommentsOnXGitHubUserArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for issue comments returned from the connection.
-   */
-  orderBy?: IXGitHubIssueCommentOrder | null;
 }
 
 export interface IIssuesOnXGitHubUserArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * Ordering options for issues returned from the connection.
    */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Filtering options for issues returned from the connection.
-   */
-  filterBy?: IXGitHubIssueFilters | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
+  orderBy?: IXGitHubIssueOrder | null;
 
   /**
    * A list of label names to filter the pull requests by.
@@ -46313,19 +46805,34 @@ export interface IIssuesOnXGitHubUserArguments {
   labels?: Array<string> | null;
 
   /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for issues returned from the connection.
-   */
-  orderBy?: IXGitHubIssueOrder | null;
-
-  /**
    * A list of states to filter the issues by.
    */
   states?: Array<XGitHubIssueState> | null;
+
+  /**
+   * Filtering options for issues returned from the connection.
+   */
+  filterBy?: IXGitHubIssueFilters | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IOrganizationOnXGitHubUserArguments {
@@ -46391,10 +46898,9 @@ export interface IPackagesOnXGitHubUserArguments {
   names?: Array<string | null> | null;
 
   /**
-   * Ordering of the returned packages.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * Find packages in a repository by ID.
    */
-  orderBy?: IXGitHubPackageOrder | null;
+  repositoryId?: string | null;
 
   /**
    * Filter registry package by type.
@@ -46402,13 +46908,19 @@ export interface IPackagesOnXGitHubUserArguments {
   packageType?: XGitHubPackageType | null;
 
   /**
-   * Find packages in a repository by ID.
+   * Ordering of the returned packages.
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
-  repositoryId?: string | null;
+  orderBy?: IXGitHubPackageOrder | null;
 }
 
 export interface IPinnableItemsOnXGitHubUserArguments {
   /**
+   * Filter the types of pinnable items that are returned.
+   */
+  types?: Array<XGitHubPinnableItemType> | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -46427,15 +46939,15 @@ export interface IPinnableItemsOnXGitHubUserArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter the types of pinnable items that are returned.
-   */
-  types?: Array<XGitHubPinnableItemType> | null;
 }
 
 export interface IPinnedItemsOnXGitHubUserArguments {
   /**
+   * Filter the types of pinned items that are returned.
+   */
+  types?: Array<XGitHubPinnableItemType> | null;
+
+  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -46454,11 +46966,6 @@ export interface IPinnedItemsOnXGitHubUserArguments {
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Filter the types of pinned items that are returned.
-   */
-  types?: Array<XGitHubPinnableItemType> | null;
 }
 
 export interface IProjectOnXGitHubUserArguments {
@@ -46469,26 +46976,6 @@ export interface IProjectOnXGitHubUserArguments {
 }
 
 export interface IProjectsOnXGitHubUserArguments {
-  /**
-   * Returns the elements in the list that come after the specified cursor.
-   */
-  after?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
   /**
    * Ordering options for projects returned from the connection
    */
@@ -46503,6 +46990,26 @@ export interface IProjectsOnXGitHubUserArguments {
    * A list of states to filter the projects by.
    */
   states?: Array<XGitHubProjectState> | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
 }
 
 export interface IPublicKeysOnXGitHubUserArguments {
@@ -46529,29 +47036,9 @@ export interface IPublicKeysOnXGitHubUserArguments {
 
 export interface IPullRequestsOnXGitHubUserArguments {
   /**
-   * Returns the elements in the list that come after the specified cursor.
+   * A list of states to filter the pull requests by.
    */
-  after?: string | null;
-
-  /**
-   * The base ref name to filter the pull requests by.
-   */
-  baseRefName?: string | null;
-
-  /**
-   * Returns the elements in the list that come before the specified cursor.
-   */
-  before?: string | null;
-
-  /**
-   * Returns the first _n_ elements from the list.
-   */
-  first?: number | null;
-
-  /**
-   * The head ref name to filter the pull requests by.
-   */
-  headRefName?: string | null;
+  states?: Array<XGitHubPullRequestState> | null;
 
   /**
    * A list of label names to filter the pull requests by.
@@ -46559,9 +47046,14 @@ export interface IPullRequestsOnXGitHubUserArguments {
   labels?: Array<string> | null;
 
   /**
-   * Returns the last _n_ elements from the list.
+   * The head ref name to filter the pull requests by.
    */
-  last?: number | null;
+  headRefName?: string | null;
+
+  /**
+   * The base ref name to filter the pull requests by.
+   */
+  baseRefName?: string | null;
 
   /**
    * Ordering options for pull requests returned from the connection.
@@ -46569,20 +47061,6 @@ export interface IPullRequestsOnXGitHubUserArguments {
   orderBy?: IXGitHubIssueOrder | null;
 
   /**
-   * A list of states to filter the pull requests by.
-   */
-  states?: Array<XGitHubPullRequestState> | null;
-}
-
-export interface IRepositoriesOnXGitHubUserArguments {
-  /**
-   * Array of viewer's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * current viewer owns.
-   */
-  affiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
-
-  /**
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
@@ -46598,19 +47076,16 @@ export interface IRepositoriesOnXGitHubUserArguments {
   first?: number | null;
 
   /**
-   * If non-null, filters repositories according to whether they are forks of another repository
-   */
-  isFork?: boolean | null;
-
-  /**
-   * If non-null, filters repositories according to whether they have been locked
-   */
-  isLocked?: boolean | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
+}
+
+export interface IRepositoriesOnXGitHubUserArguments {
+  /**
+   * If non-null, filters repositories according to privacy
+   */
+  privacy?: XGitHubRepositoryPrivacy | null;
 
   /**
    * Ordering options for repositories returned from the connection
@@ -46618,20 +47093,21 @@ export interface IRepositoriesOnXGitHubUserArguments {
   orderBy?: IXGitHubRepositoryOrder | null;
 
   /**
-   * Array of owner's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * organization or user being viewed owns.
+   * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
+   */
+  affiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    * @default ["OWNER","COLLABORATOR"]
    */
   ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
 
   /**
-   * If non-null, filters repositories according to privacy
+   * If non-null, filters repositories according to whether they have been locked
    */
-  privacy?: XGitHubRepositoryPrivacy | null;
-}
+  isLocked?: boolean | null;
 
-export interface IRepositoriesContributedToOnXGitHubUserArguments {
   /**
    * Returns the elements in the list that come after the specified cursor.
    */
@@ -46643,15 +47119,36 @@ export interface IRepositoriesContributedToOnXGitHubUserArguments {
   before?: string | null;
 
   /**
-   * If non-null, include only the specified types of contributions. The
-   * GitHub.com UI uses [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]
-   */
-  contributionTypes?: Array<XGitHubRepositoryContributionType | null> | null;
-
-  /**
    * Returns the first _n_ elements from the list.
    */
   first?: number | null;
+
+  /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
+
+  /**
+   * If non-null, filters repositories according to whether they are forks of another repository
+   */
+  isFork?: boolean | null;
+}
+
+export interface IRepositoriesContributedToOnXGitHubUserArguments {
+  /**
+   * If non-null, filters repositories according to privacy
+   */
+  privacy?: XGitHubRepositoryPrivacy | null;
+
+  /**
+   * Ordering options for repositories returned from the connection
+   */
+  orderBy?: IXGitHubRepositoryOrder | null;
+
+  /**
+   * If non-null, filters repositories according to whether they have been locked
+   */
+  isLocked?: boolean | null;
 
   /**
    * If true, include user repositories
@@ -46659,24 +47156,29 @@ export interface IRepositoriesContributedToOnXGitHubUserArguments {
   includeUserRepositories?: boolean | null;
 
   /**
-   * If non-null, filters repositories according to whether they have been locked
+   * If non-null, include only the specified types of contributions. The GitHub.com UI uses [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]
    */
-  isLocked?: boolean | null;
+  contributionTypes?: Array<XGitHubRepositoryContributionType | null> | null;
+
+  /**
+   * Returns the elements in the list that come after the specified cursor.
+   */
+  after?: string | null;
+
+  /**
+   * Returns the elements in the list that come before the specified cursor.
+   */
+  before?: string | null;
+
+  /**
+   * Returns the first _n_ elements from the list.
+   */
+  first?: number | null;
 
   /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for repositories returned from the connection
-   */
-  orderBy?: IXGitHubRepositoryOrder | null;
-
-  /**
-   * If non-null, filters repositories according to privacy
-   */
-  privacy?: XGitHubRepositoryPrivacy | null;
 }
 
 export interface IRepositoryOnXGitHubUserArguments {
@@ -46708,15 +47210,15 @@ export interface IRepositoryDiscussionCommentsOnXGitHubUserArguments {
   last?: number | null;
 
   /**
+   * Filter discussion comments to only those in a specific repository.
+   */
+  repositoryId?: string | null;
+
+  /**
    * Filter discussion comments to only those that were marked as the answer
    * @default false
    */
   onlyAnswers?: boolean | null;
-
-  /**
-   * Filter discussion comments to only those in a specific repository.
-   */
-  repositoryId?: string | null;
 }
 
 export interface IRepositoryDiscussionsOnXGitHubUserArguments {
@@ -46724,13 +47226,6 @@ export interface IRepositoryDiscussionsOnXGitHubUserArguments {
    * Returns the elements in the list that come after the specified cursor.
    */
   after?: string | null;
-
-  /**
-   * Filter discussions to only those that have been answered or not. Defaults to
-   * including both answered and unanswered discussions.
-   * @default null
-   */
-  answered?: boolean | null;
 
   /**
    * Returns the elements in the list that come before the specified cursor.
@@ -46749,7 +47244,7 @@ export interface IRepositoryDiscussionsOnXGitHubUserArguments {
 
   /**
    * Ordering options for discussions returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubDiscussionOrder | null;
 
@@ -46757,6 +47252,12 @@ export interface IRepositoryDiscussionsOnXGitHubUserArguments {
    * Filter discussions to only those in a specific repository.
    */
   repositoryId?: string | null;
+
+  /**
+   * Filter discussions to only those that have been answered or not. Defaults to including both answered and unanswered discussions.
+   * @default null
+   */
+  answered?: boolean | null;
 }
 
 export interface ISavedRepliesOnXGitHubUserArguments {
@@ -46782,7 +47283,7 @@ export interface ISavedRepliesOnXGitHubUserArguments {
 
   /**
    * The field to order saved replies by.
-   * @default {"direction":"DESC","field":"UPDATED_AT"}
+   * @default {"field":"UPDATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubSavedReplyOrder | null;
 }
@@ -46810,7 +47311,7 @@ export interface ISponsoringOnXGitHubUserArguments {
 
   /**
    * Ordering options for the users and organizations returned from the connection.
-   * @default {"direction":"DESC","field":"RELEVANCE"}
+   * @default {"field":"RELEVANCE","direction":"DESC"}
    */
   orderBy?: IXGitHubSponsorOrder | null;
 }
@@ -46837,16 +47338,15 @@ export interface ISponsorsOnXGitHubUserArguments {
   last?: number | null;
 
   /**
-   * Ordering options for sponsors returned from the connection.
-   * @default {"direction":"DESC","field":"RELEVANCE"}
-   */
-  orderBy?: IXGitHubSponsorOrder | null;
-
-  /**
-   * If given, will filter for sponsors at the given tier. Will only return
-   * sponsors whose tier the viewer is permitted to see.
+   * If given, will filter for sponsors at the given tier. Will only return sponsors whose tier the viewer is permitted to see.
    */
   tierId?: string | null;
+
+  /**
+   * Ordering options for sponsors returned from the connection.
+   * @default {"field":"RELEVANCE","direction":"DESC"}
+   */
+  orderBy?: IXGitHubSponsorOrder | null;
 }
 
 export interface ISponsorsActivitiesOnXGitHubUserArguments {
@@ -46871,16 +47371,16 @@ export interface ISponsorsActivitiesOnXGitHubUserArguments {
   last?: number | null;
 
   /**
-   * Ordering options for activity returned from the connection.
-   * @default {"direction":"DESC","field":"TIMESTAMP"}
-   */
-  orderBy?: IXGitHubSponsorsActivityOrder | null;
-
-  /**
    * Filter activities returned to only those that occurred in a given time range.
    * @default "MONTH"
    */
   period?: XGitHubSponsorsActivityPeriod | null;
+
+  /**
+   * Ordering options for activity returned from the connection.
+   * @default {"field":"TIMESTAMP","direction":"DESC"}
+   */
+  orderBy?: IXGitHubSponsorsActivityOrder | null;
 }
 
 export interface ISponsorshipNewslettersOnXGitHubUserArguments {
@@ -46906,7 +47406,7 @@ export interface ISponsorshipNewslettersOnXGitHubUserArguments {
 
   /**
    * Ordering options for sponsorship updates returned from the connection.
-   * @default {"direction":"DESC","field":"CREATED_AT"}
+   * @default {"field":"CREATED_AT","direction":"DESC"}
    */
   orderBy?: IXGitHubSponsorshipNewsletterOrder | null;
 }
@@ -46928,19 +47428,18 @@ export interface ISponsorshipsAsMaintainerOnXGitHubUserArguments {
   first?: number | null;
 
   /**
+   * Returns the last _n_ elements from the list.
+   */
+  last?: number | null;
+
+  /**
    * Whether or not to include private sponsorships in the result set
    * @default false
    */
   includePrivate?: boolean | null;
 
   /**
-   * Returns the last _n_ elements from the list.
-   */
-  last?: number | null;
-
-  /**
-   * Ordering options for sponsorships returned from this connection. If left
-   * blank, the sponsorships will be ordered based on relevancy to the viewer.
+   * Ordering options for sponsorships returned from this connection. If left blank, the sponsorships will be ordered based on relevancy to the viewer.
    */
   orderBy?: IXGitHubSponsorshipOrder | null;
 }
@@ -46967,8 +47466,7 @@ export interface ISponsorshipsAsSponsorOnXGitHubUserArguments {
   last?: number | null;
 
   /**
-   * Ordering options for sponsorships returned from this connection. If left
-   * blank, the sponsorships will be ordered based on relevancy to the viewer.
+   * Ordering options for sponsorships returned from this connection. If left blank, the sponsorships will be ordered based on relevancy to the viewer.
    */
   orderBy?: IXGitHubSponsorshipOrder | null;
 }
@@ -46995,14 +47493,14 @@ export interface IStarredRepositoriesOnXGitHubUserArguments {
   last?: number | null;
 
   /**
-   * Order for connection
-   */
-  orderBy?: IXGitHubStarOrder | null;
-
-  /**
    * Filters starred repositories to only return repositories owned by the viewer.
    */
   ownedByViewer?: boolean | null;
+
+  /**
+   * Order for connection
+   */
+  orderBy?: IXGitHubStarOrder | null;
 }
 
 export interface ITopRepositoriesOnXGitHubUserArguments {
@@ -47039,11 +47537,30 @@ export interface ITopRepositoriesOnXGitHubUserArguments {
 
 export interface IWatchingOnXGitHubUserArguments {
   /**
-   * Affiliation options for repositories returned from the connection. If none
-   * specified, the results will include repositories for which the current
-   * viewer is an owner or collaborator, or member.
+   * If non-null, filters repositories according to privacy
+   */
+  privacy?: XGitHubRepositoryPrivacy | null;
+
+  /**
+   * Ordering options for repositories returned from the connection
+   */
+  orderBy?: IXGitHubRepositoryOrder | null;
+
+  /**
+   * Affiliation options for repositories returned from the connection. If none specified, the results will include repositories for which the current viewer is an owner or collaborator, or member.
    */
   affiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
+   * @default ["OWNER","COLLABORATOR"]
+   */
+  ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
+
+  /**
+   * If non-null, filters repositories according to whether they have been locked
+   */
+  isLocked?: boolean | null;
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -47061,32 +47578,9 @@ export interface IWatchingOnXGitHubUserArguments {
   first?: number | null;
 
   /**
-   * If non-null, filters repositories according to whether they have been locked
-   */
-  isLocked?: boolean | null;
-
-  /**
    * Returns the last _n_ elements from the list.
    */
   last?: number | null;
-
-  /**
-   * Ordering options for repositories returned from the connection
-   */
-  orderBy?: IXGitHubRepositoryOrder | null;
-
-  /**
-   * Array of owner's affiliation options for repositories returned from the
-   * connection. For example, OWNER will include only repositories that the
-   * organization or user being viewed owns.
-   * @default ["OWNER","COLLABORATOR"]
-   */
-  ownerAffiliations?: Array<XGitHubRepositoryAffiliation | null> | null;
-
-  /**
-   * If non-null, filters repositories according to privacy
-   */
-  privacy?: XGitHubRepositoryPrivacy | null;
 }
 
 /**
@@ -47099,9 +47593,9 @@ export const enum XGitHubUserBlockDuration {
   ONE_DAY = 'ONE_DAY',
 
   /**
-   * The user was blocked for 30 days
+   * The user was blocked for 3 days
    */
-  ONE_MONTH = 'ONE_MONTH',
+  THREE_DAYS = 'THREE_DAYS',
 
   /**
    * The user was blocked for 7 days
@@ -47109,14 +47603,14 @@ export const enum XGitHubUserBlockDuration {
   ONE_WEEK = 'ONE_WEEK',
 
   /**
+   * The user was blocked for 30 days
+   */
+  ONE_MONTH = 'ONE_MONTH',
+
+  /**
    * The user was blocked permanently
    */
   PERMANENT = 'PERMANENT',
-
-  /**
-   * The user was blocked for 3 days
-   */
-  THREE_DAYS = 'THREE_DAYS'
 }
 
 /**
@@ -47402,14 +47896,14 @@ export interface IXGitHubUserStatusEdge {
  */
 export interface IXGitHubUserStatusOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order user statuses by.
    */
   field: XGitHubUserStatusOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -47419,7 +47913,7 @@ export const enum XGitHubUserStatusOrderField {
   /**
    * Order user statuses by when they were updated.
    */
-  UPDATED_AT = 'UPDATED_AT'
+  UPDATED_AT = 'UPDATED_AT',
 }
 
 /**
@@ -47549,14 +48043,14 @@ export interface IXGitHubVerifiableDomainEdge {
  */
 export interface IXGitHubVerifiableDomainOrder {
   /**
-   * The ordering direction.
-   */
-  direction: XGitHubOrderDirection;
-
-  /**
    * The field to order verifiable domains by.
    */
   field: XGitHubVerifiableDomainOrderField;
+
+  /**
+   * The ordering direction.
+   */
+  direction: XGitHubOrderDirection;
 }
 
 /**
@@ -47564,14 +48058,14 @@ export interface IXGitHubVerifiableDomainOrder {
  */
 export const enum XGitHubVerifiableDomainOrderField {
   /**
+   * Order verifiable domains by the domain name.
+   */
+  DOMAIN = 'DOMAIN',
+
+  /**
    * Order verifiable domains by their creation date.
    */
   CREATED_AT = 'CREATED_AT',
-
-  /**
-   * Order verifiable domains by the domain name.
-   */
-  DOMAIN = 'DOMAIN'
 }
 
 /**
@@ -47586,14 +48080,14 @@ export type _xGitHubVerifiableDomainOwner =
  */
 export interface IXGitHubVerifyVerifiableDomainInput {
   /**
-   * A unique identifier for the client performing the mutation.
-   */
-  clientMutationId?: string | null;
-
-  /**
    * The ID of the verifiable domain to verify.
    */
   id: string;
+
+  /**
+   * A unique identifier for the client performing the mutation.
+   */
+  clientMutationId?: string | null;
 }
 
 /**
@@ -47833,7 +48327,7 @@ export interface IAuthIdentity {
  */
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE'
+  GOOGLE = 'GOOGLE',
 }
 
 /**
@@ -47921,7 +48415,7 @@ export const enum NewMeetingPhaseTypeEnum {
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
   SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE'
+  ESTIMATE = 'ESTIMATE',
 }
 
 /**
@@ -48381,7 +48875,7 @@ export interface IUser {
 }
 
 export interface IArchivedTasksOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor
@@ -48409,7 +48903,7 @@ export interface IInvoiceDetailsOnUserArguments {
 }
 
 export interface IInvoicesOnUserArguments {
-  first?: number | null;
+  first: number;
 
   /**
    * the datetime cursor
@@ -48483,9 +48977,9 @@ export interface IOrganizationUserOnUserArguments {
 
 export interface ISimilarReflectionGroupsOnUserArguments {
   /**
-   * The id of the selected reflection in the Spotlight
+   * The id of the selected reflection group in the Spotlight
    */
-  reflectionId: string;
+  reflectionGroupId: string;
 
   /**
    * Only return reflection groups that match the search query
@@ -48955,7 +49449,7 @@ export interface ITeamMember {
   /**
    * Is user a team lead?
    */
-  isLead: boolean | null;
+  isLead: boolean;
 
   /**
    * true if the user prefers to not vote during a poker meeting
@@ -48963,9 +49457,9 @@ export interface ITeamMember {
   isSpectatingPoker: boolean;
 
   /**
-   * hide the agenda list on the dashboard
+   * the type of drawer that is open in the team dash. Null if the drawer is closed
    */
-  hideAgenda: boolean;
+  openDrawer: TeamDrawer | null;
 
   /**
    * The user email
@@ -49057,7 +49551,15 @@ export interface ISuggestedIntegration {
 export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
-  PARABOL = 'PARABOL'
+  PARABOL = 'PARABOL',
+}
+
+/**
+ * The right drawer types available on the team dashboard
+ */
+export const enum TeamDrawer {
+  agenda = 'agenda',
+  manageTeam = 'manageTeam',
 }
 
 /**
@@ -49080,6 +49582,11 @@ export interface ITeamMemberIntegrations {
    * All things associated with a GitHub integration for a team member
    */
   github: IGitHubIntegration | null;
+
+  /**
+   * All things associated with a Mattermost integration for a team member
+   */
+  mattermost: IMattermostIntegration | null;
 
   /**
    * All things associated with a slack integration for a team member
@@ -49480,6 +49987,38 @@ export interface IGitHubSearchQuery {
 /**
  * OAuth token for a team member
  */
+export interface IMattermostIntegration {
+  __typename: 'MattermostIntegration';
+
+  /**
+   * true if the auth is updated & ready to use for all features, else false
+   */
+  isActive: boolean;
+
+  /**
+   * the Mattermost server to integrate against
+   */
+  webhookUrl: any;
+
+  /**
+   * The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The id of the user that integrated Mattermost
+   */
+  userId: string;
+}
+
+/**
+ * OAuth token for a team member
+ */
 export interface ISlackIntegration {
   __typename: 'SlackIntegration';
 
@@ -49578,7 +50117,7 @@ export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START',
 }
 
 /**
@@ -49593,7 +50132,7 @@ export const enum SlackNotificationEventTypeEnum {
   /**
    * notification that concerns a single member on the team
    */
-  member = 'member'
+  member = 'member',
 }
 
 /**
@@ -49639,7 +50178,7 @@ export interface IMeetingMember {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 /**
@@ -50056,7 +50595,7 @@ export interface IReflectTemplate {
 export const enum SharingScopeEnum {
   TEAM = 'TEAM',
   ORGANIZATION = 'ORGANIZATION',
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -50314,7 +50853,7 @@ export interface ITemplateScaleValue {
 export const enum TierEnum {
   personal = 'personal',
   pro = 'pro',
-  enterprise = 'enterprise'
+  enterprise = 'enterprise',
 }
 
 /**
@@ -50643,7 +51182,7 @@ export interface IOrganizationUser {
  * The role of the org user
  */
 export const enum OrgUserRole {
-  BILLING_LEADER = 'BILLING_LEADER'
+  BILLING_LEADER = 'BILLING_LEADER',
 }
 
 export interface IOrgUserCount {
@@ -50728,7 +51267,7 @@ export interface ITaskEstimate {
 export const enum ChangeSourceEnum {
   meeting = 'meeting',
   task = 'task',
-  external = 'external'
+  external = 'external',
 }
 
 export interface ITaskEditorDetails {
@@ -50752,29 +51291,24 @@ export const enum TaskStatusEnum {
   active = 'active',
   stuck = 'stuck',
   done = 'done',
-  future = 'future'
+  future = 'future',
 }
 
 /**
- * The user account profile
+ * The types of flags that give an individual user super powers
  */
 export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
-   * true if the user has access to retro meeting video
+   * true if spotlight is allowed
    */
-  video: boolean;
+  spotlight: boolean;
 
   /**
-   * true if jira is allowed
+   * true if standups is allowed
    */
-  jira: boolean;
-
-  /**
-   * true if jira is allowed
-   */
-  poker: boolean;
+  standups: boolean;
 }
 
 /**
@@ -50992,7 +51526,7 @@ export const enum InvoiceLineItemEnum {
   ADDED_USERS = 'ADDED_USERS',
   INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS',
   OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS',
-  REMOVED_USERS = 'REMOVED_USERS'
+  REMOVED_USERS = 'REMOVED_USERS',
 }
 
 /**
@@ -51034,7 +51568,7 @@ export const enum InvoiceStatusEnum {
   PENDING = 'PENDING',
   PAID = 'PAID',
   FAILED = 'FAILED',
-  UPCOMING = 'UPCOMING'
+  UPCOMING = 'UPCOMING',
 }
 
 /**
@@ -51127,7 +51661,7 @@ export const enum SuggestedActionTypeEnum {
   tryTheDemo = 'tryTheDemo',
   tryRetroMeeting = 'tryRetroMeeting',
   createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
+  tryActionMeeting = 'tryActionMeeting',
 }
 
 /**
@@ -51245,7 +51779,7 @@ export const enum TimelineEventEnum {
   actionComplete = 'actionComplete',
   joinedParabol = 'joinedParabol',
   createdTeam = 'createdTeam',
-  POKER_COMPLETE = 'POKER_COMPLETE'
+  POKER_COMPLETE = 'POKER_COMPLETE',
 }
 
 /**
@@ -51308,7 +51842,7 @@ export const enum DiscussionTopicTypeEnum {
   reflectionGroup = 'reflectionGroup',
   task = 'task',
   githubIssue = 'githubIssue',
-  jiraIssue = 'jiraIssue'
+  jiraIssue = 'jiraIssue',
 }
 
 /**
@@ -51434,7 +51968,7 @@ export interface INotification {
 export const enum NotificationStatusEnum {
   UNREAD = 'UNREAD',
   READ = 'READ',
-  CLICKED = 'CLICKED'
+  CLICKED = 'CLICKED',
 }
 
 /**
@@ -51447,7 +51981,7 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
 }
 
 /**
@@ -53440,7 +53974,7 @@ export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
  */
 export const enum ReflectionGroupSortEnum {
   voteCount = 'voteCount',
-  stageOrder = 'stageOrder'
+  stageOrder = 'stageOrder',
 }
 
 /**
@@ -54598,7 +55132,7 @@ export interface IMassInvitationPayload {
 export const enum TeamInvitationErrorEnum {
   accepted = 'accepted',
   expired = 'expired',
-  notFound = 'notFound'
+  notFound = 'notFound',
 }
 
 export interface IVerifiedInvitationPayload {
@@ -54667,6 +55201,7 @@ export interface IMutation {
    * Add a comment to a discussion
    */
   addComment: AddCommentPayload;
+  addMattermostAuth: AddMattermostAuthPayload;
 
   /**
    * Add a new poker template with a default dimension created
@@ -54733,7 +55268,7 @@ export interface IMutation {
   autoGroupReflections: IAutoGroupReflectionsPayload | null;
 
   /**
-   * Change the team a task is associated with
+   * Change the team a task is associated with. Also copy the viewers integration if necessary.
    */
   changeTaskTeam: IChangeTaskTeamPayload | null;
 
@@ -55017,6 +55552,11 @@ export interface IMutation {
   removePokerTemplateScaleValue: IRemovePokerTemplateScaleValuePayload;
 
   /**
+   * Disconnect a team member from Slack
+   */
+  removeMattermostAuth: RemoveMattermostAuthPayload;
+
+  /**
    * Remove a reflection
    */
   removeReflection: IRemoveReflectionPayload | null;
@@ -55106,11 +55646,6 @@ export interface IMutation {
    * Start a new sprint poker meeting
    */
   startSprintPoker: StartSprintPokerPayload;
-
-  /**
-   * Show/hide the agenda list
-   */
-  toggleAgendaList: ITeamMember | null;
 
   /**
    * Update an agenda item
@@ -55231,12 +55766,6 @@ export interface IMutation {
   pokerAnnounceDeckHover: PokerAnnounceDeckHoverPayload;
 
   /**
-   * Update the final score field & push to the associated integration
-   * @deprecated "Use setTaskEstimate. Can delete this mutation Aug 15-2021"
-   */
-  pokerSetFinalScore: PokerSetFinalScorePayload;
-
-  /**
    * Move a scale value to an index
    */
   movePokerTemplateScaleValue: MovePokerTemplateScaleValuePayload;
@@ -55266,6 +55795,11 @@ export interface IMutation {
    * Update a task estimate
    */
   setTaskEstimate: SetTaskEstimatePayload;
+
+  /**
+   * Show/hide the drawer in the team dashboard
+   */
+  toggleTeamDrawer: ToggleTeamDrawerPayload;
 
   /**
    * Update how a parabol dimension maps to a GitHub label
@@ -55303,6 +55837,18 @@ export interface IAddCommentOnMutationArguments {
    * A partial new comment
    */
   comment: IAddCommentInput;
+}
+
+export interface IAddMattermostAuthOnMutationArguments {
+  /**
+   * the url of the Mattermost server the token is good for
+   */
+  webhookUrl: any;
+
+  /**
+   * the teamId, when combined with the viewer's userId, used to upsert the credentials
+   */
+  teamId: string;
 }
 
 export interface IAddPokerTemplateOnMutationArguments {
@@ -55783,7 +56329,7 @@ export interface IPayLaterOnMutationArguments {
 
 export interface IPersistJiraSearchQueryOnMutationArguments {
   /**
-   * the team witht the settings we add the query to
+   * the team with the settings we add the query to
    */
   teamId: string;
 
@@ -55811,9 +56357,14 @@ export interface IPromoteNewMeetingFacilitatorOnMutationArguments {
 
 export interface IPromoteToTeamLeadOnMutationArguments {
   /**
-   * the new team member that will be the leader
+   * Team id of the team which is about to get a new team leader
    */
-  teamMemberId: string;
+  teamId: string;
+
+  /**
+   * Email of the user who will be set as a new team leader
+   */
+  newTeamLeadEmail: any;
 }
 
 export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
@@ -55919,6 +56470,13 @@ export interface IRemovePokerTemplateScaleOnMutationArguments {
 export interface IRemovePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
   label: string;
+}
+
+export interface IRemoveMattermostAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from Mattermost
+   */
+  teamId: string;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -56053,6 +56611,7 @@ export interface ISignUpWithPasswordOnMutationArguments {
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
   dragId: string;
+  isSpotlight?: boolean | null;
 }
 
 export interface IStartCheckInOnMutationArguments {
@@ -56072,13 +56631,6 @@ export interface IStartRetrospectiveOnMutationArguments {
 export interface IStartSprintPokerOnMutationArguments {
   /**
    * The team starting the meeting
-   */
-  teamId: string;
-}
-
-export interface IToggleAgendaListOnMutationArguments {
-  /**
-   * the team to hide the agenda for
    */
   teamId: string;
 }
@@ -56323,16 +56875,6 @@ export interface IPokerAnnounceDeckHoverOnMutationArguments {
   isHover: boolean;
 }
 
-export interface IPokerSetFinalScoreOnMutationArguments {
-  meetingId: string;
-  stageId: string;
-
-  /**
-   * The label from the scale value
-   */
-  finalScore: string;
-}
-
 export interface IMovePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
 
@@ -56408,6 +56950,18 @@ export interface IPersistGitHubSearchQueryOnMutationArguments {
 
 export interface ISetTaskEstimateOnMutationArguments {
   taskEstimate: ITaskEstimateInput;
+}
+
+export interface IToggleTeamDrawerOnMutationArguments {
+  /**
+   * the team to show/hide the drawer for
+   */
+  teamId: string;
+
+  /**
+   * The type of team drawer that the viewer is toggling. Null if closing the drawer.
+   */
+  teamDrawerType?: TeamDrawer | null;
 }
 
 export interface IUpdateGitHubDimensionFieldOnMutationArguments {
@@ -56571,6 +57125,27 @@ export interface IAddCommentInput {
   threadParentId?: string | null;
 }
 
+/**
+ * Return object for AddMattermostAuthPayload
+ */
+export type AddMattermostAuthPayload =
+  | IErrorPayload
+  | IAddMattermostAuthSuccess;
+
+export interface IAddMattermostAuthSuccess {
+  __typename: 'AddMattermostAuthSuccess';
+
+  /**
+   * The newly created mattermost integration object
+   */
+  mattermostIntegration: IMattermostIntegration;
+
+  /**
+   * The user who updated mattermost integration object
+   */
+  user: IUser;
+}
+
 export interface IAddPokerTemplatePayload {
   __typename: 'AddPokerTemplatePayload';
   error: IStandardMutationError | null;
@@ -56631,7 +57206,7 @@ export interface IAddReactjiToReactableSuccess {
  */
 export const enum ReactableEnum {
   COMMENT = 'COMMENT',
-  REFLECTION = 'REFLECTION'
+  REFLECTION = 'REFLECTION',
 }
 
 export interface IAddReflectTemplatePayload {
@@ -56680,9 +57255,8 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  video = 'video',
-  jira = 'jira',
-  poker = 'poker'
+  spotlight = 'spotlight',
+  standups = 'standups',
 }
 
 export interface IAddGitHubAuthPayload {
@@ -57019,7 +57593,7 @@ export interface INotifyTaskInvolves {
  */
 export const enum TaskInvolvementType {
   ASSIGNEE = 'ASSIGNEE',
-  MENTIONEE = 'MENTIONEE'
+  MENTIONEE = 'MENTIONEE',
 }
 
 export interface ICreateTaskInput {
@@ -57070,7 +57644,7 @@ export interface ICreateTaskIntegrationInput {
 export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
-  userDash = 'userDash'
+  userDash = 'userDash',
 }
 
 /**
@@ -57339,6 +57913,7 @@ export interface IRemoteReflectionDrag {
    * The name of the dragUser
    */
   dragUserName: string | null;
+  isSpotlight: boolean | null;
   clientHeight: number | null;
   clientWidth: number | null;
 
@@ -57378,7 +57953,7 @@ export interface IRemoteReflectionDrag {
  */
 export const enum DragReflectionDropTargetTypeEnum {
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  REFLECTION_GRID = 'REFLECTION_GRID'
+  REFLECTION_GRID = 'REFLECTION_GRID',
 }
 
 /**
@@ -57936,6 +58511,27 @@ export interface IRemovePokerTemplateScaleValuePayload {
   scale: ITemplateScale | null;
 }
 
+/**
+ * Return object for RemoveMattermostAuthPayload
+ */
+export type RemoveMattermostAuthPayload =
+  | IErrorPayload
+  | IRemoveMattermostAuthSuccess;
+
+export interface IRemoveMattermostAuthSuccess {
+  __typename: 'RemoveMattermostAuthSuccess';
+
+  /**
+   * The team with updated mattermost auth
+   */
+  teamId: string;
+
+  /**
+   * The user with updated mattermost auth
+   */
+  user: IUser;
+}
+
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload';
   error: IStandardMutationError | null;
@@ -58022,6 +58618,10 @@ export interface ISegmentEventTrackOptions {
   phase?: NewMeetingPhaseTypeEnum | null;
   eventId?: number | null;
   actionType?: string | null;
+  meetingId?: string | null;
+  reflectionId?: string | null;
+  viewerId?: string | null;
+  reflectionsCount?: number | null;
 }
 
 export interface ISelectTemplatePayload {
@@ -58388,7 +58988,7 @@ export interface IUpdatePokerScopeItemInput {
  */
 export const enum AddOrDeleteEnum {
   ADD = 'ADD',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export interface IUpdateReflectionContentPayload {
@@ -58441,7 +59041,6 @@ export interface IUpdateTaskInput {
   content?: string | null;
   sortOrder?: number | null;
   status?: TaskStatusEnum | null;
-  teamId?: string | null;
 
   /**
    * userId, the owner of the task. This can be null if the task is not assigned to anyone.
@@ -58642,22 +59241,6 @@ export interface IPokerAnnounceDeckHoverSuccess {
 }
 
 /**
- * Return object for PokerSetFinalScorePayload
- */
-export type PokerSetFinalScorePayload =
-  | IErrorPayload
-  | IPokerSetFinalScoreSuccess;
-
-export interface IPokerSetFinalScoreSuccess {
-  __typename: 'PokerSetFinalScoreSuccess';
-
-  /**
-   * The stage that holds the updated finalScore
-   */
-  stage: IEstimateStage;
-}
-
-/**
  * Return object for MovePokerTemplateScaleValuePayload
  */
 export type MovePokerTemplateScaleValuePayload =
@@ -58796,6 +59379,16 @@ export interface ITaskEstimateInput {
 }
 
 /**
+ * Return object for ToggleTeamDrawerPayload
+ */
+export type ToggleTeamDrawerPayload = IErrorPayload | IToggleTeamDrawerSuccess;
+
+export interface IToggleTeamDrawerSuccess {
+  __typename: 'ToggleTeamDrawerSuccess';
+  teamMember: ITeamMember;
+}
+
+/**
  * Return object for UpdateGitHubDimensionFieldPayload
  */
 export type UpdateGitHubDimensionFieldPayload =
@@ -58862,7 +59455,7 @@ export interface IPoll {
   /**
    * The user that created the item
    */
-  createdByUser: IUser | null;
+  createdByUser: IUser;
 
   /**
    * the replies to this threadable item
@@ -59001,6 +59594,7 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 
 export type MeetingSubscriptionPayload =
   | IAddCommentSuccess
+  | ICreatePollSuccess
   | IAddReactjiToReflectionSuccess
   | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload
@@ -59031,7 +59625,6 @@ export type MeetingSubscriptionPayload =
   | IPokerRevealVotesSuccess
   | IPokerResetDimensionSuccess
   | IPokerAnnounceDeckHoverSuccess
-  | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
   | ISetPokerSpectateSuccess
   | ISetTaskEstimateSuccess;
@@ -59274,6 +59867,7 @@ export type TeamSubscriptionPayload =
   | IAddAgendaItemPayload
   | IAddAtlassianAuthPayload
   | IAddGitHubAuthPayload
+  | IAddMattermostAuthSuccess
   | IAddSlackAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
@@ -59312,6 +59906,7 @@ export type TeamSubscriptionPayload =
   | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
+  | IRemoveMattermostAuthSuccess
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
   | IRemovePokerTemplatePayload

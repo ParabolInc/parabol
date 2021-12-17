@@ -4,16 +4,19 @@
 import ms from 'ms'
 import getRethink from '../database/rethinkDriver'
 
+// All results must be mapped to their ids!
 const customRedisQueries = {
   endTimesByTemplateId: async (templateIds: string[]) => {
     const r = await getRethink()
     const aQuarterAgo = new Date(Date.now() - ms('90d'))
-    const meetings = (await (r
-      .table('NewMeeting')
-      .getAll(r.args(templateIds), {index: 'templateId'})
-      .pluck('templateId', 'endedAt')
-      .filter((row) => row('endedAt').ge(aQuarterAgo))
-      .group('templateId' as any) as any)
+    const meetings = (await (
+      r
+        .table('NewMeeting')
+        .getAll(r.args(templateIds), {index: 'templateId'})
+        .pluck('templateId', 'endedAt')
+        .filter((row) => row('endedAt').ge(aQuarterAgo))
+        .group('templateId' as any) as any
+    )
       .limit(1000)('endedAt')
       .run()) as {group: string; reduction: Date[]}[]
     return templateIds.map((id) => {
@@ -46,11 +49,7 @@ const customRedisQueries = {
           .table('TemplateScale')
           .getAll(teamId, {index: 'teamId'})
           .filter({isStarter: true})
-          .filter((row) =>
-            row('removedAt')
-              .default(null)
-              .eq(null)
-          )
+          .filter((row) => row('removedAt').default(null).eq(null))
           .run()
       })
     )

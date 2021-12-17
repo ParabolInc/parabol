@@ -79,7 +79,7 @@ const UserAvatarInput = lazy(() =>
   import(/* webpackChunkName: 'UserAvatarInput' */ '../../../components/UserAvatarInput')
 )
 
-interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps {
+interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps<'preferredName'> {
   viewer: UserProfile_viewer
 }
 

@@ -16,7 +16,7 @@ interface Props {
 class AtmosphereProvider extends Component<Props> {
   atmosphere?: Atmosphere | TLocalAtmosphere
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props)
     if (props.getLocalAtmosphere) {
       this.loadDemo().catch()

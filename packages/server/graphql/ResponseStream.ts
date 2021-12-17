@@ -20,7 +20,7 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
   async next() {
     const sourceIter = await this.sourceStream.next()
     if (sourceIter.done) return sourceIter
-    const {mutatorId, operationId: dataLoaderId, rootValue} = sourceIter.value
+    const {mutatorId, operationId: dataLoaderId, rootValue, serverChannel} = sourceIter.value
     const {connectionContext, query, variables, docId} = this.req
     const {id: socketId, authToken, ip} = connectionContext
     if (mutatorId === socketId) return this.next()
@@ -33,10 +33,11 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
         query,
         variables,
         rootValue,
-        socketId
+        socketId,
+        serverChannel
       })
       if (result.errors) {
-        sendToSentry(new Error(result.errors[0].message))
+        sendToSentry(new Error(result.errors[0]?.message))
         return this.next()
       }
       return {done: false, value: result}

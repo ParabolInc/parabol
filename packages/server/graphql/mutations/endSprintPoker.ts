@@ -15,20 +15,21 @@ import {GQLContext} from '../graphql'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifySlack'
+import {endSlackMeeting} from './helpers/notifications/notifySlack'
+import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 import getPhase from '../../utils/getPhase'
 
 export default {
-  type: GraphQLNonNull(EndSprintPokerPayload),
+  type: new GraphQLNonNull(EndSprintPokerPayload),
   description: 'Finish a sprint poker meeting',
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The meeting to end'
     }
   },
-  async resolve(_source, {meetingId}, context: GQLContext) {
+  async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -66,7 +67,7 @@ export default {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
     const storyCount = new Set(
-      estimateStages.filter(({isComplete}) => isComplete).map(({serviceTaskId}) => serviceTaskId)
+      estimateStages.filter(({isComplete}) => isComplete).map(({taskId}) => taskId)
     ).size
     const discussionIds = estimateStages.map((stage) => stage.discussionId)
     const {stage} = currentStageRes
@@ -74,24 +75,24 @@ export default {
     stage.isComplete = true
     stage.endAt = now
 
-    const completedMeeting = ((await r
+    const completedMeeting = (await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
         {
           endedAt: now,
           phases,
-          commentCount: (r
+          commentCount: r
             .table('Comment')
             .getAll(r.args(discussionIds), {index: 'discussionId'})
             .count()
-            .default(0) as unknown) as number,
+            .default(0) as unknown as number,
           storyCount
         },
         {returnChanges: true, nonAtomic: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run()) as unknown) as MeetingPoker
+      .run()) as unknown as MeetingPoker
     if (!completedMeeting) {
       return standardError(new Error('Completed poker meeting does not exist'), {
         userId: viewerId
@@ -106,9 +107,10 @@ export default {
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').load(templateId)
     ])
+    endMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
-    const isKill = phase.phaseType !== 'ESTIMATE'
+    const isKill = phase && phase.phaseType !== 'ESTIMATE'
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     }
@@ -121,10 +123,7 @@ export default {
           meetingId
         })
     )
-    await r
-      .table('TimelineEvent')
-      .insert(events)
-      .run()
+    await r.table('TimelineEvent').insert(events).run()
 
     const data = {
       meetingId,

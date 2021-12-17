@@ -24,8 +24,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {meetingId, checkInQuestion},
+    _source: unknown,
+    {meetingId, checkInQuestion}: {meetingId: string; checkInQuestion: string},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()

@@ -40,7 +40,7 @@ const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
     template: {
       type: new GraphQLNonNull(ReflectTemplate),
       description: 'The template that this prompt belongs to',
-      resolve: ({templateId}, _args, {dataLoader}) => {
+      resolve: ({templateId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingTemplates').load(templateId)
       }
     },

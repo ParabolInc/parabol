@@ -3,10 +3,11 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitation from '../../database/types/MassInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import CreateMassInvitationPayload from '../types/CreateMassInvitationPayload'
 
 const createMassInvitation = {
-  type: GraphQLNonNull(CreateMassInvitationPayload),
+  type: new GraphQLNonNull(CreateMassInvitationPayload),
   description: `Create a new mass inivtation and optionally void old ones`,
   args: {
     meetingId: {
@@ -14,7 +15,7 @@ const createMassInvitation = {
       description: 'the specific meeting where the invite occurred, if any'
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId to create the mass invitation for'
     },
     voidOld: {
@@ -22,7 +23,15 @@ const createMassInvitation = {
       description: 'If true, will void all existing mass invitations for the team member'
     }
   },
-  resolve: async (_source, {meetingId, teamId, voidOld}, {authToken}) => {
+  resolve: async (
+    _source: unknown,
+    {
+      meetingId,
+      teamId,
+      voidOld
+    }: {meetingId?: string | null; teamId: string; voidOld?: boolean | null},
+    {authToken}: GQLContext
+  ) => {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
 
@@ -40,7 +49,7 @@ const createMassInvitation = {
         .delete()
         .run()
     }
-    const massInvitation = new MassInvitation({meetingId, teamMemberId})
+    const massInvitation = new MassInvitation({meetingId: meetingId ?? undefined, teamMemberId})
 
     await r
       .table('MassInvitation')
