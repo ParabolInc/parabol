@@ -4,11 +4,11 @@ import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
+import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
-import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
-import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useModal from '../hooks/useModal'
+import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
@@ -61,6 +61,9 @@ const GroupingKanban = (props: Props) => {
 
   // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
   useEffect(() => {
+    window.onbeforeunload = () => {
+      closePortal()
+    }
     if (spotlightGroup) {
       openPortal()
     } else {
@@ -130,7 +133,7 @@ const GroupingKanban = (props: Props) => {
       </ColumnsBlock>
       {modalPortal(
         <SpotlightModal
-          closeSpotlight={onCloseSpotlight}
+          closeSpotlight={closePortal}
           meetingRef={meeting}
           sourceRef={sourceRef}
           portalStatus={portalStatus}
@@ -174,6 +177,7 @@ export default createFragmentContainer(GroupingKanban, {
           id
         }
       }
+      spotlightSearchQuery
     }
   `
 })
