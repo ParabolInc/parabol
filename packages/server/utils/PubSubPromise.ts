@@ -11,7 +11,7 @@ interface Job {
   timeoutId: NodeJS.Timeout
 }
 
-const {SERVER_ID, REDIS_URL} = process.env
+const {SERVER_ID, REDIS_PORT, REDIS_URL} = process.env
 
 interface BaseRequest {
   serverChannel?: string
@@ -20,8 +20,8 @@ interface BaseRequest {
 
 export default class PubSubPromise<Request extends BaseRequest, Response> {
   jobs = {} as {[jobId: string]: Job}
-  publisher = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_pub'})
-  subscriber = new Redis(REDIS_URL, {connectionName: 'pubsubPromise_sub'})
+  publisher = new Redis(Number(REDIS_PORT), REDIS_URL, {connectionName: 'pubsubPromise_pub'})
+  subscriber = new Redis(Number(REDIS_PORT), REDIS_URL, {connectionName: 'pubsubPromise_sub'})
   subChannel: string
   stream: string
   jobCounter = 0

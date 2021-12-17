@@ -1,6 +1,6 @@
 import Redis from 'ioredis'
 
-const {REDIS_URL} = process.env
+const {REDIS_PORT, REDIS_URL} = process.env
 
 type MessageValue = [prop: string, stringifiedData: string]
 type Message = [messageId: string, value: MessageValue]
@@ -9,7 +9,7 @@ export default class RedisStream<T> implements AsyncIterableIterator<T> {
   private stream: string
   private consumerGroup: string
   // xreadgroup blocks until a response is received, so this needs its own connection
-  private redis = new Redis(REDIS_URL)
+  private redis = new Redis(Number(REDIS_PORT), REDIS_URL)
   private consumer: string
 
   constructor(stream: string, consumerGroup: string, consumer: string) {

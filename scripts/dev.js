@@ -38,7 +38,7 @@ const removeArtifacts = async () => {
 
 const dev = async (maybeInit) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
-  const redis = new Redis(process.env.REDIS_URL, {connectionName: 'devRedis'})
+  const redis = new Redis(Number(process.env.REDIS_PORT), process.env.REDIS_URL, {connectionName: 'devRedis'})
   const toolboxPromise = compileToolbox()
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')

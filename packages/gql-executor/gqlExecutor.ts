@@ -12,15 +12,15 @@ tracer.init({
   plugins: false
 })
 
-const {REDIS_URL, SERVER_ID} = process.env
+const {REDIS_PORT, REDIS_URL, SERVER_ID} = process.env
 interface PubSubPromiseMessage {
   jobId: string
   request: GQLRequest
 }
 
 const run = async () => {
-  const publisher = new Redis(REDIS_URL, {connectionName: 'gql_pub'})
-  const subscriber = new Redis(REDIS_URL, {connectionName: 'gql_sub'})
+  const publisher = new Redis(Number(REDIS_PORT), REDIS_URL, {connectionName: 'gql_pub'})
+  const subscriber = new Redis(Number(REDIS_PORT), REDIS_URL, {connectionName: 'gql_sub'})
   const serverChannel = GQLExecutorId.join(SERVER_ID)
 
   // subscribe to direct messages
