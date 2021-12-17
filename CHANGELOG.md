@@ -12,6 +12,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Add updatedAt trigger to User table (#5733)
 - Add standups feature flag (#5754)
 - Release Spotlight (#5785)
+- Spotlight tracking (#5714)
 
 ### Fixed
 
@@ -21,6 +22,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - noUncheckedIndexedAccess fixes (#5737)
 - Fix image scaling in task description (#5758)
 - Fix typo in comment (#5784)
+- Remove instanceof TouchEvent (#5807)
 
 ## 6.40.0 2021-Dec-09
 
