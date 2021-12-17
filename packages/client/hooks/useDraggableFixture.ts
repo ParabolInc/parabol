@@ -30,8 +30,8 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     // required to prevent address bar scrolling & other strange browser things on mobile view
     e.preventDefault()
-    const isTouchMove = e instanceof TouchEvent
-    const {clientX} = isTouchMove ? e.touches[0]! : e
+    const isTouchMove = e.type === 'touchmove'
+    const {clientX} = isTouchMove ? (e as TouchEvent).touches[0]! : (e as MouseEvent)
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, 0, drag.lastX, 0)
