@@ -36,7 +36,11 @@ export default {
     }
 
     // RESOLUTION
-    const {accessToken, scope} = await GitHubServerManager.init(code)
+    const oAuth2Response = await GitHubServerManager.init(code)
+    if (oAuth2Response instanceof Error) {
+      return standardError(oAuth2Response, {userId: viewerId})
+    }
+    const {accessToken, scopes} = oAuth2Response
     const githubRequest = getGitHubRequest(info, context, {
       accessToken
     })
@@ -48,7 +52,7 @@ export default {
     const {viewer} = data
     const {login} = viewer
 
-    await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope})
+    await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope: scopes.join(',')})
     segmentIo.track({
       userId: viewerId,
       event: 'Added Integration',
