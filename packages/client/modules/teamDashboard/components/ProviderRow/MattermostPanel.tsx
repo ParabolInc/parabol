@@ -73,7 +73,11 @@ const MattermostPanel = (props: Props) => {
             mattermost {
               activeProvider {
                 id
-                serverBaseUri
+                providerMetadata {
+                  ... on WebHookProviderMetadata {
+                    webhookUrl
+                  }
+                }
               }
             }
           }
@@ -93,9 +97,11 @@ const MattermostPanel = (props: Props) => {
   const {orgId} = teamMember!.team!
   const atmosphere = useAtmosphere()
 
+  // corner case: let them re-upsert the same webhook url when reverting to a previous value
+  const serverWebhookUrl = activeProvider?.providerMetadata?.webhookUrl || ''
   const {validateField, setDirtyField, onChange, fields} = useForm({
     webhookUrl: {
-      getDefault: () => activeProvider?.serverBaseUri || '',
+      getDefault: () => serverWebhookUrl,
       validate: (rawInput: string) => {
         return new Legitity(rawInput).test((maybeUrl) => {
           if (!maybeUrl) return 'No link provided'
@@ -115,9 +121,6 @@ const MattermostPanel = (props: Props) => {
   } = useMutationProps()
 
   const {error: fieldError, value: fieldValue} = fields.webhookUrl
-  // corner case: let them re-upsert the same webhook url when reverting to a
-  //              previous value
-  const serverWebhookUrl = activeProvider?.serverBaseUri || ''
   const updateDisabled = (error, value) =>
     error || submitting || !value || (value === serverWebhookUrl && !mutationError)
 

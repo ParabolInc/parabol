@@ -94,10 +94,14 @@ const GitLabProviderRow = (props: Props) => {
                 scope
                 tokenType
                 name
-                oauthClientId
-                oauthScopes
-                serverBaseUri
                 updatedAt
+                providerMetadata {
+                  ... on OAuth2ProviderMetadata {
+                    clientId
+                    serverBaseUrl
+                    scopes
+                  }
+                }
               }
               activeProvider {
                 id
@@ -124,9 +128,13 @@ const GitLabProviderRow = (props: Props) => {
   const openOAuth = (provider) => {
     GitLabClientManager.openOAuth(atmosphere, provider, teamId, mutationProps)
   }
-  const {originRef: menuRef, menuPortal, menuProps, terminatePortal, togglePortal} = useMenu(
-    MenuPosition.UPPER_RIGHT
-  )
+  const {
+    originRef: menuRef,
+    menuPortal,
+    menuProps,
+    terminatePortal,
+    togglePortal
+  } = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const primaryProviderName = !secondaryProvider ? 'Connect' : primaryProvider!.name
   const {
@@ -183,7 +191,9 @@ const GitLabProviderRow = (props: Props) => {
             </StyledSecondaryButton>
           )}
           {secondaryProvider &&
-            secondaryTooltipPortal(`Connect to ${secondaryProvider!.serverBaseUri}`)}
+            secondaryTooltipPortal(
+              `Connect to ${secondaryProvider!.providerMetadata!.serverBaseUrl}`
+            )}
         </ProviderActions>
       )}
       {isActive && (

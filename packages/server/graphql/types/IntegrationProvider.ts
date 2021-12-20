@@ -5,7 +5,8 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString
+  GraphQLString,
+  GraphQLUnionType
 } from 'graphql'
 import GraphQLURLType from './GraphQLURLType'
 import {GQLContext} from '../graphql'
@@ -14,7 +15,9 @@ import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProvi
 import {
   IntegrationProviderTypesEnum as DBIntegrationProviderTypesEnum,
   IntegrationProviderScopesEnum as DBIntegrationProviderScopesEnum,
-  IntegrationProviderTokenTypeEnum as DBIntegrationProviderTokenTypeEnum
+  IntegrationProviderTokenTypeEnum as DBIntegrationProviderTokenTypeEnum,
+  isOAuth2ProviderMetadata,
+  isWebHookProviderMetadata
 } from '../../postgres/types/IntegrationProvider'
 
 export const IntegrationProviderTypeEnum = new GraphQLEnumType({
@@ -46,6 +49,51 @@ export const IntegrationProviderScopesEnum = new GraphQLEnumType({
   } as {[P in DBIntegrationProviderScopesEnum]: any}
 })
 
+const OAuth2ProviderMetadata = new GraphQLObjectType<any, GQLContext>({
+  name: 'OAuth2ProviderMetadata',
+  description: 'OAuth2 metadata for an Integration Provider, excluding the client secret',
+  fields: () => ({
+    serverBaseUrl: {
+      type: new GraphQLNonNull(GraphQLURLType),
+      description: 'The base URL of the OAuth2 server'
+    },
+    clientId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The OAuth2 client id'
+    },
+    scopes: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+      description: 'The OAuth2 scopes'
+    }
+  })
+})
+
+const WebHookProviderMetadata = new GraphQLObjectType<any, GQLContext>({
+  name: 'WebHookProviderMetadata',
+  description: 'WebHook metadata for an Integration Provider',
+  fields: () => ({
+    webhookUrl: {
+      type: new GraphQLNonNull(GraphQLURLType),
+      description: 'The webhook URL'
+    }
+  })
+})
+
+const ProviderMetadata = new GraphQLUnionType({
+  name: 'ProviderMetadata',
+  types: [OAuth2ProviderMetadata, WebHookProviderMetadata],
+  resolveType(value) {
+    if (isOAuth2ProviderMetadata(value)) {
+      return OAuth2ProviderMetadata
+    }
+    if (isWebHookProviderMetadata(value)) {
+      return WebHookProviderMetadata
+    }
+
+    return null
+  }
+})
+
 const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
   name: 'IntegrationProvider',
   description: 'An authentication provider configuration',
@@ -55,25 +103,34 @@ const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
       description: "The provider's unique identifier",
       resolve: ({id}) => IntegrationProviderId.join(id)
     },
-    type: {
-      description: 'The service this provider is associated with',
-      type: new GraphQLNonNull(IntegrationProviderTypeEnum),
-      resolve: ({type}) => type.toLowerCase()
+    orgId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The org that the access token is attached to'
     },
-    tokenType: {
-      description: 'The kind of token used by this provider',
-      type: new GraphQLNonNull(IntegrationProviderTokenTypeEnum),
-      resolve: ({tokenType}) => tokenType.toLowerCase()
-    },
-    scope: {
-      description:
-        'The scope this provider configuration was created at (globally, org-wide, or by the team)',
-      type: new GraphQLNonNull(IntegrationProviderScopesEnum),
-      resolve: ({scope}) => scope.toLowerCase()
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The team that the token is linked to'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the provider was created'
+    },
+    updatedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The timestamp the token was updated at'
+    },
+    type: {
+      description: 'The service this provider is associated with',
+      type: new GraphQLNonNull(IntegrationProviderTypeEnum)
+    },
+    tokenType: {
+      description: 'The kind of token used by this provider',
+      type: new GraphQLNonNull(IntegrationProviderTokenTypeEnum)
+    },
+    scope: {
+      description:
+        'The scope this provider configuration was created at (globally, org-wide, or by the team)',
+      type: new GraphQLNonNull(IntegrationProviderScopesEnum)
     },
     isActive: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -83,29 +140,10 @@ const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the provider, suitable for display on a user interface'
     },
-    oauthScopes: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
-      description: 'A list of scope strings that should be requested from the provider'
-    },
-    serverBaseUri: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'The base URI used to access the provider'
-    },
-    oauthClientId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The client id to give to the provider'
-    },
-    orgId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The org that the access token is attached to'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The team that the token is linked to'
-    },
-    updatedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The timestamp the token was updated at'
+    providerMetadata: {
+      type: new GraphQLNonNull(ProviderMetadata),
+      description:
+        'The metadata associated with the provider, depending on the provider token type (OAuth2 or WebHook), different metadata will be provided'
     }
   })
 })

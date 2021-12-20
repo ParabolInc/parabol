@@ -1,16 +1,24 @@
+import {
+  IntegrationProviderScopesEnum,
+  IntegrationProviderTokenTypeEnum
+} from '~/__generated__/GitLabProviderRow_viewer.graphql'
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddIntegrationTokenMutation from '../mutations/AddIntegrationTokenMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
-interface AbridgedProvider
-  extends Pick<IntegrationProvider, 'oauthClientId' | 'name' | 'serverBaseUri'> {
+interface GitLabIntegrationProvider {
   id: string
-  scope: Lowercase<IntegrationProvider['scope']>
-  tokenType: Lowercase<IntegrationProvider['tokenType']>
-  oauthScopes: ReadonlyArray<string>
+  name: string
+  scope: IntegrationProviderScopesEnum
+  tokenType: IntegrationProviderTokenTypeEnum
   updatedAt: string
+  providerMetadata: {
+    clientId?: string
+    serverBaseUrl?: string
+    scopes?: ReadonlyArray<string>
+  }
 }
 
 class GitLabClientManager {
@@ -18,17 +26,22 @@ class GitLabClientManager {
 
   static openOAuth(
     atmosphere: Atmosphere,
-    provider: AbridgedProvider,
+    provider: GitLabIntegrationProvider,
     teamId: string,
     mutationProps: MenuMutationProps
   ) {
-    const {id: providerId, oauthClientId, serverBaseUri, oauthScopes: oauthScopesList} = provider
+    const {
+      id: providerId,
+      providerMetadata: {clientId, serverBaseUrl, scopes}
+    } = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const oauthScopes = oauthScopesList ? oauthScopesList.join(' ') : ''
-    const providerState = Math.random().toString(36).substring(5)
+    const oauthScopes = scopes ? scopes.join(' ') : ''
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
 
     const redirect_uri = makeHref('/auth/gitlab')
-    const uri = `${serverBaseUri}/oauth/authorize?client_id=${oauthClientId}&scope=${oauthScopes}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
+    const uri = `${serverBaseUrl}/oauth/authorize?client_id=${clientId}&scope=${oauthScopes}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
 
     const popup = window.open(
       uri,
@@ -53,13 +66,13 @@ class GitLabClientManager {
     window.addEventListener('message', handler)
   }
 
-  static getPrimaryProvider(providerList: readonly AbridgedProvider[]) {
+  static getPrimaryProvider(providerList: readonly GitLabIntegrationProvider[]) {
     return providerList.find(
       (provider) => provider.scope === 'global' && provider.tokenType === 'oauth2'
     )
   }
 
-  static getSecondaryProvider(providerList: readonly AbridgedProvider[]) {
+  static getSecondaryProvider(providerList: readonly GitLabIntegrationProvider[]) {
     const scopeScore = {
       global: 0,
       org: 1,
