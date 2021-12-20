@@ -11,7 +11,6 @@ import {
   IntegrationProviderTokenInputT
 } from '../types/AddIntegrationTokenInput'
 import upsertGlobalIntegrationProvider from '../../postgres/queries/upsertGlobalIntegrationProvider'
-import insertIntegrationProvider from '../../postgres/queries/insertIntegrationProvider'
 import insertIntegrationProviderWithToken from '../../postgres/queries/insertIntegrationProviderWithToken'
 import validateNewIntegrationAuthToken from './helpers/addIntegrationTokenValidation'
 import {
@@ -83,21 +82,18 @@ const addIntegrationProvider = {
       const upsertParams = createGlobalIntegrationProviderUpsertParams(integrationProviderInput)
       await upsertGlobalIntegrationProvider(upsertParams)
     } else if (scope === 'org' || scope === 'team') {
+      const integrationTokenMetadata = integrationTokenInput || {}
       const newIntegrationProvider = createIntegrationProviderInsertParams(integrationProviderInput)
-      if (integrationTokenInput !== null) {
-        const tokenValidationResult = validateNewIntegrationAuthToken(
-          integrationTokenInput,
-          newIntegrationProvider
-        )
-        if (tokenValidationResult instanceof Error) return standardError(tokenValidationResult)
-        await insertIntegrationProviderWithToken({
-          provider: newIntegrationProvider,
-          userId: viewerId,
-          tokenMetadata: integrationTokenInput
-        })
-      } else {
-        await insertIntegrationProvider(newIntegrationProvider)
-      }
+      const tokenValidationResult = validateNewIntegrationAuthToken(
+        integrationTokenMetadata,
+        newIntegrationProvider
+      )
+      if (tokenValidationResult instanceof Error) return standardError(tokenValidationResult)
+      await insertIntegrationProviderWithToken({
+        provider: newIntegrationProvider,
+        userId: viewerId,
+        tokenMetadata: integrationTokenMetadata
+      })
     }
 
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope

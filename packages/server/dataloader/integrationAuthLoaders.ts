@@ -15,7 +15,7 @@ export interface IntegrationProviderTeamKey {
   teamId: string
 }
 
-export interface IntegrationProviderKey {
+export interface IntegrationProviderTeamOrgKey {
   type: IntegrationProviderTypesEnum
   teamId: string
   orgId: string
@@ -40,7 +40,7 @@ export const integrationProviders = (parent: RootDataLoader) => {
 }
 
 export const integrationProvidersByType = (parent: RootDataLoader) => {
-  return new DataLoader<IntegrationProviderKey, IntegrationProvider[] | null, string>(
+  return new DataLoader<IntegrationProviderTeamOrgKey, IntegrationProvider[] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({type, teamId, orgId}) => getIntegrationProviders(type, teamId, orgId))

@@ -198,7 +198,7 @@ export const endMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
+  return notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
 }
 
 export const notifyMattermostTimeLimitStart = async (
@@ -271,13 +271,7 @@ export const notifyMattermostTimeLimitStart = async (
     )
   ]
 
-  return await notifyMattermost(
-    'MEETING_STAGE_TIME_LIMIT_START',
-    webhookUrl,
-    userId,
-    teamId,
-    attachments
-  )
+  return notifyMattermost('MEETING_STAGE_TIME_LIMIT_START', webhookUrl, userId, teamId, attachments)
 }
 
 export const notifyMattermostTimeLimitEnd = async (
@@ -297,11 +291,5 @@ export const notifyMattermostTimeLimitEnd = async (
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
 
-  return await notifyMattermost(
-    'MEETING_STAGE_TIME_LIMIT_END',
-    webhookUrl,
-    teamId,
-    userId,
-    messageText
-  )
+  return notifyMattermost('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, teamId, userId, messageText)
 }

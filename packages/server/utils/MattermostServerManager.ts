@@ -98,6 +98,7 @@ class MattermostServerManager extends MattermostManager {
       .get('integrationTokensByTeamWithProvider')
       .load({type: 'mattermost', teamId})
     if (!tokensAndProvider) {
+      console.warn('No Mattermost integration tokens found for team', teamId)
       return null
     }
 
