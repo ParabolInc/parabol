@@ -28,8 +28,8 @@ const GitLabConfigMenu = (props: Props) => {
     terminatePortal()
   }
   return (
-    <Menu ariaLabel={'Configure your Mattermost integration'} {...menuProps}>
-      <MenuItem label='Remove Mattermost' onClick={removeGitLabAuth} />
+    <Menu ariaLabel={'Configure your GitLab integration'} {...menuProps}>
+      <MenuItem label='Remove GitLab' onClick={removeGitLabAuth} />
     </Menu>
   )
 }

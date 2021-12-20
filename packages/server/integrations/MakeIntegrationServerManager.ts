@@ -33,7 +33,8 @@ const integrationProviderClassMap: {
 }
 
 export const createIntegrationServerManager = async <T extends IntegrationServerManager>(
-  provider: IntegrationProvider
+  provider: IntegrationProvider,
+  accessToken: string
 ) => {
-  return new integrationProviderClassMap[provider.type](provider) as T
+  return new integrationProviderClassMap[provider.type](provider, accessToken) as T
 }

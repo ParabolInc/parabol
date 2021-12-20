@@ -39,7 +39,7 @@ const createTokenMetadata = async (
     const {accessToken, refreshToken, scopes} = authResponse
 
     const integrationServerManager =
-      await createIntegrationServerManager<OAuth2IntegrationServerManager>(provider)
+      await createIntegrationServerManager<OAuth2IntegrationServerManager>(provider, accessToken)
     const [tokenTestValid, tokenTestError] = await integrationServerManager.isTokenValid(
       info,
       context
