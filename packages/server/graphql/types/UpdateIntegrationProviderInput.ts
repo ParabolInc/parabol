@@ -1,11 +1,8 @@
+import {GraphQLID, GraphQLNonNull, GraphQLInputObjectType, GraphQLString} from 'graphql'
 import {
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLInputObjectType,
-  GraphQLString
-} from 'graphql'
-import GraphQLURLType from './GraphQLURLType'
+  OAuth2ProviderMetadataInput,
+  WebhookProviderMetadataInput
+} from './AddIntegrationProviderInput'
 import {
   IntegrationProviderTypeEnum,
   IntegrationProviderTokenTypeEnum,
@@ -37,22 +34,6 @@ const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the provider, suitable for display on a user interface'
     },
-    oauthScopes: {
-      type: new GraphQLList(GraphQLNonNull(GraphQLString)),
-      description: 'A list of scope strings that should be requested from the provider'
-    },
-    serverBaseUri: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'The base URI used to access the provider'
-    },
-    oauthClientId: {
-      type: GraphQLString,
-      description: 'The client id to give to the provider'
-    },
-    oauthClientSecret: {
-      type: GraphQLString,
-      description: 'The secret used to authenticate the client'
-    },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The org that the access token is attached to'
@@ -60,6 +41,16 @@ const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team that the token is linked to'
+    },
+    webhookProviderMetadataInput: {
+      type: WebhookProviderMetadataInput,
+      description:
+        'Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
+    },
+    oAuth2ProviderMetadataInput: {
+      type: OAuth2ProviderMetadataInput,
+      description:
+        'OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
     }
   })
 })

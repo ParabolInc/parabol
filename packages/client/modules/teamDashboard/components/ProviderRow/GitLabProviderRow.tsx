@@ -18,7 +18,7 @@ import useMenu from '../../../../hooks/useMenu'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint} from '../../../../types/constEnums'
-import GitLabClientManager from '../../../../utils/GitLabClientManager'
+import GitLabClientManager, {GitLabIntegrationProvider} from '../../../../utils/GitLabClientManager'
 import {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
 import GitLabConfigMenu from './GitLabConfigMenu'
 import useTooltip from 'parabol-client/hooks/useTooltip'
@@ -125,7 +125,7 @@ const GitLabProviderRow = (props: Props) => {
   const {submitting} = mutationProps
   const primaryProvider = GitLabClientManager.getPrimaryProvider(availableProviders)
   const secondaryProvider = GitLabClientManager.getSecondaryProvider(availableProviders)
-  const openOAuth = (provider) => {
+  const openOAuth = (provider: GitLabIntegrationProvider) => {
     GitLabClientManager.openOAuth(atmosphere, provider, teamId, mutationProps)
   }
   const {
@@ -172,7 +172,7 @@ const GitLabProviderRow = (props: Props) => {
               {isDesktop ? primaryProviderName : <Icon>add</Icon>}
             </StyledPrimaryButton>
           )}
-          {primaryProvider && primaryTooltipPortal('Connect to GitHub Cloud')}
+          {primaryProvider && primaryTooltipPortal('Connect to GitLab Cloud')}
           {secondaryProvider && (
             <StyledSecondaryButton
               key='linkAccountToSecondary'

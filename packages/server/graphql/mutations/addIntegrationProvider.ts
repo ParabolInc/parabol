@@ -28,7 +28,7 @@ export type AddIntegrationProviderInput = Omit<IntegrationProviderInput, 'id'>
 
 type AddIntegrationProviderVariables = {
   provider: AddIntegrationProviderInput
-  token?: IntegrationProviderTokenInputT
+  token: IntegrationProviderTokenInputT | null
 }
 
 const addIntegrationProvider = {
@@ -51,7 +51,6 @@ const addIntegrationProvider = {
       provider: integrationProviderInput,
       token: integrationTokenInput
     }: AddIntegrationProviderVariables,
-
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
@@ -83,26 +82,22 @@ const addIntegrationProvider = {
     if (scope === 'global') {
       const upsertParams = createGlobalIntegrationProviderUpsertParams(integrationProviderInput)
       await upsertGlobalIntegrationProvider(upsertParams)
-    }
-
-    if (scope === 'org' || scope === 'team') {
+    } else if (scope === 'org' || scope === 'team') {
       const newIntegrationProvider = createIntegrationProviderInsertParams(integrationProviderInput)
-      if (!integrationTokenInput) {
+      if (integrationTokenInput !== null) {
+        const tokenValidationResult = validateNewIntegrationAuthToken(
+          integrationTokenInput,
+          newIntegrationProvider
+        )
+        if (tokenValidationResult instanceof Error) return standardError(tokenValidationResult)
+        await insertIntegrationProviderWithToken({
+          provider: newIntegrationProvider,
+          userId: viewerId,
+          tokenMetadata: integrationTokenInput
+        })
+      } else {
         await insertIntegrationProvider(newIntegrationProvider)
-        return
       }
-
-      const tokenValidationResult = validateNewIntegrationAuthToken(
-        integrationTokenInput,
-        newIntegrationProvider
-      )
-      if (tokenValidationResult instanceof Error) return standardError(tokenValidationResult)
-
-      await insertIntegrationProviderWithToken({
-        provider: newIntegrationProvider,
-        userId: viewerId,
-        tokenMetadata: integrationTokenInput
-      })
     }
 
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope

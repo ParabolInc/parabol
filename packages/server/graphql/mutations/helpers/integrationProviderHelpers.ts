@@ -9,6 +9,7 @@ import {DataLoaderWorker} from '../../graphql'
 import linkify from 'parabol-client/utils/linkify'
 import {notifyWebhookConfigUpdated} from './notifications/notifyMattermost'
 import {
+  IntegrationProviderMetadata,
   IntegrationProviderScopesEnum,
   isOAuth2ProviderMetadata,
   isWebHookProviderMetadata
@@ -66,7 +67,14 @@ export const validateIntegrationProvider = async (
       if (!checkOrg) return new Error('organization not found')
   }
 
-  const {providerMetadata} = provider
+  let providerMetadata: IntegrationProviderMetadata | null = null
+  if (provider.tokenType === 'oauth2') {
+    providerMetadata = provider.oAuth2ProviderMetadataInput!
+  } else if (provider.tokenType === 'webhook') {
+    providerMetadata = provider.webhookProviderMetadataInput!
+  }
+  if (!providerMetadata) return new Error('Provider metadata is required')
+
   if (isOAuth2ProviderMetadata(providerMetadata)) {
     if (!providerMetadata.scopes) return new Error('scopes required for OAuth2 provider')
     if (!providerMetadata.clientId) return new Error('oauthClientId required for OAuth2 provider')

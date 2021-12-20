@@ -59838,6 +59838,16 @@ export interface IAddIntegrationProviderSuccess {
  */
 export interface IAddIntegrationProviderInput {
   /**
+   * The org that the access token is attached to
+   */
+  orgId: string;
+
+  /**
+   * The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
    * The service this provider is associated with
    */
   type?: IntegrationProviderTypeEnum | null;
@@ -59858,34 +59868,49 @@ export interface IAddIntegrationProviderInput {
   name: string;
 
   /**
+   * Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+   */
+  webhookProviderMetadataInput?: IWebhookProviderMetadataInput | null;
+
+  /**
+   * OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+   */
+  oAuth2ProviderMetadataInput?: IOAuth2ProviderMetadataInput | null;
+}
+
+/**
+ * Webhook provider metadata
+ */
+export interface IWebhookProviderMetadataInput {
+  /**
+   * Webhook URL to be used by the provider
+   */
+  webhookUrl: any;
+}
+
+/**
+ * OAuth2 provider metadata
+ */
+export interface IOAuth2ProviderMetadataInput {
+  /**
    * A list of scope strings that should be requested from the provider
    */
-  oauthScopes?: Array<string> | null;
+  scopes?: Array<string> | null;
 
   /**
-   * The base URI used to access the provider
+   * The base URL used to access the provider
    */
-  serverBaseUri: any;
-
-  /**
-   * The client id to give to the provider
-   */
-  oauthClientId?: string | null;
+  serverBaseUrl: any;
 
   /**
    * The client id to give to the provider
    */
-  oauthClientSecret?: string | null;
+  clientId: string;
 
   /**
-   * The org that the access token is attached to
+   * The client id to give to the provider
    */
-  orgId: string;
-
-  /**
-   * The team that the token is linked to
-   */
-  teamId: string;
+  clientSecret: string;
 }
 
 /**
@@ -59954,26 +59979,6 @@ export interface IUpdateIntegrationProviderInput {
   name: string;
 
   /**
-   * A list of scope strings that should be requested from the provider
-   */
-  oauthScopes?: Array<string> | null;
-
-  /**
-   * The base URI used to access the provider
-   */
-  serverBaseUri: any;
-
-  /**
-   * The client id to give to the provider
-   */
-  oauthClientId?: string | null;
-
-  /**
-   * The secret used to authenticate the client
-   */
-  oauthClientSecret?: string | null;
-
-  /**
    * The org that the access token is attached to
    */
   orgId: string;
@@ -59982,6 +59987,16 @@ export interface IUpdateIntegrationProviderInput {
    * The team that the token is linked to
    */
   teamId: string;
+
+  /**
+   * Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+   */
+  webhookProviderMetadataInput?: IWebhookProviderMetadataInput | null;
+
+  /**
+   * OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+   */
+  oAuth2ProviderMetadataInput?: IOAuth2ProviderMetadataInput | null;
 }
 
 /**

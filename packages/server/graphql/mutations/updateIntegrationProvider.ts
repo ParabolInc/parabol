@@ -45,7 +45,6 @@ const updateIntegrationProvider = {
     // VALIDATION
     const providerDbId = IntegrationProviderId.split(provider.id)
     const validationResult = await validateIntegrationProvider(provider, viewerId, dataLoader)
-
     if (validationResult instanceof Error) return standardError(validationResult)
 
     // RESOLUTION

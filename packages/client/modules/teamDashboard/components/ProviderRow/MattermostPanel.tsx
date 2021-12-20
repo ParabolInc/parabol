@@ -18,6 +18,7 @@ import useTooltip from '~/hooks/useTooltip'
 import {MenuPosition} from '~/hooks/useCoords'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
+import {AddIntegrationProviderInput} from '~/__generated__/AddIntegrationProviderMutation.graphql'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key
@@ -130,16 +131,17 @@ const MattermostPanel = (props: Props) => {
     if (updateDisabled(error, webhookUrl)) return
     setDirtyField()
     submitMutation()
-    const provider = {
+    const provider: AddIntegrationProviderInput = {
+      orgId,
+      teamId,
       type: 'mattermost',
       scope: 'team',
       tokenType: 'webhook',
       name: `Mattermost webhook for ${preferredName ? preferredName : email}`,
-      serverBaseUri: webhookUrl,
-      orgId,
-      teamId
-    } as const
-    const token = {}
+      webhookProviderMetadataInput: {
+        webhookUrl
+      }
+    }
     if (mattermost?.activeProvider) {
       UpdateIntegrationProviderMutation(
         atmosphere,
@@ -153,7 +155,7 @@ const MattermostPanel = (props: Props) => {
         {onError, onCompleted}
       )
     } else {
-      AddIntegrationProviderMutation(atmosphere, {provider, token, teamId}, {onError, onCompleted})
+      AddIntegrationProviderMutation(atmosphere, {provider, teamId}, {onError, onCompleted})
     }
   }
 

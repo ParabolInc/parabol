@@ -104,13 +104,21 @@ export interface IntegrationProviderInput {
   type: IntegrationProviderTypesEnum
   tokenType: IntegrationProviderTokenTypeEnum
   scope: IntegrationProviderScopesEnum
-  providerMetadata: any
+  webhookProviderMetadataInput?: {
+    webhookUrl: string
+  }
+  oAuth2ProviderMetadataInput?: {
+    scopes: string[]
+    clientId: string
+    clientSecret: string
+    serverBaseUrl: string
+  }
 }
 
 export interface GlobalIntegrationProviderInsertParams {
   type: IntegrationProviderTypesEnum
   name: string
-  providerMetadata: Record<string, string>
+  providerMetadata: Record<string, string | string[]>
 }
 
 export interface IntegrationProviderInsertParams {
@@ -120,27 +128,37 @@ export interface IntegrationProviderInsertParams {
   type: IntegrationProviderTypesEnum
   tokenType: IntegrationProviderTokenTypeEnum
   scope: IntegrationProviderScopesEnum
-  providerMetadata: Record<string, string>
+  providerMetadata: Record<string, string | string[]>
 }
 
 export const createGlobalIntegrationProviderUpsertParams = (
   provider: Omit<IntegrationProviderInput, 'id' | 'scope' | 'orgId' | 'teamId'>
 ): GlobalIntegrationProviderInsertParams => {
-  const newIntegrationProviderMetadata = provider.providerMetadata
-  if (!isOAuth2ProviderMetadata(newIntegrationProviderMetadata)) {
+  const newIntegrationProviderMetadata = provider.oAuth2ProviderMetadataInput
+  if (
+    !newIntegrationProviderMetadata ||
+    !isOAuth2ProviderMetadata(newIntegrationProviderMetadata)
+  ) {
     throw new Error('Global provider can be only OAuth2!')
   }
 
   return {
     name: provider.name,
     type: provider.type,
-    providerMetadata: provider.providerMetadata
+    providerMetadata: {...newIntegrationProviderMetadata}
   }
 }
 
 export const createIntegrationProviderInsertParams = (
   provider: Omit<IntegrationProviderInput, 'id'>
 ): IntegrationProviderInsertParams => {
+  let providerMetadata: Record<string, string | string[]> = {}
+  if (provider.tokenType === 'oauth2') {
+    providerMetadata = provider.oAuth2ProviderMetadataInput!
+  } else if (provider.tokenType === 'webhook') {
+    providerMetadata = provider.webhookProviderMetadataInput!
+  }
+
   return {
     name: provider.name,
     type: provider.type,
@@ -148,6 +166,6 @@ export const createIntegrationProviderInsertParams = (
     scope: provider.scope,
     orgId: provider.orgId,
     teamId: provider.teamId,
-    providerMetadata: provider.providerMetadata
+    providerMetadata
   }
 }

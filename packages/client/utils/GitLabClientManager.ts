@@ -8,7 +8,7 @@ import AddIntegrationTokenMutation from '../mutations/AddIntegrationTokenMutatio
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
-interface GitLabIntegrationProvider {
+export interface GitLabIntegrationProvider {
   id: string
   name: string
   scope: IntegrationProviderScopesEnum
@@ -36,9 +36,7 @@ class GitLabClientManager {
     } = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const oauthScopes = scopes ? scopes.join(' ') : ''
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
+    const providerState = Math.random().toString(36).substring(5)
 
     const redirect_uri = makeHref('/auth/gitlab')
     const uri = `${serverBaseUrl}/oauth/authorize?client_id=${clientId}&scope=${oauthScopes}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
