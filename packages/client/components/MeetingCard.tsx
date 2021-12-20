@@ -48,7 +48,7 @@ const CardWrapper = styled('div')<{
 const MeetingInfo = styled('div')({
   // tighter padding for options, meta, avatars
   // keep a nice left edge
-  padding: '8px 8px 8px 16px'
+  padding: '4px 8px 12px 16px'
 })
 
 const Name = styled('span')({
@@ -63,45 +63,52 @@ const Name = styled('span')({
 })
 
 const Meta = styled('span')({
-  color: PALETTE.SLATE_800,
+  color: PALETTE.SLATE_600,
   display: 'block',
   fontSize: 14,
-  lineHeight: '24px',
   // partial grid bottom padding accounts for maybe avatar whitespace and offset
   paddingBottom: '4px',
   wordBreak: 'break-word'
 })
 
 const BACKGROUND_COLORS = {
-  retrospective: PALETTE.GRAPE_700,
-  action: PALETTE.SKY_500,
-  poker: PALETTE.TOMATO_500
+  retrospective: PALETTE.GRAPE_500,
+  action: PALETTE.AQUA_400,
+  poker: PALETTE.TOMATO_400
 }
-
-const MeetingImgWrapper = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
+const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
   ({meetingType}) => ({
     background: BACKGROUND_COLORS[meetingType],
     borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
     display: 'block',
-    position: 'relative'
+    position: 'absolute',
+    top: 0,
+    bottom: '4px',
+    width: '100%'
   })
 )
+
+const MeetingImgWrapper = styled('div')({
+  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
+  display: 'block',
+  position: 'relative'
+})
 
 const MeetingTypeLabel = styled('span')({
   color: PALETTE.WHITE,
   fontSize: 12,
   fontWeight: 600,
-  left: 16,
-  lineHeight: '16px',
   position: 'absolute',
-  textTransform: 'uppercase',
-  top: 12
+  left: 8,
+  top: 8
 })
 
 const MeetingImg = styled('img')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
+  position: 'relative',
   display: 'block',
   overflow: 'hidden',
+  paddingTop: 24,
   marginLeft: 'auto',
   marginRight: 'auto',
   height: '180px'
@@ -138,7 +145,7 @@ const ILLUSTRATIONS = {
 }
 const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
-  action: 'Check-in',
+  action: 'Check-In',
   poker: 'Sprint Poker'
 }
 
@@ -178,7 +185,8 @@ const MeetingCard = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
     >
-      <MeetingImgWrapper meetingType={meetingType}>
+      <MeetingImgWrapper>
+        <MeetingImgBackground meetingType={meetingType} />
         <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
         <Link to={`/meet/${meetingId}`}>
           <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
