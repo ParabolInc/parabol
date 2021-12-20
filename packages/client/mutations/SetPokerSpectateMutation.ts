@@ -12,8 +12,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation SetPokerSpectateMutation($meetingId: ID!, $isSpectating: Boolean!) {
-    setPokerSpectate(meetingId: $meetingId, isSpectating: $isSpectating) {
+  mutation SetPokerSpectateMutation($meetingId: ID!, $isSpectating: Boolean!, $stageId: ID!) {
+    setPokerSpectate(meetingId: $meetingId, isSpectating: $isSpectating, stageId: $stageId) {
       ... on ErrorPayload {
         error {
           message

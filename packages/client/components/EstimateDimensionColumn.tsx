@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
-import VoteForPokerStoryMutation from '~/mutations/VoteForPokerStoryMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useIsInitializing from '../hooks/useIsInitializing'
 import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
@@ -62,7 +61,7 @@ const EstimateDimensionColumn = (props: Props) => {
   const {endedAt, facilitatorUserId, id: meetingId, viewerMeetingMember} = meeting
   const isSpectating = viewerMeetingMember?.isSpectating
   const isFacilitator = viewerId === facilitatorUserId
-  const {id: stageId, dimensionRef, scores} = stage
+  const {id: stageId, dimensionRef} = stage
   const {name} = dimensionRef
   const {isVoting} = stage
   const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
@@ -76,11 +75,7 @@ const EstimateDimensionColumn = (props: Props) => {
   const setSpectating = (isSpectating: boolean) => () => {
     if (submitting) return
     submitMutation()
-    SetPokerSpectateMutation(atmosphere, {meetingId, isSpectating}, {onError, onCompleted})
-    const viewerHasVoted = !!scores.find(({userId}) => userId === viewerId)
-    if (viewerHasVoted) {
-      VoteForPokerStoryMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
-    }
+    SetPokerSpectateMutation(atmosphere, {meetingId, isSpectating, stageId}, {onError, onCompleted})
   }
   const showVoting = isVoting || isClosing
   return (
@@ -133,9 +128,6 @@ export default createFragmentContainer(EstimateDimensionColumn, {
       isVoting
       dimensionRef {
         name
-      }
-      scores {
-        userId
       }
     }
   `,

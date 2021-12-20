@@ -56929,6 +56929,11 @@ export interface ISetPokerSpectateOnMutationArguments {
    * true if the viewer is spectating poker and does not want to vote. else false
    */
   isSpectating: boolean;
+
+  /**
+   * The stage where the viewer is toggling their spectate status
+   */
+  stageId: string;
 }
 
 export interface IPersistGitHubSearchQueryOnMutationArguments {
