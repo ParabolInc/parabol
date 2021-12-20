@@ -3,19 +3,20 @@ import {
   IntegrationProviderTypesEnum
 } from '../postgres/types/IntegrationProvider'
 import GitLabServerManager from './gitlab/GitLabServerManager'
-import {
-  AuthorizationManager,
-  IntegrationServerManager,
-  NoopWebHookAuthorizationManager
-} from './IntegrationServerManager'
+import {AuthorizationManager, IntegrationServerManager} from './IntegrationServerManager'
 import {GitLabAuthorizationManager} from './gitlab/GitLabAuthorizationManager'
 import MattermostServerManager from '../utils/MattermostServerManager'
 
+/**
+ * Represents all the integration providers that require authorization.
+ */
+type AuthRequiredIntegrationProviderTypes = Exclude<IntegrationProviderTypesEnum, 'mattermost'>
+export const allAuthRequiredIntegrationProviderTypes: IntegrationProviderTypesEnum[] = ['gitlab']
+
 const authorizationManagerLookup: {
-  [K in IntegrationProviderTypesEnum]: new (...args: any[]) => AuthorizationManager
+  [K in AuthRequiredIntegrationProviderTypes]: new (...args: any[]) => AuthorizationManager
 } = {
-  gitlab: GitLabAuthorizationManager,
-  mattermost: NoopWebHookAuthorizationManager
+  gitlab: GitLabAuthorizationManager
 }
 
 export const createAuthorizationManager = async <T extends AuthorizationManager>(

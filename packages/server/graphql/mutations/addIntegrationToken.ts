@@ -8,6 +8,7 @@ import publish from '../../utils/publish'
 import GraphQLURLType from '../types/GraphQLURLType'
 import upsertIntegrationToken from '../../postgres/queries/upsertIntegrationToken'
 import {
+  allAuthRequiredIntegrationProviderTypes,
   createAuthorizationManager,
   createIntegrationServerManager
 } from '../../integrations/MakeIntegrationServerManager'
@@ -21,6 +22,35 @@ import {
   isOAuth2ProviderMetadata
 } from '../../postgres/types/IntegrationProvider'
 
+const createOAuth2TokenMetadata = async (
+  provider: IntegrationProvider,
+  oauthCodeOrPat: string,
+  redirectUri: string,
+  info: GraphQLResolveInfo,
+  context: GQLContext
+) => {
+  const authorizationManager = await createAuthorizationManager<OAuth2AuthorizationManager>(
+    provider
+  )
+
+  const authResponse = await authorizationManager.authorize(oauthCodeOrPat, redirectUri)
+  if (authResponse instanceof Error) return authResponse
+  const {accessToken, refreshToken, scopes} = authResponse
+
+  const integrationServerManager =
+    await createIntegrationServerManager<OAuth2IntegrationServerManager>(provider, accessToken)
+  const [tokenTestValid, tokenTestError] = await integrationServerManager.isTokenValid(
+    info,
+    context
+  )
+  if (!tokenTestValid) {
+    return tokenTestError
+      ? tokenTestError
+      : new Error(`Unknown error occurred when validating token`)
+  }
+  return {accessToken, refreshToken, scopes}
+}
+
 const createTokenMetadata = async (
   provider: IntegrationProvider,
   oauthCodeOrPat: string,
@@ -30,26 +60,7 @@ const createTokenMetadata = async (
 ) => {
   const {providerMetadata} = provider
   if (isOAuth2ProviderMetadata(providerMetadata)) {
-    const authorizationManager = await createAuthorizationManager<OAuth2AuthorizationManager>(
-      provider
-    )
-
-    const authResponse = await authorizationManager.authorize(oauthCodeOrPat, redirectUri)
-    if (authResponse instanceof Error) return authResponse
-    const {accessToken, refreshToken, scopes} = authResponse
-
-    const integrationServerManager =
-      await createIntegrationServerManager<OAuth2IntegrationServerManager>(provider, accessToken)
-    const [tokenTestValid, tokenTestError] = await integrationServerManager.isTokenValid(
-      info,
-      context
-    )
-    if (!tokenTestValid) {
-      return tokenTestError
-        ? tokenTestError
-        : new Error(`Unknown error occurred when validating token`)
-    }
-    return {accessToken, refreshToken, scopes}
+    return createOAuth2TokenMetadata(provider, oauthCodeOrPat, redirectUri, info, context)
   }
 
   return null
@@ -100,6 +111,19 @@ const addIntegrationToken = {
       )
     }
 
+    if (!allAuthRequiredIntegrationProviderTypes.includes(provider.type)) {
+      return standardError(
+        new Error(
+          `Adding auth tokens for ${providerId} is not supported! Provider ${providerId} is ${
+            provider.type
+          }, but only ${allAuthRequiredIntegrationProviderTypes.join(', ')} are supported.`
+        ),
+        {
+          userId: viewerId
+        }
+      )
+    }
+
     // VALIDATION
     const tokenMetadata = await createTokenMetadata(
       provider,
@@ -113,8 +137,6 @@ const addIntegrationToken = {
         userId: viewerId
       })
     }
-
-    // TODO: support pat, webhooks, etc. Not just oauth2
 
     // RESOLUTION
     await upsertIntegrationToken({

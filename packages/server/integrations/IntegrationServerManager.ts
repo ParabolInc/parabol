@@ -29,29 +29,7 @@ export const isOAuth2AuthorizationManager = (
 ): authorizationManager is OAuth2AuthorizationManager =>
   authorizationManager.provider.tokenType === 'oauth2'
 
-/**
- * Are webhooks ever require authorization?
- */
-export interface WebHookAuthorizationManager {
-  provider: IntegrationProvider
-  authorize(): any
-}
-
-export const isWebHookAuthorizationManager = (
-  authorizationManager: AuthorizationManager
-): authorizationManager is OAuth2AuthorizationManager =>
-  authorizationManager.provider.tokenType === 'webhook'
-
-export class NoopWebHookAuthorizationManager implements WebHookAuthorizationManager {
-  provider: IntegrationProvider
-  constructor(provider: IntegrationProvider) {
-    this.provider = provider
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  authorize() {}
-}
-
-export type AuthorizationManager = OAuth2AuthorizationManager | WebHookAuthorizationManager
+export type AuthorizationManager = OAuth2AuthorizationManager
 
 export interface WebHookIntegrationServerManager {
   provider: IntegrationProvider
