@@ -37,6 +37,15 @@ const safetyPatchRes = (res: HttpResponse) => {
     return res._close()
   }
 
+  res._cork = res.cork
+  res.cork = (cb: () => void) => {
+    if (res.done) {
+      console.log(`uWS DEBUG: Called cork after done`)
+      return
+    }
+    res._cork(cb)
+  }
+
   res._tryEnd = res.tryEnd
   res.tryEnd = (fullBodyOrChunk: RecognizedString, totalSize: number) => {
     if (res.done) {
