@@ -33,8 +33,6 @@ export const authorizeOAuth2 = async ({
     body: JSON.stringify(body)
   })
   const tokenJson = (await oauth2Response.json()) as Required<OAuth2Response>
-  console.log('OAuth2Response', tokenJson)
-
   if ('error' in tokenJson) return new Error(tokenJson.error)
   const {access_token: accessToken, refresh_token: oauthRefreshToken, scope} = tokenJson
   return {

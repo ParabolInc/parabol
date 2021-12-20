@@ -59,7 +59,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     isActive: {
       description: 'true if an access token exists, else false',
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: ({tokenMetadata}) => !!tokenMetadata.accessToken
+      resolve: ({tokenMetadata}) => !!tokenMetadata?.accessToken
     },
     tokenMetadata: {
       type: OAuth2TokenMetadata,
