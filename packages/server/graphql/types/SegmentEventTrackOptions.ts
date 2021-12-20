@@ -8,7 +8,12 @@ const SegmentEventTrackOptions = new GraphQLInputObjectType({
     orgId: {type: GraphQLID},
     phase: {type: NewMeetingPhaseTypeEnum},
     eventId: {type: GraphQLInt},
-    actionType: {type: GraphQLString}
+    actionType: {type: GraphQLString},
+    spotlightSearchQuery: {type: GraphQLString},
+    meetingId: {type: GraphQLID},
+    reflectionId: {type: GraphQLID},
+    viewerId: {type: GraphQLID},
+    reflectionsCount: {type: GraphQLInt}
   })
 })
 

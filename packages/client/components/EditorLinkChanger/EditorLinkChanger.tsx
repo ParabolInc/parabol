@@ -46,7 +46,7 @@ const ButtonBlock = styled('div')({
   justifyContent: 'flex-end'
 })
 
-interface Props extends WithFormProps {
+interface Props extends WithFormProps<'link' | 'text'> {
   editorState: EditorState
   editorRef: RefObject<HTMLTextAreaElement>
 
@@ -90,7 +90,7 @@ const EditorLinkChanger = (props: Props) => {
     e.preventDefault()
     setDirtyField()
     const {link: linkRes, text: textRes} = validateField()
-    if (linkRes.error || textRes.error) return
+    if (!linkRes || linkRes.error || !textRes || textRes.error) return
     const link = linkRes.value as string
     const text = textRes.value as string
     const href = linkify.match(link)[0].url

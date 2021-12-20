@@ -8,7 +8,7 @@ const sendMeetingStartToSegment = async (newMeeting: Meeting, template?: Meeting
     userId: facilitatorUserId,
     event: 'Meeting Started',
     properties: {
-      hasIcebreaker: phases[0].phaseType === 'checkin',
+      hasIcebreaker: phases[0]?.phaseType === 'checkin',
       meetingType,
       meetingTemplateId: template?.id,
       meetingTemplateName: template?.name,

@@ -8,9 +8,22 @@ import lazyPreload from '~/utils/lazyPreload'
 import {TopBarAvatar_viewer} from '~/__generated__/TopBarAvatar_viewer.graphql'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
 import Avatar from './Avatar/Avatar'
+import {PALETTE} from '../styles/paletteV3'
 
-const SpacedAvatar = styled(Avatar)({
-  marginLeft: 8
+const AvatarWrapper = styled('button')({
+  background: 'transparent',
+  border: 'none',
+  borderRadius: 100,
+  marginLeft: 8,
+  padding: 4,
+  ':focus': {
+    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
+    cursor: 'pointer',
+    outline: 'none'
+  },
+  ':active': {
+    boxShadow: '0 0 0 2px transparent'
+  }
 })
 
 const StandardHubUserMenu = lazyPreload(() =>
@@ -29,15 +42,16 @@ const TopBarAvatar = (props: Props) => {
   )
   return (
     <>
-      <SpacedAvatar
-        onClick={togglePortal}
-        onMouseEnter={StandardHubUserMenu.preload}
-        ref={originRef}
-        hasBadge={false}
-        picture={userAvatar}
-        size={40}
-      />
-      {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer} />)}
+      <AvatarWrapper onClick={togglePortal}>
+        <Avatar
+          onMouseEnter={StandardHubUserMenu.preload}
+          ref={originRef}
+          hasBadge={false}
+          picture={userAvatar}
+          size={40}
+        />
+        {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer} />)}
+      </AvatarWrapper>
     </>
   )
 }

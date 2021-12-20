@@ -420,6 +420,12 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
   } as Partial<IRetrospectiveMeeting>
 }
 
+type BaseUser = {
+  preferredName: string
+  email: string
+  picture: string
+}
+
 const initDB = (botScript: ReturnType<typeof initBotScript>) => {
   const baseUsers = [
     {
@@ -429,7 +435,7 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
     },
     getDemoAvatar(1),
     getDemoAvatar(2)
-  ]
+  ] as BaseUser[]
   const users = baseUsers.map(
     ({preferredName, email, picture}, idx) => new DemoUser(preferredName, email, picture, idx)
   )

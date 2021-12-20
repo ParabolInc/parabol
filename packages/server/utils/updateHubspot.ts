@@ -413,7 +413,7 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
   } else if (event === 'Account Removed') {
     const {parabolPayload} = properties
     if (!parabolPayload) return
-    const {user} = (parabolPayload as unknown) as ParabolPayload
+    const {user} = parabolPayload as unknown as ParabolPayload
     const {email, company, ...contact} = user
     await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
   } else if (tierChanges.includes(event)) {

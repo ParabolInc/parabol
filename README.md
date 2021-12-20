@@ -85,6 +85,10 @@ Parabol offers equity for qualified contributions.
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to
 get involved and how to get compensated.
 
+## Have feedback, ideas or feature requests?
+
+Please review our [Discussions](https://github.com/ParabolInc/parabol/discussions) to see if there's already a similar suggestion, and if not please feel free to [start a new one](https://github.com/ParabolInc/parabol/discussions/new).
+
 ## Helpful VSCode extensions
 
 We use [GraphQL](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) for IntelliSense and syntax highlighting.

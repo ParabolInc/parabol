@@ -43,7 +43,7 @@ const ArchiveOrganizationForm = (props: Props) => {
     e.preventDefault()
     setDirtyField()
     const {archivedOrganizationName: res} = validateField()
-    if (submitting || res?.error) return
+    if (submitting || res.error) return
     submitMutation()
     ArchiveOrganizationMutation(atmosphere, {orgId}, {history, onError, onCompleted})
   }

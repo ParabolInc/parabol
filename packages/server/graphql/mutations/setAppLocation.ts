@@ -48,8 +48,8 @@ export default {
       if (connectedSocketIdx === -1) {
         return {error: {message: "Socket doesn't exist"}}
       }
-      const connectedSocketStr = userPresence[connectedSocketIdx]
-      const connectedSocket = connections[connectedSocketIdx]
+      const connectedSocketStr = userPresence[connectedSocketIdx]!
+      const connectedSocket = connections[connectedSocketIdx]!
 
       // RESOLUTION
       const {lastSeenAtURL, socketId, serverId} = connectedSocket
