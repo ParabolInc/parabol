@@ -1,15 +1,15 @@
-import getRedis from '../getRedis'
-import AtlassianManager, {
-  RateLimitError,
-  JiraGetIssueRes
-} from 'parabol-client/utils/AtlassianManager'
-import ms from 'ms'
-import sleep from 'parabol-client/utils/sleep'
 import stringify from 'fast-json-stable-stringify'
+import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
+import AtlassianManager, {
+  JiraGetIssueRes,
+  RateLimitError
+} from 'parabol-client/utils/AtlassianManager'
+import sleep from 'parabol-client/utils/sleep'
+import getRedis from '../getRedis'
 
 const ISSUE_TTL_MS = ms('2d')
-const MAX_RETRIES = 4
+const MAX_ATTEMPT_DURATION = ms('9s')
 
 type StoreAndNetworkRequests = RequestsInit | CacheHit | CacheMiss | CacheError
 
@@ -38,18 +38,18 @@ const getIssueFromJira = async (
   extraFieldIds: string[],
   redisKey: string,
   requests: StoreAndNetworkRequests, // resolve originally created promise in outer fn
-  retryNo = 0
+  tryUntil: Date
 ) => {
   // get issue from external network (jira api)
   const res = await manager.getIssue(cloudId, issueKey, extraFieldIds)
 
   if (res instanceof RateLimitError) {
     const {retryAt} = res
-    const delay = Math.max(0, retryAt.getTime() - Date.now())
-    if (delay > ms('10s') || retryNo > MAX_RETRIES) {
+    if (retryAt > tryUntil) {
       requests.firstToResolve(res)
       return
     }
+    const delay = Math.max(0, retryAt.getTime() - Date.now())
     await sleep(delay)
     return getIssueFromJira(
       manager,
@@ -59,7 +59,7 @@ const getIssueFromJira = async (
       extraFieldIds,
       redisKey,
       requests,
-      retryNo + 1
+      tryUntil
     )
   } else if (res instanceof Error) {
     /*
@@ -112,6 +112,7 @@ export const getIssue = async (
         requests.firstToResolve(JSON.parse(res))
       }
     })
+    const tryUntil = new Date(Date.now() + MAX_ATTEMPT_DURATION)
     getIssueFromJira(
       manager,
       cloudId,
@@ -119,7 +120,8 @@ export const getIssue = async (
       pushUpdateToClient,
       extraFieldIds,
       redisKey,
-      requests // pass requests obj so jira retries resolve the originally returned promise
+      requests, // pass requests obj so jira retries resolve the originally returned promise
+      tryUntil
     )
   })
 }

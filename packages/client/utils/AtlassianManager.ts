@@ -323,16 +323,19 @@ export default abstract class AtlassianManager {
     if (res instanceof Error) {
       return res
     }
-    const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
-
+    const {headers} = res
     if (res.status === 429) {
-      const retryAfterSeconds = res.headers.get('Retry-After') ?? '3'
+      const retryAfterSeconds = headers.get('Retry-After') ?? '3'
       return new RateLimitError(
         'got jira rate limit error',
         new Date(Date.now() + Number(retryAfterSeconds) * 1000)
       )
     }
-
+    const contentType = headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return new Error('Received non-JSON Atlassian Response')
+    }
+    const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
     if ('message' in json) {
       if (json.message === 'No message available' && 'error' in json) {
         return new Error(json.error)
