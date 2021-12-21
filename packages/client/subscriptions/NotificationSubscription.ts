@@ -120,6 +120,12 @@ const subscription = graphql`
           url
         }
       }
+
+      ... on JiraIssue {
+        id
+        summary
+        descriptionHTML
+      }
     }
   }
 `
