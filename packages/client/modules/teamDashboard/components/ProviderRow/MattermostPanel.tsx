@@ -122,13 +122,13 @@ const MattermostPanel = (props: Props) => {
   } = useMutationProps()
 
   const {error: fieldError, value: fieldValue} = fields.webhookUrl
-  const updateDisabled = (error, value) =>
-    error || submitting || !value || (value === serverWebhookUrl && !mutationError)
+  const isUpdateDisabled = (error?: string, value?: any) =>
+    !!error || submitting || !value || (value === serverWebhookUrl && !mutationError)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     const {error, value: webhookUrl} = validateField('webhookUrl')
-    if (updateDisabled(error, webhookUrl)) return
+    if (isUpdateDisabled(error, webhookUrl)) return
     setDirtyField()
     submitMutation()
     const provider: AddIntegrationProviderInput = {
@@ -155,7 +155,11 @@ const MattermostPanel = (props: Props) => {
         {onError, onCompleted}
       )
     } else {
-      AddIntegrationProviderMutation(atmosphere, {provider, teamId}, {onError, onCompleted})
+      AddIntegrationProviderMutation(
+        atmosphere,
+        {provider, token: {}, teamId},
+        {onError, onCompleted}
+      )
     }
   }
 
@@ -181,7 +185,7 @@ const MattermostPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='https://my.mattermost.com:8065/hooks/abc123'
           />
-          <StyledButton size='medium' disabled={updateDisabled(fieldError, fieldValue)}>
+          <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
             Update
           </StyledButton>
         </Row>

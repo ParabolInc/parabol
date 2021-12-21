@@ -1,8 +1,10 @@
 import {stringify} from 'querystring'
 import fetch from 'node-fetch'
 
-import {OAuth2Response} from '../IntegrationServerManager'
 import {OAuth2IntegrationTokenMetadata} from '../../postgres/types/IntegrationToken'
+import {OAuth2Error, OAuth2Success} from '../../types/custom'
+
+type OAuth2Response = OAuth2Success | OAuth2Error
 
 type AuthorizeOAuth2Params = {
   authUrl: string

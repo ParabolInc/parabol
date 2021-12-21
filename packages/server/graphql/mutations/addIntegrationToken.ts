@@ -8,15 +8,17 @@ import publish from '../../utils/publish'
 import GraphQLURLType from '../types/GraphQLURLType'
 import upsertIntegrationToken from '../../postgres/queries/upsertIntegrationToken'
 import {
-  allAuthRequiredIntegrationProviderTypes,
   createAuthorizationManager,
-  createIntegrationServerManager
-} from '../../integrations/MakeIntegrationServerManager'
-import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
+  allAuthRequiredIntegrationProviderTypes,
+  OAuth2IntegrationAuthorizationManager
+} from '../../integrations/IntegrationAuthorizationManager'
 import {
-  OAuth2AuthorizationManager,
+  createIntegrationServerManager,
   OAuth2IntegrationServerManager
 } from '../../integrations/IntegrationServerManager'
+
+import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
+
 import {
   IntegrationProvider,
   isOAuth2ProviderMetadata
@@ -29,9 +31,8 @@ const createOAuth2TokenMetadata = async (
   info: GraphQLResolveInfo,
   context: GQLContext
 ) => {
-  const authorizationManager = await createAuthorizationManager<OAuth2AuthorizationManager>(
-    provider
-  )
+  const authorizationManager =
+    await createAuthorizationManager<OAuth2IntegrationAuthorizationManager>(provider)
 
   const authResponse = await authorizationManager.authorize(oauthCodeOrPat, redirectUri)
   if (authResponse instanceof Error) return authResponse

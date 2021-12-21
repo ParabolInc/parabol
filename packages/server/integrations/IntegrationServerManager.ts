@@ -1,35 +1,25 @@
 import {GraphQLResolveInfo} from 'graphql'
-import {IntegrationProvider} from '../postgres/types/IntegrationProvider'
-import {OAuth2Error, OAuth2Success} from '../types/custom'
-import {OAuth2IntegrationTokenMetadata} from '../postgres/types/IntegrationToken'
+import {
+  IntegrationProvider,
+  IntegrationProviderTypesEnum
+} from '../postgres/types/IntegrationProvider'
+import GitLabServerManager from './gitlab/GitLabServerManager'
+import MattermostServerManager from '../utils/MattermostServerManager'
 
-export type OAuth2GrantType = 'authorization_code' | 'refresh_token'
-
-export interface OAuthAuthorizationParams {
-  grant_type: 'authorization_code'
-  code: string
-  redirect_uri: string
+//TODO: Fix any after aligning mattermost the the proper interface
+const integrationProviderClassMap: {
+  [K in IntegrationProviderTypesEnum]: new (...args: any[]) => IntegrationServerManager | any
+} = {
+  gitlab: GitLabServerManager,
+  mattermost: MattermostServerManager
 }
 
-export interface OAuthRefreshAuthorizationParams {
-  grant_type: 'refresh_token'
-  refresh_token: string
+export const createIntegrationServerManager = async <T extends IntegrationServerManager>(
+  provider: IntegrationProvider,
+  accessToken: string
+) => {
+  return new integrationProviderClassMap[provider.type](provider, accessToken) as T
 }
-
-export type OAuth2Response = OAuth2Success | OAuth2Error
-
-export interface OAuth2AuthorizationManager {
-  provider: IntegrationProvider
-  authorize(code: string, redirectUri: string): Promise<OAuth2IntegrationTokenMetadata | Error>
-  refresh(refreshToken: string): Promise<OAuth2IntegrationTokenMetadata | Error>
-}
-
-export const isOAuth2AuthorizationManager = (
-  authorizationManager: AuthorizationManager
-): authorizationManager is OAuth2AuthorizationManager =>
-  authorizationManager.provider.tokenType === 'oauth2'
-
-export type AuthorizationManager = OAuth2AuthorizationManager
 
 export interface WebHookIntegrationServerManager {
   provider: IntegrationProvider
@@ -61,6 +51,9 @@ export const isOAuth2IntegrationServerManager = (
 ): integrationServerManager is OAuth2IntegrationServerManager =>
   integrationServerManager.provider.tokenType === 'oauth2'
 
+/**
+ * Union type reperesenting all integration server managers
+ */
 export type IntegrationServerManager =
   | WebHookIntegrationServerManager
   | OAuth2IntegrationServerManager

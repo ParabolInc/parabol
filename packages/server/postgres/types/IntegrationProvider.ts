@@ -11,8 +11,22 @@ export type IntegrationProviderTokenTypeEnum = _IntegrationProviderTokenTypeEnum
 
 /**
  * Represents a single integration provider.
- * Depending on the {@link IntegrationProvider.type} metadata will have a different structure.
- * @see {@link OAuth2IntegrationProviderMetadata}
+ * Integration provider spefic data is kept in the providerMetadata field (JSONB).
+ * Depending on the {@link IntegrationProvider.type} metadata will have a different structure,
+ * @see {@link OAuth2IntegrationProviderMetadata} and {@link WebHookIntegrationProviderMetadata}.
+ *
+ * To add a global integration provider
+ * 1. If it's a new service, add a new type to the {@link IntegrationProviderTypesEnum} via migration
+ * 2. To make it availabe to all users, configure new integration in {@link makeGlobalIntegrationProvidersFromEnv}, it'll be automatically added to the database via postdeploy script
+ * 3. New integration can also be added in runtime by calling {@link addIntegrationProvider} mutation by superuser
+ *
+ * When adding a new integration provider with a new authentication type (not defined in {@link IntegrationProviderTokenTypeEnum}), a few additional steps is required
+ * 1. Add a new type to the {@link IntegrationProviderTokenTypeEnum} via migration
+ * 2. If there's any speficic data needed to be store by the integration provider define a new type, similar to {@link OAuth2IntegrationProviderMetadata} and {@link WebHookIntegrationProviderMetadata}
+ * 3. Make sure to add a case in {@link mapToIntegrationProviderMetadata} to get properly typed data from the providerMetadata field
+ * 4. Update {@link addIntegrationProvider} mutation to handle the new type properly
+ * 5. Update {@link updateIntegrationProvider} mutation to handle the new type properly
+ * 6. If new integration provider requires authorization, update {@link addIntegrationToken} mutation to handle it properly
  */
 export interface IntegrationProvider extends Omit<_IntegrationProvider, 'providerMetadata'> {
   providerMetadata: IntegrationProviderMetadata
@@ -121,16 +135,6 @@ export interface GlobalIntegrationProviderInsertParams {
   providerMetadata: Record<string, string | string[]>
 }
 
-export interface IntegrationProviderInsertParams {
-  name: string
-  orgId: string
-  teamId: string
-  type: IntegrationProviderTypesEnum
-  tokenType: IntegrationProviderTokenTypeEnum
-  scope: IntegrationProviderScopesEnum
-  providerMetadata: Record<string, string | string[]>
-}
-
 export const createGlobalIntegrationProviderUpsertParams = (
   provider: Omit<IntegrationProviderInput, 'id' | 'scope' | 'orgId' | 'teamId'>
 ): GlobalIntegrationProviderInsertParams => {
@@ -147,6 +151,16 @@ export const createGlobalIntegrationProviderUpsertParams = (
     type: provider.type,
     providerMetadata: {...newIntegrationProviderMetadata}
   }
+}
+
+export interface IntegrationProviderInsertParams {
+  name: string
+  orgId: string
+  teamId: string
+  type: IntegrationProviderTypesEnum
+  tokenType: IntegrationProviderTokenTypeEnum
+  scope: IntegrationProviderScopesEnum
+  providerMetadata: Record<string, string | string[]>
 }
 
 export const createIntegrationProviderInsertParams = (

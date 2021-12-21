@@ -6,6 +6,7 @@ import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import publish from '../../utils/publish'
 import AddIntegrationProviderInput from '../types/AddIntegrationProviderInput'
+import insertIntegrationProvider from '../../postgres/queries/insertIntegrationProvider'
 import {
   IntegrationProviderTokenInput,
   IntegrationProviderTokenInputT
@@ -82,18 +83,23 @@ const addIntegrationProvider = {
       const upsertParams = createGlobalIntegrationProviderUpsertParams(integrationProviderInput)
       await upsertGlobalIntegrationProvider(upsertParams)
     } else if (scope === 'org' || scope === 'team') {
-      const integrationTokenMetadata = integrationTokenInput || {}
       const newIntegrationProvider = createIntegrationProviderInsertParams(integrationProviderInput)
-      const tokenValidationResult = validateNewIntegrationAuthToken(
-        integrationTokenMetadata,
-        newIntegrationProvider
-      )
-      if (tokenValidationResult instanceof Error) return standardError(tokenValidationResult)
-      await insertIntegrationProviderWithToken({
-        provider: newIntegrationProvider,
-        userId: viewerId,
-        tokenMetadata: integrationTokenMetadata
-      })
+      if (integrationTokenInput) {
+        const integrationTokenMetadata = integrationTokenInput
+
+        const tokenValidationResult = validateNewIntegrationAuthToken(
+          integrationTokenMetadata,
+          newIntegrationProvider
+        )
+        if (tokenValidationResult instanceof Error) return standardError(tokenValidationResult)
+        await insertIntegrationProviderWithToken({
+          provider: newIntegrationProvider,
+          userId: viewerId,
+          tokenMetadata: integrationTokenMetadata
+        })
+      } else {
+        await insertIntegrationProvider(newIntegrationProvider)
+      }
     }
 
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope

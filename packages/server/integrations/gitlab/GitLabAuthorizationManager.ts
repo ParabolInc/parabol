@@ -1,15 +1,15 @@
 import {
-  OAuth2AuthorizationManager,
-  OAuthAuthorizationParams,
-  OAuthRefreshAuthorizationParams
-} from '../IntegrationServerManager'
+  OAuth2IntegrationAuthorizationManager,
+  OAuth2AuthorizationParams,
+  OAuth2RefreshAuthorizationParams
+} from '../IntegrationAuthorizationManager'
 import {
   IntegrationProvider,
   isOAuth2ProviderMetadata
 } from '../../postgres/types/IntegrationProvider'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 
-export class GitLabAuthorizationManager implements OAuth2AuthorizationManager {
+export class GitLabAuthorizationManager implements OAuth2IntegrationAuthorizationManager {
   provider: IntegrationProvider
 
   constructor(provider: IntegrationProvider) {
@@ -32,7 +32,7 @@ export class GitLabAuthorizationManager implements OAuth2AuthorizationManager {
   }
 
   private async fetchToken(
-    partialAuthParams: OAuthAuthorizationParams | OAuthRefreshAuthorizationParams
+    partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ) {
     const {providerMetadata} = this.provider
     if (!isOAuth2ProviderMetadata(providerMetadata)) {
