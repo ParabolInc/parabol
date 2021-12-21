@@ -1,6 +1,10 @@
 /*
-  @name getIntegrationProvidersByIdsQuery
-  @param ids -> (...)
-*/
-SELECT * FROM "IntegrationProvider"
-WHERE id in :ids;
+ @name getIntegrationProvidersByIdsQuery
+ @param ids -> (...)
+ */
+SELECT
+  *
+FROM
+  "IntegrationProvider"
+WHERE
+  id in :ids;

@@ -1,6 +1,6 @@
 /*
-  @name getIntegrationTokensWithProviderQuery
-*/
+ @name getIntegrationTokensWithProviderQuery
+ */
 SELECT
   "IntegrationToken".*,
   "IntegrationProvider"."id" AS "IntegrationProvider_id",
@@ -14,12 +14,21 @@ SELECT
   "IntegrationProvider"."providerMetadata" AS "IntegrationProvider_providerMetadata",
   "IntegrationProvider"."createdAt" AS "IntegrationProvider_createdAt",
   "IntegrationProvider"."updatedAt" AS "IntegrationProvider_updatedAt"
-FROM "IntegrationToken"
-  JOIN "IntegrationProvider"
-  ON ("IntegrationToken"."providerId" = "IntegrationProvider"."id")
-  WHERE (
-	  "IntegrationToken"."teamId" = :teamId
-	  AND (FALSE = :byUserId OR (TRUE = :byUserId AND "IntegrationToken"."userId" = :userId))
+FROM
+  "IntegrationToken"
+  JOIN "IntegrationProvider" ON (
+    "IntegrationToken"."providerId" = "IntegrationProvider"."id"
+  )
+WHERE
+  (
+    "IntegrationToken"."teamId" = :teamId
+    AND (
+      FALSE = :byUserId
+      OR (
+        TRUE = :byUserId
+        AND "IntegrationToken"."userId" = :userId
+      )
+    )
     AND "IntegrationProvider"."type" = :type
     AND "IntegrationToken"."isActive" = TRUE
     AND "IntegrationProvider"."isActive" = TRUE

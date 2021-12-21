@@ -36,7 +36,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     gitlab: {
       type: GitLabIntegration,
       description: 'All things associated with a GitLab integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         const integrationToken = await dataLoader
           .get('integrationTokenWithProvider')
@@ -46,7 +46,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
         const integrationProvider = await dataLoader
           .get('integrationProviders')
           .load(integrationToken.providerId)
-        return {...integrationToken, activeProvider: {...integrationProvider}}
+        return {...integrationToken, activeProvider: integrationProvider}
       }
     },
     mattermost: {
@@ -61,7 +61,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
         const integrationProvider = await dataLoader
           .get('integrationProviders')
           .load(integrationToken.providerId)
-        return {...integrationToken, activeProvider: {...integrationProvider}}
+        return {...integrationToken, activeProvider: integrationProvider}
       }
     },
     slack: {

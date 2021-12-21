@@ -1,8 +1,10 @@
 /*
-  @name updateIntegrationProviderQuery
-  @param ids -> (...)
-*/
-UPDATE "IntegrationProvider" SET
+ @name updateIntegrationProviderQuery
+ @param ids -> (...)
+ */
+UPDATE
+  "IntegrationProvider"
+SET
   "type" = COALESCE(:type, "type"),
   "tokenType" = COALESCE(:tokenType, "tokenType"),
   "scope" = COALESCE(:scope, "scope"),
@@ -10,4 +12,5 @@ UPDATE "IntegrationProvider" SET
   "providerMetadata" = COALESCE(:providerMetadata, "providerMetadata"),
   "orgId" = COALESCE(:orgId, "orgId"),
   "teamId" = COALESCE(:teamId, "teamId")
- WHERE id IN :ids;
+WHERE
+  id IN :ids;

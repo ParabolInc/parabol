@@ -76,7 +76,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     availableProviders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProvider))),
       description: 'A list of available Integration Providers',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
         const orgId = (await dataLoader.get('teams').load(teamId)).orgId
         const providers = await dataLoader.get('integrationProvidersByType').load({
           type: 'gitlab',
