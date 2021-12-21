@@ -1,7 +1,8 @@
 import {Client} from 'pg'
 import getPgConfig from '../getPgConfig'
 import {r} from 'rethinkdb-ts'
-import insertIntegrationProvider from '../queries/insertIntegrationProvider'
+import insertIntegrationProviderWithToken from '../queries/insertIntegrationProviderWithToken'
+import {nestIntegrationProviderOnIntegrationToken} from '../types/IntegrationTokenWithProvider'
 
 interface MattermostAuth {
   createdAt: Date
@@ -44,16 +45,20 @@ export async function up() {
   }, {} as {[teamId: string]: string})
 
   const mattermostAuthsToInsert = mattermostAuths.map((mattermostAuth) => {
-    return insertIntegrationProvider({
-      type: 'mattermost',
-      tokenType: 'webhook',
-      scope: 'team',
-      name: 'mattermost',
-      providerMetadata: {
-        serverBaseUri: mattermostAuth.webhookUrl
+    return insertIntegrationProviderWithToken({
+      provider: {
+        type: 'mattermost',
+        tokenType: 'webhook',
+        scope: 'team',
+        name: 'mattermost',
+        providerMetadata: {
+          webhookUrl: mattermostAuth.webhookUrl
+        },
+        orgId: orgIdsByTeamId[mattermostAuth.teamId],
+        teamId: mattermostAuth.teamId
       },
-      orgId: orgIdsByTeamId[mattermostAuth.teamId],
-      teamId: mattermostAuth.teamId
+      userId: mattermostAuth.userId,
+      tokenMetadata: {}
     })
   })
   await Promise.all(mattermostAuthsToInsert)
@@ -68,10 +73,32 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
 
-  const mattermostTokensWithProvider = await client.query(`
-    SELECT * FROM "IntegrationProvider"
-    WHERE "type" = 'mattermost' AND "isActive" = TRUE;
+  const mattermostTokensWithProvider = (
+    await client.query(`
+    SELECT
+      "IntegrationToken".*,
+      "IntegrationProvider"."id" AS "IntegrationProvider_id",
+      "IntegrationProvider"."type" AS "IntegrationProvider_type",
+      "IntegrationProvider"."scope" AS "IntegrationProvider_scope",
+      "IntegrationProvider"."orgId" AS "IntegrationProvider_orgId",
+      "IntegrationProvider"."teamId" AS "IntegrationProvider_teamId",
+      "IntegrationProvider"."isActive" AS "IntegrationProvider_isActive",
+      "IntegrationProvider"."name" AS "IntegrationProvider_name",
+      "IntegrationProvider"."serverBaseUri" AS "IntegrationProvider_serverBaseUri",
+      "IntegrationProvider"."oauthScopes" AS "IntegrationProvider_oauthScopes",
+      "IntegrationProvider"."oauthClientId" AS "IntegrationProvider_oauthClientId",
+      "IntegrationProvider"."createdAt" AS "IntegrationProvider_createdAt",
+      "IntegrationProvider"."updatedAt" AS "IntegrationProvider_updatedAt"
+    FROM "IntegrationToken"
+    JOIN "IntegrationProvider"
+    ON ("IntegrationToken"."providerId" = "IntegrationProvider"."id")
+    WHERE (
+      "IntegrationProvider"."type" = 'mattermost'
+      AND "IntegrationToken"."isActive" = TRUE
+      AND "IntegrationProvider"."isActive" = TRUE
+    );
   `)
+  ).rows.map((row) => nestIntegrationProviderOnIntegrationToken(row))
 
   await client.query(`
     CREATE TABLE IF NOT EXISTS "MattermostAuth" (
@@ -86,30 +113,30 @@ export async function down() {
     CREATE INDEX IF NOT EXISTS "idx_MattermostAuth_teamId" ON "MattermostAuth"("teamId");
   `)
 
-  if (mattermostTokensWithProvider.rows.length > 0) {
-    const mattermostAuthsToInsert = mattermostTokensWithProvider.rows.map((row) =>
-      client.query(
-        `
+  if (mattermostTokensWithProvider.length > 0) {
+    const mattermostAuthsToInsert = mattermostTokensWithProvider.map(
+      (mattermostTokenWithProvider) =>
+        client.query(
+          `
         INSERT INTO "MattermostAuth" ("createdAt", "updatedAt", "isActive", "webhookUrl", "userId", "teamId")
         VALUES ($1, $2, $3, $4, $5, $6)
       `,
-
-        [
-          row.createdAt,
-          row.updatedAt,
-          row.isActive,
-          row.provider.serverBaseUri,
-          row.userId,
-          row.teamId
-        ]
-      )
+          [
+            mattermostTokenWithProvider.createdAt,
+            mattermostTokenWithProvider.updatedAt,
+            mattermostTokenWithProvider.isActive,
+            (mattermostTokenWithProvider.provider.providerMetadata as any).webhookUrl,
+            mattermostTokenWithProvider.userId,
+            mattermostTokenWithProvider.teamId
+          ]
+        )
     )
     await Promise.all(mattermostAuthsToInsert)
     await client.query(
       `
       DELETE FROM "IntegrationProvider" WHERE "id" = ANY($1::int[]);
     `,
-      [mattermostTokensWithProvider.rows.map((row) => row.provider.id)]
+      [mattermostTokensWithProvider.map((row) => row.provider.id)]
     )
   }
   await client.end()
