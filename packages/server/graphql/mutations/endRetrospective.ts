@@ -17,7 +17,8 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifySlack'
+import {endSlackMeeting} from './helpers/notifications/notifySlack'
+import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
@@ -38,17 +39,17 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
     .get(meetingId)
     .update(
       {
-        commentCount: (r
+        commentCount: r
           .table('Comment')
           .getAll(r.args(discussionIds), {index: 'discussionId'})
           .filter({isActive: true})
           .count()
-          .default(0) as unknown) as number,
-        taskCount: (r
+          .default(0) as unknown as number,
+        taskCount: r
           .table('Task')
           .getAll(r.args(discussionIds), {index: 'discussionId'})
           .count()
-          .default(0) as unknown) as number,
+          .default(0) as unknown as number,
         topicCount: reflectionGroupIds.length,
         reflectionCount: reflections.length
       },
@@ -99,7 +100,7 @@ export default {
     stage.isComplete = true
     stage.endAt = now
 
-    const completedRetrospective = ((await r
+    const completedRetrospective = (await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
@@ -110,7 +111,7 @@ export default {
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run()) as unknown) as MeetingRetrospective
+      .run()) as unknown as MeetingRetrospective
 
     if (!completedRetrospective) {
       return standardError(new Error('Completed check-in meeting does not exist'), {
@@ -131,6 +132,7 @@ export default {
     // to be generated in finishRetroMeeting before sending Slack notifications
     await finishRetroMeeting(completedRetrospective, dataLoader)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    endMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = teamMembers.map(
@@ -143,10 +145,7 @@ export default {
         })
     )
     const timelineEventId = events[0].id as string
-    await r
-      .table('TimelineEvent')
-      .insert(events)
-      .run()
+    await r.table('TimelineEvent').insert(events).run()
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')

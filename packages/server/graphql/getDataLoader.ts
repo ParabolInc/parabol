@@ -14,7 +14,7 @@ let nextId = 0
 const getDataLoader = (did?: string) => {
   // if a did was provided, attempt to reuse that, since a mutation likely filled it up before sharing it
   // if the viewer is logged in, give them their own dataloader that they can quickly reuse for subsequent requests or share with others
-  // if not logged in, just make a new anonymous laoder.
+  // if not logged in, just make a new anonymous loader.
   const id = did || `${NODE_ID}:${numToBase64(nextId++)}`
   return dataLoaderCache.use(id) || dataLoaderCache.add(id, new RootDataLoader())
 }

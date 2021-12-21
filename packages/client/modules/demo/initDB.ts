@@ -15,6 +15,7 @@ import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServ
 import DemoDiscussStage from './DemoDiscussStage'
 import DemoGenericMeetingStage from './DemoGenericMeetingStage'
 import DemoUser from './DemoUser'
+import initBotScript from './initBotScript'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
@@ -156,7 +157,10 @@ const initSlackAuth = (userId: string) => ({
   notifications: [initSlackNotification(userId)]
 })
 
-const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
+const initDemoTeamMember = (
+  {id: userId, preferredName, picture}: {id: string; preferredName: string; picture: string},
+  idx: number
+) => {
   const teamMemberId = toTeamMemberId(demoTeamId, userId)
   return {
     __typename: 'TeamMember',
@@ -189,7 +193,7 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
   }
 }
 
-const initDemoMeetingMember = (user) => {
+const initDemoMeetingMember = (user: DemoUser) => {
   return {
     __typename: 'RetrospectiveMeetingMember',
     id: toTeamMemberId(RetroDemo.MEETING_ID, user.id),
@@ -217,7 +221,11 @@ const initDemoOrg = () => {
   } as const
 }
 
-const initDemoTeam = (organization, teamMembers, newMeeting) => {
+const initDemoTeam = (
+  organization: ReturnType<typeof initDemoOrg>,
+  teamMembers,
+  newMeeting: ReturnType<typeof initNewMeeting>
+) => {
   return {
     __typename: 'Team',
     id: demoTeamId,
@@ -412,7 +420,13 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
   } as Partial<IRetrospectiveMeeting>
 }
 
-const initDB = (botScript) => {
+type BaseUser = {
+  preferredName: string
+  email: string
+  picture: string
+}
+
+const initDB = (botScript: ReturnType<typeof initBotScript>) => {
   const baseUsers = [
     {
       preferredName: 'You',
@@ -421,7 +435,7 @@ const initDB = (botScript) => {
     },
     getDemoAvatar(1),
     getDemoAvatar(2)
-  ]
+  ] as BaseUser[]
   const users = baseUsers.map(
     ({preferredName, email, picture}, idx) => new DemoUser(preferredName, email, picture, idx)
   )
@@ -432,13 +446,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ; (user as any).teamMember = teamMembers[idx]
+    ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ; (teamMember as any).team = team
+    ;(teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0

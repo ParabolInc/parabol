@@ -5,6 +5,48 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.41.0 2021-Dec-16
+
+### Added
+
+- Add updatedAt trigger to User table (#5733)
+- Add standups feature flag (#5754)
+- Release Spotlight (#5785)
+- Spotlight tracking (#5714)
+
+### Fixed
+
+- Spotlight height doesn't change when searching (#5747)
+- This is proper this again in make resolve (#5769)
+- Fix mapping to jira dimension field (#5770)
+- noUncheckedIndexedAccess fixes (#5737)
+- Fix image scaling in task description (#5758)
+- Fix typo in comment (#5784)
+- Remove instanceof TouchEvent (#5807)
+
+## 6.40.0 2021-Dec-09
+
+### Added
+
+- Add mattermost notification integration (#5550)
+- Add datadog tracing to compiled graphql queries (#5681)
+- Add hardDeleteUser mutation (#5475)
+- Add spotlightSearchQuery to similarReflectionGroups queries (#5735)
+- Spotlight — highlight search keyword (#5716)
+- Spotlight feature flag (#5699)
+- Add calculated domain field to User (#5719)
+
+### Changed
+
+- Extend GQL Timeout for GraphiQL Queries (#5577)
+
+### Fixed
+
+- Prevent ungrouping Spotlight results (#5704)
+- Fix spotlight not loading similar reflections (#5728)
+- Mitigate safari popups on SSO (#5617)
+- Fix more implicit any errors (#5740)
+
 ## 6.39.0 2021-Dec-02
 
 ### Added

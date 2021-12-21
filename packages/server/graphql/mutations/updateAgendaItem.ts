@@ -33,7 +33,7 @@ export default {
 
     // AUTH
     const {id: agendaItemId} = updatedAgendaItem
-    const [teamId] = agendaItemId.split('::')
+    const [teamId] = agendaItemId.split('::') as [string]
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }

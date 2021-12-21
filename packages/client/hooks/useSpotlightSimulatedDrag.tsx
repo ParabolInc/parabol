@@ -1,9 +1,10 @@
-import {MutableRefObject, useCallback, useEffect, useRef} from 'react'
+import {MutableRefObject, useCallback, useEffect, useMemo, useRef} from 'react'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import useAtmosphere from './useAtmosphere'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {commitLocalUpdate} from 'react-relay'
 import {Times} from '~/types/constEnums'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 const useSpotlightSimulatedDrag = (
   meeting: GroupingKanban_meeting,
@@ -12,7 +13,12 @@ const useSpotlightSimulatedDrag = (
   const atmosphere = useAtmosphere()
   const reflectionIdRef = useRef<string>()
   const timeoutRef = useRef(0)
-  const {id: meetingId, spotlightGroup} = meeting
+  const {id: meetingId, spotlightGroup, reflectionGroups, spotlightSearchQuery} = meeting
+  const reflectionsCount = useMemo(
+    () => reflectionGroups.map(({reflections}) => reflections).length,
+    [reflectionGroups]
+  )
+  const {viewerId} = atmosphere
 
   // handle the case when someone steals the reflection
   useEffect(() => {
@@ -41,14 +47,20 @@ const useSpotlightSimulatedDrag = (
     // Only send the enddragging mutation when we didn't send it before,
     // but always null the spotlight reflection to close the dialog
     const reflectionId = reflectionIdRef.current
-    if (!reflectionId) return
+    if (!reflectionId || !dragIdRef.current) return
     EndDraggingReflectionMutation(atmosphere, {
       reflectionId,
       dropTargetType: null,
       dropTargetId: null,
       dragId: dragIdRef.current
     })
-
+    SendClientSegmentEventMutation(atmosphere, 'Closed Spotlight', {
+      viewerId,
+      reflectionsCount,
+      meetingId,
+      reflectionId,
+      spotlightSearchQuery
+    })
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       meetingProxy?.setValue(null, 'spotlightGroup')

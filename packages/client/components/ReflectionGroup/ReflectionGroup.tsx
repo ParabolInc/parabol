@@ -7,7 +7,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
-import useSpotlightVisibleReflections from './useSpotlightVisibleReflections'
 import {
   DragAttribute,
   ElementWidth,
@@ -96,6 +95,7 @@ const ReflectionGroup = (props: Props) => {
       fragment ReflectionGroup_meeting on RetrospectiveMeeting {
         ...DraggableReflectionCard_meeting
         ...ReflectionGroupHeader_meeting
+        ...useSpotlightResults_meeting
         id
         localPhase {
           phaseType
@@ -147,23 +147,18 @@ const ReflectionGroup = (props: Props) => {
     reflectionGroupRef
   )
   const groupRef = useRef<HTMLDivElement>(null)
-  const {localPhase, localStage, spotlightGroup, spotlightSearchQuery} = meeting
+  const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
+  const {id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const spotlightGroupId = spotlightGroup?.id
-  const visibleReflections = useSpotlightVisibleReflections(
-    reflections,
-    spotlightSearchQuery,
-    reflectionIdsToHide
-  )
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
-  const [isRemoteSpotlightSrc, disableDrop] = useSpotlightReflectionGroup(
-    visibleReflections,
-    spotlightGroupId,
-    reflectionGroupId,
-    isBehindSpotlight
+  const {isRemoteSpotlightSrc, disableDrop, visibleReflections} = useSpotlightReflectionGroup(
+    meeting,
+    reflectionGroup,
+    isBehindSpotlight,
+    reflectionIdsToHide
   )
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
@@ -175,22 +170,14 @@ const ReflectionGroup = (props: Props) => {
     )
   }, [visibleReflections])
   const stackRef = useRef<HTMLDivElement>(null)
-  const {
-    setItemsRef,
-    scrollRef,
-    bgRef,
-    modalHeaderRef,
-    portal,
-    portalStatus,
-    collapse,
-    expand
-  } = useExpandedReflections(
-    groupRef,
-    stackRef,
-    visibleReflections.length,
-    headerRef,
-    expandedReflectionGroupPortalParentId
-  )
+  const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} =
+    useExpandedReflections(
+      groupRef,
+      stackRef,
+      visibleReflections.length,
+      headerRef,
+      expandedReflectionGroupPortalParentId
+    )
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === 'group' && !isComplete

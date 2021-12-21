@@ -117,7 +117,8 @@ export const enum ExternalLinks {
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
-  TEAM = 'https://www.parabol.co/team/'
+  TEAM = 'https://www.parabol.co/team/',
+  LANDING_PAGE = 'https://www.parabol.co/'
 }
 
 export const enum Filter {
@@ -249,6 +250,8 @@ export const enum Providers {
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
+  MATTERMOST_NAME = 'Mattermost',
+  MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }

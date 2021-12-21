@@ -6,6 +6,7 @@ import Discussion from './Discussion'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 
 const DUMMY_DISCUSSION = {
   id: 'dummy-discussion-id',
@@ -45,7 +46,9 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
       description: 'the group that is the focal point of the discussion',
       resolve: async ({reflectionGroupId, meetingId}, _args: unknown, {dataLoader}) => {
         if (!reflectionGroupId) {
-          const meeting = await dataLoader.get('newMeetings').load(meetingId)
+          const meeting = (await dataLoader
+            .get('newMeetings')
+            .load(meetingId)) as MeetingRetrospective
           const prompts = await dataLoader
             .get('reflectPromptsByTemplateId')
             .load(meeting.templateId)

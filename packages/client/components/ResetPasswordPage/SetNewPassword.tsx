@@ -60,7 +60,9 @@ const SetNewPassword = (props: Props) => {
   })
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
-    setDirtyField(name)
+    if (name === 'password') {
+      setDirtyField(name)
+    }
   }
 
   const onSubmit = async (e) => {
@@ -69,7 +71,7 @@ const SetNewPassword = (props: Props) => {
     setDirtyField()
     const {password: passwordRes} = validateField()
     if (passwordRes.error) return
-    const newPassword = passwordRes.value as string
+    const {value: newPassword} = passwordRes
     submitMutation()
     ResetPasswordMutation(atmosphere, {newPassword, token}, {onError, onCompleted, history})
   }

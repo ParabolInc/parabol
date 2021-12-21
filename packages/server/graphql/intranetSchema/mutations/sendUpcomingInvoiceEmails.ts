@@ -10,6 +10,7 @@ import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTem
 import IUser from '../../../postgres/types/IUser'
 import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
+import {isNotNull} from '../../../utils/predicates'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]
@@ -108,7 +109,7 @@ const sendUpcomingInvoiceEmails = {
     const allUsers = await Promise.all(
       allUserIds.map((userId) => dataLoader.get('users').load(userId))
     )
-    const allUserMap = allUsers.reduce((prev, cur) => {
+    const allUserMap = allUsers.filter(isNotNull).reduce((prev, cur) => {
       prev.set(cur.id, cur)
       return prev
     }, new Map<string, IUser>())

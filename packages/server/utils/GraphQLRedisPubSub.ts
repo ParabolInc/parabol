@@ -27,10 +27,9 @@ export default class GraphQLRedisPubSub {
     const listeners = this.listenersByChannel[channel]
     if (!listeners) return
     const parsedMessage = JSON.parse(message)
-    for (let i = 0; i < listeners.length; i++) {
-      const listener = listeners[i]
+    listeners.forEach((listener) => {
       listener(parsedMessage)
-    }
+    })
   }
 
   publish = (channel: string, payload: any) => {
@@ -40,11 +39,10 @@ export default class GraphQLRedisPubSub {
   subscribe = (channels: string[], options: SubscribeOptions = {}) => {
     this.subscriber.subscribe(...channels)
     const onStart = (listener: SubscriptionListener) => {
-      for (let i = 0; i < channels.length; i++) {
-        const channel = channels[i]
+      channels.forEach((channel) => {
         this.listenersByChannel[channel] = this.listenersByChannel[channel] || []
-        this.listenersByChannel[channel].push(listener)
-      }
+        this.listenersByChannel[channel]!.push(listener)
+      })
     }
     const onCompleted = (listener: SubscriptionListener) => {
       options?.onCompleted?.()
@@ -55,19 +53,18 @@ export default class GraphQLRedisPubSub {
 
   unsubscribe = (channels: string[], listener: SubscriptionListener) => {
     const emptyChannels = [] as string[]
-    for (let i = 0; i < channels.length; i++) {
-      const channel = channels[i]
+    channels.forEach((channel) => {
       const listeners = this.listenersByChannel[channel]
-      if (!listeners) continue
+      if (!listeners) return
       const listenerIdx = listeners.indexOf(listener)
-      if (listenerIdx === -1) continue
+      if (listenerIdx === -1) return
       if (listeners.length === 1) {
         emptyChannels.push(channel)
         delete this.listenersByChannel[channel]
       } else {
         listeners.splice(listenerIdx, 1)
       }
-    }
+    })
     if (emptyChannels.length > 0) {
       this.subscriber.unsubscribe(...emptyChannels)
     }

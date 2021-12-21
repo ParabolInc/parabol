@@ -35,9 +35,14 @@ const Wrapper = styled('header')({
 })
 
 const LeftNavToggle = styled(PlainButton)({
+  borderRadius: 100,
   fontSize: ICON_SIZE.MD24,
   lineHeight: '16px',
-  paddingLeft: 16
+  margin: 12,
+  padding: 4,
+  ':focus': {
+    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`
+  }
 })
 
 const LeftNavHeader = styled('div')({
@@ -48,9 +53,17 @@ const LeftNavHeader = styled('div')({
   width: NavSidebar.WIDTH
 })
 
-const Img = styled('img')({
+const LogoWrapper = styled('button')({
+  background: 'transparent',
+  border: 'none',
+  borderRadius: 4,
   cursor: 'pointer',
-  margin: '8px 16px'
+  margin: '8px 0',
+  padding: '8px 8px 4px 8px',
+  ':focus': {
+    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
+    outline: 'none'
+  }
 })
 
 const TopBarIcons = styled('div')({
@@ -87,7 +100,9 @@ const DashTopBar = (props: Props) => {
         <LeftNavToggle onClick={toggle} aria-label='Toggle dashboard menu'>
           <Icon>{'menu'}</Icon>
         </LeftNavToggle>
-        <Img onClick={gotoHome} crossOrigin='' src={parabolLogo} alt='Parabol logo' />
+        <LogoWrapper onClick={gotoHome}>
+          <img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
+        </LogoWrapper>
       </LeftNavHeader>
       <TopBarMain>
         <TopBarSearch viewer={viewer} />

@@ -61,7 +61,7 @@ const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotl
 interface Props {
   isClipped?: boolean
   reflection: ReflectionCard_reflection
-  meeting: ReflectionCard_meeting | null
+  meeting: ReflectionCard_meeting
   openSpotlight?: OpenSpotlight
   stackCount?: number
   showOriginFooter?: boolean
@@ -96,10 +96,10 @@ const ReflectionCard = (props: Props) => {
     reactjis,
     reflectionGroupId
   } = reflection
-  const phaseType = meeting ? meeting.localPhase.phaseType : null
-  const isComplete = meeting?.localStage?.isComplete
-  const phases = meeting ? meeting.phases : null
-  const spotlightGroupId = meeting?.spotlightGroup?.id
+  const {localPhase, localStage, spotlightGroup, phases, spotlightSearchQuery} = meeting
+  const {phaseType} = localPhase
+  const {isComplete} = localStage
+  const spotlightGroupId = spotlightGroup?.id
   const isSpotlightSource = reflectionGroupId === spotlightGroupId
   const isSpotlightOpen = !!spotlightGroupId
   const atmosphere = useAtmosphere()
@@ -109,9 +109,12 @@ const ReflectionCard = (props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.UPPER_CENTER)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
@@ -133,9 +136,9 @@ const ReflectionCard = (props: Props) => {
   }, [])
 
   useEffect(() => {
-    const refreshedState = remountDecorators(() => editorState, meeting?.spotlightSearchQuery)
+    const refreshedState = remountDecorators(() => editorState, spotlightSearchQuery)
     setEditorState(refreshedState)
-  }, [meeting?.spotlightSearchQuery])
+  }, [spotlightSearchQuery])
 
   const handleContentUpdate = () => {
     if (isAndroid) {
@@ -246,7 +249,6 @@ const ReflectionCard = (props: Props) => {
   }
 
   const showSpotlight =
-    !__PRODUCTION__ &&
     phaseType === 'group' &&
     !isSpotlightOpen &&
     !isComplete &&
