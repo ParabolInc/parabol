@@ -132,6 +132,15 @@ export async function down() {
         )
     )
     await Promise.all(mattermostAuthsToInsert)
+    const tokenDeletionQueries = mattermostTokensWithProvider.map((row) =>
+      client.query(
+        `
+        DELETE FROM "IntegrationToken" WHERE "providerId" = $1 AND "userId" = $2 AND "teamId" = $3;
+    `,
+        [row.providerId, row.userId, row.teamId]
+      )
+    )
+    await Promise.all(tokenDeletionQueries)
     await client.query(
       `
       DELETE FROM "IntegrationProvider" WHERE "id" = ANY($1::int[]);
