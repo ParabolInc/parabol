@@ -1,9 +1,10 @@
 import ms from 'ms'
+import {Unpromise} from 'parabol-client/types/generics'
 import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 
-export interface IntegrationByUserId {
+export interface IntegrationByTeamId {
   id: string
   userId: string
   service: 'github' | 'jira'
@@ -17,10 +18,10 @@ export interface IntegrationByUserId {
 
 const MAX_RECENT_INTEGRATIONS = 3
 export const useOnlyUserIntegrations = (
-  teamIntegrationsByUserId: IntegrationByUserId[],
+  teamIntegrationsByTeamId: IntegrationByTeamId[],
   userId: string
 ) => {
-  const userIntegrationsForTeam = teamIntegrationsByUserId.filter(
+  const userIntegrationsForTeam = teamIntegrationsByTeamId.filter(
     (integration) => integration.userId === userId
   )
   const aMonthAgo = new Date(Date.now() - ms('30d'))
@@ -35,7 +36,7 @@ export const useOnlyUserIntegrations = (
 
   // at least 1 person has 1 integration on the team
   const integrationSet = new Set()
-  teamIntegrationsByUserId.forEach(({id}) => integrationSet.add(id))
+  teamIntegrationsByTeamId.forEach(({id}) => integrationSet.add(id))
 
   // the user is integrated against every team integration, use those
   return userIntegrationsForTeam.length === integrationSet.size
@@ -43,26 +44,25 @@ export const useOnlyUserIntegrations = (
     : undefined
 }
 
-export const getTeamIntegrationsByUserId = async (
-  teamId: string
-): Promise<IntegrationByUserId[]> => {
+export const getTeamIntegrationsByTeamId = async (
+  teamId: string,
+  permLookup: Unpromise<ReturnType<typeof getPermsByTaskService>>
+): Promise<IntegrationByTeamId[]> => {
   const r = await getRethink()
-  const res = await (r
-    .table('Task')
-    .getAll(teamId, {index: 'teamId'})
-    .filter((row) =>
-      row('integration')
-        .ne(null)
-        .default(false)
-    )
-    .group((row) => [
-      row('userId').default(null),
-      row('integration')('service'),
-      row('integration')('nameWithOwner').default(null),
-      row('integration')('projectKey').default(null),
-      row('integration')('avatar').default(null),
-      row('integration')('cloudId').default(null)
-    ]) as any)
+  const res = await (
+    r
+      .table('Task')
+      .getAll(teamId, {index: 'teamId'})
+      .filter((row) => row('integration').ne(null).default(false))
+      .group((row) => [
+        row('userId').default(null),
+        row('integration')('service'),
+        row('integration')('nameWithOwner').default(null),
+        row('integration')('projectKey').default(null),
+        row('integration')('avatar').default(null),
+        row('integration')('cloudId').default(null)
+      ]) as any
+  )
     .max('createdAt')('createdAt')
     .ungroup()
     .orderBy(r.desc('reduction'))
@@ -79,7 +79,7 @@ export const getTeamIntegrationsByUserId = async (
   return (
     res
       // jira integrations are making it through that don't have a projectKey
-      .filter((res) => res.service !== 'jira' || res.projectKey)
+      .filter((res) => permLookup[res.service] && (res.service !== 'jira' || res.projectKey))
       .map((item) => ({
         ...item,
         id: makeSuggestedIntegrationId(item)

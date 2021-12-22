@@ -70,13 +70,13 @@ const Label = styled('div')({
 const getValue = (
   item: NonNullable<TaskFooterIntegrateMenuList_suggestedIntegrations['items']>[0]
 ) => {
-  const jiraItemName = item?.remoteProject?.name ?? ''
+  const jiraItemName = item?.projectKey ?? ''
   const githubName = item?.nameWithOwner ?? ''
-  const name = jiraItemName ?? githubName
+  const name = jiraItemName || githubName
   return name.toLowerCase()
 }
 
-const TaskFooterIntegrateMenu = (props: Props) => {
+const TaskFooterIntegrateMenuList = (props: Props) => {
   const {mutationProps, menuProps, placeholder, suggestedIntegrations, task, label} = props
   const {hasMore} = suggestedIntegrations
   const items = suggestedIntegrations.items || []
@@ -186,7 +186,7 @@ graphql`
   }
 `
 
-export default createFragmentContainer(TaskFooterIntegrateMenu, {
+export default createFragmentContainer(TaskFooterIntegrateMenuList, {
   suggestedIntegrations: graphql`
     fragment TaskFooterIntegrateMenuList_suggestedIntegrations on SuggestedIntegrationQueryPayload {
       hasMore

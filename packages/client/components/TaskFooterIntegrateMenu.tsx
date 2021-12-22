@@ -69,8 +69,6 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   )
 
   const {id: viewerId, viewerTeamMember, assigneeTeamMember} = viewer
-  // not 100% sure how this could be, maybe if we manually deleted a user?
-  // https://github.com/ParabolInc/parabol/issues/2980
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {
     integrations: viewerIntegrations,
@@ -91,18 +89,16 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       isViewerIntegrated.hasGitHub,
       isViewerIntegrated.hasAtlassian
     )
-    const label = 'Push with your credentials.'
+    const label = 'Push with your credentials'
     return (
-      <>
-        <TaskFooterIntegrateMenuList
-          menuProps={menuProps}
-          mutationProps={mutationProps}
-          placeholder={placeholder}
-          suggestedIntegrations={viewerSuggestedIntegrations}
-          task={task}
-          label={label}
-        />
-      </>
+      <TaskFooterIntegrateMenuList
+        menuProps={menuProps}
+        mutationProps={mutationProps}
+        placeholder={placeholder}
+        suggestedIntegrations={viewerSuggestedIntegrations}
+        task={task}
+        label={label}
+      />
     )
   }
 
@@ -111,18 +107,16 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       isAssigneeIntegrated.hasGitHub,
       isAssigneeIntegrated.hasAtlassian
     )
-    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}.`
+    const label = isViewerAssignee ? undefined : `Push as ${assigneeName}`
     return (
-      <>
-        <TaskFooterIntegrateMenuList
-          menuProps={menuProps}
-          mutationProps={mutationProps}
-          placeholder={placeholder}
-          suggestedIntegrations={assigneeSuggestedIntegrations}
-          task={task}
-          label={label}
-        />
-      </>
+      <TaskFooterIntegrateMenuList
+        menuProps={menuProps}
+        mutationProps={mutationProps}
+        placeholder={placeholder}
+        suggestedIntegrations={assigneeSuggestedIntegrations}
+        task={task}
+        label={label}
+      />
     )
   }
   const label = isViewerAssignee
