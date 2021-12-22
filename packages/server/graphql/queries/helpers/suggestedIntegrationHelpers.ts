@@ -1,8 +1,8 @@
 import ms from 'ms'
+import {Unpromise} from 'parabol-client/types/generics'
 import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
-import {PermLookup} from '../suggestedIntegrations'
 
 export interface IntegrationByTeamId {
   id: string
@@ -46,7 +46,7 @@ export const useOnlyUserIntegrations = (
 
 export const getTeamIntegrationsByTeamId = async (
   teamId: string,
-  permLookup: PermLookup
+  permLookup: Unpromise<ReturnType<typeof getPermsByTaskService>>
 ): Promise<IntegrationByTeamId[]> => {
   const r = await getRethink()
   const res = await (

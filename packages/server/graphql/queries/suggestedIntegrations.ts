@@ -12,11 +12,6 @@ import {
   useOnlyUserIntegrations
 } from './helpers/suggestedIntegrationHelpers'
 
-export type PermLookup = {
-  jira: boolean
-  github: boolean
-}
-
 export default {
   description: 'The integrations that the user would probably like to use',
   type: new GraphQLNonNull(SuggestedIntegrationQueryPayload),
@@ -38,7 +33,7 @@ export default {
         return standardError(new Error('Not on same team as user'), {userId: viewerId})
       }
     }
-    const permLookup: PermLookup = await getPermsByTaskService(dataLoader, teamId, userId)
+    const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
     const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId, permLookup)
 
     // if the team has no integrations, return every possible integration for the user
