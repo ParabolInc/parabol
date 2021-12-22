@@ -63,17 +63,17 @@ const useTrebuchetEvents = () => {
       // hacky but that way we don't have to double parse huge json payloads. SSE graphql payloads are pre-parsed
       const obj = typeof payload === 'string' ? JSON.parse(payload) : payload
 
-      // obj.version is sent once on connection, if we have disconnects logged, it's reconnect
-      const isReconnect = obj.version && recentDisconnectsRef.current.length > 0
-
-      if (obj.version && obj.version !== serverVersionRef.current) {
-        serverVersionRef.current = obj.version
-        if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.getRegistration()
-          registration?.update().catch()
+      if (obj.version) {
+        if (obj.version !== serverVersionRef.current) {
+          serverVersionRef.current = obj.version
+          if ('serviceWorker' in navigator) {
+            const registration = await navigator.serviceWorker.getRegistration()
+            registration?.update().catch()
+          }
+        } else if (recentDisconnectsRef.current.length > 0) {
+          // retry if reconnect and versions are the same
+          atmosphere.retries.forEach((retry) => retry())
         }
-      } else if (isReconnect) {
-        atmosphere.retries.forEach((retry) => retry())
       }
       if (obj.authToken) {
         atmosphere.setAuthToken(obj.authToken)
