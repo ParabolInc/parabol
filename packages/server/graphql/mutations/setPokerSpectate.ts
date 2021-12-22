@@ -20,15 +20,11 @@ const setPokerSpectate = {
     isSpectating: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is spectating poker and does not want to vote. else false'
-    },
-    stageId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The stage where the viewer is toggling their spectate status'
     }
   },
   resolve: async (
     _source: unknown,
-    {meetingId, isSpectating, stageId}: {meetingId: string; isSpectating: boolean; stageId: string},
+    {meetingId, isSpectating}: {meetingId: string; isSpectating: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -63,13 +59,8 @@ const setPokerSpectate = {
     // VALIDATION
     const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
-    const stage = stages.find((stage) => stage.id === stageId)
-    if (!stage) {
-      return {error: {message: 'Invalid stageId provided'}}
-    }
 
     // RESOLUTION
-    const {scores} = stage
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     await r({
       meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating}),
@@ -78,14 +69,19 @@ const setPokerSpectate = {
         .get(teamMemberId)
         .update({isSpectatingPoker: isSpectating, updatedAt: now})
     }).run()
-    const viewerHasVoted = !!scores.find(({userId}) => userId === viewerId)
-    if (viewerHasVoted) {
-      await removeVoteForUserId(viewerId, stageId, meetingId)
-    }
 
     // mutate the dataLoader cache
     meetingMember.isSpectating = isSpectating
-    const data = {meetingId, userId: viewerId}
+    stages.forEach(async (stage) => {
+      const {id: stageId, scores} = stage
+      const viewerVotedInStage = scores.find(({userId}) => userId === viewerId)
+      if (viewerVotedInStage) {
+        const newStageScores = scores.filter(({userId}) => userId !== viewerId)
+        stage.scores = newStageScores
+        await removeVoteForUserId(viewerId, stageId, meetingId)
+      }
+    })
+    const data = {meetingId, userId: viewerId, stages, teamId, phaseType: 'ESTIMATE'}
     publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectateSuccess', data, subOptions)
     return data
   }

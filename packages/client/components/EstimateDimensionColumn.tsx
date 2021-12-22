@@ -75,7 +75,7 @@ const EstimateDimensionColumn = (props: Props) => {
   const setSpectating = (isSpectating: boolean) => () => {
     if (submitting) return
     submitMutation()
-    SetPokerSpectateMutation(atmosphere, {meetingId, isSpectating, stageId}, {onError, onCompleted})
+    SetPokerSpectateMutation(atmosphere, {meetingId, isSpectating}, {onError, onCompleted})
   }
   const showVoting = isVoting || isClosing
   return (
