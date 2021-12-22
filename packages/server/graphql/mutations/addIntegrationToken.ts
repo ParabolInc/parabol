@@ -102,8 +102,8 @@ const addIntegrationToken = {
     }
 
     const providerDbId = IntegrationProviderId.split(providerId)
-    const provider = await dataLoader.get('integrationProviders').load(providerDbId)
-    if (!provider) {
+    const integrationProvider = await dataLoader.get('integrationProviders').load(providerDbId)
+    if (!integrationProvider) {
       return standardError(
         new Error(`Unable to find appropriate integration provider for providerId ${providerId}`),
         {
@@ -112,11 +112,11 @@ const addIntegrationToken = {
       )
     }
 
-    if (!allAuthRequiredIntegrationProviderTypes.includes(provider.type)) {
+    if (!allAuthRequiredIntegrationProviderTypes.includes(integrationProvider.provider)) {
       return standardError(
         new Error(
           `Adding auth tokens for ${providerId} is not supported! Provider ${providerId} is ${
-            provider.type
+            integrationProvider.type
           }, but only ${allAuthRequiredIntegrationProviderTypes.join(', ')} are supported.`
         ),
         {
@@ -127,7 +127,7 @@ const addIntegrationToken = {
 
     // VALIDATION
     const tokenMetadata = await createTokenMetadata(
-      provider,
+      integrationProvider,
       oauthCodeOrPat,
       redirectUri,
       info,

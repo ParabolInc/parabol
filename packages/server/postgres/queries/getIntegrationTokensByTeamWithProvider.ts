@@ -1,21 +1,19 @@
 import getPg from '../getPg'
-import {
-  IntegrationProviderTypesEnum,
-  mapToIntegrationProviderMetadata
-} from '../types/IntegrationProvider'
+import {mapToIntegrationProviderMetadata} from '../types/IntegrationProvider'
 import {
   IntegrationTokenWithProvider,
   nestIntegrationProviderOnIntegrationToken
 } from '../types/IntegrationTokenWithProvider'
+import {IntegrationProvidersEnum} from './generated/getIntegrationProvidersByIdsQuery'
 import {getIntegrationTokensWithProviderQuery} from './generated/getIntegrationTokensWithProviderQuery'
 
 const getIntegrationTokensByTeamWithProvider = async (
-  type: IntegrationProviderTypesEnum,
+  provider: IntegrationProvidersEnum,
   teamId: string
 ): Promise<IntegrationTokenWithProvider[]> =>
   (
     await getIntegrationTokensWithProviderQuery.run(
-      {type, teamId, userId: null, byUserId: false},
+      {provider, teamId, userId: null, byUserId: false},
       getPg()
     )
   )
@@ -25,7 +23,7 @@ const getIntegrationTokensByTeamWithProvider = async (
       provider: {
         ...integrationTokenWithProvider.provider,
         providerMetadata: mapToIntegrationProviderMetadata(
-          integrationTokenWithProvider.provider.tokenType,
+          integrationTokenWithProvider.provider.type,
           integrationTokenWithProvider.provider.providerMetadata
         )
       }

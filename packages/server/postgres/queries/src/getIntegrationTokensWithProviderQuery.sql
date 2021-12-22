@@ -4,8 +4,8 @@
 SELECT
   "IntegrationToken".*,
   "IntegrationProvider"."id" AS "IntegrationProvider_id",
+  "IntegrationProvider"."provider" AS "IntegrationProvider_provider",
   "IntegrationProvider"."type" AS "IntegrationProvider_type",
-  "IntegrationProvider"."tokenType" AS "IntegrationProvider_tokenType",
   "IntegrationProvider"."scope" AS "IntegrationProvider_scope",
   "IntegrationProvider"."orgId" AS "IntegrationProvider_orgId",
   "IntegrationProvider"."teamId" AS "IntegrationProvider_teamId",
@@ -29,7 +29,7 @@ WHERE
         AND "IntegrationToken"."userId" = :userId
       )
     )
-    AND "IntegrationProvider"."type" = :type
+    AND "IntegrationProvider"."provider" = :provider
     AND "IntegrationToken"."isActive" = TRUE
     AND "IntegrationProvider"."isActive" = TRUE
   );

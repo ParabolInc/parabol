@@ -45,33 +45,33 @@ export const checkAuthPermissions = (
 }
 
 export const validateIntegrationProvider = async (
-  provider: AddIntegrationProviderInput,
+  integrationProvider: AddIntegrationProviderInput,
   viewerId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  switch (provider.scope) {
+  switch (integrationProvider.scope) {
     case 'global':
-      if (provider.tokenType !== 'oauth2')
+      if (integrationProvider.type !== 'oauth2')
         return new Error('globally-scoped token provider must be OAuth2 provider')
       break
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore no-fallthrough
     case 'org':
-      if (provider.tokenType !== 'oauth2')
+      if (integrationProvider.type !== 'oauth2')
         return new Error('org-scoped token provider must be OAuth2 provider')
     // fall-through and verify team and org
     case 'team':
-      const checkTeam = await dataLoader.get('teams').load(provider.teamId)
+      const checkTeam = await dataLoader.get('teams').load(integrationProvider.teamId)
       if (!checkTeam) return new Error('team not found')
-      const checkOrg = await dataLoader.get('organizations').load(provider.orgId)
+      const checkOrg = await dataLoader.get('organizations').load(integrationProvider.orgId)
       if (!checkOrg) return new Error('organization not found')
   }
 
   let providerMetadata: IntegrationProviderMetadata | null = null
-  if (provider.tokenType === 'oauth2') {
-    providerMetadata = provider.oAuth2ProviderMetadataInput!
-  } else if (provider.tokenType === 'webhook') {
-    providerMetadata = provider.webhookProviderMetadataInput!
+  if (integrationProvider.type === 'oauth2') {
+    providerMetadata = integrationProvider.oAuth2ProviderMetadataInput!
+  } else if (integrationProvider.type === 'webhook') {
+    providerMetadata = integrationProvider.webhookProviderMetadataInput!
   }
   if (!providerMetadata) return new Error('Provider metadata is required')
 
@@ -91,7 +91,7 @@ export const validateIntegrationProvider = async (
   //       and support pat, oauth2, and webhooks here. Method should be shared
   //       with addIntegrationToken implementation. See addIntegrationToken for
   //       inspriation.
-  switch (provider.type) {
+  switch (integrationProvider.provider) {
     case 'mattermost':
       if (!isWebHookProviderMetadata(providerMetadata)) {
         return
@@ -100,7 +100,7 @@ export const validateIntegrationProvider = async (
       const result = await notifyWebhookConfigUpdated(
         providerMetadata.webhookUrl,
         viewerId,
-        provider.teamId
+        integrationProvider.teamId
       )
       if (result instanceof Error) return result
   }

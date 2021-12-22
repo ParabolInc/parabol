@@ -1,6 +1,6 @@
 import {
   IntegrationProviderScopesEnum,
-  IntegrationProviderTokenTypeEnum
+  IntegrationProviderTypesEnum
 } from '~/__generated__/GitLabProviderRow_viewer.graphql'
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
@@ -12,7 +12,7 @@ export interface GitLabIntegrationProvider {
   id: string
   name: string
   scope: IntegrationProviderScopesEnum
-  tokenType: IntegrationProviderTokenTypeEnum
+  type: IntegrationProviderTypesEnum
   updatedAt: string
   providerMetadata: {
     clientId?: string
@@ -36,7 +36,9 @@ class GitLabClientManager {
     } = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const oauthScopes = scopes ? scopes.join(' ') : ''
-    const providerState = Math.random().toString(36).substring(5)
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
 
     const redirect_uri = makeHref('/auth/gitlab')
     const uri = `${serverBaseUrl}/oauth/authorize?client_id=${clientId}&scope=${oauthScopes}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
@@ -66,7 +68,7 @@ class GitLabClientManager {
 
   static getPrimaryProvider(providerList: readonly GitLabIntegrationProvider[]) {
     return providerList.find(
-      (provider) => provider.scope === 'global' && provider.tokenType === 'oauth2'
+      (provider) => provider.scope === 'global' && provider.type === 'oauth2'
     )
   }
 
@@ -77,7 +79,7 @@ class GitLabClientManager {
       team: 2
     }
     const sortedProviders = providerList
-      .filter((provider) => provider.scope != 'global' && provider.tokenType === 'oauth2')
+      .filter((provider) => provider.scope != 'global' && provider.type === 'oauth2')
       .map((provider) => ({
         ...provider,
         score: scopeScore[provider.scope]

@@ -8,10 +8,7 @@ const getIntegrationProvidersByIds = async (
   const providers = await getIntegrationProvidersByIdsQuery.run({ids}, getPg())
   return providers.map((provider) => ({
     ...provider,
-    providerMetadata: mapToIntegrationProviderMetadata(
-      provider.tokenType,
-      provider.providerMetadata
-    )
+    providerMetadata: mapToIntegrationProviderMetadata(provider.type, provider.providerMetadata)
   }))
 }
 

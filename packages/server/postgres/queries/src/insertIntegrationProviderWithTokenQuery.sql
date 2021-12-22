@@ -1,12 +1,12 @@
 /*
  @name insertIntegrationProviderWithTokenQuery
- @param provider -> (type, tokenType, scope, name, providerMetadata, orgId, teamId)
+ @param provider -> (provider, type, scope, name, providerMetadata, orgId, teamId)
  */
 WITH providerRow AS (
   INSERT INTO
     "IntegrationProvider" (
+      "provider",
       "type",
-      "tokenType",
       "scope",
       "name",
       "providerMetadata",

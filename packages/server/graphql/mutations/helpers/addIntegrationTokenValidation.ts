@@ -32,7 +32,7 @@ const validateNewIntegrationAuthToken = (
   maybeInputToken: TokenInputTypes,
   providerInfo: {
     id?: IntegrationProviderT['id']
-    tokenType: IntegrationProviderT['tokenType']
+    type: IntegrationProviderT['type']
   }
 ) => {
   const errors: string[] = []
@@ -42,7 +42,7 @@ const validateNewIntegrationAuthToken = (
     errors.push(...validateTokenInput(maybeInputToken, providerInfo.id))
   }
 
-  switch (providerInfo.tokenType) {
+  switch (providerInfo.type) {
     case 'oauth2':
     case 'pat':
       !maybeInputToken.oauthCodeOrPat && errors.push('oauthCodeOrPat is required')

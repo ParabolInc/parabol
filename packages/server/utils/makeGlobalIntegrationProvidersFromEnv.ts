@@ -3,7 +3,7 @@ import {IUpsertGlobalIntegrationProviderQueryParams} from '../postgres/queries/g
 const hasGitLabConfig = () => !!process.env.GITLAB_CLIENT_ID && !!process.env.GITLAB_CLIENT_SECRET
 const createGitLabIntegrationProviderUpsertParams =
   (): IUpsertGlobalIntegrationProviderQueryParams => ({
-    type: 'gitlab',
+    provider: 'gitlab',
     name: 'GitLab.com',
     providerMetadata: {
       serverBaseUrl: 'https://gitlab.com',

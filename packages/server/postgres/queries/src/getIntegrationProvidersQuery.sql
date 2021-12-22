@@ -6,7 +6,7 @@ SELECT
 FROM
   "IntegrationProvider"
 WHERE
-  "type" = :type
+  "provider" = :provider
   AND "isActive" = TRUE
   AND (
     "scope" = 'global'

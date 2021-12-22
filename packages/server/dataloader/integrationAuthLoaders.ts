@@ -4,25 +4,22 @@ import getIntegrationProvidersByIds from '../postgres/queries/getIntegrationProv
 import getIntegrationProviders from '../postgres/queries/getIntegrationProviders'
 import getIntegrationTokenWithProvider from '../postgres/queries/getIntegrationTokenWithProvider'
 import getIntegrationTokensByTeamWithProvider from '../postgres/queries/getIntegrationTokensByTeamWithProvider'
-import {
-  IntegrationProvider,
-  IntegrationProviderTypesEnum
-} from '../postgres/types/IntegrationProvider'
+import {IntegrationProvider, IntegrationProvidersEnum} from '../postgres/types/IntegrationProvider'
 import {IntegrationTokenWithProvider} from '../postgres/types/IntegrationTokenWithProvider'
 
 export interface IntegrationProviderTeamKey {
-  type: IntegrationProviderTypesEnum
+  provider: IntegrationProvidersEnum
   teamId: string
 }
 
 export interface IntegrationProviderTeamOrgKey {
-  type: IntegrationProviderTypesEnum
+  provider: IntegrationProvidersEnum
   teamId: string
   orgId: string
 }
 
 export interface IntegrationTokenPrimaryKey {
-  type: IntegrationProviderTypesEnum
+  provider: IntegrationProvidersEnum
   teamId: string
   userId: string
 }
@@ -43,14 +40,16 @@ export const integrationProvidersByType = (parent: RootDataLoader) => {
   return new DataLoader<IntegrationProviderTeamOrgKey, IntegrationProvider[] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({type, teamId, orgId}) => getIntegrationProviders(type, teamId, orgId))
+        keys.map(async ({provider, teamId, orgId}) =>
+          getIntegrationProviders(provider, teamId, orgId)
+        )
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
       return vals
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: ({type, teamId, orgId}) => `${type}:${orgId}:${teamId}`
+      cacheKeyFn: ({provider, teamId, orgId}) => `${provider}:${orgId}:${teamId}`
     }
   )
 }
@@ -59,8 +58,8 @@ export const integrationTokenWithProvider = (parent: RootDataLoader) => {
   return new DataLoader<IntegrationTokenPrimaryKey, IntegrationTokenWithProvider | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({type, teamId, userId}) =>
-          getIntegrationTokenWithProvider(type, teamId, userId)
+        keys.map(async ({provider, teamId, userId}) =>
+          getIntegrationTokenWithProvider(provider, teamId, userId)
         )
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
@@ -68,7 +67,7 @@ export const integrationTokenWithProvider = (parent: RootDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: ({type, teamId, userId}) => `${type}:${teamId}:${userId}`
+      cacheKeyFn: ({provider, teamId, userId}) => `${provider}:${teamId}:${userId}`
     }
   )
 }
@@ -77,14 +76,16 @@ export const integrationTokensByTeamWithProvider = (parent: RootDataLoader) => {
   return new DataLoader<IntegrationProviderTeamKey, IntegrationTokenWithProvider[] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({type, teamId}) => getIntegrationTokensByTeamWithProvider(type, teamId))
+        keys.map(async ({provider, teamId}) =>
+          getIntegrationTokensByTeamWithProvider(provider, teamId)
+        )
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
       return vals
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: ({type, teamId}) => `${type}:${teamId}`
+      cacheKeyFn: ({provider, teamId}) => `${provider}:${teamId}`
     }
   )
 }

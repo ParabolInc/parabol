@@ -13,30 +13,30 @@ import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {
-  IntegrationProviderTypesEnum as DBIntegrationProviderTypesEnum,
+  IntegrationProvidersEnum as DBIntegrationProvidersEnum,
   IntegrationProviderScopesEnum as DBIntegrationProviderScopesEnum,
-  IntegrationProviderTokenTypeEnum as DBIntegrationProviderTokenTypeEnum,
+  IntegrationProviderTypesEnum as DBIntegrationProviderTypesEnum,
   isOAuth2ProviderMetadata,
   isWebHookProviderMetadata
 } from '../../postgres/types/IntegrationProvider'
 
-export const IntegrationProviderTypeEnum = new GraphQLEnumType({
-  name: 'IntegrationProviderTypeEnum',
+export const IntegrationProvidersEnum = new GraphQLEnumType({
+  name: 'IntegrationProvidersEnum',
   description: 'The type of Integration Provider service',
   values: {
     gitlab: {},
     mattermost: {}
-  } as {[P in DBIntegrationProviderTypesEnum]: any}
+  } as {[P in DBIntegrationProvidersEnum]: any}
 })
 
-export const IntegrationProviderTokenTypeEnum = new GraphQLEnumType({
-  name: 'IntegrationProviderTokenTypeEnum',
+export const IntegrationProviderTypesEnum = new GraphQLEnumType({
+  name: 'IntegrationProviderTypesEnum',
   description: 'The kind of token provided by the service',
   values: {
     oauth2: {},
     pat: {},
     webhook: {}
-  } as {[P in DBIntegrationProviderTokenTypeEnum]: any}
+  } as {[P in DBIntegrationProviderTypesEnum]: any}
 })
 
 export const IntegrationProviderScopesEnum = new GraphQLEnumType({
@@ -119,13 +119,13 @@ const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the token was updated at'
     },
-    type: {
+    provider: {
       description: 'The service this provider is associated with',
-      type: new GraphQLNonNull(IntegrationProviderTypeEnum)
+      type: new GraphQLNonNull(IntegrationProvidersEnum)
     },
-    tokenType: {
+    type: {
       description: 'The kind of token used by this provider',
-      type: new GraphQLNonNull(IntegrationProviderTokenTypeEnum)
+      type: new GraphQLNonNull(IntegrationProviderTypesEnum)
     },
     scope: {
       description:

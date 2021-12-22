@@ -1,8 +1,5 @@
 import {OAuth2IntegrationTokenMetadata} from '../postgres/types/IntegrationToken'
-import {
-  IntegrationProvider,
-  IntegrationProviderTypesEnum
-} from '../postgres/types/IntegrationProvider'
+import {IntegrationProvider, IntegrationProvidersEnum} from '../postgres/types/IntegrationProvider'
 import {GitLabAuthorizationManager} from './gitlab/GitLabAuthorizationManager'
 
 export interface OAuth2AuthorizationParams {
@@ -25,15 +22,15 @@ export interface OAuth2IntegrationAuthorizationManager {
 export const isOAuth2AuthorizationManager = (
   authorizationManager: IntegrationAuthorizationManager
 ): authorizationManager is OAuth2IntegrationAuthorizationManager =>
-  authorizationManager.provider.tokenType === 'oauth2'
+  authorizationManager.provider.type === 'oauth2'
 
 export type IntegrationAuthorizationManager = OAuth2IntegrationAuthorizationManager
 
 /**
  * Represents all the integration providers that require authorization.
  */
-type AuthRequiredIntegrationProviderTypes = Exclude<IntegrationProviderTypesEnum, 'mattermost'>
-export const allAuthRequiredIntegrationProviderTypes: IntegrationProviderTypesEnum[] = ['gitlab']
+type AuthRequiredIntegrationProviderTypes = Exclude<IntegrationProvidersEnum, 'mattermost'>
+export const allAuthRequiredIntegrationProviderTypes: IntegrationProvidersEnum[] = ['gitlab']
 
 const authorizationManagerLookup: {
   [K in AuthRequiredIntegrationProviderTypes]: new (
@@ -44,7 +41,7 @@ const authorizationManagerLookup: {
 }
 
 export const createAuthorizationManager = async <T extends IntegrationAuthorizationManager>(
-  provider: IntegrationProvider
+  integrationProvider: IntegrationProvider
 ) => {
-  return new authorizationManagerLookup[provider.type](provider) as T
+  return new authorizationManagerLookup[integrationProvider.provider](integrationProvider) as T
 }

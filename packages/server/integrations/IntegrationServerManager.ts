@@ -1,24 +1,24 @@
 import {GraphQLResolveInfo} from 'graphql'
-import {
-  IntegrationProvider,
-  IntegrationProviderTypesEnum
-} from '../postgres/types/IntegrationProvider'
+import {IntegrationProvider, IntegrationProvidersEnum} from '../postgres/types/IntegrationProvider'
 import GitLabServerManager from './gitlab/GitLabServerManager'
 import MattermostServerManager from '../utils/MattermostServerManager'
 
 //TODO: Fix any after aligning mattermost the the proper interface
 const integrationProviderClassMap: {
-  [K in IntegrationProviderTypesEnum]: new (...args: any[]) => IntegrationServerManager | any
+  [K in IntegrationProvidersEnum]: new (...args: any[]) => IntegrationServerManager | any
 } = {
   gitlab: GitLabServerManager,
   mattermost: MattermostServerManager
 }
 
 export const createIntegrationServerManager = async <T extends IntegrationServerManager>(
-  provider: IntegrationProvider,
+  integrationProvider: IntegrationProvider,
   accessToken: string
 ) => {
-  return new integrationProviderClassMap[provider.type](provider, accessToken) as T
+  return new integrationProviderClassMap[integrationProvider.provider](
+    integrationProvider,
+    accessToken
+  ) as T
 }
 
 export interface WebHookIntegrationServerManager {
@@ -28,7 +28,7 @@ export interface WebHookIntegrationServerManager {
 export const isWebHookIntegrationServerManager = (
   integrationServerManager: IntegrationServerManager
 ): integrationServerManager is WebHookIntegrationServerManager =>
-  integrationServerManager.provider.tokenType === 'webhook'
+  integrationServerManager.provider.type === 'webhook'
 
 export interface OAuth2IntegrationServerManager {
   provider: IntegrationProvider
@@ -49,7 +49,7 @@ export interface OAuth2IntegrationServerManager {
 export const isOAuth2IntegrationServerManager = (
   integrationServerManager: IntegrationServerManager
 ): integrationServerManager is OAuth2IntegrationServerManager =>
-  integrationServerManager.provider.tokenType === 'oauth2'
+  integrationServerManager.provider.type === 'oauth2'
 
 /**
  * Union type reperesenting all integration server managers

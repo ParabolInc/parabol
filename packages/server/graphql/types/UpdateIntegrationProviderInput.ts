@@ -4,9 +4,9 @@ import {
   WebhookProviderMetadataInput
 } from './AddIntegrationProviderInput'
 import {
-  IntegrationProviderTypeEnum,
-  IntegrationProviderTokenTypeEnum,
-  IntegrationProviderScopesEnum
+  IntegrationProviderScopesEnum,
+  IntegrationProvidersEnum,
+  IntegrationProviderTypesEnum
 } from './IntegrationProvider'
 
 const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
@@ -17,14 +17,15 @@ const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The the id of the Integration Provider to update'
     },
-    type: {
-      type: IntegrationProviderTypeEnum,
+    provider: {
+      type: IntegrationProvidersEnum,
       description: 'The service this provider is associated with'
     },
-    tokenType: {
-      type: IntegrationProviderTokenTypeEnum,
+    type: {
+      type: IntegrationProviderTypesEnum,
       description: 'The kind of token used by this provider'
     },
+
     scope: {
       type: IntegrationProviderScopesEnum,
       description:
