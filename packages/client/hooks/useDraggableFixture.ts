@@ -16,7 +16,7 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
 
 let drag: ReturnType<typeof makeDrag>
 
-const noop = () => { }
+const noop = () => {}
 const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -31,7 +31,7 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
     // required to prevent address bar scrolling & other strange browser things on mobile view
     e.preventDefault()
     const isTouchMove = e.type === 'touchmove'
-    const {clientX} = isTouchMove ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+    const {clientX} = isTouchMove ? (e as TouchEvent).touches[0]! : (e as MouseEvent)
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, 0, drag.lastX, 0)
@@ -81,7 +81,7 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
         document.addEventListener('mouseup', onMouseUp)
       }
       const {clientX} = isTouchStart
-        ? (e as React.TouchEvent<HTMLDivElement>).touches[0]
+        ? (e as React.TouchEvent<HTMLDivElement>).touches[0]!
         : (e as React.MouseEvent<HTMLDivElement>)
       drag = makeDrag(e.currentTarget as HTMLDivElement, clientX)
     }

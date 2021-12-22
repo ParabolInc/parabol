@@ -19,8 +19,8 @@ interface PubSubPromiseMessage {
 }
 
 const run = async () => {
-  const subscriber = new Redis(REDIS_URL)
-  const publisher = new Redis(REDIS_URL)
+  const publisher = new Redis(REDIS_URL, {connectionName: 'gql_pub'})
+  const subscriber = new Redis(REDIS_URL, {connectionName: 'gql_sub'})
   const serverChannel = GQLExecutorId.join(SERVER_ID)
 
   // subscribe to direct messages

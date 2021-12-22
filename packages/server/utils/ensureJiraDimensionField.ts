@@ -1,7 +1,7 @@
 import stringify from 'fast-json-stable-stringify'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
+import {JiraDimensionField} from '../postgres/queries/getTeamsByIds'
 import getRethink from '../database/rethinkDriver'
-import JiraDimensionField from '../database/types/JiraDimensionField'
 import {DataLoaderWorker} from '../graphql/graphql'
 import getPg from '../postgres/getPg'
 import {
@@ -10,21 +10,15 @@ import {
 } from '../postgres/queries/generated/mergeTeamJiraDimensionFieldsQuery'
 import catchAndLog from '../postgres/utils/catchAndLog'
 import AtlassianServerManager from './AtlassianServerManager'
+import {isNotNull} from './predicates'
 
-interface Mapper {
-  cloudId: string
-  projectKey: string
-  issueKey: string
-  dimensionName: string
-}
-
-const hashMapper = (mapper: Mapper) => {
+const hashMapper = (mapper: JiraDimensionField) => {
   const {cloudId, projectKey, dimensionName} = mapper
   return JSON.stringify({cloudId, projectKey, dimensionName})
 }
 
 const ensureJiraDimensionField = async (
-  requiredMappers: Mapper[],
+  requiredMappers: JiraDimensionField[],
   teamId: string,
   userId: string,
   dataLoader: DataLoaderWorker
@@ -33,7 +27,7 @@ const ensureJiraDimensionField = async (
   const team = await dataLoader.get('teams').load(teamId)
   const currentMappers = team.jiraDimensionFields || []
   const seenHashes = new Set<string>()
-  const missingMappers = [] as Mapper[]
+  const missingMappers = [] as JiraDimensionField[]
 
   currentMappers.forEach((mapper) => {
     seenHashes.add(hashMapper(mapper))
@@ -62,17 +56,17 @@ const ensureJiraDimensionField = async (
       if (!defaultField) return null
       const {id: fieldId, name: fieldName, schema} = defaultField
       const fieldType = schema.type as 'string' | 'number'
-      return new JiraDimensionField({
+      return {
         cloudId,
         dimensionName,
         fieldId,
         fieldName,
         fieldType,
         projectKey
-      })
+      } as JiraDimensionField
     })
   )
-  const fieldsToAdd = newJiraDimensionFields.filter(Boolean)
+  const fieldsToAdd = newJiraDimensionFields.filter(Boolean).filter(isNotNull)
   if (fieldsToAdd.length === 0) return
   const sortedJiraDimensionFields = [...currentMappers, ...fieldsToAdd].sort((a, b) =>
     stringify(a) < stringify(b) ? -1 : 1
@@ -88,10 +82,10 @@ const ensureJiraDimensionField = async (
       .run(),
     catchAndLog(() =>
       mergeTeamJiraDimensionFieldsQuery.run(
-        ({
+        {
           jiraDimensionFields: fieldsToAdd,
           id: teamId
-        } as unknown) as IMergeTeamJiraDimensionFieldsQueryParams,
+        } as unknown as IMergeTeamJiraDimensionFieldsQueryParams,
         getPg()
       )
     )

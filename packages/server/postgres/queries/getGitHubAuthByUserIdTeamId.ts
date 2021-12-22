@@ -23,6 +23,6 @@ const getGitHubAuthByUserIdTeamId = async (userId: string, teamId: string) => {
   res.githubSearchQueries.forEach((query) => {
     ;(query as any).lastUsedAt = new Date((query as any).lastUsedAt)
   })
-  return (res as any) as GitHubAuth
+  return res as any as GitHubAuth
 }
 export default getGitHubAuthByUserIdTeamId

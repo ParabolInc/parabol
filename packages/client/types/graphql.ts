@@ -51295,20 +51295,20 @@ export const enum TaskStatusEnum {
 }
 
 /**
- * The user account profile
+ * The types of flags that give an individual user super powers
  */
 export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags';
 
   /**
-   * true if jira is allowed
+   * true if spotlight is allowed
    */
-  jira: boolean;
+  spotlight: boolean;
 
   /**
-   * true if jira is allowed
+   * true if standups is allowed
    */
-  poker: boolean;
+  standups: boolean;
 }
 
 /**
@@ -57255,8 +57255,8 @@ export interface IAddFeatureFlagPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  jira = 'jira',
-  poker = 'poker',
+  spotlight = 'spotlight',
+  standups = 'standups',
 }
 
 export interface IAddGitHubAuthPayload {
@@ -58618,6 +58618,11 @@ export interface ISegmentEventTrackOptions {
   phase?: NewMeetingPhaseTypeEnum | null;
   eventId?: number | null;
   actionType?: string | null;
+  spotlightSearchQuery?: string | null;
+  meetingId?: string | null;
+  reflectionId?: string | null;
+  viewerId?: string | null;
+  reflectionsCount?: number | null;
 }
 
 export interface ISelectTemplatePayload {
@@ -59666,7 +59671,8 @@ export type NotificationSubscriptionPayload =
   | IPersistJiraSearchQuerySuccess
   | IUser
   | IAuthTokenPayload
-  | IPersistGitHubSearchQuerySuccess;
+  | IPersistGitHubSearchQuerySuccess
+  | IJiraIssue;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';

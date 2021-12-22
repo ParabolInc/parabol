@@ -1,10 +1,5 @@
-import {DemoReflectionGroup} from '../modules/demo/ClientGraphQLServer'
-
-const mapGroupsToStages = (reflectionGroups: DemoReflectionGroup[]) => {
-  const sortedReflectionGroups = reflectionGroups.sort((a, b) =>
-    a.voterIds.length < b.voterIds.length ? 1 : -1
-  )
-  return sortedReflectionGroups
+const mapGroupsToStages = (reflectionGroups: {id: string; voterIds: string[]}[]) => {
+  return reflectionGroups.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
 }
 
 export default mapGroupsToStages

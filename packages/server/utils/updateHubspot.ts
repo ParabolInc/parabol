@@ -28,7 +28,7 @@ interface BulkRecord {
   [key: string]: string | number | undefined
 }
 
-const contactKeys = {
+const contactKeys: Record<string, string> = {
   lastMetAt: 'last_met_at',
   isAnyBillingLeader: 'is_any_billing_leader',
   monthlyStreakCurrent: 'monthly_streak_current',
@@ -41,9 +41,9 @@ const contactKeys = {
   payLaterClickCount: 'pay_later_click_count',
   preferredName: 'parabol_preferred_name',
   tier: 'highest_tier'
-}
+} as const
 
-const companyKeys = {
+const companyKeys: Record<string, string> = {
   lastMetAt: 'last_met_at',
   userCount: 'user_count',
   activeUserCount: 'active_user_count',
@@ -51,9 +51,9 @@ const companyKeys = {
   meetingCount: 'meeting_count',
   monthlyTeamStreakMax: 'monthly_team_streak_max',
   tier: 'highest_tier'
-}
+} as const
 
-const queries = {
+const queries: Record<string, string> = {
   'Changed name': `
 query ChangedName($userId: ID!) {
   user(userId: $userId) {
@@ -223,7 +223,7 @@ query ArchiveTeam($userId: ID!) {
       }
     }
   }`
-}
+} as const
 
 const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
 const hapiKey = process.env.HUBSPOT_API_KEY
@@ -281,7 +281,7 @@ const upsertHubspotContact = async (
   )
   if (!String(res.status).startsWith('2')) {
     sendToSentry(new Error('HS upsertContact Fail'), {tags: {email, body}})
-    if (retryCount < 3) return upsertHubspotContact(email, propertiesObj, retryCount + 1)
+    if (retryCount < 3) upsertHubspotContact(email, propertiesObj, retryCount + 1)
   }
 }
 
@@ -309,7 +309,7 @@ const updateHubspotBulkContact = async (records: BulkRecord[], retryCount = 0) =
   if (!String(res.status).startsWith('2')) {
     sendToSentry(new Error('HS Fail bulk contact update'), {tags: {body}})
     if (retryCount < 3) {
-      return updateHubspotBulkContact(records, retryCount + 1)
+      updateHubspotBulkContact(records, retryCount + 1)
     }
   }
 }
@@ -330,7 +330,8 @@ const updateHubspotCompany = async (
       sendToSentry(new Error('HS Update Company Fail. No Contact'), {tags: {email}})
     }
     if (retryCount >= 3) return
-    return updateHubspotCompany(email, propertiesObj, retryCount + 1)
+    updateHubspotCompany(email, propertiesObj, retryCount + 1)
+    return
   }
   const contactResJSON = await contactRes.json()
   const associatedCompany = contactResJSON['associated-company']
@@ -340,7 +341,8 @@ const updateHubspotCompany = async (
       tags: {email, associatedCompany: JSON.stringify(associatedCompany)}
     })
     if (retryCount >= 3) return
-    return updateHubspotCompany(email, propertiesObj, retryCount + 1)
+    updateHubspotCompany(email, propertiesObj, retryCount + 1)
+    return
   }
   const body = JSON.stringify({
     properties: Object.keys(propertiesObj).map((key) => ({
@@ -370,7 +372,8 @@ const updateHubspotCompany = async (
       tags: {email, body, companyId, error: JSON.stringify(errBody)}
     })
     if (retryCount >= 3) return
-    return updateHubspotCompany(email, propertiesObj, retryCount + 1)
+    updateHubspotCompany(email, propertiesObj, retryCount + 1)
+    return
   }
 }
 
@@ -395,7 +398,7 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
     const parabolPayload = await parabolFetch(query, {userIds, userId})
     if (!parabolPayload) return
     const {users, company} = parabolPayload
-    const facilitator = users.find((user) => user.id === userId)
+    const facilitator = users.find((user: any) => user.id === userId)
     const {email} = facilitator
     await Promise.all([updateHubspotBulkContact(users), updateHubspotCompany(email, company)])
   } else if (event === 'Account Created') {
@@ -421,10 +424,10 @@ const updateHubspot = async (event: string, user: IUser, properties: BulkRecord)
     const {tier, organizations} = company
     const users = [] as {email: string; [key: string]: string | number}[]
     const emails = new Set<string>()
-    organizations.forEach((organization) => {
+    organizations.forEach((organization: any) => {
       const {organizationUsers} = organization
       const {edges} = organizationUsers
-      edges.forEach((edge) => {
+      edges.forEach((edge: any) => {
         const {node} = edge
         const {user} = node
         const {email} = user

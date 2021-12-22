@@ -48,18 +48,14 @@ export default {
 
     // RESOLUTION
     // update the dataLoader cache
-    const cachedTeam = orgTeams.find((team) => team.id === teamId)
+    const cachedTeam = orgTeams.find((team) => team.id === teamId)!
     cachedTeam.name = name
     const dbUpdate = {
       name,
       updatedAt: now
     }
     await Promise.all([
-      r
-        .table('Team')
-        .get(teamId)
-        .update(dbUpdate)
-        .run(),
+      r.table('Team').get(teamId).update(dbUpdate).run(),
       updateTeamByTeamId(dbUpdate, teamId)
     ])
 

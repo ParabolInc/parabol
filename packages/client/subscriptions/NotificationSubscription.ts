@@ -107,7 +107,7 @@ const subscription = graphql`
         user {
           id
           featureFlags {
-            jira
+            spotlight
           }
         }
       }
@@ -119,6 +119,12 @@ const subscription = graphql`
           copy
           url
         }
+      }
+
+      ... on JiraIssue {
+        id
+        summary
+        descriptionHTML
       }
     }
   }

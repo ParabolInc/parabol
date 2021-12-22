@@ -27,7 +27,12 @@ export default class StripeManager {
     })
   }
 
-  async createEnterpriseSubscription(customerId: string, orgId: string, quantity, plan?: string) {
+  async createEnterpriseSubscription(
+    customerId: string,
+    orgId: string,
+    quantity: number,
+    plan?: string
+  ) {
     return this.stripe.subscriptions.create({
       collection_method: 'send_invoice',
       customer: customerId,
@@ -45,7 +50,7 @@ export default class StripeManager {
     } as any)
   }
 
-  async createProSubscription(customerId: string, orgId: string, quantity) {
+  async createProSubscription(customerId: string, orgId: string, quantity: number) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
       // https://stripe.com/docs/billing/testing

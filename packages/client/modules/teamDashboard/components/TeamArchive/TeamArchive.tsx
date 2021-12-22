@@ -248,7 +248,7 @@ const TeamArchive = (props: Props) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const index = getIndex(columnIndex, rowIndex)
     if (!isRowLoaded({index})) return undefined
-    const task = edges[index].node
+    const task = edges[index]!.node
     return (
       <CellMeasurer
         cache={cellCache}

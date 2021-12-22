@@ -99,7 +99,9 @@ const ForgotPasswordPage = (props: Props) => {
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
-    setDirtyField(name)
+    if (name === 'email') {
+      setDirtyField(name)
+    }
   }
 
   const onSubmit = async (e) => {
@@ -108,7 +110,7 @@ const ForgotPasswordPage = (props: Props) => {
     setDirtyField()
     const {email: emailRes} = validateField()
     if (emailRes.error) return
-    const email = emailRes.value as string
+    const {value: email} = emailRes
     submitMutation()
 
     EmailPasswordResetMutation(

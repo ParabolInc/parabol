@@ -4,6 +4,7 @@ import getRethink from '../../../../database/rethinkDriver'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import {GQLContext} from '../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
+import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
@@ -42,23 +43,18 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   const {id: reflectionGroupId} = reflectionGroup
   await r({
     reflectionGroup: r.table('RetroReflectionGroup').insert(reflectionGroup),
-    reflection: r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
-        sortOrder: 0,
-        reflectionGroupId,
-        updatedAt: now
-      }),
-    meeting: r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({nextAutoGroupThreshold: null})
+    reflection: r.table('RetroReflection').get(reflectionId).update({
+      sortOrder: 0,
+      reflectionGroupId,
+      updatedAt: now
+    }),
+    meeting: r.table('NewMeeting').get(meetingId).update({nextAutoGroupThreshold: null})
   }).run()
   // mutates the dataloader response
   reflection.sortOrder = 0
   reflection.reflectionGroupId = reflectionGroupId
-  meeting.nextAutoGroupThreshold = null
+  const retroMeeting = meeting as MeetingRetrospective
+  retroMeeting.nextAutoGroupThreshold = null
   const oldReflections = await r
     .table('RetroReflection')
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})

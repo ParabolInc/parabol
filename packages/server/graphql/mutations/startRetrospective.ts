@@ -64,10 +64,7 @@ export default {
     )
     const teams = await getTeamsByIds([teamId])
     const team = teams[0]!
-    const organization = await r
-      .table('Organization')
-      .get(team.orgId)
-      .run()
+    const organization = await r.table('Organization').get(team.orgId).run()
     const {showConversionModal} = organization
 
     const meetingSettings = (await dataLoader
@@ -89,10 +86,7 @@ export default {
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     const now = new Date()
     await r({
-      template: r
-        .table('MeetingTemplate')
-        .get(selectedTemplateId)
-        .update({lastUsedAt: now}),
+      template: r.table('MeetingTemplate').get(selectedTemplateId).update({lastUsedAt: now}),
       meeting: r.table('NewMeeting').insert(meeting)
     }).run()
 
@@ -104,11 +98,7 @@ export default {
       return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .delete()
-        .run()
+      await r.table('NewMeeting').get(meetingId).delete().run()
       return {error: {message: 'Meeting already started'}}
     }
 
@@ -123,11 +113,7 @@ export default {
           new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
         )
         .run(),
-      r
-        .table('Team')
-        .get(teamId)
-        .update(updates)
-        .run(),
+      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
 

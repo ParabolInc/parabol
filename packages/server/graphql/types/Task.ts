@@ -27,6 +27,7 @@ import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimat
 import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
 import getRethink from '../../database/rethinkDriver'
+import {getUserId} from '../../utils/authorization'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -65,13 +66,18 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     estimates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEstimate))),
       description: 'A list of the most recent estimates for the task',
-      resolve: async ({id: taskId, integration, teamId}: DBTask, _args: unknown, {dataLoader}) => {
+      resolve: async (
+        {id: taskId, integration, teamId}: DBTask,
+        _args: unknown,
+        {dataLoader, authToken}
+      ) => {
+        const viewerId = getUserId(authToken)
         if (integration?.service === 'jira') {
           const {accessUserId, cloudId, issueKey} = integration
           // this dataloader has the side effect of guaranteeing fresh estimates
           await dataLoader
             .get('jiraIssue')
-            .load({teamId, userId: accessUserId, cloudId, issueKey, taskId})
+            .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
         }
         return dataLoader.get('latestTaskEstimates').load(taskId)
       }
@@ -86,14 +92,15 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       type: TaskIntegration,
       description: 'The reference to the single source of truth for this task',
       resolve: async ({integration, teamId, id: taskId}: DBTask, _args: unknown, context, info) => {
-        const {dataLoader} = context
+        const {dataLoader, authToken} = context
+        const viewerId = getUserId(authToken)
         if (!integration) return null
         const {accessUserId} = integration
         if (integration.service === 'jira') {
           const {cloudId, issueKey} = integration
           return dataLoader
             .get('jiraIssue')
-            .load({teamId, userId: accessUserId, cloudId, issueKey, taskId})
+            .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
         } else if (integration.service === 'github') {
           const [githubAuth, estimates] = await Promise.all([
             dataLoader.get('githubAuth').load({userId: accessUserId, teamId}),

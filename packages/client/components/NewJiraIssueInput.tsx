@@ -141,8 +141,8 @@ const NewJiraIssueInput = (props: Props) => {
     e.preventDefault()
     if (portalStatus !== PortalStatus.Exited || !selectedProjectKey || !cloudId) return
     const {newIssue: newIssueRes} = validateField()
-    const newIssueTitle = newIssueRes.value as string
-    if (newIssueRes.error) {
+    const {value: newIssueTitle, error} = newIssueRes
+    if (error) {
       setDirtyField()
       return
     }

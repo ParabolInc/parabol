@@ -10,7 +10,7 @@ const segmentIo = new SegmentIo(SEGMENT_WRITE_KEY || 'x', {
   enable: !!SEGMENT_WRITE_KEY
 }) as any
 segmentIo._track = segmentIo.track
-segmentIo.track = async (options) => {
+segmentIo.track = async (options: any) => {
   const {userId, event, properties: inProps} = options
   const user = options.userId ? await getUserById(options.userId) : null
   const {email, segmentId} = user ?? {}

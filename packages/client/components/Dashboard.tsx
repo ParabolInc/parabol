@@ -14,6 +14,7 @@ import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
+import {PALETTE} from '~/styles/paletteV3'
 
 const MeetingsDash = lazy(() =>
   import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
@@ -50,7 +51,7 @@ const DashPanel = styled('div')({
   overflow: 'hidden'
 })
 
-const DashMain = styled('div')({
+const DashMain = styled('main')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -58,6 +59,30 @@ const DashMain = styled('div')({
   minHeight: 0,
   overflow: 'auto',
   position: 'relative'
+})
+
+const SkipLink = styled('a')({
+  position: 'absolute',
+  clip: 'rect(1px,1px,1px,1px)',
+  clipPath: 'inset(50%)',
+  height: '1px',
+  margin: '-1px',
+  overflow: 'hidden',
+  width: '1px',
+  transition: 'background-color 0.1s ease',
+
+  ':focus': {
+    clip: 'auto !important',
+    clipPath: 'inherit',
+    width: 'auto',
+    height: 'auto',
+    color: PALETTE.SLATE_900,
+    backgroundColor: PALETTE.GOLD_300,
+    padding: '4px 44px',
+    lineHeight: '49px',
+    textDecoration: 'underline',
+    outline: 'none'
+  }
 })
 
 const Dashboard = (props: Props) => {
@@ -94,6 +119,7 @@ const Dashboard = (props: Props) => {
   useSnacksForNewMeetings(activeMeetings)
   return (
     <DashLayout>
+      <SkipLink href='#main'>Skip to content</SkipLink>
       {isDesktop ? (
         <DashTopBar viewer={viewer} toggle={toggle} />
       ) : (
@@ -107,7 +133,7 @@ const Dashboard = (props: Props) => {
             <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
           </SwipeableDashSidebar>
         )}
-        <DashMain ref={meetingsDashRef}>
+        <DashMain id='main' ref={meetingsDashRef}>
           <Switch>
             <Route
               path='/meetings'
