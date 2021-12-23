@@ -11,7 +11,6 @@ import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
-import {isNotNull} from '../utils/predicates'
 import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
@@ -135,9 +134,6 @@ export const jiraIssue = (
           if (!auth) return null
           const {accessToken} = auth
           const manager = new AtlassianServerManager(accessToken)
-          const estimateFieldIds = estimates
-            .map((estimate) => estimate.jiraFieldId)
-            .filter(isNotNull)
 
           const cacheImagesUpdateEstimates = async (issueRes: JiraGetIssueRes) => {
             const {fields} = issueRes
@@ -171,8 +167,40 @@ export const jiraIssue = (
                 })
               })
             )
+
+            const VALID_TYPES = ['string', 'number']
+            const INVALID_WORDS = ['color', 'name', 'description', 'environment']
+            const INVALID_NOT_SIMPLIFIED_FIELD = 'story point estimate'
+
+            const possibleEstimationFieldNames = Array.from(
+              new Set(
+                Object.entries<{type: string}>(issueRes.schema)
+                  .filter(([fieldId, fieldSchema]) => {
+                    if (!VALID_TYPES.includes(fieldSchema.type)) return false
+                    const fieldName = issueRes.names[fieldId].toLowerCase()
+                    for (let i = 0; i < INVALID_WORDS.length; i++) {
+                      if (fieldName.includes(INVALID_WORDS[i]!)) return false
+                    }
+
+                    if (
+                      !issueRes.fields.project?.simplified &&
+                      fieldName === INVALID_NOT_SIMPLIFIED_FIELD
+                    ) {
+                      return false
+                    }
+
+                    return true
+                  })
+                  .map(([fieldId]) => {
+                    return issueRes.names[fieldId]
+                  })
+                  .sort()
+              )
+            )
+
             return {
               ...fields,
+              possibleEstimationFieldNames,
               descriptionHTML: updatedDescription,
               teamId,
               userId
@@ -188,7 +216,8 @@ export const jiraIssue = (
             cloudId,
             issueKey,
             publishUpdatedIssue,
-            estimateFieldIds
+            ['*all'],
+            ['names', 'schema']
           )
           if (issueRes instanceof Error || issueRes instanceof RateLimitError) {
             sendToSentry(issueRes, {userId, tags: {cloudId, issueKey, teamId}})

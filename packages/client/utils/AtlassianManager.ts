@@ -195,6 +195,9 @@ interface JiraAddCommentResponse {
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 interface JiraGQLFields {
+  project?: {
+    simplified: boolean
+  }
   cloudId: string
   description: any
   descriptionHTML: string
@@ -571,11 +574,20 @@ export default abstract class AtlassianManager {
     return cloudNameLookup
   }
 
-  async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
+  async getIssue(
+    cloudId: string,
+    issueKey: string,
+    extraFieldIds: string[] = [],
+    extraExpand: string[] = []
+  ) {
     const baseFields = ['summary', 'description']
-    const reqFields = [...baseFields, ...extraFieldIds].join(',')
+    const reqFields = extraFieldIds.includes('*all')
+      ? '*all'
+      : [...baseFields, ...extraFieldIds].join(',')
+    const baseExpand = ['renderedFields']
+    const expand = [...baseExpand, ...extraExpand].join(',')
     const issueRes = await this.get<JiraIssueRaw>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
     if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
     return {

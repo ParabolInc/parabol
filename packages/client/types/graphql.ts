@@ -49786,6 +49786,7 @@ export interface IJiraIssue {
    * The plaintext summary of the jira issue
    */
   summary: string;
+  possibleEstimationFieldNames: Array<string>;
 
   /**
    * The stringified ADF of the jira issue description
