@@ -171,6 +171,8 @@ export const jiraIssue = (
             const VALID_TYPES = ['string', 'number']
             const INVALID_WORDS = ['color', 'name', 'description', 'environment']
             const INVALID_NOT_SIMPLIFIED_FIELD = 'story point estimate'
+            const INVALID_SIMPLIFIED_FIELD = 'story points'
+            const simplified = !!issueRes.fields.project?.simplified
 
             const possibleEstimationFieldNames = Array.from(
               new Set(
@@ -183,8 +185,8 @@ export const jiraIssue = (
                     }
 
                     if (
-                      !issueRes.fields.project?.simplified &&
-                      fieldName === INVALID_NOT_SIMPLIFIED_FIELD
+                      (!simplified && fieldName === INVALID_NOT_SIMPLIFIED_FIELD) ||
+                      (simplified && fieldName === INVALID_SIMPLIFIED_FIELD)
                     ) {
                       return false
                     }
