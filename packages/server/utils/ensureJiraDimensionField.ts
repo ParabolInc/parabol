@@ -83,7 +83,7 @@ const ensureJiraDimensionField = async (
     })
   )
   const fieldsToAdd = newJiraDimensionFields.filter(Boolean).filter(isNotNull)
-  if (fieldsToAdd.length === 0) return // exit here
+  if (fieldsToAdd.length === 0) return
   const sortedJiraDimensionFields = [...currentMappers, ...fieldsToAdd].sort((a, b) =>
     stringify(a) < stringify(b) ? -1 : 1
   )

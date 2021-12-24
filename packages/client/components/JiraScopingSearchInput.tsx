@@ -51,7 +51,7 @@ const JiraScopingSearchInput = (props: Props) => {
   const {isJQL, queryString} = jiraSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
-  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'xxx2 Search issues on Jira'
+  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira'
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(atmosphere, meetingId, value)

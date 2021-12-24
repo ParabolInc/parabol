@@ -29,7 +29,6 @@ const setTaskEstimate = {
     context: GQLContext,
     info: GraphQLResolveInfo
   ) => {
-    console.log('SET TASK ESTIMATE')
     const {authToken, dataLoader, socketId: mutatorId} = context
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -104,16 +103,13 @@ const setTaskEstimate = {
       const {accessToken} = auth
       const manager = new AtlassianServerManager(accessToken)
       const jiraDimensionFields = team.jiraDimensionFields || []
-      console.log('jiraDimensionFields:::::', jiraDimensionFields)
       const dimensionField = jiraDimensionFields.find(
         (dimensionField) =>
           dimensionField.dimensionName === dimensionName &&
           dimensionField.cloudId === cloudId &&
           dimensionField.projectKey === projectKey
       )
-      console.log('dimensionField:::::', dimensionField)
       const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
-      console.log('fieldName:::::::', fieldName)
       if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
         if (!stageId || !meeting) {
           return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
@@ -132,7 +128,6 @@ const setTaskEstimate = {
           return {error: {message: res.message}}
         }
       } else if (fieldName !== SprintPokerDefaults.SERVICE_FIELD_NULL) {
-        console.log('Not equal NULL')
         const {fieldId, fieldType} = dimensionField!
         jiraFieldId = fieldId
         try {
@@ -140,12 +135,10 @@ const setTaskEstimate = {
 
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
-          console.log('ERRRRR', e)
           const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
           return {error: {message}}
         }
       }
-      console.log('NOTHING HAPPENED')
     } else if (service === 'github') {
       const githubPushRes = await pushEstimateToGitHub(taskEstimate, context, info, stageId)
       if (githubPushRes instanceof Error) {
@@ -155,23 +148,18 @@ const setTaskEstimate = {
       githubLabelName = githubPushRes
     }
 
-    try {
-      console.log('try to insert task estimate')
-      await insertTaskEstimate({
-        changeSource: meeting ? 'meeting' : 'task',
-        discussionId,
-        jiraFieldId,
-        githubLabelName,
-        label: value,
-        name: dimensionName,
-        meetingId,
-        stageId,
-        taskId,
-        userId: viewerId
-      })
-    } catch (e) {
-      console.log('ERRRRRRRRR INSERTING TASK', e)
-    }
+    await insertTaskEstimate({
+      changeSource: meeting ? 'meeting' : 'task',
+      discussionId,
+      jiraFieldId,
+      githubLabelName,
+      label: value,
+      name: dimensionName,
+      meetingId,
+      stageId,
+      taskId,
+      userId: viewerId
+    })
 
     const data = {meetingId, stageId, taskId}
     if (meetingId) {

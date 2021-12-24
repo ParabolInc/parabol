@@ -49786,6 +49786,10 @@ export interface IJiraIssue {
    * The plaintext summary of the jira issue
    */
   summary: string;
+
+  /**
+   * Field names that exists on the issue and can be used as estimation fields
+   */
   possibleEstimationFieldNames: Array<string>;
 
   /**
