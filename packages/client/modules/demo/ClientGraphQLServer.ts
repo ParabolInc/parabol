@@ -245,12 +245,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     TaskFooterIntegrateMenuRootQuery: () => {
       return {
-        viewer: {
-          ...this.db.users[0],
-          userOnTeam: {
-            ...this.db.users[0]
-          }
-        }
+        ...this.db.viewer
       }
     },
     NewMeetingSummaryRootQuery: () => {
