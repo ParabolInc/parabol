@@ -7,6 +7,6 @@ import {
 const upsertGlobalIntegrationProvider = async (
   provider: IUpsertGlobalIntegrationProviderQueryParams
 ) => {
-  await upsertGlobalIntegrationProviderQuery.run(provider, getPg())
+  return upsertGlobalIntegrationProviderQuery.run(provider, getPg())
 }
 export default upsertGlobalIntegrationProvider

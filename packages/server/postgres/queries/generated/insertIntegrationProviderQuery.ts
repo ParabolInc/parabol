@@ -3,16 +3,16 @@ import { PreparedQuery } from '@pgtyped/query';
 
 export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderTokenTypeEnum = 'oauth2' | 'pat' | 'webhook';
+export type IntegrationProviderTypesEnum = 'oauth2' | 'pat' | 'webhook';
 
-export type IntegrationProviderTypesEnum = 'gitlab' | 'mattermost';
+export type IntegrationProvidersEnum = 'gitlab' | 'mattermost';
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
 /** 'InsertIntegrationProviderQuery' parameters type */
 export interface IInsertIntegrationProviderQueryParams {
+  provider: IntegrationProvidersEnum | null | void;
   type: IntegrationProviderTypesEnum | null | void;
-  tokenType: IntegrationProviderTokenTypeEnum | null | void;
   scope: IntegrationProviderScopesEnum | null | void;
   name: string | null | void;
   providerMetadata: Json | null | void;
@@ -29,28 +29,31 @@ export interface IInsertIntegrationProviderQueryQuery {
   result: IInsertIntegrationProviderQueryResult;
 }
 
-const insertIntegrationProviderQueryIR: any = {"name":"insertIntegrationProviderQuery","params":[{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":185,"b":188,"line":13,"col":3}]}},{"name":"tokenType","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":194,"b":202,"line":14,"col":3}]}},{"name":"scope","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":208,"b":212,"line":15,"col":3}]}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":218,"b":221,"line":16,"col":3}]}},{"name":"providerMetadata","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":227,"b":242,"line":17,"col":3}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":248,"b":252,"line":18,"col":3}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":258,"b":263,"line":19,"col":3}]}}],"usedParamSet":{"type":true,"tokenType":true,"scope":true,"name":true,"providerMetadata":true,"orgId":true,"teamId":true},"statement":{"body":"INSERT INTO \"IntegrationProvider\" (\n  \"type\",\n  \"tokenType\",\n  \"scope\",\n  \"name\",\n  \"providerMetadata\",\n  \"orgId\",\n  \"teamId\"\n) VALUES (\n  :type,\n  :tokenType,\n  :scope,\n  :name,\n  :providerMetadata,\n  :orgId,\n  :teamId\n)","loc":{"a":45,"b":265,"line":4,"col":0}}};
+const insertIntegrationProviderQueryIR: any = {"name":"insertIntegrationProviderQuery","params":[{"name":"provider","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":206,"b":213,"line":16,"col":5}]}},{"name":"type","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":221,"b":224,"line":17,"col":5}]}},{"name":"scope","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":232,"b":236,"line":18,"col":5}]}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":244,"b":247,"line":19,"col":5}]}},{"name":"providerMetadata","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":255,"b":270,"line":20,"col":5}]}},{"name":"orgId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":278,"b":282,"line":21,"col":5}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":290,"b":295,"line":22,"col":5}]}}],"usedParamSet":{"provider":true,"type":true,"scope":true,"name":true,"providerMetadata":true,"orgId":true,"teamId":true},"statement":{"body":"INSERT INTO\n  \"IntegrationProvider\" (\n    \"provider\",\n    \"type\",\n    \"scope\",\n    \"name\",\n    \"providerMetadata\",\n    \"orgId\",\n    \"teamId\"\n  )\nVALUES\n  (\n    :provider,\n    :type,\n    :scope,\n    :name,\n    :providerMetadata,\n    :orgId,\n    :teamId\n  )","loc":{"a":45,"b":299,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
- * INSERT INTO "IntegrationProvider" (
- *   "type",
- *   "tokenType",
- *   "scope",
- *   "name",
- *   "providerMetadata",
- *   "orgId",
- *   "teamId"
- * ) VALUES (
- *   :type,
- *   :tokenType,
- *   :scope,
- *   :name,
- *   :providerMetadata,
- *   :orgId,
- *   :teamId
- * )
+ * INSERT INTO
+ *   "IntegrationProvider" (
+ *     "provider",
+ *     "type",
+ *     "scope",
+ *     "name",
+ *     "providerMetadata",
+ *     "orgId",
+ *     "teamId"
+ *   )
+ * VALUES
+ *   (
+ *     :provider,
+ *     :type,
+ *     :scope,
+ *     :name,
+ *     :providerMetadata,
+ *     :orgId,
+ *     :teamId
+ *   )
  * ```
  */
 export const insertIntegrationProviderQuery = new PreparedQuery<IInsertIntegrationProviderQueryParams,IInsertIntegrationProviderQueryResult>(insertIntegrationProviderQueryIR);

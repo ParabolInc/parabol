@@ -1,5 +1,5 @@
 import {IUpsertIntegrationTokenQueryResult as _IntegrationToken} from '../queries/generated/upsertIntegrationTokenQuery'
-import {IntegrationProviderTokenTypeEnum} from './IntegrationProvider'
+import {IntegrationProviderTypesEnum} from './IntegrationProvider'
 
 /**
  * Metadata structure of the OAuth2 integration token.
@@ -23,20 +23,20 @@ const mapToOAuth2IntegrationTokenMetadata = (metadata: any): OAuth2IntegrationTo
 /**
  * Parse the integration provider token metadata from the database as a proper {@link IntegrationTokenMetadata}
  * Used when data is fetched from the database.
- * @param providerTokenType
+ * @param providerType
  * @param metadata
  * @returns properly typed {@link IntegrationTokenMetadata}
  */
 export const mapToIntegrationTokenMetadata = (
-  providerTokenType: IntegrationProviderTokenTypeEnum,
+  providerType: IntegrationProviderTypesEnum,
   metadata: any
 ): IntegrationTokenMetadata => {
-  if (providerTokenType === 'oauth2') {
+  if (providerType === 'oauth2') {
     return mapToOAuth2IntegrationTokenMetadata(metadata)
   }
 
   // fail early, this should never happen in production, aka famous last words
-  throw new Error(`Unsupported provider token type: ${providerTokenType}`)
+  throw new Error(`Unsupported provider token type: ${providerType}`)
 }
 
 /**

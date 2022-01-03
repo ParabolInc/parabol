@@ -134,9 +134,9 @@ const MattermostPanel = (props: Props) => {
     const provider: AddIntegrationProviderInput = {
       orgId,
       teamId,
-      type: 'mattermost',
+      provider: 'mattermost',
       scope: 'team',
-      tokenType: 'webhook',
+      type: 'webhook',
       name: `Mattermost webhook for ${preferredName ? preferredName : email}`,
       webhookProviderMetadataInput: {
         webhookUrl

@@ -92,7 +92,7 @@ const GitLabProviderRow = (props: Props) => {
               availableProviders {
                 id
                 scope
-                tokenType
+                type
                 name
                 updatedAt
                 providerMetadata {

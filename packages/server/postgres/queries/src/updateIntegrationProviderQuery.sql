@@ -5,8 +5,8 @@
 UPDATE
   "IntegrationProvider"
 SET
+  "provider" = COALESCE(:provider, "provider"),
   "type" = COALESCE(:type, "type"),
-  "tokenType" = COALESCE(:tokenType, "tokenType"),
   "scope" = COALESCE(:scope, "scope"),
   "name" = COALESCE(:name, "name"),
   "providerMetadata" = COALESCE(:providerMetadata, "providerMetadata"),

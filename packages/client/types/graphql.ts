@@ -50098,12 +50098,12 @@ export interface IIntegrationProvider {
   /**
    * The service this provider is associated with
    */
-  type: IntegrationProviderTypeEnum;
+  provider: IntegrationProvidersEnum;
 
   /**
    * The kind of token used by this provider
    */
-  tokenType: IntegrationProviderTokenTypeEnum;
+  type: IntegrationProviderTypesEnum;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
@@ -50129,7 +50129,7 @@ export interface IIntegrationProvider {
 /**
  * The type of Integration Provider service
  */
-export const enum IntegrationProviderTypeEnum {
+export const enum IntegrationProvidersEnum {
   gitlab = 'gitlab',
   mattermost = 'mattermost',
 }
@@ -50137,7 +50137,7 @@ export const enum IntegrationProviderTypeEnum {
 /**
  * The kind of token provided by the service
  */
-export const enum IntegrationProviderTokenTypeEnum {
+export const enum IntegrationProviderTypesEnum {
   oauth2 = 'oauth2',
   pat = 'pat',
   webhook = 'webhook',
@@ -59850,12 +59850,12 @@ export interface IAddIntegrationProviderInput {
   /**
    * The service this provider is associated with
    */
-  type?: IntegrationProviderTypeEnum | null;
+  provider?: IntegrationProvidersEnum | null;
 
   /**
    * The kind of token used by this provider
    */
-  tokenType?: IntegrationProviderTokenTypeEnum | null;
+  type?: IntegrationProviderTypesEnum | null;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
@@ -59961,12 +59961,12 @@ export interface IUpdateIntegrationProviderInput {
   /**
    * The service this provider is associated with
    */
-  type?: IntegrationProviderTypeEnum | null;
+  provider?: IntegrationProvidersEnum | null;
 
   /**
    * The kind of token used by this provider
    */
-  tokenType?: IntegrationProviderTokenTypeEnum | null;
+  type?: IntegrationProviderTypesEnum | null;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)

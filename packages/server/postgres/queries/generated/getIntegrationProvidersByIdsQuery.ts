@@ -3,9 +3,9 @@ import { PreparedQuery } from '@pgtyped/query';
 
 export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderTokenTypeEnum = 'oauth2' | 'pat' | 'webhook';
+export type IntegrationProviderTypesEnum = 'oauth2' | 'pat' | 'webhook';
 
-export type IntegrationProviderTypesEnum = 'gitlab' | 'mattermost';
+export type IntegrationProvidersEnum = 'gitlab' | 'mattermost';
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
@@ -19,8 +19,8 @@ export interface IGetIntegrationProvidersByIdsQueryResult {
   id: number;
   createdAt: Date;
   updatedAt: Date;
+  provider: IntegrationProvidersEnum;
   type: IntegrationProviderTypesEnum;
-  tokenType: IntegrationProviderTokenTypeEnum;
   scope: IntegrationProviderScopesEnum;
   scopeGlobal: boolean | null;
   orgId: string | null;
@@ -36,13 +36,17 @@ export interface IGetIntegrationProvidersByIdsQueryQuery {
   result: IGetIntegrationProvidersByIdsQueryResult;
 }
 
-const getIntegrationProvidersByIdsQueryIR: any = {"name":"getIntegrationProvidersByIdsQuery","params":[{"name":"ids","codeRefs":{"defined":{"a":54,"b":56,"line":3,"col":9},"used":[{"a":119,"b":121,"line":6,"col":13}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"ids":true},"statement":{"body":"SELECT * FROM \"IntegrationProvider\"\nWHERE id in :ids","loc":{"a":70,"b":121,"line":5,"col":0}}};
+const getIntegrationProvidersByIdsQueryIR: any = {"name":"getIntegrationProvidersByIdsQuery","params":[{"name":"ids","codeRefs":{"defined":{"a":52,"b":54,"line":3,"col":8},"used":[{"a":124,"b":126,"line":10,"col":9}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"ids":true},"statement":{"body":"SELECT\n  *\nFROM\n  \"IntegrationProvider\"\nWHERE\n  id in :ids","loc":{"a":69,"b":126,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT * FROM "IntegrationProvider"
- * WHERE id in :ids
+ * SELECT
+ *   *
+ * FROM
+ *   "IntegrationProvider"
+ * WHERE
+ *   id in :ids
  * ```
  */
 export const getIntegrationProvidersByIdsQuery = new PreparedQuery<IGetIntegrationProvidersByIdsQueryParams,IGetIntegrationProvidersByIdsQueryResult>(getIntegrationProvidersByIdsQueryIR);

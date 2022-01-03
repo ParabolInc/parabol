@@ -7,9 +7,9 @@ import {
 } from 'graphql'
 import GraphQLURLType from './GraphQLURLType'
 import {
-  IntegrationProviderTypeEnum,
-  IntegrationProviderTokenTypeEnum,
-  IntegrationProviderScopesEnum
+  IntegrationProviderScopesEnum,
+  IntegrationProvidersEnum,
+  IntegrationProviderTypesEnum
 } from './IntegrationProvider'
 
 export const WebhookProviderMetadataInput = new GraphQLInputObjectType({
@@ -58,12 +58,12 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team that the token is linked to'
     },
-    type: {
-      type: IntegrationProviderTypeEnum,
+    provider: {
+      type: IntegrationProvidersEnum,
       description: 'The service this provider is associated with'
     },
-    tokenType: {
-      type: IntegrationProviderTokenTypeEnum,
+    type: {
+      type: IntegrationProviderTypesEnum,
       description: 'The kind of token used by this provider'
     },
     scope: {

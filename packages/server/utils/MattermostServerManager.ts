@@ -96,7 +96,7 @@ class MattermostServerManager extends MattermostManager {
   static async getBestWebhook(userId: string, teamId: string, dataLoader: DataLoaderWorker) {
     const tokensAndProvider = await dataLoader
       .get('integrationTokensByTeamWithProvider')
-      .load({type: 'mattermost', teamId})
+      .load({provider: 'mattermost', teamId})
     if (!tokensAndProvider) {
       console.warn('No Mattermost integration tokens found for team', teamId)
       return null

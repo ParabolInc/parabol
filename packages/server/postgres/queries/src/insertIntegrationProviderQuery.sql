@@ -3,8 +3,8 @@
  */
 INSERT INTO
   "IntegrationProvider" (
+    "provider",
     "type",
-    "tokenType",
     "scope",
     "name",
     "providerMetadata",
@@ -13,8 +13,8 @@ INSERT INTO
   )
 VALUES
   (
+    :provider,
     :type,
-    :tokenType,
     :scope,
     :name,
     :providerMetadata,

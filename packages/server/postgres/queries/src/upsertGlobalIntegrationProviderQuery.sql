@@ -3,8 +3,8 @@
  */
 INSERT INTO
 	"IntegrationProvider" (
+		"provider",
 		"type",
-		"tokenType",
 		"scope",
 		"isActive",
 		"name",
@@ -12,26 +12,26 @@ INSERT INTO
 	)
 VALUES
 	(
-		:type,
-		'oauth2' :: "IntegrationProviderTokenTypeEnum",
+		:provider,
+		'oauth2' :: "IntegrationProviderTypesEnum",
 		'global' :: "IntegrationProviderScopesEnum",
 		TRUE,
 		:name,
 		:providerMetadata
-	) ON CONFLICT ("scopeGlobal", "type") DO
+	) ON CONFLICT ("scopeGlobal", "provider") DO
 UPDATE
 SET
 	(
+		"provider",
 		"type",
-		"tokenType",
 		"scope",
 		"isActive",
 		"name",
 		"providerMetadata",
 		"updatedAt"
 	) = (
-		EXCLUDED."type",
-		'oauth2' :: "IntegrationProviderTokenTypeEnum",
+		EXCLUDED."provider",
+		'oauth2' :: "IntegrationProviderTypesEnum",
 		'global' :: "IntegrationProviderScopesEnum",
 		TRUE,
 		EXCLUDED."name",

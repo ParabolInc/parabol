@@ -30,16 +30,28 @@ export interface IUpsertIntegrationTokenQueryQuery {
   result: IUpsertIntegrationTokenQueryResult;
 }
 
-const upsertIntegrationTokenQueryIR: any = {"name":"upsertIntegrationTokenQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":48,"b":51,"line":3,"col":9},"used":[{"a":196,"b":199,"line":6,"col":10}]},"transform":{"type":"pick_tuple","keys":["tokenMetadata","providerId","teamId","userId"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO \"IntegrationToken\" (\"tokenMetadata\", \"providerId\", \"teamId\", \"userId\")\n  VALUES :auth\n  ON CONFLICT (\"providerId\", \"userId\", \"teamId\")\n  DO UPDATE\n  SET (\"tokenMetadata\", \"providerId\", \"isActive\", \"updatedAt\") = (\n    EXCLUDED.\"tokenMetadata\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  ) RETURNING *","loc":{"a":103,"b":432,"line":5,"col":0}}};
+const upsertIntegrationTokenQueryIR: any = {"name":"upsertIntegrationTokenQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":46,"b":49,"line":3,"col":8},"used":[{"a":217,"b":220,"line":13,"col":3}]},"transform":{"type":"pick_tuple","keys":["tokenMetadata","providerId","teamId","userId"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO\n  \"IntegrationToken\" (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"teamId\",\n    \"userId\"\n  )\nVALUES\n  :auth ON CONFLICT (\"providerId\", \"userId\", \"teamId\") DO\nUPDATE\nSET\n  (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"tokenMetadata\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  ) RETURNING *","loc":{"a":102,"b":469,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
- * INSERT INTO "IntegrationToken" ("tokenMetadata", "providerId", "teamId", "userId")
- *   VALUES :auth
- *   ON CONFLICT ("providerId", "userId", "teamId")
- *   DO UPDATE
- *   SET ("tokenMetadata", "providerId", "isActive", "updatedAt") = (
+ * INSERT INTO
+ *   "IntegrationToken" (
+ *     "tokenMetadata",
+ *     "providerId",
+ *     "teamId",
+ *     "userId"
+ *   )
+ * VALUES
+ *   :auth ON CONFLICT ("providerId", "userId", "teamId") DO
+ * UPDATE
+ * SET
+ *   (
+ *     "tokenMetadata",
+ *     "providerId",
+ *     "isActive",
+ *     "updatedAt"
+ *   ) = (
  *     EXCLUDED."tokenMetadata",
  *     EXCLUDED."providerId",
  *     TRUE,
