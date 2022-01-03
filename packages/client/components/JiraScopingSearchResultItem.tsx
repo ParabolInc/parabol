@@ -76,7 +76,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
   }
   return (
     <Item onClick={onClick}>
-      <Checkbox active={isSelected || isTemp} disabled={disabled} />
+      <Checkbox active={isSelected || isTemp} disabled={disabled || submitting} />
       <Issue>
         <Title>{summary}</Title>
         <StyledLink
