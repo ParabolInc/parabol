@@ -17,7 +17,7 @@ const handleParsedMessage = async (
     // only reply if an opId was included. no opId = no sink on client = ignored
     if (response?.id) {
       const {type, id: opId, payload} = response
-      sendGQLMessage(connectionContext, opId, type, false, payload)
+      sendGQLMessage(connectionContext, opId, type, true, payload)
     }
   })
 }
