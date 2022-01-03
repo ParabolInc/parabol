@@ -166,11 +166,11 @@ function wrapSchema(tracer: Tracer, config: Config, schema: PatchedGraphQLSchema
   schema._datadog_patched = true
 
   const typeMap = schema.getTypeMap()
-  Object.values(typeMap).forEach((namedType) => {
+  Object.values(typeMap).forEach((namedType: any) => {
     // ignore introspection and scalar types
     if (namedType.name.startsWith('__') || !isObjectType(namedType)) return
     const fields = namedType.getFields()
-    Object.values(fields).forEach((field) => {
+    Object.values(fields).forEach((field: any) => {
       if (field.resolve) {
         field.resolve = wrappedResolve(tracer, config, field.resolve)
       }

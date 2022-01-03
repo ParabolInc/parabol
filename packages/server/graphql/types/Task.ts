@@ -69,7 +69,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
       resolve: async (
         {id: taskId, integration, teamId}: DBTask,
         _args: unknown,
-        {dataLoader, authToken}
+        {dataLoader, authToken}: GQLContext
       ) => {
         const viewerId = getUserId(authToken)
         if (integration?.service === 'jira') {

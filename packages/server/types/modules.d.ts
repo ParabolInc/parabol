@@ -13,6 +13,9 @@ declare module 'draft-js-utils'
 declare module 'draft-js-export-markdown'
 declare module '@authenio/samlify-node-xmllint'
 declare module 'node-env-flag'
+declare module 'es6-promisify'
+declare module 'nodemailer'
+declare module 'jsdom'
 
 declare const __PRODUCTION__: string
 declare const __SOCKET_PORT__: string

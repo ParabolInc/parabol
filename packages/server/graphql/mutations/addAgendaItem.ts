@@ -3,7 +3,7 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
 import getRethink from '../../database/rethinkDriver'
-import AgendaItem from '../../database/types/AgendaItem'
+import AgendaItem, {AgendaItemInput} from '../../database/types/AgendaItem'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -52,7 +52,7 @@ export default {
           ...validNewAgendaItem,
           id: agendaItemId,
           teamId
-        })
+        } as AgendaItemInput)
       )
       .run()
 

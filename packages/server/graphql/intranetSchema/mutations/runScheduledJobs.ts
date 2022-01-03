@@ -85,7 +85,7 @@ const jobProcessors = {
 
 export type ScheduledJobUnion = Parameters<ValueOf<typeof jobProcessors>>[0]
 
-const processJob = async (job: ScheduledJobUnion, {dataLoader}: GQLContext) => {
+const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: DataLoaderWorker}) => {
   const r = await getRethink()
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)

@@ -1,8 +1,8 @@
-import {AuthToken} from './../../../../client/types/AuthToken'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import {getUserId} from '../../../utils/authorization'
+import AuthToken from '../../../database/types/AuthToken'
 
 const safelyCastVote = async (
   authToken: AuthToken,
@@ -39,9 +39,7 @@ const safelyCastVote = async (
     .get(reflectionGroupId)
     .update((group) => {
       return r.branch(
-        group('voterIds')
-          .count(userId)
-          .lt(maxVotesPerGroup),
+        group('voterIds').count(userId).lt(maxVotesPerGroup),
         {
           updatedAt: now,
           voterIds: group('voterIds').append(userId)

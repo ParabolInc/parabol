@@ -28,7 +28,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/cheerio": "^0.22.30",
     "@types/dotenv": "^6.1.1",
-    "@types/es6-promisify": "^6.0.0",
+    "@types/es6-promisify": "^6.0.1",
     "@types/fbjs": "^3.0.2",
     "@types/graphql": "^14.5.0",
     "@types/ioredis": "^4.0.10",

@@ -15,7 +15,7 @@ const hydrators = {
   }
 }
 
-const hydrateRedisDoc = (docStr: string, type: keyof typeof hydrators) => {
+const hydrateRedisDoc = (docStr: string, type: string) => {
   const doc = JSON.parse(docStr)
   const hydrator = hydrators[type]
   if (!hydrator) return doc
