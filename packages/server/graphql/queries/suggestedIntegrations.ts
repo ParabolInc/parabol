@@ -7,8 +7,8 @@ import SuggestedIntegrationQueryPayload from '../types/SuggestedIntegrationQuery
 import fetchAllIntegrations from './helpers/fetchAllIntegrations'
 import {
   getPermsByTaskService,
-  getTeamIntegrationsByUserId,
-  IntegrationByUserId,
+  getTeamIntegrationsByTeamId,
+  IntegrationByTeamId,
   useOnlyUserIntegrations
 } from './helpers/suggestedIntegrationHelpers'
 
@@ -33,33 +33,30 @@ export default {
         return standardError(new Error('Not on same team as user'), {userId: viewerId})
       }
     }
-    const teamIntegrationsByUserId = await getTeamIntegrationsByUserId(teamId)
+    const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
+    const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId, permLookup)
 
     // if the team has no integrations, return every possible integration for the user
-    if (!teamIntegrationsByUserId.length) {
+    if (!teamIntegrationsByTeamId.length) {
       const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
       return {items, hasMore: false}
     }
-    const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByUserId, userId)
+    const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByTeamId, userId)
     if (userIntegrationsForTeam) {
       return {items: userIntegrationsForTeam, hasMore: true}
     }
 
-    const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-
     const aMonthAgo = new Date(Date.now() - ms('30d'))
-    const recentUserIntegrations = teamIntegrationsByUserId.filter(
+    const recentUserIntegrations = teamIntegrationsByTeamId.filter(
       (integration) => integration.userId === userId && integration.lastUsedAt >= aMonthAgo
     )
 
     const idSet = new Set()
-    const dedupedTeamIntegrations = [] as IntegrationByUserId[]
-    const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByUserId]
+    const dedupedTeamIntegrations = [] as IntegrationByTeamId[]
+    const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByTeamId]
     // dedupes for perms, user vs team items, as well as possible name changes
     userAndTeamItems.forEach((integration) => {
-      if (!permLookup[integration.service] || idSet.has(integration.id)) {
-        return
-      }
+      if (idSet.has(integration.id)) return
       idSet.add(integration.id)
       dedupedTeamIntegrations.push(integration)
     })

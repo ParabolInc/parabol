@@ -1,16 +1,20 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import {JiraGetIssueRes, JiraProject} from 'parabol-client/utils/AtlassianManager'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {JiraGetIssueRes, JiraProject, RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import JiraIssue from '../graphql/types/JiraIssue'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
+import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
+import {getIssue} from '../utils/atlassian/jiraIssues'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import {isNotNull} from '../utils/predicates'
+import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
-import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
-import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 
 type TeamUserKey = {
   teamId: string
@@ -28,6 +32,7 @@ export interface JiraIssueKey {
   userId: string
   cloudId: string
   issueKey: string
+  viewerId: string
   taskId?: string
 }
 
@@ -122,7 +127,7 @@ export const jiraIssue = (
   return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId, cloudId, issueKey, taskId}) => {
+        keys.map(async ({teamId, userId, cloudId, issueKey, taskId, viewerId}) => {
           const [auth, estimates] = await Promise.all([
             parent.get('freshAtlassianAuth').load({teamId, userId}),
             taskId ? parent.get('latestTaskEstimates').load(taskId) : []
@@ -134,51 +139,63 @@ export const jiraIssue = (
             .map((estimate) => estimate.jiraFieldId)
             .filter(isNotNull)
 
-          const issueRes = await manager.getIssue(cloudId, issueKey, estimateFieldIds)
-          if (issueRes instanceof Error) {
+          const cacheImagesUpdateEstimates = async (issueRes: JiraGetIssueRes) => {
+            const {fields} = issueRes
+            const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
+              cloudId,
+              issueRes.fields.descriptionHTML
+            )
+            downloadAndCacheImages(manager, imageUrlToHash)
+            // update our records
+            await Promise.all(
+              estimates.map((estimate) => {
+                const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
+                if (!jiraFieldId) {
+                  return undefined
+                }
+                const freshEstimate = String(fields[jiraFieldId])
+                if (freshEstimate === label) return undefined
+                // mutate current dataloader
+                estimate.label = freshEstimate
+                return insertTaskEstimate({
+                  changeSource: 'external',
+                  // keep the link to the discussion alive, if possible
+                  discussionId,
+                  jiraFieldId,
+                  label: freshEstimate,
+                  name,
+                  meetingId: null,
+                  stageId: null,
+                  taskId,
+                  userId
+                })
+              })
+            )
+            return {
+              ...fields,
+              descriptionHTML: updatedDescription,
+              teamId,
+              userId
+            }
+          }
+
+          const publishUpdatedIssue = async (issue) => {
+            const res = await cacheImagesUpdateEstimates(issue)
+            publish(SubscriptionChannel.NOTIFICATION, viewerId, JiraIssue, res)
+          }
+          const issueRes = await getIssue(
+            manager,
+            cloudId,
+            issueKey,
+            publishUpdatedIssue,
+            estimateFieldIds
+          )
+          if (issueRes instanceof Error || issueRes instanceof RateLimitError) {
             sendToSentry(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
             return null
           }
-          const {fields} = issueRes
-
-          const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
-            cloudId,
-            issueRes.fields.descriptionHTML
-          )
-          downloadAndCacheImages(manager, imageUrlToHash)
-
-          // update our records
-          await Promise.all(
-            estimates.map((estimate) => {
-              const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
-              if (!jiraFieldId) {
-                return undefined
-              }
-              const freshEstimate = String(fields[jiraFieldId])
-              if (freshEstimate === label) return undefined
-              // mutate current dataloader
-              estimate.label = freshEstimate
-              return insertTaskEstimate({
-                changeSource: 'external',
-                // keep the link to the discussion alive, if possible
-                discussionId,
-                jiraFieldId,
-                label: freshEstimate,
-                name,
-                meetingId: null,
-                stageId: null,
-                taskId,
-                userId
-              })
-            })
-          )
-
-          return {
-            ...fields,
-            descriptionHTML: updatedDescription,
-            teamId,
-            userId
-          }
+          const res = await cacheImagesUpdateEstimates(issueRes)
+          return res
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
