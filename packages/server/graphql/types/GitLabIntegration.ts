@@ -1,35 +1,9 @@
-import {
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import GitLabIntegrationId from 'parabol-client/shared/gqlIds/GitLabIntegrationId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProvider from './IntegrationProvider'
-
-const OAuth2TokenMetadata = new GraphQLObjectType<any, GQLContext>({
-  name: 'OAuth2TokenMetadata',
-  description: 'OAuth2 token metadata for an Integration Provider',
-  fields: () => ({
-    accessToken: {
-      type: GraphQLString,
-      description: 'The access token'
-    },
-    refreshToken: {
-      type: GraphQLString,
-      description: 'The refresh token'
-    },
-    scopes: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      description: 'The scopes this token is valid for'
-    }
-  })
-})
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitLabIntegration',
@@ -61,30 +35,25 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({tokenMetadata}) => !!tokenMetadata?.accessToken
     },
-    tokenMetadata: {
-      type: OAuth2TokenMetadata,
-      description: 'The active Integration Provider details to be used with token',
-      resolve: ({userId, tokenMetadata}, _args: unknown, {authToken}) => {
+    accessToken: {
+      type: GraphQLID,
+      description: 'The OAuth2 access token, typically a JWT',
+      resolve: ({accessToken, userId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        return viewerId === userId ? tokenMetadata : null
+        return viewerId === userId ? accessToken : null
       }
     },
-    activeProvider: {
-      description: 'The active Integration Provider details to be used with token',
+    scopes: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The OAuth2 scopes this token is valid for'
+    },
+    cloudProvider: {
+      description: 'The provider to connect to GitLab cloud',
       type: IntegrationProvider
     },
-    availableProviders: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProvider))),
-      description: 'A list of available Integration Providers',
-      resolve: async ({teamId}, _args: unknown, {dataLoader}) => {
-        const orgId = (await dataLoader.get('teams').load(teamId)).orgId
-        const providers = await dataLoader.get('integrationProvidersByType').load({
-          provider: 'gitlab',
-          teamId,
-          orgId
-        })
-        return providers
-      }
+    selfHostedProvider: {
+      description: 'The provider to connect to a self-hosted GitLab instance',
+      type: IntegrationProvider
     }
   })
 })

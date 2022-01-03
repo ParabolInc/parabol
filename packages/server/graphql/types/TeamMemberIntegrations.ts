@@ -36,7 +36,11 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     gitlab: {
       type: GitLabIntegration,
       description: 'All things associated with a GitLab integration for a team member',
-      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        _args: unknown,
+        {authToken, dataLoader}
+      ) => {
         if (!isTeamMember(authToken, teamId)) return null
         const integrationToken = await dataLoader
           .get('integrationTokenWithProvider')
