@@ -48,7 +48,11 @@ import initDB, {
   DemoThreadableEdge,
   demoViewerId,
   JiraProjectKeyLookup,
-  RetroDemoDB
+  RetroDemoDB,
+  JiraDemoKey,
+  GitHubDemoKey,
+  makeSuggestedIntegrationJira,
+  makeSuggestedIntegrationGitHub
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
@@ -243,9 +247,52 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuRootQuery: () => {
+    TaskFooterIntegrateMenuRootQuery: (_$teamId, $userId) => {
+      const user = this.db.users[0]
       return {
-        ...this.db.viewer
+        viewer: {
+          ...user,
+          userOnTeam: {
+            ...user
+          },
+          assigneeTeamMember: {
+            preferredName: user.id === $userId ? user.preferredName : 'assignee_name',
+            integrations:
+              user.id === $userId
+                ? {
+                    id: 'demoTeamIntegrations',
+                    atlassian: {
+                      id: 'demoTeamAtlassianIntegration',
+                      isActive: true,
+                      accessToken: '123'
+                    },
+                    github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'}
+                  }
+                : null,
+            suggestedIntegrations: {
+              hasMore: true,
+              items: [
+                makeSuggestedIntegrationJira(JiraDemoKey),
+                makeSuggestedIntegrationGitHub(GitHubDemoKey)
+              ]
+            }
+          },
+          viewerTeamMember: {
+            preferredName: user.preferredName,
+            integrations: {
+              id: 'demoTeamIntegrations',
+              atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
+              github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'}
+            },
+            suggestedIntegrations: {
+              hasMore: true,
+              items: [
+                makeSuggestedIntegrationJira(JiraDemoKey),
+                makeSuggestedIntegrationGitHub(GitHubDemoKey)
+              ]
+            }
+          }
+        }
       }
     },
     NewMeetingSummaryRootQuery: () => {

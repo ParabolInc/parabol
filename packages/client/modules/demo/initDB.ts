@@ -116,7 +116,7 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
+export const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
   return {
     __typename: 'SuggestedIntegrationJira',
     id: key,
@@ -125,7 +125,9 @@ const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) =>
   }
 }
 
-const makeSuggestedIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
+export const makeSuggestedIntegrationGitHub = (
+  nameWithOwner: keyof typeof GitHubProjectKeyLookup
+) => ({
   __typename: 'SuggestedIntegrationGitHub',
   id: `si:${nameWithOwner}`,
   ...GitHubProjectKeyLookup[nameWithOwner]
@@ -420,49 +422,6 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
   } as Partial<IRetrospectiveMeeting>
 }
 
-const initViewer = (user) => {
-  return {
-    viewer: {
-      ...user,
-      userOnTeam: {
-        ...user
-      },
-      assigneeTeamMember: {
-        preferredName: user.preferredName,
-        integrations: {
-          id: 'demoTeamIntegrations',
-          atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
-          github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'},
-          slack: initSlackAuth(user.id)
-        },
-        suggestedIntegrations: {
-          hasMore: true,
-          items: [
-            makeSuggestedIntegrationJira(JiraDemoKey),
-            makeSuggestedIntegrationGitHub(GitHubDemoKey)
-          ]
-        }
-      },
-      viewerTeamMember: {
-        preferredName: user.preferredName,
-        integrations: {
-          id: 'demoTeamIntegrations',
-          atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
-          github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'},
-          slack: initSlackAuth(user.id)
-        },
-        suggestedIntegrations: {
-          hasMore: true,
-          items: [
-            makeSuggestedIntegrationJira(JiraDemoKey),
-            makeSuggestedIntegrationGitHub(GitHubDemoKey)
-          ]
-        }
-      }
-    }
-  }
-}
-
 type BaseUser = {
   preferredName: string
   email: string
@@ -505,7 +464,6 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
   newMeeting.teamId = team.id
   newMeeting.topicCount = 0
   newMeeting.settings = team.meetingSettings as any
-  const viewer = initViewer(users[0])
   return {
     discussions: [] as DemoDiscussion[],
     meetingMembers,
@@ -520,8 +478,7 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
     users,
     _updatedAt: new Date(),
     _tempID: 1,
-    _botScript: botScript,
-    viewer
+    _botScript: botScript
   }
 }
 
