@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import useTooltip from 'parabol-client/hooks/useTooltip'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useMutationProps from '../../../../hooks/useMutationProps'
 import FlatButton from '../../../../components/FlatButton'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import GitLabSVG from '../../../../components/GitLabSVG'
@@ -12,16 +11,17 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import useMutationProps from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import GitLabClientManager, {GitLabIntegrationProvider} from '../../../../utils/GitLabClientManager'
 import {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
 import GitLabConfigMenu from './GitLabConfigMenu'
-import useTooltip from 'parabol-client/hooks/useTooltip'
 
 const StyledButton = styled(FlatButton)({
   color: PALETTE.SLATE_700,
@@ -128,13 +128,9 @@ const GitLabProviderRow = (props: Props) => {
   const openOAuth = (provider: GitLabIntegrationProvider) => {
     GitLabClientManager.openOAuth(atmosphere, provider, teamId, mutationProps)
   }
-  const {
-    originRef: menuRef,
-    menuPortal,
-    menuProps,
-    terminatePortal,
-    togglePortal
-  } = useMenu(MenuPosition.UPPER_RIGHT)
+  const {originRef: menuRef, menuPortal, menuProps, togglePortal} = useMenu(
+    MenuPosition.UPPER_RIGHT
+  )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const primaryProviderName = !secondaryProvider ? 'Connect' : primaryProvider!.name
   const {
@@ -211,7 +207,6 @@ const GitLabProviderRow = (props: Props) => {
               mutationProps={mutationProps}
               providerId={gitlab!.activeProvider!.id}
               teamId={gitlab!.teamId}
-              terminatePortal={terminatePortal}
             />
           )}
         </ListAndMenu>

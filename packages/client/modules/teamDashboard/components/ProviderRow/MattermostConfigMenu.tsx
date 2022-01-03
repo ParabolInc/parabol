@@ -5,27 +5,27 @@ import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import RemoveIntegrationProviderMutation from '../../../../mutations/RemoveIntegrationProviderMutation'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
+import {Duration} from '../../../../types/constEnums'
 
 interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
   providerId: string
-  terminatePortal: () => void
 }
 
 const MattermostConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, providerId, teamId, terminatePortal} = props
+  const {menuProps, mutationProps, providerId, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
 
   const removeMattermostAuth = () => {
     if (submitting) return
     submitMutation()
-    RemoveIntegrationProviderMutation(atmosphere, {providerId, teamId}, {onCompleted, onError})
-    // Our parent component does not unmount, and it often re-renders before the CSS menu transition
-    // can complete. We nuke the portal here to ensure the menu is closed.
-    terminatePortal()
+    // wait for the portal to animate closed before removing, otherwise it'll stick around forever
+    setTimeout(() => {
+      RemoveIntegrationProviderMutation(atmosphere, {providerId, teamId}, {onCompleted, onError})
+    }, Duration.PORTAL_CLOSE)
   }
   return (
     <Menu ariaLabel={'Configure your Mattermost integration'} {...menuProps}>
