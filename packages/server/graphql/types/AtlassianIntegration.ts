@@ -30,7 +30,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'Composite key in atlassiani:teamId:userId format',
-      resolve: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId)
+      resolve: ({teamId, userId}: {teamId: string; userId: string}) =>
+        AtlassianIntegrationId.join(teamId, userId)
     },
     isActive: {
       description: 'true if the auth is valid, else false',
@@ -41,7 +42,11 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user',
       type: GraphQLID,
-      resolve: async ({accessToken, userId}: AtlassianAuth, _args: unknown, {authToken}) => {
+      resolve: async (
+        {accessToken, userId}: AtlassianAuth,
+        _args: unknown,
+        {authToken}: GQLContext
+      ) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
@@ -99,15 +104,9 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async (
         {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
-        {
-          first,
-          queryString,
-          isJQL,
-          projectKeyFilters
-        }: {first: number; queryString: string; isJQL: boolean; projectKeyFilters: string[]},
-        context
+        {first, queryString, isJQL, projectKeyFilters},
+        {authToken}: GQLContext
       ) => {
-        const {authToken} = context
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -158,7 +157,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async (
         {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
         _args: unknown,
-        {authToken}
+        {authToken}: GQLContext
       ) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
@@ -180,7 +179,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'Filter the fields to single cloudId'
         }
       },
-      resolve: async ({accessToken}: AtlassianAuth, {cloudId}: {cloudId: string}) => {
+      resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
         if (fields instanceof Error || fields instanceof RateLimitError) return []

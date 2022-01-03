@@ -14,7 +14,10 @@ const unlockStagesForParticipants = (facilitatorStageId: string, phases: Generic
   return unlockAllStagesForPhase(phases, stage.phaseType, false)
 }
 
-const unlockNextStageForFacilitator = (facilitatorStageId, phases) => {
+const unlockNextStageForFacilitator = (
+  facilitatorStageId: string,
+  phases: GenericMeetingPhase[]
+) => {
   const nextStageRes = findStageAfterId(phases, facilitatorStageId)
   if (!nextStageRes) return []
   const {stage: nextStage} = nextStageRes as any
@@ -23,7 +26,7 @@ const unlockNextStageForFacilitator = (facilitatorStageId, phases) => {
   return unlockAllStagesForPhase(phases, nextStage.phaseType, true)
 }
 
-const unlockNextStages = (facilitatorStageId: string, phases: any[]) => {
+const unlockNextStages = (facilitatorStageId: string, phases: GenericMeetingPhase[]) => {
   const unlockedFacilitatorStageIds = unlockNextStageForFacilitator(facilitatorStageId, phases)
   const unlockedParticipantStageIds = unlockStagesForParticipants(facilitatorStageId, phases)
   return [...unlockedFacilitatorStageIds, ...unlockedParticipantStageIds]
