@@ -3524,11 +3524,6 @@
     "@types/react" "*"
     immutable "~3.7.4"
 
-"@types/es6-promisify@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/@types/es6-promisify/-/es6-promisify-6.0.1.tgz#ce013718244cbbf56dd9974718e29251db13e514"
-  integrity sha512-48cyHC9riRATnxEHgNjbhzm8GGGg+L8FFTyhYBcTkY/OXXLzEG/F+dHMNzSLccjn6ZKlfhZREmUqmMJmidfwrQ==
-
 "@types/eslint-scope@^3.7.0":
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.2.tgz#11e96a868c67acf65bf6f11d10bb89ea71d5e473"

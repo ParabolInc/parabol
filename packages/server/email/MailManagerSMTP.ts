@@ -3,9 +3,9 @@ import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerSMTP extends MailManager {
-  transport = new nodemailer.createTransport({
+  transport = nodemailer.createTransport({
     host: process.env.MAIL_SMTP_HOST,
-    port: process.env.MAIL_SMTP_PORT,
+    port: Number(process.env.MAIL_SMTP_PORT) || 0,
     auth: process.env.MAIL_SMTP_USER
       ? {
           user: process.env.MAIL_SMTP_USER,

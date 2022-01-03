@@ -58,7 +58,6 @@ const traverseTree = (initialTree: ClusterfckTree, groupingOptions: GroupingOpti
       visit(tree.left, newGroup)
       visit(tree.right, newGroup)
       groups.push(newGroup)
-      console.log({groups, newGroup})
     } else {
       visit(tree.left, group)
       visit(tree.right, group)

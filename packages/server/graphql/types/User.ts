@@ -149,7 +149,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
     isWatched: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if all user sessions are being recorded in LogRocket, else false',
-      resolve: ({isWatched}: {isWatched: boolean}) => isWatched
+      resolve: ({isWatched}: {isWatched: boolean}) => !!isWatched
     },
     lastMetAt: {
       type: GraphQLISO8601Type,
@@ -362,11 +362,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           description: 'the orgId'
         }
       },
-      resolve: async (
-        {id: userId}: {id: string},
-        {orgId}, //: {orgId: string},
-        {authToken, dataLoader}: GQLContext
-      ) => {
+      resolve: async ({id: userId}: {id: string}, {orgId}, {authToken, dataLoader}: GQLContext) => {
         // AUTH
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
