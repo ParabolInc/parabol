@@ -59318,7 +59318,7 @@ export interface ISetPokerSpectateSuccess {
   meetingMember: IPokerMeetingMember;
 
   /**
-   * The updated stages
+   * The stages that were updated if the viewer voted and then changed to spectating
    */
   stages: Array<IEstimateStage> | null;
 }

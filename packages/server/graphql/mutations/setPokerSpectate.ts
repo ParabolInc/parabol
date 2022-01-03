@@ -9,6 +9,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SetPokerSpectatePayload from '../types/SetPokerSpectatePayload'
 import getPhase from '../../utils/getPhase'
+import EstimateStage from '../../database/types/EstimateStage'
 
 const setPokerSpectate = {
   type: new GraphQLNonNull(SetPokerSpectatePayload),
@@ -72,16 +73,18 @@ const setPokerSpectate = {
 
     // mutate the dataLoader cache
     meetingMember.isSpectating = isSpectating
+    const dirtyStages: EstimateStage[] = []
     stages.forEach(async (stage) => {
       const {id: stageId, scores} = stage
       const viewerVotedInStage = scores.find(({userId}) => userId === viewerId)
       if (viewerVotedInStage) {
         const newStageScores = scores.filter(({userId}) => userId !== viewerId)
         stage.scores = newStageScores
+        dirtyStages.push(stage)
         await removeVoteForUserId(viewerId, stageId, meetingId)
       }
     })
-    const data = {meetingId, userId: viewerId, stages, teamId, phaseType: 'ESTIMATE'}
+    const data = {meetingId, userId: viewerId, dirtyStages, teamId, phaseType: 'ESTIMATE'}
     publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectateSuccess', data, subOptions)
     return data
   }
