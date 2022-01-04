@@ -83,7 +83,7 @@ const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_CO
     display: 'block',
     position: 'absolute',
     top: 0,
-    bottom: '4px',
+    bottom: '6px',
     width: '100%'
   })
 )
