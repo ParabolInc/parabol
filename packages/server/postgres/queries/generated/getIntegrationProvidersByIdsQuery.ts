@@ -1,11 +1,11 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getIntegrationProvidersByIdsQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
+export type IntegrationProviderScopeEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderTypesEnum = 'oauth2' | 'pat' | 'webhook';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
 
-export type IntegrationProvidersEnum = 'gitlab' | 'mattermost';
+export type IntegrationProviderTypeEnum = 'oauth2' | 'pat' | 'webhook';
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
@@ -19,14 +19,12 @@ export interface IGetIntegrationProvidersByIdsQueryResult {
   id: number;
   createdAt: Date;
   updatedAt: Date;
-  provider: IntegrationProvidersEnum;
-  type: IntegrationProviderTypesEnum;
-  scope: IntegrationProviderScopesEnum;
-  scopeGlobal: boolean | null;
-  orgId: string | null;
+  service: IntegrationProviderServiceEnum;
+  type: IntegrationProviderTypeEnum;
+  scope: IntegrationProviderScopeEnum;
+  scopeGlobal: boolean;
   teamId: string | null;
   isActive: boolean;
-  name: string;
   providerMetadata: Json;
 }
 

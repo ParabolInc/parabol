@@ -4,7 +4,9 @@ import {
   insertIntegrationProviderQuery
 } from './generated/insertIntegrationProviderQuery'
 
-const insertIntegrationProvider = async (provider: IInsertIntegrationProviderQueryParams) =>
-  insertIntegrationProviderQuery.run(provider, getPg())
+const insertIntegrationProvider = async (provider: IInsertIntegrationProviderQueryParams) => {
+  const result = await insertIntegrationProviderQuery.run(provider, getPg())
+  return result[0].id
+}
 
 export default insertIntegrationProvider

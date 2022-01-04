@@ -8,45 +8,45 @@ import {
   GraphQLString,
   GraphQLUnionType
 } from 'graphql'
-import GraphQLURLType from './GraphQLURLType'
-import {GQLContext} from '../graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {
+  IntegrationProviderScopeEnum as DBIntegrationProviderScopeEnum,
   IntegrationProvidersEnum as DBIntegrationProvidersEnum,
-  IntegrationProviderScopesEnum as DBIntegrationProviderScopesEnum,
-  IntegrationProviderTypesEnum as DBIntegrationProviderTypesEnum,
+  IntegrationProviderTypeEnum as DBIntegrationProviderTypeEnum,
   isOAuth2ProviderMetadata,
   isWebHookProviderMetadata
 } from '../../postgres/types/IntegrationProvider'
+import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import GraphQLURLType from './GraphQLURLType'
 
 export const IntegrationProvidersEnum = new GraphQLEnumType({
   name: 'IntegrationProvidersEnum',
-  description: 'The type of Integration Provider service',
+  description: 'The name of the service of the Integration Provider',
   values: {
     gitlab: {},
     mattermost: {}
   } as {[P in DBIntegrationProvidersEnum]: any}
 })
 
-export const IntegrationProviderTypesEnum = new GraphQLEnumType({
-  name: 'IntegrationProviderTypesEnum',
+export const IntegrationProviderTypeEnum = new GraphQLEnumType({
+  name: 'IntegrationProviderTypeEnum',
   description: 'The kind of token provided by the service',
   values: {
     oauth2: {},
     pat: {},
     webhook: {}
-  } as {[P in DBIntegrationProviderTypesEnum]: any}
+  } as {[P in DBIntegrationProviderTypeEnum]: any}
 })
 
-export const IntegrationProviderScopesEnum = new GraphQLEnumType({
-  name: 'IntegrationProviderScopesEnum',
+export const IntegrationProviderScopeEnum = new GraphQLEnumType({
+  name: 'IntegrationProviderScopeEnum',
   description: 'The scope this provider was created on (globally, org-wide, or on the team)',
   values: {
     global: {},
     org: {},
     team: {}
-  } as {[P in DBIntegrationProviderScopesEnum]: any}
+  } as {[P in DBIntegrationProviderScopeEnum]: any}
 })
 
 const OAuth2ProviderMetadata = new GraphQLObjectType<any, GQLContext>({
@@ -103,10 +103,6 @@ const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
       description: "The provider's unique identifier",
       resolve: ({id}) => IntegrationProviderId.join(id)
     },
-    orgId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The org that the access token is attached to'
-    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team that the token is linked to'
@@ -125,20 +121,16 @@ const IntegrationProvider = new GraphQLObjectType<any, GQLContext>({
     },
     type: {
       description: 'The kind of token used by this provider',
-      type: new GraphQLNonNull(IntegrationProviderTypesEnum)
+      type: new GraphQLNonNull(IntegrationProviderTypeEnum)
     },
     scope: {
       description:
         'The scope this provider configuration was created at (globally, org-wide, or by the team)',
-      type: new GraphQLNonNull(IntegrationProviderScopesEnum)
+      type: new GraphQLNonNull(IntegrationProviderScopeEnum)
     },
     isActive: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the provider configuration should be used'
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the provider, suitable for display on a user interface'
     },
     providerMetadata: {
       type: new GraphQLNonNull(ProviderMetadata),

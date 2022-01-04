@@ -1,15 +1,15 @@
 import {
   GraphQLID,
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLInputObjectType,
   GraphQLString
 } from 'graphql'
 import GraphQLURLType from './GraphQLURLType'
 import {
-  IntegrationProviderScopesEnum,
+  IntegrationProviderScopeEnum,
   IntegrationProvidersEnum,
-  IntegrationProviderTypesEnum
+  IntegrationProviderTypeEnum
 } from './IntegrationProvider'
 
 export const WebhookProviderMetadataInput = new GraphQLInputObjectType({
@@ -50,10 +50,6 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
   name: 'AddIntegrationProviderInput',
   description: 'An Integration Provider configuration',
   fields: () => ({
-    orgId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The org that the access token is attached to'
-    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team that the token is linked to'
@@ -63,17 +59,13 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
       description: 'The service this provider is associated with'
     },
     type: {
-      type: IntegrationProviderTypesEnum,
+      type: IntegrationProviderTypeEnum,
       description: 'The kind of token used by this provider'
     },
     scope: {
-      type: IntegrationProviderScopesEnum,
+      type: IntegrationProviderScopeEnum,
       description:
         'The scope this provider configuration was created at (globally, org-wide, or by the team)'
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the provider, suitable for display on a user interface'
     },
     webhookProviderMetadataInput: {
       type: WebhookProviderMetadataInput,

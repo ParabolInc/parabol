@@ -1,24 +1,24 @@
+import linkify from 'parabol-client/utils/linkify'
+import AuthToken from '../../../database/types/AuthToken'
+import {
+  IntegrationProviderMetadata,
+  IntegrationProviderScopeEnum,
+  isOAuth2ProviderMetadata,
+  isWebHookProviderMetadata
+} from '../../../postgres/types/IntegrationProvider'
 import {
   getUserId,
   isSuperUser as checkSuperUser,
   isTeamMember as checkTeamMember,
   isUserBillingLeader as checkBillingLeader
 } from '../../../utils/authorization'
-import AuthToken from '../../../database/types/AuthToken'
 import {DataLoaderWorker} from '../../graphql'
-import linkify from 'parabol-client/utils/linkify'
-import {notifyWebhookConfigUpdated} from './notifications/notifyMattermost'
-import {
-  IntegrationProviderMetadata,
-  IntegrationProviderScopesEnum,
-  isOAuth2ProviderMetadata,
-  isWebHookProviderMetadata
-} from '../../../postgres/types/IntegrationProvider'
 import {AddIntegrationProviderInput} from '../addIntegrationProvider'
+import {notifyWebhookConfigUpdated} from './notifications/notifyMattermost'
 
 export const checkAuthPermissions = (
   dataLoader: DataLoaderWorker,
-  scope: IntegrationProviderScopesEnum,
+  scope: IntegrationProviderScopeEnum,
   authToken: AuthToken,
   teamId: string | null,
   orgId: string | null

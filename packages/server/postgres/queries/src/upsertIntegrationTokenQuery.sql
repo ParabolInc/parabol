@@ -23,4 +23,4 @@ SET
     EXCLUDED."providerId",
     TRUE,
     CURRENT_TIMESTAMP
-  ) RETURNING *;
+  );

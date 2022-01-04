@@ -1,41 +1,13 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/insertIntegrationProviderWithTokenQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderScopesEnum = 'global' | 'org' | 'team';
+/** Query 'InsertIntegrationProviderWithTokenQuery' is invalid, so its result is assigned type 'never' */
+export type IInsertIntegrationProviderWithTokenQueryResult = never;
 
-export type IntegrationProviderTypesEnum = 'oauth2' | 'pat' | 'webhook';
+/** Query 'InsertIntegrationProviderWithTokenQuery' is invalid, so its parameters are assigned type 'never' */
+export type IInsertIntegrationProviderWithTokenQueryParams = never;
 
-export type IntegrationProvidersEnum = 'gitlab' | 'mattermost';
-
-export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-
-/** 'InsertIntegrationProviderWithTokenQuery' parameters type */
-export interface IInsertIntegrationProviderWithTokenQueryParams {
-  provider: {
-    provider: IntegrationProvidersEnum | null | void,
-    type: IntegrationProviderTypesEnum | null | void,
-    scope: IntegrationProviderScopesEnum | null | void,
-    name: string | null | void,
-    providerMetadata: Json | null | void,
-    orgId: string | null | void,
-    teamId: string | null | void
-  };
-  userId: string | null | void;
-  tokenMetadata: Json | null | void;
-}
-
-/** 'InsertIntegrationProviderWithTokenQuery' return type */
-export interface IInsertIntegrationProviderWithTokenQueryResult {
-  id: number;
-}
-
-/** 'InsertIntegrationProviderWithTokenQuery' query type */
-export interface IInsertIntegrationProviderWithTokenQueryQuery {
-  params: IInsertIntegrationProviderWithTokenQueryParams;
-  result: IInsertIntegrationProviderWithTokenQueryResult;
-}
-
-const insertIntegrationProviderWithTokenQueryIR: any = {"name":"insertIntegrationProviderWithTokenQuery","params":[{"name":"provider","codeRefs":{"defined":{"a":58,"b":65,"line":3,"col":8},"used":[{"a":338,"b":345,"line":17,"col":5}]},"transform":{"type":"pick_tuple","keys":["provider","type","scope","name","providerMetadata","orgId","teamId"]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":612,"b":617,"line":38,"col":9}]}},{"name":"tokenMetadata","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":723,"b":735,"line":45,"col":9}]}}],"usedParamSet":{"provider":true,"userId":true,"tokenMetadata":true},"statement":{"body":"WITH providerRow AS (\n  INSERT INTO\n    \"IntegrationProvider\" (\n      \"provider\",\n      \"type\",\n      \"scope\",\n      \"name\",\n      \"providerMetadata\",\n      \"orgId\",\n      \"teamId\"\n    )\n  VALUES\n    :provider RETURNING *\n)\nINSERT INTO\n  \"IntegrationToken\" (\n    \"teamId\",\n    \"userId\",\n    \"providerId\",\n    \"tokenMetadata\"\n  )\nSELECT\n  *\nFROM\n  (\n    VALUES\n      (\n        (\n          SELECT\n            \"teamId\"\n          FROM\n            providerRow\n        ),\n        :userId,\n        (\n          SELECT\n            \"id\"\n          FROM\n            providerRow\n        ),\n        :tokenMetadata :: jsonb\n      )\n  ) AS \"integrationToken\" ON CONFLICT (\"providerId\", \"userId\", \"teamId\") DO\nUPDATE\nSET\n  (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"tokenMetadata\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  ) RETURNING \"providerId\" AS \"id\"","loc":{"a":137,"b":1046,"line":5,"col":0}}};
+const insertIntegrationProviderWithTokenQueryIR: any = {"name":"insertIntegrationProviderWithTokenQuery","params":[{"name":"provider","codeRefs":{"defined":{"a":58,"b":65,"line":3,"col":8},"used":[{"a":296,"b":303,"line":15,"col":5}]},"transform":{"type":"pick_tuple","keys":["provider","type","scope","providerMetadata","teamId"]}},{"name":"userId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":570,"b":575,"line":36,"col":9}]}},{"name":"tokenMetadata","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":681,"b":693,"line":43,"col":9}]}}],"usedParamSet":{"provider":true,"userId":true,"tokenMetadata":true},"statement":{"body":"WITH providerRow AS (\n  INSERT INTO\n    \"IntegrationProvider\" (\n      \"provider\",\n      \"type\",\n      \"scope\",\n      \"providerMetadata\",\n      \"teamId\"\n    )\n  VALUES\n    :provider RETURNING *\n)\nINSERT INTO\n  \"IntegrationToken\" (\n    \"teamId\",\n    \"userId\",\n    \"providerId\",\n    \"tokenMetadata\"\n  )\nSELECT\n  *\nFROM\n  (\n    VALUES\n      (\n        (\n          SELECT\n            \"teamId\"\n          FROM\n            providerRow\n        ),\n        :userId,\n        (\n          SELECT\n            \"id\"\n          FROM\n            providerRow\n        ),\n        :tokenMetadata :: jsonb\n      )\n  ) AS \"integrationToken\" ON CONFLICT (\"providerId\", \"userId\", \"teamId\") DO\nUPDATE\nSET\n  (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"tokenMetadata\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  ) RETURNING \"providerId\" AS \"id\"","loc":{"a":124,"b":1004,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -46,9 +18,7 @@ const insertIntegrationProviderWithTokenQueryIR: any = {"name":"insertIntegratio
  *       "provider",
  *       "type",
  *       "scope",
- *       "name",
  *       "providerMetadata",
- *       "orgId",
  *       "teamId"
  *     )
  *   VALUES

@@ -1,6 +1,6 @@
 import {
   IntegrationProviderScopesEnum,
-  IntegrationProviderTypesEnum
+  IntegrationProviderTokenTypeEnum
 } from '~/__generated__/GitLabProviderRow_viewer.graphql'
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
@@ -12,7 +12,7 @@ export interface GitLabIntegrationProvider {
   id: string
   name: string
   scope: IntegrationProviderScopesEnum
-  type: IntegrationProviderTypesEnum
+  type: IntegrationProviderTokenTypeEnum
   updatedAt: string
   providerMetadata: {
     clientId?: string

@@ -1,21 +1,12 @@
 import {IUpsertIntegrationTokenQueryResult as _IntegrationToken} from '../queries/generated/upsertIntegrationTokenQuery'
-import {IntegrationProviderTypesEnum} from './IntegrationProvider'
-
-/**
- * Metadata structure of the OAuth2 integration token.
- */
-export interface OAuth2IntegrationTokenMetadata {
-  accessToken: string
-  refreshToken: string
-  scopes: string[]
-}
+import {IntegrationProviderTypeEnum} from './IntegrationProvider'
 
 /**
  * Union type representing all the possible types of integration tokens
  */
-export type IntegrationTokenMetadata = OAuth2IntegrationTokenMetadata
+export type IntegrationTokenMetadata = any
 
-const mapToOAuth2IntegrationTokenMetadata = (metadata: any): OAuth2IntegrationTokenMetadata => {
+const mapToOAuth2IntegrationTokenMetadata = (metadata: any) => {
   const {accessToken, refreshToken, scopes} = metadata
   return {accessToken, refreshToken, scopes}
 }
@@ -28,9 +19,9 @@ const mapToOAuth2IntegrationTokenMetadata = (metadata: any): OAuth2IntegrationTo
  * @returns properly typed {@link IntegrationTokenMetadata}
  */
 export const mapToIntegrationTokenMetadata = (
-  providerType: IntegrationProviderTypesEnum,
+  providerType: IntegrationProviderTypeEnum,
   metadata: any
-): IntegrationTokenMetadata => {
+) => {
   if (providerType === 'oauth2') {
     return mapToOAuth2IntegrationTokenMetadata(metadata)
   }

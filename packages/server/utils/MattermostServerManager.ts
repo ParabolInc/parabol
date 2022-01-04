@@ -93,27 +93,29 @@ class MattermostServerManager extends MattermostManager {
     super(webhookUrl)
   }
 
-  static async getBestWebhook(userId: string, teamId: string, dataLoader: DataLoaderWorker) {
-    const tokensAndProvider = await dataLoader
-      .get('integrationTokensByTeamWithProvider')
-      .load({provider: 'mattermost', teamId})
-    if (!tokensAndProvider) {
-      console.warn('No Mattermost integration tokens found for team', teamId)
-      return null
-    }
+  static async getBestWebhook(userId: string, teamId: string, _dataLoader: DataLoaderWorker) {
+    return userId + teamId
+    // FIXME GitLab
+    // const tokensAndProvider = await dataLoader
+    //   .get('integrationTokensByTeamWithProvider')
+    //   .load({provider: 'mattermost', teamId})
+    // if (!tokensAndProvider) {
+    //   console.warn('No Mattermost integration tokens found for team', teamId)
+    //   return null
+    // }
 
-    const bestTokenAndProvider = tokensAndProvider.sort((a, b) => {
-      const userIdCompare = (b.userId != userId ? 0 : 1) - (a.userId != userId ? 0 : 1)
-      if (userIdCompare != 0) return userIdCompare
-      return b.updatedAt.getTime() - a.updatedAt.getTime()
-    })[0]
+    // const bestTokenAndProvider = tokensAndProvider.sort((a, b) => {
+    //   const userIdCompare = (b.userId != userId ? 0 : 1) - (a.userId != userId ? 0 : 1)
+    //   if (userIdCompare != 0) return userIdCompare
+    //   return b.updatedAt.getTime() - a.updatedAt.getTime()
+    // })[0]
 
-    const {
-      provider: {providerMetadata}
-    } = bestTokenAndProvider
+    // const {
+    //   provider: {providerMetadata}
+    // } = bestTokenAndProvider
 
-    //TODO: make it nicer when mattermost is aligned to new patterns
-    return (providerMetadata as any).webhookUrl
+    // //TODO: make it nicer when mattermost is aligned to new patterns
+    // return (providerMetadata as any).webhookUrl
   }
 }
 

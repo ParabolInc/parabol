@@ -1,10 +1,21 @@
 import getPg from '../getPg'
-import {
-  IUpsertIntegrationTokenQueryParams,
-  upsertIntegrationTokenQuery
-} from './generated/upsertIntegrationTokenQuery'
+import {upsertIntegrationTokenQuery} from './generated/upsertIntegrationTokenQuery'
 
-const upsertGitHubAuth = async (auth: IUpsertIntegrationTokenQueryParams['auth']) => {
-  await upsertIntegrationTokenQuery.run({auth}, getPg())
+type OAuth2TokenMetadata = {
+  accessToken: string
+  refreshToken: string
+  scopes: string
 }
-export default upsertGitHubAuth
+type WebhookTokenMetadata = Record<string, never>
+
+interface IAuth {
+  providerId: number
+  tokenMetadata: OAuth2TokenMetadata | WebhookTokenMetadata
+  teamId: string
+  userId: string
+}
+
+const upsertIntegrationToken = async (auth: IAuth) => {
+  return upsertIntegrationTokenQuery.run({auth}, getPg())
+}
+export default upsertIntegrationToken

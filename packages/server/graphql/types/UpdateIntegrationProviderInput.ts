@@ -1,12 +1,12 @@
-import {GraphQLID, GraphQLNonNull, GraphQLInputObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
 import {
   OAuth2ProviderMetadataInput,
   WebhookProviderMetadataInput
 } from './AddIntegrationProviderInput'
 import {
-  IntegrationProviderScopesEnum,
+  IntegrationProviderScopeEnum,
   IntegrationProvidersEnum,
-  IntegrationProviderTypesEnum
+  IntegrationProviderTypeEnum
 } from './IntegrationProvider'
 
 const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
@@ -22,12 +22,12 @@ const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
       description: 'The service this provider is associated with'
     },
     type: {
-      type: IntegrationProviderTypesEnum,
+      type: IntegrationProviderTypeEnum,
       description: 'The kind of token used by this provider'
     },
 
     scope: {
-      type: IntegrationProviderScopesEnum,
+      type: IntegrationProviderScopeEnum,
       description:
         'The scope this provider configuration was created at (globally, org-wide, or by the team)'
     },

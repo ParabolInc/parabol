@@ -3,21 +3,17 @@
  */
 INSERT INTO
   "IntegrationProvider" (
-    "provider",
+    "service",
     "type",
     "scope",
-    "name",
     "providerMetadata",
-    "orgId",
     "teamId"
   )
 VALUES
   (
-    :provider,
+    :service,
     :type,
     :scope,
-    :name,
     :providerMetadata,
-    :orgId,
     :teamId
-  );
+  ) RETURNING id;

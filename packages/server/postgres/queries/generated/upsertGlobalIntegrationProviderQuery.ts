@@ -1,14 +1,13 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/upsertGlobalIntegrationProviderQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProvidersEnum = 'gitlab' | 'mattermost';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
 /** 'UpsertGlobalIntegrationProviderQuery' parameters type */
 export interface IUpsertGlobalIntegrationProviderQueryParams {
-  provider: IntegrationProvidersEnum | null | void;
-  name: string | null | void;
+  service: IntegrationProviderServiceEnum | null | void;
   providerMetadata: Json | null | void;
 }
 
@@ -21,45 +20,41 @@ export interface IUpsertGlobalIntegrationProviderQueryQuery {
   result: IUpsertGlobalIntegrationProviderQueryResult;
 }
 
-const upsertGlobalIntegrationProviderQueryIR: any = {"name":"upsertGlobalIntegrationProviderQuery","params":[{"name":"provider","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":184,"b":191,"line":15,"col":3}]}},{"name":"name","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":298,"b":301,"line":19,"col":3}]}},{"name":"providerMetadata","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":307,"b":322,"line":20,"col":3}]}}],"usedParamSet":{"provider":true,"name":true,"providerMetadata":true},"statement":{"body":"INSERT INTO\n\t\"IntegrationProvider\" (\n\t\t\"provider\",\n\t\t\"type\",\n\t\t\"scope\",\n\t\t\"isActive\",\n\t\t\"name\",\n\t\t\"providerMetadata\"\n\t)\nVALUES\n\t(\n\t\t:provider,\n\t\t'oauth2' :: \"IntegrationProviderTypesEnum\",\n\t\t'global' :: \"IntegrationProviderScopesEnum\",\n\t\tTRUE,\n\t\t:name,\n\t\t:providerMetadata\n\t) ON CONFLICT (\"scopeGlobal\", \"provider\") DO\nUPDATE\nSET\n\t(\n\t\t\"provider\",\n\t\t\"type\",\n\t\t\"scope\",\n\t\t\"isActive\",\n\t\t\"name\",\n\t\t\"providerMetadata\",\n\t\t\"updatedAt\"\n\t) = (\n\t\tEXCLUDED.\"provider\",\n\t\t'oauth2' :: \"IntegrationProviderTypesEnum\",\n\t\t'global' :: \"IntegrationProviderScopesEnum\",\n\t\tTRUE,\n\t\tEXCLUDED.\"name\",\n\t\tEXCLUDED.\"providerMetadata\",\n\t\tCURRENT_TIMESTAMP\n\t)","loc":{"a":51,"b":681,"line":4,"col":0}}};
+const upsertGlobalIntegrationProviderQueryIR: any = {"name":"upsertGlobalIntegrationProviderQuery","params":[{"name":"service","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":173,"b":179,"line":14,"col":3}]}},{"name":"providerMetadata","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":284,"b":299,"line":18,"col":3}]}}],"usedParamSet":{"service":true,"providerMetadata":true},"statement":{"body":"INSERT INTO\n\t\"IntegrationProvider\" (\n\t\t\"service\",\n\t\t\"type\",\n\t\t\"scope\",\n\t\t\"isActive\",\n\t\t\"providerMetadata\"\n\t)\nVALUES\n\t(\n\t\t:service,\n\t\t'oauth2' :: \"IntegrationProviderTypeEnum\",\n\t\t'global' :: \"IntegrationProviderScopeEnum\",\n\t\tTRUE,\n\t\t:providerMetadata\n\t) ON CONFLICT (\"scopeGlobal\", \"service\") DO\nUPDATE\nSET\n\t(\n\t\t\"service\",\n\t\t\"type\",\n\t\t\"scope\",\n\t\t\"isActive\",\n\t\t\"providerMetadata\",\n\t\t\"updatedAt\"\n\t) = (\n\t\tEXCLUDED.\"service\",\n\t\t'oauth2' :: \"IntegrationProviderTypeEnum\",\n\t\t'global' :: \"IntegrationProviderScopeEnum\",\n\t\tTRUE,\n\t\tEXCLUDED.\"providerMetadata\",\n\t\tCURRENT_TIMESTAMP\n\t)","loc":{"a":51,"b":624,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO
  * 	"IntegrationProvider" (
- * 		"provider",
+ * 		"service",
  * 		"type",
  * 		"scope",
  * 		"isActive",
- * 		"name",
  * 		"providerMetadata"
  * 	)
  * VALUES
  * 	(
- * 		:provider,
- * 		'oauth2' :: "IntegrationProviderTypesEnum",
- * 		'global' :: "IntegrationProviderScopesEnum",
+ * 		:service,
+ * 		'oauth2' :: "IntegrationProviderTypeEnum",
+ * 		'global' :: "IntegrationProviderScopeEnum",
  * 		TRUE,
- * 		:name,
  * 		:providerMetadata
- * 	) ON CONFLICT ("scopeGlobal", "provider") DO
+ * 	) ON CONFLICT ("scopeGlobal", "service") DO
  * UPDATE
  * SET
  * 	(
- * 		"provider",
+ * 		"service",
  * 		"type",
  * 		"scope",
  * 		"isActive",
- * 		"name",
  * 		"providerMetadata",
  * 		"updatedAt"
  * 	) = (
- * 		EXCLUDED."provider",
- * 		'oauth2' :: "IntegrationProviderTypesEnum",
- * 		'global' :: "IntegrationProviderScopesEnum",
+ * 		EXCLUDED."service",
+ * 		'oauth2' :: "IntegrationProviderTypeEnum",
+ * 		'global' :: "IntegrationProviderScopeEnum",
  * 		TRUE,
- * 		EXCLUDED."name",
  * 		EXCLUDED."providerMetadata",
  * 		CURRENT_TIMESTAMP
  * 	)

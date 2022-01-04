@@ -5,12 +5,10 @@
 UPDATE
   "IntegrationProvider"
 SET
-  "provider" = COALESCE(:provider, "provider"),
+  "service" = COALESCE(:service, "service"),
   "type" = COALESCE(:type, "type"),
   "scope" = COALESCE(:scope, "scope"),
-  "name" = COALESCE(:name, "name"),
   "providerMetadata" = COALESCE(:providerMetadata, "providerMetadata"),
-  "orgId" = COALESCE(:orgId, "orgId"),
   "teamId" = COALESCE(:teamId, "teamId")
 WHERE
   id IN :ids;

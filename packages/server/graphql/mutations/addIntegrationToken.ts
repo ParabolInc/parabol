@@ -1,28 +1,26 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import AddIntegrationTokenPayload from '../types/AddIntegrationTokenPayload'
-import standardError from '../../utils/standardError'
-import publish from '../../utils/publish'
-import GraphQLURLType from '../types/GraphQLURLType'
-import upsertIntegrationToken from '../../postgres/queries/upsertIntegrationToken'
+import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import {
-  createAuthorizationManager,
   allAuthRequiredIntegrationProviderTypes,
+  createAuthorizationManager,
   OAuth2IntegrationAuthorizationManager
 } from '../../integrations/IntegrationAuthorizationManager'
 import {
   createIntegrationServerManager,
   OAuth2IntegrationServerManager
 } from '../../integrations/IntegrationServerManager'
-
-import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
-
+import upsertIntegrationToken from '../../postgres/queries/upsertIntegrationToken'
 import {
   IntegrationProvider,
   isOAuth2ProviderMetadata
 } from '../../postgres/types/IntegrationProvider'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import AddIntegrationTokenPayload from '../types/AddIntegrationTokenPayload'
+import GraphQLURLType from '../types/GraphQLURLType'
 
 const createOAuth2TokenMetadata = async (
   provider: IntegrationProvider,
@@ -31,15 +29,17 @@ const createOAuth2TokenMetadata = async (
   info: GraphQLResolveInfo,
   context: GQLContext
 ) => {
-  const authorizationManager =
-    await createAuthorizationManager<OAuth2IntegrationAuthorizationManager>(provider)
+  const authorizationManager = await createAuthorizationManager<
+    OAuth2IntegrationAuthorizationManager
+  >(provider)
 
   const authResponse = await authorizationManager.authorize(oauthCodeOrPat, redirectUri)
   if (authResponse instanceof Error) return authResponse
   const {accessToken, refreshToken, scopes} = authResponse
 
-  const integrationServerManager =
-    await createIntegrationServerManager<OAuth2IntegrationServerManager>(provider, accessToken)
+  const integrationServerManager = await createIntegrationServerManager<
+    OAuth2IntegrationServerManager
+  >(provider, accessToken)
   const [tokenTestValid, tokenTestError] = await integrationServerManager.isTokenValid(
     info,
     context
@@ -64,7 +64,7 @@ const createTokenMetadata = async (
     return createOAuth2TokenMetadata(provider, oauthCodeOrPat, redirectUri, info, context)
   }
 
-  return null
+  return {}
 }
 
 const addIntegrationToken = {

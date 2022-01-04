@@ -1,12 +1,12 @@
 import {
   IGetIntegrationProvidersByIdsQueryResult as _IntegrationProvider,
-  IntegrationProviderTypesEnum as _IntegrationProviderTypesEnum,
-  IntegrationProviderScopesEnum as _IntegrationProviderScopesEnum,
-  IntegrationProvidersEnum as _IntegrationProvidersEnum
+  IntegrationProviderScopeEnum as _IntegrationProviderScopeEnum,
+  IntegrationProvidersEnum as _IntegrationProvidersEnum,
+  IntegrationProviderTypeEnum as _IntegrationProviderTypeEnum
 } from '../queries/generated/getIntegrationProvidersByIdsQuery'
 
-export type IntegrationProviderTypesEnum = _IntegrationProviderTypesEnum
-export type IntegrationProviderScopesEnum = _IntegrationProviderScopesEnum
+export type IntegrationProviderTypeEnum = _IntegrationProviderTypeEnum
+export type IntegrationProviderScopeEnum = _IntegrationProviderScopeEnum
 export type IntegrationProvidersEnum = _IntegrationProvidersEnum
 
 /**
@@ -20,8 +20,8 @@ export type IntegrationProvidersEnum = _IntegrationProvidersEnum
  * 2. To make it availabe to all users, configure new integration in {@link makeGlobalIntegrationProvidersFromEnv}, it'll be automatically added to the database via postdeploy script
  * 3. New integration can also be added in runtime by calling {@link addIntegrationProvider} mutation by superuser
  *
- * When adding a new integration provider with a new authentication type (not defined in {@link IntegrationProviderTypesEnum}), a few additional steps is required
- * 1. Add a new type to the {@link IntegrationProviderTypesEnum} via migration
+ * When adding a new integration provider with a new authentication type (not defined in {@link IntegrationProviderTypeEnum}), a few additional steps is required
+ * 1. Add a new type to the {@link IntegrationProviderTypeEnum} via migration
  * 2. If there's any speficic data needed to be store by the integration provider define a new type, similar to {@link OAuth2IntegrationProviderMetadata} and {@link WebHookIntegrationProviderMetadata}
  * 3. Make sure to add a case in {@link mapToIntegrationProviderMetadata} to get properly typed data from the providerMetadata field
  * 4. Update {@link addIntegrationProvider} mutation to handle the new type properly
@@ -76,7 +76,7 @@ const mapToWebHookIntegrationProviderMetadata = (providerMetadata: any) => {
  * @returns properly typed {@link IntegrationProviderMetadata}
  */
 export const mapToIntegrationProviderMetadata = (
-  providerType: IntegrationProviderTypesEnum,
+  providerType: IntegrationProviderTypeEnum,
   providerMetadata: any
 ): IntegrationProviderMetadata => {
   if (providerType === 'oauth2') {
@@ -110,25 +110,6 @@ export const isWebHookProviderMetadata = (
   return maybeWebhookProviderMetadata.webhookUrl !== undefined
 }
 
-export interface IntegrationProviderInput {
-  id: string
-  name: string
-  orgId: string
-  teamId: string
-  provider: IntegrationProvidersEnum
-  type: IntegrationProviderTypesEnum
-  scope: IntegrationProviderScopesEnum
-  webhookProviderMetadataInput?: {
-    webhookUrl: string
-  }
-  oAuth2ProviderMetadataInput?: {
-    scopes: string[]
-    clientId: string
-    clientSecret: string
-    serverBaseUrl: string
-  }
-}
-
 export interface GlobalIntegrationProviderInsertParams {
   provider: IntegrationProvidersEnum
   name: string
@@ -136,7 +117,7 @@ export interface GlobalIntegrationProviderInsertParams {
 }
 
 export const createGlobalIntegrationProviderUpsertParams = (
-  integrationProvider: Omit<IntegrationProviderInput, 'id' | 'scope' | 'orgId' | 'teamId'>
+  integrationProvider: any
 ): GlobalIntegrationProviderInsertParams => {
   const newIntegrationProviderMetadata = integrationProvider.oAuth2ProviderMetadataInput
   if (
@@ -153,19 +134,7 @@ export const createGlobalIntegrationProviderUpsertParams = (
   }
 }
 
-export interface IntegrationProviderInsertParams {
-  name: string
-  orgId: string
-  teamId: string
-  provider: IntegrationProvidersEnum
-  type: IntegrationProviderTypesEnum
-  scope: IntegrationProviderScopesEnum
-  providerMetadata: Record<string, string | string[]>
-}
-
-export const createIntegrationProviderInsertParams = (
-  integrationProvider: Omit<IntegrationProviderInput, 'id'>
-): IntegrationProviderInsertParams => {
+export const createIntegrationProviderInsertParams = (integrationProvider: any) => {
   let providerMetadata: Record<string, string | string[]> = {}
   if (integrationProvider.type === 'oauth2') {
     providerMetadata = integrationProvider.oAuth2ProviderMetadataInput!
@@ -174,11 +143,9 @@ export const createIntegrationProviderInsertParams = (
   }
 
   return {
-    name: integrationProvider.name,
     provider: integrationProvider.provider,
     type: integrationProvider.type,
     scope: integrationProvider.scope,
-    orgId: integrationProvider.orgId,
     teamId: integrationProvider.teamId,
     providerMetadata
   }

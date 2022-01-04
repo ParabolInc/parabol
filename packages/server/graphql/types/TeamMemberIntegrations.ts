@@ -43,7 +43,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       ) => {
         if (!isTeamMember(authToken, teamId)) return null
         const integrationToken = await dataLoader
-          .get('integrationTokenWithProvider')
+          .get('integrationToken')
           .load({provider: 'gitlab', teamId, userId})
         if (!integrationToken) return {teamId}
         // resolving activeProvider to include in source for GitLab api stitch
@@ -59,7 +59,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         const integrationToken = await dataLoader
-          .get('integrationTokenWithProvider')
+          .get('integrationToken')
           .load({provider: 'mattermost', teamId, userId})
         if (!integrationToken) return {teamId}
         const integrationProvider = await dataLoader

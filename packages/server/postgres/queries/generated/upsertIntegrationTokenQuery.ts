@@ -14,15 +14,7 @@ export interface IUpsertIntegrationTokenQueryParams {
 }
 
 /** 'UpsertIntegrationTokenQuery' return type */
-export interface IUpsertIntegrationTokenQueryResult {
-  createdAt: Date;
-  updatedAt: Date;
-  teamId: string;
-  userId: string;
-  providerId: number;
-  isActive: boolean;
-  tokenMetadata: Json;
-}
+export type IUpsertIntegrationTokenQueryResult = void;
 
 /** 'UpsertIntegrationTokenQuery' query type */
 export interface IUpsertIntegrationTokenQueryQuery {
@@ -30,7 +22,7 @@ export interface IUpsertIntegrationTokenQueryQuery {
   result: IUpsertIntegrationTokenQueryResult;
 }
 
-const upsertIntegrationTokenQueryIR: any = {"name":"upsertIntegrationTokenQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":46,"b":49,"line":3,"col":8},"used":[{"a":217,"b":220,"line":13,"col":3}]},"transform":{"type":"pick_tuple","keys":["tokenMetadata","providerId","teamId","userId"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO\n  \"IntegrationToken\" (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"teamId\",\n    \"userId\"\n  )\nVALUES\n  :auth ON CONFLICT (\"providerId\", \"userId\", \"teamId\") DO\nUPDATE\nSET\n  (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"tokenMetadata\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  ) RETURNING *","loc":{"a":102,"b":469,"line":5,"col":0}}};
+const upsertIntegrationTokenQueryIR: any = {"name":"upsertIntegrationTokenQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":46,"b":49,"line":3,"col":8},"used":[{"a":217,"b":220,"line":13,"col":3}]},"transform":{"type":"pick_tuple","keys":["tokenMetadata","providerId","teamId","userId"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO\n  \"IntegrationToken\" (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"teamId\",\n    \"userId\"\n  )\nVALUES\n  :auth ON CONFLICT (\"providerId\", \"userId\", \"teamId\") DO\nUPDATE\nSET\n  (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"tokenMetadata\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  )","loc":{"a":102,"b":457,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -56,7 +48,7 @@ const upsertIntegrationTokenQueryIR: any = {"name":"upsertIntegrationTokenQuery"
  *     EXCLUDED."providerId",
  *     TRUE,
  *     CURRENT_TIMESTAMP
- *   ) RETURNING *
+ *   )
  * ```
  */
 export const upsertIntegrationTokenQuery = new PreparedQuery<IUpsertIntegrationTokenQueryParams,IUpsertIntegrationTokenQueryResult>(upsertIntegrationTokenQueryIR);
