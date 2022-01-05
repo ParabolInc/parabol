@@ -19,7 +19,8 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint} from '../../../../types/constEnums'
-import GitLabClientManager, {GitLabIntegrationProvider} from '../../../../utils/GitLabClientManager'
+import GitLabClientManager from '../../../../utils/GitLabClientManager'
+import {GitLabProviderRowProvider} from '../../../../__generated__/GitLabProviderRowProvider.graphql'
 import {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
 import GitLabConfigMenu from './GitLabConfigMenu'
 
@@ -81,33 +82,58 @@ const ProviderName = styled('div')({
   verticalAlign: 'middle'
 })
 
+graphql`
+  fragment GitLabProviderRowProvider on IntegrationProviderOAuth2 {
+    id
+    clientId
+    serverBaseUrl
+  }
+`
 const GitLabProviderRow = (props: Props) => {
   const {teamId, viewerRef} = props
+  const atmosphere = useAtmosphere()
+  const mutationProps = useMutationProps()
+  const {submitting} = mutationProps
+  const openOAuth = (provider: Omit<GitLabProviderRowProvider, ' $refType'>) => {
+    const {id: providerId, clientId, serverBaseUrl} = provider
+    GitLabClientManager.openOAuth(
+      atmosphere,
+      providerId,
+      clientId,
+      serverBaseUrl,
+      teamId,
+      mutationProps
+    )
+  }
+  const {originRef: menuRef, menuPortal, menuProps, togglePortal} = useMenu(
+    MenuPosition.UPPER_RIGHT
+  )
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {
+    tooltipPortal: cloudTooltipPortal,
+    openTooltip: cloudOpenTooltip,
+    closeTooltip: cloudCloseTooltip,
+    originRef: cloudRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
+  const {
+    tooltipPortal: selfHostedTooltipPortal,
+    openTooltip: selfHostedOpenTooltip,
+    closeTooltip: selfHostedCloseTooltip,
+    originRef: selfHostedRef
+  } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
+
   const viewer = useFragment(
     graphql`
       fragment GitLabProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
           integrations {
             gitlab {
-              availableProviders {
-                id
-                scope
-                type
-                name
-                updatedAt
-                providerMetadata {
-                  ... on OAuth2ProviderMetadata {
-                    clientId
-                    serverBaseUrl
-                    scopes
-                  }
-                }
+              cloudProvider {
+                ...GitLabProviderRowProvider @relay(mask: false)
               }
-              activeProvider {
-                id
-                name
+              selfHostedProvider {
+                ...GitLabProviderRowProvider @relay(mask: false)
               }
-              isActive
               teamId
             }
           }
@@ -119,33 +145,9 @@ const GitLabProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {gitlab} = integrations
-  const {isActive, availableProviders} = gitlab!
-  const atmosphere = useAtmosphere()
-  const mutationProps = useMutationProps()
-  const {submitting} = mutationProps
-  const primaryProvider = GitLabClientManager.getPrimaryProvider(availableProviders)
-  const secondaryProvider = GitLabClientManager.getSecondaryProvider(availableProviders)
-  const openOAuth = (provider: GitLabIntegrationProvider) => {
-    GitLabClientManager.openOAuth(atmosphere, provider, teamId, mutationProps)
-  }
-  const {originRef: menuRef, menuPortal, menuProps, togglePortal} = useMenu(
-    MenuPosition.UPPER_RIGHT
-  )
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const primaryProviderName = !secondaryProvider ? 'Connect' : primaryProvider!.name
-  const {
-    tooltipPortal: primaryTooltipPortal,
-    openTooltip: primaryOpenTooltip,
-    closeTooltip: primaryCloseTooltip,
-    originRef: primaryRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
-  const {
-    tooltipPortal: secondaryTooltipPortal,
-    openTooltip: secondaryOpenTooltip,
-    closeTooltip: secondaryCloseTooltip,
-    originRef: secondaryRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
-
+  if (!gitlab) return null
+  const {cloudProvider, selfHostedProvider} = gitlab
+  const activeProvider = cloudProvider ?? selfHostedProvider ?? null
   return (
     <ProviderCard>
       <GitLabProviderLogo />
@@ -153,49 +155,42 @@ const GitLabProviderRow = (props: Props) => {
         <ProviderName>GitLab</ProviderName>
         <RowInfoCopy>Use GitLab Issues from within Parabol</RowInfoCopy>
       </RowInfo>
-      {!isActive && (
+      {!activeProvider && (
         <ProviderActions>
-          {primaryProvider && (
-            <StyledPrimaryButton
-              key='linkAccountToPrimary'
-              onClick={() => openOAuth(primaryProvider)}
-              palette='warm'
-              waiting={submitting}
-              onMouseOver={primaryOpenTooltip}
-              onMouseOut={primaryCloseTooltip}
-              ref={primaryRef as any}
-            >
-              {isDesktop ? primaryProviderName : <Icon>add</Icon>}
-            </StyledPrimaryButton>
+          {cloudProvider && (
+            <>
+              <StyledPrimaryButton
+                onClick={() => openOAuth(cloudProvider)}
+                palette='warm'
+                waiting={submitting}
+                onMouseOver={cloudOpenTooltip}
+                onMouseOut={cloudCloseTooltip}
+                ref={cloudRef}
+              >
+                {isDesktop ? 'Connect' : <Icon>add</Icon>}
+              </StyledPrimaryButton>
+              {cloudTooltipPortal('Connect to GitLab Cloud')}
+            </>
           )}
-          {primaryProvider && primaryTooltipPortal('Connect to GitLab Cloud')}
-          {secondaryProvider && (
+          {selfHostedProvider && (
             <StyledSecondaryButton
-              key='linkAccountToSecondary'
-              onClick={() => openOAuth(secondaryProvider)}
+              onClick={() => openOAuth(selfHostedProvider)}
               palette='warm'
               waiting={submitting}
-              onMouseOver={secondaryOpenTooltip}
-              onMouseOut={secondaryCloseTooltip}
-              ref={secondaryRef as any}
+              onMouseOver={selfHostedOpenTooltip}
+              onMouseOut={selfHostedCloseTooltip}
+              ref={selfHostedRef}
             >
-              {isDesktop ? (
-                GitLabClientManager.getTruncatedProviderName(secondaryProvider.name)
-              ) : (
-                <Icon>enhanced_encryption</Icon>
-              )}
+              {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
             </StyledSecondaryButton>
           )}
-          {secondaryProvider &&
-            secondaryTooltipPortal(
-              `Connect to ${secondaryProvider!.providerMetadata!.serverBaseUrl}`
-            )}
+          {selfHostedProvider &&
+            selfHostedTooltipPortal(`Connect to ${selfHostedProvider.serverBaseUrl}`)}
         </ProviderActions>
       )}
-      {isActive && (
+      {activeProvider && (
         <ListAndMenu>
-          {/* <GitLabLogin title={gitlab!.login}> */}
-          <GitLabLogin title={gitlab!.activeProvider!.name}>
+          <GitLabLogin title={activeProvider === cloudProvider ? 'Cloud' : 'Self-hosted'}>
             <GitLabSVG />
           </GitLabLogin>
           <MenuButton onClick={togglePortal} ref={menuRef}>
@@ -205,8 +200,8 @@ const GitLabProviderRow = (props: Props) => {
             <GitLabConfigMenu
               menuProps={menuProps}
               mutationProps={mutationProps}
-              providerId={gitlab!.activeProvider!.id}
-              teamId={gitlab!.teamId}
+              providerId={activeProvider.id}
+              teamId={teamId}
             />
           )}
         </ListAndMenu>

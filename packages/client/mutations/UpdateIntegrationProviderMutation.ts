@@ -5,17 +5,21 @@ import {UpdateIntegrationProviderMutation as TUpdateIntegrationProviderMutation}
 
 graphql`
   fragment UpdateIntegrationProviderMutation_part on UpdateIntegrationProviderSuccess {
-    user {
-      ...MattermostPanel_viewer
+    provider {
+      id
+      ... on IntegrationProviderWebhook {
+        webhookUrl
+      }
+      ... on IntegrationProviderOAuth2 {
+        serverBaseUrl
+        clientId
+      }
     }
   }
 `
 
 const mutation = graphql`
-  mutation UpdateIntegrationProviderMutation(
-    $provider: UpdateIntegrationProviderInput!
-    $teamId: ID!
-  ) {
+  mutation UpdateIntegrationProviderMutation($provider: UpdateIntegrationProviderInput!) {
     updateIntegrationProvider(provider: $provider) {
       ... on ErrorPayload {
         error {

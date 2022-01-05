@@ -5,19 +5,22 @@ import {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from 
 
 graphql`
   fragment AddIntegrationProviderMutation_team on AddIntegrationProviderSuccess {
-    user {
-      ...MattermostProviderRow_viewer @relay(mask: false)
+    provider {
+      id
+      ... on IntegrationProviderWebhook {
+        webhookUrl
+      }
+      ... on IntegrationProviderOAuth2 {
+        serverBaseUrl
+        clientId
+      }
     }
   }
 `
 
 const mutation = graphql`
-  mutation AddIntegrationProviderMutation(
-    $provider: AddIntegrationProviderInput!
-    $token: IntegrationTokenInput
-    $teamId: ID
-  ) {
-    addIntegrationProvider(provider: $provider, token: $token) {
+  mutation AddIntegrationProviderMutation($input: AddIntegrationProviderInput!) {
+    addIntegrationProvider(input: $input) {
       ... on ErrorPayload {
         error {
           message

@@ -91,7 +91,6 @@ const MattermostProviderRow = (props: Props) => {
         teamMember(teamId: $teamId) {
           integrations {
             mattermost {
-              isActive
               activeProvider {
                 id
               }
@@ -102,15 +101,16 @@ const MattermostProviderRow = (props: Props) => {
     `,
     viewerRef
   )
+  const [isConnectClicked, setConnectClicked] = useState(false)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
-  const [isConnectClicked, setConnectClicked] = useState(false)
-  const isActive = mattermost?.isActive
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  if (!mattermost) return null
+  const {activeProvider} = mattermost
 
   return (
     <ExtraProviderCard>
@@ -120,7 +120,7 @@ const MattermostProviderRow = (props: Props) => {
           <ProviderName>{Providers.MATTERMOST_NAME}</ProviderName>
           <RowInfoCopy>{Providers.MATTERMOST_DESC}</RowInfoCopy>
         </RowInfo>
-        {isActive ? (
+        {activeProvider ? (
           <ListAndMenu>
             <MattermostLogin title='Mattermost'>
               <MattermostSVG />
@@ -133,7 +133,7 @@ const MattermostProviderRow = (props: Props) => {
                 menuProps={menuProps}
                 mutationProps={mutationProps}
                 teamId={teamId}
-                providerId={mattermost!.activeProvider!.id}
+                providerId={activeProvider.id}
               />
             )}
           </ListAndMenu>
@@ -150,7 +150,9 @@ const MattermostProviderRow = (props: Props) => {
           </ProviderActions>
         )}
       </CardTop>
-      {(isActive || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
+      {(activeProvider || isConnectClicked) && (
+        <MattermostPanel teamId={teamId} viewerRef={viewer} />
+      )}
     </ExtraProviderCard>
   )
 }

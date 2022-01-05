@@ -1,13 +1,21 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
+import IntegrationProvider from './IntegrationProvider'
 import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 export const UpdateIntegrationProviderSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateIntegrationProviderSuccess',
   fields: () => ({
+    provider: {
+      type: new GraphQLNonNull(IntegrationProvider),
+      description: 'The provider that was updated',
+      resolve: async ({providerId}, _args, {dataLoader}) => {
+        return dataLoader.get('integrationProviders').load(providerId)
+      }
+    },
     teamMember: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member with the updated auth',
