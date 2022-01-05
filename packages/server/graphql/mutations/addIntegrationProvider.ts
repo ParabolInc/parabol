@@ -1,6 +1,6 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import insertIntegrationProvider from '../../postgres/queries/insertIntegrationProvider'
+import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -51,7 +51,7 @@ const addIntegrationProvider = {
     // RESOLUTION
     const providerMetadata = oAuth2ProviderMetadataInput || webhookProviderMetadataInput
 
-    const providerId = await insertIntegrationProvider({...rest, providerMetadata})
+    const providerId = await upsertIntegrationProvider({...rest, providerMetadata})
 
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId, providerId}

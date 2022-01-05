@@ -5,7 +5,7 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
 class GitLabClientManager {
-  static SCOPES = ''
+  static SCOPES = 'read_api'
   static openOAuth(
     atmosphere: Atmosphere,
     providerId: string,

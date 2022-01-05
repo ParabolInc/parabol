@@ -1,15 +1,13 @@
-import fs from 'fs'
-import path from 'path'
 import dotenv from 'dotenv'
 import dotenvExpand from 'dotenv-expand'
-import getPg from '../../packages/server/postgres/getPg'
+import fs from 'fs'
+import path from 'path'
 import getRethink from '../../packages/server/database/rethinkDriver'
-import getProjectRoot from '../webpack/utils/getProjectRoot'
+import getPg from '../../packages/server/postgres/getPg'
 import getRedis from '../../packages/server/utils/getRedis'
 import sendToSentry from '../../packages/server/utils/sendToSentry'
-import makeGlobalIntegrationProvidersFromEnv from '../../packages/server/utils/makeGlobalIntegrationProvidersFromEnv'
-import upsertGlobalIntegrationProvider from '../../packages/server/postgres/queries/upsertGlobalIntegrationProvider'
-import plural from 'parabol-client/utils/plural'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
+import primeIntegrations from './primeIntegrations'
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -61,25 +59,8 @@ const storePersistedQueries = async () => {
   }))
 
   const r = await getRethink()
-  const res = await r
-    .table('QueryMap')
-    .insert(records, {conflict: 'replace'})
-    .run()
+  const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
   console.log(`Added ${res.inserted} records to the queryMap`)
-}
-
-const upsertGlobalIntegrationProvidersFromEnv = async () => {
-  const providers = []
-  await Promise.all(
-    makeGlobalIntegrationProvidersFromEnv().map((provider) => {
-      providers.push(provider.type)
-      return upsertGlobalIntegrationProvider(provider)
-    })
-  )
-  console.log(
-    `Upserted ${providers.length} global integration ${plural(providers.length, 'provider')}` +
-      (providers.length ? `: ${providers.join(', ')}` : '')
-  )
 }
 
 const postDeploy = async () => {
@@ -94,7 +75,7 @@ const postDeploy = async () => {
     await r.getPoolMaster().drain()
 
     const pg = getPg()
-    await upsertGlobalIntegrationProvidersFromEnv()
+    await primeIntegrations()
     await pg.end()
   } catch (e) {
     console.log('Post deploy error', e)

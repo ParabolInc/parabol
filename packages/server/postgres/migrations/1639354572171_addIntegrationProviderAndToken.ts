@@ -45,7 +45,7 @@ export async function up() {
       "providerMetadata" JSONB NOT NULL DEFAULT '{}',
       UNIQUE("scopeGlobal", "service"),
       CONSTRAINT global_provider_must_be_oauth2 CHECK (
-        "scopeGlobal" IS NULL OR ("scopeGlobal" = TRUE AND "type" = 'oauth2')
+        "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "type" = 'oauth2')
       ),
       CONSTRAINT "fk_team"
         FOREIGN KEY("teamId")

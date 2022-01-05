@@ -21,7 +21,6 @@ module.exports = {
   },
   entry: {
     createMigration: [DOTENV, path.join(TOOLBOX_SRC, 'migrate-create.ts')],
-    getClientActionVars: [DOTENV, path.join(TOOLBOX_SRC, 'getClientActionVars.ts')],
     pgRestore: [DOTENV, path.join(TOOLBOX_SRC, 'pgRestore.ts')],
     postDeploy: [DOTENV, path.join(TOOLBOX_SRC, 'postDeploy.ts')],
     renameDB: [DOTENV, path.join(TOOLBOX_SRC, 'renameDB.ts')],
