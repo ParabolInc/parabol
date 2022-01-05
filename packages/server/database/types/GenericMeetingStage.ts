@@ -6,6 +6,7 @@ const MAX_SYNC_STAGE_DURATION = ms('1h')
 // https://stackoverflow.com/a/20811670/3155110
 const filterOutliers = (someArray: number[]) => {
   const values = someArray.concat()
+  if (values.length === 0) return []
   values.sort(function (a, b) {
     return a - b
   })
