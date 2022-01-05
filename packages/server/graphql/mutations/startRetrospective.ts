@@ -8,7 +8,7 @@ import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import generateUID from '../../generateUID'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isLocked, isPaid, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -41,6 +41,14 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('User not on team'), {userId: viewerId})
     }
+    const teams = await getTeamsByIds([teamId])
+    const team = teams[0]!
+    if (!isPaid(team)) {
+      const errMsg = isLocked(team)
+        ? "Wow, you're determined to use Parabol! That's awesome! Do you want to keep sneaking over the gate, or walk through the door with our Sales team?"
+        : 'Team is not paid'
+      return standardError(new Error(errMsg), {userId: viewerId})
+    }
 
     const meetingType: MeetingTypeEnum = 'retrospective'
 
@@ -62,8 +70,6 @@ export default {
       meetingType,
       dataLoader
     )
-    const teams = await getTeamsByIds([teamId])
-    const team = teams[0]!
     const organization = await r.table('Organization').get(team.orgId).run()
     const {showConversionModal} = organization
 

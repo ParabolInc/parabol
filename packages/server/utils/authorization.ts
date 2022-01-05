@@ -3,6 +3,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../database/types/AuthToken'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'
+import {Team} from '../postgres/queries/getTeamsByIds'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
@@ -36,11 +37,7 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
 export const isTeamLead = async (userId: string, teamId: string) => {
   const r = await getRethink()
   const teamMemberId = toTeamMemberId(teamId, userId)
-  return r
-    .table('TeamMember')
-    .get(teamMemberId)('isLead')
-    .default(false)
-    .run()
+  return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run()
 }
 
 export const requireSU = (authToken: AuthToken) => {
@@ -84,18 +81,21 @@ export const isOrgLeaderOfUser = async (authToken: AuthToken, userId: string) =>
   const r = await getRethink()
   const viewerId = getUserId(authToken)
   const {viewerOrgIds, userOrgIds} = await r({
-    viewerOrgIds: (r
+    viewerOrgIds: r
       .table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
       .filter({removedAt: null, role: 'BILLING_LEADER'})('orgId')
-      .coerceTo('array') as any) as OrganizationUser[],
-    userOrgIds: (r
+      .coerceTo('array') as any as OrganizationUser[],
+    userOrgIds: r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null})('orgId')
-      .coerceTo('array') as any) as OrganizationUser[]
+      .coerceTo('array') as any as OrganizationUser[]
   }).run()
   const uniques = new Set(viewerOrgIds.concat(userOrgIds))
   const total = viewerOrgIds.length + userOrgIds.length
   return uniques.size < total
 }
+
+export const isPaid = (team: Team) => team.isPaid
+export const isLocked = (team: Team) => !!team.lockMessageHTML

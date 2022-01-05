@@ -6,11 +6,12 @@ import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import getPg from '../../postgres/getPg'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isLocked, isPaid, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -85,6 +86,14 @@ export default {
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
+    }
+    const teams = await getTeamsByIds([teamId])
+    const team = teams[0]!
+    if (!isPaid(team)) {
+      const errMsg = isLocked(team)
+        ? "Wow, you're determined to use Parabol! That's awesome! Do you want to keep sneaking over the gate, or walk through the door with our Sales team?"
+        : 'Team is not paid'
+      return standardError(new Error(errMsg), {userId: viewerId})
     }
 
     const meetingType: MeetingTypeEnum = 'poker'
