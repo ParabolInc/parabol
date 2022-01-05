@@ -22,7 +22,7 @@ const getOnCompletedError = (
   res?: null | {[operationNames: string]: {error?: MutationServerError}},
   errors?: readonly PayloadError[] | null
 ) => {
-  const payload = res && res[Object.keys(res)[0]]
+  const payload = res && Object.values(res)[0]
   return (payload && payload.error) || (errors && errors[0]) || undefined
 }
 

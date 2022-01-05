@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    //TODO remove once added to tsconfig.base.json
+    "noUncheckedIndexedAccess": true,
     "paths": {
       "~/*": [
         "*"

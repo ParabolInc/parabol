@@ -19,14 +19,14 @@ const MeetingImage = styled('img')({
 interface Props {
   idx: number
   setIdx: (idx: number) => void
-  newMeetingOrder: readonly MeetingTypeEnum[]
+  newMeetingOrder: readonly [MeetingTypeEnum, ...MeetingTypeEnum[]]
 }
 
-const ILLUSTRATIONS = {
+const ILLUSTRATIONS: Record<MeetingTypeEnum, string> = {
   retrospective: retrospectiveSvg,
   action: checkinSvg,
   poker: pokerSvg
-} as Record<MeetingTypeEnum, string>
+}
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews)
 
@@ -53,7 +53,7 @@ const NewMeetingIllustration = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const slideRenderer = ({index, key}) => {
     const idx = mod(index, newMeetingOrder.length)
-    const nextMeetingType = newMeetingOrder[idx]
+    const nextMeetingType = newMeetingOrder[idx]!
     const src = ILLUSTRATIONS[nextMeetingType]
     const Wrapper = isDesktop ? ImageWithPadding : Fragment
     return (

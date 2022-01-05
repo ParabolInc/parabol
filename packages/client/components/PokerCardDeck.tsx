@@ -137,6 +137,7 @@ const PokerCardDeck = (props: Props) => {
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+    if (!event) return
     const {clientX} = event
     if (swipe.isSwipe === null) {
       const dx = Math.abs(swipe.startX - clientX)
@@ -160,7 +161,7 @@ const PokerCardDeck = (props: Props) => {
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (maxSlide === 0 || isCollapsed) return
     const isTouchStart = e.type === 'touchstart'
-    let event: {clientX: number; clientY: number}
+    let event: {clientX: number; clientY: number} | undefined
     if (isTouchStart) {
       document.addEventListener('touchend', onMouseUp, {once: true})
       document.addEventListener('touchmove', onMouseMove)
@@ -170,6 +171,7 @@ const PokerCardDeck = (props: Props) => {
       document.addEventListener('mousemove', onMouseMove)
       event = e as React.MouseEvent
     }
+    if (!event) return
     const {clientX} = event
     swipe.startX = clientX
     swipe.lastX = clientX

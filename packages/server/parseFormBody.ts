@@ -54,7 +54,7 @@ const parseFormBody = async ({
         parsedBody = JSON.parse(Buffer.from(data).toString())
       } else if (name.startsWith('uploadables')) {
         const [, key] = name.split('.')
-        parsedUploadables[key] = {
+        parsedUploadables[key!] = {
           contentType: type,
           buffer: Buffer.from(data)
         } as UploadableBuffer

@@ -28,11 +28,7 @@ const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) =>
       [quantityName]: quantity,
       stripeSubscriptionId: subscription as string
     })
-    .filter((row) =>
-      row(invoiceItemName)
-        .default(null)
-        .eq(null)
-    )
+    .filter((row) => row(invoiceItemName).default(null).eq(null))
     .orderBy(r.desc('prorationDate'))
     .run()
   if (proratedHooks.length) return proratedHooks
@@ -40,18 +36,14 @@ const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) =>
     .table('InvoiceItemHook')
     .getAll(subscription as string, {index: 'stripeSubscriptionId'})
     .filter({[quantityName]: quantity, isProrated: false})
-    .filter((row) =>
-      row(invoiceItemName)
-        .default(null)
-        .eq(null)
-    )
+    .filter((row) => row(invoiceItemName).default(null).eq(null))
     .orderBy(r.desc('createdAt'))
     .run()
 }
 
 const getBestHook = (possibleHooks: InvoiceItemHook[]) => {
-  if (possibleHooks.length === 1) return possibleHooks[0]
-  const firstHook = possibleHooks[possibleHooks.length - 1]
+  if (possibleHooks.length === 1) return possibleHooks[0]!
+  const firstHook = possibleHooks[possibleHooks.length - 1]!
   const {id: hookId} = firstHook
   sendToSentry(new Error('Imperfect invoice item hook selected'), {tags: {hookId}})
   return firstHook
