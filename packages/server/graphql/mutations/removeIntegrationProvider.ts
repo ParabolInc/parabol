@@ -1,13 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {getUserId} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import RemoveIntegrationProviderPayload from '../types/RemoveIntegrationProviderPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
-import {checkAuthPermissions} from './helpers/integrationProviderHelpers'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeIntegrationProviderQuery from '../../postgres/queries/removeIntegrationProvider'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import RemoveIntegrationProviderPayload from '../types/RemoveIntegrationProviderPayload'
 
 const removeIntegrationProvider = {
   name: 'RemoveIntegrationProvider',
@@ -28,9 +27,10 @@ const removeIntegrationProvider = {
     const providerDbId = IntegrationProviderId.split(providerId)
     const provider = await dataLoader.get('integrationProviders').load(providerDbId)
     if (!provider) return standardError(new Error('Integration Provider not found'))
-    const {teamId, orgId} = provider
-    const authResult = checkAuthPermissions(dataLoader, provider.scope, authToken, teamId, orgId)
-    if (authResult instanceof Error) return standardError(authResult)
+    const {teamId} = provider
+    if (!isTeamMember(authToken, teamId)) {
+      return {error: {message: 'Must be on the team that created the provider'}}
+    }
 
     // RESOLUTION
     await removeIntegrationProviderQuery(providerDbId)

@@ -3,7 +3,7 @@ import GitLabIntegrationId from 'parabol-client/shared/gqlIds/GitLabIntegrationI
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import IntegrationProvider from './IntegrationProvider'
+import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitLabIntegration',
@@ -49,11 +49,11 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     cloudProvider: {
       description: 'The provider to connect to GitLab cloud',
-      type: IntegrationProvider
+      type: IntegrationProviderOAuth2
     },
     selfHostedProvider: {
       description: 'The provider to connect to a self-hosted GitLab instance',
-      type: IntegrationProvider
+      type: IntegrationProviderOAuth2
     }
   })
 })

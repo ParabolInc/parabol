@@ -23,7 +23,7 @@ export interface IGetIntegrationProvidersByIdsQueryResult {
   type: IntegrationProviderTypeEnum;
   scope: IntegrationProviderScopeEnum;
   scopeGlobal: boolean;
-  teamId: string | null;
+  teamId: string;
   isActive: boolean;
   providerMetadata: Json;
 }
@@ -34,17 +34,14 @@ export interface IGetIntegrationProvidersByIdsQueryQuery {
   result: IGetIntegrationProvidersByIdsQueryResult;
 }
 
-const getIntegrationProvidersByIdsQueryIR: any = {"name":"getIntegrationProvidersByIdsQuery","params":[{"name":"ids","codeRefs":{"defined":{"a":52,"b":54,"line":3,"col":8},"used":[{"a":124,"b":126,"line":10,"col":9}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"ids":true},"statement":{"body":"SELECT\n  *\nFROM\n  \"IntegrationProvider\"\nWHERE\n  id in :ids","loc":{"a":69,"b":126,"line":5,"col":0}}};
+const getIntegrationProvidersByIdsQueryIR: any = {"name":"getIntegrationProvidersByIdsQuery","params":[{"name":"ids","codeRefs":{"defined":{"a":52,"b":54,"line":3,"col":8},"used":[{"a":118,"b":120,"line":6,"col":13}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"ids":true},"statement":{"body":"SELECT * FROM \"IntegrationProvider\"\nWHERE id in :ids\nAND \"isActive\" = TRUE","loc":{"a":69,"b":142,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   *
- * FROM
- *   "IntegrationProvider"
- * WHERE
- *   id in :ids
+ * SELECT * FROM "IntegrationProvider"
+ * WHERE id in :ids
+ * AND "isActive" = TRUE
  * ```
  */
 export const getIntegrationProvidersByIdsQuery = new PreparedQuery<IGetIntegrationProvidersByIdsQueryParams,IGetIntegrationProvidersByIdsQueryResult>(getIntegrationProvidersByIdsQueryIR);

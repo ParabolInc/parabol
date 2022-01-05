@@ -1,13 +1,20 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
-import {
-  OAuth2ProviderMetadataInput,
-  WebhookProviderMetadataInput
-} from './AddIntegrationProviderInput'
-import {
-  IntegrationProviderScopeEnum,
-  IntegrationProvidersEnum,
-  IntegrationProviderTypeEnum
-} from './IntegrationProvider'
+import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql'
+import IntegrationProviderEditableScopeEnum, {
+  TIntegrationProviderEditableScopeEnum
+} from './IntegrationProviderEditableScopeEnum'
+import IntegrationProviderMetadataInputOAuth2, {
+  IIntegrationProviderMetadataInputOAuth2
+} from './IntegrationProviderMetadataInputOAuth2'
+import IntegrationProviderMetadataInputWebhook, {
+  IIntegrationProviderMetadataInputWebhook
+} from './IntegrationProviderMetadataInputWebhook'
+
+export interface IUpdateIntegrationProviderInput {
+  id: string
+  scope: TIntegrationProviderEditableScopeEnum
+  webhookProviderMetadataInput: IIntegrationProviderMetadataInputWebhook
+  oAuth2ProviderMetadataInput: IIntegrationProviderMetadataInputOAuth2
+}
 
 const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
   name: 'UpdateIntegrationProviderInput',
@@ -17,39 +24,17 @@ const UpdateIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The the id of the Integration Provider to update'
     },
-    provider: {
-      type: IntegrationProvidersEnum,
-      description: 'The service this provider is associated with'
-    },
-    type: {
-      type: IntegrationProviderTypeEnum,
-      description: 'The kind of token used by this provider'
-    },
-
     scope: {
-      type: IntegrationProviderScopeEnum,
-      description:
-        'The scope this provider configuration was created at (globally, org-wide, or by the team)'
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the provider, suitable for display on a user interface'
-    },
-    orgId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The org that the access token is attached to'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The team that the token is linked to'
+      type: IntegrationProviderEditableScopeEnum,
+      description: 'The new scope for this provider (org, team)'
     },
     webhookProviderMetadataInput: {
-      type: WebhookProviderMetadataInput,
+      type: IntegrationProviderMetadataInputWebhook,
       description:
         'Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
     },
     oAuth2ProviderMetadataInput: {
-      type: OAuth2ProviderMetadataInput,
+      type: IntegrationProviderMetadataInputOAuth2,
       description:
         'OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
     }

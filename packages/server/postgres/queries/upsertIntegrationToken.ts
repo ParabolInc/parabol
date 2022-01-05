@@ -1,16 +1,16 @@
 import getPg from '../getPg'
 import {upsertIntegrationTokenQuery} from './generated/upsertIntegrationTokenQuery'
 
-type OAuth2TokenMetadata = {
+export type IntegrationTokenOAuth2Metadata = {
   accessToken: string
   refreshToken: string
   scopes: string
 }
-type WebhookTokenMetadata = Record<string, never>
+type IntegrationTokenWebhookMetadata = Record<string, never>
 
 interface IAuth {
   providerId: number
-  tokenMetadata: OAuth2TokenMetadata | WebhookTokenMetadata
+  tokenMetadata: IntegrationTokenOAuth2Metadata | IntegrationTokenWebhookMetadata
   teamId: string
   userId: string
 }

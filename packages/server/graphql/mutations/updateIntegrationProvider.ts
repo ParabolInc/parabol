@@ -1,21 +1,15 @@
 import {GraphQLNonNull} from 'graphql'
-import {getUserId} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
-import publish from '../../utils/publish'
-import UpdateIntegrationProviderPayload from '../types/UpdateIntegrationProviderPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
-import UpdateIntegrationProviderInput from '../types/UpdateIntegrationProviderInput'
-import {
-  checkAuthPermissions,
-  validateIntegrationProvider
-} from './helpers/integrationProviderHelpers'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import updateIntegrationProviderQuery from '../../postgres/queries/updateIntegrationProvider'
-import {
-  createIntegrationProviderInsertParams,
-  IntegrationProviderInput
-} from '../../postgres/types/IntegrationProvider'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {GQLContext} from '../graphql'
+import UpdateIntegrationProviderInput, {
+  IUpdateIntegrationProviderInput
+} from '../types/UpdateIntegrationProviderInput'
+import UpdateIntegrationProviderPayload from '../types/UpdateIntegrationProviderPayload'
+import {notifyWebhookConfigUpdated} from './helpers/notifications/notifyMattermost'
 
 const updateIntegrationProvider = {
   name: 'UpdateIntegrationProvider',
@@ -29,31 +23,48 @@ const updateIntegrationProvider = {
   },
   resolve: async (
     _source,
-    {provider}: {provider: IntegrationProviderInput},
+    {provider}: {provider: IUpdateIntegrationProviderInput},
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const viewerId = getUserId(authToken)
-    const {teamId, orgId} = provider
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const authResult = checkAuthPermissions(dataLoader, provider.scope, authToken, teamId, orgId)
-    if (authResult instanceof Error) return standardError(authResult)
+    const providerDbId = IntegrationProviderId.split(provider.id)
+    const currentProvider = await dataLoader.get('integrationProviders').load(providerDbId)
+    dataLoader.get('integrationProviders').clear(providerDbId)
+    if (!currentProvider) {
+      return {error: {message: 'Invalid provider ID'}}
+    }
+    const {teamId} = currentProvider
+    if (!isTeamMember(authToken, teamId)) {
+      return {error: {message: 'Must be on the team that owns the provider'}}
+    }
 
     // VALIDATION
-    const providerDbId = IntegrationProviderId.split(provider.id)
-    const validationResult = await validateIntegrationProvider(provider, viewerId, dataLoader)
-    if (validationResult instanceof Error) return standardError(validationResult)
+    const {oAuth2ProviderMetadataInput, webhookProviderMetadataInput, scope} = provider
+    if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {
+      return {error: {message: 'Provided 2 metadata types, expected 1'}}
+    }
 
     // RESOLUTION
-    const dbProvider = {
-      ...createIntegrationProviderInsertParams(provider),
-      ids: [providerDbId]
-    }
-    await updateIntegrationProviderQuery(dbProvider)
+    const providerMetadata = oAuth2ProviderMetadataInput || webhookProviderMetadataInput
+    await updateIntegrationProviderQuery({
+      id: providerDbId,
+      scope,
+      providerMetadata
+    })
 
+    if (currentProvider.service === 'mattermost') {
+      const {providerMetadata} = currentProvider
+      const {webhookUrl} = providerMetadata
+      const newWebhookUrl = provider.webhookProviderMetadataInput?.webhookUrl
+      if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
+        await notifyWebhookConfigUpdated(newWebhookUrl, viewerId, teamId)
+      }
+    }
     //TODO: add proper scopes handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateIntegrationProvider', data, subOptions)

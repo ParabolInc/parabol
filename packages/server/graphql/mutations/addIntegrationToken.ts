@@ -1,20 +1,9 @@
-import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
-import {
-  allAuthRequiredIntegrationProviderTypes,
-  createAuthorizationManager,
-  OAuth2IntegrationAuthorizationManager
-} from '../../integrations/IntegrationAuthorizationManager'
-import {
-  createIntegrationServerManager,
-  OAuth2IntegrationServerManager
-} from '../../integrations/IntegrationServerManager'
+import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
+import {TIntegrationProvider} from '../../postgres/queries/getIntegrationProvidersByIds'
 import upsertIntegrationToken from '../../postgres/queries/upsertIntegrationToken'
-import {
-  IntegrationProvider,
-  isOAuth2ProviderMetadata
-} from '../../postgres/types/IntegrationProvider'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -22,49 +11,20 @@ import {GQLContext} from '../graphql'
 import AddIntegrationTokenPayload from '../types/AddIntegrationTokenPayload'
 import GraphQLURLType from '../types/GraphQLURLType'
 
-const createOAuth2TokenMetadata = async (
-  provider: IntegrationProvider,
-  oauthCodeOrPat: string,
-  redirectUri: string,
-  info: GraphQLResolveInfo,
-  context: GQLContext
-) => {
-  const authorizationManager = await createAuthorizationManager<
-    OAuth2IntegrationAuthorizationManager
-  >(provider)
-
-  const authResponse = await authorizationManager.authorize(oauthCodeOrPat, redirectUri)
-  if (authResponse instanceof Error) return authResponse
-  const {accessToken, refreshToken, scopes} = authResponse
-
-  const integrationServerManager = await createIntegrationServerManager<
-    OAuth2IntegrationServerManager
-  >(provider, accessToken)
-  const [tokenTestValid, tokenTestError] = await integrationServerManager.isTokenValid(
-    info,
-    context
-  )
-  if (!tokenTestValid) {
-    return tokenTestError
-      ? tokenTestError
-      : new Error(`Unknown error occurred when validating token`)
-  }
-  return {accessToken, refreshToken, scopes}
-}
-
 const createTokenMetadata = async (
-  provider: IntegrationProvider,
+  provider: TIntegrationProvider,
   oauthCodeOrPat: string,
-  redirectUri: string,
-  info: GraphQLResolveInfo,
-  context: GQLContext
+  redirectUri: string
 ) => {
-  const {providerMetadata} = provider
-  if (isOAuth2ProviderMetadata(providerMetadata)) {
-    return createOAuth2TokenMetadata(provider, oauthCodeOrPat, redirectUri, info, context)
+  const {type, service} = provider
+  if (type === 'oauth2') {
+    if (service === 'gitlab') {
+      const manager = new GitLabOAuth2Manager(provider.providerMetadata)
+      const res = await manager.authorize(oauthCodeOrPat, redirectUri)
+      return res
+    }
   }
-
-  return {}
+  return {} as Record<string, never>
 }
 
 const addIntegrationToken = {
@@ -87,9 +47,13 @@ const addIntegrationToken = {
   },
   resolve: async (
     _source,
-    {providerId, oauthCodeOrPat, teamId, redirectUri},
-    context: GQLContext,
-    info: GraphQLResolveInfo
+    {
+      providerId,
+      oauthCodeOrPat,
+      teamId,
+      redirectUri
+    }: {providerId: string; oauthCodeOrPat: string; teamId: string; redirectUri: string},
+    context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const viewerId = getUserId(authToken)
@@ -112,26 +76,11 @@ const addIntegrationToken = {
       )
     }
 
-    if (!allAuthRequiredIntegrationProviderTypes.includes(integrationProvider.provider)) {
-      return standardError(
-        new Error(
-          `Adding auth tokens for ${providerId} is not supported! Provider ${providerId} is ${
-            integrationProvider.type
-          }, but only ${allAuthRequiredIntegrationProviderTypes.join(', ')} are supported.`
-        ),
-        {
-          userId: viewerId
-        }
-      )
-    }
-
     // VALIDATION
     const tokenMetadata = await createTokenMetadata(
       integrationProvider,
       oauthCodeOrPat,
-      redirectUri,
-      info,
-      context
+      redirectUri
     )
     if (tokenMetadata instanceof Error) {
       return standardError(tokenMetadata, {
@@ -144,7 +93,7 @@ const addIntegrationToken = {
       providerId: providerDbId,
       teamId,
       userId: viewerId,
-      tokenMetadata: {...tokenMetadata}
+      tokenMetadata
     })
 
     const data = {userId: viewerId, teamId}

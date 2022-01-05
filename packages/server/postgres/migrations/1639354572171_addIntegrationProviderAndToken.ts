@@ -40,7 +40,7 @@ export async function up() {
           ELSE FALSE
         END
       ) STORED NOT NULL,
-      "teamId" VARCHAR(100),
+      "teamId" VARCHAR(100) NOT NULL,
       "isActive" BOOLEAN DEFAULT TRUE NOT NULL,
       "providerMetadata" JSONB NOT NULL DEFAULT '{}',
       UNIQUE("scopeGlobal", "service"),

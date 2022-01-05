@@ -3,8 +3,14 @@ import {
   IUpdateIntegrationProviderQueryParams,
   updateIntegrationProviderQuery
 } from './generated/updateIntegrationProviderQuery'
+import {IntegrationProviderMetadata} from './getIntegrationProvidersByIds'
 
-const updateIntegrationProvider = async (params: IUpdateIntegrationProviderQueryParams) => {
-  await updateIntegrationProviderQuery.run(params, getPg())
+interface Params extends Omit<IUpdateIntegrationProviderQueryParams, 'providerMetadata'> {
+  id: number
+  providerMetadata: IntegrationProviderMetadata
+}
+
+const updateIntegrationProvider = async (params: Params) => {
+  return updateIntegrationProviderQuery.run(params as any, getPg())
 }
 export default updateIntegrationProvider

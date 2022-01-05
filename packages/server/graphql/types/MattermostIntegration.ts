@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {GQLContext} from '../graphql'
-import IntegrationProvider from './IntegrationProvider'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import IntegrationProviderWebhook from './IntegrationProviderWebhook'
 
 const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'MattermostIntegration',
@@ -14,7 +14,7 @@ const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     activeProvider: {
       description: 'The active Integration Provider details to be used to access Mattermost',
-      type: IntegrationProvider
+      type: IntegrationProviderWebhook
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

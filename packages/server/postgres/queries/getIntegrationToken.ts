@@ -1,13 +1,12 @@
 import getPg from '../getPg'
-import {IntegrationTokenWithProvider} from '../types/IntegrationTokenWithProvider'
-import {IntegrationProvidersEnum} from './generated/getIntegrationProvidersByIdsQuery'
+import {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
 import {getIntegrationTokenQuery} from './generated/getIntegrationTokenQuery'
 
 const getIntegrationToken = async (
-  service: IntegrationProvidersEnum,
+  service: IntegrationProviderServiceEnum,
   teamId: string,
   userId: string
-): Promise<IntegrationTokenWithProvider> => {
+) => {
   const [res] = await getIntegrationTokenQuery.run({service, teamId, userId}, getPg())
   return res
 }

@@ -1,11 +1,13 @@
 import getPg from '../getPg'
-import {
-  IInsertIntegrationProviderQueryParams,
-  insertIntegrationProviderQuery
-} from './generated/insertIntegrationProviderQuery'
+import {insertIntegrationProviderQuery} from './generated/insertIntegrationProviderQuery'
+import {TIntegrationProvider} from './getIntegrationProvidersByIds'
 
-const insertIntegrationProvider = async (provider: IInsertIntegrationProviderQueryParams) => {
-  const result = await insertIntegrationProviderQuery.run(provider, getPg())
+type Provider = Omit<
+  TIntegrationProvider,
+  'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'scopeGlobal'
+>
+const insertIntegrationProvider = async (provider: Provider) => {
+  const result = await insertIntegrationProviderQuery.run(provider as any, getPg())
   return result[0].id
 }
 

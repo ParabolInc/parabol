@@ -52,7 +52,7 @@ export default {
     const {viewer} = data
     const {login} = viewer
 
-    await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope: scopes.join(',')})
+    await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope: scopes})
     segmentIo.track({
       userId: viewerId,
       event: 'Added Integration',

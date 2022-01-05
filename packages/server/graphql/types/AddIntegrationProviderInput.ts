@@ -1,50 +1,28 @@
+import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql'
 import {
-  GraphQLID,
-  GraphQLInputObjectType,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLString
-} from 'graphql'
-import GraphQLURLType from './GraphQLURLType'
-import {
-  IntegrationProviderScopeEnum,
-  IntegrationProvidersEnum,
-  IntegrationProviderTypeEnum
-} from './IntegrationProvider'
+  IntegrationProviderServiceEnum as TIntegrationProviderServiceEnum,
+  IntegrationProviderTypeEnum as TIntegrationProviderTypeEnum
+} from '../../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
+import IntegrationProviderEditableScopeEnum, {
+  TIntegrationProviderEditableScopeEnum
+} from './IntegrationProviderEditableScopeEnum'
+import IntegrationProviderMetadataInputOAuth2, {
+  IIntegrationProviderMetadataInputOAuth2
+} from './IntegrationProviderMetadataInputOAuth2'
+import IntegrationProviderMetadataInputWebhook, {
+  IIntegrationProviderMetadataInputWebhook
+} from './IntegrationProviderMetadataInputWebhook'
+import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
+import IntegrationProviderTypeEnum from './IntegrationProviderTypeEnum'
 
-export const WebhookProviderMetadataInput = new GraphQLInputObjectType({
-  name: 'WebhookProviderMetadataInput',
-  description: 'Webhook provider metadata',
-  fields: () => ({
-    webhookUrl: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'Webhook URL to be used by the provider'
-    }
-  })
-})
-
-export const OAuth2ProviderMetadataInput = new GraphQLInputObjectType({
-  name: 'OAuth2ProviderMetadataInput',
-  description: 'OAuth2 provider metadata',
-  fields: () => ({
-    scopes: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
-      description: 'A list of scope strings that should be requested from the provider'
-    },
-    serverBaseUrl: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'The base URL used to access the provider'
-    },
-    clientId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The client id to give to the provider'
-    },
-    clientSecret: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The client id to give to the provider'
-    }
-  })
-})
+export interface IAddIntegrationProviderInput {
+  teamId: string
+  service: TIntegrationProviderServiceEnum
+  type: TIntegrationProviderTypeEnum
+  scope: TIntegrationProviderEditableScopeEnum
+  webhookProviderMetadataInput: IIntegrationProviderMetadataInputWebhook | null
+  oAuth2ProviderMetadataInput: IIntegrationProviderMetadataInputOAuth2 | null
+}
 
 const AddIntegrationProviderInput = new GraphQLInputObjectType({
   name: 'AddIntegrationProviderInput',
@@ -54,26 +32,25 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The team that the token is linked to'
     },
-    provider: {
-      type: IntegrationProvidersEnum,
+    service: {
+      type: new GraphQLNonNull(IntegrationProviderServiceEnum),
       description: 'The service this provider is associated with'
     },
     type: {
-      type: IntegrationProviderTypeEnum,
+      type: new GraphQLNonNull(IntegrationProviderTypeEnum),
       description: 'The kind of token used by this provider'
     },
     scope: {
-      type: IntegrationProviderScopeEnum,
-      description:
-        'The scope this provider configuration was created at (globally, org-wide, or by the team)'
+      type: new GraphQLNonNull(IntegrationProviderEditableScopeEnum),
+      description: 'The scope this provider configuration was created at (org-wide, or by the team)'
     },
     webhookProviderMetadataInput: {
-      type: WebhookProviderMetadataInput,
+      type: IntegrationProviderMetadataInputWebhook,
       description:
         'Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
     },
     oAuth2ProviderMetadataInput: {
-      type: OAuth2ProviderMetadataInput,
+      type: IntegrationProviderMetadataInputOAuth2,
       description:
         'OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
     }
