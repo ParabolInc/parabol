@@ -92,7 +92,7 @@ export default {
     if (!isPaid(team)) {
       const errMsg = isLocked(team)
         ? "Wow, you're determined to use Parabol! That's awesome! Do you want to keep sneaking over the gate, or walk through the door with our Sales team?"
-        : 'Team is not paid'
+        : 'Sorry! We are unable to start your meeting because your team has an overdue payment'
       return standardError(new Error(errMsg), {userId: viewerId})
     }
 
