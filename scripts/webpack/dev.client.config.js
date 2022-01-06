@@ -6,7 +6,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-const getClientActionVars = require('../toolbox/getClientActionVars').default
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -101,7 +100,17 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'devTemplate.html'),
-      __ACTION__: JSON.stringify(getClientActionVars())
+      __ACTION__: JSON.stringify({
+        atlassian: process.env.ATLASSIAN_CLIENT_ID,
+        github: process.env.GITHUB_CLIENT_ID,
+        google: process.env.GOOGLE_OAUTH_CLIENT_ID,
+        logRocket: process.env.LOG_ROCKET,
+        segment: process.env.SEGMENT_WRITE_KEY,
+        sentry: process.env.SENTRY_DSN,
+        slack: process.env.SLACK_CLIENT_ID,
+        stripe: process.env.STRIPE_PUBLISHABLE_KEY,
+        prblIn: process.env.INVITATION_SHORTLINK
+      })
     }),
     new ReactRefreshWebpackPlugin(),
     new webpack.DefinePlugin({
