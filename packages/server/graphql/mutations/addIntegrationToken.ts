@@ -91,6 +91,7 @@ const addIntegrationToken = {
     // RESOLUTION
     await upsertIntegrationToken({
       providerId: providerDbId,
+      service: integrationProvider.service,
       teamId,
       userId: viewerId,
       tokenMetadata

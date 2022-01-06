@@ -1,19 +1,19 @@
 import {GraphQLInt, GraphQLNonNull} from 'graphql'
-import {DataLoaderWorker} from '../../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {ValueOf} from '../../../../client/types/generics'
+import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification from '../../../database/types/SlackNotification'
+import {IntegrationProviderMattermost} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import {requireSU} from '../../../utils/authorization'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
-import appOrigin from '../../../appOrigin'
+import {DataLoaderWorker} from '../../graphql'
 import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
-import MattermostServerManager from '../../../utils/MattermostServerManager'
-import {ValueOf} from '../../../../client/types/generics'
 
 const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
   const r = await getRethink()
@@ -48,23 +48,25 @@ const processMeetingStageTimeLimits = async (
   const {meetingId} = job
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {teamId, facilitatorUserId} = meeting
-  const [{slackNotification, slackAuth}, mattermostWebhook] = await Promise.all([
+  const [{slackNotification, slackAuth}, mattermostProvider] = await Promise.all([
     getSlackNotificationAndAuth(teamId, facilitatorUserId),
-    MattermostServerManager.getBestWebhook(facilitatorUserId, teamId, dataLoader)
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'mattermost', teamId, userId: facilitatorUserId})
   ])
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
-
-  const sendViaMattermost = !!mattermostWebhook
 
   if (slackAuth?.botAccessToken && slackNotification?.channelId) {
     const manager = new SlackServerManager(slackAuth.botAccessToken)
     const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
     const res = await manager.postMessage(slackNotification.channelId, slackText)
-    if (res.ok && !sendViaMattermost) return
+    if (res.ok && !mattermostProvider) return
   }
 
-  if (sendViaMattermost) {
-    const res = await notifyMattermostTimeLimitEnd(meetingId, teamId, dataLoader)
+  if (mattermostProvider) {
+    const {providerMetadata} = mattermostProvider as IntegrationProviderMattermost
+    const {webhookUrl} = providerMetadata
+    const res = await notifyMattermostTimeLimitEnd(meetingId, teamId, webhookUrl, dataLoader)
     if (!(res instanceof Error)) return
   }
 

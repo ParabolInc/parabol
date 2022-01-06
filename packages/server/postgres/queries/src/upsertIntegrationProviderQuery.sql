@@ -21,8 +21,8 @@ ON CONFLICT ("teamId", "service", "type") DO UPDATE SET
   "service" = EXCLUDED."service",
   "type" = EXCLUDED."type",
   "scope" = EXCLUDED."scope",
-  "providerMetadata" = EXCLUDED."providerMetadata"
-  "updatedAt" = CURRENT_TIMESTAMP
+  "providerMetadata" = EXCLUDED."providerMetadata",
+  "updatedAt" = CURRENT_TIMESTAMP,
   "isActive" = TRUE
 
 RETURNING id;

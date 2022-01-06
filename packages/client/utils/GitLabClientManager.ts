@@ -19,8 +19,8 @@ class GitLabClientManager {
       .toString(36)
       .substring(5)
 
-    const redirect_uri = makeHref('/auth/gitlab')
-    const uri = `${serverBaseUrl}/oauth/authorize?client_id=${clientId}&scope=${GitLabClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirect_uri}&response_type=code`
+    const redirectUri = makeHref('/auth/gitlab')
+    const uri = `${serverBaseUrl}/oauth/authorize?client_id=${clientId}&scope=${GitLabClientManager.SCOPES}&state=${providerState}&redirect_uri=${redirectUri}&response_type=code`
 
     const popup = window.open(
       uri,
@@ -36,7 +36,7 @@ class GitLabClientManager {
       submitMutation()
       AddIntegrationTokenMutation(
         atmosphere,
-        {providerId, oauthCodeOrPat: code, teamId, redirectUri: redirect_uri},
+        {providerId, oauthCodeOrPat: code, teamId, redirectUri},
         {onError, onCompleted}
       )
       popup && popup.close()

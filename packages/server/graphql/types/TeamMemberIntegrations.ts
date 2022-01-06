@@ -42,9 +42,10 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
         {authToken, dataLoader}
       ) => {
         if (!isTeamMember(authToken, teamId)) return null
+        // FIXME GitLab
         const integrationToken = await dataLoader
-          .get('integrationToken')
-          .load({provider: 'gitlab', teamId, userId})
+          .get('integrationTokens')
+          .load({service: 'gitlab', teamId, userId})
         if (!integrationToken) return {teamId}
         // resolving activeProvider to include in source for GitLab api stitch
         const integrationProvider = await dataLoader
@@ -58,9 +59,10 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       description: 'All things associated with a Mattermost integration for a team member',
       resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
+        // FIXME GitLab
         const integrationToken = await dataLoader
-          .get('integrationToken')
-          .load({provider: 'mattermost', teamId, userId})
+          .get('integrationTokens')
+          .load({service: 'mattermost', teamId, userId})
         if (!integrationToken) return {teamId}
         const integrationProvider = await dataLoader
           .get('integrationProviders')

@@ -1,13 +1,14 @@
 /*
  @name upsertIntegrationTokenQuery
- @param auth -> (tokenMetadata, providerId, teamId, userId)
+ @param auth -> (tokenMetadata, providerId, teamId, userId, service)
  */
 INSERT INTO
   "IntegrationToken" (
     "tokenMetadata",
     "providerId",
     "teamId",
-    "userId"
+    "userId",
+    "service"
   )
 VALUES
   :auth ON CONFLICT ("providerId", "userId", "teamId") DO
