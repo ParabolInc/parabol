@@ -4,7 +4,7 @@
 INSERT INTO
   "IntegrationProvider" (
     "service",
-    "type",
+    "authStrategy",
     "scope",
     "clientId",
     "clientSecret",
@@ -15,7 +15,7 @@ INSERT INTO
 VALUES
   (
     :service,
-    :type,
+    :authStrategy,
     :scope,
     :clientId,
     :clientSecret,
@@ -23,9 +23,9 @@ VALUES
     :webhookUrl,
     :teamId
   )
-ON CONFLICT ("teamId", "service", "type") DO UPDATE SET
+ON CONFLICT ("teamId", "service", "authStrategy") DO UPDATE SET
   "service" = EXCLUDED."service",
-  "type" = EXCLUDED."type",
+  "authStrategy" = EXCLUDED."authStrategy",
   "scope" = EXCLUDED."scope",
   "clientId" = EXCLUDED."clientId",
   "clientSecret" = EXCLUDED."clientSecret",

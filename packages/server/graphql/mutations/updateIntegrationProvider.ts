@@ -44,7 +44,7 @@ const updateIntegrationProvider = {
     if (!currentProvider) {
       return {error: {message: 'Invalid provider ID'}}
     }
-    const {teamId, service, type} = currentProvider
+    const {teamId, service, authStrategy} = currentProvider
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Must be on the team that owns the provider'}}
     }
@@ -62,7 +62,7 @@ const updateIntegrationProvider = {
       ...oAuth2ProviderMetadataInput,
       ...webhookProviderMetadataInput,
       service,
-      type,
+      authStrategy,
       teamId,
       scope
     })

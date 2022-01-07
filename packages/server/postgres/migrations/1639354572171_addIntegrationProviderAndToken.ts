@@ -13,8 +13,8 @@ export async function up() {
         'mattermost'
       );
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'IntegrationProviderTypeEnum') THEN
-      CREATE TYPE "IntegrationProviderTypeEnum" AS ENUM (
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'IntegrationProviderAuthStrategyEnum') THEN
+      CREATE TYPE "IntegrationProviderAuthStrategyEnum" AS ENUM (
         'pat',
         'oauth2',
         'webhook'
@@ -32,7 +32,7 @@ export async function up() {
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "service" "IntegrationProviderServiceEnum" NOT NULL,
-      "type" "IntegrationProviderTypeEnum" NOT NULL,
+      "authStrategy" "IntegrationProviderAuthStrategyEnum" NOT NULL,
       "scope" "IntegrationProviderScopeEnum" NOT NULL,
       "scopeGlobal" BOOLEAN GENERATED ALWAYS AS (
         CASE
@@ -48,7 +48,7 @@ export async function up() {
       "webhookUrl" VARCHAR(255),
       UNIQUE("scopeGlobal", "service"),
       CONSTRAINT global_provider_must_be_oauth2 CHECK (
-        "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "type" = 'oauth2')
+        "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "authStrategy" = 'oauth2')
       ),
       CONSTRAINT "fk_team"
         FOREIGN KEY("teamId")
@@ -96,7 +96,7 @@ export async function down() {
   DROP TABLE IF EXISTS "TeamMemberIntegrationAuth" CASCADE;
   DROP TABLE IF EXISTS "IntegrationProvider" CASCADE;
   DROP TYPE IF EXISTS "IntegrationProviderScopeEnum" CASCADE;
-  DROP TYPE IF EXISTS "IntegrationProviderTypeEnum" CASCADE;
+  DROP TYPE IF EXISTS "IntegrationProviderAuthStrategyEnum" CASCADE;
   DROP TYPE IF EXISTS "IntegrationProviderServiceEnum" CASCADE;
   `)
   await client.end()

@@ -14,8 +14,8 @@ const createTokenMetadata = async (
   oauthCodeOrPat: string,
   redirectUri: string
 ) => {
-  const {type, service} = provider
-  if (type === 'oauth2') {
+  const {authStrategy, service} = provider
+  if (authStrategy === 'oauth2') {
     if (service === 'gitlab') {
       const {clientId, clientSecret, serverBaseUrl} = provider
       const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)

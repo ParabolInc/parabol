@@ -1,9 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import IntegrationProviderAuthStrategyEnum from './IntegrationProviderAuthStrategyEnum'
 import IntegrationProviderScopeEnum from './IntegrationProviderScopeEnum'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
-import IntegrationProviderTypeEnum from './IntegrationProviderTypeEnum'
 
 export const integrationProviderFields = () => ({
   id: {
@@ -27,9 +27,9 @@ export const integrationProviderFields = () => ({
     description: 'The service this provider is associated with',
     type: new GraphQLNonNull(IntegrationProviderServiceEnum)
   },
-  type: {
+  authStrategy: {
     description: 'The kind of token used by this provider',
-    type: new GraphQLNonNull(IntegrationProviderTypeEnum)
+    type: new GraphQLNonNull(IntegrationProviderAuthStrategyEnum)
   },
   scope: {
     description:

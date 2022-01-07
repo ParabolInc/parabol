@@ -1,7 +1,7 @@
 import {GraphQLEnumType} from 'graphql'
 
-const IntegrationProviderTypeEnum = new GraphQLEnumType({
-  name: 'IntegrationProviderTypeEnum',
+const IntegrationProviderAuthStrategyEnum = new GraphQLEnumType({
+  name: 'IntegrationProviderAuthStrategyEnum',
   description: 'The kind of token provided by the service',
   values: {
     oauth2: {},
@@ -10,4 +10,4 @@ const IntegrationProviderTypeEnum = new GraphQLEnumType({
   }
 })
 
-export default IntegrationProviderTypeEnum
+export default IntegrationProviderAuthStrategyEnum

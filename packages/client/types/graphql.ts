@@ -48320,7 +48320,7 @@ export interface IIntegrationProviderOAuth2 {
   /**
    * The kind of token used by this provider
    */
-  type: IntegrationProviderTypeEnum;
+  authStrategy: IntegrationProviderAuthStrategyEnum;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
@@ -48384,7 +48384,7 @@ export interface IIntegrationProvider {
   /**
    * The kind of token used by this provider
    */
-  type: IntegrationProviderTypeEnum;
+  authStrategy: IntegrationProviderAuthStrategyEnum;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
@@ -48408,7 +48408,7 @@ export const enum IntegrationProviderServiceEnum {
 /**
  * The kind of token provided by the service
  */
-export const enum IntegrationProviderTypeEnum {
+export const enum IntegrationProviderAuthStrategyEnum {
   oauth2 = 'oauth2',
   pat = 'pat',
   webhook = 'webhook',
@@ -48457,7 +48457,7 @@ export interface IIntegrationProviderWebhook {
   /**
    * The kind of token used by this provider
    */
-  type: IntegrationProviderTypeEnum;
+  authStrategy: IntegrationProviderAuthStrategyEnum;
 
   /**
    * The scope this provider configuration was created at (globally, org-wide, or by the team)
@@ -60008,7 +60008,7 @@ export interface IAddIntegrationProviderInput {
   /**
    * The kind of token used by this provider
    */
-  type: IntegrationProviderTypeEnum;
+  authStrategy: IntegrationProviderAuthStrategyEnum;
 
   /**
    * The scope this provider configuration was created at (org-wide, or by the team)

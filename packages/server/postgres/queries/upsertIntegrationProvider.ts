@@ -1,14 +1,14 @@
 import getPg from '../getPg'
 import {
+  IntegrationProviderAuthStrategyEnum,
   IntegrationProviderScopeEnum,
   IntegrationProviderServiceEnum,
-  IntegrationProviderTypeEnum,
   upsertIntegrationProviderQuery
 } from './generated/upsertIntegrationProviderQuery'
 
 interface IUpsertIntegrationProviderInput {
   service: IntegrationProviderServiceEnum
-  type: IntegrationProviderTypeEnum
+  authStrategy: IntegrationProviderAuthStrategyEnum
   scope?: IntegrationProviderScopeEnum
   clientId?: string
   clientSecret?: string

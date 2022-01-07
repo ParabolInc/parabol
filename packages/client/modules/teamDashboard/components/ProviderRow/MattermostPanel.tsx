@@ -144,7 +144,7 @@ const MattermostPanel = (props: Props) => {
             scope: 'team',
             service: 'mattermost',
             teamId,
-            type: 'webhook'
+            authStrategy: 'webhook'
           }
         },
         {onError, onCompleted}
