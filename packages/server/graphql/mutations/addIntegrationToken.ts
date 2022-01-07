@@ -1,11 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
 import {TIntegrationProvider} from '../../postgres/queries/getIntegrationProvidersByIds'
 import upsertIntegrationToken from '../../postgres/queries/upsertIntegrationToken'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddIntegrationTokenPayload from '../types/AddIntegrationTokenPayload'
@@ -55,10 +53,8 @@ const addIntegrationToken = {
     }: {providerId: string; oauthCodeOrPat: string; teamId: string; redirectUri: string},
     context: GQLContext
   ) => {
-    const {authToken, dataLoader, socketId: mutatorId} = context
+    const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId, operationId}
 
     //AUTH
     if (!isTeamMember(authToken, teamId)) {
@@ -98,7 +94,6 @@ const addIntegrationToken = {
     })
 
     const data = {userId: viewerId, teamId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationToken', data, subOptions)
     return data
   }
 }

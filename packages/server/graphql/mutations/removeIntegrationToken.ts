@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IntegrationProviderServiceEnum as TIntegrationProviderServiceEnum} from '../../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
 import removeIntegrationTokenQuery from '../../postgres/queries/removeIntegrationToken'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import IntegrationProviderServiceEnum from '../types/IntegrationProviderServiceEnum'
@@ -27,10 +25,8 @@ const removeIntegrationToken = {
     {service, teamId}: {service: TIntegrationProviderServiceEnum; teamId: string},
     context: GQLContext
   ) => {
-    const {authToken, dataLoader, socketId: mutatorId} = context
+    const {authToken} = context
     const viewerId = getUserId(authToken)
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId, operationId}
 
     // AUTH
     if (!isTeamMember(authToken, teamId))
@@ -40,7 +36,6 @@ const removeIntegrationToken = {
     await removeIntegrationTokenQuery(service, teamId, viewerId)
 
     const data = {userId: viewerId, teamId}
-    publish(SubscriptionChannel.TEAM, teamId, 'RemoveIntegrationToken', data, subOptions)
     return data
   }
 }
