@@ -125,9 +125,7 @@ export const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLoo
   }
 }
 
-export const makeSuggestedIntegrationGitHub = (
-  nameWithOwner: keyof typeof GitHubProjectKeyLookup
-) => ({
+const makeSuggestedIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
   __typename: 'SuggestedIntegrationGitHub',
   id: `si:${nameWithOwner}`,
   ...GitHubProjectKeyLookup[nameWithOwner]

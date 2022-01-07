@@ -48,11 +48,7 @@ import initDB, {
   DemoThreadableEdge,
   demoViewerId,
   JiraProjectKeyLookup,
-  RetroDemoDB,
-  JiraDemoKey,
-  GitHubDemoKey,
-  makeSuggestedIntegrationJira,
-  makeSuggestedIntegrationGitHub
+  RetroDemoDB
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
@@ -247,7 +243,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuRootQuery: (_$teamId, $userId) => {
+    TaskFooterIntegrateMenuRootQuery: (_teamId: unknown, userId: string) => {
       const user = this.db.users[0]
       return {
         viewer: {
@@ -255,43 +251,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           userOnTeam: {
             ...user
           },
-          assigneeTeamMember: {
-            preferredName: user.id === $userId ? user.preferredName : 'assignee_name',
-            integrations:
-              user.id === $userId
-                ? {
-                    id: 'demoTeamIntegrations',
-                    atlassian: {
-                      id: 'demoTeamAtlassianIntegration',
-                      isActive: true,
-                      accessToken: '123'
-                    },
-                    github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'}
-                  }
-                : null,
-            suggestedIntegrations: {
-              hasMore: true,
-              items: [
-                makeSuggestedIntegrationJira(JiraDemoKey),
-                makeSuggestedIntegrationGitHub(GitHubDemoKey)
-              ]
-            }
-          },
-          viewerTeamMember: {
-            preferredName: user.preferredName,
-            integrations: {
-              id: 'demoTeamIntegrations',
-              atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
-              github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'}
-            },
-            suggestedIntegrations: {
-              hasMore: true,
-              items: [
-                makeSuggestedIntegrationJira(JiraDemoKey),
-                makeSuggestedIntegrationGitHub(GitHubDemoKey)
-              ]
-            }
-          }
+          assigneeTeamMember: this.db.teamMembers.find(
+            (teamMember) => teamMember.userId === userId
+          ),
+          viewerTeamMember: this.db.teamMembers[0]
         }
       }
     },
