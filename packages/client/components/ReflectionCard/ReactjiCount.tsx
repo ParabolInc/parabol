@@ -62,11 +62,11 @@ const ReactjiCount = (props: Props) => {
   const {onToggle, reactji, status, onTransitionEnd} = props
   if (!reactji) return null
   const {count, id, isViewerReactji} = reactji
-  const [, name] = id.split(':')
-  const unified = data.emojis[name ?? '']?.unified ?? ''
+  const [, name = ''] = id.split(':')
+  const unified = data.emojis[name]?.unified ?? ''
   const unicode = unifiedToNative(unified) || ''
   const onClick = () => {
-    onToggle(name ?? '')
+    onToggle(name)
   }
   return (
     <Parent onTransitionEnd={onTransitionEnd} status={status}>
