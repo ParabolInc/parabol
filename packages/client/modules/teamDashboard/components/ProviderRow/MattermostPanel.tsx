@@ -69,14 +69,13 @@ const MattermostPanel = (props: Props) => {
         teamMember(teamId: $teamId) {
           integrations {
             mattermost {
-              activeProvider {
-                id
-                webhookUrl
+              auth {
+                provider {
+                  id
+                  webhookUrl
+                }
               }
             }
-          }
-          team {
-            orgId
           }
         }
       }
@@ -86,7 +85,8 @@ const MattermostPanel = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
-  const activeProvider = mattermost?.activeProvider
+  const {auth} = mattermost
+  const activeProvider = auth?.provider
   const atmosphere = useAtmosphere()
 
   // corner case: let them re-upsert the same webhook url when reverting to a previous value

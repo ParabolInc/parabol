@@ -48287,6 +48287,195 @@ export interface IPendingDeploymentRequestsOnXGitHubWorkflowRunArguments {
 }
 
 /**
+ * An integration provider that connects via OAuth2
+ */
+export interface IIntegrationProviderOAuth2 {
+  __typename: 'IntegrationProviderOAuth2';
+
+  /**
+   * The provider's unique identifier
+   */
+  id: string;
+
+  /**
+   * The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The service this provider is associated with
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
+   * The kind of token used by this provider
+   */
+  type: IntegrationProviderTypeEnum;
+
+  /**
+   * The scope this provider configuration was created at (globally, org-wide, or by the team)
+   */
+  scope: IntegrationProviderScopeEnum;
+
+  /**
+   * true if the provider configuration should be used
+   */
+  isActive: boolean;
+
+  /**
+   * The base URL of the OAuth2 server
+   */
+  serverBaseUrl: any;
+
+  /**
+   * The OAuth2 client id
+   */
+  clientId: string;
+}
+
+/**
+ * An authentication provider configuration
+ */
+export type IntegrationProvider =
+  | IIntegrationProviderOAuth2
+  | IIntegrationProviderWebhook;
+
+/**
+ * An authentication provider configuration
+ */
+export interface IIntegrationProvider {
+  __typename: 'IntegrationProvider';
+
+  /**
+   * The provider's unique identifier
+   */
+  id: string;
+
+  /**
+   * The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The service this provider is associated with
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
+   * The kind of token used by this provider
+   */
+  type: IntegrationProviderTypeEnum;
+
+  /**
+   * The scope this provider configuration was created at (globally, org-wide, or by the team)
+   */
+  scope: IntegrationProviderScopeEnum;
+
+  /**
+   * true if the provider configuration should be used
+   */
+  isActive: boolean;
+}
+
+/**
+ * The name of the service of the Integration Provider
+ */
+export const enum IntegrationProviderServiceEnum {
+  gitlab = 'gitlab',
+  mattermost = 'mattermost',
+}
+
+/**
+ * The kind of token provided by the service
+ */
+export const enum IntegrationProviderTypeEnum {
+  oauth2 = 'oauth2',
+  pat = 'pat',
+  webhook = 'webhook',
+}
+
+/**
+ * The scope this provider was created on (globally, org-wide, or on the team)
+ */
+export const enum IntegrationProviderScopeEnum {
+  global = 'global',
+  org = 'org',
+  team = 'team',
+}
+
+/**
+ * An integration provider that connects via webhook
+ */
+export interface IIntegrationProviderWebhook {
+  __typename: 'IntegrationProviderWebhook';
+
+  /**
+   * The provider's unique identifier
+   */
+  id: string;
+
+  /**
+   * The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The service this provider is associated with
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
+   * The kind of token used by this provider
+   */
+  type: IntegrationProviderTypeEnum;
+
+  /**
+   * The scope this provider configuration was created at (globally, org-wide, or by the team)
+   */
+  scope: IntegrationProviderScopeEnum;
+
+  /**
+   * true if the provider configuration should be used
+   */
+  isActive: boolean;
+
+  /**
+   * The webhook URL
+   */
+  webhookUrl: any;
+}
+
+/**
  * An authentication strategy using Google
  */
 export interface IAuthIdentityGoogle {
@@ -49586,12 +49775,12 @@ export interface ITeamMemberIntegrations {
   /**
    * All things associated with a GitLab integration for a team member
    */
-  gitlab: IGitLabIntegration | null;
+  gitlab: IGitLabIntegration;
 
   /**
    * All things associated with a Mattermost integration for a team member
    */
-  mattermost: IMattermostIntegration | null;
+  mattermost: IMattermostIntegration;
 
   /**
    * All things associated with a slack integration for a team member
@@ -49990,71 +50179,36 @@ export interface IGitHubSearchQuery {
 }
 
 /**
- * Gitlab integration data for a given user
+ * Gitlab integration data for a given team member
  */
 export interface IGitLabIntegration {
   __typename: 'GitLabIntegration';
 
   /**
-   * composite key
+   * The OAuth2 Authorization for this team member
    */
-  id: string;
+  auth: IIntegrationTokenOAuth2 | null;
 
   /**
-   * The timestamp the token was updated at
+   * The cloud provider the team member may choose to integrate with
    */
-  updatedAt: any;
+  cloudProvider: IIntegrationProviderOAuth2;
 
   /**
-   * The timestamp the provider was created
+   * The non-global providers shared with the team or organization
    */
-  createdAt: any;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-
-  /**
-   * true if an access token exists, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The OAuth2 access token, typically a JWT
-   */
-  accessToken: string | null;
-
-  /**
-   * The OAuth2 scopes this token is valid for
-   */
-  scopes: string;
-
-  /**
-   * The provider to connect to GitLab cloud
-   */
-  cloudProvider: IIntegrationProviderOAuth2 | null;
-
-  /**
-   * The provider to connect to a self-hosted GitLab instance
-   */
-  selfHostedProvider: IIntegrationProviderOAuth2 | null;
+  sharedProviders: Array<IIntegrationProviderOAuth2>;
   api: IXGitLabApi | null;
 }
 
 /**
- * An integration provider that connects via OAuth2
+ * An integration token that connects via OAuth2
  */
-export interface IIntegrationProviderOAuth2 {
-  __typename: 'IntegrationProviderOAuth2';
+export interface IIntegrationTokenOAuth2 {
+  __typename: 'IntegrationTokenOAuth2';
 
   /**
-   * The provider's unique identifier
+   * The token's unique identifier
    */
   id: string;
 
@@ -50064,7 +50218,7 @@ export interface IIntegrationProviderOAuth2 {
   teamId: string;
 
   /**
-   * The timestamp the provider was created
+   * The timestamp the token was created
    */
   createdAt: any;
 
@@ -50074,51 +50228,51 @@ export interface IIntegrationProviderOAuth2 {
   updatedAt: any;
 
   /**
-   * The service this provider is associated with
+   * The GQL GUID of the DB providerId foreign key
    */
-  provider: IntegrationProviderServiceEnum;
+  providerId: string;
 
   /**
-   * The kind of token used by this provider
+   * The service this token is associated with, denormalized from the provider
    */
-  type: IntegrationProviderTypeEnum;
+  service: IntegrationProviderServiceEnum;
 
   /**
-   * The scope this provider configuration was created at (globally, org-wide, or by the team)
-   */
-  scope: IntegrationProviderScopeEnum;
-
-  /**
-   * true if the provider configuration should be used
+   * true if the token configuration should be used
    */
   isActive: boolean;
 
   /**
-   * The base URL of the OAuth2 server
+   * The provider strategy this token connects to
    */
-  serverBaseUrl: any;
+  provider: IIntegrationProviderOAuth2;
 
   /**
-   * The OAuth2 client id
+   * The token used to connect to the provider
    */
-  clientId: string;
+  accessToken: string;
+
+  /**
+   * The scopes allowed on the provider
+   */
+  scopes: string;
 }
 
 /**
- * An authentication provider configuration
+ * The auth credentials for a token, specific to a team member
  */
-export type IntegrationProvider =
-  | IIntegrationProviderOAuth2
-  | IIntegrationProviderWebhook;
+export type IntegrationToken =
+  | IIntegrationTokenOAuth2
+  | IIntegrationTokenWebhook;
 
 /**
- * An authentication provider configuration
+ * The auth credentials for a token, specific to a team member
  */
-export interface IIntegrationProvider {
-  __typename: 'IntegrationProvider';
+export interface IIntegrationToken {
+  __typename: 'IntegrationToken';
 
   /**
-   * The provider's unique identifier
+   * The token's unique identifier
    */
   id: string;
 
@@ -50128,7 +50282,7 @@ export interface IIntegrationProvider {
   teamId: string;
 
   /**
-   * The timestamp the provider was created
+   * The timestamp the token was created
    */
   createdAt: any;
 
@@ -50138,92 +50292,51 @@ export interface IIntegrationProvider {
   updatedAt: any;
 
   /**
-   * The service this provider is associated with
+   * The GQL GUID of the DB providerId foreign key
    */
-  provider: IntegrationProviderServiceEnum;
+  providerId: string;
 
   /**
-   * The kind of token used by this provider
+   * The service this token is associated with, denormalized from the provider
    */
-  type: IntegrationProviderTypeEnum;
+  service: IntegrationProviderServiceEnum;
 
   /**
-   * The scope this provider configuration was created at (globally, org-wide, or by the team)
-   */
-  scope: IntegrationProviderScopeEnum;
-
-  /**
-   * true if the provider configuration should be used
+   * true if the token configuration should be used
    */
   isActive: boolean;
+
+  /**
+   * The provider to connect to
+   */
+  provider: IntegrationProvider;
 }
 
 /**
- * The name of the service of the Integration Provider
- */
-export const enum IntegrationProviderServiceEnum {
-  gitlab = 'gitlab',
-  mattermost = 'mattermost',
-}
-
-/**
- * The kind of token provided by the service
- */
-export const enum IntegrationProviderTypeEnum {
-  oauth2 = 'oauth2',
-  pat = 'pat',
-  webhook = 'webhook',
-}
-
-/**
- * The scope this provider was created on (globally, org-wide, or on the team)
- */
-export const enum IntegrationProviderScopeEnum {
-  global = 'global',
-  org = 'org',
-  team = 'team',
-}
-
-/**
- * OAuth token for a team member
+ * Integration Auth and shared providers available to the team member
  */
 export interface IMattermostIntegration {
   __typename: 'MattermostIntegration';
 
   /**
-   * true if the auth is updated & ready to use for all features, else false
+   * The OAuth2 Authorization for this team member
    */
-  isActive: boolean;
+  auth: IIntegrationTokenWebhook | null;
 
   /**
-   * The active Integration Provider details to be used to access Mattermost
+   * The non-global providers shared with the team or organization
    */
-  activeProvider: IIntegrationProviderWebhook | null;
-
-  /**
-   * The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The id of the user that integrated Mattermost
-   */
-  userId: string;
+  sharedProviders: Array<IIntegrationProviderWebhook>;
 }
 
 /**
- * An integration provider that connects via webhook
+ * An integration token that connects via Webhook
  */
-export interface IIntegrationProviderWebhook {
-  __typename: 'IntegrationProviderWebhook';
+export interface IIntegrationTokenWebhook {
+  __typename: 'IntegrationTokenWebhook';
 
   /**
-   * The provider's unique identifier
+   * The token's unique identifier
    */
   id: string;
 
@@ -50233,7 +50346,7 @@ export interface IIntegrationProviderWebhook {
   teamId: string;
 
   /**
-   * The timestamp the provider was created
+   * The timestamp the token was created
    */
   createdAt: any;
 
@@ -50243,29 +50356,24 @@ export interface IIntegrationProviderWebhook {
   updatedAt: any;
 
   /**
-   * The service this provider is associated with
+   * The GQL GUID of the DB providerId foreign key
    */
-  provider: IntegrationProviderServiceEnum;
+  providerId: string;
 
   /**
-   * The kind of token used by this provider
+   * The service this token is associated with, denormalized from the provider
    */
-  type: IntegrationProviderTypeEnum;
+  service: IntegrationProviderServiceEnum;
 
   /**
-   * The scope this provider configuration was created at (globally, org-wide, or by the team)
-   */
-  scope: IntegrationProviderScopeEnum;
-
-  /**
-   * true if the provider configuration should be used
+   * true if the token configuration should be used
    */
   isActive: boolean;
 
   /**
-   * The webhook URL
+   * The provider strategy this token connects to
    */
-  webhookUrl: any;
+  provider: IIntegrationProviderWebhook;
 }
 
 /**

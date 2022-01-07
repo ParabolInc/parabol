@@ -8,6 +8,8 @@ import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
 import rootTypes from './rootTypes'
+import {IntegrationProviderGitLabOAuth2} from '../postgres/queries/getIntegrationProvidersByIds'
+import {GQLContext} from './graphql'
 
 const parabolSchema = new GraphQLSchema({
   query,
@@ -32,13 +34,24 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
   parentSchema: parabolSchema,
   parentType: 'GitLabIntegration',
   fieldName: 'api',
-  resolveEndpointContext: ({accessToken, activeProvider}) => {
-    const context = {
+  resolveEndpointContext: async (
+    {teamId, userId}: {teamId: string; userId: string},
+    _args,
+    {dataLoader}: GQLContext
+  ) => {
+    const token = await dataLoader
+      .get('integrationTokens')
+      .load({service: 'gitlab', teamId, userId})
+    if (!token) throw new Error('No GitLab token found')
+    const {accessToken, providerId} = token
+    const provider = await dataLoader.get('integrationProviders').load(providerId)
+    if (!provider) throw new Error('No GitLab provider found')
+    const {providerMetadata} = provider as IntegrationProviderGitLabOAuth2
+    const {serverBaseUrl} = providerMetadata
+    return {
       accessToken,
-      baseUri: activeProvider.serverBaseUri,
-      headers: {Accept: 'application/json'}
+      baseUri: serverBaseUrl
     }
-    return context
   },
   prefix: '_xGitLab',
   schemaIDL: gitlabSchema

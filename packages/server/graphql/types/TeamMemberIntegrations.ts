@@ -34,41 +34,14 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       }
     },
     gitlab: {
-      type: GitLabIntegration,
+      type: new GraphQLNonNull(GitLabIntegration),
       description: 'All things associated with a GitLab integration for a team member',
-      resolve: async (
-        {teamId, userId}: {teamId: string; userId: string},
-        _args: unknown,
-        {authToken, dataLoader}
-      ) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        // FIXME GitLab
-        const integrationToken = await dataLoader
-          .get('integrationTokens')
-          .load({service: 'gitlab', teamId, userId})
-        if (!integrationToken) return {teamId}
-        // resolving activeProvider to include in source for GitLab api stitch
-        const integrationProvider = await dataLoader
-          .get('integrationProviders')
-          .load(integrationToken.providerId)
-        return {...integrationToken, activeProvider: integrationProvider}
-      }
+      resolve: (source) => source
     },
     mattermost: {
-      type: MattermostIntegration,
+      type: new GraphQLNonNull(MattermostIntegration),
       description: 'All things associated with a Mattermost integration for a team member',
-      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        // FIXME GitLab
-        const integrationToken = await dataLoader
-          .get('integrationTokens')
-          .load({service: 'mattermost', teamId, userId})
-        if (!integrationToken) return {teamId}
-        const integrationProvider = await dataLoader
-          .get('integrationProviders')
-          .load(integrationToken.providerId)
-        return {...integrationToken, activeProvider: integrationProvider}
-      }
+      resolve: (source) => source
     },
     slack: {
       type: SlackIntegration,

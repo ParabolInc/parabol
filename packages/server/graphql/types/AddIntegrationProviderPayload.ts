@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {GQLContext} from '../graphql'
 import IntegrationProvider from './IntegrationProvider'
 import makeMutationPayload from './makeMutationPayload'
@@ -20,7 +20,7 @@ export const AddIntegrationProviderSuccess = new GraphQLObjectType<any, GQLConte
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member with the updated Integration Provider',
       resolve: ({teamId, userId}, _args, {dataLoader}) => {
-        const teamMemberId = toTeamMemberId(teamId, userId)
+        const teamMemberId = TeamMemberId.join(teamId, userId)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },

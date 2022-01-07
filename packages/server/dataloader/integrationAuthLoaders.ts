@@ -6,12 +6,19 @@ import getIntegrationProvidersByIds, {
   TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
 import getIntegrationToken, {IIntegrationToken} from '../postgres/queries/getIntegrationToken'
+import getSharedIntegrationProviders from '../postgres/queries/getSharedIntegrationProviders'
 import RootDataLoader from './RootDataLoader'
 
-export interface IntegrationTokenPrimaryKey {
+interface IntegrationTokenPrimaryKey {
   service: IntegrationProviderServiceEnum
   teamId: string
   userId: string
+}
+
+interface SharedIntegrationProviderKey {
+  service: IntegrationProviderServiceEnum
+  orgTeamIds: string[]
+  teamIds: string[]
 }
 
 const integrationTokenCacheKeyFn = ({service, teamId, userId}) => `${service}:${teamId}:${userId}`
@@ -22,6 +29,23 @@ export const integrationProviders = (parent: RootDataLoader) => {
       return providerIds.map(
         (providerId) => integrationProviders.find((row) => row.id === providerId) || null
       )
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const sharedIntegrationProviders = (parent: RootDataLoader) => {
+  return new DataLoader<SharedIntegrationProviderKey, TIntegrationProvider[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({service, orgTeamIds, teamIds}) =>
+          getSharedIntegrationProviders(service, orgTeamIds, teamIds)
+        )
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+      return vals
     },
     {
       ...parent.dataLoaderOptions

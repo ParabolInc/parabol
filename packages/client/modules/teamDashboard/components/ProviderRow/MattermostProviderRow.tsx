@@ -91,8 +91,10 @@ const MattermostProviderRow = (props: Props) => {
         teamMember(teamId: $teamId) {
           integrations {
             mattermost {
-              activeProvider {
-                id
+              auth {
+                provider {
+                  id
+                }
               }
             }
           }
@@ -109,9 +111,7 @@ const MattermostProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
-  if (!mattermost) return null
-  const {activeProvider} = mattermost
-
+  const {auth} = mattermost
   return (
     <ExtraProviderCard>
       <CardTop>
@@ -120,7 +120,7 @@ const MattermostProviderRow = (props: Props) => {
           <ProviderName>{Providers.MATTERMOST_NAME}</ProviderName>
           <RowInfoCopy>{Providers.MATTERMOST_DESC}</RowInfoCopy>
         </RowInfo>
-        {activeProvider ? (
+        {auth ? (
           <ListAndMenu>
             <MattermostLogin title='Mattermost'>
               <MattermostSVG />
@@ -133,7 +133,7 @@ const MattermostProviderRow = (props: Props) => {
                 menuProps={menuProps}
                 mutationProps={mutationProps}
                 teamId={teamId}
-                providerId={activeProvider.id}
+                providerId={auth.provider.id}
               />
             )}
           </ListAndMenu>
@@ -150,9 +150,7 @@ const MattermostProviderRow = (props: Props) => {
           </ProviderActions>
         )}
       </CardTop>
-      {(activeProvider || isConnectClicked) && (
-        <MattermostPanel teamId={teamId} viewerRef={viewer} />
-      )}
+      {(auth || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
     </ExtraProviderCard>
   )
 }

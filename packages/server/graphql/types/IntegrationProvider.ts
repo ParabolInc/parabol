@@ -23,7 +23,7 @@ export const integrationProviderFields = () => ({
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the token was updated at'
   },
-  provider: {
+  service: {
     description: 'The service this provider is associated with',
     type: new GraphQLNonNull(IntegrationProviderServiceEnum)
   },
