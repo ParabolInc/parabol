@@ -116,7 +116,8 @@ const subscription = graphql`
       ... on AddNewFeaturePayload {
         newFeature {
           id
-          copy
+          actionButtonCopy
+          snackbarMessage
           url
         }
       }
