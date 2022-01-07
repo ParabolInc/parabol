@@ -5,6 +5,7 @@ import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
+import * as pgPrimaryKeyLoaderMakers from './pgPrimaryKeyLoaderMakers'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
@@ -18,6 +19,7 @@ interface LoaderDict {
 const loaderMakers = {
   ...rethinkPrimaryKeyLoaderMakers,
   ...rethinkForeignKeyLoaderMakers,
+  ...pgPrimaryKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
   ...pollLoaders
@@ -36,7 +38,7 @@ type ForeignLoaders = keyof ForeignLoaderMakers
 type Unforeign<T> = T extends RethinkForeignKeyLoaderMaker<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
-type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof pollLoaders
+type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof pollLoaders & typeof pgPrimaryKeyLoaderMakers
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
@@ -69,7 +71,6 @@ export default class RootDataLoader {
     if (loaderMaker instanceof RethinkPrimaryKeyLoaderMaker) {
       const {table} = loaderMaker
       loader = rethinkPrimaryKeyLoader(this.dataLoaderOptions, table)
-      this.loaders[loaderName]
     } else if (loaderMaker instanceof RethinkForeignKeyLoaderMaker) {
       const {fetch, field, pk} = loaderMaker
       const basePkLoader = this.get(pk as PrimaryLoaders)
