@@ -14,24 +14,15 @@ const useServiceWorkerUpdater = () => {
         isFirstServiceWorkerRef.current = false
         return
       }
-      const showCustomNotification =
-        __APP_VERSION__ === window.__ACTION__.launchVersion &&
-        window.__ACTION__.launchMessage &&
-        window.__ACTION__.launchURL
-      const message = showCustomNotification
-        ? window.__ACTION__.launchMessage
-        : 'A new version of Parabol is available 🎉'
-      const label = showCustomNotification ? 'Check it out' : `See what's changed`
-      const defaultUrl =
-        'https://github.com/ParabolInc/parabol/blob/production/CHANGELOG.md#parabol-change-log'
-      const url = showCustomNotification ? window.__ACTION__.launchURL : defaultUrl
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'newVersion',
         autoDismiss: 5,
-        message,
+        message: 'A new version of Parabol is available 🎉',
         action: {
-          label,
+          label: `See what's changed`,
           callback: () => {
+            const url =
+              'https://github.com/ParabolInc/parabol/blob/production/CHANGELOG.md#parabol-change-log'
             window.open(url, '_blank', 'noopener')?.focus()
           }
         }
