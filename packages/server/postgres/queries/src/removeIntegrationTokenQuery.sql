@@ -3,7 +3,7 @@
 */
 UPDATE "IntegrationToken"
 SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
-WHERE "providerId" = :providerId
+WHERE "userId" = :userId
   AND "teamId" = :teamId
-  AND "userId" = :userId
+  AND "service" = :service
   AND "isActive" = TRUE;

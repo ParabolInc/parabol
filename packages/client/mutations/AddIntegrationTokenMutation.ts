@@ -42,9 +42,6 @@ const AddIntegrationTokenMutation: StandardMutation<TAddIntegrationTokenMutation
   return commitMutation<TAddIntegrationTokenMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: () => {
-      const {} = variables
-    },
     onCompleted,
     onError
   })

@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 export const RemoveIntegrationTokenSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveIntegrationTokenSuccess',
@@ -12,7 +12,7 @@ export const RemoveIntegrationTokenSuccess = new GraphQLObjectType<any, GQLConte
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member with the updated auth',
       resolve: ({teamId, userId}, _args, {dataLoader}) => {
-        const teamMemberId = toTeamMemberId(teamId, userId)
+        const teamMemberId = TeamMemberId.join(teamId, userId)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },

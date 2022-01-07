@@ -8,8 +8,7 @@ export default class DemoUser {
   createdAt = new Date().toJSON()
   email: string
   featureFlags = {
-    gitlab: false,
-    video: false
+    gitlab: false
   }
   facilitatorUserId: string
   facilitatorName: string

@@ -56185,6 +56185,10 @@ export interface IMutation {
    * Remove an Integration Provider, and any associated tokens
    */
   removeIntegrationProvider: RemoveIntegrationProviderPayload;
+
+  /**
+   * Remove the integrated auth for a given team member
+   */
   removeIntegrationToken: RemoveIntegrationTokenPayload;
 }
 
@@ -57381,9 +57385,9 @@ export interface IRemoveIntegrationProviderOnMutationArguments {
 
 export interface IRemoveIntegrationTokenOnMutationArguments {
   /**
-   * The Integration Provider id related to the token
+   * The Integration Provider service name related to the token
    */
-  providerId: string;
+  service: IntegrationProviderServiceEnum;
 
   /**
    * The team id related to the token

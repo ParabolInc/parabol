@@ -1,27 +1,17 @@
 import {GraphQLResolveInfo} from 'graphql'
-import {OAuth2IntegrationServerManager} from '../IntegrationServerManager'
-import {
-  IntegrationProvider,
-  isOAuth2ProviderMetadata
-} from '../../postgres/types/IntegrationProvider'
-import {GetProfileQuery} from '../../types/gitlabTypes'
-import {GitLabRequest} from '../../graphql/rootSchema'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
+import {GitLabRequest} from '../../graphql/rootSchema'
+import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {GetProfileQuery} from '../../types/gitlabTypes'
 
-class GitLabServerManager implements OAuth2IntegrationServerManager {
-  readonly provider: IntegrationProvider
+class GitLabServerManager {
+  readonly provider: IntegrationProviderGitLabOAuth2
   readonly accessToken: string
   readonly serverBaseUrl: string
 
-  constructor(provider: IntegrationProvider, accessToken: string) {
-    const {providerMetadata} = provider
-    if (!isOAuth2ProviderMetadata(providerMetadata)) {
-      throw Error('Cannot instantiate GitLab with non OAuth2 metadata!')
-    }
-
-    this.provider = provider
+  constructor(accessToken: string, serverBaseUrl: string) {
     this.accessToken = accessToken
-    this.serverBaseUrl = providerMetadata.serverBaseUrl
+    this.serverBaseUrl = serverBaseUrl
   }
 
   getGitLabRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {

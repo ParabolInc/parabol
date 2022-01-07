@@ -1,19 +1,12 @@
 import fetch from 'node-fetch'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import appOrigin from '../appOrigin'
-
-interface AuthQueryParams {
-  grant_type: 'authorization_code'
-  code: string
-  redirect_uri: string
-}
-
-interface RefreshQueryParams {
-  grant_type: 'refresh_token'
-  refresh_token: string
-}
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
+import {
+  OAuth2AuthorizationParams,
+  OAuth2RefreshAuthorizationParams
+} from '../integrations/OAuth2Manager'
 
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch as any
@@ -32,7 +25,9 @@ class AtlassianServerManager extends AtlassianManager {
     })
   }
 
-  private static async fetchToken(partialQueryParams: AuthQueryParams | RefreshQueryParams) {
+  private static async fetchToken(
+    partialQueryParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
+  ) {
     const body = {
       ...partialQueryParams,
       client_id: process.env.ATLASSIAN_CLIENT_ID!,

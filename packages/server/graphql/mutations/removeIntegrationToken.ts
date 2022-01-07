@@ -1,20 +1,21 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import RemoveIntegrationTokenPayload from '../types/RemoveIntegrationTokenPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
-import standardError from '../../utils/standardError'
-import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import {IntegrationProviderServiceEnum as TIntegrationProviderServiceEnum} from '../../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
 import removeIntegrationTokenQuery from '../../postgres/queries/removeIntegrationToken'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import IntegrationProviderServiceEnum from '../types/IntegrationProviderServiceEnum'
+import RemoveIntegrationTokenPayload from '../types/RemoveIntegrationTokenPayload'
 
 const removeIntegrationToken = {
   type: GraphQLNonNull(RemoveIntegrationTokenPayload),
-  description: ``,
+  description: 'Remove the integrated auth for a given team member',
   args: {
-    providerId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'The Integration Provider id related to the token'
+    service: {
+      type: GraphQLNonNull(IntegrationProviderServiceEnum),
+      description: 'The Integration Provider service name related to the token'
     },
     teamId: {
       type: GraphQLNonNull(GraphQLID),
@@ -23,7 +24,7 @@ const removeIntegrationToken = {
   },
   resolve: async (
     _source,
-    {providerId, teamId}: {providerId: string; teamId: string},
+    {service, teamId}: {service: TIntegrationProviderServiceEnum; teamId: string},
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
@@ -32,15 +33,11 @@ const removeIntegrationToken = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken))
-      return standardError(new Error('persmission denied; must be team member'))
-
-    // VALIDATION
-    const providerDbId = IntegrationProviderId.split(providerId)
-    if (!providerDbId) return standardError(new Error('invalid providerId'))
+    if (!isTeamMember(authToken, teamId))
+      return standardError(new Error('permission denied; must be team member'))
 
     // RESOLUTION
-    await removeIntegrationTokenQuery(providerDbId, teamId, viewerId)
+    await removeIntegrationTokenQuery(service, teamId, viewerId)
 
     const data = {userId: viewerId, teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveIntegrationToken', data, subOptions)

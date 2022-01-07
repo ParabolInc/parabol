@@ -15,14 +15,14 @@ declare const __webpack_public_path__: string
 
 interface Window {
   __ACTION__: {
-    atlassian: string | undefined
-    github: string | undefined
-    google: string | undefined
-    segment: string | undefined
-    sentry: string | undefined
-    slack: string | undefined
-    stripe: string | undefined
-    prblIn: string | undefined
+    atlassian: string
+    github: string
+    google: string
+    segment: string
+    sentry: string
+    slack: string
+    stripe: string
+    prblIn: string
   }
 }
 

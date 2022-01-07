@@ -12,8 +12,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation RemoveIntegrationTokenMutation($providerId: ID!, $teamId: ID!) {
-    removeIntegrationToken(providerId: $providerId, teamId: $teamId) {
+  mutation RemoveIntegrationTokenMutation($service: IntegrationProviderServiceEnum!, $teamId: ID!) {
+    removeIntegrationToken(service: $service, teamId: $teamId) {
       ... on ErrorPayload {
         error {
           message

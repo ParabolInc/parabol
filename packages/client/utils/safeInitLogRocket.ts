@@ -1,7 +1,7 @@
 import LogRocket from 'logrocket'
 
 const safeInitLogRocket = (viewerId?: string, email?: string) => {
-  const logRocketId = window.__ACTION__.logRocket
+  const logRocketId = (window.__ACTION__ as any).logRocket
   if (!logRocketId) return
   LogRocket.init(logRocketId, {
     release: __APP_VERSION__,
