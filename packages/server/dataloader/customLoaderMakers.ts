@@ -6,9 +6,9 @@ import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getPg from '../postgres/getPg'
 import {
-  getDiscussionsByIdQuery,
-  IGetDiscussionsByIdQueryResult
-} from '../postgres/queries/generated/getDiscussionsByIdQuery'
+  getDiscussionsByIdsQuery,
+  IGetDiscussionsByIdsQueryResult
+} from '../postgres/queries/generated/getDiscussionsByIdsQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -28,7 +28,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import getTeamsByIds, {Team} from '../postgres/queries/getTeamsByIds'
 import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
-import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
+import getTemplateRefsByIds, {TemplateRef} from '../postgres/queries/getTemplateRefsByIds'
 import getTemplateScaleRefsByIds, {
   TemplateScaleRef
 } from '../postgres/queries/getTemplateScaleRefsByIds'
@@ -291,9 +291,9 @@ export const userTasks = (parent: RootDataLoader) => {
 
 // TODO abstract this out so we can use this easier with PG
 export const discussions = (parent: RootDataLoader) => {
-  return new DataLoader<string, IGetDiscussionsByIdQueryResult | null, string>(
+  return new DataLoader<string, IGetDiscussionsByIdsQueryResult | null, string>(
     async (keys) => {
-      const rows = await getDiscussionsByIdQuery.run({ids: keys as string[]}, getPg())
+      const rows = await getDiscussionsByIdsQuery.run({ids: keys as string[]}, getPg())
       return keys.map((key) => rows.find((row) => row.id === key) || null)
     },
     {
@@ -452,7 +452,7 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
 export const templateRefs = (parent: RootDataLoader) => {
   return new DataLoader<string, TemplateRef, string>(
     async (refIds) => {
-      const templateRefs = await getTemplateRefsById(refIds)
+      const templateRefs = await getTemplateRefsByIds(refIds)
       return refIds.map((refId) => templateRefs.find((ref) => ref.id === refId)!)
     },
     {

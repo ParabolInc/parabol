@@ -5,7 +5,7 @@ export type Json = null | boolean | number | string | Json[] | { [key: string]: 
 
 /** 'GetTemplateScaleRefsByIdsQuery' parameters type */
 export interface IGetTemplateScaleRefsByIdsQueryParams {
-  scaleRefIds: readonly (string | null | void)[];
+  ids: readonly (string | null | void)[];
 }
 
 /** 'GetTemplateScaleRefsByIdsQuery' return type */
@@ -22,14 +22,14 @@ export interface IGetTemplateScaleRefsByIdsQueryQuery {
   result: IGetTemplateScaleRefsByIdsQueryResult;
 }
 
-const getTemplateScaleRefsByIdsQueryIR: any = {"name":"getTemplateScaleRefsByIdsQuery","params":[{"name":"scaleRefIds","codeRefs":{"defined":{"a":51,"b":61,"line":3,"col":9},"used":[{"a":234,"b":244,"line":8,"col":17}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"scaleRefIds":true},"statement":{"body":"SELECT t.\"id\", t.\"createdAt\", s.\"name\", s.\"values\"\nFROM \"TemplateScaleRef\" as t, jsonb_to_record(t.\"scale\") as s(\"name\" text, \"values\" json)\nWHERE t.\"id\" in :scaleRefIds","loc":{"a":76,"b":244,"line":6,"col":0}}};
+const getTemplateScaleRefsByIdsQueryIR: any = {"name":"getTemplateScaleRefsByIdsQuery","params":[{"name":"ids","codeRefs":{"defined":{"a":51,"b":53,"line":3,"col":9},"used":[{"a":226,"b":228,"line":8,"col":17}]},"transform":{"type":"array_spread"}}],"usedParamSet":{"ids":true},"statement":{"body":"SELECT t.\"id\", t.\"createdAt\", s.\"name\", s.\"values\"\nFROM \"TemplateScaleRef\" as t, jsonb_to_record(t.\"scale\") as s(\"name\" text, \"values\" json)\nWHERE t.\"id\" in :ids","loc":{"a":68,"b":228,"line":6,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT t."id", t."createdAt", s."name", s."values"
  * FROM "TemplateScaleRef" as t, jsonb_to_record(t."scale") as s("name" text, "values" json)
- * WHERE t."id" in :scaleRefIds
+ * WHERE t."id" in :ids
  * ```
  */
 export const getTemplateScaleRefsByIdsQuery = new PreparedQuery<IGetTemplateScaleRefsByIdsQueryParams,IGetTemplateScaleRefsByIdsQueryResult>(getTemplateScaleRefsByIdsQueryIR);
