@@ -35,7 +35,7 @@ const handleMessage = (
     keepAlive(connectionContext)
     return
   }
-  if (messageBuffer.length == 4) {
+  if (messageBuffer.length === 4) {
     handleReliableMessage(messageBuffer, connectionContext)
     return
   }
