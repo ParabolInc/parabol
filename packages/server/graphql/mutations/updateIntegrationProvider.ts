@@ -1,7 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import updateIntegrationProviderQuery from '../../postgres/queries/updateIntegrationProvider'
+import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -32,27 +32,37 @@ const updateIntegrationProvider = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const providerDbId = IntegrationProviderId.split(provider.id)
+    const {
+      id: providerId,
+      webhookProviderMetadataInput,
+      oAuth2ProviderMetadataInput,
+      scope
+    } = provider
+    const providerDbId = IntegrationProviderId.split(providerId)
     const currentProvider = await dataLoader.get('integrationProviders').load(providerDbId)
     dataLoader.get('integrationProviders').clear(providerDbId)
     if (!currentProvider) {
       return {error: {message: 'Invalid provider ID'}}
     }
-    const {teamId} = currentProvider
+    const {teamId, service, type} = currentProvider
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Must be on the team that owns the provider'}}
     }
 
     // VALIDATION
-    const {oAuth2ProviderMetadataInput, webhookProviderMetadataInput, scope} = provider
     if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {
       return {error: {message: 'Provided 2 metadata types, expected 1'}}
+    }
+    if (!oAuth2ProviderMetadataInput && !webhookProviderMetadataInput) {
+      return {error: {message: 'Provided 0 metadata types, expected 1'}}
     }
 
     // RESOLUTION
     const providerMetadata = oAuth2ProviderMetadataInput || webhookProviderMetadataInput
-    await updateIntegrationProviderQuery({
-      id: providerDbId,
+    await upsertIntegrationProvider({
+      service,
+      type,
+      teamId,
       scope,
       providerMetadata
     })
@@ -60,7 +70,7 @@ const updateIntegrationProvider = {
     if (currentProvider.service === 'mattermost') {
       const {providerMetadata} = currentProvider
       const {webhookUrl} = providerMetadata
-      const newWebhookUrl = provider.webhookProviderMetadataInput?.webhookUrl
+      const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
       if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
         await notifyWebhookConfigUpdated(newWebhookUrl, viewerId, teamId)
       }
