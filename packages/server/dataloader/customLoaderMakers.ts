@@ -21,8 +21,6 @@ import getMattermostBestAuthByUserIdTeamId, {
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {Team} from '../postgres/queries/getTeamsByIds'
-import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RootDataLoader from './RootDataLoader'
 
@@ -56,32 +54,6 @@ const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
   {type: 'REFLECTION', loader: 'retroReflections'}
 ] as const
-
-// export type LoaderMakerCustom<K, V, C = K> = (parent: RootDataLoader) => DataLoader<K, V, C>
-
-// TODO: refactor if the interface pattern is used a total of 3 times
-
-export const teamsByOrgIds = (parent: RootDataLoader) =>
-  new DataLoader<string, Team[], string>(
-    async (orgIds) => {
-      const teamLoader = parent.get('teams')
-      const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
-      teams.forEach((team) => {
-        teamLoader.clear(team.id).prime(team.id, team)
-      })
-
-      const teamsByOrgIds = teams.reduce((map, team) => {
-        const teamsByOrgId = map[team.orgId] ?? []
-        teamsByOrgId.push(team)
-        map[team.orgId] = teamsByOrgId
-        return map
-      }, {} as {[key: string]: Team[]})
-      return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key

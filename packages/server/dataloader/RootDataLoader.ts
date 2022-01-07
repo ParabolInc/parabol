@@ -5,7 +5,8 @@ import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
-import * as pgPrimaryKeyLoaderMakers from './pgPrimaryKeyLoaderMakers'
+import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
+import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
@@ -19,7 +20,8 @@ interface LoaderDict {
 const loaderMakers = {
   ...rethinkPrimaryKeyLoaderMakers,
   ...rethinkForeignKeyLoaderMakers,
-  ...pgPrimaryKeyLoaderMakers,
+  ...primaryKeyLoaderMakers,
+  ...foreignKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
   ...pollLoaders
@@ -38,7 +40,11 @@ type ForeignLoaders = keyof ForeignLoaderMakers
 type Unforeign<T> = T extends RethinkForeignKeyLoaderMaker<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
-type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof pollLoaders & typeof pgPrimaryKeyLoaderMakers
+type CustomLoaderMakers = typeof customLoaderMakers &
+  typeof atlassianLoaders &
+  typeof pollLoaders &
+  typeof primaryKeyLoaderMakers &
+  typeof foreignKeyLoaderMakers
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
