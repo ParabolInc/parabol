@@ -3,8 +3,6 @@ import { PreparedQuery } from '@pgtyped/query';
 
 export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
 
-export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-
 /** 'GetIntegrationTokenQuery' parameters type */
 export interface IGetIntegrationTokenQueryParams {
   teamId: string | null | void;
@@ -21,7 +19,9 @@ export interface IGetIntegrationTokenQueryResult {
   providerId: number;
   service: IntegrationProviderServiceEnum;
   isActive: boolean;
-  tokenMetadata: Json;
+  accessToken: string | null;
+  refreshToken: string | null;
+  scopes: string | null;
 }
 
 /** 'GetIntegrationTokenQuery' query type */

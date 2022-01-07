@@ -1,12 +1,22 @@
 import getPg from '../getPg'
-import {upsertIntegrationProviderQuery} from './generated/upsertIntegrationProviderQuery'
-import {TIntegrationProvider} from './getIntegrationProvidersByIds'
+import {
+  IntegrationProviderScopeEnum,
+  IntegrationProviderServiceEnum,
+  IntegrationProviderTypeEnum,
+  upsertIntegrationProviderQuery
+} from './generated/upsertIntegrationProviderQuery'
 
-type Provider = Omit<
-  TIntegrationProvider,
-  'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'scopeGlobal'
->
-const upsertIntegrationProvider = async (provider: Provider) => {
+interface IUpsertIntegrationProviderInput {
+  service: IntegrationProviderServiceEnum
+  type: IntegrationProviderTypeEnum
+  scope?: IntegrationProviderScopeEnum
+  clientId?: string
+  clientSecret?: string
+  serverBaseUrl?: string
+  webhookUrl?: string
+  teamId: string
+}
+const upsertIntegrationProvider = async (provider: IUpsertIntegrationProviderInput) => {
   const result = await upsertIntegrationProviderQuery.run(provider as any, getPg())
   return result[0].id
 }

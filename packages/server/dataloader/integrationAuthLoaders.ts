@@ -1,11 +1,13 @@
 import DataLoader from 'dataloader'
 import isValid from '../graphql/isValid'
+import {IGetBestTeamIntegrationTokenQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationTokenQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
+import {IGetIntegrationTokenQueryResult} from '../postgres/queries/generated/getIntegrationTokenQuery'
 import getBestTeamIntegrationToken from '../postgres/queries/getBestTeamIntegrationToken'
 import getIntegrationProvidersByIds, {
   TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
-import getIntegrationToken, {IIntegrationToken} from '../postgres/queries/getIntegrationToken'
+import getIntegrationToken from '../postgres/queries/getIntegrationToken'
 import getSharedIntegrationProviders from '../postgres/queries/getSharedIntegrationProviders'
 import RootDataLoader from './RootDataLoader'
 
@@ -85,7 +87,7 @@ export const bestTeamIntegrationProviders = (parent: RootDataLoader) => {
 }
 
 export const integrationTokens = (parent: RootDataLoader) => {
-  return new DataLoader<IntegrationTokenPrimaryKey, IIntegrationToken | null, string>(
+  return new DataLoader<IntegrationTokenPrimaryKey, IGetIntegrationTokenQueryResult | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({service, teamId, userId}) => getIntegrationToken(service, teamId, userId))
@@ -101,7 +103,11 @@ export const integrationTokens = (parent: RootDataLoader) => {
 }
 
 export const bestTeamIntegrationTokens = (parent: RootDataLoader) => {
-  return new DataLoader<IntegrationTokenPrimaryKey, IIntegrationToken | null, string>(
+  return new DataLoader<
+    IntegrationTokenPrimaryKey,
+    IGetBestTeamIntegrationTokenQueryResult | null,
+    string
+  >(
     async (keys) => {
       // TODO check the integrationTokens loader first, it probably exists there & then we don't have to hit the DB
       const results = await Promise.allSettled(

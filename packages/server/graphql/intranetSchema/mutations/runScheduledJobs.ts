@@ -64,8 +64,7 @@ const processMeetingStageTimeLimits = async (
   }
 
   if (mattermostProvider) {
-    const {providerMetadata} = mattermostProvider as IntegrationProviderMattermost
-    const {webhookUrl} = providerMetadata
+    const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
     const res = await notifyMattermostTimeLimitEnd(meetingId, teamId, webhookUrl, dataLoader)
     if (!(res instanceof Error)) return
   }

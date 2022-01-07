@@ -39,19 +39,18 @@ export async function up() {
           "service",
           "type",
           "scope",
-          "providerMetadata",
+          "webhookUrl",
           "teamId"
         )
       VALUES($1, $2, $3, $4, $5)
       RETURNING id;`,
-      ['mattermost', 'webhook', 'team', {webhookUrl}, teamId]
+      ['mattermost', 'webhook', 'team', webhookUrl, teamId]
     )
     const providerId = result.rows[0].id
     await client.query(
       `
       INSERT INTO
         "IntegrationToken" (
-          "tokenMetadata",
           "providerId",
           "teamId",
           "userId",
@@ -59,7 +58,7 @@ export async function up() {
         )
       VALUES($1, $2, $3, $4)
     `,
-      [{}, providerId, teamId, userId, 'mattermost']
+      [providerId, teamId, userId, 'mattermost']
     )
   })
   await Promise.all(mattermostAuthsToInsert)

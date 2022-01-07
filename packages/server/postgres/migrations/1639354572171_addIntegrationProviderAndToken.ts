@@ -42,7 +42,10 @@ export async function up() {
       ) STORED NOT NULL,
       "teamId" VARCHAR(100) NOT NULL,
       "isActive" BOOLEAN DEFAULT TRUE NOT NULL,
-      "providerMetadata" JSONB NOT NULL DEFAULT '{}',
+      "clientId" VARCHAR(255),
+      "clientSecret" VARCHAR(255),
+      "serverBaseUrl" VARCHAR(255),
+      "webhookUrl" VARCHAR(255),
       UNIQUE("scopeGlobal", "service"),
       CONSTRAINT global_provider_must_be_oauth2 CHECK (
         "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "type" = 'oauth2')
@@ -62,7 +65,9 @@ export async function up() {
       "providerId" INT NOT NULL,
       "service" "IntegrationProviderServiceEnum" NOT NULL,
       "isActive" BOOLEAN DEFAULT TRUE NOT NULL,
-      "tokenMetadata" JSONB NOT NULL DEFAULT '{}',
+      "accessToken" VARCHAR(1028),
+      "refreshToken" VARCHAR(1028),
+      "scopes" VARCHAR(255),
       PRIMARY KEY ("userId", "teamId", "service"),
       CONSTRAINT "fk_userId"
         FOREIGN KEY("userId")

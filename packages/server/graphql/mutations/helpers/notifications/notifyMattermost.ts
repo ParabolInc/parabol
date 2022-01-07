@@ -82,8 +82,7 @@ export const startMattermostMeeting = async (
     .get('bestTeamIntegrationProviders')
     .load({service: 'mattermost', teamId, userId: facilitatorUserId})
   if (!mattermostProvider) return
-  const {providerMetadata} = mattermostProvider as IntegrationProviderMattermost
-  const {webhookUrl} = providerMetadata
+  const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
 
   const searchParams = {
     utm_source: 'mattermost meeting start',
@@ -168,8 +167,7 @@ export const endMattermostMeeting = async (
     .get('bestTeamIntegrationProviders')
     .load({service: 'mattermost', teamId, userId: facilitatorUserId})
   if (!mattermostProvider) return
-  const {providerMetadata} = mattermostProvider as IntegrationProviderMattermost
-  const {webhookUrl} = providerMetadata
+  const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
   const team = await dataLoader.get('teams').load(teamId)
   const summaryText = getSummaryText(meeting)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
@@ -216,8 +214,7 @@ export const notifyMattermostTimeLimitStart = async (
     .get('bestTeamIntegrationProviders')
     .load({service: 'mattermost', teamId, userId: facilitatorUserId})
   if (!mattermostProvider) return
-  const {providerMetadata} = mattermostProvider as IntegrationProviderMattermost
-  const {webhookUrl} = providerMetadata
+  const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
 
   const team = await dataLoader.get('teams').load(teamId)
 

@@ -1,27 +1,33 @@
 /*
  @name upsertIntegrationTokenQuery
- @param auth -> (tokenMetadata, providerId, teamId, userId, service)
+ @param auth -> (providerId, teamId, userId, service, accessToken, refreshToken, scopes)
  */
 INSERT INTO
   "IntegrationToken" (
-    "tokenMetadata",
     "providerId",
     "teamId",
     "userId",
-    "service"
+    "service",
+    "accessToken",
+    "refreshToken",
+    "scopes"
   )
 VALUES
-  :auth ON CONFLICT ("providerId", "userId", "teamId") DO
+  :auth ON CONFLICT ("userId", "teamId", "service") DO
 UPDATE
 SET
   (
-    "tokenMetadata",
     "providerId",
+    "accessToken",
+    "refreshToken",
+    "scopes",
     "isActive",
     "updatedAt"
   ) = (
-    EXCLUDED."tokenMetadata",
     EXCLUDED."providerId",
+    EXCLUDED."accessToken",
+    EXCLUDED."refreshToken",
+    EXCLUDED."scopes",
     TRUE,
     CURRENT_TIMESTAMP
   );

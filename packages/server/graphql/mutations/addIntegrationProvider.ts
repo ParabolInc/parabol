@@ -49,9 +49,12 @@ const addIntegrationProvider = {
     }
 
     // RESOLUTION
-    const providerMetadata = oAuth2ProviderMetadataInput || webhookProviderMetadataInput
 
-    const providerId = await upsertIntegrationProvider({...rest, providerMetadata})
+    const providerId = await upsertIntegrationProvider({
+      ...rest,
+      ...oAuth2ProviderMetadataInput,
+      ...webhookProviderMetadataInput
+    })
 
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId, providerId}

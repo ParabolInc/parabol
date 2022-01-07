@@ -1,5 +1,3 @@
-import {IIntegrationProviderMetadataInputOAuth2} from '../graphql/types/IntegrationProviderMetadataInputOAuth2'
-
 export interface OAuth2AuthorizationParams {
   grant_type: 'authorization_code'
   code: string
@@ -12,9 +10,13 @@ export interface OAuth2RefreshAuthorizationParams {
 }
 
 export default abstract class OAuth2Manager {
-  protected metadata: IIntegrationProviderMetadataInputOAuth2
-  constructor(providerMetadata: IIntegrationProviderMetadataInputOAuth2) {
-    this.metadata = providerMetadata
+  protected clientId: string
+  protected clientSecret: string
+  protected serverBaseUrl: string
+  constructor(clientId: string, clientSecret: string, serverBaseUrl: string) {
+    this.clientId = clientId
+    this.clientSecret = clientSecret
+    this.serverBaseUrl = serverBaseUrl
   }
   abstract authorize(
     code: string,

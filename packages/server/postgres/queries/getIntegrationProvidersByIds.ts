@@ -5,38 +5,26 @@ import {
   IntegrationProviderScopeEnum
 } from './generated/getIntegrationProvidersByIdsQuery'
 
-export interface IntegrationProviderOAuth2Metadata {
+interface IntegrationProviderActive extends IGetIntegrationProvidersByIdsQueryResult {
+  isActive: true
+}
+
+interface IntegrationProviderWebhook extends IntegrationProviderActive {
+  type: 'webhook'
+  webhookUrl: string
+}
+
+interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
+  type: 'oauth2'
   clientId: string
   clientSecret: string
   serverBaseUrl: string
 }
 
-export interface IntegrationProviderWebhookMetadata {
-  webhookUrl: string
-}
-
-export type IntegrationProviderMetadata =
-  | IntegrationProviderOAuth2Metadata
-  | IntegrationProviderWebhookMetadata
-
-interface IntegrationProviderActive extends IGetIntegrationProvidersByIdsQueryResult {
-  isActive: true
-  providerMetadata: any
-}
-
-interface IntegrationProviderWebhook extends IntegrationProviderActive {
-  type: 'webhook'
-  providerMetadata: IntegrationProviderWebhookMetadata
-}
-
-interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
-  type: 'oauth2'
-  providerMetadata: IntegrationProviderOAuth2Metadata
-}
-
+// Not used yet
 interface IntegrationProviderPAT extends IntegrationProviderActive {
   type: 'pat'
-  providerMetadata: IntegrationProviderOAuth2Metadata
+  clientId: string
 }
 
 export interface IntegrationProviderMattermost extends Omit<IntegrationProviderWebhook, 'scope'> {

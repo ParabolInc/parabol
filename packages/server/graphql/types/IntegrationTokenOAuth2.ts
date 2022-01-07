@@ -12,8 +12,7 @@ const IntegrationTokenOAuth2 = new GraphQLObjectType<any, GQLContext>({
     ...integrationTokenFields(),
     accessToken: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The token used to connect to the provider',
-      resolve: ({tokenMetadata}) => tokenMetadata.accessToken
+      description: 'The token used to connect to the provider'
     },
     scopes: {
       type: new GraphQLNonNull(GraphQLString),

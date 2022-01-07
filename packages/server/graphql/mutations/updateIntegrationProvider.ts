@@ -58,18 +58,17 @@ const updateIntegrationProvider = {
     }
 
     // RESOLUTION
-    const providerMetadata = oAuth2ProviderMetadataInput || webhookProviderMetadataInput
     await upsertIntegrationProvider({
+      ...oAuth2ProviderMetadataInput,
+      ...webhookProviderMetadataInput,
       service,
       type,
       teamId,
-      scope,
-      providerMetadata
+      scope
     })
 
     if (currentProvider.service === 'mattermost') {
-      const {providerMetadata} = currentProvider
-      const {webhookUrl} = providerMetadata
+      const {webhookUrl} = currentProvider
       const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
       if (newWebhookUrl && newWebhookUrl !== webhookUrl) {
         await notifyWebhookConfigUpdated(newWebhookUrl, viewerId, teamId)

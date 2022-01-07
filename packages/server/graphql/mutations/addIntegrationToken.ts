@@ -17,7 +17,8 @@ const createTokenMetadata = async (
   const {type, service} = provider
   if (type === 'oauth2') {
     if (service === 'gitlab') {
-      const manager = new GitLabOAuth2Manager(provider.providerMetadata)
+      const {clientId, clientSecret, serverBaseUrl} = provider
+      const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
       const res = await manager.authorize(oauthCodeOrPat, redirectUri)
       return res
     }
@@ -86,11 +87,11 @@ const addIntegrationToken = {
 
     // RESOLUTION
     await upsertIntegrationToken({
+      ...tokenMetadata,
       providerId: providerDbId,
       service: integrationProvider.service,
       teamId,
-      userId: viewerId,
-      tokenMetadata
+      userId: viewerId
     })
 
     const data = {userId: viewerId, teamId}

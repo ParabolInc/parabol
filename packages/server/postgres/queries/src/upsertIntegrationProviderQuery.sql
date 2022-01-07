@@ -6,7 +6,10 @@ INSERT INTO
     "service",
     "type",
     "scope",
-    "providerMetadata",
+    "clientId",
+    "clientSecret",
+    "serverBaseUrl",
+    "webhookUrl",
     "teamId"
   )
 VALUES
@@ -14,14 +17,20 @@ VALUES
     :service,
     :type,
     :scope,
-    :providerMetadata,
+    :clientId,
+    :clientSecret,
+    :serverBaseUrl,
+    :webhookUrl,
     :teamId
   )
 ON CONFLICT ("teamId", "service", "type") DO UPDATE SET
   "service" = EXCLUDED."service",
   "type" = EXCLUDED."type",
   "scope" = EXCLUDED."scope",
-  "providerMetadata" = EXCLUDED."providerMetadata",
+  "clientId" = EXCLUDED."clientId",
+  "clientSecret" = EXCLUDED."clientSecret",
+  "serverBaseUrl" = EXCLUDED."serverBaseUrl",
+  "webhookUrl" = EXCLUDED."webhookUrl",
   "updatedAt" = CURRENT_TIMESTAMP,
   "isActive" = TRUE
 

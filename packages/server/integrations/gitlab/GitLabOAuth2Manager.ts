@@ -22,11 +22,10 @@ export default class GitLabOAuth2Manager extends OAuth2Manager {
   protected async fetchToken<TSuccess>(
     partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ) {
-    const {clientId, clientSecret, serverBaseUrl} = this.metadata
-    const authUrl = `${serverBaseUrl}/oauth/token`
+    const authUrl = `${this.serverBaseUrl}/oauth/token`
     const searchParams = {
-      client_id: clientId,
-      client_secret: clientSecret,
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
       ...partialAuthParams
     }
     return authorizeOAuth2<TSuccess>({authUrl, searchParams})

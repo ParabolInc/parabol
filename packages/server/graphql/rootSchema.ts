@@ -46,8 +46,7 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
     const {accessToken, providerId} = token
     const provider = await dataLoader.get('integrationProviders').load(providerId)
     if (!provider) throw new Error('No GitLab provider found')
-    const {providerMetadata} = provider as IntegrationProviderGitLabOAuth2
-    const {serverBaseUrl} = providerMetadata
+    const {serverBaseUrl} = provider as IntegrationProviderGitLabOAuth2
     return {
       accessToken,
       baseUri: serverBaseUrl

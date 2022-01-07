@@ -3,16 +3,16 @@ import { PreparedQuery } from '@pgtyped/query';
 
 export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
 
-export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-
 /** 'UpsertIntegrationTokenQuery' parameters type */
 export interface IUpsertIntegrationTokenQueryParams {
   auth: {
-    tokenMetadata: Json | null | void,
     providerId: number | null | void,
     teamId: string | null | void,
     userId: string | null | void,
-    service: IntegrationProviderServiceEnum | null | void
+    service: IntegrationProviderServiceEnum | null | void,
+    accessToken: string | null | void,
+    refreshToken: string | null | void,
+    scopes: string | null | void
   };
 }
 
@@ -25,31 +25,37 @@ export interface IUpsertIntegrationTokenQueryQuery {
   result: IUpsertIntegrationTokenQueryResult;
 }
 
-const upsertIntegrationTokenQueryIR: any = {"name":"upsertIntegrationTokenQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":46,"b":49,"line":3,"col":8},"used":[{"a":241,"b":244,"line":14,"col":3}]},"transform":{"type":"pick_tuple","keys":["tokenMetadata","providerId","teamId","userId","service"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO\n  \"IntegrationToken\" (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"teamId\",\n    \"userId\",\n    \"service\"\n  )\nVALUES\n  :auth ON CONFLICT (\"providerId\", \"userId\", \"teamId\") DO\nUPDATE\nSET\n  (\n    \"tokenMetadata\",\n    \"providerId\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"tokenMetadata\",\n    EXCLUDED.\"providerId\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  )","loc":{"a":111,"b":481,"line":5,"col":0}}};
+const upsertIntegrationTokenQueryIR: any = {"name":"upsertIntegrationTokenQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":46,"b":49,"line":3,"col":8},"used":[{"a":293,"b":296,"line":16,"col":3}]},"transform":{"type":"pick_tuple","keys":["providerId","teamId","userId","service","accessToken","refreshToken","scopes"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO\n  \"IntegrationToken\" (\n    \"providerId\",\n    \"teamId\",\n    \"userId\",\n    \"service\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"scopes\"\n  )\nVALUES\n  :auth ON CONFLICT (\"userId\", \"teamId\", \"service\") DO\nUPDATE\nSET\n  (\n    \"providerId\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"scopes\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"providerId\",\n    EXCLUDED.\"accessToken\",\n    EXCLUDED.\"refreshToken\",\n    EXCLUDED.\"scopes\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  )","loc":{"a":131,"b":612,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO
  *   "IntegrationToken" (
- *     "tokenMetadata",
  *     "providerId",
  *     "teamId",
  *     "userId",
- *     "service"
+ *     "service",
+ *     "accessToken",
+ *     "refreshToken",
+ *     "scopes"
  *   )
  * VALUES
- *   :auth ON CONFLICT ("providerId", "userId", "teamId") DO
+ *   :auth ON CONFLICT ("userId", "teamId", "service") DO
  * UPDATE
  * SET
  *   (
- *     "tokenMetadata",
  *     "providerId",
+ *     "accessToken",
+ *     "refreshToken",
+ *     "scopes",
  *     "isActive",
  *     "updatedAt"
  *   ) = (
- *     EXCLUDED."tokenMetadata",
  *     EXCLUDED."providerId",
+ *     EXCLUDED."accessToken",
+ *     EXCLUDED."refreshToken",
+ *     EXCLUDED."scopes",
  *     TRUE,
  *     CURRENT_TIMESTAMP
  *   )

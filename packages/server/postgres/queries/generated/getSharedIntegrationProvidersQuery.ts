@@ -7,8 +7,6 @@ export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
 
 export type IntegrationProviderTypeEnum = 'oauth2' | 'pat' | 'webhook';
 
-export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-
 /** 'GetSharedIntegrationProvidersQuery' parameters type */
 export interface IGetSharedIntegrationProvidersQueryParams {
   orgTeamIds: readonly (string | null | void)[];
@@ -27,7 +25,10 @@ export interface IGetSharedIntegrationProvidersQueryResult {
   scopeGlobal: boolean;
   teamId: string;
   isActive: boolean;
-  providerMetadata: Json;
+  clientId: string | null;
+  clientSecret: string | null;
+  serverBaseUrl: string | null;
+  webhookUrl: string | null;
 }
 
 /** 'GetSharedIntegrationProvidersQuery' query type */

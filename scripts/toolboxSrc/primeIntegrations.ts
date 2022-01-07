@@ -8,17 +8,13 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       type: 'oauth2',
       scope: 'global',
       teamId: 'aGhostTeam',
-      providerMetadata: {
-        serverBaseUrl: 'https://gitlab.com',
-        clientId: process.env.GITLAB_CLIENT_ID,
-        clientSecret: process.env.GITLAB_CLIENT_SECRET
-      }
+      serverBaseUrl: 'https://gitlab.com',
+      clientId: process.env.GITLAB_CLIENT_ID,
+      clientSecret: process.env.GITLAB_CLIENT_SECRET
     }
   ] as const
 
-  const validProviders = providers.filter(
-    ({providerMetadata}) => providerMetadata.clientId && providerMetadata.clientSecret
-  )
+  const validProviders = providers.filter(({clientId, clientSecret}) => clientId && clientSecret)
   await Promise.all(
     validProviders.map((provider) => {
       return upsertIntegrationProvider(provider)

@@ -1,14 +1,6 @@
 import getPg from '../getPg'
 import {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
-import {
-  getIntegrationTokenQuery,
-  IGetIntegrationTokenQueryResult
-} from './generated/getIntegrationTokenQuery'
-import {IntegrationTokenMetadata} from './upsertIntegrationToken'
-
-export interface IIntegrationToken extends Omit<IGetIntegrationTokenQueryResult, 'tokenMetadata'> {
-  tokenMetadata: IntegrationTokenMetadata
-}
+import {getIntegrationTokenQuery} from './generated/getIntegrationTokenQuery'
 
 const getIntegrationToken = async (
   service: IntegrationProviderServiceEnum,
@@ -16,7 +8,6 @@ const getIntegrationToken = async (
   userId: string
 ) => {
   const [res] = await getIntegrationTokenQuery.run({service, teamId, userId}, getPg())
-  return res as IIntegrationToken
+  return res
 }
-
 export default getIntegrationToken

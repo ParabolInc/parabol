@@ -4,25 +4,22 @@ import {
   upsertIntegrationTokenQuery
 } from './generated/upsertIntegrationTokenQuery'
 
-export type IntegrationTokenOAuth2Metadata = {
-  accessToken: string
-  refreshToken: string
-  scopes: string
-}
-export type IntegrationTokenWebhookMetadata = Record<string, never>
-
-export type IntegrationTokenMetadata =
-  | IntegrationTokenOAuth2Metadata
-  | IntegrationTokenWebhookMetadata
-interface IIntegrationTokenInput {
+interface IIntegrationTokenWebhookInput {
   service: IntegrationProviderServiceEnum
   providerId: number
-  tokenMetadata: IntegrationTokenMetadata
   teamId: string
   userId: string
 }
 
+interface IIntegrationTokenOAuth2Input extends IIntegrationTokenWebhookInput {
+  accessToken: string
+  refreshToken: string
+  scopes: string
+}
+
+type IIntegrationTokenInput = IIntegrationTokenOAuth2Input | IIntegrationTokenWebhookInput
+
 const upsertIntegrationToken = async (auth: IIntegrationTokenInput) => {
-  return upsertIntegrationTokenQuery.run({auth}, getPg())
+  return upsertIntegrationTokenQuery.run({auth} as any, getPg())
 }
 export default upsertIntegrationToken
