@@ -2,11 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
 import {TIntegrationProvider} from '../../postgres/queries/getIntegrationProvidersByIds'
-import upsertIntegrationToken from '../../postgres/queries/upsertIntegrationToken'
+import upsertTeamMemberIntegrationAuth from '../../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import AddIntegrationTokenPayload from '../types/AddIntegrationTokenPayload'
+import AddTeamMemberIntegrationAuthPayload from '../types/AddTeamMemberIntegrationAuthPayload'
 import GraphQLURLType from '../types/GraphQLURLType'
 
 const createTokenMetadata = async (
@@ -26,9 +26,9 @@ const createTokenMetadata = async (
   return {} as Record<string, never>
 }
 
-const addIntegrationToken = {
-  name: 'AddIntegrationToken',
-  type: new GraphQLNonNull(AddIntegrationTokenPayload),
+const addTeamMemberIntegrationAuth = {
+  name: 'AddTeamMemberIntegrationAuth',
+  type: new GraphQLNonNull(AddTeamMemberIntegrationAuthPayload),
   description: 'Add integration token material to the team, supported by the GitLab integration',
   args: {
     providerId: {
@@ -86,7 +86,7 @@ const addIntegrationToken = {
     }
 
     // RESOLUTION
-    await upsertIntegrationToken({
+    await upsertTeamMemberIntegrationAuth({
       ...tokenMetadata,
       providerId: providerDbId,
       service: integrationProvider.service,
@@ -99,4 +99,4 @@ const addIntegrationToken = {
   }
 }
 
-export default addIntegrationToken
+export default addTeamMemberIntegrationAuth

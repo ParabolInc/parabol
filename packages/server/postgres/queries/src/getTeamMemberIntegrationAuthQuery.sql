@@ -1,7 +1,7 @@
 /*
- @name getIntegrationTokenQuery
+ @name getTeamMemberIntegrationAuthQuery
  */
-SELECT * FROM "IntegrationToken"
+SELECT * FROM "TeamMemberIntegrationAuth"
 WHERE "teamId" = :teamId
 AND "userId" = :userId
 AND "service" = :service

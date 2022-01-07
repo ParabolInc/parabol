@@ -1,9 +1,9 @@
 /*
- @name upsertIntegrationTokenQuery
+ @name upsertTeamMemberIntegrationAuthQuery
  @param auth -> (providerId, teamId, userId, service, accessToken, refreshToken, scopes)
  */
 INSERT INTO
-  "IntegrationToken" (
+  "TeamMemberIntegrationAuth" (
     "providerId",
     "teamId",
     "userId",

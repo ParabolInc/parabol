@@ -5,8 +5,8 @@ import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
 
-export const RemoveIntegrationTokenSuccess = new GraphQLObjectType<any, GQLContext>({
-  name: 'RemoveIntegrationTokenSuccess',
+export const RemoveTeamMemberIntegrationAuthSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'RemoveTeamMemberIntegrationAuthSuccess',
   fields: () => ({
     teamMember: {
       type: new GraphQLNonNull(TeamMember),
@@ -18,7 +18,7 @@ export const RemoveIntegrationTokenSuccess = new GraphQLObjectType<any, GQLConte
     },
     user: {
       type: new GraphQLNonNull(User),
-      description: 'The user who updated IntegrationToken object',
+      description: 'The user who updated TeamMemberIntegrationAuth object',
       resolve: async ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
@@ -26,9 +26,9 @@ export const RemoveIntegrationTokenSuccess = new GraphQLObjectType<any, GQLConte
   })
 })
 
-const RemoveIntegrationTokenPayload = makeMutationPayload(
-  'RemoveIntegrationTokenPayload',
-  RemoveIntegrationTokenSuccess
+const RemoveTeamMemberIntegrationAuthPayload = makeMutationPayload(
+  'RemoveTeamMemberIntegrationAuthPayload',
+  RemoveTeamMemberIntegrationAuthSuccess
 )
 
-export default RemoveIntegrationTokenPayload
+export default RemoveTeamMemberIntegrationAuthPayload

@@ -57,7 +57,7 @@ export async function up() {
     );
     CREATE INDEX IF NOT EXISTS "idx_IntegrationProvider_teamId" ON "IntegrationProvider"("teamId");
 
-    CREATE TABLE IF NOT EXISTS "IntegrationToken" (
+    CREATE TABLE IF NOT EXISTS "TeamMemberIntegrationAuth" (
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "teamId" VARCHAR(100) NOT NULL,
@@ -82,8 +82,8 @@ export async function up() {
           REFERENCES "Team"("id")
           ON DELETE CASCADE
     );
-    CREATE INDEX IF NOT EXISTS "idx_IntegrationTokens_teamId" ON "IntegrationToken"("teamId");
-    CREATE INDEX IF NOT EXISTS "idx_IntegrationTokens_providerId" ON "IntegrationToken"("providerId");
+    CREATE INDEX IF NOT EXISTS "idx_TeamMemberIntegrationAuths_teamId" ON "TeamMemberIntegrationAuth"("teamId");
+    CREATE INDEX IF NOT EXISTS "idx_TeamMemberIntegrationAuths_providerId" ON "TeamMemberIntegrationAuth"("providerId");
   END $$;
   `)
   await client.end()
@@ -93,11 +93,11 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
-  DROP TABLE IF EXISTS "IntegrationToken";
-  DROP TABLE IF EXISTS "IntegrationProvider";
-  DROP TYPE IF EXISTS "IntegrationProviderScopeEnum";
-  DROP TYPE IF EXISTS "IntegrationProviderTypeEnum";
-  DROP TYPE IF EXISTS "IntegrationProviderServiceEnum";
+  DROP TABLE IF EXISTS "TeamMemberIntegrationAuth" CASCADE;
+  DROP TABLE IF EXISTS "IntegrationProvider" CASCADE;
+  DROP TYPE IF EXISTS "IntegrationProviderScopeEnum" CASCADE;
+  DROP TYPE IF EXISTS "IntegrationProviderTypeEnum" CASCADE;
+  DROP TYPE IF EXISTS "IntegrationProviderServiceEnum" CASCADE;
   `)
   await client.end()
 }

@@ -1,17 +1,17 @@
 import DataLoader from 'dataloader'
 import isValid from '../graphql/isValid'
-import {IGetBestTeamIntegrationTokenQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationTokenQuery'
+import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
-import {IGetIntegrationTokenQueryResult} from '../postgres/queries/generated/getIntegrationTokenQuery'
-import getBestTeamIntegrationToken from '../postgres/queries/getBestTeamIntegrationToken'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import getBestTeamIntegrationAuth from '../postgres/queries/getBestTeamIntegrationAuth'
 import getIntegrationProvidersByIds, {
   TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
-import getIntegrationToken from '../postgres/queries/getIntegrationToken'
 import getSharedIntegrationProviders from '../postgres/queries/getSharedIntegrationProviders'
+import getTeamMemberIntegrationAuth from '../postgres/queries/getTeamMemberIntegrationAuth'
 import RootDataLoader from './RootDataLoader'
 
-interface IntegrationTokenPrimaryKey {
+interface TeamMemberIntegrationAuthPrimaryKey {
   service: IntegrationProviderServiceEnum
   teamId: string
   userId: string
@@ -23,7 +23,8 @@ interface SharedIntegrationProviderKey {
   teamIds: string[]
 }
 
-const integrationTokenCacheKeyFn = ({service, teamId, userId}) => `${service}:${teamId}:${userId}`
+const teamMemberIntegrationAuthCacheKeyFn = ({service, teamId, userId}) =>
+  `${service}:${teamId}:${userId}`
 export const integrationProviders = (parent: RootDataLoader) => {
   return new DataLoader<number, TIntegrationProvider | null, string>(
     async (providerIds) => {
@@ -56,22 +57,22 @@ export const sharedIntegrationProviders = (parent: RootDataLoader) => {
 }
 
 export const bestTeamIntegrationProviders = (parent: RootDataLoader) => {
-  return new DataLoader<IntegrationTokenPrimaryKey, TIntegrationProvider | null, string>(
+  return new DataLoader<TeamMemberIntegrationAuthPrimaryKey, TIntegrationProvider | null, string>(
     async (keys) => {
       // given token params, get the best team token
-      const bestTeamIntegrationTokens = (
-        await parent.get('bestTeamIntegrationTokens').loadMany(keys)
+      const bestTeamIntegrationAuths = (
+        await parent.get('bestTeamIntegrationAuths').loadMany(keys)
       ).filter(isValid)
       // dedupe providerIds
       const providerIds = Array.from(
-        new Set(bestTeamIntegrationTokens.map((token) => token.providerId))
+        new Set(bestTeamIntegrationAuths.map((token) => token.providerId))
       )
       // get the providers for each token
       const integrationProviders = (
         await parent.get('integrationProviders').loadMany(providerIds)
       ).filter(isValid)
       return keys.map((key) => {
-        const token = bestTeamIntegrationTokens.find(
+        const token = bestTeamIntegrationAuths.find(
           ({service, teamId}) => service === key.service && teamId === key.teamId
         )
         if (!token) return null
@@ -81,38 +82,21 @@ export const bestTeamIntegrationProviders = (parent: RootDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: integrationTokenCacheKeyFn
+      cacheKeyFn: teamMemberIntegrationAuthCacheKeyFn
     }
   )
 }
 
-export const integrationTokens = (parent: RootDataLoader) => {
-  return new DataLoader<IntegrationTokenPrimaryKey, IGetIntegrationTokenQueryResult | null, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({service, teamId, userId}) => getIntegrationToken(service, teamId, userId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: integrationTokenCacheKeyFn
-    }
-  )
-}
-
-export const bestTeamIntegrationTokens = (parent: RootDataLoader) => {
+export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
   return new DataLoader<
-    IntegrationTokenPrimaryKey,
-    IGetBestTeamIntegrationTokenQueryResult | null,
+    TeamMemberIntegrationAuthPrimaryKey,
+    IGetTeamMemberIntegrationAuthQueryResult | null,
     string
   >(
     async (keys) => {
-      // TODO check the integrationTokens loader first, it probably exists there & then we don't have to hit the DB
       const results = await Promise.allSettled(
         keys.map(async ({service, teamId, userId}) =>
-          getBestTeamIntegrationToken(service, teamId, userId)
+          getTeamMemberIntegrationAuth(service, teamId, userId)
         )
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
@@ -120,7 +104,30 @@ export const bestTeamIntegrationTokens = (parent: RootDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: integrationTokenCacheKeyFn
+      cacheKeyFn: teamMemberIntegrationAuthCacheKeyFn
+    }
+  )
+}
+
+export const bestTeamIntegrationAuths = (parent: RootDataLoader) => {
+  return new DataLoader<
+    TeamMemberIntegrationAuthPrimaryKey,
+    IGetBestTeamIntegrationAuthQueryResult | null,
+    string
+  >(
+    async (keys) => {
+      // TODO check the teamMemberIntegrationAuths loader first, it probably exists there & then we don't have to hit the DB
+      const results = await Promise.allSettled(
+        keys.map(async ({service, teamId, userId}) =>
+          getBestTeamIntegrationAuth(service, teamId, userId)
+        )
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: teamMemberIntegrationAuthCacheKeyFn
     }
   )
 }

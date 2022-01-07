@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {IntegrationProviderServiceEnum as TIntegrationProviderServiceEnum} from '../../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
-import removeIntegrationTokenQuery from '../../postgres/queries/removeIntegrationToken'
+import removeTeamMemberIntegrationAuthQuery from '../../postgres/queries/removeTeamMemberIntegrationAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import IntegrationProviderServiceEnum from '../types/IntegrationProviderServiceEnum'
-import RemoveIntegrationTokenPayload from '../types/RemoveIntegrationTokenPayload'
+import RemoveTeamMemberIntegrationAuthPayload from '../types/RemoveTeamMemberIntegrationAuthPayload'
 
-const removeIntegrationToken = {
-  type: GraphQLNonNull(RemoveIntegrationTokenPayload),
+const removeTeamMemberIntegrationAuth = {
+  type: GraphQLNonNull(RemoveTeamMemberIntegrationAuthPayload),
   description: 'Remove the integrated auth for a given team member',
   args: {
     service: {
@@ -33,11 +33,11 @@ const removeIntegrationToken = {
       return standardError(new Error('permission denied; must be team member'))
 
     // RESOLUTION
-    await removeIntegrationTokenQuery(service, teamId, viewerId)
+    await removeTeamMemberIntegrationAuthQuery(service, teamId, viewerId)
 
     const data = {userId: viewerId, teamId}
     return data
   }
 }
 
-export default removeIntegrationToken
+export default removeTeamMemberIntegrationAuth

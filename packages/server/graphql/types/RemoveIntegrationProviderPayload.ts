@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 export const RemoveIntegrationProviderSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveIntegrationProviderSuccess',
@@ -18,7 +18,7 @@ export const RemoveIntegrationProviderSuccess = new GraphQLObjectType<any, GQLCo
     },
     user: {
       type: new GraphQLNonNull(User),
-      description: 'The user who updated IntegrationToken object',
+      description: 'The user who updated TeamMemberIntegrationAuth object',
       resolve: async ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }

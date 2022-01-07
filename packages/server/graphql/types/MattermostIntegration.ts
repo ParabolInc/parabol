@@ -2,7 +2,7 @@ import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import IntegrationProviderWebhook from './IntegrationProviderWebhook'
-import IntegrationTokenWebhook from './IntegrationTokenWebhook'
+import TeamMemberIntegrationAuthWebhook from './TeamMemberIntegrationAuthWebhook'
 
 const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'MattermostIntegration',
@@ -10,9 +10,11 @@ const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     auth: {
       description: 'The OAuth2 Authorization for this team member',
-      type: IntegrationTokenWebhook,
+      type: TeamMemberIntegrationAuthWebhook,
       resolve: async ({teamId, userId}, _args, {dataLoader}) => {
-        return dataLoader.get('integrationTokens').load({service: 'mattermost', teamId, userId})
+        return dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'mattermost', teamId, userId})
       }
     },
     sharedProviders: {

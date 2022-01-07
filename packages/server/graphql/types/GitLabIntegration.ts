@@ -2,7 +2,7 @@ import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
-import IntegrationTokenOAuth2 from './IntegrationTokenOAuth2'
+import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitLabIntegration',
@@ -10,9 +10,11 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     auth: {
       description: 'The OAuth2 Authorization for this team member',
-      type: IntegrationTokenOAuth2,
+      type: TeamMemberIntegrationAuthOAuth2,
       resolve: async ({teamId, userId}, _args, {dataLoader}) => {
-        return dataLoader.get('integrationTokens').load({service: 'gitlab', teamId, userId})
+        return dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'gitlab', teamId, userId})
       }
     },
     cloudProvider: {

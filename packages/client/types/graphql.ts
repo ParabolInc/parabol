@@ -50187,7 +50187,7 @@ export interface IGitLabIntegration {
   /**
    * The OAuth2 Authorization for this team member
    */
-  auth: IIntegrationTokenOAuth2 | null;
+  auth: ITeamMemberIntegrationAuthOAuth2 | null;
 
   /**
    * The cloud provider the team member may choose to integrate with
@@ -50204,8 +50204,8 @@ export interface IGitLabIntegration {
 /**
  * An integration token that connects via OAuth2
  */
-export interface IIntegrationTokenOAuth2 {
-  __typename: 'IntegrationTokenOAuth2';
+export interface ITeamMemberIntegrationAuthOAuth2 {
+  __typename: 'TeamMemberIntegrationAuthOAuth2';
 
   /**
    * The token's unique identifier
@@ -50261,15 +50261,15 @@ export interface IIntegrationTokenOAuth2 {
 /**
  * The auth credentials for a token, specific to a team member
  */
-export type IntegrationToken =
-  | IIntegrationTokenOAuth2
-  | IIntegrationTokenWebhook;
+export type TeamMemberIntegrationAuth =
+  | ITeamMemberIntegrationAuthOAuth2
+  | ITeamMemberIntegrationAuthWebhook;
 
 /**
  * The auth credentials for a token, specific to a team member
  */
-export interface IIntegrationToken {
-  __typename: 'IntegrationToken';
+export interface ITeamMemberIntegrationAuth {
+  __typename: 'TeamMemberIntegrationAuth';
 
   /**
    * The token's unique identifier
@@ -50321,7 +50321,7 @@ export interface IMattermostIntegration {
   /**
    * The OAuth2 Authorization for this team member
    */
-  auth: IIntegrationTokenWebhook | null;
+  auth: ITeamMemberIntegrationAuthWebhook | null;
 
   /**
    * The non-global providers shared with the team or organization
@@ -50332,8 +50332,8 @@ export interface IMattermostIntegration {
 /**
  * An integration token that connects via Webhook
  */
-export interface IIntegrationTokenWebhook {
-  __typename: 'IntegrationTokenWebhook';
+export interface ITeamMemberIntegrationAuthWebhook {
+  __typename: 'TeamMemberIntegrationAuthWebhook';
 
   /**
    * The token's unique identifier
@@ -56169,7 +56169,7 @@ export interface IMutation {
   /**
    * Add integration token material to the team, supported by the GitLab integration
    */
-  addIntegrationToken: AddIntegrationTokenPayload;
+  addTeamMemberIntegrationAuth: AddTeamMemberIntegrationAuthPayload;
 
   /**
    * Adds a new Integration Provider configuration
@@ -56189,7 +56189,7 @@ export interface IMutation {
   /**
    * Remove the integrated auth for a given team member
    */
-  removeIntegrationToken: RemoveIntegrationTokenPayload;
+  removeTeamMemberIntegrationAuth: RemoveTeamMemberIntegrationAuthPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -57355,7 +57355,7 @@ export interface ICreatePollOnMutationArguments {
   newPoll: ICreatePollInput;
 }
 
-export interface IAddIntegrationTokenOnMutationArguments {
+export interface IAddTeamMemberIntegrationAuthOnMutationArguments {
   providerId: string;
   oauthCodeOrPat: string;
   teamId: string;
@@ -57383,7 +57383,7 @@ export interface IRemoveIntegrationProviderOnMutationArguments {
   providerId: string;
 }
 
-export interface IRemoveIntegrationTokenOnMutationArguments {
+export interface IRemoveTeamMemberIntegrationAuthOnMutationArguments {
   /**
    * The Integration Provider service name related to the token
    */
@@ -59945,14 +59945,14 @@ export interface IPollOptionInput {
 }
 
 /**
- * Return object for AddIntegrationTokenPayload
+ * Return object for AddTeamMemberIntegrationAuthPayload
  */
-export type AddIntegrationTokenPayload =
+export type AddTeamMemberIntegrationAuthPayload =
   | IErrorPayload
-  | IAddIntegrationTokenSuccess;
+  | IAddTeamMemberIntegrationAuthSuccess;
 
-export interface IAddIntegrationTokenSuccess {
-  __typename: 'AddIntegrationTokenSuccess';
+export interface IAddTeamMemberIntegrationAuthSuccess {
+  __typename: 'AddTeamMemberIntegrationAuthSuccess';
 
   /**
    * The team member with the updated auth
@@ -59960,7 +59960,7 @@ export interface IAddIntegrationTokenSuccess {
   teamMember: ITeamMember | null;
 
   /**
-   * The user who updated IntegrationToken object
+   * The user who updated TeamMemberIntegrationAuth object
    */
   user: IUser | null;
 }
@@ -60085,7 +60085,7 @@ export interface IUpdateIntegrationProviderSuccess {
   teamMember: ITeamMember;
 
   /**
-   * The user who updated IntegrationToken object
+   * The user who updated TeamMemberIntegrationAuth object
    */
   user: IUser;
 }
@@ -60131,20 +60131,20 @@ export interface IRemoveIntegrationProviderSuccess {
   teamMember: ITeamMember;
 
   /**
-   * The user who updated IntegrationToken object
+   * The user who updated TeamMemberIntegrationAuth object
    */
   user: IUser;
 }
 
 /**
- * Return object for RemoveIntegrationTokenPayload
+ * Return object for RemoveTeamMemberIntegrationAuthPayload
  */
-export type RemoveIntegrationTokenPayload =
+export type RemoveTeamMemberIntegrationAuthPayload =
   | IErrorPayload
-  | IRemoveIntegrationTokenSuccess;
+  | IRemoveTeamMemberIntegrationAuthSuccess;
 
-export interface IRemoveIntegrationTokenSuccess {
-  __typename: 'RemoveIntegrationTokenSuccess';
+export interface IRemoveTeamMemberIntegrationAuthSuccess {
+  __typename: 'RemoveTeamMemberIntegrationAuthSuccess';
 
   /**
    * The team member with the updated auth
@@ -60152,7 +60152,7 @@ export interface IRemoveIntegrationTokenSuccess {
   teamMember: ITeamMember;
 
   /**
-   * The user who updated IntegrationToken object
+   * The user who updated TeamMemberIntegrationAuth object
    */
   user: IUser;
 }

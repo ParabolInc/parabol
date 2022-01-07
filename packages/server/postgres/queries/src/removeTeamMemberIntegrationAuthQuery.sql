@@ -1,7 +1,7 @@
 /*
-  @name removeIntegrationTokenQuery
+  @name removeTeamMemberIntegrationAuthQuery
 */
-UPDATE "IntegrationToken"
+UPDATE "TeamMemberIntegrationAuth"
 SET "isActive" = FALSE, "updatedAt" = CURRENT_TIMESTAMP
 WHERE "userId" = :userId
   AND "teamId" = :teamId

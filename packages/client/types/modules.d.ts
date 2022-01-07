@@ -14,6 +14,7 @@ declare const __SOCKET_PORT__: string
 interface Window {
   __ACTION__: {
     atlassian: string
+    logRocket: string | undefined
     github: string
     google: string
     segment: string

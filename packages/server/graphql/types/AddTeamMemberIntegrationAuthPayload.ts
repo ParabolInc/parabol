@@ -1,12 +1,12 @@
 import {GraphQLObjectType} from 'graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
 import User from './User'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
-export const AddIntegrationTokenSuccess = new GraphQLObjectType<any, GQLContext>({
-  name: 'AddIntegrationTokenSuccess',
+export const AddTeamMemberIntegrationAuthSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'AddTeamMemberIntegrationAuthSuccess',
   fields: () => ({
     teamMember: {
       type: TeamMember,
@@ -18,7 +18,7 @@ export const AddIntegrationTokenSuccess = new GraphQLObjectType<any, GQLContext>
     },
     user: {
       type: User,
-      description: 'The user who updated IntegrationToken object',
+      description: 'The user who updated TeamMemberIntegrationAuth object',
       resolve: async ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
@@ -26,9 +26,9 @@ export const AddIntegrationTokenSuccess = new GraphQLObjectType<any, GQLContext>
   })
 })
 
-const AddIntegrationTokenPayload = makeMutationPayload(
-  'AddIntegrationTokenPayload',
-  AddIntegrationTokenSuccess
+const AddTeamMemberIntegrationAuthPayload = makeMutationPayload(
+  'AddTeamMemberIntegrationAuthPayload',
+  AddTeamMemberIntegrationAuthSuccess
 )
 
-export default AddIntegrationTokenPayload
+export default AddTeamMemberIntegrationAuthPayload

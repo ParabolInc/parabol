@@ -1,15 +1,17 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
-import IntegrationToken, {integrationTokenFields} from './IntegrationToken'
+import TeamMemberIntegrationAuth, {
+  teamMemberIntegrationAuthFields
+} from './TeamMemberIntegrationAuth'
 
-const IntegrationTokenOAuth2 = new GraphQLObjectType<any, GQLContext>({
-  name: 'IntegrationTokenOAuth2',
+const TeamMemberIntegrationAuthOAuth2 = new GraphQLObjectType<any, GQLContext>({
+  name: 'TeamMemberIntegrationAuthOAuth2',
   description: 'An integration token that connects via OAuth2',
-  interfaces: () => [IntegrationToken],
+  interfaces: () => [TeamMemberIntegrationAuth],
   isTypeOf: ({accessToken, refreshToken, scopes}) => accessToken && refreshToken && scopes,
   fields: () => ({
-    ...integrationTokenFields(),
+    ...teamMemberIntegrationAuthFields(),
     accessToken: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The token used to connect to the provider'
@@ -28,4 +30,4 @@ const IntegrationTokenOAuth2 = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default IntegrationTokenOAuth2
+export default TeamMemberIntegrationAuthOAuth2

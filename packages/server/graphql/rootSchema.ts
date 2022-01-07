@@ -1,15 +1,15 @@
 import {mergeSchemas} from '@graphql-tools/merge'
 import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
+import {IntegrationProviderGitLabOAuth2} from '../postgres/queries/getIntegrationProvidersByIds'
 import githubSchema from '../utils/githubSchema.graphql'
-import nestGitLabEndpoint from './nestedSchema/nestGitLabEndpoint'
+import {GQLContext} from './graphql'
 import gitlabSchema from './nestedSchema/GitLab/gitlabSchema.graphql'
+import nestGitLabEndpoint from './nestedSchema/nestGitLabEndpoint'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
 import rootTypes from './rootTypes'
-import {IntegrationProviderGitLabOAuth2} from '../postgres/queries/getIntegrationProvidersByIds'
-import {GQLContext} from './graphql'
 
 const parabolSchema = new GraphQLSchema({
   query,
@@ -40,7 +40,7 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
     {dataLoader}: GQLContext
   ) => {
     const token = await dataLoader
-      .get('integrationTokens')
+      .get('teamMemberIntegrationAuths')
       .load({service: 'gitlab', teamId, userId})
     if (!token) throw new Error('No GitLab token found')
     const {accessToken, providerId} = token
@@ -66,8 +66,8 @@ const withNestedSchema = mergeSchemas({
 export {githubRequest}
 export type GitHubRequest = typeof githubRequest
 ;(withNestedSchema as any).githubRequest = githubRequest
-
 export {gitlabRequest}
+
 export type GitLabRequest = typeof gitlabRequest
 ;(withNestedSchema as any).gitlabRequest = gitlabRequest
 

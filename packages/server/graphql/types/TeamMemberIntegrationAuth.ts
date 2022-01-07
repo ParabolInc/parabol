@@ -1,15 +1,16 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
-import IntegrationTokenId from 'parabol-client/shared/gqlIds/IntegrationTokenId'
+import TeamMemberIntegrationAuthId from 'parabol-client/shared/gqlIds/TeamMemberIntegrationAuthId'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProvider from './IntegrationProvider'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 
-export const integrationTokenFields = () => ({
+export const teamMemberIntegrationAuthFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: "The token's unique identifier",
-    resolve: ({service, teamId, userId}) => IntegrationTokenId.join(service, teamId, userId)
+    resolve: ({service, teamId, userId}) =>
+      TeamMemberIntegrationAuthId.join(service, teamId, userId)
   },
   teamId: {
     type: new GraphQLNonNull(GraphQLID),
@@ -45,10 +46,10 @@ export const integrationTokenFields = () => ({
   }
 })
 
-const IntegrationToken = new GraphQLInterfaceType({
-  name: 'IntegrationToken',
+const TeamMemberIntegrationAuth = new GraphQLInterfaceType({
+  name: 'TeamMemberIntegrationAuth',
   description: 'The auth credentials for a token, specific to a team member',
-  fields: integrationTokenFields
+  fields: teamMemberIntegrationAuthFields
 })
 
-export default IntegrationToken
+export default TeamMemberIntegrationAuth

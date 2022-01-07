@@ -1,7 +1,7 @@
 /*
- @name getBestTeamIntegrationTokenQuery
+ @name getBestTeamIntegrationAuthQuery
  */
-SELECT *, "userId" = :userId as "isUser" FROM "IntegrationToken"
+SELECT *, "userId" = :userId as "isUser" FROM "TeamMemberIntegrationAuth"
 WHERE "teamId" = :teamId
 AND "service" = :service
 AND "isActive" = TRUE

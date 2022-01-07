@@ -1,6 +1,6 @@
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import AddIntegrationTokenMutation from '../mutations/AddIntegrationTokenMutation'
+import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
@@ -34,7 +34,7 @@ class GitLabClientManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
-      AddIntegrationTokenMutation(
+      AddTeamMemberIntegrationAuthMutation(
         atmosphere,
         {providerId, oauthCodeOrPat: code, teamId, redirectUri},
         {onError, onCompleted}

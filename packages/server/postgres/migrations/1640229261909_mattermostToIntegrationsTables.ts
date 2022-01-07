@@ -50,7 +50,7 @@ export async function up() {
     await client.query(
       `
       INSERT INTO
-        "IntegrationToken" (
+        "TeamMemberIntegrationAuth" (
           "providerId",
           "teamId",
           "userId",

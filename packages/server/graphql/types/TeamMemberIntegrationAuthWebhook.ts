@@ -1,17 +1,19 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import IntegrationProviderWebhook from './IntegrationProviderWebhook'
-import IntegrationToken, {integrationTokenFields} from './IntegrationToken'
+import TeamMemberIntegrationAuth, {
+  teamMemberIntegrationAuthFields
+} from './TeamMemberIntegrationAuth'
 
-const IntegrationTokenWebhook = new GraphQLObjectType<any, GQLContext>({
-  name: 'IntegrationTokenWebhook',
+const TeamMemberIntegrationAuthWebhook = new GraphQLObjectType<any, GQLContext>({
+  name: 'TeamMemberIntegrationAuthWebhook',
   description: 'An integration token that connects via Webhook',
-  interfaces: () => [IntegrationToken],
+  interfaces: () => [TeamMemberIntegrationAuth],
   // negating the duck typing of OAuth2 feels bad, man
   // make sure if we add another provider type we add that here, too
   isTypeOf: ({accessToken, refreshToken, scopes}) => !accessToken || !refreshToken || !scopes,
   fields: () => ({
-    ...integrationTokenFields(),
+    ...teamMemberIntegrationAuthFields(),
     provider: {
       description: 'The provider strategy this token connects to',
       type: new GraphQLNonNull(IntegrationProviderWebhook),
@@ -22,4 +24,4 @@ const IntegrationTokenWebhook = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default IntegrationTokenWebhook
+export default TeamMemberIntegrationAuthWebhook

@@ -26,7 +26,7 @@ export const UpdateIntegrationProviderSuccess = new GraphQLObjectType<any, GQLCo
     },
     user: {
       type: new GraphQLNonNull(User),
-      description: 'The user who updated IntegrationToken object',
+      description: 'The user who updated TeamMemberIntegrationAuth object',
       resolve: async ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
-import {AddIntegrationTokenMutation as TAddIntegrationTokenMutation} from '../__generated__/AddIntegrationTokenMutation.graphql'
+import {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 
 graphql`
-  fragment AddIntegrationTokenMutation_part on AddIntegrationTokenSuccess {
+  fragment AddTeamMemberIntegrationAuthMutation_part on AddTeamMemberIntegrationAuthSuccess {
     user {
       ...GitLabProviderRow_viewer @relay(mask: false)
     }
@@ -12,13 +12,13 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AddIntegrationTokenMutation(
+  mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID!
     $oauthCodeOrPat: ID!
     $teamId: ID!
     $redirectUri: URL!
   ) {
-    addIntegrationToken(
+    addTeamMemberIntegrationAuth(
       providerId: $providerId
       oauthCodeOrPat: $oauthCodeOrPat
       teamId: $teamId
@@ -29,17 +29,17 @@ const mutation = graphql`
           message
         }
       }
-      ...AddIntegrationTokenMutation_part @relay(mask: false)
+      ...AddTeamMemberIntegrationAuthMutation_part @relay(mask: false)
     }
   }
 `
 
-const AddIntegrationTokenMutation: StandardMutation<TAddIntegrationTokenMutation> = (
+const AddTeamMemberIntegrationAuthMutation: StandardMutation<TAddTeamMemberIntegrationAuthMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TAddIntegrationTokenMutation>(atmosphere, {
+  return commitMutation<TAddTeamMemberIntegrationAuthMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -47,4 +47,4 @@ const AddIntegrationTokenMutation: StandardMutation<TAddIntegrationTokenMutation
   })
 }
 
-export default AddIntegrationTokenMutation
+export default AddTeamMemberIntegrationAuthMutation

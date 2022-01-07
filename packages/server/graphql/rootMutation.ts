@@ -6,6 +6,7 @@ import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
+import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addMissingJiraField from './mutations/addMissingJiraField'
 import addOrg from './mutations/addOrg'
 import addPokerTemplate from './mutations/addPokerTemplate'
@@ -17,6 +18,7 @@ import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
 import addTeam from './mutations/addTeam'
+import addTeamMemberIntegrationAuth from './mutations/addTeamMemberIntegrationAuth'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
@@ -74,6 +76,7 @@ import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePr
 import removeAgendaItem from './mutations/removeAgendaItem'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
+import removeIntegrationProvider from './mutations/removeIntegrationProvider'
 import removeOrgUser from './mutations/removeOrgUser'
 import removePokerTemplate from './mutations/removePokerTemplate'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
@@ -84,6 +87,7 @@ import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
+import removeTeamMemberIntegrationAuth from './mutations/removeTeamMemberIntegrationAuth'
 import renameMeeting from './mutations/renameMeeting'
 import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
@@ -108,11 +112,13 @@ import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
+import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
+import updateIntegrationProvider from './mutations/updateIntegrationProvider'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
@@ -132,12 +138,6 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
-import toggleTeamDrawer from './mutations/toggleTeamDrawer'
-import addIntegrationToken from './mutations/addIntegrationToken'
-import addIntegrationProvider from './mutations/addIntegrationProvider'
-import updateIntegrationProvider from './mutations/updateIntegrationProvider'
-import removeIntegrationProvider from './mutations/removeIntegrationProvider'
-import removeIntegrationToken from './mutations/removeIntegrationToken'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -280,10 +280,10 @@ export default new GraphQLObjectType<any, Context>({
       toggleTeamDrawer,
       updateGitHubDimensionField,
       createPoll,
-      addIntegrationToken,
+      addTeamMemberIntegrationAuth,
       addIntegrationProvider,
       updateIntegrationProvider,
       removeIntegrationProvider,
-      removeIntegrationToken
+      removeTeamMemberIntegrationAuth
     } as any)
 })

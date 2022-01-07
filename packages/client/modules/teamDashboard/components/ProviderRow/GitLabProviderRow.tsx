@@ -121,7 +121,6 @@ const GitLabProviderRow = (props: Props) => {
             gitlab {
               auth {
                 provider {
-                  id
                   scope
                 }
               }
@@ -186,12 +185,7 @@ const GitLabProviderRow = (props: Props) => {
             <StyledIcon>more_vert</StyledIcon>
           </MenuButton>
           {menuPortal(
-            <GitLabConfigMenu
-              menuProps={menuProps}
-              mutationProps={mutationProps}
-              providerId={auth.provider.id}
-              teamId={teamId}
-            />
+            <GitLabConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
           )}
         </ListAndMenu>
       )}
