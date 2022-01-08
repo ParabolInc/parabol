@@ -59955,14 +59955,24 @@ export interface IAddTeamMemberIntegrationAuthSuccess {
   __typename: 'AddTeamMemberIntegrationAuthSuccess';
 
   /**
+   * The auth that was just added
+   */
+  integrationAuth: TeamMemberIntegrationAuth;
+
+  /**
+   * The service this provider is associated with
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
    * The team member with the updated auth
    */
-  teamMember: ITeamMember | null;
+  teamMember: ITeamMember;
 
   /**
    * The user who updated TeamMemberIntegrationAuth object
    */
-  user: IUser | null;
+  user: IUser;
 }
 
 /**
@@ -60506,7 +60516,8 @@ export type TeamSubscriptionPayload =
   | IUpdateJiraDimensionFieldSuccess
   | ISetDefaultSlackChannelSuccess
   | ISetAppLocationSuccess
-  | IUpdateGitHubDimensionFieldSuccess;
+  | IUpdateGitHubDimensionFieldSuccess
+  | IUpdateIntegrationProviderSuccess;
 
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';

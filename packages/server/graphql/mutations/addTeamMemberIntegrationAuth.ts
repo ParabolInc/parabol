@@ -86,15 +86,16 @@ const addTeamMemberIntegrationAuth = {
     }
 
     // RESOLUTION
+    const {service} = integrationProvider
     await upsertTeamMemberIntegrationAuth({
       ...tokenMetadata,
       providerId: providerDbId,
-      service: integrationProvider.service,
+      service,
       teamId,
       userId: viewerId
     })
 
-    const data = {userId: viewerId, teamId}
+    const data = {userId: viewerId, teamId, service}
     return data
   }
 }

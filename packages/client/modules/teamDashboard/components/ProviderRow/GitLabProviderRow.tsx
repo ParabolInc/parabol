@@ -81,6 +81,25 @@ const ProviderName = styled('div')({
   verticalAlign: 'middle'
 })
 
+graphql`
+  fragment GitLabProviderRowTeamMember on TeamMember {
+    integrations {
+      gitlab {
+        auth {
+          provider {
+            scope
+          }
+        }
+        cloudProvider {
+          id
+          clientId
+          serverBaseUrl
+        }
+      }
+    }
+  }
+`
+
 const GitLabProviderRow = (props: Props) => {
   const {teamId, viewerRef} = props
   const atmosphere = useAtmosphere()
@@ -117,20 +136,7 @@ const GitLabProviderRow = (props: Props) => {
     graphql`
       fragment GitLabProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
-          integrations {
-            gitlab {
-              auth {
-                provider {
-                  scope
-                }
-              }
-              cloudProvider {
-                id
-                clientId
-                serverBaseUrl
-              }
-            }
-          }
+          ...GitLabProviderRowTeamMember @relay(mask: false)
         }
       }
     `,

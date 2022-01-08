@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import TeamMemberIntegrationAuthId from '../../client/shared/gqlIds/TeamMemberIntegrationAuthId'
 import isValid from '../graphql/isValid'
 import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
@@ -24,7 +25,8 @@ interface SharedIntegrationProviderKey {
 }
 
 const teamMemberIntegrationAuthCacheKeyFn = ({service, teamId, userId}) =>
-  `${service}:${teamId}:${userId}`
+  TeamMemberIntegrationAuthId.join(service, teamId, userId)
+
 export const integrationProviders = (parent: RootDataLoader) => {
   return new DataLoader<number, TIntegrationProvider | null, string>(
     async (providerIds) => {

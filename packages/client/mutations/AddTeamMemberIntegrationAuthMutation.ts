@@ -5,8 +5,9 @@ import {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMut
 
 graphql`
   fragment AddTeamMemberIntegrationAuthMutation_part on AddTeamMemberIntegrationAuthSuccess {
-    user {
-      ...GitLabProviderRow_viewer @relay(mask: false)
+    teamMember {
+      ...GitLabProviderRowTeamMember
+      ...MattermostProviderRowTeamMember
     }
   }
 `

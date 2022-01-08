@@ -58,7 +58,7 @@ const addIntegrationProvider = {
 
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId, providerId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProvider', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProviderSuccess', data, subOptions)
     return data
   }
 }

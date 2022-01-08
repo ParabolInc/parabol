@@ -5,14 +5,15 @@ import {RemoveIntegrationProviderMutation as TRemoveIntegrationProviderMutation}
 
 graphql`
   fragment RemoveIntegrationProviderMutation_team on RemoveIntegrationProviderSuccess {
-    user {
-      ...MattermostProviderRow_viewer @relay(mask: false)
+    teamMember {
+      ...MattermostProviderRowTeamMember @relay(mask: false)
+      ...GitLabProviderRowTeamMember @relay(mask: false)
     }
   }
 `
 
 const mutation = graphql`
-  mutation RemoveIntegrationProviderMutation($providerId: ID!, $teamId: ID!) {
+  mutation RemoveIntegrationProviderMutation($providerId: ID!) {
     removeIntegrationProvider(providerId: $providerId) {
       ... on ErrorPayload {
         error {

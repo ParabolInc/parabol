@@ -82,6 +82,19 @@ const ExtraProviderCard = styled(ProviderCard)({
   padding: 0
 })
 
+graphql`
+  fragment MattermostProviderRowTeamMember on TeamMember {
+    integrations {
+      mattermost {
+        auth {
+          provider {
+            id
+          }
+        }
+      }
+    }
+  }
+`
 const MattermostProviderRow = (props: Props) => {
   const {viewerRef, teamId} = props
   const viewer = useFragment(
@@ -89,15 +102,7 @@ const MattermostProviderRow = (props: Props) => {
       fragment MattermostProviderRow_viewer on User {
         ...MattermostPanel_viewer
         teamMember(teamId: $teamId) {
-          integrations {
-            mattermost {
-              auth {
-                provider {
-                  id
-                }
-              }
-            }
-          }
+          ...MattermostProviderRowTeamMember @relay(mask: false)
         }
       }
     `,
@@ -132,7 +137,6 @@ const MattermostProviderRow = (props: Props) => {
               <MattermostConfigMenu
                 menuProps={menuProps}
                 mutationProps={mutationProps}
-                teamId={teamId}
                 providerId={auth.provider.id}
               />
             )}

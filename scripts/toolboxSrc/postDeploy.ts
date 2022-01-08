@@ -3,7 +3,6 @@ import dotenvExpand from 'dotenv-expand'
 import fs from 'fs'
 import path from 'path'
 import getRethink from '../../packages/server/database/rethinkDriver'
-import getPg from '../../packages/server/postgres/getPg'
 import getRedis from '../../packages/server/utils/getRedis'
 import sendToSentry from '../../packages/server/utils/sendToSentry'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
@@ -73,10 +72,7 @@ const postDeploy = async () => {
     await flushSocketConnections()
     await storePersistedQueries()
     await r.getPoolMaster().drain()
-
-    const pg = getPg()
     await primeIntegrations()
-    await pg.end()
   } catch (e) {
     console.log('Post deploy error', e)
   }

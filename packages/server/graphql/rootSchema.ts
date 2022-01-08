@@ -62,18 +62,17 @@ const withNestedSchema = mergeSchemas({
     type _xGitHubIssue implements TaskIntegration
   `
 })
-
-export {githubRequest}
-export type GitHubRequest = typeof githubRequest
-;(withNestedSchema as any).githubRequest = githubRequest
-export {gitlabRequest}
-
-export type GitLabRequest = typeof gitlabRequest
-;(withNestedSchema as any).gitlabRequest = gitlabRequest
-
-export type RootSchema = GraphQLSchema & {
-  githubRequest: GitHubRequest
-  gitlabRequest: GitLabRequest
+const addRequestors = (schema: GraphQLSchema) => {
+  const finalSchema = schema as any
+  finalSchema.githubRequest = githubRequest
+  finalSchema.gitlabRequest = gitlabRequest
+  return finalSchema as GraphQLSchema & {
+    githubRequest: typeof githubRequest
+    gitlabRequest: typeof gitlabRequest
+  }
 }
 
-export default withNestedSchema
+const rootSchema = addRequestors(withNestedSchema)
+
+export type RootSchema = typeof rootSchema
+export default rootSchema

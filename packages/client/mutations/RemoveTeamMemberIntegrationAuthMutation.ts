@@ -5,8 +5,9 @@ import {RemoveTeamMemberIntegrationAuthMutation as TRemoveTeamMemberIntegrationA
 
 graphql`
   fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthSuccess {
-    user {
-      ...GitLabProviderRow_viewer @relay(mask: false)
+    teamMember {
+      ...GitLabProviderRowTeamMember
+      ...MattermostProviderRowTeamMember
     }
   }
 `

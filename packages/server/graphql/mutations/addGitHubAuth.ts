@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import {GetProfileQuery} from '../../types/githubTypes'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -7,7 +7,7 @@ import getProfile from '../../utils/githubQueries/getProfile.graphql'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {GQLContext, GQLResolveInfo} from '../graphql'
+import {GQLContext} from '../graphql'
 import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
 
 export default {
@@ -25,7 +25,7 @@ export default {
     _source: unknown,
     {code, teamId}: {code: string; teamId: string},
     context: GQLContext,
-    info: GQLResolveInfo
+    info: GraphQLResolveInfo
   ) => {
     const {authToken} = context
     const viewerId = getUserId(authToken)
