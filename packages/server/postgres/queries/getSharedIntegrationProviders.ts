@@ -12,7 +12,8 @@ const getSharedIntegrationProviders = async <T = TIntegrationProvider>(
   teamIds: MaybeReadonly<string[]>
 ) => {
   const providers = await getSharedIntegrationProvidersQuery.run(
-    {orgTeamIds, teamIds, service},
+    // theres a bug where an empty teamIds array causes it to return no rows >:-()
+    {orgTeamIds, teamIds: [...teamIds, ''], service},
     getPg()
   )
   return providers as any as T[]

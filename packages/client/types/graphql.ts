@@ -50190,9 +50190,9 @@ export interface IGitLabIntegration {
   auth: ITeamMemberIntegrationAuthOAuth2 | null;
 
   /**
-   * The cloud provider the team member may choose to integrate with
+   * The cloud provider the team member may choose to integrate with. Nullable based on env vars
    */
-  cloudProvider: IIntegrationProviderOAuth2;
+  cloudProvider: IIntegrationProviderOAuth2 | null;
 
   /**
    * The non-global providers shared with the team or organization

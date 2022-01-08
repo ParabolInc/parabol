@@ -1,11 +1,11 @@
-import upsertIntegrationProvider from 'parabol-server/postgres/queries/upsertIntegrationProvider'
 import getPg from '../../packages/server/postgres/getPg'
+import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
 
 const upsertGlobalIntegrationProvidersFromEnv = async () => {
   const providers = [
     {
       service: 'gitlab',
-      type: 'oauth2',
+      authStrategy: 'oauth2',
       scope: 'global',
       teamId: 'aGhostTeam',
       serverBaseUrl: 'https://gitlab.com',

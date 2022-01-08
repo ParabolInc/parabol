@@ -7,7 +7,7 @@ const IntegrationProviderWebhook = new GraphQLObjectType<any, GQLContext>({
   name: 'IntegrationProviderWebhook',
   description: 'An integration provider that connects via webhook',
   interfaces: () => [IntegrationProvider],
-  isTypeOf: ({type}) => type === 'webhook',
+  isTypeOf: ({authStrategy}) => authStrategy === 'webhook',
   fields: () => ({
     ...integrationProviderFields(),
     webhookUrl: {

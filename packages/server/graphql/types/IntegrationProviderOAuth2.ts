@@ -7,7 +7,7 @@ const IntegrationProviderOAuth2 = new GraphQLObjectType<any, GQLContext>({
   name: 'IntegrationProviderOAuth2',
   description: 'An integration provider that connects via OAuth2',
   interfaces: () => [IntegrationProvider],
-  isTypeOf: ({type}) => type === 'oauth2',
+  isTypeOf: ({authStrategy}) => authStrategy === 'oauth2',
   fields: () => ({
     ...integrationProviderFields(),
     serverBaseUrl: {

@@ -46,7 +46,7 @@ export async function up() {
       "clientSecret" VARCHAR(255),
       "serverBaseUrl" VARCHAR(255),
       "webhookUrl" VARCHAR(255),
-      UNIQUE("scopeGlobal", "service"),
+      UNIQUE("teamId", "service", "authStrategy"),
       CONSTRAINT global_provider_must_be_oauth2 CHECK (
         "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "authStrategy" = 'oauth2')
       ),
