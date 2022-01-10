@@ -18,7 +18,7 @@ const fetchAllIntegrations = async (
     result.status === 'fulfilled' ? result.value : []
   )
 
-  const getValue = (item) => (item.nameWithOwner || item.projectName).toLowerCase()
+  const getValue = (item) => (item.nameWithOwner || item.name)?.toLowerCase()
   allIntegrations.sort((a, b) => {
     return getValue(a) < getValue(b) ? -1 : 1
   })

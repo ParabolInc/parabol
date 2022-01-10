@@ -69,8 +69,8 @@ interface Props {
   userId: string
 }
 
-const getValue = (item: {remoteProject?: any; nameWithOwner?: string}) => {
-  const repoName = item.remoteProject?.name ?? item.nameWithOwner ?? 'Unknown Project'
+const getValue = (item: {name?: string; nameWithOwner?: string}) => {
+  const repoName = item.name ?? item.nameWithOwner ?? 'Unknown Project'
   return repoName.toLowerCase()
 }
 
@@ -129,11 +129,11 @@ const NewJiraIssueMenu = (props: Props) => {
         null}
 
       {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, service} = suggestedIntegration
-        if (service === 'jira') {
-          const {projectKey} = suggestedIntegration
+        const {id, __typename} = suggestedIntegration
+        if (__typename === 'JiraRemoteProject') {
+          const {key} = suggestedIntegration
           const onClick = () => {
-            handleSelectProjectKey(projectKey)
+            handleSelectProjectKey(key)
           }
           return (
             <SuggestedIntegrationJiraMenuItem
@@ -155,13 +155,11 @@ export default createFragmentContainer(NewJiraIssueMenu, {
     fragment NewJiraIssueMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
       hasMore
       items {
-        ... on SuggestedIntegrationJira {
+        ... on JiraRemoteProject {
+          __typename
           id
-          projectKey
-          service
-          remoteProject {
-            name
-          }
+          name
+          key
         }
         ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
       }

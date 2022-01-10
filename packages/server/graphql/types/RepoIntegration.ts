@@ -1,31 +1,32 @@
+import {IXGitHubRepository} from './../../../client/types/graphql'
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import JiraRemoteProject from './JiraRemoteProject'
 import SuggestedIntegrationGitHub from './SuggestedIntegrationGitHub'
 import SuggestedIntegrationJira from './SuggestedIntegrationJira'
 import TaskServiceEnum from './TaskServiceEnum'
 
-export const suggestedIntegrationFields = () => ({
+export const repoIntegrationFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     resolve: ({id}: {id: string}) => {
       return `sa:${id}`
     }
-  },
-  service: {
-    type: new GraphQLNonNull(TaskServiceEnum)
   }
 })
 
 const resolveTypeLookup = {
+  // github: IXGitHubRepository,
   github: SuggestedIntegrationGitHub,
-  jira: SuggestedIntegrationJira
+  jira: JiraRemoteProject
 }
 
-const SuggestedIntegration = new GraphQLInterfaceType({
-  name: 'SuggestedIntegration',
-  fields: suggestedIntegrationFields,
+const RepoIntegration = new GraphQLInterfaceType({
+  name: 'RepoIntegration',
+  fields: repoIntegrationFields,
   resolveType(value) {
-    return resolveTypeLookup[value.service]
+    // console.log('🚀  ~ RESOLVE', value)
+    return resolveTypeLookup.jira
   }
 })
 
-export default SuggestedIntegration
+export default RepoIntegration

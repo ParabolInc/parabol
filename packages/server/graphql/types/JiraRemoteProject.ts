@@ -5,11 +5,14 @@ import defaultJiraProjectAvatar from '../../utils/defaultJiraProjectAvatar'
 import {GQLContext} from '../graphql'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
+import RepoIntegration, {repoIntegrationFields} from './RepoIntegration'
 
 const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteProject',
   description: 'A project fetched from Jira in real time',
+  interfaces: () => [RepoIntegration],
   fields: () => ({
+    // ...repoIntegrationFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       resolve: ({cloudId, key}) => JiraProjectId.join(cloudId, key)

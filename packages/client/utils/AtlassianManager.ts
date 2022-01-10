@@ -42,6 +42,9 @@ export interface JiraProject {
   }
   simplified: boolean
   style: string
+  cloudId: string
+  teamId: string
+  userId: string
 }
 
 export interface JiraProjectResponse {

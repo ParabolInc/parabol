@@ -49434,7 +49434,7 @@ export interface ITeamMember {
   /**
    * All the integrations that the user could possibly use
    */
-  allAvailableIntegrations: Array<SuggestedIntegration>;
+  allAvailableIntegrations: Array<RepoIntegration>;
 
   /**
    * The datetime the team member was created
@@ -49535,23 +49535,11 @@ export interface ITasksOnTeamMemberArguments {
   after?: any | null;
 }
 
-export type SuggestedIntegration =
-  | ISuggestedIntegrationGitHub
-  | ISuggestedIntegrationJira;
+export type RepoIntegration = IJiraRemoteProject | ISuggestedIntegrationGitHub;
 
-export interface ISuggestedIntegration {
-  __typename: 'SuggestedIntegration';
+export interface IRepoIntegration {
+  __typename: 'RepoIntegration';
   id: string;
-  service: TaskServiceEnum;
-}
-
-/**
- * The list of services for task integrations
- */
-export const enum TaskServiceEnum {
-  github = 'github',
-  jira = 'jira',
-  PARABOL = 'PARABOL',
 }
 
 /**
@@ -49778,11 +49766,6 @@ export interface IJiraIssue {
   projectKey: string;
 
   /**
-   * The project fetched from jira
-   */
-  project: IJiraRemoteProject | null;
-
-  /**
    * The plaintext summary of the jira issue
    */
   summary: string;
@@ -49803,6 +49786,20 @@ export type TaskIntegration = IXGitHubIssue | IJiraIssue;
 export interface ITaskIntegration {
   __typename: 'TaskIntegration';
   id: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
 }
 
 /**
@@ -49856,20 +49853,6 @@ export interface IJiraRemoteProjectCategory {
   id: string;
   name: string;
   description: string;
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
-
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
 }
 
 /**
@@ -50196,7 +50179,7 @@ export interface ISuggestedIntegrationQueryPayload {
   /**
    * All the integrations that are likely to be integrated
    */
-  items: Array<SuggestedIntegration> | null;
+  items: Array<RepoIntegration> | null;
 }
 
 /**
@@ -54939,46 +54922,11 @@ export interface IActionMeetingSettings {
 export interface ISuggestedIntegrationGitHub {
   __typename: 'SuggestedIntegrationGitHub';
   id: string;
-  service: TaskServiceEnum;
 
   /**
    * The name of the repo. Follows format of OWNER/NAME
    */
   nameWithOwner: string;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ISuggestedIntegrationJira {
-  __typename: 'SuggestedIntegrationJira';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * URL to a 24x24 avatar icon
-   */
-  avatar: string;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
-   */
-  projectName: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The full project document fetched from Jira
-   */
-  remoteProject: IJiraRemoteProject | null;
 }
 
 /**
@@ -57636,6 +57584,15 @@ export interface ICreateTaskIntegrationInput {
    * The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
    */
   serviceProjectHash: string;
+}
+
+/**
+ * The list of services for task integrations
+ */
+export const enum TaskServiceEnum {
+  github = 'github',
+  jira = 'jira',
+  PARABOL = 'PARABOL',
 }
 
 /**

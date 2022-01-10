@@ -49,30 +49,28 @@ export const getTeamIntegrationsByTeamId = async (
   permLookup: Unpromise<ReturnType<typeof getPermsByTaskService>>
 ): Promise<IntegrationByTeamId[]> => {
   const r = await getRethink()
-  const res = await (
-    r
-      .table('Task')
-      .getAll(teamId, {index: 'teamId'})
-      .filter((row) => row('integration').ne(null).default(false))
-      .group((row) => [
-        row('userId').default(null),
-        row('integration')('service'),
-        row('integration')('nameWithOwner').default(null),
-        row('integration')('projectKey').default(null),
-        row('integration')('avatar').default(null),
-        row('integration')('cloudId').default(null)
-      ]) as any
-  )
+  const res = await (r
+    .table('Task')
+    .getAll(teamId, {index: 'teamId'})
+    .filter((row) =>
+      row('integration')
+        .ne(null)
+        .default(false)
+    )
+    .group((row) => [
+      row('userId').default(null),
+      row('integration')('service'),
+      row('integration')('projectKey').default(null),
+      row('integration')('cloudId').default(null)
+    ]) as any)
     .max('createdAt')('createdAt')
     .ungroup()
     .orderBy(r.desc('reduction'))
     .map((row) => ({
       userId: row('group')(0),
       service: row('group')(1),
-      nameWithOwner: row('group')(2),
-      projectKey: row('group')(3),
-      avatar: row('group')(4),
-      cloudId: row('group')(5),
+      projectKey: row('group')(2),
+      cloudId: row('group')(3),
       lastUsedAt: row('reduction')
     }))
     .run()

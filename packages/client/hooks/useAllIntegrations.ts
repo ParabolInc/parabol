@@ -16,22 +16,20 @@ const gqlQuery = graphql`
     viewer {
       teamMember(userId: $userId, teamId: $teamId) {
         allAvailableIntegrations {
-          ... on SuggestedIntegrationJira {
+          ... on JiraRemoteProject {
             id
             __typename
-            remoteProject {
-              name
-            }
-            projectKey
+            name
+            key
             cloudId
             ...TaskFooterIntegrateMenuListItem @relay(mask: false)
           }
-          ... on SuggestedIntegrationGitHub {
-            __typename
-            id
-            nameWithOwner
-            ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-          }
+          # ... on SuggestedIntegrationGitHub {
+          #   __typename
+          #   id
+          #   nameWithOwner
+          #   ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+          # }
         }
       }
     }
@@ -39,8 +37,8 @@ const gqlQuery = graphql`
 `
 
 const getValue = (item: FetchedItems[0]) => {
-  if (item.__typename == 'SuggestedIntegrationJira') {
-    return item.projectKey.toLowerCase()
+  if (item.__typename == 'JiraRemoteProject') {
+    return item.key.toLowerCase()
   } else if (item.__typename === 'SuggestedIntegrationGitHub') {
     return item.nameWithOwner.toLowerCase()
   }

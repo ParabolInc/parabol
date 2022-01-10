@@ -158,7 +158,6 @@ export default createFragmentContainer(NewGitHubIssueMenu, {
         ... on SuggestedIntegrationGitHub {
           id
           nameWithOwner
-          service
         }
         ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
       }

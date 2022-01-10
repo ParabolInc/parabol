@@ -116,9 +116,9 @@ const NewJiraIssueInput = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {items} = suggestedIntegrations
-  const suggestedIntegration = items?.find((item) => item.projectKey)
+  const suggestedIntegration = items?.find((item) => item.key)
   const cloudId = suggestedIntegration?.cloudId
-  const projectKey = suggestedIntegration?.projectKey
+  const projectKey = suggestedIntegration?.key
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
     MenuPosition.UPPER_LEFT
@@ -248,8 +248,8 @@ export default createFragmentContainer(NewJiraIssueInput, {
           suggestedIntegrations {
             ...NewJiraIssueMenu_suggestedIntegrations
             items {
-              ... on SuggestedIntegrationJira {
-                projectKey
+              ... on JiraRemoteProject {
+                key
                 cloudId
                 id
               }

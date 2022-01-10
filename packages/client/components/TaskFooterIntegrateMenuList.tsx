@@ -70,7 +70,7 @@ const Label = styled('div')({
 const getValue = (
   item: NonNullable<TaskFooterIntegrateMenuList_suggestedIntegrations['items']>[0]
 ) => {
-  const jiraItemName = item?.projectKey ?? ''
+  const jiraItemName = item?.name ?? ''
   const githubName = item?.nameWithOwner ?? ''
   const name = jiraItemName || githubName
   return name.toLowerCase()
@@ -124,10 +124,10 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       )) ||
         null}
       {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, service} = suggestedIntegration
+        const {id, __typename} = suggestedIntegration
         const {submitMutation, onError, onCompleted} = mutationProps
-        if (service === 'jira') {
-          const {cloudId, projectKey} = suggestedIntegration
+        if (__typename === 'JiraRemoteProject') {
+          const {cloudId, key: projectKey} = suggestedIntegration
           const onClick = () => {
             const variables = {cloudId, projectKey, taskId}
             submitMutation()
@@ -168,21 +168,20 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
 }
 
 graphql`
-  fragment TaskFooterIntegrateMenuListItem on SuggestedIntegration {
+  fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
     id
-    service
-    ... on SuggestedIntegrationJira {
-      remoteProject {
-        name
-      }
-      projectKey
+    ... on JiraRemoteProject {
+      __typename
+      id
       cloudId
+      key
+      name
     }
-    ... on SuggestedIntegrationGitHub {
-      nameWithOwner
-    }
+    # ... on SuggestedIntegrationGitHub {
+    #   nameWithOwner
+    # }
     ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
-    ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
+    # ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
   }
 `
 

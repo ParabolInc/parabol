@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import SuggestedIntegration from './SuggestedIntegration'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
+import RepoIntegration from './RepoIntegration'
 
 const SuggestedIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SuggestedIntegrationQueryPayload',
@@ -16,7 +16,7 @@ const SuggestedIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>(
         'true if the items returned are a subset of all the possible integration, else false (all possible integrations)'
     },
     items: {
-      type: new GraphQLList(new GraphQLNonNull(SuggestedIntegration)),
+      type: new GraphQLList(new GraphQLNonNull(RepoIntegration)),
       description: 'All the integrations that are likely to be integrated'
     }
   })

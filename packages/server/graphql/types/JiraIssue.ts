@@ -59,14 +59,14 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       description: 'The key of the project, which is the prefix to the issueKey',
       resolve: ({issueKey}) => JiraProjectKeyId.join(issueKey)
     },
-    project: {
-      type: JiraRemoteProject,
-      description: 'The project fetched from jira',
-      resolve: async ({issueKey, teamId, userId, cloudId}, _args: unknown, {dataLoader}) => {
-        const projectKey = JiraProjectKeyId.join(issueKey)
-        return dataLoader.get('jiraRemoteProject').load({cloudId, projectKey, teamId, userId})
-      }
-    },
+    // project: {
+    //   type: JiraRemoteProject,
+    //   description: 'The project fetched from jira',
+    //   resolve: async ({issueKey, teamId, userId, cloudId}, _args: unknown, {dataLoader}) => {
+    //     const projectKey = JiraProjectKeyId.join(issueKey)
+    //     return dataLoader.get('jiraRemoteProject').load({cloudId, projectKey, teamId, userId})
+    //   }
+    // },
     summary: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The plaintext summary of the jira issue'

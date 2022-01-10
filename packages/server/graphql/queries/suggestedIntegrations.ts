@@ -1,5 +1,4 @@
 import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
-import ms from 'ms'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -8,7 +7,6 @@ import fetchAllIntegrations from './helpers/fetchAllIntegrations'
 import {
   getPermsByTaskService,
   getTeamIntegrationsByTeamId,
-  IntegrationByTeamId,
   useOnlyUserIntegrations
 } from './helpers/suggestedIntegrationHelpers'
 
@@ -35,37 +33,62 @@ export default {
     }
     const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
     const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId, permLookup)
+    const userIntegrationIdsForTeam =
+      (await useOnlyUserIntegrations(teamIntegrationsByTeamId, userId))?.map(({id}) => id) || []
+    // const recentIntegrationIds = Array.from(
+    //   new Set([...userIntegrationsForTeam, ...teamIntegrationsByTeamId].map(({id}) => id))
+    // )
+    // const testa = await fetchAllIntegrations(
+    //   dataLoader,
+    //   teamId,
+    //   userId,
+    //   // recentIntegrationIds,
+    //   context,
+    //   info
+    // )
+    // console.log('🚀  ~ sug int--', {teamIntegrationsByTeamId, userIntegrationsForTeam})
+    // return {items: testa, hasMore: false}
+
+    // console.log('🚀  ~ teamIntegrationsByTeamId', teamIntegrationsByTeamId)
 
     // if the team has no integrations, return every possible integration for the user
-    if (!teamIntegrationsByTeamId.length) {
-      const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
-      return {items, hasMore: false}
-    }
-    const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByTeamId, userId)
-    if (userIntegrationsForTeam) {
-      return {items: userIntegrationsForTeam, hasMore: true}
-    }
+    // if (!teamIntegrationsByTeamId.length) {
+    //   const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+    //   console.log('🚀  ~ sug int 1', {items})
+    //   return {items, hasMore: false}
+    // }
+    // // const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByTeamId, userId)
+    // if (userIntegrationsForTeam) {
+    //   console.log('🚀  ~ sug int 2', {userIntegrationsForTeam})
+    //   return {items: userIntegrationsForTeam, hasMore: true}
+    // }
 
-    const aMonthAgo = new Date(Date.now() - ms('30d'))
-    const recentUserIntegrations = teamIntegrationsByTeamId.filter(
-      (integration) => integration.userId === userId && integration.lastUsedAt >= aMonthAgo
-    )
-
+    const allIntegrations = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+    const orderedIntegrations: any = []
     const idSet = new Set()
-    const dedupedTeamIntegrations = [] as IntegrationByTeamId[]
-    const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByTeamId]
-    // dedupes for perms, user vs team items, as well as possible name changes
-    userAndTeamItems.forEach((integration) => {
+    allIntegrations.forEach((integration) => {
       if (idSet.has(integration.id)) return
       idSet.add(integration.id)
-      dedupedTeamIntegrations.push(integration)
+      return userIntegrationIdsForTeam.includes(integration.id)
+        ? orderedIntegrations.unshift(integration)
+        : orderedIntegrations.push(integration)
     })
 
+    // console.log('🚀  ~ ------', {
+    //   recentUserIntegrations,
+    //   teamIntegrationsByTeamId,
+    //   userIntegrationIdsForTeam,
+    //   orderedIntegrations
+    // })
+    return {hasMore: false, items: [...orderedIntegrations, userId, teamId, cloudId]}
+    // return {items: orderedIntegrations, hasMore: false}
+
     // if other users have items that the viewer can't access, revert back to fetching everything
-    if (userAndTeamItems.length === 0) {
-      const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
-      return {items, hasMore: false}
-    }
-    return {hasMore: true, items: dedupedTeamIntegrations}
+    // if (userAndTeamItems.length === 0) {
+    // const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+    // return {items, hasMore: false}
+    // }
+    // console.log('🚀  ~ suggested int 3...', {dedupedTeamIntegrations})
+    // return {hasMore: true, items: dedupedTeamIntegrations}
   }
 }
