@@ -10,6 +10,7 @@ import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
+import {isValidEstimationField} from '../utils/atlassian/jiraFields'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
@@ -168,31 +169,14 @@ export const jiraIssue = (
               })
             )
 
-            const VALID_TYPES = ['string', 'number']
-            const INVALID_WORDS = ['color', 'name', 'description', 'environment']
-            const INVALID_NOT_SIMPLIFIED_FIELD = 'story point estimate'
-            const INVALID_SIMPLIFIED_FIELD = 'story points'
             const simplified = !!issueRes.fields.project?.simplified
 
             const possibleEstimationFieldNames = Array.from(
               new Set(
                 Object.entries<{type: string}>(issueRes.schema)
-                  .filter(([fieldId, fieldSchema]) => {
-                    if (!VALID_TYPES.includes(fieldSchema.type)) return false
-                    const fieldName = issueRes.names[fieldId].toLowerCase()
-                    for (let i = 0; i < INVALID_WORDS.length; i++) {
-                      if (fieldName.includes(INVALID_WORDS[i]!)) return false
-                    }
-
-                    if (
-                      (!simplified && fieldName === INVALID_NOT_SIMPLIFIED_FIELD) ||
-                      (simplified && fieldName === INVALID_SIMPLIFIED_FIELD)
-                    ) {
-                      return false
-                    }
-
-                    return true
-                  })
+                  .filter(([fieldId, fieldSchema]) =>
+                    isValidEstimationField(fieldSchema.type, issueRes.names[fieldId], simplified)
+                  )
                   .map(([fieldId]) => {
                     return issueRes.names[fieldId]
                   })
