@@ -580,12 +580,10 @@ export default abstract class AtlassianManager {
     extraFieldIds: string[] = [],
     extraExpand: string[] = []
   ) {
-    const baseFields = ['summary', 'description']
     const reqFields = extraFieldIds.includes('*all')
       ? '*all'
-      : [...baseFields, ...extraFieldIds].join(',')
-    const baseExpand = ['renderedFields']
-    const expand = [...baseExpand, ...extraExpand].join(',')
+      : ['summary', 'description', ...extraFieldIds].join(',')
+    const expand = ['renderedFields', ...extraExpand].join(',')
     const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )

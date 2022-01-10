@@ -72,6 +72,7 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       description: 'The plaintext summary of the jira issue'
     },
     possibleEstimationFieldNames: {
+      // The field is computed in the atlassian data loader
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: 'Field names that exists on the issue and can be used as estimation fields'
     },
