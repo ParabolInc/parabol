@@ -60,6 +60,5 @@ test('Login after signup', async () => {
     }
   })
   const lastSeenAt = Date.parse(login.data.loginWithPassword.user.lastSeenAt)
-  console.log(lastSeenAt)
   expect(lastSeenAt).toBeGreaterThan(Date.now() - 1000 * 60) // lastSeenAt should be more recent than 1 minute ago
 })
