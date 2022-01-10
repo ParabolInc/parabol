@@ -54,6 +54,7 @@ import MeetingMemberType from '../../database/types/MeetingMember'
 import {UserFeatureFlagEnum} from './UserFlagEnum'
 import Reflection from '../../database/types/Reflection'
 import isValid from '../isValid'
+import {isNeitherNullNorError} from '../../utils/predicates'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -563,7 +564,9 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
             : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
-        const teams = await dataLoader.get('teams').loadMany(teamIds)
+        const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(
+          isNeitherNullNorError
+        )
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
       }

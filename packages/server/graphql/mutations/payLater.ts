@@ -44,7 +44,7 @@ export default {
     }
 
     // RESOLUTION
-    const team = await dataLoader.get('teams').load(teamId)
+    const team = (await dataLoader.get('teams').load(teamId))!
     const {orgId} = team
     await r
       .table('Organization')

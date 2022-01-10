@@ -25,7 +25,7 @@ const ensureJiraDimensionField = async (
 ) => {
   if (requiredMappers.length === 0) return
   const team = await dataLoader.get('teams').load(teamId)
-  const currentMappers = team.jiraDimensionFields || []
+  const currentMappers = team?.jiraDimensionFields || []
   const seenHashes = new Set<string>()
   const missingMappers = [] as JiraDimensionField[]
 

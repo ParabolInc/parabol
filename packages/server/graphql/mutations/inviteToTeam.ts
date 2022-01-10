@@ -69,6 +69,9 @@ export default {
       if (!inviter) {
         return standardError(new Error('User not found'), {userId: viewerId})
       }
+      if (!team) {
+        return standardError(new Error('Team not found'), {userId: viewerId})
+      }
       const {name: teamName, isOnboardTeam, orgId} = team
       const organization = await dataLoader.get('organizations').load(orgId)
       const {tier, name: orgName} = organization

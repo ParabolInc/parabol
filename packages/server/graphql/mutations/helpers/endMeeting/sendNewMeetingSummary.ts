@@ -16,7 +16,7 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
     dataLoader.get('teams').load(teamId),
     r.table('NewMeeting').get(meetingId).update({summarySentAt: now}).run()
   ])
-  const {name: teamName, orgId} = team
+  const {name: teamName, orgId} = team!
   const userIds = teamMembers.map(({userId}) => userId)
   const [content, users, organization] = await Promise.all([
     newMeetingSummaryEmailCreator({meetingId, context}),

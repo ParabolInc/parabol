@@ -119,7 +119,7 @@ export default {
         new TimelineEventPokerComplete({
           userId: teamMember.userId,
           teamId,
-          orgId: team.orgId,
+          orgId: team!.orgId,
           meetingId
         })
     )

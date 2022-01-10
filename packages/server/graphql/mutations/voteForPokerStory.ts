@@ -99,11 +99,11 @@ const voteForPokerStory = {
 
     // RESOLUTION
     const {dimensionRefIdx} = stage
-    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+    const templateRef = (await dataLoader.get('templateRefs').load(templateRefId))!
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {scaleRefId} = dimensionRef
-    const scaleRef = await dataLoader.get('templateScaleRefs').load(scaleRefId)
+    const scaleRef = (await dataLoader.get('templateScaleRefs').load(scaleRefId))!
     const {values} = scaleRef
     if (score) {
       // validate the score is a value on the scale

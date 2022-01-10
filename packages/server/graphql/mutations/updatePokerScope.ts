@@ -109,7 +109,7 @@ const updatePokerScope = {
     })
 
     // add stages
-    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+    const templateRef = (await dataLoader.get('templateRefs').load(templateRefId))!
     const {dimensions} = templateRef
     const firstDimensionName = dimensions[0].name
     const newDiscussions = [] as Writeable<InputDiscussions>

@@ -94,7 +94,7 @@ export default {
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     // RESOLUTION
-    const {name: teamName} = team
+    const {name: teamName} = team!
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =

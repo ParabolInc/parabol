@@ -102,7 +102,7 @@ export const startMattermostMeeting = async (
         {
           short: true,
           title: 'Team',
-          value: team.name
+          value: team?.name ?? ''
         },
         {
           short: true,
@@ -178,7 +178,7 @@ export const endMattermostMeeting = async (
         {
           short: true,
           title: 'Team',
-          value: team.name
+          value: team?.name ?? ''
         },
         {
           short: true,
@@ -214,7 +214,7 @@ export const notifyMattermostTimeLimitStart = async (
 
   const team = await dataLoader.get('teams').load(teamId)
   const {name: meetingName, phases, facilitatorStageId, facilitatorUserId: userId} = meeting
-  const {name: teamName} = team
+  const {name: teamName = ''} = team ?? {}
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
   const maybeMeetingShortLink = makeAppURL(

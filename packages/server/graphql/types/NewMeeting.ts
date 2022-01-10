@@ -89,7 +89,7 @@ export const newMeetingFields = () => ({
     type: new GraphQLNonNull(Organization),
     description: 'The organization this meeting belongs to',
     resolve: async ({teamId}: {teamId: string}, _args: any, {dataLoader}: GQLContext) => {
-      const team = await dataLoader.get('teams').load(teamId)
+      const team = (await dataLoader.get('teams').load(teamId))!
       const {orgId} = team
       return dataLoader.get('organizations').load(orgId)
     }

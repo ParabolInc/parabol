@@ -112,7 +112,7 @@ export const startSlackMeeting = async (
   const title = 'Meeting started :wave: '
   const blocks = [
     makeSection(title),
-    makeSections([`*Team:*\n${team.name}`, `*Meeting:*\n${meeting.name}`]),
+    makeSections([`*Team:*\n${team?.name}`, `*Meeting:*\n${meeting.name}`]),
     makeSection(`*Link:*\n<${meetingUrl}|https:/prbl.in/${meetingId}>`),
     makeButtons([button])
   ]
@@ -165,7 +165,7 @@ export const endSlackMeeting = async (
     dataLoader.get('newMeetings').load(meetingId)
   ])
   const summaryText = getSummaryText(meeting)
-  const {name: teamName} = team
+  const {name: teamName = ''} = team ?? {}
   const {name: meetingName} = meeting
   const title = 'Meeting completed :tada:'
   const blocks = [
@@ -188,7 +188,7 @@ export const notifySlackTimeLimitStart = async (
     dataLoader.get('newMeetings').load(meetingId)
   ])
   const {name: meetingName, phases, facilitatorStageId} = meeting
-  const {name: teamName} = team
+  const {name: teamName = ''} = team ?? {}
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
   const maybeMeetingShortLink = makeAppURL(process.env.INVITATION_SHORTLINK!, `${meetingId}`)

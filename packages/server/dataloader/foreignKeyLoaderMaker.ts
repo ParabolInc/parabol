@@ -10,7 +10,7 @@ type LoaderType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends Data
   infer T,
   any
 >
-  ? T
+  ? NonNullable<T>
   : any
 
 /**
@@ -36,9 +36,11 @@ export function foreignKeyLoaderMaker<
       async (ids) => {
         const items = await fetchFn(ids)
         items.forEach((item) => {
-          primaryLoader.clear(item['id']).prime(item['id'], item as any)
+          if (item && item['id']) {
+            primaryLoader.clear(item['id']).prime(item['id'], item as any)
+          }
         })
-        return ids.map((id) => items.filter((item) => item[foreignKey] === id))
+        return ids.map((id) => items.filter((item) => item && item[foreignKey] === id))
       },
       {
         ...parent.dataLoaderOptions
