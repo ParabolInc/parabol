@@ -29,7 +29,7 @@ const createTokenMetadata = async (
 const addTeamMemberIntegrationAuth = {
   name: 'AddTeamMemberIntegrationAuth',
   type: new GraphQLNonNull(AddTeamMemberIntegrationAuthPayload),
-  description: 'Add integration token material to the team, supported by the GitLab integration',
+  description: 'Add an integration authorization for a specific team member',
   args: {
     providerId: {
       type: new GraphQLNonNull(GraphQLID)

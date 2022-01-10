@@ -169,17 +169,21 @@ const GitLabProviderRow = (props: Props) => {
               {isDesktop ? 'Connect' : <Icon>add</Icon>}
             </StyledPrimaryButton>
             {cloudTooltipPortal('Connect to GitLab Cloud')}
-            <StyledSecondaryButton
-              onClick={() => console.log('todo')}
-              palette='warm'
-              waiting={submitting}
-              onMouseOver={selfHostedOpenTooltip}
-              onMouseOut={selfHostedCloseTooltip}
-              ref={selfHostedRef}
-            >
-              {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
-            </StyledSecondaryButton>
-            {selfHostedTooltipPortal(`Connect to GitLab Self-hosted`)}
+            {null && (
+              <>
+                <StyledSecondaryButton
+                  onClick={() => console.log('todo')}
+                  palette='warm'
+                  waiting={submitting}
+                  onMouseOver={selfHostedOpenTooltip}
+                  onMouseOut={selfHostedCloseTooltip}
+                  ref={selfHostedRef}
+                >
+                  {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
+                </StyledSecondaryButton>
+                {selfHostedTooltipPortal(`Connect to GitLab Self-hosted`)}
+              </>
+            )}
           </>
         </ProviderActions>
       )}

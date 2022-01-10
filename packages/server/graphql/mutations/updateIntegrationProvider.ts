@@ -74,7 +74,6 @@ const updateIntegrationProvider = {
         await notifyWebhookConfigUpdated(newWebhookUrl, viewerId, teamId)
       }
     }
-    //TODO: add proper scopes handling here, teamId only exists in provider with team scope
     const data = {userId: viewerId, teamId, providerId: providerDbId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateIntegrationProviderSuccess', data, subOptions)
     return data

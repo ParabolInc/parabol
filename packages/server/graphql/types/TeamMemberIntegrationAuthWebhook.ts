@@ -7,7 +7,7 @@ import TeamMemberIntegrationAuth, {
 
 const TeamMemberIntegrationAuthWebhook = new GraphQLObjectType<any, GQLContext>({
   name: 'TeamMemberIntegrationAuthWebhook',
-  description: 'An integration token that connects via Webhook',
+  description: 'An integration authorization that connects via Webhook auth strategy',
   interfaces: () => [TeamMemberIntegrationAuth],
   // negating the duck typing of OAuth2 feels bad, man
   // make sure if we add another provider type we add that here, too

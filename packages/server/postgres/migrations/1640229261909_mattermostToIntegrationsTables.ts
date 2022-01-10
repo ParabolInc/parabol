@@ -37,7 +37,7 @@ export async function up() {
       INSERT INTO
         "IntegrationProvider" (
           "service",
-          "type",
+          "authStrategy",
           "scope",
           "webhookUrl",
           "teamId"

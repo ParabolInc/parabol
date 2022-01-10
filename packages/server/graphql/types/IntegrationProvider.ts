@@ -13,7 +13,7 @@ export const integrationProviderFields = () => ({
   },
   teamId: {
     type: new GraphQLNonNull(GraphQLID),
-    description: 'The team that the token is linked to'
+    description: 'The team that created the provider. "aGhostTeam" if global'
   },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -24,11 +24,11 @@ export const integrationProviderFields = () => ({
     description: 'The timestamp the token was updated at'
   },
   service: {
-    description: 'The service this provider is associated with',
+    description: 'The name of the integration service (GitLab, Mattermost, etc)',
     type: new GraphQLNonNull(IntegrationProviderServiceEnum)
   },
   authStrategy: {
-    description: 'The kind of token used by this provider',
+    description: 'The kind of token used by this provider (OAuth2, PAT, Webhook)',
     type: new GraphQLNonNull(IntegrationProviderAuthStrategyEnum)
   },
   scope: {

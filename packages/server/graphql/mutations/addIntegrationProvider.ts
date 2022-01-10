@@ -44,12 +44,11 @@ const addIntegrationProvider = {
     if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {
       return {error: {message: 'Provided 2 metadata types, expected 1'}}
     }
-    if (!oAuth2ProviderMetadataInput || !webhookProviderMetadataInput) {
+    if (!oAuth2ProviderMetadataInput && !webhookProviderMetadataInput) {
       return {error: {message: 'Provided 0 metadata types, expected 1'}}
     }
 
     // RESOLUTION
-
     const providerId = await upsertIntegrationProvider({
       ...rest,
       ...oAuth2ProviderMetadataInput,
