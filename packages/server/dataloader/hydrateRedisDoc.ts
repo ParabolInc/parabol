@@ -9,7 +9,7 @@ const hydrators = {
   },
   User: (user: IUser) => {
     user.createdAt = new Date(user.createdAt)
-    user.lastSeenAt = user.lastSeenAt ? new Date(user.lastSeenAt) : null
+    user.lastSeenAt = user.lastSeenAt ? new Date(user.lastSeenAt) : new Date()
     user.updatedAt = new Date(user.updatedAt)
     return user
   }

@@ -37,7 +37,7 @@ test('Autopause users who where never active', async () => {
     data: {
       user: {
         id: userId,
-        inactive: true
+        inactive: false // user will have lastSeenAt populated upon sign up so won't be inactive
       }
     }
   })
