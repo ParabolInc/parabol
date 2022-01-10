@@ -84,8 +84,11 @@ export const startMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const webhookUrl = await getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader)
-  if (!webhookUrl) return null
+  const [webhookUrl, team] = await Promise.all([
+    getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader),
+    dataLoader.get('teams').load(teamId)
+  ])
+  if (!webhookUrl || !team) return null
 
   const searchParams = {
     utm_source: 'mattermost meeting start',
@@ -93,7 +96,6 @@ export const startMattermostMeeting = async (
     utm_campaign: 'invitations'
   }
   const options = {searchParams}
-  const team = await dataLoader.get('teams').load(teamId)
   const {facilitatorUserId: userId} = meeting
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const attachments = [
@@ -102,7 +104,7 @@ export const startMattermostMeeting = async (
         {
           short: true,
           title: 'Team',
-          value: team?.name ?? ''
+          value: team.name
         },
         {
           short: true,
@@ -166,9 +168,11 @@ export const endMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const webhookUrl = await getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader)
-  if (!webhookUrl) return null
-  const team = await dataLoader.get('teams').load(teamId)
+  const [webhookUrl, team] = await Promise.all([
+    getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader),
+    dataLoader.get('teams').load(teamId)
+  ])
+  if (!webhookUrl || !team) return null
   const {facilitatorUserId: userId} = meeting
   const summaryText = getSummaryText(meeting)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
@@ -178,7 +182,7 @@ export const endMattermostMeeting = async (
         {
           short: true,
           title: 'Team',
-          value: team?.name ?? ''
+          value: team.name
         },
         {
           short: true,
@@ -209,12 +213,14 @@ export const notifyMattermostTimeLimitStart = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const webhookUrl = await getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader)
-  if (!webhookUrl) return null
+  const [webhookUrl, team] = await Promise.all([
+    getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader),
+    await dataLoader.get('teams').load(teamId)
+  ])
+  if (!webhookUrl || !team) return null
 
-  const team = await dataLoader.get('teams').load(teamId)
   const {name: meetingName, phases, facilitatorStageId, facilitatorUserId: userId} = meeting
-  const {name: teamName = ''} = team ?? {}
+  const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
   const maybeMeetingShortLink = makeAppURL(
