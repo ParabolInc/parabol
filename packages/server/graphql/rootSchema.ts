@@ -31,7 +31,14 @@ const withLinkedGitHubSchema = mergeSchemas({
   schemas: [withGitHubSchema],
   typeDefs: `
      type _xGitHubIssue implements TaskIntegration
-    `
+     type _xGitHubRepository implements RepoIntegration
+    `,
+  resolvers: {
+    _xGitHubRepository: {
+      __interfaces: () => ['RepoIntegration'],
+      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner
+    }
+  }
 })
 
 export {githubRequest}

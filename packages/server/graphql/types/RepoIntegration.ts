@@ -8,6 +8,7 @@ export const repoIntegrationFields = () => ({
 
 const RepoIntegration = new GraphQLInterfaceType({
   name: 'RepoIntegration',
+  description: 'The suggested repos and projects a user can integrate with',
   fields: repoIntegrationFields
 })
 

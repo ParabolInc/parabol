@@ -63,7 +63,13 @@ export default {
     //   return {items: userIntegrationsForTeam, hasMore: true}
     // }
 
-    const allIntegrations = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+    const allIntegrations = (await fetchAllIntegrations(
+      dataLoader,
+      teamId,
+      userId,
+      context,
+      info
+    )) as any[]
     const orderedIntegrations: any = []
     const idSet = new Set()
     allIntegrations.forEach((integration) => {

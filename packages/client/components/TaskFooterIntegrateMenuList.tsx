@@ -142,7 +142,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (__typename === 'GitHubRepo') {
+        if (__typename === '_xGitHubRepository') {
           const onClick = () => {
             const {nameWithOwner} = suggestedIntegration
             const variables = {nameWithOwner, taskId}
@@ -177,7 +177,7 @@ graphql`
       key
       name
     }
-    ... on GitHubRepo {
+    ... on _xGitHubRepository {
       __typename
       nameWithOwner
     }

@@ -49,7 +49,7 @@ const GitHubScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             suggestedIntegrations {
               items {
-                ... on GitHubRepo {
+                ... on _xGitHubRepository {
                   id
                   nameWithOwner
                 }

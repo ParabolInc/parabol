@@ -49535,8 +49535,14 @@ export interface ITasksOnTeamMemberArguments {
   after?: any | null;
 }
 
-export type RepoIntegration = IJiraRemoteProject | IGitHubRepo;
+/**
+ * The suggested repos and projects a user can integrate with
+ */
+export type RepoIntegration = IXGitHubRepository | IJiraRemoteProject;
 
+/**
+ * The suggested repos and projects a user can integrate with
+ */
 export interface IRepoIntegration {
   __typename: 'RepoIntegration';
   id: string;
@@ -54914,19 +54920,6 @@ export interface IActionMeetingSettings {
    * The team these settings belong to
    */
   team: ITeam;
-}
-
-/**
- * A repo fetched from GitHub in real time
- */
-export interface IGitHubRepo {
-  __typename: 'GitHubRepo';
-  id: string;
-
-  /**
-   * The unique name of the GitHub repository
-   */
-  nameWithOwner: string;
 }
 
 /**

@@ -9,7 +9,6 @@ import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
 import EstimatePhase from './types/EstimatePhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
-import GitHubRepo from './types/GitHubRepo'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
@@ -63,7 +62,6 @@ const rootTypes = [
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
   ActionMeetingSettings,
-  GitHubRepo,
   Comment
 ]
 export default rootTypes
