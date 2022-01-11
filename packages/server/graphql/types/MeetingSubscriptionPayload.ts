@@ -34,6 +34,7 @@ import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
 import {SetTaskEstimateSuccess} from './SetTaskEstimatePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {CreatePollSuccess} from './CreatePollPayload'
+import SetTaskHighlightPayload from './SetTaskHighlightPayload'
 
 const types = [
   AddCommentSuccess,
@@ -56,6 +57,7 @@ const types = [
   SetPhaseFocusPayload,
   SetStageTimerPayload,
   StartDraggingReflectionPayload,
+  SetTaskHighlightPayload,
   UpdateCommentContentSuccess,
   UpdateDragLocationPayload,
   UpdateNewCheckInQuestionPayload,

@@ -110,6 +110,7 @@ import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
+import setTaskHighlight from './mutations/setTaskHighlight'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
@@ -243,6 +244,7 @@ export default new GraphQLObjectType<any, Context>({
       startCheckIn,
       startRetrospective,
       startSprintPoker,
+      setTaskHighlight,
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,

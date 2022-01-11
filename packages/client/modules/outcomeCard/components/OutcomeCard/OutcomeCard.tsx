@@ -4,6 +4,7 @@ import {EditorState} from 'draft-js'
 import React, {memo, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
+import {PALETTE} from '~/styles/paletteV3'
 import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
@@ -21,11 +22,13 @@ import {taskStatusLabels} from '../../../../utils/taskStatus'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 
+const HIGHLIGHT_COLOR = PALETTE.TERRA_300
 const RootCard = styled('div')<{
   isTaskHovered: boolean
   isTaskFocused: boolean
   isDragging: boolean
-}>(({isTaskHovered, isTaskFocused, isDragging}) => ({
+  isTaskHighlighted: boolean
+}>(({isTaskHovered, isTaskFocused, isDragging, isTaskHighlighted}) => ({
   ...cardRootStyles,
   borderTop: 0,
   outline: 'none',
@@ -34,6 +37,8 @@ const RootCard = styled('div')<{
   // hover before focus, it matters
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
+    : isTaskHighlighted ?
+    `${HIGHLIGHT_COLOR} 0px 3px 5px -1px, ${HIGHLIGHT_COLOR} 0px 5px 8px 0px, ${HIGHLIGHT_COLOR} 0px 1px 14px 0px`
     : isTaskFocused
     ? cardFocusShadow
     : isTaskHovered
@@ -83,7 +88,7 @@ const OutcomeCard = memo((props: Props) => {
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
-  const {integration, status, id: taskId, team} = task
+  const {integration, status, id: taskId, team, isHighlighted} = task
   const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const {id: teamId} = team
   const type = integration?.__typename
@@ -98,6 +103,7 @@ const OutcomeCard = memo((props: Props) => {
       isTaskHovered={isTaskHovered}
       isTaskFocused={isTaskFocused}
       isDragging={!!isDraggingOver}
+      isTaskHighlighted={!!isHighlighted}
     >
       <TaskWatermark type={type} />
       <ContentBlock>
@@ -164,6 +170,7 @@ export default createFragmentContainer(OutcomeCard, {
       }
       # grab userId to ensure sorting on connections works
       userId
+      isHighlighted
       ...EditingStatus_task
       ...TaskFooter_task
     }

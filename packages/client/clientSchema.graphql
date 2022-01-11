@@ -62,6 +62,7 @@ extend type User {
 }
 
 extend type Task {
+  isHighlighted: Boolean
   error: String
 }
 

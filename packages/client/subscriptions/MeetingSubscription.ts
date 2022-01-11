@@ -22,6 +22,7 @@ import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutat
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {setTaskHighlightUpdater} from '../mutations/SetTaskHighlightMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -50,6 +51,7 @@ const subscription = graphql`
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
       ...SetStageTimerMutation_meeting @relay(mask: false)
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
+      ...SetTaskHighlightMutation_meeting @relay(mask: false)
       ...UpdateCommentContentMutation_meeting @relay(mask: false)
       ...UpdateNewCheckInQuestionMutation_meeting @relay(mask: false)
       ...UpdateDragLocationMutation_meeting @relay(mask: false)
@@ -79,6 +81,7 @@ const updateHandlers = {
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
+  SetTaskHighlightPayload: setTaskHighlightUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater
 }
 

@@ -14,6 +14,8 @@ import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graph
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../../../utils/draftjs/isAndroid'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
+import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
+import {matchPath} from 'react-router'
 
 const Wrapper = styled('div')({
   outline: 'none'
@@ -41,6 +43,21 @@ const OutcomeCardContainer = memo((props: Props) => {
 
   const [editorState, setEditorState] = useEditorState(content)
   const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
+
+  React.useEffect(() => {
+    const {pathname} = window.location
+    const meetingRoute = matchPath<{meetingId: string}>(pathname, {path: '/meet/:meetingId/update'})
+    // TODO get meetingId from somewhere else maybe?
+    const {meetingId} = meetingRoute?.params ?? {}
+    if (!meetingId) return
+
+    // TODO skip update when task owner !== viewer
+    SetTaskHighlightMutation(atmosphere, {
+      taskId,
+      meetingId,
+      isHighlighted: isTaskHovered
+    })
+  }, [isTaskHovered])
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
