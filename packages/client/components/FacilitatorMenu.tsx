@@ -28,13 +28,13 @@ const FacilitatorMenu = (props: Props) => {
     PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: newFacilitatorId, meetingId})
   }
   return (
-    <Menu ariaLabel={'Change the Facilitator role'} {...menuProps}>
+    <Menu ariaLabel={'Change the facilitator role'} {...menuProps}>
       {viewerId !== facilitatorUserId && <MenuItem
-        label={<MenuItemLabel>{'I want to be the Facilitator!'}</MenuItemLabel>}
+        label={<MenuItemLabel>{'Take the facilitator role'}</MenuItemLabel>}
         onClick={promoteViewerToFacilitator}
       />}
       <MenuItem
-        label={<MenuItemLabel>{'Pick someone for me...'}</MenuItemLabel>}
+        label={<MenuItemLabel>{'Randomize facilitator'}</MenuItemLabel>}
         onClick={promoteRandomPersonToFacilitator}
       />
     </Menu>
