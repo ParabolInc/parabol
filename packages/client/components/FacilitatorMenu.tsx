@@ -29,10 +29,10 @@ const FacilitatorMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={'Change the Facilitator role'} {...menuProps}>
-      <MenuItem
+      {viewerId !== facilitatorUserId && <MenuItem
         label={<MenuItemLabel>{'I want to be the Facilitator!'}</MenuItemLabel>}
         onClick={promoteViewerToFacilitator}
-      />
+      />}
       <MenuItem
         label={<MenuItemLabel>{'Pick someone for me...'}</MenuItemLabel>}
         onClick={promoteRandomPersonToFacilitator}
