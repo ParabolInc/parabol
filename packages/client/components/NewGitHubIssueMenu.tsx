@@ -129,8 +129,8 @@ const NewGitHubIssueMenu = (props: Props) => {
         null}
 
       {allItems.slice(0, 10).map((repoIntegration) => {
-        const {id, service} = repoIntegration
-        if (service === 'github') {
+        const {id, __typename} = repoIntegration
+        if (__typename === '_xGitHubRepository') {
           const {nameWithOwner} = repoIntegration
           const onClick = () => {
             handleSelectNameWithOwner(nameWithOwner)
@@ -156,6 +156,7 @@ export default createFragmentContainer(NewGitHubIssueMenu, {
       hasMore
       items {
         ... on _xGitHubRepository {
+          __typename
           id
           nameWithOwner
         }

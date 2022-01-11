@@ -49772,6 +49772,11 @@ export interface IJiraIssue {
   projectKey: string;
 
   /**
+   * The project fetched from jira
+   */
+  project: IJiraRemoteProject | null;
+
+  /**
    * The plaintext summary of the jira issue
    */
   summary: string;
@@ -49792,20 +49797,6 @@ export type TaskIntegration = IXGitHubIssue | IJiraIssue;
 export interface ITaskIntegration {
   __typename: 'TaskIntegration';
   id: string;
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
-
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
 }
 
 /**
@@ -49859,6 +49850,20 @@ export interface IJiraRemoteProjectCategory {
   id: string;
   name: string;
   description: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
 }
 
 /**

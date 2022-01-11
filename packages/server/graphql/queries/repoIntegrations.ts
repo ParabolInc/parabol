@@ -35,34 +35,6 @@ export default {
     const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId, permLookup)
     const userIntegrationIdsForTeam =
       (await useOnlyUserIntegrations(teamIntegrationsByTeamId, userId))?.map(({id}) => id) || []
-    // const recentIntegrationIds = Array.from(
-    //   new Set([...userIntegrationsForTeam, ...teamIntegrationsByTeamId].map(({id}) => id))
-    // )
-    // const testa = await fetchAllIntegrations(
-    //   dataLoader,
-    //   teamId,
-    //   userId,
-    //   // recentIntegrationIds,
-    //   context,
-    //   info
-    // )
-    // console.log('🚀  ~ sug int--', {teamIntegrationsByTeamId, userIntegrationsForTeam})
-    // return {items: testa, hasMore: false}
-
-    // console.log('🚀  ~ teamIntegrationsByTeamId', teamIntegrationsByTeamId)
-
-    // if the team has no integrations, return every possible integration for the user
-    // if (!teamIntegrationsByTeamId.length) {
-    //   const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
-    //   console.log('🚀  ~ sug int 1', {items})
-    //   return {items, hasMore: false}
-    // }
-    // // const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByTeamId, userId)
-    // if (userIntegrationsForTeam) {
-    //   console.log('🚀  ~ sug int 2', {userIntegrationsForTeam})
-    //   return {items: userIntegrationsForTeam, hasMore: true}
-    // }
-
     const allIntegrations = (await fetchAllIntegrations(
       dataLoader,
       teamId,
@@ -80,15 +52,11 @@ export default {
         : orderedIntegrations.push(integration)
     })
 
-    return {hasMore: false, items: orderedIntegrations}
-    // return {items: orderedIntegrations, hasMore: false}
-
-    // if other users have items that the viewer can't access, revert back to fetching everything
-    // if (userAndTeamItems.length === 0) {
-    // const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
-    // return {items, hasMore: false}
-    // }
-    // console.log('🚀  ~ suggested int 3...', {dedupedTeamIntegrations})
-    // return {hasMore: true, items: dedupedTeamIntegrations}
+    const first = 10
+    if (orderedIntegrations.length > first) {
+      return {hasMore: true, items: orderedIntegrations.slice(0, first)}
+    } else {
+      return {hasMore: false, items: orderedIntegrations}
+    }
   }
 }

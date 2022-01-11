@@ -116,21 +116,6 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeRepoIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
-  return {
-    __typename: 'RepoIntegrationJira',
-    id: key,
-    remoteProject: new DemoJiraRemoteProject(key),
-    ...JiraProjectKeyLookup[key]
-  }
-}
-
-const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
-  __typename: 'GitHubRepo',
-  id: `si:${nameWithOwner}`,
-  ...GitHubProjectKeyLookup[nameWithOwner]
-})
-
 const initSlackNotification = (userId: string) => ({
   __typename: 'SlackNotification',
   id: 'demoSlackNotification',
@@ -179,11 +164,11 @@ const initDemoTeamMember = (
     },
     repoIntegrations: {
       hasMore: true,
-      items: [makeRepoIntegrationJira(JiraDemoKey), makeRepoIntegrationGitHub(GitHubDemoKey)]
+      items: [new DemoJiraRemoteProject(JiraDemoKey), GitHubProjectKeyLookup[GitHubDemoKey]]
     },
     allAvailableIntegrations: [
-      makeRepoIntegrationJira(JiraDemoKey),
-      makeRepoIntegrationJira(JiraSecretKey)
+      new DemoJiraRemoteProject(JiraDemoKey),
+      new DemoJiraRemoteProject(JiraSecretKey)
     ],
     teamId: demoTeamId,
     userId
