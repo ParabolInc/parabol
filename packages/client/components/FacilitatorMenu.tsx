@@ -16,17 +16,26 @@ interface Props {
 
 const FacilitatorMenu = (props: Props) => {
   const {menuProps, meeting} = props
-  const {id: meetingId} = meeting
+  const {id: meetingId, facilitatorUserId, meetingMembers} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const promoteToFacilitator = () => {
+  const promoteViewerToFacilitator = () => {
     PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
   }
+  const promoteRandomPersonToFacilitator = () => {
+    const memberIdsWithoutCurrentFacilitator = meetingMembers.filter(({userId}) => userId != facilitatorUserId).map(({userId}) => userId)
+    const newFacilitatorId = memberIdsWithoutCurrentFacilitator[Math.floor(Math.random() * memberIdsWithoutCurrentFacilitator.length)]
+    PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: newFacilitatorId, meetingId})
+  }
   return (
-    <Menu ariaLabel={'Take the Facilitator role'} {...menuProps}>
+    <Menu ariaLabel={'Change the Facilitator role'} {...menuProps}>
       <MenuItem
-        label={<MenuItemLabel>{'Take the Facilitator role'}</MenuItemLabel>}
-        onClick={promoteToFacilitator}
+        label={<MenuItemLabel>{'I want to be the Facilitator!'}</MenuItemLabel>}
+        onClick={promoteViewerToFacilitator}
+      />
+      <MenuItem
+        label={<MenuItemLabel>{'Pick someone for me...'}</MenuItemLabel>}
+        onClick={promoteRandomPersonToFacilitator}
       />
     </Menu>
   )
@@ -36,6 +45,10 @@ export default createFragmentContainer(FacilitatorMenu, {
   meeting: graphql`
     fragment FacilitatorMenu_meeting on NewMeeting {
       id
+      facilitatorUserId
+      meetingMembers {
+        userId
+      }
     }
   `
 })
