@@ -1,6 +1,6 @@
 import {sendIntranet, signUp} from './common'
 
-// As of 01/11/2021, this test is not testing the AutoPauseUsers mutation
+// As of 01/11/2022, this test is not testing the AutoPauseUsers mutation
 // because there is no easy way to set the lastSeenAt field to a date in the past
 test('Autopause users who where never active', async () => {
   const {userId} = await signUp()
