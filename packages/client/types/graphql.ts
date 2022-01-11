@@ -49494,7 +49494,7 @@ export interface ITeamMember {
   /**
    * The integrations that the user would probably like to use
    */
-  suggestedIntegrations: ISuggestedIntegrationQueryPayload;
+  repoIntegrations: IRepoIntegrationQueryPayload;
 
   /**
    * Tasks owned by the team member
@@ -50171,10 +50171,10 @@ export const enum MeetingTypeEnum {
 }
 
 /**
- * The details associated with a task integrated with GitHub
+ * The details associated with the possible repo and project integrations
  */
-export interface ISuggestedIntegrationQueryPayload {
-  __typename: 'SuggestedIntegrationQueryPayload';
+export interface IRepoIntegrationQueryPayload {
+  __typename: 'RepoIntegrationQueryPayload';
   error: IStandardMutationError | null;
 
   /**

@@ -116,16 +116,16 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
+const makeRepoIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
   return {
-    __typename: 'SuggestedIntegrationJira',
+    __typename: 'RepoIntegrationJira',
     id: key,
     remoteProject: new DemoJiraRemoteProject(key),
     ...JiraProjectKeyLookup[key]
   }
 }
 
-const makeSuggestedIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
+const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
   __typename: 'GitHubRepo',
   id: `si:${nameWithOwner}`,
   ...GitHubProjectKeyLookup[nameWithOwner]
@@ -177,16 +177,13 @@ const initDemoTeamMember = (
       github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'},
       slack: initSlackAuth(userId)
     },
-    suggestedIntegrations: {
+    repoIntegrations: {
       hasMore: true,
-      items: [
-        makeSuggestedIntegrationJira(JiraDemoKey),
-        makeSuggestedIntegrationGitHub(GitHubDemoKey)
-      ]
+      items: [makeRepoIntegrationJira(JiraDemoKey), makeRepoIntegrationGitHub(GitHubDemoKey)]
     },
     allAvailableIntegrations: [
-      makeSuggestedIntegrationJira(JiraDemoKey),
-      makeSuggestedIntegrationJira(JiraSecretKey)
+      makeRepoIntegrationJira(JiraDemoKey),
+      makeRepoIntegrationJira(JiraSecretKey)
     ],
     teamId: demoTeamId,
     userId

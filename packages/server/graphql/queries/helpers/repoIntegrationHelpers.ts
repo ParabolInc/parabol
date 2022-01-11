@@ -1,6 +1,6 @@
 import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
-import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
+import makeRepoIntegrationId from 'parabol-client/utils/makeRepoIntegrationId'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -80,7 +80,7 @@ export const getTeamIntegrationsByTeamId = async (
       .filter((res) => permLookup[res.service] && (res.service !== 'jira' || res.projectKey))
       .map((item) => ({
         ...item,
-        id: makeSuggestedIntegrationId(item)
+        id: makeRepoIntegrationId(item)
       }))
   )
 }

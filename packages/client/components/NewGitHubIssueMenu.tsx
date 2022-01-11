@@ -9,12 +9,12 @@ import useForm from '~/hooks/useForm'
 import {MenuProps} from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import {NewGitHubIssueMenu_suggestedIntegrations} from '~/__generated__/NewGitHubIssueMenu_suggestedIntegrations.graphql'
+import {NewGitHubIssueMenu_repoIntegrations} from '~/__generated__/NewGitHubIssueMenu_repoIntegrations.graphql'
 import Icon from './Icon'
 import Menu from './Menu'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
+import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
 
 const NoResults = styled(MenuItemLabel)({
   color: PALETTE.SLATE_600,
@@ -64,7 +64,7 @@ const Input = styled('input')({
 interface Props {
   handleSelectNameWithOwner: (key: string) => void
   menuProps: MenuProps
-  suggestedIntegrations: NewGitHubIssueMenu_suggestedIntegrations
+  repoIntegrations: NewGitHubIssueMenu_repoIntegrations
   teamId: string
   userId: string
 }
@@ -75,8 +75,8 @@ const getValue = (item: {projectName?: string; nameWithOwner?: string}) => {
 }
 
 const NewGitHubIssueMenu = (props: Props) => {
-  const {handleSelectNameWithOwner, menuProps, suggestedIntegrations, teamId, userId} = props
-  const {hasMore, items} = suggestedIntegrations
+  const {handleSelectNameWithOwner, menuProps, repoIntegrations, teamId, userId} = props
+  const {hasMore, items} = repoIntegrations
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -128,18 +128,18 @@ const NewGitHubIssueMenu = (props: Props) => {
       )) ||
         null}
 
-      {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, service} = suggestedIntegration
+      {allItems.slice(0, 10).map((repoIntegration) => {
+        const {id, service} = repoIntegration
         if (service === 'github') {
-          const {nameWithOwner} = suggestedIntegration
+          const {nameWithOwner} = repoIntegration
           const onClick = () => {
             handleSelectNameWithOwner(nameWithOwner)
           }
           return (
-            <SuggestedIntegrationGitHubMenuItem
+            <RepoIntegrationGitHubMenuItem
               key={id}
               query={query}
-              suggestedIntegration={suggestedIntegration}
+              repoIntegration={repoIntegration}
               onClick={onClick}
             />
           )
@@ -151,15 +151,15 @@ const NewGitHubIssueMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(NewGitHubIssueMenu, {
-  suggestedIntegrations: graphql`
-    fragment NewGitHubIssueMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+  repoIntegrations: graphql`
+    fragment NewGitHubIssueMenu_repoIntegrations on RepoIntegrationQueryPayload {
       hasMore
       items {
         ... on _xGitHubRepository {
           id
           nameWithOwner
         }
-        ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
+        ...RepoIntegrationGitHubMenuItem_repoIntegration
       }
     }
   `

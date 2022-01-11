@@ -3,9 +3,9 @@ import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 import RepoIntegration from './RepoIntegration'
 
-const SuggestedIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'SuggestedIntegrationQueryPayload',
-  description: 'The details associated with a task integrated with GitHub',
+const RepoIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'RepoIntegrationQueryPayload',
+  description: 'The details associated with the possible repo and project integrations',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -22,4 +22,4 @@ const SuggestedIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>(
   })
 })
 
-export default SuggestedIntegrationQueryPayload
+export default RepoIntegrationQueryPayload

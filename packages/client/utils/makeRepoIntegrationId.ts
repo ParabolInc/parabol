@@ -1,4 +1,4 @@
-const makeSuggestedIntegrationId = (item) => {
+const makeRepoIntegrationId = (item) => {
   const {service} = item
   switch (service) {
     case 'github':
@@ -8,4 +8,4 @@ const makeSuggestedIntegrationId = (item) => {
   }
 }
 
-export default makeSuggestedIntegrationId
+export default makeRepoIntegrationId

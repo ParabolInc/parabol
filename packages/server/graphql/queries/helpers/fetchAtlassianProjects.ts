@@ -1,7 +1,7 @@
 import {JiraProject} from 'parabol-client/utils/AtlassianManager'
 import {DataLoaderWorker} from '../../graphql'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
+import makeRepoIntegrationId from 'parabol-client/utils/makeRepoIntegrationId'
 import {TaskServiceEnum} from '../../../database/types/Task'
 
 const fetchAtlassianProjects = async (
@@ -30,7 +30,7 @@ const fetchAtlassianProjects = async (
       const {cloudId, newProjects} = res
       const newItems = newProjects.map((project) => {
         // projectId/key is not globally unique, but a cloudId is
-        project.id = makeSuggestedIntegrationId({
+        project.id = makeRepoIntegrationId({
           ...project,
           projectKey: project.key,
           cloudId,

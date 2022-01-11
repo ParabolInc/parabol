@@ -112,13 +112,13 @@ const NewJiraIssueInput = (props: Props) => {
   const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
-  const {suggestedIntegrations} = teamMember!
+  const {repoIntegrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const {items} = suggestedIntegrations
-  const suggestedIntegration = items?.find((item) => item.key)
-  const cloudId = suggestedIntegration?.cloudId
-  const projectKey = suggestedIntegration?.key
+  const {items} = repoIntegrations
+  const repoIntegration = items?.find((item) => item.key)
+  const cloudId = repoIntegration?.cloudId
+  const projectKey = repoIntegration?.key
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
     MenuPosition.UPPER_LEFT
@@ -222,7 +222,7 @@ const NewJiraIssueInput = (props: Props) => {
         <NewJiraIssueMenu
           handleSelectProjectKey={handleSelectProjectKey}
           menuProps={menuProps}
-          suggestedIntegrations={suggestedIntegrations}
+          repoIntegrations={repoIntegrations}
           teamId={teamId}
           userId={userId}
         />
@@ -245,8 +245,8 @@ export default createFragmentContainer(NewJiraIssueInput, {
       }
       teamMember(teamId: $teamId) {
         ... on TeamMember {
-          suggestedIntegrations {
-            ...NewJiraIssueMenu_suggestedIntegrations
+          repoIntegrations {
+            ...NewJiraIssueMenu_repoIntegrations
             items {
               ... on JiraRemoteProject {
                 key

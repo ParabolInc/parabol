@@ -64,15 +64,15 @@ const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegra
     //   if (!userId) return
     //   const user = store.get(userId)
     //   if (!user || !integration) return
-    //   const suggestedIntegrations = user.getLinkedRecord('suggestedIntegrations', {teamId})
+    //   const repoIntegrations = user.getLinkedRecord('repoIntegrations', {teamId})
     //   const projectKey = integration.getValue('projectKey')
-    //   if (!suggestedIntegrations || !projectKey) return
-    //   const items = suggestedIntegrations.getLinkedRecords('items')
+    //   if (!repoIntegrations || !projectKey) return
+    //   const items = repoIntegrations.getLinkedRecords('items')
     //   if (!items) return
     //   const existingIntegration = items.find(
     //     (item) => item && item.getValue('projectKey') === projectKey
     //   )
-    //   const hasMore = suggestedIntegrations.getValue('hasMore')
+    //   const hasMore = repoIntegrations.getValue('hasMore')
     //   if (!existingIntegration || !hasMore) {
     //     const project = integration.getLinkedRecord('project')
     //     console.log('🚀  ~ project', project)
@@ -86,17 +86,17 @@ const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegra
     //       projectName,
     //       service: 'jira'
     //     } as const
-    //     const id = makeSuggestedIntegrationId(nextItem)
+    //     const id = makeRepoIntegrationId(nextItem)
     //     // the fallback is likely never used
     //     const latestIntegration =
     //       store.get(id) ||
-    //       createProxyRecord(store, 'SuggestedIntegrationJira', {
+    //       createProxyRecord(store, 'RepoIntegrationJira', {
     //         id,
     //         ...nextItem
     //       })
-    //     const nextSuggestedIntegrations = [latestIntegration, ...items].slice(0, hasMore ? 3 : 1)
-    //     suggestedIntegrations.setLinkedRecords(nextSuggestedIntegrations, 'items')
-    //     suggestedIntegrations.setValue(true, 'hasMore')
+    //     const nextRepoIntegrations = [latestIntegration, ...items].slice(0, hasMore ? 3 : 1)
+    //     repoIntegrations.setLinkedRecords(nextRepoIntegrations, 'items')
+    //     repoIntegrations.setValue(true, 'hasMore')
     //   }
     // },
     optimisticUpdater: (store) => {

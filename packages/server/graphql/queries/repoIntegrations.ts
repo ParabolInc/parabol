@@ -2,17 +2,17 @@ import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import SuggestedIntegrationQueryPayload from '../types/SuggestedIntegrationQueryPayload'
+import RepoIntegrationQueryPayload from '../types/RepoIntegrationQueryPayload'
 import fetchAllIntegrations from './helpers/fetchAllIntegrations'
 import {
   getPermsByTaskService,
   getTeamIntegrationsByTeamId,
   useOnlyUserIntegrations
-} from './helpers/suggestedIntegrationHelpers'
+} from './helpers/repoIntegrationHelpers'
 
 export default {
   description: 'The integrations that the user would probably like to use',
-  type: new GraphQLNonNull(SuggestedIntegrationQueryPayload),
+  type: new GraphQLNonNull(RepoIntegrationQueryPayload),
   resolve: async (
     {teamId, userId}: {teamId: string; userId: string},
     _args: unknown,

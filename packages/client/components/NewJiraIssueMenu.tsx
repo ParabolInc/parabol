@@ -9,12 +9,12 @@ import useForm from '~/hooks/useForm'
 import {MenuProps} from '~/hooks/useMenu'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import {NewJiraIssueMenu_suggestedIntegrations} from '~/__generated__/NewJiraIssueMenu_suggestedIntegrations.graphql'
+import {NewJiraIssueMenu_repoIntegrations} from '~/__generated__/NewJiraIssueMenu_repoIntegrations.graphql'
 import Icon from './Icon'
 import Menu from './Menu'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
+import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
 
 const NoResults = styled(MenuItemLabel)({
   color: PALETTE.SLATE_600,
@@ -64,7 +64,7 @@ const Input = styled('input')({
 interface Props {
   handleSelectProjectKey: (key: string) => void
   menuProps: MenuProps
-  suggestedIntegrations: NewJiraIssueMenu_suggestedIntegrations
+  repoIntegrations: NewJiraIssueMenu_repoIntegrations
   teamId: string
   userId: string
 }
@@ -75,8 +75,8 @@ const getValue = (item: {name?: string; nameWithOwner?: string}) => {
 }
 
 const NewJiraIssueMenu = (props: Props) => {
-  const {handleSelectProjectKey, menuProps, suggestedIntegrations, teamId, userId} = props
-  const {hasMore, items} = suggestedIntegrations
+  const {handleSelectProjectKey, menuProps, repoIntegrations, teamId, userId} = props
+  const {hasMore, items} = repoIntegrations
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -128,18 +128,18 @@ const NewJiraIssueMenu = (props: Props) => {
       )) ||
         null}
 
-      {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, __typename} = suggestedIntegration
+      {allItems.slice(0, 10).map((repoIntegration) => {
+        const {id, __typename} = repoIntegration
         if (__typename === 'JiraRemoteProject') {
-          const {key} = suggestedIntegration
+          const {key} = repoIntegration
           const onClick = () => {
             handleSelectProjectKey(key)
           }
           return (
-            <SuggestedIntegrationJiraMenuItem
+            <RepoIntegrationJiraMenuItem
               key={id}
               query={query}
-              suggestedIntegration={suggestedIntegration}
+              repoIntegration={repoIntegration}
               onClick={onClick}
             />
           )
@@ -151,8 +151,8 @@ const NewJiraIssueMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(NewJiraIssueMenu, {
-  suggestedIntegrations: graphql`
-    fragment NewJiraIssueMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+  repoIntegrations: graphql`
+    fragment NewJiraIssueMenu_repoIntegrations on RepoIntegrationQueryPayload {
       hasMore
       items {
         ... on JiraRemoteProject {
@@ -161,7 +161,7 @@ export default createFragmentContainer(NewJiraIssueMenu, {
           name
           key
         }
-        ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
+        ...RepoIntegrationJiraMenuItem_repoIntegration
       }
     }
   `
