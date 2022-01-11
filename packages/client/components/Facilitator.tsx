@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Facilitator_meeting} from '~/__generated__/Facilitator_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
@@ -96,7 +97,7 @@ const FacilitatorMenu = lazyPreload(() =>
 
 const Facilitator = (props: Props) => {
   const {meeting} = props
-  const {endedAt, facilitator} = meeting
+  const {endedAt, facilitatorUserId, meetingMembers, facilitator} = meeting
   const {user, picture, preferredName} = facilitator
   // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
   const isConnected = user?.isConnected ?? false
@@ -106,7 +107,9 @@ const Facilitator = (props: Props) => {
       isDropdown: true
     }
   )
-  const isReadOnly = isDemoRoute() || !!endedAt
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isReadOnly = isDemoRoute() || (viewerId === facilitatorUserId && meetingMembers.length == 1 && meetingMembers[0].userId === viewerId) || !!endedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
@@ -137,6 +140,10 @@ export default createFragmentContainer(Facilitator, {
     fragment Facilitator_meeting on NewMeeting {
       ...FacilitatorMenu_meeting
       endedAt
+      facilitatorUserId
+      meetingMembers {
+        userId
+      }
       facilitator {
         picture
         preferredName
