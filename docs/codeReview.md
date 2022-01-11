@@ -16,7 +16,6 @@ Review progress is tracked in the [Sprint Board](https://github.com/orgs/Parabol
       - refactoring of existing code, e.g. While you're in here, could you fix xyz?
     - +2 kudos
     e.g. nice work here, I learnt something, good find
-    - refactor? ie. the author's doing things in a part of the code that could be improved (for example changing from fragment containers to relay hooks). Then it’s the author’s responsibility to make a decision to either fix it (if it’s simple enough like 10 min work, or create a separate task from a given comment)
 - Final review is approval if there are no negative comments, otherwise change requested
     - Changes requested? Move ticket to self-review
     - Approved? Move to maintainer-review
