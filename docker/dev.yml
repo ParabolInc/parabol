@@ -58,6 +58,8 @@ services:
       - REDIS_HOSTS=local:redis:6379
     ports:
       - "8082:8081"
+    networks:
+      parabol-network:
 networks:
   parabol-network:
 volumes:
