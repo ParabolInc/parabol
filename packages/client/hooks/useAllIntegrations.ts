@@ -24,12 +24,12 @@ const gqlQuery = graphql`
             cloudId
             ...TaskFooterIntegrateMenuListItem @relay(mask: false)
           }
-          # ... on SuggestedIntegrationGitHub {
-          #   __typename
-          #   id
-          #   nameWithOwner
-          #   ...TaskFooterIntegrateMenuListItem @relay(mask: false)
-          # }
+          ... on GitHubRepo {
+            __typename
+            id
+            nameWithOwner
+            ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+          }
         }
       }
     }
@@ -39,7 +39,7 @@ const gqlQuery = graphql`
 const getValue = (item: FetchedItems[0]) => {
   if (item.__typename == 'JiraRemoteProject') {
     return item.key.toLowerCase()
-  } else if (item.__typename === 'SuggestedIntegrationGitHub') {
+  } else if (item.__typename === 'GitHubRepo') {
     return item.nameWithOwner.toLowerCase()
   }
   return ''

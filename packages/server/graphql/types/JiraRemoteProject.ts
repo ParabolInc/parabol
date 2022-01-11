@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import JiraProjectId from '../../../client/shared/gqlIds/JiraProjectId'
+import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import defaultJiraProjectAvatar from '../../utils/defaultJiraProjectAvatar'
 import {GQLContext} from '../graphql'
@@ -11,8 +11,9 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteProject',
   description: 'A project fetched from Jira in real time',
   interfaces: () => [RepoIntegration],
+  isTypeOf: ({cloudId, key}) => !!(cloudId && key),
   fields: () => ({
-    // ...repoIntegrationFields(),
+    ...repoIntegrationFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       resolve: ({cloudId, key}) => JiraProjectId.join(cloudId, key)

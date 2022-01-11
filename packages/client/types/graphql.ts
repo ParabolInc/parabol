@@ -49535,7 +49535,7 @@ export interface ITasksOnTeamMemberArguments {
   after?: any | null;
 }
 
-export type RepoIntegration = IJiraRemoteProject | ISuggestedIntegrationGitHub;
+export type RepoIntegration = IJiraRemoteProject | IGitHubRepo;
 
 export interface IRepoIntegration {
   __typename: 'RepoIntegration';
@@ -54917,14 +54917,14 @@ export interface IActionMeetingSettings {
 }
 
 /**
- * The details associated with a task integrated with GitHub
+ * A repo fetched from GitHub in real time
  */
-export interface ISuggestedIntegrationGitHub {
-  __typename: 'SuggestedIntegrationGitHub';
+export interface IGitHubRepo {
+  __typename: 'GitHubRepo';
   id: string;
 
   /**
-   * The name of the repo. Follows format of OWNER/NAME
+   * The unique name of the GitHub repository
    */
   nameWithOwner: string;
 }

@@ -142,7 +142,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (service === 'github') {
+        if (__typename === 'GitHubRepo') {
           const onClick = () => {
             const {nameWithOwner} = suggestedIntegration
             const variables = {nameWithOwner, taskId}
@@ -177,11 +177,12 @@ graphql`
       key
       name
     }
-    # ... on SuggestedIntegrationGitHub {
-    #   nameWithOwner
-    # }
+    ... on GitHubRepo {
+      __typename
+      nameWithOwner
+    }
     ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
-    # ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
+    ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
   }
 `
 

@@ -14,9 +14,9 @@ const fetchAllIntegrations = async (
     fetchAtlassianProjects(dataLoader, teamId, userId),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info)
   ])
-  const allIntegrations = results.flatMap((result) =>
-    result.status === 'fulfilled' ? result.value : []
-  )
+  const allIntegrations = results.flatMap((result) => {
+    return result.status === 'fulfilled' ? result.value : []
+  })
 
   const getValue = (item) => (item.nameWithOwner || item.name)?.toLowerCase()
   allIntegrations.sort((a, b) => {

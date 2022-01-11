@@ -9,6 +9,7 @@ import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
 import EstimatePhase from './types/EstimatePhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
+import GitHubRepo from './types/GitHubRepo'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
@@ -23,7 +24,6 @@ import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
 import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
-import SuggestedIntegrationGitHub from './types/SuggestedIntegrationGitHub'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
@@ -63,7 +63,7 @@ const rootTypes = [
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
   ActionMeetingSettings,
-  SuggestedIntegrationGitHub,
+  GitHubRepo,
   Comment
 ]
 export default rootTypes

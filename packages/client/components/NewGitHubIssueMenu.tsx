@@ -155,7 +155,7 @@ export default createFragmentContainer(NewGitHubIssueMenu, {
     fragment NewGitHubIssueMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
       hasMore
       items {
-        ... on SuggestedIntegrationGitHub {
+        ... on GitHubRepo {
           id
           nameWithOwner
         }

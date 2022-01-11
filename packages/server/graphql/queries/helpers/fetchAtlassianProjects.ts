@@ -1,7 +1,6 @@
 import {JiraProject} from 'parabol-client/utils/AtlassianManager'
 import {DataLoaderWorker} from '../../graphql'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import makeJiraProjectName from 'parabol-client/utils/makeJiraProjectName'
 import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
 import {TaskServiceEnum} from '../../../database/types/Task'
 

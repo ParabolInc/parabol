@@ -120,7 +120,7 @@ const NewGitHubIssueInput = (props: Props) => {
             suggestedIntegrations {
               ...NewGitHubIssueMenu_suggestedIntegrations
               items {
-                ... on SuggestedIntegrationGitHub {
+                ... on GitHubRepo {
                   id
                   nameWithOwner
                 }

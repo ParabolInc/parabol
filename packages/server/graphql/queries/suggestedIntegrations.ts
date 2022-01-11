@@ -69,18 +69,12 @@ export default {
     allIntegrations.forEach((integration) => {
       if (idSet.has(integration.id)) return
       idSet.add(integration.id)
-      return userIntegrationIdsForTeam.includes(integration.id)
+      userIntegrationIdsForTeam.includes(integration.id)
         ? orderedIntegrations.unshift(integration)
         : orderedIntegrations.push(integration)
     })
 
-    // console.log('🚀  ~ ------', {
-    //   recentUserIntegrations,
-    //   teamIntegrationsByTeamId,
-    //   userIntegrationIdsForTeam,
-    //   orderedIntegrations
-    // })
-    return {hasMore: false, items: [...orderedIntegrations, userId, teamId, cloudId]}
+    return {hasMore: false, items: orderedIntegrations}
     // return {items: orderedIntegrations, hasMore: false}
 
     // if other users have items that the viewer can't access, revert back to fetching everything
