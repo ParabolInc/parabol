@@ -17,13 +17,13 @@ export interface IGetUserIdsToPauseQueryQuery {
   result: IGetUserIdsToPauseQueryResult;
 }
 
-const getUserIdsToPauseQueryIR: any = {"name":"getUserIdsToPauseQuery","params":[{"name":"activeThreshold","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":128,"b":142,"line":5,"col":69}]}}],"usedParamSet":{"activeThreshold":true},"statement":{"body":"SELECT id FROM \"User\"\nWHERE inactive = false AND (\"lastSeenAt\" IS NULL OR \"lastSeenAt\" <= :activeThreshold)","loc":{"a":37,"b":143,"line":4,"col":0}}};
+const getUserIdsToPauseQueryIR: any = {"name":"getUserIdsToPauseQuery","params":[{"name":"activeThreshold","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":103,"b":117,"line":5,"col":44}]}}],"usedParamSet":{"activeThreshold":true},"statement":{"body":"SELECT id FROM \"User\"\nWHERE inactive = false AND \"lastSeenAt\" <= :activeThreshold","loc":{"a":37,"b":117,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id FROM "User"
- * WHERE inactive = false AND ("lastSeenAt" IS NULL OR "lastSeenAt" <= :activeThreshold)
+ * WHERE inactive = false AND "lastSeenAt" <= :activeThreshold
  * ```
  */
 export const getUserIdsToPauseQuery = new PreparedQuery<IGetUserIdsToPauseQueryParams,IGetUserIdsToPauseQueryResult>(getUserIdsToPauseQueryIR);

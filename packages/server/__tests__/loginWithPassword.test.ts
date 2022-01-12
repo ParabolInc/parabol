@@ -22,6 +22,7 @@ test('Login after signup', async () => {
             picture
             preferredName
             createdAt
+            lastSeenAt
           }
         }
         acceptTeamInvitation(invitationToken: $invitationToken) {
@@ -58,4 +59,7 @@ test('Login after signup', async () => {
       }
     }
   })
+  const lastSeenAt = Date.parse(login.data.loginWithPassword.user.lastSeenAt)
+  expect(lastSeenAt).toBeGreaterThan(Date.now() - 1000 * 60) // lastSeenAt should be more recent than 1 minute ago
+  expect(lastSeenAt).toBeLessThan(Date.now())
 })
