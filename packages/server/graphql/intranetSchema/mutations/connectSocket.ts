@@ -57,7 +57,8 @@ export default {
     if (!datesAreOnSameDay) {
       await updateUser(
         {
-          inactive: false
+          inactive: false,
+          lastSeenAt: now
         },
         userId
       )
