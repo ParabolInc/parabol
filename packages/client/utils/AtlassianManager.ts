@@ -700,15 +700,40 @@ export default abstract class AtlassianManager {
     if (firstValidUpdateIdx === -1) return null
     return possibleFields[firstValidUpdateIdx]
   }
+
   async updateStoryPoints(
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
     fieldId: string
   ) {
-    const payload = {
-      fields: {
-        [fieldId]: storyPoints
+    // according to Jira docs fields related to the time tracking have to be set in a different way than other fields
+    // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
+    // more context: https://github.com/ParabolInc/parabol/issues/5705#issuecomment-1007501068
+    let payload: Record<string, any>
+    const timeTrackingFieldId = 'timetracking'
+    const timeTrackingFieldLookup = {
+      timeoriginalestimate: 'originalEstimate',
+      timeestimate: 'remainingEstimate'
+    }
+    const isTimeTrackingField = ['timeoriginalestimate', 'timeestimate'].includes(fieldId)
+    if (isTimeTrackingField) {
+      payload = {
+        update: {
+          [timeTrackingFieldId]: [
+            {
+              set: {
+                [timeTrackingFieldLookup[fieldId]]: `${storyPoints}h`
+              }
+            }
+          ]
+        }
+      }
+    } else {
+      payload = {
+        fields: {
+          [fieldId]: storyPoints
+        }
       }
     }
     const res = await this.put(
@@ -721,10 +746,11 @@ export default abstract class AtlassianManager {
         'The user who added this issue was removed from Jira. Please remove & re-add the issue'
       )
     }
-    if (res.message.startsWith(fieldId)) {
-      if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
-      }
+    if (
+      res.message.startsWith(isTimeTrackingField ? timeTrackingFieldId : fieldId) &&
+      res.message.includes('is not on the appropriate screen')
+    ) {
+      throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
     }
     throw res
   }
