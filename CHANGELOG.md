@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.43.0 2022-Jan-12
+
+### Fixed
+
+- Fix demo retrospective task integration menu (#5827)
+- Fix undefined in team invitation emails (@5853)
+
 ## 6.42.0 2022-Jan-06
 
 ### Changed
