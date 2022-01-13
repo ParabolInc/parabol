@@ -18,6 +18,9 @@ const loginWithPassword = {
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
     async (_source: unknown, {email, password}: {email: string; password: string}, context) => {
+      if (process.env.AUTH_INTERNAL_ENABLED !== 'true') {
+        return {error: {message: 'Log in with password is disabled'}}
+      }
       const loginAttempt = await attemptLogin(email, password, context.ip)
       if (loginAttempt.userId) {
         context.authToken = loginAttempt.authToken
