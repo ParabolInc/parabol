@@ -237,7 +237,7 @@ export const enum NavSidebar {
 }
 
 export const enum NewMeeting {
-  ILLUSTRATION_WIDTH = 400,
+  ILLUSTRATION_WIDTH = 450,
   CONTROLS_WIDTH = 300
 }
 export const enum Pricing {

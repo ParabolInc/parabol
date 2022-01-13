@@ -308,7 +308,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
       }
     },
     lastSeenAt: {
-      type: GraphQLISO8601Type,
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The last day the user connected via websocket or navigated to a common area'
     },
     lastSeenAtURLs: {
