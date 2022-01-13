@@ -39,7 +39,7 @@ const gqlQuery = graphql`
 `
 
 const getValue = (item: FetchedItems[0]) => {
-  if (item.__typename == 'SuggestedIntegrationJira') {
+  if (item.__typename === 'SuggestedIntegrationJira') {
     return item.projectKey.toLowerCase()
   } else if (item.__typename === 'SuggestedIntegrationGitHub') {
     return item.nameWithOwner.toLowerCase()

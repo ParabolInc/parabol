@@ -379,7 +379,7 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if (res.status == 204) return null
+    if (res.status === 204) return null
     const error = (await res.json()) as AtlassianError | JiraError
     if ('message' in error) {
       return new Error(error.message)
@@ -404,7 +404,7 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if (res.status == 204) return null
+    if (res.status === 204) return null
     const error = (await res.json()) as AtlassianError | JiraError
     if ('message' in error) {
       return new Error(error.message)
