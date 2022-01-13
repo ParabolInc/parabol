@@ -1,7 +1,8 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
+import {isNotNull} from '../../utils/predicates'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddIntegrationProviderInput, {
@@ -35,22 +36,43 @@ const addIntegrationProvider = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) {
+    if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
       return {error: {message: 'Must be on the team that created the provider'}}
     }
 
     // VALIDATION
-    const {oAuth2ProviderMetadataInput, webhookProviderMetadataInput, ...rest} = input
-    if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {
-      return {error: {message: 'Provided 2 metadata types, expected 1'}}
+    const {
+      authStrategy,
+      oAuth1ProviderMetadataInput,
+      oAuth2ProviderMetadataInput,
+      webhookProviderMetadataInput,
+      ...rest
+    } = input
+
+    if (authStrategy === 'oauth1' && !oAuth1ProviderMetadataInput) {
+      return {error: {message: 'Auth strategy oauth1 requires oAuth1ProviderMetadataInput'}}
     }
-    if (!oAuth2ProviderMetadataInput && !webhookProviderMetadataInput) {
-      return {error: {message: 'Provided 0 metadata types, expected 1'}}
+    if (authStrategy === 'oauth2' && !oAuth2ProviderMetadataInput) {
+      return {error: {message: 'Auth strategy oauth2 requires oAuth2ProviderMetadataInput'}}
+    }
+    if (authStrategy === 'webhook' && !webhookProviderMetadataInput) {
+      return {error: {message: 'Auth strategy webhook requires webhookProviderMetadataInput'}}
+    }
+    if (
+      [
+        oAuth1ProviderMetadataInput,
+        oAuth2ProviderMetadataInput,
+        webhookProviderMetadataInput
+      ].filter(isNotNull).length !== 1
+    ) {
+      return {error: {message: 'Exactly 1 metadata provider is expected'}}
     }
 
     // RESOLUTION
     const providerId = await upsertIntegrationProvider({
+      authStrategy,
       ...rest,
+      ...oAuth1ProviderMetadataInput,
       ...oAuth2ProviderMetadataInput,
       ...webhookProviderMetadataInput
     })

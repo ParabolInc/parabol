@@ -1,11 +1,11 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getSharedIntegrationProvidersQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderAuthStrategyEnum = 'oauth2' | 'pat' | 'webhook';
+export type IntegrationProviderAuthStrategyEnum = 'oauth1' | 'oauth2' | 'pat' | 'webhook';
 
 export type IntegrationProviderScopeEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost';
 
 /** 'GetSharedIntegrationProvidersQuery' parameters type */
 export interface IGetSharedIntegrationProvidersQueryParams {
@@ -29,6 +29,8 @@ export interface IGetSharedIntegrationProvidersQueryResult {
   clientSecret: string | null;
   serverBaseUrl: string | null;
   webhookUrl: string | null;
+  consumerKey: string | null;
+  privateKey: string | null;
 }
 
 /** 'GetSharedIntegrationProvidersQuery' query type */

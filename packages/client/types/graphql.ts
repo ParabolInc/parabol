@@ -48403,12 +48403,14 @@ export interface IIntegrationProvider {
 export const enum IntegrationProviderServiceEnum {
   gitlab = 'gitlab',
   mattermost = 'mattermost',
+  jiraServer = 'jiraServer',
 }
 
 /**
  * The kind of token provided by the service
  */
 export const enum IntegrationProviderAuthStrategyEnum {
+  oauth1 = 'oauth1',
   oauth2 = 'oauth2',
   pat = 'pat',
   webhook = 'webhook',
@@ -60049,6 +60051,11 @@ export interface IAddIntegrationProviderInput {
   webhookProviderMetadataInput?: IIntegrationProviderMetadataInputWebhook | null;
 
   /**
+   * OAuth1 provider metadata, has to be non-null if token type is OAuth1, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+   */
+  oAuth1ProviderMetadataInput?: IIntegrationProviderMetadataInputOAuth1 | null;
+
+  /**
    * OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
    */
   oAuth2ProviderMetadataInput?: IIntegrationProviderMetadataInputOAuth2 | null;
@@ -60070,6 +60077,26 @@ export interface IIntegrationProviderMetadataInputWebhook {
    * Webhook URL to be used by the provider
    */
   webhookUrl: any;
+}
+
+/**
+ * OAuth1 provider metadata
+ */
+export interface IIntegrationProviderMetadataInputOAuth1 {
+  /**
+   * The base URL used to access the provider
+   */
+  serverBaseUrl: any;
+
+  /**
+   * The client key to give to the provider
+   */
+  consumerKey: string;
+
+  /**
+   * Private key of the generate private/public key pair
+   */
+  privateKey: string;
 }
 
 /**
