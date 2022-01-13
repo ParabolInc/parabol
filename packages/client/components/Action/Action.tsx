@@ -63,15 +63,16 @@ const Action = memo(() => {
               component={DemoMeeting}
             />
             <Route path='/retrospective-demo-summary/:urlAction?' component={DemoSummary} />
-            <Route
+            {process.env.AUTH_INTERNAL_ENABLED &&
+              <Route
               exact
               path={`/forgot-password`}
               render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
-            />
-            <Route
+            />}
+            {process.env.AUTH_INTERNAL_ENABLED && <Route
               path={`/forgot-password/submitted`}
               render={(p) => <AuthenticationPage {...p} page={`forgot-password/submitted`} />}
-            />
+            />}
             <Route
               path='/verify-email/:verificationToken/:invitationToken?'
               component={VerifyEmail}

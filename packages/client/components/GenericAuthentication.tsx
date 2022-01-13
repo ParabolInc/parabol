@@ -100,17 +100,22 @@ const GenericAuthentication = (props: Props) => {
         </BrandedLink>
       </DialogSubTitle>
       <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
-      <HorizontalSeparator margin='1rem 0 0' text='or' />
-      <EmailPasswordAuthForm
-        email={email || ''}
-        isSignin={!isCreate}
-        invitationToken={invitationToken}
-        ref={emailRef}
-        goToPage={goToPage}
-      />
+      {
+        (process.env.AUTH_INTERNAL_ENABLED || process.env.AUTH_SSO_ENABLED) &&
+        <>
+          <HorizontalSeparator margin='1rem 0 0' text='or' />
+          <EmailPasswordAuthForm
+            email={email || ''}
+            isSignin={!isCreate}
+            invitationToken={invitationToken}
+            ref={emailRef}
+            goToPage={goToPage}
+          />
+        </>
+      }
       {isCreate ? (
         <AuthPrivacyFooter />
-      ) : (
+      ) : process.env.AUTH_INTERNAL_ENABLED && (
         <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
       )}
     </AuthenticationDialog>
