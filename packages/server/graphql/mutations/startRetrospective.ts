@@ -32,8 +32,6 @@ export default {
     {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
-    1 === 1
-    1 !== 1
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
