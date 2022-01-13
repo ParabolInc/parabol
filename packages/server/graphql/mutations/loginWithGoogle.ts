@@ -43,6 +43,9 @@ const loginWithGoogle = {
       context: GQLContext
     ) => {
       // VALIDATION
+      if (process.env.AUTH_GOOGLE_ENABLED !== 'true') {
+        return {error: {message: 'Sign up or log in using Google is disabled'}}
+      }
       const manager = await GoogleServerManager.init(code)
       const {id} = manager
       if (!id) {

@@ -99,19 +99,20 @@ const GenericAuthentication = (props: Props) => {
           {counterAction}
         </BrandedLink>
       </DialogSubTitle>
-      <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
+      {process.env.AUTH_GOOGLE_ENABLED && <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />}
+      {
+        (process.env.AUTH_GOOGLE_ENABLED && (process.env.AUTH_INTERNAL_ENABLED || process.env.AUTH_SSO_ENABLED)) &&
+        <HorizontalSeparator margin='1rem 0 0' text='or' />
+      }
       {
         (process.env.AUTH_INTERNAL_ENABLED || process.env.AUTH_SSO_ENABLED) &&
-        <>
-          <HorizontalSeparator margin='1rem 0 0' text='or' />
-          <EmailPasswordAuthForm
-            email={email || ''}
-            isSignin={!isCreate}
-            invitationToken={invitationToken}
-            ref={emailRef}
-            goToPage={goToPage}
-          />
-        </>
+        <EmailPasswordAuthForm
+          email={email || ''}
+          isSignin={!isCreate}
+          invitationToken={invitationToken}
+          ref={emailRef}
+          goToPage={goToPage}
+        />
       }
       {isCreate ? (
         <AuthPrivacyFooter />
