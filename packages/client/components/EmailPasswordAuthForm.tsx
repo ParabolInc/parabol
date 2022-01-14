@@ -252,7 +252,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}{isSSOOnly ? " with SSO" : ""}
         </Button>
       </Form>
-      {!isSSOOnly &&
+      {process.env.AUTH_SSO_ENABLED && process.env.AUTH_INTERNAL_ENABLED &&
         <UseSSO onClick={toggleSSO}>
           {`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}
         </UseSSO>
