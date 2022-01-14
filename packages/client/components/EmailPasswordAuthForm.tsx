@@ -95,7 +95,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
   const [ssoDomain, setSSODomain] = useState('')
-  const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
+  const {submitMutation, onCompleted, submitting, error, setError, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {fields, onChange, setDirtyField, validateField} = useForm({
@@ -194,6 +194,10 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     const {value: email} = emailRes
     const isSSO = await tryLoginWithSSO(email)
     if (isSSO || passwordRes.error) return
+    if (isSSOOnly && !isSSO) {
+      setError(new Error('This email is not valid against your SSO provider'))
+      return
+    }
     const {value: password} = passwordRes
     submitMutation()
     if (isSignin) {
