@@ -14,10 +14,12 @@ import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
+import AddTeamMemberIntegrationAuthMutation from '../../../../mutations/AddTeamMemberIntegrationAuthMutation'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
+import {AddIntegrationProviderMutationResponse} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key
@@ -137,6 +139,18 @@ const MattermostPanel = (props: Props) => {
         {onError, onCompleted}
       )
     } else {
+      const handleCompleted = (res: AddIntegrationProviderMutationResponse) => {
+        const {addIntegrationProvider} = res
+        const {provider} = addIntegrationProvider
+        if (!provider) return
+        const {id: providerId} = provider
+        AddTeamMemberIntegrationAuthMutation(
+          atmosphere,
+          {providerId, teamId},
+          {onError, onCompleted}
+        )
+      }
+
       AddIntegrationProviderMutation(
         atmosphere,
         {
@@ -144,10 +158,13 @@ const MattermostPanel = (props: Props) => {
             scope: 'team',
             service: 'mattermost',
             teamId,
-            authStrategy: 'webhook'
+            authStrategy: 'webhook',
+            webhookProviderMetadataInput: {
+              webhookUrl
+            }
           }
         },
-        {onError, onCompleted}
+        {onError, onCompleted: handleCompleted}
       )
     }
   }

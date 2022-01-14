@@ -4,14 +4,14 @@ import {
   upsertTeamMemberIntegrationAuthQuery
 } from './generated/upsertTeamMemberIntegrationAuthQuery'
 
-interface ITeamMemberIntegrationAuthWebhookInput {
+interface ITeamMemberIntegrationAuthBaseInput {
   service: IntegrationProviderServiceEnum
   providerId: number
   teamId: string
   userId: string
 }
 
-interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegrationAuthWebhookInput {
+export interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegrationAuthBaseInput {
   accessToken: string
   refreshToken: string
   scopes: string
@@ -19,7 +19,7 @@ interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegrationAu
 
 type ITeamMemberIntegrationAuthInput =
   | ITeamMemberIntegrationAuthOAuth2Input
-  | ITeamMemberIntegrationAuthWebhookInput
+  | ITeamMemberIntegrationAuthBaseInput
 
 const upsertTeamMemberIntegrationAuth = async (auth: ITeamMemberIntegrationAuthInput) => {
   return upsertTeamMemberIntegrationAuthQuery.run({auth} as any, getPg())

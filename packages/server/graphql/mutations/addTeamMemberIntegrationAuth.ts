@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
-import {TIntegrationProvider} from '../../postgres/queries/getIntegrationProvidersByIds'
 import upsertTeamMemberIntegrationAuth from '../../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -9,21 +8,10 @@ import {GQLContext} from '../graphql'
 import AddTeamMemberIntegrationAuthPayload from '../types/AddTeamMemberIntegrationAuthPayload'
 import GraphQLURLType from '../types/GraphQLURLType'
 
-const createTokenMetadata = async (
-  provider: TIntegrationProvider,
-  oauthCodeOrPat: string,
-  redirectUri: string
-) => {
-  const {authStrategy, service} = provider
-  if (authStrategy === 'oauth2') {
-    if (service === 'gitlab') {
-      const {clientId, clientSecret, serverBaseUrl} = provider
-      const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-      const res = await manager.authorize(oauthCodeOrPat, redirectUri)
-      return res
-    }
-  }
-  return {} as Record<string, never>
+interface OAuth2Auth {
+  accessToken: string
+  refreshToken: string
+  scopes: string
 }
 
 const addTeamMemberIntegrationAuth = {
@@ -34,14 +22,16 @@ const addTeamMemberIntegrationAuth = {
     providerId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    oauthCodeOrPat: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
     },
+    oauthCodeOrPat: {
+      type: GraphQLID,
+      description: 'The OAuth2 code or personal access token. Null for webhook auth'
+    },
     redirectUri: {
-      type: new GraphQLNonNull(GraphQLURLType)
+      type: GraphQLURLType,
+      description: 'The URL the OAuth2 token will be sent to. Null for webhook auth'
     }
   },
   resolve: async (
@@ -51,7 +41,12 @@ const addTeamMemberIntegrationAuth = {
       oauthCodeOrPat,
       teamId,
       redirectUri
-    }: {providerId: string; oauthCodeOrPat: string; teamId: string; redirectUri: string},
+    }: {
+      providerId: string
+      oauthCodeOrPat: string | null
+      teamId: string
+      redirectUri: string | null
+    },
     context: GQLContext
   ) => {
     const {authToken, dataLoader} = context
@@ -74,11 +69,32 @@ const addTeamMemberIntegrationAuth = {
     }
 
     // VALIDATION
-    const tokenMetadata = await createTokenMetadata(
-      integrationProvider,
-      oauthCodeOrPat,
-      redirectUri
-    )
+    const {authStrategy, service, scope} = integrationProvider
+    if (scope === 'team') {
+      if (teamId !== integrationProvider.teamId) {
+        return {error: {message: 'teamId mismatch'}}
+      }
+    } else if (scope === 'org' && teamId !== integrationProvider.teamId) {
+      const [providerTeam, authTeam] = await Promise.all([
+        dataLoader.get('teams').load(integrationProvider.teamId),
+        dataLoader.get('teams').load(teamId)
+      ])
+      if (providerTeam.orgId !== authTeam.orgId) {
+        return {error: {message: 'provider not available for this team'}}
+      }
+    }
+
+    let tokenMetadata: OAuth2Auth | Error | undefined = undefined
+    if (authStrategy === 'oauth2') {
+      if (!oauthCodeOrPat || !redirectUri)
+        return {error: {message: 'Missing OAuth2 code or redirect URI'}}
+      if (service === 'gitlab') {
+        const {clientId, clientSecret, serverBaseUrl} = integrationProvider
+        const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
+      }
+    }
+
     if (tokenMetadata instanceof Error) {
       return standardError(tokenMetadata, {
         userId: viewerId
@@ -86,7 +102,6 @@ const addTeamMemberIntegrationAuth = {
     }
 
     // RESOLUTION
-    const {service} = integrationProvider
     await upsertTeamMemberIntegrationAuth({
       ...tokenMetadata,
       providerId: providerDbId,

@@ -15,9 +15,9 @@ graphql`
 const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID!
-    $oauthCodeOrPat: ID!
+    $oauthCodeOrPat: ID
     $teamId: ID!
-    $redirectUri: URL!
+    $redirectUri: URL
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId

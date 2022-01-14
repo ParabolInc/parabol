@@ -48298,7 +48298,7 @@ export interface IIntegrationProviderOAuth2 {
   id: string;
 
   /**
-   * The team that the token is linked to
+   * The team that created the provider. "aGhostTeam" if global
    */
   teamId: string;
 
@@ -48313,12 +48313,12 @@ export interface IIntegrationProviderOAuth2 {
   updatedAt: any;
 
   /**
-   * The service this provider is associated with
+   * The name of the integration service (GitLab, Mattermost, etc)
    */
   service: IntegrationProviderServiceEnum;
 
   /**
-   * The kind of token used by this provider
+   * The kind of token used by this provider (OAuth2, PAT, Webhook)
    */
   authStrategy: IntegrationProviderAuthStrategyEnum;
 
@@ -48362,7 +48362,7 @@ export interface IIntegrationProvider {
   id: string;
 
   /**
-   * The team that the token is linked to
+   * The team that created the provider. "aGhostTeam" if global
    */
   teamId: string;
 
@@ -48377,12 +48377,12 @@ export interface IIntegrationProvider {
   updatedAt: any;
 
   /**
-   * The service this provider is associated with
+   * The name of the integration service (GitLab, Mattermost, etc)
    */
   service: IntegrationProviderServiceEnum;
 
   /**
-   * The kind of token used by this provider
+   * The kind of token used by this provider (OAuth2, PAT, Webhook)
    */
   authStrategy: IntegrationProviderAuthStrategyEnum;
 
@@ -48435,7 +48435,7 @@ export interface IIntegrationProviderWebhook {
   id: string;
 
   /**
-   * The team that the token is linked to
+   * The team that created the provider. "aGhostTeam" if global
    */
   teamId: string;
 
@@ -48450,12 +48450,12 @@ export interface IIntegrationProviderWebhook {
   updatedAt: any;
 
   /**
-   * The service this provider is associated with
+   * The name of the integration service (GitLab, Mattermost, etc)
    */
   service: IntegrationProviderServiceEnum;
 
   /**
-   * The kind of token used by this provider
+   * The kind of token used by this provider (OAuth2, PAT, Webhook)
    */
   authStrategy: IntegrationProviderAuthStrategyEnum;
 
@@ -50330,7 +50330,7 @@ export interface IMattermostIntegration {
 }
 
 /**
- * An integration token that connects via Webhook
+ * An integration authorization that connects via Webhook auth strategy
  */
 export interface ITeamMemberIntegrationAuthWebhook {
   __typename: 'TeamMemberIntegrationAuthWebhook';
@@ -56167,7 +56167,7 @@ export interface IMutation {
   createPoll: CreatePollPayload;
 
   /**
-   * Add integration token material to the team, supported by the GitLab integration
+   * Add an integration authorization for a specific team member
    */
   addTeamMemberIntegrationAuth: AddTeamMemberIntegrationAuthPayload;
 
@@ -57357,9 +57357,17 @@ export interface ICreatePollOnMutationArguments {
 
 export interface IAddTeamMemberIntegrationAuthOnMutationArguments {
   providerId: string;
-  oauthCodeOrPat: string;
   teamId: string;
-  redirectUri: any;
+
+  /**
+   * The OAuth2 code or personal access token. Null for webhook auth
+   */
+  oauthCodeOrPat?: string | null;
+
+  /**
+   * The URL the OAuth2 token will be sent to. Null for webhook auth
+   */
+  redirectUri?: any | null;
 }
 
 export interface IAddIntegrationProviderOnMutationArguments {
