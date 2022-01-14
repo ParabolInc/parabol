@@ -90,7 +90,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
   const isSSODefault = Boolean(params.get('sso'))
-  const [isSSO, setIsSSO] = useState(isSSODefault)
+  const isSSOOnly = !!process.env.AUTH_SSO_ENABLED && !!!process.env.AUTH_INTERNAL_ENABLED
+  const [isSSO, setIsSSO] = useState(isSSODefault || isSSOOnly)
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
   const [ssoDomain, setSSODomain] = useState('')
@@ -231,22 +232,27 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
               onBlur={handleBlur}
             />
           </FieldBlock>
-          <FieldBlock isSSO={isSSO}>
-            <PasswordInputField
-              autoFocus={hasEmail}
-              {...fields.password}
-              onChange={onChange}
-              onBlur={handleBlur}
-            />
-          </FieldBlock>
+          {
+            process.env.AUTH_INTERNAL_ENABLED &&
+            <FieldBlock isSSO={isSSO}>
+              <PasswordInputField
+                autoFocus={hasEmail}
+                {...fields.password}
+                onChange={onChange}
+                onBlur={handleBlur}
+              />
+            </FieldBlock>
+          }
         </FieldGroup>
         <Button size='medium' disabled={false} waiting={submitting}>
-          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
+          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}{isSSOOnly ? " with SSO" : ""}
         </Button>
       </Form>
-      <UseSSO onClick={toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${
-        isSSO ? 'without' : 'with'
-      } SSO`}</UseSSO>
+      {!isSSOOnly &&
+        <UseSSO onClick={toggleSSO}>
+          {`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}
+        </UseSSO>
+      }
     </>
   )
 })
