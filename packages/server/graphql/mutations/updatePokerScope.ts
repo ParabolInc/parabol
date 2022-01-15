@@ -61,11 +61,13 @@ const updatePokerScope = {
     }
 
     const {endedAt, teamId, phases, meetingType, templateRefId, facilitatorStageId} = meeting
+    if (!isTeamMember(authToken, teamId)) {
+      // bad actors could be naughty & just lock meetings that they don't own. Limit bad actors to team members
+      await redisLock.unlock()
+      return {error: {message: `Not on team`}}
+    }
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
-    }
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: `Not on team`}}
     }
 
     if (meetingType !== 'poker') {
