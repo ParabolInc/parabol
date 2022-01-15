@@ -259,7 +259,7 @@ export default class Atmosphere extends Environment {
   handleFetchPromise = async (
     request: RequestParameters,
     variables: Variables,
-    cacheConfig: CacheConfig,
+    cacheConfig?: CacheConfig,
     uploadables?: UploadableMap | null,
     sink?: Sink<any> | undefined | null
   ) => {
