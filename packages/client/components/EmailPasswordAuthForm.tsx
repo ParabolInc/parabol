@@ -90,8 +90,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
   const isSSODefault = Boolean(params.get('sso'))
-  const isSSOOnly = !!process.env.AUTH_SSO_ENABLED && !!!process.env.AUTH_INTERNAL_ENABLED
-  const [isSSO, setIsSSO] = useState(isSSODefault || isSSOOnly)
+  const signInWithSSOOnly = !!process.env.AUTH_SSO_ENABLED && !!!process.env.AUTH_INTERNAL_ENABLED
+  const [isSSO, setIsSSO] = useState(isSSODefault || signInWithSSOOnly)
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
   const [ssoDomain, setSSODomain] = useState('')
@@ -194,7 +194,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     const {value: email} = emailRes
     const isSSO = await tryLoginWithSSO(email)
     if (isSSO || passwordRes.error) return
-    if (isSSOOnly && !isSSO) {
+    if (signInWithSSOOnly && !isSSO) {
       setError(new Error('This domain is not configured for SSO. Please contact support@parabol.co'))
       return
     }
@@ -249,7 +249,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           }
         </FieldGroup>
         <Button size='medium' disabled={false} waiting={submitting}>
-          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}{isSSOOnly ? " with SSO" : ""}
+          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}{signInWithSSOOnly ? " with SSO" : ""}
         </Button>
       </Form>
       {process.env.AUTH_SSO_ENABLED && process.env.AUTH_INTERNAL_ENABLED &&
