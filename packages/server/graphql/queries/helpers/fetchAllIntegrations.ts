@@ -10,10 +10,10 @@ const fetchAllIntegrations = async (
   context: any,
   info: GraphQLResolveInfo
 ) => {
-  const results = await Promise.allSettled([
+  const results = (await Promise.allSettled([
     fetchAtlassianProjects(dataLoader, teamId, userId),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info)
-  ])
+  ])) as any[]
   const allIntegrations = results.flatMap((result) => {
     return result.status === 'fulfilled' ? result.value : []
   })

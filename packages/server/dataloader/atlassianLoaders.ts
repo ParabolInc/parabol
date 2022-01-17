@@ -109,7 +109,7 @@ export const jiraRemoteProject = (
             sendToSentry(projectRes, {userId, tags: {teamId, projectKey}})
             return null
           }
-          return projectRes
+          return {...projectRes, cloudId, userId, teamId}
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))

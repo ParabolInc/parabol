@@ -6,6 +6,7 @@ import {DataLoaderWorker} from '../../graphql'
 
 interface Repo {
   nameWithOwner: string
+  hasIssuesEnabled: boolean
 }
 interface GetRepoOrg {
   repositories: {
@@ -62,11 +63,13 @@ const fetchGitHubRepos = async (
   const orgs = organizations.nodes || []
   const personalRepos = repositories.nodes || []
   const uniqueRepos = getUniqueRepos(orgs as any, personalRepos as any)
-  return uniqueRepos.map((repo) => ({
-    id: repo.nameWithOwner,
-    service: 'github',
-    nameWithOwner: repo.nameWithOwner
-  }))
+  return uniqueRepos
+    .filter(({hasIssuesEnabled}) => hasIssuesEnabled)
+    .map((repo) => ({
+      id: repo.nameWithOwner,
+      service: 'github',
+      nameWithOwner: repo.nameWithOwner
+    }))
 }
 
 export default fetchGitHubRepos

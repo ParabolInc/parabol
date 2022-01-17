@@ -22182,6 +22182,7 @@ export type GetRepositoriesQuery = {
                     | Array<
                         | {
                             __typename?: 'Repository'
+                            hasIssuesEnabled: boolean
                             nameWithOwner: string
                             updatedAt: any
                             viewerCanAdminister: boolean
@@ -22205,6 +22206,7 @@ export type GetRepositoriesQuery = {
         | Array<
             | {
                 __typename?: 'Repository'
+                hasIssuesEnabled: boolean
                 nameWithOwner: string
                 updatedAt: any
                 viewerCanAdminister: boolean
@@ -22224,6 +22226,7 @@ export type RepoFragFragment = {
     | Array<
         | {
             __typename?: 'Repository'
+            hasIssuesEnabled: boolean
             nameWithOwner: string
             updatedAt: any
             viewerCanAdminister: boolean
