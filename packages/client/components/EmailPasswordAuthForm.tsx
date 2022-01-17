@@ -195,7 +195,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     const isSSO = await tryLoginWithSSO(email)
     if (isSSO || passwordRes.error) return
     if (isSSOOnly && !isSSO) {
-      setError(new Error('This email is not valid against your SSO provider'))
+      setError(new Error('This domain is not configured for SSO. Please contact support@parabol.co'))
       return
     }
     const {value: password} = passwordRes
