@@ -48779,7 +48779,7 @@ export interface IUser {
   /**
    * The last day the user connected via websocket or navigated to a common area
    */
-  lastSeenAt: any | null;
+  lastSeenAt: any;
 
   /**
    * The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.

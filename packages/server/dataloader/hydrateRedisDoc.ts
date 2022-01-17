@@ -1,5 +1,3 @@
-import IUser from '../postgres/types/IUser'
-
 const hydrators = {
   publicTemplates: (publicTemplates: any[]) => {
     publicTemplates.forEach((template) => {
@@ -7,9 +5,9 @@ const hydrators = {
     })
     return publicTemplates
   },
-  User: (user: IUser) => {
+  User: (user: any) => {
     user.createdAt = new Date(user.createdAt)
-    user.lastSeenAt = user.lastSeenAt ? new Date(user.lastSeenAt) : null
+    user.lastSeenAt = new Date(user.lastSeenAt)
     user.updatedAt = new Date(user.updatedAt)
     return user
   }

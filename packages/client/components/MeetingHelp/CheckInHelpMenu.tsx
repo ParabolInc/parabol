@@ -10,7 +10,8 @@ import HelpMenuLink from './HelpMenuLink'
 
 const linkLookup = {
   action: `${ExternalLinks.GETTING_STARTED_CHECK_INS}#icebreaker`,
-  retrospective: `${ExternalLinks.GETTING_STARTED_RETROS}#icebreaker`
+  retrospective: `${ExternalLinks.GETTING_STARTED_RETROS}#icebreaker`,
+  poker: `${ExternalLinks.GETTING_STARTED_SPRINT_POKER}#icebreaker`
 } as Record<MeetingTypeEnum, string>
 
 interface Props {

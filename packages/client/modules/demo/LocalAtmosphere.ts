@@ -3,8 +3,11 @@ import {stringify} from 'flatted'
 import {
   Environment,
   FetchFunction,
+  fetchQuery,
+  GraphQLTaggedNode,
   Network,
   Observable,
+  OperationType,
   RecordSource,
   RequestParameters,
   Store,
@@ -61,6 +64,21 @@ export default class LocalAtmosphere extends Environment {
       // await sleep(1000)
       this.clientGraphQLServer.db._updatedAt = new Date()
       window.localStorage.setItem('retroDemo', stringify(this.clientGraphQLServer.db))
+    }
+    return res
+  }
+
+  fetchQuery = async <T extends OperationType>(
+    taggedNode: GraphQLTaggedNode,
+    variables: Variables = {}
+  ) => {
+    let res: T['response']
+    try {
+      res = await fetchQuery<T>(this, taggedNode, variables, {
+        fetchPolicy: 'store-or-network'
+      }).toPromise()
+    } catch (e) {
+      return null
     }
     return res
   }
