@@ -49,6 +49,17 @@ services:
       - redis-data:/data
     networks:
       - parabol-network
+  redis-commander:
+    container_name: redis_commander
+    image: rediscommander/redis-commander:latest
+    hostname: redis-commander
+    restart: unless-stopped
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8082:8081"
+    networks:
+      parabol-network:
 networks:
   parabol-network:
 volumes:

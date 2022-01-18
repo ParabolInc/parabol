@@ -97,7 +97,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         )
       })
       .sort((a, b) =>
-        a.userId === viewerId ? -1 : a.user.lastSeenAt! < b.user.lastSeenAt! ? -1 : 1
+        a.userId === viewerId ? -1 : a.user.lastSeenAt < b.user.lastSeenAt ? -1 : 1
       )
       .map((tm) => ({
         ...tm,

@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.43.0 2022-Jan-12
+
+### Fixed
+
+- Fix demo retrospective task integration menu (#5827)
+- Fix undefined in team invitation emails (@5853)
+
+## 6.42.0 2022-Jan-06
+
+### Changed
+
+- Remove editor.wordWrap from workspace settings (#5713)
+- Disable refetch queries on new version bump to increase deployment reliability (#5749)
+
+### Fixed
+
+- Implement rate limit handling to fix a Jira thorttling issue (#5546)
+- Fix searching not working in integration dropdown list (#5755)
+- Fix an issue where user is unable to toggle active status in organization page (#5836)
+- Fix alignment of logo (#5814)
+
 ## 6.41.0 2021-Dec-16
 
 ### Added

@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import customTemplate from '../../../../../static/images/illustrations/customTemplate.svg'
-import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.svg'
-import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.svg'
+import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
+import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
+import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.png'
 import {PALETTE} from '../../../styles/paletteV3'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
@@ -47,7 +47,8 @@ const TemplateImg = styled('img')({
   maxWidth: 360,
   maxHeight: 200,
   padding: '16px 0 0',
-  width: '100%'
+  width: '100%',
+  objectFit: 'contain'
 })
 
 const Description = styled('div')({

@@ -243,13 +243,18 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuRootQuery: () => {
+    TaskFooterIntegrateMenuRootQuery: (_teamId: unknown, userId: string) => {
+      const user = this.db.users[0]
       return {
         viewer: {
-          ...this.db.users[0],
+          ...user,
           userOnTeam: {
-            ...this.db.users[0]
-          }
+            ...user
+          },
+          assigneeTeamMember: this.db.teamMembers.find(
+            (teamMember) => teamMember.userId === userId
+          ),
+          viewerTeamMember: this.db.teamMembers[0]
         }
       }
     },

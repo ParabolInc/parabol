@@ -58,7 +58,7 @@ const LogoWrapper = styled('button')({
   border: 'none',
   borderRadius: 4,
   cursor: 'pointer',
-  margin: '8px 0',
+  margin: '8px 0 8px -8px',
   padding: '8px 8px 4px 8px',
   ':focus': {
     boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
