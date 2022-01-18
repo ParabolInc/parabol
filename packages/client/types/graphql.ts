@@ -55719,6 +55719,11 @@ export interface IMutation {
   createMassInvitation: CreateMassInvitationPayload;
 
   /**
+   * Generate a new OAuth1 request token and encode it in the authorization URL to start an oauth1 flow
+   */
+  createOAuth1AuthorizeUrl: ICreateOAuth1AuthorizationURLPayload | null;
+
+  /**
    * Create a new reflection
    */
   createReflection: ICreateReflectionPayload | null;
@@ -56491,6 +56496,18 @@ export interface ICreateMassInvitationOnMutationArguments {
    * If true, will void all existing mass invitations for the team member
    */
   voidOld?: boolean | null;
+}
+
+export interface ICreateOAuth1AuthorizeUrlOnMutationArguments {
+  /**
+   * Id of the integration provider with OAuth1 auth strategy
+   */
+  providerId: string;
+
+  /**
+   * Id of the team where the integration should be added
+   */
+  teamId: string;
 }
 
 export interface ICreateReflectionOnMutationArguments {
@@ -57946,6 +57963,19 @@ export interface ICreateMassInvitationSuccess {
    * the team with the updated mass inivtation
    */
   team: ITeam;
+}
+
+/**
+ * Authorization URL constructed after creating a new request token
+ */
+export interface ICreateOAuth1AuthorizationURLPayload {
+  __typename: 'CreateOAuth1AuthorizationURLPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * Authorization URL including oauth_token to start authorization flow
+   */
+  url: string | null;
 }
 
 export interface ICreateReflectionPayload {
