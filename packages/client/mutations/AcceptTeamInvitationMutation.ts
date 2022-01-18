@@ -48,6 +48,9 @@ graphql`
         id
       }
     }
+    teamMember {
+      ...DashboardAvatar_teamMember
+    }
     # this is just for the team lead
     teamLead {
       suggestedActions {
