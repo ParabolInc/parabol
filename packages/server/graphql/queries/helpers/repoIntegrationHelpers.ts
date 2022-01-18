@@ -16,53 +16,25 @@ export interface IntegrationByTeamId {
   lastUsedAt: Date
 }
 
-const MAX_RECENT_INTEGRATIONS = 3
-export const useOnlyUserIntegrations = (
-  teamIntegrationsByTeamId: IntegrationByTeamId[],
-  userId: string
-) => {
-  const userIntegrationsForTeam = teamIntegrationsByTeamId.filter(
-    (integration) => integration.userId === userId
-  )
-  const aMonthAgo = new Date(Date.now() - ms('30d'))
-
-  // the user has 3+ active integrations, use those
-  if (
-    userIntegrationsForTeam.length >= MAX_RECENT_INTEGRATIONS &&
-    userIntegrationsForTeam[MAX_RECENT_INTEGRATIONS - 1].lastUsedAt >= aMonthAgo
-  ) {
-    return userIntegrationsForTeam
-  }
-
-  // at least 1 person has 1 integration on the team
-  const integrationSet = new Set()
-  teamIntegrationsByTeamId.forEach(({id}) => integrationSet.add(id))
-
-  // the user is integrated against every team integration, use those
-  return userIntegrationsForTeam.length === integrationSet.size
-    ? userIntegrationsForTeam
-    : undefined
-}
-
-export const getTeamIntegrationsByTeamId = async (
+export const getUserIntegrationIds = async (
+  userId: string,
   teamId: string,
   permLookup: Unpromise<ReturnType<typeof getPermsByTaskService>>
-): Promise<IntegrationByTeamId[]> => {
+) => {
   const r = await getRethink()
-  const res = await (r
-    .table('Task')
-    .getAll(teamId, {index: 'teamId'})
-    .filter((row) =>
-      row('integration')
-        .ne(null)
-        .default(false)
-    )
-    .group((row) => [
-      row('userId').default(null),
-      row('integration')('service'),
-      row('integration')('projectKey').default(null),
-      row('integration')('cloudId').default(null)
-    ]) as any)
+  const res = await (
+    r
+      .table('Task')
+      .getAll(teamId, {index: 'teamId'})
+      .filter((row) => row('integration').ne(null).default(false).and(row('userId').eq(userId)))
+      .group((row) => [
+        row('userId').default(null),
+        row('integration')('service'),
+        row('integration')('projectKey').default(null),
+        row('integration')('cloudId').default(null),
+        row('integration')('nameWithOwner').default(null)
+      ]) as any
+  )
     .max('createdAt')('createdAt')
     .ungroup()
     .orderBy(r.desc('reduction'))
@@ -71,18 +43,20 @@ export const getTeamIntegrationsByTeamId = async (
       service: row('group')(1),
       projectKey: row('group')(2),
       cloudId: row('group')(3),
+      nameWithOwner: row('group')(4),
       lastUsedAt: row('reduction')
     }))
     .run()
-  return (
-    res
-      // jira integrations are making it through that don't have a projectKey
-      .filter((res) => permLookup[res.service] && (res.service !== 'jira' || res.projectKey))
-      .map((item) => ({
-        ...item,
-        id: makeRepoIntegrationId(item)
-      }))
-  )
+
+  const threeMonthsAgo = new Date(Date.now() - ms('90d'))
+  return res
+    .filter(
+      (res) =>
+        permLookup[res.service] &&
+        (res.service !== 'jira' || res.projectKey) && // jira integrations are making it through that don't have a projectKey
+        res.lastUsedAt > threeMonthsAgo
+    )
+    .map((item) => makeRepoIntegrationId(item)) as string[]
 }
 
 export const getPermsByTaskService = async (

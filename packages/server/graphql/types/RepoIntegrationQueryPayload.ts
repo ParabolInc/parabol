@@ -11,7 +11,7 @@ const RepoIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>({
       type: StandardMutationError
     },
     hasMore: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description:
         'true if the items returned are a subset of all the possible integration, else false (all possible integrations)'
     },

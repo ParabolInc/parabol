@@ -3,19 +3,15 @@ import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import RepoIntegrationQueryPayload from '../types/RepoIntegrationQueryPayload'
-import fetchAllIntegrations from './helpers/fetchAllIntegrations'
-import {
-  getPermsByTaskService,
-  getTeamIntegrationsByTeamId,
-  useOnlyUserIntegrations
-} from './helpers/repoIntegrationHelpers'
+import fetchAllIntegrations, {Integration} from './helpers/fetchAllIntegrations'
+import {getPermsByTaskService, getUserIntegrationIds} from './helpers/repoIntegrationHelpers'
 
 export default {
   description: 'The integrations that the user would probably like to use',
   type: new GraphQLNonNull(RepoIntegrationQueryPayload),
   resolve: async (
     {teamId, userId}: {teamId: string; userId: string},
-    _args: unknown,
+    {first = 10}: {first?: number},
     context: GQLContext,
     info: GraphQLResolveInfo
   ) => {
@@ -32,27 +28,20 @@ export default {
       }
     }
     const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-    const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId, permLookup)
-    const userIntegrationIdsForTeam =
-      (await useOnlyUserIntegrations(teamIntegrationsByTeamId, userId))?.map(({id}) => id) || []
-    const allIntegrations = (await fetchAllIntegrations(
-      dataLoader,
-      teamId,
-      userId,
-      context,
-      info
-    )) as any[]
-    const orderedIntegrations: any = []
+    const [userIntegrationIds, allIntegrations] = await Promise.all([
+      getUserIntegrationIds(userId, teamId, permLookup),
+      fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+    ])
+    const orderedIntegrations: Integration[] = []
     const idSet = new Set()
     allIntegrations.forEach((integration) => {
       if (idSet.has(integration.id)) return
       idSet.add(integration.id)
-      userIntegrationIdsForTeam.includes(integration.id)
+      userIntegrationIds.includes(integration.id)
         ? orderedIntegrations.unshift(integration)
         : orderedIntegrations.push(integration)
     })
 
-    const first = 10
     if (orderedIntegrations.length > first) {
       return {hasMore: true, items: orderedIntegrations.slice(0, first)}
     } else {

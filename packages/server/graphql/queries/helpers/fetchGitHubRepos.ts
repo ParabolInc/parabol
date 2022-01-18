@@ -4,19 +4,24 @@ import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
 import {DataLoaderWorker} from '../../graphql'
 
-interface Repo {
+export interface GitHubRepo {
+  id: string
   nameWithOwner: string
-  hasIssuesEnabled: boolean
+  hasIssuesEnabled?: boolean
+  service: 'github'
 }
 interface GetRepoOrg {
   repositories: {
-    nodes: Repo[]
+    nodes: GitHubRepo[]
   }
 }
 
-const getUniqueRepos = <T extends GetRepoOrg, V extends Repo>(orgs: T[], personalRepos: V[]) => {
+const getUniqueRepos = <T extends GetRepoOrg, V extends GitHubRepo>(
+  orgs: T[],
+  personalRepos: V[]
+) => {
   const repoSet = new Set()
-  const repos = [] as Repo[]
+  const repos = [] as GitHubRepo[]
 
   // add in the organization repos
   for (let i = 0; i < orgs.length; i++) {

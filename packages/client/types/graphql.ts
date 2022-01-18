@@ -50185,7 +50185,7 @@ export interface IRepoIntegrationQueryPayload {
   /**
    * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
    */
-  hasMore: boolean | null;
+  hasMore: boolean;
 
   /**
    * All the integrations that are likely to be integrated

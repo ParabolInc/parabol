@@ -1,7 +1,10 @@
 import {GraphQLResolveInfo} from 'graphql'
+import {JiraProject} from 'parabol-client/utils/AtlassianManager'
 import {DataLoaderWorker} from '../../graphql'
 import fetchAtlassianProjects from './fetchAtlassianProjects'
-import fetchGitHubRepos from './fetchGitHubRepos'
+import fetchGitHubRepos, {GitHubRepo} from './fetchGitHubRepos'
+
+export type Integration = JiraProject | GitHubRepo
 
 const fetchAllIntegrations = async (
   dataLoader: DataLoaderWorker,
@@ -13,7 +16,8 @@ const fetchAllIntegrations = async (
   const results = (await Promise.allSettled([
     fetchAtlassianProjects(dataLoader, teamId, userId),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info)
-  ])) as any[]
+  ])) as PromiseSettledResult<Integration[]>[]
+
   const allIntegrations = results.flatMap((result) => {
     return result.status === 'fulfilled' ? result.value : []
   })

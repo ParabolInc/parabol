@@ -2,7 +2,8 @@ import {JiraProject} from 'parabol-client/utils/AtlassianManager'
 import {DataLoaderWorker} from '../../graphql'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import makeRepoIntegrationId from 'parabol-client/utils/makeRepoIntegrationId'
-import {TaskServiceEnum} from '../../../database/types/Task'
+
+export type PickedJiraProject = Pick<JiraProject, 'id' | 'cloudId' | 'teamId' | 'userId'>[]
 
 const fetchAtlassianProjects = async (
   dataLoader: DataLoaderWorker,
@@ -22,7 +23,6 @@ const fetchAtlassianProjects = async (
 
   const cloudIds = sites.map((site) => site.id)
   const atlassianProjects = [] as JiraProject[]
-  const service: TaskServiceEnum = 'jira'
   await manager.getProjects(cloudIds, (err, res) => {
     if (err) {
       console.error(err)
@@ -33,8 +33,7 @@ const fetchAtlassianProjects = async (
         project.id = makeRepoIntegrationId({
           ...project,
           projectKey: project.key,
-          cloudId,
-          service
+          cloudId
         })
         project.userId = userId
         project.teamId = teamId
