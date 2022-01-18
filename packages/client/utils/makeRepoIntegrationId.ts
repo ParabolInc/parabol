@@ -1,15 +1,29 @@
 type GitHubItem = {
+  cloudId?: null
+  lastUsedAt?: string
   nameWithOwner: string
+  projectKey?: null
+  service: 'github'
+  userId: string
 }
 
 type JiraItem = {
-  projectKey: string
   cloudId: string
+  lastUsedAt?: string
+  nameWithOwner?: null
+  projectKey: string
+  service: 'jira'
+  userId: string
 }
 
 const makeRepoIntegrationId = (item: GitHubItem | JiraItem) => {
-  if ('nameWithOwner' in item) return item.nameWithOwner
-  return `${item.cloudId}:${item.projectKey}`
+  const {service} = item
+  switch (service) {
+    case 'github':
+      return item.nameWithOwner
+    case 'jira':
+      return `${item.cloudId}:${item.projectKey}`
+  }
 }
 
 export default makeRepoIntegrationId
