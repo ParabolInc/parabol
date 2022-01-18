@@ -2,21 +2,24 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent} from 'react'
 import {useFragment} from 'react-relay'
+import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
+import useTooltip from '~/hooks/useTooltip'
+import linkify from '~/utils/linkify'
+import {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
 import FlatButton from '../../../../components/FlatButton'
 import BasicInput from '../../../../components/InputField/BasicInput'
+import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import AddMattermostAuthMutation from '../../../../mutations/AddMattermostAuthMutation'
+import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
+import AddTeamMemberIntegrationAuthMutation from '../../../../mutations/AddTeamMemberIntegrationAuthMutation'
+import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import Legitity from '../../../../validation/Legitity'
-import {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
 import {Layout} from '../../../../types/constEnums'
-import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
-import linkify from '~/utils/linkify'
-import useTooltip from '~/hooks/useTooltip'
-import {MenuPosition} from '~/hooks/useCoords'
+import Legitity from '../../../../validation/Legitity'
+import {AddIntegrationProviderMutationResponse} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key
@@ -68,8 +71,12 @@ const MattermostPanel = (props: Props) => {
         teamMember(teamId: $teamId) {
           integrations {
             mattermost {
-              isActive
-              webhookUrl
+              auth {
+                provider {
+                  id
+                  webhookUrl
+                }
+              }
             }
           }
         }
@@ -80,11 +87,15 @@ const MattermostPanel = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
+  const {auth} = mattermost
+  const activeProvider = auth?.provider
   const atmosphere = useAtmosphere()
 
+  // corner case: let them re-upsert the same webhook url when reverting to a previous value
+  const serverWebhookUrl = activeProvider?.webhookUrl ?? ''
   const {validateField, setDirtyField, onChange, fields} = useForm({
     webhookUrl: {
-      getDefault: () => mattermost?.webhookUrl || '',
+      getDefault: () => serverWebhookUrl,
       validate: (rawInput: string) => {
         return new Legitity(rawInput).test((maybeUrl) => {
           if (!maybeUrl) return 'No link provided'
@@ -104,18 +115,58 @@ const MattermostPanel = (props: Props) => {
   } = useMutationProps()
 
   const {error: fieldError, value: fieldValue} = fields.webhookUrl
-  // corner case: let them re-upsert the same webhook url when reverting to a
-  //              previous value
-  const updateDisabled = (error, value) =>
-    error || submitting || !value || (value === mattermost?.webhookUrl && !mutationError)
+  const isUpdateDisabled = (error?: string, value?: any) =>
+    !!error || submitting || !value || (value === serverWebhookUrl && !mutationError)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     const {error, value: webhookUrl} = validateField('webhookUrl')
-    if (updateDisabled(error, webhookUrl)) return
+    if (isUpdateDisabled(error, webhookUrl)) return
     setDirtyField()
     submitMutation()
-    AddMattermostAuthMutation(atmosphere, {webhookUrl, teamId}, {onError, onCompleted})
+    if (activeProvider) {
+      UpdateIntegrationProviderMutation(
+        atmosphere,
+        {
+          provider: {
+            id: activeProvider.id,
+            scope: 'team',
+            webhookProviderMetadataInput: {
+              webhookUrl
+            }
+          }
+        },
+        {onError, onCompleted}
+      )
+    } else {
+      const handleCompleted = (res: AddIntegrationProviderMutationResponse) => {
+        const {addIntegrationProvider} = res
+        const {provider} = addIntegrationProvider
+        if (!provider) return
+        const {id: providerId} = provider
+        AddTeamMemberIntegrationAuthMutation(
+          atmosphere,
+          {providerId, teamId},
+          {onError, onCompleted}
+        )
+      }
+
+      AddIntegrationProviderMutation(
+        atmosphere,
+        {
+          input: {
+            scope: 'team',
+            service: 'mattermost',
+            teamId,
+            authStrategy: 'webhook',
+            webhookProviderMetadataInput: {
+              webhookUrl
+            }
+          }
+        },
+        {onError, onCompleted: handleCompleted}
+      )
+    }
   }
 
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
@@ -140,7 +191,7 @@ const MattermostPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='https://my.mattermost.com:8065/hooks/abc123'
           />
-          <StyledButton size='medium' disabled={updateDisabled(fieldError, fieldValue)}>
+          <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
             Update
           </StyledButton>
         </Row>

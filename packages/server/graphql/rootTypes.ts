@@ -9,6 +9,8 @@ import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
 import EstimatePhase from './types/EstimatePhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
+import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
+import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
@@ -33,6 +35,8 @@ import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
 const rootTypes = [
+  IntegrationProviderOAuth2,
+  IntegrationProviderWebhook,
   AuthIdentityGoogle,
   AuthIdentityLocal,
   CheckInPhase,
