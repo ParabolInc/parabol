@@ -4,8 +4,6 @@ import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import makeRepoIntegrationId from 'parabol-client/utils/makeRepoIntegrationId'
 import {TaskServiceEnum} from '../../../database/types/Task'
 
-export type PickedJiraProject = Pick<JiraProject, 'id' | 'cloudId' | 'teamId' | 'userId'>[]
-
 const fetchAtlassianProjects = async (
   dataLoader: DataLoaderWorker,
   teamId: string,

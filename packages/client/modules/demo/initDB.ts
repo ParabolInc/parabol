@@ -61,16 +61,16 @@ const JiraSecretKey = 'jira-secret'
 
 export const JiraProjectKeyLookup = {
   [JiraDemoKey]: {
-    projectKey: JiraDemoKey,
-    projectName: 'Demo Jira Project',
+    key: JiraDemoKey,
+    name: 'Demo Jira Project',
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
     service: 'jira'
   },
   [JiraSecretKey]: {
-    projectKey: JiraSecretKey,
-    projectName: 'Secret Jira Project',
+    key: JiraSecretKey,
+    name: 'Secret Jira Project',
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
@@ -98,13 +98,13 @@ class DemoJiraRemoteProject {
   style = ''
   constructor(key: keyof typeof JiraProjectKeyLookup) {
     const details = JiraProjectKeyLookup[key]
-    const {projectKey, projectName, cloudId, avatar} = details
+    const {key: projectKey, name, cloudId, avatar} = details
     this.id = JiraProjectId.join(cloudId, projectKey)
     this.teamId = RetroDemo.TEAM_ID
     this.userId = demoViewerId
     this.cloudId = cloudId
     this.key = projectKey
-    this.name = projectName
+    this.name = name
     this.avatar = avatar
   }
 }
@@ -115,6 +115,12 @@ export const GitHubProjectKeyLookup = {
     service: 'github'
   }
 }
+
+const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
+  __typename: '_xGitHubRepository',
+  id: `si:${nameWithOwner}`,
+  ...GitHubProjectKeyLookup[nameWithOwner]
+})
 
 const initSlackNotification = (userId: string) => ({
   __typename: 'SlackNotification',
@@ -164,7 +170,7 @@ const initDemoTeamMember = (
     },
     repoIntegrations: {
       hasMore: true,
-      items: [new DemoJiraRemoteProject(JiraDemoKey), GitHubProjectKeyLookup[GitHubDemoKey]]
+      items: [new DemoJiraRemoteProject(JiraDemoKey), makeRepoIntegrationGitHub(GitHubDemoKey)]
     },
     allAvailableIntegrations: [
       new DemoJiraRemoteProject(JiraDemoKey),
