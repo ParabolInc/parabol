@@ -1,5 +1,4 @@
 import {promises as fsp} from 'fs'
-import mime from 'mime-types'
 import path from 'path'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
@@ -8,13 +7,14 @@ import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getRedis from './utils/getRedis'
 
 const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
+  const imageKey = `jira-image:${fileName}`
   const redis = getRedis()
-  const imageBuffer = await redis.getBuffer(fileName)
+  const imageBuffer = await redis.getBuffer(imageKey)
   if (imageBuffer === null || imageBuffer.length === 0) return null
   if (imageBuffer.length > 1) return imageBuffer
   if (tryAgain) {
     await sleep(500)
-    return getImageFromCache(fileName, false)
+    return getImageFromCache(imageKey, false)
   }
   return null
 }
@@ -38,7 +38,8 @@ const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpReq
     return
   }
 
-  const mimeType = mime.lookup(fileName)
+  const redis = getRedis()
+  const mimeType = await redis.get(`jira-image:mime-type:${fileName}`)
   if (!mimeType || !mimeType.startsWith('image/')) {
     await servePlaceholderImage(res)
     return

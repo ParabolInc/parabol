@@ -1,7 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  createImageUrlHash,
+  createParabolImageUrl,
+  downloadAndCacheImage
+} from '../../utils/atlassian/jiraImages'
 import JiraProjectId from '../../../client/shared/gqlIds/JiraProjectId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import defaultJiraProjectAvatar from '../../utils/defaultJiraProjectAvatar'
 import {GQLContext} from '../graphql'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
@@ -43,8 +47,9 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
         if (!auth) return null
         const {accessToken} = auth
         const manager = new AtlassianServerManager(accessToken)
-        const avatar = await manager.getProjectAvatar(url)
-        return avatar || defaultJiraProjectAvatar
+        const avatarUrlHash = createImageUrlHash(url)
+        await downloadAndCacheImage(manager, avatarUrlHash, url)
+        return createParabolImageUrl(avatarUrlHash)
       }
     },
     avatarUrls: {
