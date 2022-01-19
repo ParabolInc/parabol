@@ -22,7 +22,7 @@ const AddPollIcon = styled(IconOutlined)({
   fontSize: 20,
   width: 20,
   height: 20,
-  margin: '0 4px'
+  margin: '0 4px 0 0'
 })
 
 const AddPollLabel = styled('div')({
