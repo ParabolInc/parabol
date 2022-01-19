@@ -6,9 +6,12 @@ import findStageAfterId from '../utils/meetings/findStageAfterId'
 import findStageById from '../utils/meetings/findStageById'
 import useGotoStageId from './useGotoStageId'
 
-export const useGotoNext = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {
+export const useGotoNext = (
+  meetingRef: useGotoNext_meeting$key,
+  gotoStageId: ReturnType<typeof useGotoStageId>
+) => {
   const ref = useRef<HTMLButtonElement>(null)
-  const meeting = readInlineData<useGotoNext_meeting$key>(
+  const meeting = readInlineData(
     graphql`
       fragment useGotoNext_meeting on NewMeeting @inline {
         localStage {

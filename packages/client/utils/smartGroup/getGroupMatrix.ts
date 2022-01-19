@@ -40,8 +40,8 @@ type ClusterfckRes = {
 }
 
 const traverseTree = (initialTree: ClusterfckTree, groupingOptions: GroupingOptions) => {
-  const groups = [] as any
-  const distanceSet = new Set()
+  const groups = [] as number[][][]
+  const distanceSet = new Set<number>()
   const {groupingThreshold, maxGroupSize = MAX_GROUP_SIZE} = groupingOptions
   const visit = (tree: ClusterfckTree, group?: number[][]) => {
     if ('dist' in tree) {
@@ -75,14 +75,14 @@ const getGroupMatrix = (distanceMatrix: number[][], groupingOptions: GroupingOpt
   const {tree} = clusterfckRes
   const {groupingThreshold, maxReductionPercent = MAX_REDUCTION_PERCENT} = groupingOptions
   if (!tree) return {groups: []}
-  let groups
+  let groups: number[][][]
   let thresh = groupingThreshold
   let distancesArr
   // naive logic to make sure the grouping is AOK
   for (let i = 0; i < 5; i++) {
     const res = traverseTree(tree, groupingOptions)
     groups = res.groups
-    distancesArr = Array.from(res.distanceSet).sort() as number[]
+    distancesArr = Array.from(res.distanceSet).sort()
     const reduction = (distanceMatrix.length - groups.length) / distanceMatrix.length
     if (reduction < MIN_REDUCTION_PERCENT) {
       // eslint-disable-next-line no-loop-func

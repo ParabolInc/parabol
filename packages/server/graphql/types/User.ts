@@ -512,6 +512,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             maxGroupSize: reflectionsCount,
             maxReductionPercent: MAX_REDUCTION_PERCENTAGE
           })
+          console.log('🚀  ~ user---', {groupedReflectionsRes})
           const spotlightGroupedReflection = groupedReflectionsRes.find(
             (group) => group.oldReflectionGroupId === reflectionGroupId
           )

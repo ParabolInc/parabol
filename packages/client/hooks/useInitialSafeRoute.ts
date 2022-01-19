@@ -12,10 +12,13 @@ import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
-const useInitialSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, meetingRef: any) => {
+const useInitialSafeRoute = (
+  setSafeRoute: Dispatch<SetStateAction<boolean>>,
+  meetingRef: useInitialSafeRoute_meeting$key
+) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  const meeting = readInlineData<useInitialSafeRoute_meeting$key>(
+  const meeting = readInlineData(
     graphql`
       fragment useInitialSafeRoute_meeting on NewMeeting @inline {
         ...fromStageIdToUrl_meeting
