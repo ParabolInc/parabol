@@ -15,18 +15,26 @@ const addNewFeature = {
   type: AddNewFeaturePayload,
   description: 'broadcast a new feature to the entire userbase',
   args: {
-    copy: {
+    actionButtonCopy: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The text body of the new feature'
+      description: 'The text of the action button in the snackbar'
+    },
+    snackbarMessage: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The description of the new feature'
     },
     url: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'the permalink to the blog post'
+      description: 'The permalink to the blog post describing the new feature'
     }
   },
   resolve: async (
     _source: unknown,
-    {copy, url}: {copy: string; url: string},
+    {
+      actionButtonCopy,
+      snackbarMessage,
+      url
+    }: {actionButtonCopy: string; snackbarMessage: string; url: string},
     {authToken, dataLoader}: GQLContext
   ) => {
     const r = await getRethink()
@@ -41,7 +49,8 @@ const addNewFeature = {
     const newFeatureId = generateUID()
     const newFeature = {
       id: newFeatureId,
-      copy,
+      actionButtonCopy,
+      snackbarMessage,
       url
     }
     await Promise.all([

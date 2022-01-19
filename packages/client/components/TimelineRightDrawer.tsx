@@ -6,7 +6,6 @@ import graphql from 'babel-plugin-relay/macro'
 import ErrorBoundary from './ErrorBoundary'
 import TimelinePriorityTasks from './TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV3'
-import TimelineNewFeature from './TimelineNewFeature'
 import {DashTimeline, NavSidebar} from '../types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
@@ -37,7 +36,6 @@ const TimelineRightDrawer = (props: Props) => {
   return (
     <RightDrawer>
       <ErrorBoundary>
-        <TimelineNewFeature viewer={viewer} />
         <TimelinePriorityTasks viewer={viewer} />
       </ErrorBoundary>
     </RightDrawer>
@@ -47,7 +45,6 @@ const TimelineRightDrawer = (props: Props) => {
 export default createFragmentContainer(TimelineRightDrawer, {
   viewer: graphql`
     fragment TimelineRightDrawer_viewer on User {
-      ...TimelineNewFeature_viewer
       ...TimelinePriorityTasks_viewer
     }
   `

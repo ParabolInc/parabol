@@ -52246,19 +52246,24 @@ export interface IThreadableEdge {
 }
 
 /**
- * The latest features released by Parabol
+ * The latest feature released by Parabol
  */
 export interface INewFeatureBroadcast {
   __typename: 'NewFeatureBroadcast';
   id: string;
 
   /**
-   * The description of the new features
+   * The text of the action button in the snackbar
    */
-  copy: string;
+  actionButtonCopy: string;
 
   /**
-   * The permalink to the blog post describing the new features
+   * The description of the new feature
+   */
+  snackbarMessage: string;
+
+  /**
+   * The permalink to the blog post describing the new feature
    */
   url: string;
 }
@@ -59693,6 +59698,11 @@ export interface ISetPokerSpectateSuccess {
    * The meeting member with the updated isSpectating value
    */
   meetingMember: IPokerMeetingMember;
+
+  /**
+   * The stages that were updated if the viewer voted and then changed to spectating
+   */
+  updatedStages: Array<IEstimateStage>;
 }
 
 /**
