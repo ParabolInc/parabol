@@ -167,9 +167,7 @@ const PokerDimensionValueControl = (props: Props) => {
             canUpdate={isStale}
             stage={stage}
             error={errorStr}
-            submitScore={() => {
-              onSubmitScore()
-            }}
+            submitScore={onSubmitScore}
             clearError={onCompleted}
             inputRef={inputRef}
             isFacilitator={isFacilitator}
@@ -180,9 +178,7 @@ const PokerDimensionValueControl = (props: Props) => {
             canUpdate={isStale}
             stageRef={stage}
             error={errorStr}
-            submitScore={() => {
-              onSubmitScore()
-            }}
+            submitScore={onSubmitScore}
             clearError={onCompleted}
             inputRef={inputRef}
             isFacilitator={isFacilitator}
@@ -192,13 +188,7 @@ const PokerDimensionValueControl = (props: Props) => {
           <>
             {isStale ? (
               <>
-                <StyledLinkButton
-                  onClick={() => {
-                    onSubmitScore()
-                  }}
-                >
-                  {'Update'}
-                </StyledLinkButton>
+                <StyledLinkButton onClick={onSubmitScore}>{'Update'}</StyledLinkButton>
                 {errorStr && <ErrorMessage>{errorStr}</ErrorMessage>}
               </>
             ) : (

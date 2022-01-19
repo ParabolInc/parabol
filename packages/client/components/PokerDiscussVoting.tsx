@@ -89,7 +89,7 @@ const PokerDiscussVoting = (props: Props) => {
     isLocallyValidatedRef.current = true
   }, [finalScore])
 
-  const onSubmitScore = (value?: string) => {
+  const submitScore = (value?: string) => {
     const score = value ?? cardScore
     if (submitting || !isStale(score) || !isLocallyValidatedRef.current) {
       return
@@ -129,7 +129,9 @@ const PokerDiscussVoting = (props: Props) => {
         error={error}
         onCompleted={onCompleted}
         onError={onError}
-        onSubmitScore={onSubmitScore}
+        onSubmitScore={() => {
+          submitScore()
+        }}
         isStale={isStale(cardScore)}
         isLocallyValidatedRef={isLocallyValidatedRef}
         setCardScore={setCardScore}
@@ -140,13 +142,13 @@ const PokerDiscussVoting = (props: Props) => {
           const {label} = scaleValue
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
 
-          const submitScore = () => {
+          const setFinalScore = () => {
             // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
             if (submitting || !label || finalScore === label) return
             setCardScore(label)
             isLocallyValidatedRef.current = true
             onCompleted()
-            onSubmitScore(label)
+            submitScore(label)
           }
 
           return (
@@ -154,7 +156,7 @@ const PokerDiscussVoting = (props: Props) => {
               <PokerVotingRow
                 scaleValue={scaleValue}
                 scores={scores}
-                setFinalScore={canClick ? submitScore : undefined}
+                setFinalScore={canClick ? setFinalScore : undefined}
                 isInitialStageRender={isInitialStageRender}
               />
             </React.Fragment>
@@ -163,9 +165,7 @@ const PokerDiscussVoting = (props: Props) => {
         {modalPortal(
           <AddMissingJiraFieldModal
             stage={stage}
-            submitScore={() => {
-              onSubmitScore()
-            }}
+            submitScore={submitScore}
             closePortal={closePortal}
           />
         )}
