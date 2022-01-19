@@ -170,7 +170,7 @@ function wrapSchema(tracer: Tracer, config: Config, schema: PatchedGraphQLSchema
     // ignore introspection and scalar types
     if (namedType.name.startsWith('__') || !isObjectType(namedType)) return
     const fields = namedType.getFields()
-    Object.values(fields).forEach((field) => {
+    Object.values(fields).forEach((field: any) => {
       if (field.resolve) {
         field.resolve = wrappedResolve(tracer, config, field.resolve)
       }
@@ -307,7 +307,7 @@ function pathToArray(path: Path) {
 }
 
 function withCollapse(responsePathAsArray: typeof pathToArray) {
-  return function (path: Path) {
+  return function(path: Path) {
     return responsePathAsArray(path).map((segment) => (typeof segment === 'number' ? '*' : segment))
   }
 }

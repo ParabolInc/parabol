@@ -10,6 +10,8 @@ import {GQLContext} from '../graphql'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
 import IUser from '../../postgres/types/IUser'
 import isValid from '../isValid'
+import Team from '../../database/types/Team'
+import User from '../../database/types/User'
 
 export default {
   type: new GraphQLNonNull(ArchiveOrganizationPayload),
@@ -61,12 +63,22 @@ export default {
     const allRemovedSuggestedActionIds = [] as string[]
     const allUserIds = [] as string[]
 
-    teamArchiveResults.forEach(({team, users, removedSuggestedActionIds}) => {
-      if (!team) return
-      const userIds = users.map(({id}) => id)
-      allUserIds.push(...userIds)
-      allRemovedSuggestedActionIds.push(...removedSuggestedActionIds)
-    })
+    teamArchiveResults.forEach(
+      ({
+        team,
+        users,
+        removedSuggestedActionIds
+      }: {
+        team: Team
+        users: User[]
+        removedSuggestedActionIds: string[]
+      }) => {
+        if (!team) return
+        const userIds = users.map(({id}) => id)
+        allUserIds.push(...userIds)
+        allRemovedSuggestedActionIds.push(...removedSuggestedActionIds)
+      }
+    )
 
     const uniqueUserIds = Array.from(new Set(allUserIds))
 

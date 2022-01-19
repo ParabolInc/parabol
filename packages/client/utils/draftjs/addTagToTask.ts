@@ -1,6 +1,6 @@
-import {Modifier, SelectionState} from 'draft-js'
+import {ContentState, Modifier, SelectionState} from 'draft-js'
 
-const addTagToTask = (contentState, tag) => {
+const addTagToTask = (contentState: ContentState, tag: string) => {
   const value = tag.slice(1)
   const lastBlock = contentState.getLastBlock()
   const selectionState = new SelectionState({
@@ -23,7 +23,7 @@ const addTagToTask = (contentState, tag) => {
   const contentStateWithEntity = contentStateWithNewBlock.createEntity('TAG', 'IMMUTABLE', {value})
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
 
-  return Modifier.replaceText(contentStateWithEntity, lastSelection, tag, null, entityKey)
+  return Modifier.replaceText(contentStateWithEntity, lastSelection, tag, undefined, entityKey)
 }
 
 export default addTagToTask

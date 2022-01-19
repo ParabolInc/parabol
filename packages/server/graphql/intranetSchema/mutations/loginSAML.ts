@@ -42,7 +42,10 @@ const loginSAML = {
       description: 'The name of the SAML identifier. The slug used in the redirect URL'
     }
   },
-  async resolve(_source: unknown, {samlName, queryString}) {
+  async resolve(
+    _source: unknown,
+    {samlName, queryString}: {samlName: string; queryString: string}
+  ) {
     const r = await getRethink()
     const body = querystring.parse(queryString)
     const normalizedName = samlName.trim().toLowerCase()

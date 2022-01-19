@@ -1,5 +1,14 @@
 import {GraphQLEnumType} from 'graphql'
 
+export type NotificationEnumType =
+  | 'KICKED_OUT'
+  | 'PAYMENT_REJECTED'
+  | 'TASK_INVOLVES'
+  | 'PROMOTE_TO_BILLING_LEADER'
+  | 'TEAM_ARCHIVED'
+  | 'TEAM_INVITATION'
+  | 'MEETING_STAGE_TIME_LIMIT_END'
+
 const NotificationEnum = new GraphQLEnumType({
   name: 'NotificationEnum',
   description: 'The kind of notification',

@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLInt, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -15,7 +16,7 @@ import SlackServerManager from '../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
 
-const getSlackNotificationAndAuth = async (teamId, facilitatorUserId) => {
+const getSlackNotificationAndAuth = async (teamId: string, facilitatorUserId: string) => {
   const r = await getRethink()
   const {slackNotification, slackAuth} = await r({
     slackNotification: r
@@ -86,7 +87,7 @@ const jobProcessors = {
 
 export type ScheduledJobUnion = Parameters<ValueOf<typeof jobProcessors>>[0]
 
-const processJob = async (job: ScheduledJobUnion, {dataLoader}) => {
+const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: DataLoaderWorker}) => {
   const r = await getRethink()
   const res = await r.table('ScheduledJob').get(job.id).delete().run()
   // prevent duplicates. after this point, we assume the job finishes to completion (ignores server crashes, etc.)
@@ -108,7 +109,11 @@ const runScheduledJobs = {
     //   description: 'filter jobs by their type'
     // }
   },
-  resolve: async (_source: unknown, {seconds}, {authToken, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {seconds}: {seconds: number},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     const r = await getRethink()
     const now = new Date()
     // AUTH

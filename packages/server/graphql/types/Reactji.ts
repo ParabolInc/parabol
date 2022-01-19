@@ -2,6 +2,12 @@ import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType
 import ReactjiDB from '../../database/types/Reactji'
 import {GQLContext} from '../graphql'
 
+export type ReactjiType = {
+  id: string
+  count: number
+  isViewerReactji: boolean
+}
+
 const Reactji = new GraphQLObjectType<ReactjiDB, GQLContext>({
   name: 'Reactji',
   description: 'An aggregate of reactji metadata',
