@@ -25,7 +25,7 @@ const useNewFeatureSnackbar = (viewerRef: useNewFeatureSnackbar_viewer$key) => {
   const {newFeature} = viewer
 
   useEffect(() => {
-    if (newFeature) {
+    if (!newFeature) return
       const {actionButtonCopy, snackbarMessage, url} = newFeature
       const snack = {
         key: 'newFeature',
@@ -34,11 +34,10 @@ const useNewFeatureSnackbar = (viewerRef: useNewFeatureSnackbar_viewer$key) => {
         onDismiss: () => DismissNewFeatureMutation(atmosphere, {}, {onCompleted, onError}),
         action: {
           label: actionButtonCopy,
-          callback: () => window.open(url, '_blank', 'noopener')?.focus()
+          callback: () => window.open(url, '_blank', 'noopener')
         }
       }
       atmosphere.eventEmitter.emit('addSnackbar', snack)
-    }
   }, [newFeature])
 }
 
