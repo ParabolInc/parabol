@@ -716,14 +716,15 @@ export default abstract class AtlassianManager {
       timeoriginalestimate: 'originalEstimate',
       timeestimate: 'remainingEstimate'
     }
-    const isTimeTrackingField = ['timeoriginalestimate', 'timeestimate'].includes(fieldId)
-    if (isTimeTrackingField) {
+    const timeTrackingFieldName = timeTrackingFieldLookup[fieldId]
+    if (timeTrackingFieldName) {
       payload = {
         update: {
           [timeTrackingFieldId]: [
             {
               set: {
-                [timeTrackingFieldLookup[fieldId]]: `${storyPoints}h`
+                // time tracking fields have to be set in time format, we're setting them in (h)ours
+                [timeTrackingFieldName]: `${storyPoints}h`
               }
             }
           ]
@@ -747,7 +748,7 @@ export default abstract class AtlassianManager {
       )
     }
     if (
-      res.message.startsWith(isTimeTrackingField ? timeTrackingFieldId : fieldId) &&
+      res.message.startsWith(timeTrackingFieldName ? timeTrackingFieldId : fieldId) &&
       res.message.includes('is not on the appropriate screen')
     ) {
       throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
