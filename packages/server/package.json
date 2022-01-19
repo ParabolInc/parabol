@@ -116,7 +116,7 @@
     "es6-promisify": "^5.0.0",
     "fast-json-stable-stringify": "^2.1.0",
     "graphql": "15.7.2",
-    "graphql-jit": "^0.4.2",
+    "graphql-jit": "^0.7.2",
     "html-minifier-terser": "^5.0.2",
     "immutable": "3.8.2",
     "intersection-observer": "^0.7.0",
