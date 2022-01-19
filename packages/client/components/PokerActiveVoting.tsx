@@ -100,7 +100,7 @@ const PokerActiveVoting = (props: Props) => {
   const {id: stageId, scores} = stage
   const hasVotes = scores.length > 0
   const isFacilitator = viewerId === facilitatorUserId
-  const viewerHasVoted = useMemo(() => !!scores.find(({userId}) => userId === viewerId), [scores])
+  const viewerHasVoted = scores.find(({userId}) => userId === viewerId)
   const checkedInCount = useMemo(
     () => meetingMembers.filter(({isSpectating}) => !isSpectating).length,
     [meetingMembers]

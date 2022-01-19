@@ -49,7 +49,7 @@ const PokerCardDeck = (props: Props) => {
   const {viewerId} = atmosphere
   const {meeting, estimateAreaRef} = props
   const {id: meetingId, isRightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
-  const isSpectating = viewerMeetingMember?.isSpectating
+  const isSpectating = !!viewerMeetingMember?.isSpectating
   const stageId = localStage.id!
   const {dimensionRef} = localStage
   const scores = localStage.scores!
@@ -188,7 +188,7 @@ const PokerCardDeck = (props: Props) => {
     <Deck
       ref={deckRef}
       left={left}
-      isSpectating={!!isSpectating}
+      isSpectating={isSpectating}
       // style={{transform}}
       onMouseDown={onMouseDown}
       onTouchStart={onMouseDown}

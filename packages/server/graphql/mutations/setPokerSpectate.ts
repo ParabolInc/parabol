@@ -4,7 +4,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SetPokerSpectatePayload from '../types/SetPokerSpectatePayload'
@@ -44,9 +44,6 @@ const setPokerSpectate = {
       return {error: {message: 'Meeting not found'}}
     }
     const {endedAt, phases, meetingType, teamId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: 'Not on the team'}}
-    }
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
     }
@@ -84,7 +81,7 @@ const setPokerSpectate = {
         await removeVoteForUserId(viewerId, stageId, meetingId)
       }
     })
-    const data = {meetingId, userId: viewerId, dirtyStages, teamId, phaseType: 'ESTIMATE'}
+    const data = {meetingId, userId: viewerId, dirtyStages, teamId}
     publish(SubscriptionChannel.MEETING, meetingId, 'SetPokerSpectateSuccess', data, subOptions)
     return data
   }

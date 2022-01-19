@@ -1,4 +1,3 @@
-import {NewMeetingPhaseTypeEnum} from './../../../client/__generated__/BottomControlBarReadyStage.graphql'
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import EstimateStage from './EstimateStage'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
@@ -26,22 +25,20 @@ export const SetPokerSpectateSuccess = new GraphQLObjectType<any, GQLContext>({
         return meetingMember
       }
     },
-    stages: {
-      type: new GraphQLList(new GraphQLNonNull(EstimateStage)),
+    updatedStages: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(EstimateStage))),
       description:
         'The stages that were updated if the viewer voted and then changed to spectating',
       resolve: async ({
         dirtyStages,
-        phaseType,
         teamId,
         meetingId
       }: {
         dirtyStages: EstimateStageDB[]
-        phaseType: NewMeetingPhaseTypeEnum
         teamId: string
         meetingId: string
       }) => {
-        return dirtyStages.map((stage) => augmentDBStage(stage, meetingId, phaseType, teamId))
+        return dirtyStages.map((stage) => augmentDBStage(stage, meetingId, 'ESTIMATE', teamId))
       }
     }
   })

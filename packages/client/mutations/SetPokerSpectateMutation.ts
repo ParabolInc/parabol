@@ -8,7 +8,7 @@ graphql`
     meetingMember {
       isSpectating
     }
-    stages {
+    updatedStages {
       scores {
         userId
       }
