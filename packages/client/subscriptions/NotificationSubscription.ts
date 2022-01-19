@@ -107,6 +107,7 @@ const subscription = graphql`
         user {
           id
           featureFlags {
+            gitlab
             spotlight
           }
         }

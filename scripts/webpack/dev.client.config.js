@@ -1,11 +1,11 @@
 require('./utils/dotenv')
 const path = require('path')
 const webpack = require('webpack')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')

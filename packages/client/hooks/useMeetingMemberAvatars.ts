@@ -4,9 +4,9 @@ import {readInlineData, _FragmentRefs} from 'relay-runtime'
 import {useMeetingMemberAvatars_meeting$key} from '../__generated__/useMeetingMemberAvatars_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 
-const useMeetingMemberAvatars = (meetingRef: any) => {
+const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key) => {
   const atmosphere = useAtmosphere()
-  const meeting = readInlineData<useMeetingMemberAvatars_meeting$key>(
+  const meeting = readInlineData(
     graphql`
       fragment useMeetingMemberAvatars_meeting on NewMeeting @inline {
         id
@@ -32,7 +32,7 @@ const useMeetingMemberAvatars = (meetingRef: any) => {
       .filter((user) => {
         return user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) && user.isConnected
       })
-      .sort((a, b) => (a.id === viewerId ? -1 : a.lastSeenAt! < b.lastSeenAt! ? -1 : 1))
+      .sort((a, b) => (a.id === viewerId ? -1 : a.lastSeenAt < b.lastSeenAt ? -1 : 1))
   }, [meetingMembers])
   return connectedMeetingMembers
 }

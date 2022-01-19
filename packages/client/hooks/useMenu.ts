@@ -33,7 +33,15 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
   if (originCoords) {
     ;(originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
   }
-  const {portal, closePortal, togglePortal, portalStatus, setPortalStatus, openPortal} = usePortal({
+  const {
+    portal,
+    closePortal,
+    openPortal,
+    portalStatus,
+    terminatePortal,
+    togglePortal,
+    setPortalStatus
+  } = usePortal({
     id,
     onOpen,
     onClose,
@@ -60,14 +68,15 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
   )
   const menuProps = {portalStatus, closePortal, isDropdown}
   return {
-    togglePortal,
-    originRef,
-    menuPortal,
-    menuProps,
     loadingDelay,
     loadingWidth,
+    menuPortal,
+    menuProps,
+    openPortal,
+    originRef,
     portalStatus,
-    openPortal
+    terminatePortal,
+    togglePortal
   }
 }
 

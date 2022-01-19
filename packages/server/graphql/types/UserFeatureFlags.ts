@@ -14,6 +14,11 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if standups is allowed',
       resolve: ({standups}) => !!standups
+    },
+    gitlab: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if gitlab is allowed',
+      resolve: ({gitlab}) => !!gitlab
     }
   })
 })

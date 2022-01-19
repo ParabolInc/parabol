@@ -1,1 +1,3 @@
-export default (tags) => !!tags.includes('archived')
+import {MaybeReadonly} from '../types/generics'
+
+export default (tags: MaybeReadonly<string[]>) => !!tags.includes('archived')

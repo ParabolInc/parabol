@@ -47,7 +47,6 @@ const loginSAML = {
     {samlName, queryString}: {samlName: string; queryString: string}
   ) {
     const r = await getRethink()
-    const now = new Date()
     const body = querystring.parse(queryString)
     const normalizedName = samlName.trim().toLowerCase()
     const doc = await r.table('SAML').get(normalizedName).run()
@@ -102,7 +101,6 @@ const loginSAML = {
       id: userId,
       email,
       preferredName: name,
-      lastSeenAt: now,
       tier: 'enterprise'
     })
 
