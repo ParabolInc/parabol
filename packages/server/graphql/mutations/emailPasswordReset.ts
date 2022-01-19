@@ -30,7 +30,7 @@ const emailPasswordReset = {
   },
   resolve: rateLimit({perMinute: 5, perHour: 50})(
     async (_source: unknown, {email: denormEmail}: {email: string}, {ip}: GQLContext) => {
-      if (process.env.AUTH_INTERNAL_ENABLED !== 'true') {
+      if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
         return {error: {message: 'Resetting password is disabled'}}
       }
       const email = denormEmail.toLowerCase().trim()

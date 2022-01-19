@@ -122,9 +122,9 @@ module.exports = ({isDeploy, isStats}) => ({
       'process.env.DEBUG': false,
       'process.env.NODE_ENV': JSON.stringify('production'),
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify((process.env.PROTOO_LISTEN_PORT || 4444) - 1),
-      'process.env.AUTH_INTERNAL_ENABLED': process.env.AUTH_INTERNAL_ENABLED === 'true',
-      'process.env.AUTH_GOOGLE_ENABLED': process.env.AUTH_GOOGLE_ENABLED === 'true',
-      'process.env.AUTH_SSO_ENABLED': process.env.AUTH_SSO_ENABLED === 'true'
+      'process.env.AUTH_INTERNAL_ENABLED': process.env.AUTH_INTERNAL_DISABLED !== 'true',
+      'process.env.AUTH_GOOGLE_ENABLED': process.env.AUTH_GOOGLE_DISABLED !== 'true',
+      'process.env.AUTH_SSO_ENABLED': process.env.AUTH_SSO_DISABLED !== 'true'
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[contenthash].js.map',

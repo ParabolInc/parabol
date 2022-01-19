@@ -41,7 +41,7 @@ const signUpWithPassword = {
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
     async (_source: unknown, args: SignUpWithPasswordMutationVariables, context: GQLContext) => {
-      if (process.env.AUTH_INTERNAL_ENABLED !== 'true') {
+      if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
         return {error: {message: 'Sign up with password is disabled'}}
       }
       const {invitationToken, password, segmentId} = args

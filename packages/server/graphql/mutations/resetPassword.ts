@@ -34,7 +34,7 @@ const resetPassword = {
       {token, newPassword}: {token: string; newPassword: string},
       context: GQLContext
     ) => {
-      if (process.env.AUTH_INTERNAL_ENABLED !== 'true') {
+      if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
         return {error: {message: 'Resetting password is disabled'}}
       }
       const r = await getRethink()

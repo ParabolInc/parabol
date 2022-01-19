@@ -120,9 +120,9 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
-      'process.env.AUTH_INTERNAL_ENABLED': process.env.AUTH_INTERNAL_ENABLED === 'true',
-      'process.env.AUTH_GOOGLE_ENABLED': process.env.AUTH_GOOGLE_ENABLED === 'true',
-      'process.env.AUTH_SSO_ENABLED': process.env.AUTH_SSO_ENABLED === 'true',
+      'process.env.AUTH_INTERNAL_ENABLED': process.env.AUTH_INTERNAL_DISABLED !== 'true',
+      'process.env.AUTH_GOOGLE_ENABLED': process.env.AUTH_GOOGLE_DISABLED !== 'true',
+      'process.env.AUTH_SSO_ENABLED': process.env.AUTH_SSO_DISABLED !== 'true',
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
     }),
     new webpack.HotModuleReplacementPlugin()
