@@ -1,5 +1,6 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../../../graphql/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import generateUID from '../../../generateUID'
 import getPg from '../../../postgres/getPg'
@@ -14,16 +15,28 @@ const addNewFeature = {
   type: AddNewFeaturePayload,
   description: 'broadcast a new feature to the entire userbase',
   args: {
-    copy: {
+    actionButtonCopy: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The text body of the new feature'
+      description: 'The text of the action button in the snackbar'
+    },
+    snackbarMessage: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The description of the new feature'
     },
     url: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'the permalink to the blog post'
+      description: 'The permalink to the blog post describing the new feature'
     }
   },
-  resolve: async (_source: unknown, {copy, url}, {authToken, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {
+      actionButtonCopy,
+      snackbarMessage,
+      url
+    }: {actionButtonCopy: string; snackbarMessage: string; url: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     const r = await getRethink()
     const redis = getRedis()
 
@@ -36,7 +49,8 @@ const addNewFeature = {
     const newFeatureId = generateUID()
     const newFeature = {
       id: newFeatureId,
-      copy,
+      actionButtonCopy,
+      snackbarMessage,
       url
     }
     await Promise.all([
