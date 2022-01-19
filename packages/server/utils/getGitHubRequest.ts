@@ -23,7 +23,7 @@ const getGitHubRequest = (
       batchRef
     })
     const {data, errors} = result
-    const error = errors ? new Error(errors[0].message) : null
+    const error = errors ? new Error(errors[0]?.message) : null
     return [data, error] as [TData, typeof error]
   }
   return githubRequest

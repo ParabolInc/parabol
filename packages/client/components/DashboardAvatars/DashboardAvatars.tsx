@@ -112,8 +112,8 @@ const DashboardAvatars = (props: Props) => {
       commitLocalUpdate(atmosphere, (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         const teamMember = viewer?.getLinkedRecord('teamMember', {teamId})
-        if (!teamMember) return
         const memberInFocus = teamMembers[clickedOverflow ? maxAvatars - 1 : 0]
+        if (!teamMember || !memberInFocus) return
         const {id: teamMemberId} = memberInFocus
         teamMember.setValue(teamMemberId, 'manageTeamMemberId')
       })

@@ -21,22 +21,21 @@ export default class RethinkDBCache {
     fetches.forEach((fetch) => {
       const {table, id} = fetch
       idsByTable[table] = idsByTable[table] || []
-      idsByTable[table].push(id)
+      idsByTable[table]!.push(id)
     })
     const reqlObj = {} as {[table: string]: DBType[T][]}
-    Object.keys(idsByTable).forEach((table: string) => {
-      const ids = idsByTable[table]
-      reqlObj[table] = (r
+    Object.entries(idsByTable).forEach(([table, ids]) => {
+      reqlObj[table] = r
         .table(table as any)
         .getAll(r.args(ids))
-        .coerceTo('array') as unknown) as DBType[T][]
+        .coerceTo('array') as unknown as DBType[T][]
     })
 
     const dbDocsByTable = await r(reqlObj).run()
     const docsByKey = {} as {[key: string]: DBType[T]}
     Object.keys(dbDocsByTable).forEach((table) => {
       const docs = dbDocsByTable[table]
-      docs.forEach((doc) => {
+      docs?.forEach((doc) => {
         const key = `${table}:${doc.id}`
         docsByKey[key] = doc
       })
@@ -60,9 +59,6 @@ export default class RethinkDBCache {
   }
   writeTable = async <T extends keyof DBType>(table: T, updater: Partial<DBType[T]>) => {
     const r = await getRethink()
-    return r
-      .table(table)
-      .update(updater)
-      .run()
+    return r.table(table).update(updater).run()
   }
 }

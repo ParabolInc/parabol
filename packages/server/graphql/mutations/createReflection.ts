@@ -43,11 +43,7 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
@@ -95,7 +91,7 @@ export default {
     const [groupStage] = stages
 
     let unlockedStageIds
-    if (!groupStage.isNavigableByFacilitator) {
+    if (!groupStage?.isNavigableByFacilitator) {
       unlockedStageIds = unlockAllStagesForPhase(phases, 'group', true)
       await r
         .table('NewMeeting')
