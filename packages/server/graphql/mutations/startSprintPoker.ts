@@ -4,25 +4,25 @@ import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import getPg from '../../postgres/getPg'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import {getUserId, isLocked, isPaid, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
+import isValid from '../isValid'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import isValid from '../isValid'
-import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -87,14 +87,8 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
-    const teams = await getTeamsByIds([teamId])
-    const team = teams[0]!
-    if (!isPaid(team)) {
-      const errMsg = isLocked(team)
-        ? "Wow, you're determined to use Parabol! That's awesome! Do you want to keep sneaking over the gate, or walk through the door with our Sales team?"
-        : 'Sorry! We are unable to start your meeting because your team has an overdue payment'
-      return standardError(new Error(errMsg), {userId: viewerId})
-    }
+    const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+    if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
     const meetingType: MeetingTypeEnum = 'poker'
 

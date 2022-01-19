@@ -1,9 +1,8 @@
-import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'
-import {Team} from '../postgres/queries/getTeamsByIds'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
@@ -96,6 +95,3 @@ export const isOrgLeaderOfUser = async (authToken: AuthToken, userId: string) =>
   const total = viewerOrgIds.length + userOrgIds.length
   return uniques.size < total
 }
-
-export const isPaid = (team: Team) => team.isPaid
-export const isLocked = (team: Team) => !!team.lockMessageHTML
