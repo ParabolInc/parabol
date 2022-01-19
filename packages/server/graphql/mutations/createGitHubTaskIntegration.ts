@@ -1,18 +1,18 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import GitHubIssueId from '../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
+import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {GQLContext, GQLResolveInfo} from '../graphql'
+import {GQLContext} from '../graphql'
 import CreateGitHubTaskIntegrationPayload from '../types/CreateGitHubTaskIntegrationPayload'
 import createGitHubTask from './helpers/createGitHubTask'
-import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
-import appOrigin from '../../appOrigin'
 
 type CreateGitHubTaskIntegrationMutationVariables = {
   nameWithOwner: string
@@ -35,7 +35,7 @@ export default {
     _source: any,
     {nameWithOwner, taskId}: CreateGitHubTaskIntegrationMutationVariables,
     context: GQLContext,
-    info: GQLResolveInfo
+    info: GraphQLResolveInfo
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const r = await getRethink()

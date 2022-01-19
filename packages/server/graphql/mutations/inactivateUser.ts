@@ -74,6 +74,8 @@ export default {
 
     // RESOLUTION
     const orgIds = orgs.map((org) => org.id)
+    // update the dataLoader cache
+    user.inactive = true
     await adjustUserCount(userId, orgIds, InvoiceItemType.PAUSE_USER)
 
     // TODO wire up subscription

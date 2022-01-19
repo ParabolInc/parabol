@@ -15,7 +15,7 @@ import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import ITeam from '../../database/types/Team'
 import db from '../../db'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import AgendaItem from './AgendaItem'
@@ -96,10 +96,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
             .run()
         }
         const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r
-          .table('MassInvitation')
-          .insert(massInvitation, {conflict: 'replace'})
-          .run()
+        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation
@@ -331,7 +328,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       },
       description: 'All the team members actively associated with the team',
       async resolve({id: teamId}, {sortBy = 'preferredName'}, {authToken, dataLoader}) {
-        if (!isTeamMember(authToken, teamId)) return []
+        if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) return []
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => {
           let [aProp, bProp] = [a[sortBy], b[sortBy]]

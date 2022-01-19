@@ -53,7 +53,7 @@ const transformRules = (projectRoot) => {
     },
     {
       // things that need inline-import
-      include: path.join(SERVER_ROOT, 'graphql'),
+      include: [path.join(SERVER_ROOT, 'graphql'), path.join(SERVER_ROOT, 'integrations')],
       use: [
         {
           loader: 'babel-loader',
