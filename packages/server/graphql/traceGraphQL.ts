@@ -166,7 +166,7 @@ function wrapSchema(tracer: Tracer, config: Config, schema: PatchedGraphQLSchema
   schema._datadog_patched = true
 
   const typeMap = schema.getTypeMap()
-  Object.values(typeMap).forEach((namedType: any) => {
+  Object.values(typeMap).forEach((namedType) => {
     // ignore introspection and scalar types
     if (namedType.name.startsWith('__') || !isObjectType(namedType)) return
     const fields = namedType.getFields()
@@ -307,7 +307,7 @@ function pathToArray(path: Path) {
 }
 
 function withCollapse(responsePathAsArray: typeof pathToArray) {
-  return function (path: Path) {
+  return function(path: Path) {
     return responsePathAsArray(path).map((segment) => (typeof segment === 'number' ? '*' : segment))
   }
 }

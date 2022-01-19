@@ -20,7 +20,7 @@ const company = {
   description: 'All the info about a specific company',
   async resolve(
     _source: unknown,
-    {domain, userId}: {domain?: string; userId?: string},
+    {domain, userId}: {domain?: string | null; userId?: string},
     {authToken, dataLoader}: GQLContext
   ) {
     requireSU(authToken)

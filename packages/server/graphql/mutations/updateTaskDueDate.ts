@@ -25,7 +25,7 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {taskId, dueDate}: {taskId: string; dueDate?: Date},
+    {taskId, dueDate}: {taskId: string; dueDate?: Date | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()

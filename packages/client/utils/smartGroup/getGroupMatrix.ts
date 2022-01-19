@@ -35,7 +35,7 @@ type NestedTree = {
 type ClusterfckTree = NestedTree | Tree
 
 type ClusterfckRes = {
-  clusters: Function
+  clusters: (...args: any[]) => any
   tree: ClusterfckTree
 }
 
@@ -74,10 +74,10 @@ const getGroupMatrix = (distanceMatrix: number[][], groupingOptions: GroupingOpt
   )
   const {tree} = clusterfckRes
   const {groupingThreshold, maxReductionPercent = MAX_REDUCTION_PERCENT} = groupingOptions
-  if (!tree) return {groups: []}
-  let groups: number[][][]
+  if (!tree) return {groups: [] as number[][][]}
+  let groups = [] as number[][][]
   let thresh = groupingThreshold
-  let distancesArr
+  let distancesArr = [] as number[]
   // naive logic to make sure the grouping is AOK
   for (let i = 0; i < 5; i++) {
     const res = traverseTree(tree, groupingOptions)
