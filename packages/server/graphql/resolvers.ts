@@ -16,7 +16,9 @@ import Task from '../database/types/Task'
 import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import User from '../database/types/User'
 import TeamMember from '../database/types/TeamMember'
-import {Loaders} from '../dataloader/RethinkDataLoader'
+import {Loaders} from '../dataloader/RootDataLoader'
+import isValid from './isValid'
+import {Team} from '../postgres/queries/getTeamsByIds'
 
 export const resolveAgendaItem = (
   {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},
@@ -85,7 +87,7 @@ export const resolveTasks = async (
   {authToken, dataLoader}: GQLContext
 ) => {
   if (!taskIds || taskIds.length === 0) return null
-  const tasks = await dataLoader.get('tasks').loadMany(taskIds)
+  const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
   const {userId} = tasks[0]
   const isViewer = userId === getUserId(authToken)
   const teamTasks = tasks.filter(({teamId}: {teamId: string}) => authToken.tms.includes(teamId))
@@ -107,7 +109,7 @@ export const resolveTeam = (
 }
 
 export const resolveTeams = (
-  {teamIds, teams}: {teamIds: string; teams: IGetTeamsByIdsQueryResult[]},
+  {teamIds, teams}: {teamIds: string; teams: Team[]},
   _args: any,
   {dataLoader}: GQLContext
 ) => {
@@ -136,9 +138,10 @@ export const resolveTeamMembers = (
     : teamMembers
 }
 
-export const resolveGQLStageFromId = (stageId: string, meeting: Meeting) => {
+export const resolveGQLStageFromId = (stageId: string | undefined, meeting: Meeting) => {
   const {id: meetingId, phases} = meeting
-  const stageRes = findStageById(phases, stageId)!
+  const stageRes = findStageById(phases, stageId)
+  if (!stageRes) return undefined
   const {stage} = stageRes
   return {
     ...stage,
@@ -192,43 +195,38 @@ export const resolveUser = (
 
 /* Special resolvers */
 
-export const resolveForSU = (fieldName: string) => (
-  source: any,
-  _args: any,
-  {authToken}: GQLContext
-) => {
-  return isSuperUser(authToken) ? source[fieldName] : undefined
-}
+export const resolveForSU =
+  (fieldName: string) =>
+  (source: any, _args: any, {authToken}: GQLContext) => {
+    return isSuperUser(authToken) ? source[fieldName] : undefined
+  }
 
-export const makeResolve = (
-  idName: string,
-  docName: string,
-  dataLoaderName: Loaders,
-  isMany?: boolean
-) => (source: any, _args: any, {dataLoader}: GQLContext) => {
-  const idValue = source[idName]
-  const method = isMany ? 'loadMany' : 'load'
-  return idValue ? dataLoader.get(dataLoaderName)[method](idValue) : source[docName]
-}
+export const makeResolve =
+  (idName: string, docName: string, dataLoaderName: Loaders, isMany?: boolean) =>
+  (source: any, _args: any, {dataLoader}: GQLContext) => {
+    const idValue = source[idName]
+    const method = isMany ? 'loadMany' : 'load'
+    return idValue ? (dataLoader.get(dataLoaderName)[method] as any)(idValue) : source[docName]
+  }
 
-export const resolveFilterByTeam = (
-  resolver: (source: any, _args: any, context: GQLContext) => Promise<any>,
-  getTeamId: (obj: any) => string
-) => async (source: any, _args: any, context: GQLContext) => {
-  const {teamIdFilter} = source
-  const resolvedArray = await resolver(source, _args, context)
-  return teamIdFilter
-    ? resolvedArray.filter((obj: any) => getTeamId(obj) === teamIdFilter)
-    : resolvedArray
-}
+export const resolveFilterByTeam =
+  (
+    resolver: (source: any, _args: any, context: GQLContext) => Promise<any>,
+    getTeamId: (obj: any) => string
+  ) =>
+  async (source: any, _args: any, context: GQLContext) => {
+    const {teamIdFilter} = source
+    const resolvedArray = await resolver(source, _args, context)
+    return teamIdFilter
+      ? resolvedArray.filter((obj: any) => getTeamId(obj) === teamIdFilter)
+      : resolvedArray
+  }
 
-export const resolveForBillingLeaders = (fieldName: string) => async (
-  source: any,
-  _args: any,
-  {authToken, dataLoader}: GQLContext
-) => {
-  const {id: orgId} = source
-  const viewerId = getUserId(authToken)
-  const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-  return isBillingLeader || isSuperUser(authToken) ? source[fieldName] : undefined
-}
+export const resolveForBillingLeaders =
+  (fieldName: string) =>
+  async (source: any, _args: any, {authToken, dataLoader}: GQLContext) => {
+    const {id: orgId} = source
+    const viewerId = getUserId(authToken)
+    const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
+    return isBillingLeader || isSuperUser(authToken) ? source[fieldName] : undefined
+  }

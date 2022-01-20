@@ -10,12 +10,12 @@ interface StageSummary {
   isNavigable: boolean
   isActive: boolean
   sortOrder: number
-  stageIds: string[]
+  stageIds: [string, ...string[]]
   finalScores: (string | null)[]
 }
 
-const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
-  const estimatePhase = readInlineData<useMakeStageSummaries_phase$key>(
+const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localStageId: string) => {
+  const estimatePhase = readInlineData(
     graphql`
       fragment useMakeStageSummaries_phase on EstimatePhase @inline {
         phaseType
@@ -50,12 +50,12 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
     const {stages} = estimatePhase
     const summaries = [] as StageSummary[]
     for (let i = 0; i < stages.length; i++) {
-      const stage = stages[i]
+      const stage = stages[i]!
       const {taskId, task} = stage
       const batch = [stage]
       for (let j = i + 1; j < stages.length; j++) {
         const nextStage = stages[j]
-        if (nextStage.taskId !== taskId) break
+        if (nextStage?.taskId !== taskId) break
         batch.push(nextStage)
       }
       const getSummary = () => {
@@ -96,7 +96,7 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
         sortOrder: stage.sortOrder,
-        stageIds: batch.map(({id}) => id),
+        stageIds: batch.map(({id}) => id) as [string, ...string[]],
         finalScores: batch.map(({finalScore}) => finalScore)
       })
       i += batch.length - 1

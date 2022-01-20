@@ -12,7 +12,9 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {startSlackMeeting} from './helpers/notifySlack'
+import isStartMeetingLocked from './helpers/isStartMeetingLocked'
+import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
@@ -25,7 +27,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
@@ -37,6 +39,8 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
+    const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+    if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
     const meetingType: MeetingTypeEnum = 'action'
 
@@ -66,10 +70,7 @@ export default {
       phases,
       facilitatorUserId: viewerId
     })
-    await r
-      .table('NewMeeting')
-      .insert(meeting)
-      .run()
+    await r.table('NewMeeting').insert(meeting).run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -79,11 +80,7 @@ export default {
       return true
     })
     if (otherActiveMeeting) {
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .delete()
-        .run()
+      await r.table('NewMeeting').get(meetingId).delete().run()
       return {error: {message: 'Meeting already started'}}
     }
     const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
@@ -98,20 +95,13 @@ export default {
         .table('MeetingMember')
         .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
         .run(),
-      r
-        .table('Team')
-        .get(teamId)
-        .update(updates)
-        .run(),
+      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId),
-      r
-        .table('AgendaItem')
-        .getAll(r.args(agendaItemIds))
-        .update({meetingId})
-        .run()
+      r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)

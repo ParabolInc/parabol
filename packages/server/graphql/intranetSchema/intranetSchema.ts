@@ -17,6 +17,7 @@ import enableSAMLForDomain from './mutations/enableSAMLForDomain'
 import endOldMeetings from './mutations/endOldMeetings'
 import flagConversionModal from './mutations/flagConversionModal'
 import flagOverLimit from './mutations/flagOverLimit'
+import hardDeleteUser from './mutations/hardDeleteUser'
 import lockTeams from './mutations/lockTeams'
 import loginSAML from './mutations/loginSAML'
 import messageAllSlackUsers from './mutations/messageAllSlackUsers'
@@ -41,6 +42,7 @@ import user from './queries/user'
 import users from './queries/users'
 import updateEmail from './mutations/updateEmail'
 import updateWatchlist from './mutations/updateWatchlist'
+import updateOAuthRefreshTokens from './mutations/updateOAuthRefreshTokens'
 
 const query = new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
@@ -76,6 +78,7 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       endOldMeetings,
       flagConversionModal,
       flagOverLimit,
+      hardDeleteUser,
       lockTeams,
       loginSAML,
       enableSAMLForDomain,
@@ -92,7 +95,8 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       stripeUpdateInvoiceItem,
       stripeInvoiceFinalized,
       updateEmail,
-      updateWatchlist
+      updateWatchlist,
+      updateOAuthRefreshTokens
     } as any)
 })
 

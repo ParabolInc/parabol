@@ -5,6 +5,180 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.43.0 2022-Jan-12
+
+### Fixed
+
+- Fix demo retrospective task integration menu (#5827)
+- Fix undefined in team invitation emails (@5853)
+
+## 6.42.0 2022-Jan-06
+
+### Changed
+
+- Remove editor.wordWrap from workspace settings (#5713)
+- Disable refetch queries on new version bump to increase deployment reliability (#5749)
+
+### Fixed
+
+- Implement rate limit handling to fix a Jira thorttling issue (#5546)
+- Fix searching not working in integration dropdown list (#5755)
+- Fix an issue where user is unable to toggle active status in organization page (#5836)
+- Fix alignment of logo (#5814)
+
+## 6.41.0 2021-Dec-16
+
+### Added
+
+- Add updatedAt trigger to User table (#5733)
+- Add standups feature flag (#5754)
+- Release Spotlight (#5785)
+- Spotlight tracking (#5714)
+
+### Fixed
+
+- Spotlight height doesn't change when searching (#5747)
+- This is proper this again in make resolve (#5769)
+- Fix mapping to jira dimension field (#5770)
+- noUncheckedIndexedAccess fixes (#5737)
+- Fix image scaling in task description (#5758)
+- Fix typo in comment (#5784)
+- Remove instanceof TouchEvent (#5807)
+
+## 6.40.0 2021-Dec-09
+
+### Added
+
+- Add mattermost notification integration (#5550)
+- Add datadog tracing to compiled graphql queries (#5681)
+- Add hardDeleteUser mutation (#5475)
+- Add spotlightSearchQuery to similarReflectionGroups queries (#5735)
+- Spotlight — highlight search keyword (#5716)
+- Spotlight feature flag (#5699)
+- Add calculated domain field to User (#5719)
+
+### Changed
+
+- Extend GQL Timeout for GraphiQL Queries (#5577)
+
+### Fixed
+
+- Prevent ungrouping Spotlight results (#5704)
+- Fix spotlight not loading similar reflections (#5728)
+- Mitigate safari popups on SSO (#5617)
+- Fix more implicit any errors (#5740)
+
+## 6.39.0 2021-Dec-02
+
+### Added
+
+- Language tooltip is updated on New Meeting CheckIn Greeting (#5682)
+- Spotlight: support searchQuery business logic for similarReflections (#5469)
+- Spotlight: animate remote reflection when it enters or leaves Spotlight (#5600)
+
+### Fixed
+
+- Fix remotely ungrouped results position in Spotlight (#5708)
+- Recently used emojis are managed using local storage (#5656)
+- Returning refreshed token from fresh atlassian auth loader (#5729)
+
+## 6.38.0 2021-Nov-24
+
+### Added
+
+- Spotlight: remote animation edge cases (#5621)
+- Make RetroReflection opened in spotlight by another member non-droppable (#5556)
+- Added set new team lead mutation to internal schema (#5658)
+
+### Fixed
+
+- Console errors when remotely ungrouping (#5677)
+- fix relay error on drag end (#5674)
+- Fix missing isSpotlight in useSpotlightReflectionGroup (#5689)
+- Ironbank security patches for v6.36.0 (#5687)
+- Fix sticky tooltip in agenda item pins (#5700)
+- Fix dail_user_stat to order by user counts (#5693)
+- remove hasAuth from scopephaseareaadd (#5711)
+- Fix no implicit any errors (Part 3 of 8) (#5697)
+- Invitation required screen right after creating a new team (#5721)
+
+### Changed
+
+- Show all packages errors on yarn typecheck (#5688)
+- add frozen-lockfile so CI breaks if yarn.lock doesn't package.json
+- bump eslint to v8 (#5695)
+- favor built assets over \_\_STATIC_IMAGES\_\_ (#4847)
+- Remove wrtc signal server (#5698)
+- support eslint v7+ (#5709)
+
+## 6.37.0 2021-Nov-18
+
+### Added
+
+- Allow moving integration tasks between teams (#5513)
+- Added updateOAuthRefreshTokens mutation (#5590)
+- Use 2 GraphQL Executors (#5560)
+- prepare upgrade to graphql v16 (#5662)
+- make atlassian oauth2 response spec compliant (#5652)
+
+### Fixed
+
+- support new m1 (#5593)
+- Fix source returning to kanban & 2 column error (#5626)
+- Fix collapsed reflections (#5642)
+- Fix graphiql fetcher import (#5653)
+- Fix 100 noUncheckedIndexedAccess errors (#5651)
+
+### Changed
+
+- build(deps): bump tmpl from 1.0.4 to 1.0.5 (#5618)
+- build(deps): bump vm2 from 3.9.3 to 3.9.5 (#5619)
+- bump graphiql (#5646)
+- add final newline on save vscode (#5647)
+- Rename and document dataLoader (#5649)
+
+## 6.36.0 2021-Nov-10
+
+### Added
+
+- Spotlight: groups UI (#5390)
+- GitHub: Persist favorite queries (#5435)
+- Spotlight: drag source to result (#5412)
+- Spotlight: drag result to source (#5414)
+- Allow to push integration tasks with assignee's and own integration (#5342)
+
+### Fixed
+
+- Fix some no-implicit-any errors (#5476)
+- Fix ending meeting without open phases (#5520)
+- Prevent remote reflection from loosing its position when opening spotlight (#5624)
+
+## 6.35.0 2021-Nov-03
+
+### Added
+
+- User can now create a poll in discussion thread (but can't vote yet) (#5361)
+- Show remote spotlight activity (#5500)
+- Expand Poker task description by default in estimate phase (#5569)
+
+### Fixed
+
+- Fix the bug where reflections are missing if the reto meeting does not advance to discuss phase (#5568)
+- Fix an issue where updating estimates at Atlanssian Jira does not reflect it at Parabol side (#5566)
+- Fix a performance issue in disconnectSocket mutation (#5583)
+- Fix a migration issue where silent RethinkDB fails if stage has not taskId (#5571)
+
+## 6.34.0 2021-Oct-27
+
+### Fixed
+
+- Fix pg query count datatype (#5562)
+- Fix/users type from dataloader (#5538)
+
+### Added
+
+- Better logging for timeout in publishInternalGQL (#5552)
+
 ## 6.33.1 2021-Oct-21
 
 ### Fixed

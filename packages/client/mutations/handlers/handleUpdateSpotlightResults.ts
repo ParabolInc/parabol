@@ -1,10 +1,7 @@
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import getNextSortOrder from '~/utils/getNextSortOrder'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
-// if a remote user groups/ungroups a result, a reflectionGroupId is created or removed
-// update the similarReflectionGroup to reflect this
 const handleUpdateSpotlightResults = (
   reflection: RecordProxy,
   reflectionGroup: RecordProxy | null,
@@ -15,41 +12,45 @@ const handleUpdateSpotlightResults = (
   const meeting = store.get(meetingId)
   // reflectionGroup is null if there's no target type
   if (!meeting || !reflectionGroup) return
-  const spotlightReflection = meeting?.getLinkedRecord('spotlightReflection')
-  const spotlightReflectionId = spotlightReflection?.getValue('id')
+  const spotlightSearchQuery = (meeting.getValue('spotlightSearchQuery') || '') as string
+  const spotlightGroup = meeting?.getLinkedRecord('spotlightGroup')
+  const spotlightGroupId = spotlightGroup?.getValue('id')
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  if (!viewer || !spotlightReflectionId) return
+  if (!viewer || !spotlightGroupId) return
   const similarReflectionGroups = viewer.getLinkedRecords('similarReflectionGroups', {
-    reflectionId: spotlightReflectionId,
-    searchQuery: '' // TODO: add search query
+    reflectionGroupId: spotlightGroupId,
+    searchQuery: spotlightSearchQuery
   })
-  console.log('Add searchQuery')
   if (!similarReflectionGroups) return
   const reflectionsCount = reflectionGroup?.getLinkedRecords('reflections')?.length
-  const oldReflections = store.get(oldReflectionGroupId)?.getLinkedRecords('reflections')
+  const oldReflectionGroup = store.get(oldReflectionGroupId)
+  const oldReflections = oldReflectionGroup?.getLinkedRecords('reflections')
   const reflectionId = reflection.getValue('id')
-  const isStaleGroup =
-    oldReflections?.length === 1 && oldReflections[0].getValue('id') === reflectionId
-  // added to an existing group. old reflection group needs to be removed
-  if (isStaleGroup) {
+  const isOldGroupEmpty =
+    oldReflections?.length === 1 && oldReflections[0]!.getValue('id') === reflectionId
+  const reflectionGroupId = reflectionGroup.getValue('id')
+  const groupsIds = similarReflectionGroups
+    .map((group) => group.getValue('id'))
+    .concat(spotlightGroupId)
+  const isInSpotlight = groupsIds.includes(reflectionGroupId)
+  const wasInSpotlight = groupsIds.includes(oldReflectionGroupId)
+  // added to another group. Remove old reflection group
+  if (isOldGroupEmpty && wasInSpotlight) {
     safeRemoveNodeFromArray(oldReflectionGroupId, viewer, 'similarReflectionGroups', {
       storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
-        searchQuery: '' // TODO: add search query
+        reflectionGroupId: spotlightGroupId,
+        searchQuery: spotlightSearchQuery
       }
     })
   }
-  // ungrouping created a new group id which needs to be added to Spotlight
-  else if (reflectionsCount === 1) {
-    const sortOrders = similarReflectionGroups.map((group) => ({
-      sortOrder: group.getValue('sortOrder') as number
-    }))
-    const nextSortOrder = getNextSortOrder(sortOrders)
-    reflectionGroup.setValue(nextSortOrder, 'sortOrder')
+  // ungrouping created a new group or was added to a group in the kanban
+  // reflectionsCount is undefined when ungrouping
+  // don't use else if: when a result is added to a kanban group, remove old empty group and add new one
+  if (!isInSpotlight && reflectionsCount !== undefined && wasInSpotlight) {
     addNodeToArray(reflectionGroup, viewer, 'similarReflectionGroups', 'sortOrder', {
       storageKeyArgs: {
-        reflectionId: spotlightReflectionId,
-        searchQuery: '' // TODO: add search query
+        reflectionGroupId: spotlightGroupId,
+        searchQuery: spotlightSearchQuery
       }
     })
   }

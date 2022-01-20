@@ -50,16 +50,18 @@ const AgendaList = (props: Props) => {
 
   const onDragEnd = useEventCallback((result) => {
     const {source, destination} = result
+    const destinationItem = agendaItems[destination.index]
+    const sourceItem = agendaItems[source.index]
     if (
       !destination ||
       destination.droppableId !== AGENDA_ITEM ||
       source.droppableId !== AGENDA_ITEM ||
-      destination.index === source.index
+      destination.index === source.index ||
+      !destinationItem ||
+      !sourceItem
     ) {
       return
     }
-    const sourceItem = agendaItems[source.index]
-    const destinationItem = agendaItems[destination.index]
 
     let sortOrder
     if (destination.index === 0) {
@@ -69,7 +71,7 @@ const AgendaList = (props: Props) => {
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (agendaItems[destination.index + offset].sortOrder + destinationItem.sortOrder) / 2 +
+        (agendaItems[destination.index + offset]!.sortOrder + destinationItem.sortOrder) / 2 +
         dndNoise()
     }
     UpdateAgendaItemMutation(

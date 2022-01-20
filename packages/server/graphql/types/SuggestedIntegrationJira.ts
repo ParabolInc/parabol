@@ -30,7 +30,7 @@ const SuggestedIntegrationJira = new GraphQLObjectType<any, GQLContext>({
     remoteProject: {
       type: JiraRemoteProject,
       description: 'The full project document fetched from Jira',
-      resolve: async ({cloudId, projectKey, teamId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({cloudId, projectKey, teamId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         return dataLoader
           .get('jiraRemoteProject')

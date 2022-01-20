@@ -11,7 +11,9 @@ export const cardTypeLookup = {
   'Diners Club': 'cc-diners-club-brands',
   JCB: 'cc-jcb-brands',
   Unknown: 'credit_card'
-}
+} as const
+
+export type CardTypeIcon = ValueOf<typeof cardTypeLookup>
 
 export const normalizeExpiry = (value = '', previousValue = '') => {
   const month = value.substr(0, 2)
@@ -29,7 +31,7 @@ export const normalizeExpiry = (value = '', previousValue = '') => {
     const year = numValue.substr(2)
     const currentYear = String(new Date().getFullYear()).substr(2)
     // only 201x+
-    if (year.length === 0 || (year.length === 1 && year < currentYear[0])) {
+    if (year.length === 0 || (year.length === 1 && year < currentYear[0]!)) {
       return prefix
     }
     // only 2017+
@@ -110,6 +112,6 @@ export default class StripeClientManager {
   cardTypeIcon = (number: string) => {
     if (!this.stripe) return 'credit_card'
     const type = this.stripe.cardType(number)
-    return cardTypeLookup[type] as ValueOf<typeof cardTypeLookup>
+    return cardTypeLookup[type]
   }
 }

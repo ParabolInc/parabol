@@ -1,6 +1,6 @@
 import {GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import UpdatedTeamInput from '../types/UpdatedTeamInput'
+import UpdatedTeamInput /*, {UpdatedTeamInputType}*/ from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -19,7 +19,11 @@ export default {
       description: 'The input object containing the teamId and any modified fields'
     }
   },
-  async resolve(_source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
+  async resolve(
+    _source: unknown,
+    {updatedTeam}, //FIXME type mismatch: {updatedTeam: UpdatedTeamInputType},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -44,18 +48,14 @@ export default {
 
     // RESOLUTION
     // update the dataLoader cache
-    const cachedTeam = orgTeams.find((team) => team.id === teamId)
+    const cachedTeam = orgTeams.find((team) => team.id === teamId)!
     cachedTeam.name = name
     const dbUpdate = {
       name,
       updatedAt: now
     }
     await Promise.all([
-      r
-        .table('Team')
-        .get(teamId)
-        .update(dbUpdate)
-        .run(),
+      r.table('Team').get(teamId).update(dbUpdate).run(),
       updateTeamByTeamId(dbUpdate, teamId)
     ])
 

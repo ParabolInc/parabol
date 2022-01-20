@@ -7,7 +7,7 @@ import acceptsBrotli from './acceptsBrotli'
 import PROD from './PROD'
 import dehydrate from './utils/dehydrate'
 
-export const getClientKeys = () => {
+const getClientKeys = () => {
   return {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
     github: process.env.GITHUB_CLIENT_ID,

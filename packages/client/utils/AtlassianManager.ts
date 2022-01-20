@@ -105,7 +105,7 @@ interface IssueCreateMetadata {
   })[]
 }
 
-interface JiraCreateIssueResponse {
+export interface JiraCreateIssueResponse {
   id: string
   key: string
   self: string
@@ -161,6 +161,11 @@ interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
   fieldsToInclude: JiraIncludedFields
   fields: F
 }
+
+export type JiraIssueRaw = JiraIssueBean<
+  {description: string; summary: string},
+  {description: string}
+>
 
 interface JiraAuthor {
   self: string
@@ -271,6 +276,18 @@ export type JiraPermissionScope =
   | 'offline_access'
   | 'manage:jira-project'
 
+export class RateLimitError {
+  retryAt: Date
+  name: 'RateLimitError' = 'RateLimitError'
+  message: string
+
+  constructor(message: string, retryAt: Date) {
+    this.message = message
+    this.retryAt = retryAt
+  }
+}
+Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
+
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
   static SCOPE: JiraPermissionScope[] = [
@@ -306,6 +323,18 @@ export default abstract class AtlassianManager {
     if (res instanceof Error) {
       return res
     }
+    const {headers} = res
+    if (res.status === 429) {
+      const retryAfterSeconds = headers.get('Retry-After') ?? '3'
+      return new RateLimitError(
+        'got jira rate limit error',
+        new Date(Date.now() + Number(retryAfterSeconds) * 1000)
+      )
+    }
+    const contentType = headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return new Error('Received non-JSON Atlassian Response')
+    }
     const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
     if ('message' in json) {
       if (json.message === 'No message available' && 'error' in json) {
@@ -335,7 +364,7 @@ export default abstract class AtlassianManager {
       return new Error(json.errorMessages[0])
     }
     if ('errors' in json) {
-      const errorFieldName = Object.keys(json.errors)[0]
+      const errorFieldName = Object.keys(json.errors)[0] || 'Unknown'
       return new Error(`${errorFieldName}: ${json.errors[errorFieldName]}`)
     }
     return json
@@ -360,7 +389,9 @@ export default abstract class AtlassianManager {
     }
     if ('errors' in error) {
       const errorFieldName = Object.keys(error.errors)[0]
-      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      if (errorFieldName) {
+        return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      }
     }
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
   }
@@ -383,7 +414,9 @@ export default abstract class AtlassianManager {
     }
     if ('errors' in error) {
       const errorFieldName = Object.keys(error.errors)[0]
-      return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      if (errorFieldName) {
+        return new Error(`${errorFieldName}: ${error.errors[errorFieldName]}`)
+      }
     }
 
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
@@ -406,7 +439,7 @@ export default abstract class AtlassianManager {
 
   async getPaginatedProjects(cloudId: string, url: string, callback: GetProjectsCallback) {
     const res = await this.get<JiraProjectResponse>(url)
-    if (res instanceof Error) {
+    if (res instanceof Error || res instanceof RateLimitError) {
       callback(res, null)
     } else {
       callback(null, {cloudId, newProjects: res.values})
@@ -456,7 +489,7 @@ export default abstract class AtlassianManager {
     let error: Error | undefined
     const getProjectPage = async (cloudId: string, url: string) => {
       const res = await this.get<JiraProjectResponse>(url)
-      if (res instanceof Error) {
+      if (res instanceof Error || res instanceof RateLimitError) {
         error = res
       } else {
         const pagedProjects = res.values.map((project) => ({
@@ -529,7 +562,7 @@ export default abstract class AtlassianManager {
   async getCloudNameLookup() {
     const sites = await this.getAccessibleResources()
     const cloudNameLookup = {} as {[cloudId: string]: string}
-    if (sites instanceof Error) {
+    if (sites instanceof Error || sites instanceof RateLimitError) {
       return sites
     }
     sites.forEach((site) => {
@@ -541,12 +574,10 @@ export default abstract class AtlassianManager {
   async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
     const baseFields = ['summary', 'description']
     const reqFields = [...baseFields, ...extraFieldIds].join(',')
-    const issueRes = await this.get<
-      JiraIssueBean<{description: string; summary: string}, {description: string}>
-    >(
+    const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
     )
-    if (issueRes instanceof Error) return issueRes
+    if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
     return {
       ...issueRes,
       fields: {
@@ -564,7 +595,6 @@ export default abstract class AtlassianManager {
     isJQL: boolean,
     projectFiltersByCloudId: {[cloudId: string]: string[]}
   ) {
-    const cloudIds = Object.keys(projectFiltersByCloudId)
     const allIssues = [] as JiraGQLFields[]
     let firstError: Error | undefined
     const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
@@ -577,8 +607,7 @@ export default abstract class AtlassianManager {
       const and = projectFilter && textFilter ? ' AND ' : ''
       return `${projectFilter}${and}${textFilter} ${orderBy}`
     }
-    const reqs = cloudIds.map(async (cloudId) => {
-      const projectKeys = projectFiltersByCloudId[cloudId]
+    const reqs = Object.entries(projectFiltersByCloudId).map(async ([cloudId, projectKeys]) => {
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const jql = composeJQL(queryString, isJQL, projectKeys)
       const payload = {
@@ -648,7 +677,7 @@ export default abstract class AtlassianManager {
     testIssueKeyId: string
   ) {
     const fields = await this.getFields(cloudId)
-    if (fields instanceof Error) return null
+    if (fields instanceof Error || fields instanceof RateLimitError) return null
 
     const possibleFields = possibleFieldNames
       .map((fieldName) => {
@@ -671,15 +700,41 @@ export default abstract class AtlassianManager {
     if (firstValidUpdateIdx === -1) return null
     return possibleFields[firstValidUpdateIdx]
   }
+
   async updateStoryPoints(
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
     fieldId: string
   ) {
-    const payload = {
-      fields: {
-        [fieldId]: storyPoints
+    // according to Jira docs fields related to the time tracking have to be set in a different way than other fields
+    // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
+    // more context: https://github.com/ParabolInc/parabol/issues/5705#issuecomment-1007501068
+    let payload: Record<string, any>
+    const timeTrackingFieldId = 'timetracking'
+    const timeTrackingFieldLookup = {
+      timeoriginalestimate: 'originalEstimate',
+      timeestimate: 'remainingEstimate'
+    }
+    const timeTrackingFieldName = timeTrackingFieldLookup[fieldId]
+    if (timeTrackingFieldName) {
+      payload = {
+        update: {
+          [timeTrackingFieldId]: [
+            {
+              set: {
+                // time tracking fields have to be set in time format, we're setting them in (h)ours
+                [timeTrackingFieldName]: `${storyPoints}h`
+              }
+            }
+          ]
+        }
+      }
+    } else {
+      payload = {
+        fields: {
+          [fieldId]: storyPoints
+        }
       }
     }
     const res = await this.put(
@@ -692,10 +747,11 @@ export default abstract class AtlassianManager {
         'The user who added this issue was removed from Jira. Please remove & re-add the issue'
       )
     }
-    if (res.message.startsWith(fieldId)) {
-      if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
-      }
+    if (
+      res.message.startsWith(timeTrackingFieldName ? timeTrackingFieldId : fieldId) &&
+      res.message.includes('is not on the appropriate screen')
+    ) {
+      throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
     }
     throw res
   }

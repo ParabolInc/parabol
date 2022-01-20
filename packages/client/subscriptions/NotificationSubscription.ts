@@ -107,8 +107,8 @@ const subscription = graphql`
         user {
           id
           featureFlags {
-            jira
-            video
+            gitlab
+            spotlight
           }
         }
       }
@@ -117,9 +117,16 @@ const subscription = graphql`
       ... on AddNewFeaturePayload {
         newFeature {
           id
-          copy
+          actionButtonCopy
+          snackbarMessage
           url
         }
+      }
+
+      ... on JiraIssue {
+        id
+        summary
+        descriptionHTML
       }
     }
   }

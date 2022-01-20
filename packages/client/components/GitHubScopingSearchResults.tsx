@@ -148,11 +148,9 @@ const GitHubScopingSearchResults = (props: Props) => {
         .filter((edge) => edge.node.__typename === '_xGitHubIssue')
         .map(({node}) => node as GQLType<typeof node, '_xGitHubIssue'>)
     : null
-  // const issueEdges = edges!.filter((edge) => edge.node.__typename === '_xGitHubIssue') as GQLType<typeof edges[0]['node']
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
-  // const {id: meetingId, teamId, phases, githubSearchQuery} = meeting
-  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
@@ -171,7 +169,6 @@ const GitHubScopingSearchResults = (props: Props) => {
       </>
     )
   }
-
   const persistQuery = () => {
     // don't persist empty
     if (!queryString) return
@@ -181,11 +178,11 @@ const GitHubScopingSearchResults = (props: Props) => {
     const githubSearchQueries =
       query.viewer.teamMember?.integrations.github?.githubSearchQueries ?? []
     const searchHashes = githubSearchQueries.map(({queryString}) => queryString)
-    const isQueryNew = !searchHashes.includes(queryString)
+    const isQueryNew = !searchHashes.includes(normalizedQueryString)
     if (isQueryNew) {
       PersistGitHubSearchQueryMutation(atmosphere, {
         teamId,
-        queryString
+        queryString: normalizedQueryString
       })
     }
   }

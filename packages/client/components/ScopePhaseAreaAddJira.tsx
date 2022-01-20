@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {PALETTE} from '../styles/paletteV3'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
-import {ScopePhaseAreaAddJira_meeting} from '../__generated__/ScopePhaseAreaAddJira_meeting.graphql'
+import {ScopePhaseAreaAddJira_meeting$key} from '../__generated__/ScopePhaseAreaAddJira_meeting.graphql'
 import JiraSVG from './JiraSVG'
 import RaisedButton from './RaisedButton'
 
@@ -33,24 +33,25 @@ const AddJiraButton = styled(RaisedButton)({
 })
 interface Props {
   gotoParabol: () => void
-  meeting: ScopePhaseAreaAddJira_meeting
+  meetingRef: ScopePhaseAreaAddJira_meeting$key
 }
 
 const ScopePhaseAreaAddJira = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
-  const {gotoParabol, meeting} = props
-  const {teamId, viewerMeetingMember} = meeting
-  if (!viewerMeetingMember) return null
-  const {teamMember} = viewerMeetingMember
-  const {integrations} = teamMember
-  const hasAuth = integrations?.atlassian?.isActive ?? false
-
+  const {gotoParabol, meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ScopePhaseAreaAddJira_meeting on PokerMeeting {
+        teamId
+      }
+    `,
+    meetingRef
+  )
+  const {teamId} = meeting
   const importStories = () => {
-    if (!hasAuth) {
-      AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
-    }
+    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   return (
     <AddJiraArea>
@@ -63,19 +64,4 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ScopePhaseAreaAddJira, {
-  meeting: graphql`
-    fragment ScopePhaseAreaAddJira_meeting on PokerMeeting {
-      teamId
-      viewerMeetingMember {
-        teamMember {
-          integrations {
-            atlassian {
-              isActive
-            }
-          }
-        }
-      }
-    }
-  `
-})
+export default ScopePhaseAreaAddJira

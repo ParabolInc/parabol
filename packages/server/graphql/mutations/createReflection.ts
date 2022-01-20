@@ -13,7 +13,8 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import CreateReflectionInput from '../types/CreateReflectionInput'
+import {GQLContext} from '../graphql'
+import CreateReflectionInput /*, {CreateReflectionInputType}*/ from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
 
@@ -25,7 +26,12 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve(_source, {input}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    //FIXME type mismatch, promptId is nullable in graphql
+    {input}, //: {input: CreateReflectionInputType},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
@@ -37,11 +43,7 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
@@ -89,7 +91,7 @@ export default {
     const [groupStage] = stages
 
     let unlockedStageIds
-    if (!groupStage.isNavigableByFacilitator) {
+    if (!groupStage?.isNavigableByFacilitator) {
       unlockedStageIds = unlockAllStagesForPhase(phases, 'group', true)
       await r
         .table('NewMeeting')

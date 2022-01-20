@@ -24,8 +24,8 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {orgId, stripeToken},
+    _source: unknown,
+    {orgId, stripeToken}: {orgId: string; stripeToken: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -36,10 +36,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // VALIDATION
-    const {stripeSubscriptionId: startingSubId} = await r
-      .table('Organization')
-      .get(orgId)
-      .run()
+    const {stripeSubscriptionId: startingSubId} = await r.table('Organization').get(orgId).run()
 
     if (startingSubId) {
       return standardError(new Error('Already a pro organization'), {userId: viewerId})
@@ -48,7 +45,7 @@ export default {
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
     const viewer = await dataLoader.get('users').load(viewerId)
-    const {email} = viewer
+    const {email} = viewer!
     try {
       await upgradeToPro(orgId, stripeToken, email)
     } catch (e) {

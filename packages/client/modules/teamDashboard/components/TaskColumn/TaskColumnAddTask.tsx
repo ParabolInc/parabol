@@ -42,7 +42,7 @@ const TaskColumnAddTask = (props: Props) => {
   const {viewerId} = atmosphere
   if (teams) {
     if (teams.length === 1) {
-      const {id: teamId} = teams[0]
+      const {id: teamId} = teams[0]!
       const handleAddTask = () =>
         CreateTaskMutation(
           atmosphere,
@@ -57,7 +57,7 @@ const TaskColumnAddTask = (props: Props) => {
       <TaskColumnAddTaskSelectTeam
         sortOrder={sortOrder}
         status={status}
-        teams={teams!}
+        teams={teams}
         userId={userId || viewerId}
       />
     )

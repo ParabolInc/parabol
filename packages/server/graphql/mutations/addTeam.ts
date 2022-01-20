@@ -1,23 +1,23 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import AuthToken from '../../database/types/AuthToken'
+import {TierEnum} from '../../database/types/Invoice'
 import generateUID from '../../generateUID'
+import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
-import NewTeamInput from '../types/NewTeamInput'
+import NewTeamInput /*, {NewTeamInputType}*/ from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
-import {TierEnum} from '../../database/types/Invoice'
-import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
-import {GQLContext} from '../graphql'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -29,13 +29,20 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
-    async (_source, args, {authToken, dataLoader, socketId: mutatorId}: GQLContext) => {
+    async (
+      _source: unknown,
+      // FIXME GraphQL type does not match assumed type in the resolver
+      args, //: {newTeam: NewTeamInputType},
+      {authToken, dataLoader, socketId: mutatorId}: GQLContext
+    ) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
       // AUTH
       const {orgId} = args.newTeam
       const viewerId = getUserId(authToken)
+      const viewer = await dataLoader.get('users').load(viewerId)
+
       if (!(await isUserInOrg(viewerId, orgId))) {
         return standardError(new Error('Organization not found'), {userId: viewerId})
       }
@@ -67,7 +74,7 @@ export default {
 
       // RESOLUTION
       const teamId = generateUID()
-      await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: false, ...newTeam})
+      await createTeamAndLeader(viewer!, {id: teamId, isOnboardTeam: false, ...newTeam})
 
       const {tms} = authToken
       // MUTATIVE

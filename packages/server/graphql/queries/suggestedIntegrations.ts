@@ -1,4 +1,4 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import ms from 'ms'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -7,58 +7,59 @@ import SuggestedIntegrationQueryPayload from '../types/SuggestedIntegrationQuery
 import fetchAllIntegrations from './helpers/fetchAllIntegrations'
 import {
   getPermsByTaskService,
-  getTeamIntegrationsByUserId,
-  IntegrationByUserId,
+  getTeamIntegrationsByTeamId,
+  IntegrationByTeamId,
   useOnlyUserIntegrations
 } from './helpers/suggestedIntegrationHelpers'
 
 export default {
   description: 'The integrations that the user would probably like to use',
   type: new GraphQLNonNull(SuggestedIntegrationQueryPayload),
-  resolve: async ({teamId, userId}, _args, context: GQLContext, info) => {
+  resolve: async (
+    {teamId, userId}: {teamId: string; userId: string},
+    _args: unknown,
+    context: GQLContext,
+    info: GraphQLResolveInfo
+  ) => {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
 
     // AUTH
     if (userId !== viewerId) {
       const user = await dataLoader.get('users').load(userId)
-      const {tms} = user
+      const {tms} = user!
       const onTeam = authToken.tms.find((teamId) => tms!.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {userId: viewerId})
       }
     }
-    const teamIntegrationsByUserId = await getTeamIntegrationsByUserId(teamId)
+    const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
+    const teamIntegrationsByTeamId = await getTeamIntegrationsByTeamId(teamId, permLookup)
 
     // if the team has no integrations, return every possible integration for the user
-    if (!teamIntegrationsByUserId.length) {
+    if (!teamIntegrationsByTeamId.length) {
       const items = await fetchAllIntegrations(dataLoader, teamId, userId, context, info)
       return {items, hasMore: false}
     }
-    const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByUserId, userId)
+    const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByTeamId, userId)
     if (userIntegrationsForTeam) {
       return {items: userIntegrationsForTeam, hasMore: true}
     }
 
-    const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-
     const aMonthAgo = new Date(Date.now() - ms('30d'))
-    const recentUserIntegrations = teamIntegrationsByUserId.filter(
+    const recentUserIntegrations = teamIntegrationsByTeamId.filter(
       (integration) => integration.userId === userId && integration.lastUsedAt >= aMonthAgo
     )
 
     const idSet = new Set()
-    const dedupedTeamIntegrations = [] as IntegrationByUserId[]
-    const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByUserId]
+    const dedupedTeamIntegrations = [] as IntegrationByTeamId[]
+    const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByTeamId]
     // dedupes for perms, user vs team items, as well as possible name changes
-    for (let i = 0; i < userAndTeamItems.length; i++) {
-      const integration = userAndTeamItems[i]
-      if (!permLookup[integration.service] || idSet.has(integration.id)) {
-        continue
-      }
+    userAndTeamItems.forEach((integration) => {
+      if (idSet.has(integration.id)) return
       idSet.add(integration.id)
       dedupedTeamIntegrations.push(integration)
-    }
+    })
 
     // if other users have items that the viewer can't access, revert back to fetching everything
     if (userAndTeamItems.length === 0) {

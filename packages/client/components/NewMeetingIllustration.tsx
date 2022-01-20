@@ -3,26 +3,31 @@ import React, {Fragment} from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import {mod} from 'react-swipeable-views-core'
 import {virtualize} from 'react-swipeable-views-utils'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import action from '../../../static/images/illustrations/action.png'
+import retrospective from '../../../static/images/illustrations/retrospective.png'
+import poker from '../../../static/images/illustrations/sprintPoker.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint, NewMeeting} from '../types/constEnums'
 
 const MeetingImage = styled('img')({
-  width: NewMeeting.ILLUSTRATION_WIDTH
+  width: NewMeeting.ILLUSTRATION_WIDTH,
+  objectFit: 'contain'
 })
 
 interface Props {
   idx: number
   setIdx: (idx: number) => void
-  newMeetingOrder: string[]
+  newMeetingOrder: readonly [MeetingTypeEnum, ...MeetingTypeEnum[]]
 }
 
 const ILLUSTRATIONS = {
-  retrospective: `${__STATIC_IMAGES__}/illustrations/retrospective.svg`,
-  action: `${__STATIC_IMAGES__}/illustrations/checkin.svg`,
-  poker: `${__STATIC_IMAGES__}/illustrations/sprintPoker.svg`
-}
+  retrospective,
+  action,
+  poker
+} as Record<MeetingTypeEnum, string>
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews)
 
@@ -34,27 +39,34 @@ const TabContents = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   paddingTop: isDesktop ? 16 : undefined
 }))
 
-const ImageWithPadding = styled('div')({
-  background: '#fff',
-  border: `3px solid ${PALETTE.GRAPE_600}`,
-  boxShadow: Elevation.Z12,
-  borderRadius: '8px',
-  display: 'flex',
-  height: 300,
-  padding: '0 64px'
-})
+const BACKGROUND_COLORS = {
+  retrospective: PALETTE.GRAPE_500,
+  action: PALETTE.AQUA_400,
+  poker: PALETTE.TOMATO_400
+}
+
+const ImageWithPadding = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
+  ({meetingType}) => ({
+    background: BACKGROUND_COLORS[meetingType],
+    boxShadow: Elevation.Z12,
+    borderRadius: '12px',
+    display: 'flex',
+    height: 300,
+    padding: '0 64px'
+  })
+)
 
 const NewMeetingIllustration = (props: Props) => {
   const {idx, setIdx, newMeetingOrder} = props
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const slideRenderer = ({index, key}) => {
     const idx = mod(index, newMeetingOrder.length)
-    const nextMeetingType = newMeetingOrder[idx]
+    const nextMeetingType = newMeetingOrder[idx]!
     const src = ILLUSTRATIONS[nextMeetingType]
     const Wrapper = isDesktop ? ImageWithPadding : Fragment
     return (
       <TabContents isDesktop={isDesktop} key={`${key}-${index}`}>
-        <Wrapper>
+        <Wrapper meetingType={nextMeetingType}>
           <MeetingImage src={src} />
         </Wrapper>
       </TabContents>

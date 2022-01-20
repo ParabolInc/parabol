@@ -2,15 +2,14 @@ import {GraphQLNonNull} from 'graphql'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
-import db from '../../../db'
+import updateUser from '../../../postgres/queries/updateUser'
 import {getUserId} from '../../../utils/authorization'
+import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
+import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import User from '../../types/User'
-import getRedis from '../../../utils/getRedis'
-import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
-import updateUser from '../../../postgres/queries/updateUser'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -21,8 +20,12 @@ const {SERVER_ID} = process.env
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
-  type: GraphQLNonNull(User),
-  resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
+  type: new GraphQLNonNull(User),
+  resolve: async (
+    _source: unknown,
+    _args: unknown,
+    {authToken, dataLoader, socketId}: GQLContext
+  ) => {
     const r = await getRethink()
     const redis = getRedis()
     const now = new Date()
@@ -34,7 +37,7 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    const user = await db.read('User', userId)
+    const user = await dataLoader.get('users').load(userId)
     if (!user) {
       throw new Error('User does not exist')
     }
@@ -50,14 +53,15 @@ export default {
       adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
-    const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
-    const updates = {
-      inactive: false,
-      lastSeenAt: now,
-      updatedAt: now
-    }
+    const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
     if (!datesAreOnSameDay) {
-      await Promise.all([updateUser(updates, userId), db.write('User', userId, updates)])
+      await updateUser(
+        {
+          inactive: false,
+          lastSeenAt: now
+        },
+        userId
+      )
     }
     const socketCount = await redis.rpush(
       `presence:${userId}`,

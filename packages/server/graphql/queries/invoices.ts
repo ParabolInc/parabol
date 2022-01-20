@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull, GraphQLInt} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import Invoice from '../../database/types/Invoice'
@@ -10,7 +11,7 @@ export default {
   type: InvoiceConnection,
   args: {
     first: {
-      type: GraphQLInt
+      type: new GraphQLNonNull(GraphQLInt)
     },
     after: {
       type: GraphQLISO8601Type,
@@ -21,7 +22,11 @@ export default {
       description: 'The id of the organization'
     }
   },
-  async resolve(_source, {orgId, first, after}, {authToken, dataLoader}) {
+  async resolve(
+    _source: unknown,
+    {orgId, first, after}: {orgId: string; first: number; after?: Date},
+    {authToken, dataLoader}: GQLContext
+  ) {
     const r = await getRethink()
 
     // AUTH
@@ -75,7 +80,7 @@ export default {
       edges,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
-        endCursor: firstEdge && edges[edges.length - 1].cursor,
+        endCursor: firstEdge && edges[edges.length - 1]!.cursor,
         hasNextPage: extraInvoices.length + (upcomingInvoice ? 1 : 0) > first
       }
     }

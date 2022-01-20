@@ -3,6 +3,7 @@ import AcceptTeamInvitationPayload from './AcceptTeamInvitationPayload'
 import AddAgendaItemPayload from './AddAgendaItemPayload'
 import AddAtlassianAuthPayload from './AddAtlassianAuthPayload'
 import AddGitHubAuthPayload from './AddGitHubAuthPayload'
+import {AddIntegrationProviderSuccess} from './AddIntegrationProviderPayload'
 import AddPokerTemplateDimensionPayload from './AddPokerTemplateDimensionPayload'
 import AddPokerTemplatePayload from './AddPokerTemplatePayload'
 import AddPokerTemplateScalePayload from './AddPokerTemplateScalePayload'
@@ -57,12 +58,13 @@ import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
+import {UpdateGitHubDimensionFieldSuccess} from './UpdateGitHubDimensionFieldPayload'
+import {UpdateIntegrationProviderSuccess} from './UpdateIntegrationProviderPayload'
 import {UpdateJiraDimensionFieldSuccess} from './UpdateJiraDimensionFieldPayload'
 import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimensionScalePayload'
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
-import {UpdateGitHubDimensionFieldSuccess} from './UpdateGitHubDimensionFieldPayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
 
 const types = [
@@ -70,6 +72,7 @@ const types = [
   AddAgendaItemPayload,
   AddAtlassianAuthPayload,
   AddGitHubAuthPayload,
+  AddIntegrationProviderSuccess,
   AddSlackAuthPayload,
   AddTeamPayload,
   ArchiveTeamPayload,
@@ -130,7 +133,8 @@ const types = [
   UpdateJiraDimensionFieldSuccess,
   SetDefaultSlackChannelSuccess,
   SetAppLocationSuccess,
-  UpdateGitHubDimensionFieldSuccess
+  UpdateGitHubDimensionFieldSuccess,
+  UpdateIntegrationProviderSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

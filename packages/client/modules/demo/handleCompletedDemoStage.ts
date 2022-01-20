@@ -171,11 +171,11 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
 const addDiscussionTopics = (db: RetroDemoDB) => {
   const meeting = db.newMeeting
   const {id: meetingId, phases} = meeting
-  const discussPhase = phases!.find((phase) => phase.phaseType === 'discuss')!
-  if (!discussPhase) return {}
-  const placeholderStage = discussPhase.stages[0]
+  const discussPhase = phases?.find((phase) => phase.phaseType === 'discuss')
+  const placeholderStage = discussPhase?.stages?.[0]
+  if (!placeholderStage) return {}
   const sortedReflectionGroups = mapGroupsToStages(db.reflectionGroups)
-    ; (placeholderStage as any).discussionId = `discussion:${sortedReflectionGroups[0]?.id}`
+  ;(placeholderStage as any).discussionId = `discussion:${sortedReflectionGroups[0]?.id}`
   const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : clientTempId()
     addStageToBotScript(id, db, reflectionGroup.id)
@@ -187,7 +187,7 @@ const addDiscussionTopics = (db: RetroDemoDB) => {
   })
   const firstDiscussStage = nextDiscussStages[0]
   if (!firstDiscussStage || !placeholderStage) return {}
-    ; (discussPhase as any).stages = nextDiscussStages
+  ;(discussPhase as any).stages = nextDiscussStages
   return {meetingId, discussPhaseStages: nextDiscussStages}
 }
 

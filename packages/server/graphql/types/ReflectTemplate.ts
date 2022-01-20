@@ -4,6 +4,7 @@ import {GQLContext} from '../graphql'
 import ReflectPrompt from './ReflectPrompt'
 import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
+import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',
@@ -15,11 +16,13 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
     prompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts that are part of this template',
-      resolve: async ({id: templateId}, _args, {dataLoader}) => {
+      resolve: async ({id: templateId}, _args: unknown, {dataLoader}) => {
         const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
         return prompts
-          .filter((prompt) => !prompt.removedAt)
-          .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+          .filter((prompt: RetrospectivePrompt) => !prompt.removedAt)
+          .sort((a: RetrospectivePrompt, b: RetrospectivePrompt) =>
+            a.sortOrder < b.sortOrder ? -1 : 1
+          )
       }
     }
   })

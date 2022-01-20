@@ -152,7 +152,7 @@ const makeReflectionGroupThread = () => ({
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
   db: RetroDemoDB
-  getTempId = (prefix) => `${prefix}${this.db._tempID++}`
+  getTempId = (prefix: string) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
   isNew = true
@@ -243,13 +243,18 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    TaskFooterIntegrateMenuRootQuery: () => {
+    TaskFooterIntegrateMenuRootQuery: (_teamId: unknown, userId: string) => {
+      const user = this.db.users[0]
       return {
         viewer: {
-          ...this.db.users[0],
+          ...user,
           userOnTeam: {
-            ...this.db.users[0]
-          }
+            ...user
+          },
+          assigneeTeamMember: this.db.teamMembers.find(
+            (teamMember) => teamMember.userId === userId
+          ),
+          viewerTeamMember: this.db.teamMembers[0]
         }
       }
     },

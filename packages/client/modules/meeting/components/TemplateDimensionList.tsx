@@ -40,6 +40,7 @@ const TemplateDimensionList = (props: Props) => {
 
     const sourceDimension = dimensions[source.index]
     const destinationDimension = dimensions[destination.index]
+    if (!sourceDimension || !destinationDimension) return
 
     let sortOrder
     if (destination.index === 0) {
@@ -49,7 +50,9 @@ const TemplateDimensionList = (props: Props) => {
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (dimensions[destination.index + offset].sortOrder + destinationDimension.sortOrder) / 2 +
+        ((dimensions[destination.index + offset]?.sortOrder ?? 0) +
+          destinationDimension.sortOrder) /
+          2 +
         dndNoise()
     }
 

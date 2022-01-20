@@ -2,16 +2,14 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import Meeting from '../../database/types/Meeting'
-import db from '../../db'
+import getPg from '../../postgres/getPg'
+import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import PayLaterPayload from '../types/PayLaterPayload'
-import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
-import getPg from '../../postgres/getPg'
-import catchAndLog from '../../postgres/utils/catchAndLog'
 
 export default {
   type: new GraphQLNonNull(PayLaterPayload),
@@ -23,8 +21,8 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {meetingId},
+    _source: unknown,
+    {meetingId}: {meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -33,10 +31,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()) as Meeting | null
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as Meeting | null
     if (!meeting) {
       return standardError(new Error('Invalid meeting'), {userId: viewerId})
     }
@@ -55,9 +50,7 @@ export default {
       .table('Organization')
       .get(orgId)
       .update((row) => ({
-        payLaterClickCount: row('payLaterClickCount')
-          .default(0)
-          .add(1)
+        payLaterClickCount: row('payLaterClickCount').default(0).add(1)
       }))
       .run()
     await r
@@ -68,15 +61,7 @@ export default {
       })
       .run()
 
-    const reqlUpdater = (user) => ({
-      payLaterClickCount: user('payLaterClickCount')
-        .default(0)
-        .add(1)
-    })
-    await Promise.all([
-      catchAndLog(() => incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())),
-      db.write('User', viewerId, reqlUpdater)
-    ])
+    await incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())
 
     segmentIo.track({
       userId: viewerId,

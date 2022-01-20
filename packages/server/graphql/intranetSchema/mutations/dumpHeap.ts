@@ -14,7 +14,11 @@ const dumpHeap = {
       description: 'must pass true to make it work'
     }
   },
-  resolve: async (_source, {isDangerous}, {authToken}: GQLContext) => {
+  resolve: async (
+    _source: unknown,
+    {isDangerous}: {isDangerous: boolean},
+    {authToken}: GQLContext
+  ) => {
     // AUTH
     requireSU(authToken)
     if (!isDangerous)

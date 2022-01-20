@@ -6,7 +6,7 @@ import TeamNotification from './TeamNotification'
 import TeamInvitation from './TeamInvitation'
 import {GQLContext} from '../graphql'
 
-const NotificationTeamInvitation = new GraphQLObjectType<any, GQLContext>({
+const NotificationTeamInvitation: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'NotificationTeamInvitation',
   description: 'A notification sent to a user that was invited to a new team',
   interfaces: () => [Notification, TeamNotification],
@@ -22,7 +22,7 @@ const NotificationTeamInvitation = new GraphQLObjectType<any, GQLContext>({
     invitation: {
       description: 'The invitation that triggered this notification',
       type: new GraphQLNonNull(TeamInvitation),
-      resolve: async ({invitationId}, _args, {dataLoader}) => {
+      resolve: async ({invitationId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teamInvitations').load(invitationId)
       }
     },

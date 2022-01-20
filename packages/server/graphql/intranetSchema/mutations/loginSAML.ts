@@ -38,19 +38,18 @@ const loginSAML = {
       description: 'The querystring provided by the IdP including SAMLResponse and RelayState'
     },
     samlName: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The name of the SAML identifier. The slug used in the redirect URL'
     }
   },
-  async resolve(_source, {samlName, queryString}) {
+  async resolve(
+    _source: unknown,
+    {samlName, queryString}: {samlName: string; queryString: string}
+  ) {
     const r = await getRethink()
-    const now = new Date()
     const body = querystring.parse(queryString)
     const normalizedName = samlName.trim().toLowerCase()
-    const doc = await r
-      .table('SAML')
-      .get(normalizedName)
-      .run()
+    const doc = await r.table('SAML').get(normalizedName).run()
 
     if (!doc) return {error: {message: `${normalizedName} has not been created in Parabol yet`}}
     const {domains, metadata} = doc
@@ -102,7 +101,6 @@ const loginSAML = {
       id: userId,
       email,
       preferredName: name,
-      lastSeenAt: now,
       tier: 'enterprise'
     })
 

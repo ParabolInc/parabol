@@ -1,31 +1,42 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import db from '../../../db'
 import generateUID from '../../../generateUID'
+import getPg from '../../../postgres/getPg'
+import {addUserNewFeatureQuery} from '../../../postgres/queries/generated/addUserNewFeatureQuery'
 import {requireSU} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
-import {addUserNewFeatureQuery} from '../../../postgres/queries/generated/addUserNewFeatureQuery'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import getPg from '../../../postgres/getPg'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
   description: 'broadcast a new feature to the entire userbase',
   args: {
-    copy: {
+    actionButtonCopy: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The text body of the new feature'
+      description: 'The text of the action button in the snackbar'
+    },
+    snackbarMessage: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The description of the new feature'
     },
     url: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'the permalink to the blog post'
+      description: 'The permalink to the blog post describing the new feature'
     }
   },
-  resolve: async (_source, {copy, url}, {authToken, dataLoader}) => {
+  resolve: async (
+    _source: unknown,
+    {
+      actionButtonCopy,
+      snackbarMessage,
+      url
+    }: {actionButtonCopy: string; snackbarMessage: string; url: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     const r = await getRethink()
     const redis = getRedis()
 
@@ -38,16 +49,13 @@ const addNewFeature = {
     const newFeatureId = generateUID()
     const newFeature = {
       id: newFeatureId,
-      copy,
+      actionButtonCopy,
+      snackbarMessage,
       url
     }
     await Promise.all([
-      r
-        .table('NewFeature')
-        .insert(newFeature)
-        .run(),
-      db.writeTable('User', {newFeatureId}),
-      catchAndLog(() => addUserNewFeatureQuery.run({newFeatureId}, getPg()))
+      r.table('NewFeature').insert(newFeature).run(),
+      addUserNewFeatureQuery.run({newFeatureId}, getPg())
     ])
 
     const onlineUserIds = new Set()

@@ -13,8 +13,11 @@ export const newMeetingTeamMemberStageFields = () => ({
   meetingMember: {
     description: 'The meeting member that is the focus for this phase item',
     type: new GraphQLNonNull(MeetingMember),
-    resolve: async (source, _args, {dataLoader}: GQLContext) => {
-      const {meetingId, teamMemberId} = source
+    resolve: async (
+      {meetingId, teamMemberId}: {meetingId: string; teamMemberId: string},
+      _args: unknown,
+      {dataLoader}: GQLContext
+    ) => {
       const {userId} = fromTeamMemberId(teamMemberId)
       const meetingMemberId = toTeamMemberId(meetingId, userId)
       return dataLoader.get('meetingMembers').load(meetingMemberId)
@@ -31,7 +34,7 @@ export const newMeetingTeamMemberStageFields = () => ({
   }
 })
 
-const NewMeetingTeamMemberStage = new GraphQLInterfaceType({
+const NewMeetingTeamMemberStage: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'NewMeetingTeamMemberStage',
   description:
     'An instance of a meeting phase item. On the client, this usually represents a single view',

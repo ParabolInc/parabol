@@ -5,6 +5,7 @@ import AgendaItemsStage from '../../database/types/AgendaItemsStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import RemoveAgendaItemPayload from '../types/RemoveAgendaItemPayload'
 import removeStagesFromMeetings from './helpers/removeStagesFromMeetings'
 
@@ -17,7 +18,11 @@ export default {
       description: 'The agenda item unique id'
     }
   },
-  async resolve(_source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {agendaItemId}: {agendaItemId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -25,7 +30,7 @@ export default {
 
     // AUTH
     // id is of format 'teamId::randomId'
-    const [teamId] = agendaItemId.split('::')
+    const [teamId] = agendaItemId.split('::') as [string]
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }

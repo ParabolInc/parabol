@@ -21,7 +21,7 @@ export interface IGetUsersByIdsQueryResult {
   createdAt: Date;
   updatedAt: Date;
   inactive: boolean;
-  lastSeenAt: Date | null;
+  lastSeenAt: Date;
   preferredName: string;
   tier: TierEnum;
   picture: string;
@@ -37,6 +37,7 @@ export interface IGetUsersByIdsQueryResult {
   rol: AuthTokenRole | null;
   payLaterClickCount: number;
   isWatched: boolean;
+  domain: string | null;
 }
 
 /** 'GetUsersByIdsQuery' query type */

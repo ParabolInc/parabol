@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePromptPayload from '../types/RemoveReflectTemplatePromptPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 const removeReflectTemplatePrompt = {
   description: 'Remove a prompt from a template',
@@ -14,7 +15,11 @@ const removeReflectTemplatePrompt = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {promptId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {promptId}: {promptId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

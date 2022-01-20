@@ -104,7 +104,7 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
       updateTaskTaskUpdater(payload, {atmosphere, store: store as any})
     },
     optimisticUpdater: (store) => {
-      const {id, content, teamId, userId} = updatedTask
+      const {id, content, userId} = updatedTask
       const task = store.get(id)
       if (!task) return
       const now = new Date()
@@ -113,10 +113,6 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
         updatedAt: now.toJSON()
       }
       updateProxyRecord(task, optimisticTask)
-      if (teamId) {
-        task.setValue(teamId, 'teamId')
-        task.setLinkedRecord(store.get(teamId)!, 'team')
-      }
       if (userId) {
         task.setValue(userId, 'userId')
         task.setLinkedRecord(store.get(userId)!, 'user')

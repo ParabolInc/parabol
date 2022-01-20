@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node'
-import db from '../db'
+import {getUserById} from '../postgres/queries/getUsersByIds'
 
 export interface SentryOptions {
   sampleRate?: number
@@ -15,7 +15,7 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
   console.error('SEND TO SENTRY', error, JSON.stringify(options.tags))
   const {sampleRate, tags, userId, ip} = options
   if (sampleRate && Math.random() > sampleRate) return
-  const fullUser = userId ? await db.read('User', userId) : null
+  const fullUser = userId ? await getUserById(userId) : null
   const user = fullUser ? {id: fullUser.id, email: fullUser.email} : null
   if (user && ip) {
     ;(user as any).ip_address = ip

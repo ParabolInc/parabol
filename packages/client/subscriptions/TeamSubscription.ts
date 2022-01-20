@@ -80,6 +80,8 @@ const subscription = graphql`
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpdateUserProfileMutation_team @relay(mask: false)
       ...UpgradeToProMutation_team @relay(mask: false)
+      ...UpdateIntegrationProviderMutation_team @relay(mask: false)
+      ...AddIntegrationProviderMutation_team @relay(mask: false)
     }
   }
 `

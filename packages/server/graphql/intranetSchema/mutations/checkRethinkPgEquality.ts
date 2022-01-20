@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLBoolean, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 import {requireSU} from '../../../utils/authorization'
 import fs from 'fs'
@@ -26,11 +27,11 @@ const checkEqAndWriteOutput = async (
 }
 
 const checkRethinkPgEquality = {
-  type: GraphQLNonNull(GraphQLString),
+  type: new GraphQLNonNull(GraphQLString),
   description: 'check equality of a table between rethinkdb and postgres',
   args: {
     tableName: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The table name to be compared'
     },
     maxErrors: {
@@ -44,7 +45,15 @@ const checkRethinkPgEquality = {
       description: 'Whether the output should be written to file'
     }
   },
-  resolve: async (_source, {tableName, maxErrors, writeToFile}, {authToken}) => {
+  resolve: async (
+    _source: unknown,
+    {
+      tableName,
+      maxErrors,
+      writeToFile
+    }: {tableName: string; maxErrors?: number; writeToFile?: boolean},
+    {authToken}: GQLContext
+  ) => {
     // AUTH
     requireSU(authToken)
 

@@ -15,7 +15,11 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (_source, {invoiceId}, {authToken}: InternalContext) => {
+  resolve: async (
+    _source: unknown,
+    {invoiceId}: {invoiceId: string},
+    {authToken, dataLoader}: InternalContext
+  ) => {
     // AUTH
     if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
@@ -29,7 +33,7 @@ export default {
       metadata: {orgId}
     } = await manager.retrieveCustomer(invoice.customer as string)
     await Promise.all([
-      generateInvoice(invoice, stripeLineItems, orgId, invoiceId),
+      generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader),
       manager.updateInvoice(invoiceId, orgId)
     ])
     return true

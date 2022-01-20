@@ -11,9 +11,9 @@ const RetrospectiveMeetingMember = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...meetingMemberFields(),
     tasks: {
-      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
       description: 'The tasks assigned to members during the meeting',
-      resolve: async ({meetingId, userId}, _args, {dataLoader}) => {
+      resolve: async ({meetingId, userId}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)

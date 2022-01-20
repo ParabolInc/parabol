@@ -9,18 +9,19 @@ import AuthTokenPayload from './AuthTokenPayload'
 import CreateTaskPayload from './CreateTaskPayload'
 import DeleteTaskPayload from './DeleteTaskPayload'
 import DisconnectSocketPayload from './DisconnectSocketPayload'
+import {EndCheckInSuccess} from './EndCheckInPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
+import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 import InvalidateSessionsPayload from './InvalidateSessionsPayload'
 import InviteToTeamPayload from './InviteToTeamPayload'
+import JiraIssue from './JiraIssue'
 import MeetingStageTimeLimitPayload from './MeetingStageTimeLimitPayload'
+import {PersistGitHubSearchQuerySuccess} from './PersistGitHubSearchQueryPayload'
+import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import SetNotificationStatusPayload from './SetNotificationStatusPayload'
 import StripeFailPaymentPayload from './StripeFailPaymentPayload'
-import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 import User from './User'
-import {EndCheckInSuccess} from './EndCheckInPayload'
-import {PersistGitHubSearchQuerySuccess} from './PersistGitHubSearchQueryPayload'
-import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -46,7 +47,8 @@ const types = [
   User,
   // a one off used so the server can sniff it & update its connection context
   AuthTokenPayload,
-  PersistGitHubSearchQuerySuccess
+  PersistGitHubSearchQuerySuccess,
+  JiraIssue
 ]
 
 export default graphQLSubscriptionType('NotificationSubscriptionPayload', types)

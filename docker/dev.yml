@@ -1,8 +1,8 @@
-
 version: "3.7"
 
 services:
   db:
+    platform: linux/x86_64
     image: rethinkdb:latest
     restart: unless-stopped
     ports:
@@ -33,13 +33,14 @@ services:
       - postgres
     env_file: ../.env
     volumes:
-       - "pgadmin-data:/var/lib/pgadmin"
+      - "pgadmin-data:/var/lib/pgadmin"
     ports:
       - "5050:80"
     networks:
       - parabol-network
     restart: unless-stopped
   redis:
+    platform: linux/x86_64
     image: redis:latest
     restart: unless-stopped
     ports:
@@ -48,6 +49,17 @@ services:
       - redis-data:/data
     networks:
       - parabol-network
+  redis-commander:
+    container_name: redis_commander
+    image: rediscommander/redis-commander:latest
+    hostname: redis-commander
+    restart: unless-stopped
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8082:8081"
+    networks:
+      parabol-network:
 networks:
   parabol-network:
 volumes:

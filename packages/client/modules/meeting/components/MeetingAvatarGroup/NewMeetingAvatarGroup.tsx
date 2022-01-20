@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import AddTeamMemberAvatarButton from '../../../../components/AddTeamMemberAvatarButton'
-import VideoControls from '../../../../components/VideoControls'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import useInitialRender from '../../../../hooks/useInitialRender'
@@ -12,14 +11,6 @@ import {DECELERATE} from '../../../../styles/animation'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
-import MediaRoom from '../../../../utils/mediaRoom/MediaRoom'
-import {
-  ConsumersState,
-  getConsumersForPeer,
-  PeersState,
-  ProducersState,
-  RoomState
-} from '../../../../utils/mediaRoom/reducerMediaRoom'
 import {NewMeetingAvatarGroup_meeting} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
 import NewMeetingAvatar from './NewMeetingAvatar'
 
@@ -82,12 +73,6 @@ const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
 
 interface Props {
   meeting: NewMeetingAvatarGroup_meeting
-  mediaRoom: MediaRoom | null
-  allowVideo: boolean
-  producers: ProducersState
-  consumers: ConsumersState
-  peers: PeersState
-  room: RoomState
 }
 
 const MAX_AVATARS_DESKTOP = 7
@@ -96,7 +81,7 @@ const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {mediaRoom, meeting, allowVideo, peers, producers, consumers, room} = props
+  const {meeting} = props
   const {id: meetingId, team, meetingMembers} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -112,7 +97,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         )
       })
       .sort((a, b) =>
-        a.userId === viewerId ? -1 : a.user.lastSeenAt! < b.user.lastSeenAt! ? -1 : 1
+        a.userId === viewerId ? -1 : a.user.lastSeenAt < b.user.lastSeenAt ? -1 : 1
       )
       .map((tm) => ({
         ...tm,
@@ -131,13 +116,6 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const isInit = useInitialRender()
   return (
     <MeetingAvatarGroupRoot>
-      <VideoControls
-        room={room}
-        allowVideo={allowVideo}
-        mediaRoom={mediaRoom}
-        producers={producers}
-      />
-
       {tranChildren.map((meetingMember) => {
         if (meetingMember.child.key === 'overflow') {
           return (
@@ -149,21 +127,12 @@ const NewMeetingAvatarGroup = (props: Props) => {
             </OverlappingBlock>
           )
         }
-        const userId = meetingMember.child.userId
-        const isSelf = userId == viewerId
-        const peerProducers = isSelf ? Object.values(producers) : []
-        const peerConsumers = isSelf ? [] : getConsumersForPeer(userId, peers, consumers)
-
         return (
           <OverlappingBlock key={meetingMember.child.id}>
             <NewMeetingAvatar
               teamMember={meetingMember.child.teamMember}
               onTransitionEnd={meetingMember.onTransitionEnd}
               status={isInit ? TransitionStatus.ENTERED : meetingMember.status}
-              peerProducers={peerProducers || []}
-              peerConsumers={peerConsumers || []}
-              mediaRoom={mediaRoom}
-              isSelf={isSelf}
             />
           </OverlappingBlock>
         )

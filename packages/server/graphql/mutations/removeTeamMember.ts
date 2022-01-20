@@ -6,6 +6,7 @@ import publish from '../../utils/publish'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -16,7 +17,11 @@ export default {
       description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve(_source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {teamMemberId}: {teamMemberId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -34,7 +39,9 @@ export default {
     const evictorUserId = isSelf ? undefined : viewerId
     const res = await removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
-
+    if (!user) {
+      return standardError(new Error('Could not remove given team member'), {userId})
+    }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const {tms} = user
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
@@ -48,7 +55,7 @@ export default {
     }
     // messages to the rest of the team reporting the kick out
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)
-    teamMembers.forEach(({teamMemberUserId}) => {
+    teamMembers.forEach(({userId: teamMemberUserId}) => {
       // don't send updated tasks to the person being kicked out
       if (teamMemberUserId === userId) return
       publish(

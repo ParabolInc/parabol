@@ -8,16 +8,24 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
+import IUser from '../../postgres/types/IUser'
+import isValid from '../isValid'
+import Team from '../../database/types/Team'
+import User from '../../database/types/User'
 
 export default {
-  type: GraphQLNonNull(ArchiveOrganizationPayload),
+  type: new GraphQLNonNull(ArchiveOrganizationPayload),
   args: {
     orgId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The orgId to archive'
     }
   },
-  async resolve(_source, {orgId}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
+  async resolve(
+    _source: unknown,
+    {orgId}: {orgId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -50,17 +58,27 @@ export default {
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const teamArchiveResults = (await Promise.all(
-      teamIds.map((teamId) => safeArchiveTeam(teamId))
+      teamIds.map((teamId: string) => safeArchiveTeam(teamId, dataLoader))
     )) as any
     const allRemovedSuggestedActionIds = [] as string[]
     const allUserIds = [] as string[]
 
-    teamArchiveResults.forEach(({team, users, removedSuggestedActionIds}) => {
-      if (!team) return
-      const userIds = users.map(({id}) => id)
-      allUserIds.push(...userIds)
-      allRemovedSuggestedActionIds.push(...removedSuggestedActionIds)
-    })
+    teamArchiveResults.forEach(
+      ({
+        team,
+        users,
+        removedSuggestedActionIds
+      }: {
+        team: Team
+        users: User[]
+        removedSuggestedActionIds: string[]
+      }) => {
+        if (!team) return
+        const userIds = users.map(({id}) => id)
+        allUserIds.push(...userIds)
+        allRemovedSuggestedActionIds.push(...removedSuggestedActionIds)
+      }
+    )
 
     const uniqueUserIds = Array.from(new Set(allUserIds))
 
@@ -80,7 +98,8 @@ export default {
     }
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'ArchiveOrganizationPayload', data, subOptions)
     const users = await dataLoader.get('users').loadMany(uniqueUserIds)
-    users.forEach((user) => {
+    users.filter(isValid).forEach((user?: IUser) => {
+      if (!user) return
       const {id, tms} = user
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })

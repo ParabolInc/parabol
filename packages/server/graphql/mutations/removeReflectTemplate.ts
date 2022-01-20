@@ -7,6 +7,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
+import {GQLContext} from '../graphql'
 
 const removeReflectTemplate = {
   description: 'Remove a template full of prompts',
@@ -16,7 +17,11 @@ const removeReflectTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source: unknown,
+    {templateId}: {templateId: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

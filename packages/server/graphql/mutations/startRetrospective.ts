@@ -6,7 +6,6 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import generateUID from '../../generateUID'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -14,7 +13,9 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {startSlackMeeting} from './helpers/notifySlack'
+import isStartMeetingLocked from './helpers/isStartMeetingLocked'
+import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
@@ -27,7 +28,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
@@ -40,6 +41,8 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('User not on team'), {userId: viewerId})
     }
+    const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+    if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
     const meetingType: MeetingTypeEnum = 'retrospective'
 
@@ -61,12 +64,8 @@ export default {
       meetingType,
       dataLoader
     )
-    const teams = await getTeamsByIds([teamId])
-    const team = teams[0]!
-    const organization = await r
-      .table('Organization')
-      .get(team.orgId)
-      .run()
+    const team = await dataLoader.get('teams').load(teamId)
+    const organization = await r.table('Organization').get(team.orgId).run()
     const {showConversionModal} = organization
 
     const meetingSettings = (await dataLoader
@@ -88,10 +87,7 @@ export default {
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     const now = new Date()
     await r({
-      template: r
-        .table('MeetingTemplate')
-        .get(selectedTemplateId)
-        .update({lastUsedAt: now}),
+      template: r.table('MeetingTemplate').get(selectedTemplateId).update({lastUsedAt: now}),
       meeting: r.table('NewMeeting').insert(meeting)
     }).run()
 
@@ -103,11 +99,7 @@ export default {
       return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .delete()
-        .run()
+      await r.table('NewMeeting').get(meetingId).delete().run()
       return {error: {message: 'Meeting already started'}}
     }
 
@@ -122,14 +114,11 @@ export default {
           new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
         )
         .run(),
-      r
-        .table('Team')
-        .get(teamId)
-        .update(updates)
-        .run(),
+      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
 
+    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId}

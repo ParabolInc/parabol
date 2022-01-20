@@ -16,7 +16,7 @@ const sendMeetingEndToSegment = async (
       userId,
       event: 'Meeting Completed',
       properties: {
-        hasIcebreaker: phases[0].phaseType === 'checkin',
+        hasIcebreaker: phases[0]?.phaseType === 'checkin',
         // include wasFacilitator as a flag to handle 1 per meeting
         wasFacilitator,
         userIds: wasFacilitator ? presentMemberUserIds : undefined,

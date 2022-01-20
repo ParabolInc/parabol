@@ -29,6 +29,19 @@ const query = graphql`
           name
         }
         endedAt
+        ... on RetrospectiveMeeting {
+          reflectionGroups(sortBy: voteCount) {
+            title
+            voteCount
+            reflections {
+              content
+              createdAt
+              prompt {
+                question
+              }
+            }
+          }
+        }
         phases {
           phaseType
           stages {
@@ -43,13 +56,6 @@ const query = graphql`
               reflectionGroup {
                 title
                 voteCount
-                reflections {
-                  content
-                  createdAt
-                  prompt {
-                    question
-                  }
-                }
               }
             }
             ... on EstimateStage {
@@ -196,13 +202,14 @@ class ExportToCSV extends Component<Props> {
     return rows
   }
   handleRetroMeeting(newMeeting: Meeting) {
-    const {phases} = newMeeting
+    const {phases, reflectionGroups} = newMeeting
     const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')!
     const {stages} = discussPhase
     const rows = [] as CSVRetroRow[]
-    stages.forEach((stage) => {
-      const {reflectionGroup, discussion} = stage
-      const {reflections, title, voteCount: votes} = reflectionGroup!
+
+    if (!reflectionGroups) return rows
+    reflectionGroups.forEach((reflectionGroup) => {
+      const {reflections, title, voteCount: votes} = reflectionGroup
       reflections.forEach((reflection) => {
         const {prompt, content} = reflection
         const createdAt = reflection.createdAt!
@@ -218,6 +225,11 @@ class ExportToCSV extends Component<Props> {
           content: extractTextFromDraftString(content)
         })
       })
+    })
+
+    stages.forEach((stage) => {
+      const {reflectionGroup, discussion} = stage
+      const {title, voteCount: votes} = reflectionGroup!
       if (!discussion) return
       const {thread} = discussion
       const {edges} = thread
@@ -325,7 +337,7 @@ class ExportToCSV extends Component<Props> {
     if (rows.length === 0) return
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
-    const label = meetingType[0].toUpperCase() + meetingType.slice(1)
+    const label = meetingType[0]?.toUpperCase() + meetingType.slice(1)
     const parser = new Parser({withBOM: true, eol: '\n'})
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)

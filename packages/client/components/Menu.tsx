@@ -98,6 +98,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
 
       const firstIndex = menuItemIdxs[0]
       const lastIndex = menuItemIdxs[menuItemIdxs.length - 1]
+      if (!firstIndex || !lastIndex) return
 
       if (idx === null) setActiveIdx(firstIndex)
       else if (menuItemIdxs.includes(idx)) setActiveIdx(idx)

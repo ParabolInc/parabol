@@ -9,6 +9,9 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateJiraTaskIntegrationPayload from '../types/CreateJiraTaskIntegrationPayload'
+import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 
 type CreateJiraTaskIntegrationMutationVariables = {
   cloudId: string
@@ -33,7 +36,7 @@ export default {
     }
   },
   resolve: async (
-    _source: Record<string, unknown>,
+    _source: unknown,
     {cloudId, projectKey, taskId}: CreateJiraTaskIntegrationMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -44,21 +47,13 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
     const {content: rawContentStr, teamId, userId, meetingId} = task
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
-    }
-
-    if (!userId) {
-      // we should probably remove this constraint in the future
-      return {error: {message: 'Task must have assignee before it can be integrated with Jira'}}
     }
 
     // VALIDATION
@@ -69,15 +64,51 @@ export default {
       )
     }
 
-    const viewerAuth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
-    if (!viewerAuth) {
-      return standardError(new Error('The assignee does not have access to Jira'), {
+    const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
+      dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId}),
+      userId ? dataLoader.get('freshAtlassianAuth').load({teamId, userId}) : null,
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId)
+    ])
+    const auth = viewerAuth ?? assigneeAuth
+    if (!auth) {
+      return standardError(new Error('No auth exists for a given task!'), {userId: viewerId})
+    }
+    const accessUserId = viewerAuth ? viewerId : assigneeAuth ? userId : null
+    if (!accessUserId) {
+      return standardError(new Error('Neither you nor the assignee has access to Jira'), {
         userId: viewerId
       })
     }
 
+    // using teamMembers to get the preferredName as we need the members for the notification part anyways
+    const teamMember = teamMembers.find(({userId}) => userId === viewerId)
+    if (!teamMember) {
+      return standardError(new Error('User is not member of the team'), {
+        userId: viewerId,
+        tags: {teamId}
+      })
+    }
+    const {preferredName: viewerName} = teamMember
+    const {preferredName: assigneeName = ''} =
+      (userId && teamMembers.find((user) => user.userId === userId)) || {}
+
     // RESOLUTION
-    const res = await createJiraTask(rawContentStr, cloudId, projectKey, viewerAuth)
+    const {name: teamName} = team
+
+    const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
+    const createdBySomeoneElseComment =
+      viewerId !== userId
+        ? makeCreateJiraTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+        : undefined
+
+    const res = await createJiraTask(
+      rawContentStr,
+      cloudId,
+      projectKey,
+      auth,
+      createdBySomeoneElseComment
+    )
     if (res.error) {
       return {error: {message: res.error.message}}
     }
@@ -88,7 +119,7 @@ export default {
       .update({
         integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          accessUserId: viewerId,
+          accessUserId: accessUserId!,
           service: 'jira',
           cloudId,
           issueKey
@@ -96,7 +127,7 @@ export default {
         updatedAt: now
       })
       .run()
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
       publish(

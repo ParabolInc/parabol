@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import OrganizationUser from '../../database/types/OrganizationUser'
-import {IGetTeamsByIdsQueryResult} from '../../postgres/queries/generated/getTeamsByIdsQuery'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForBillingLeaders} from '../resolvers'
@@ -33,7 +32,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         'The top level domain this organization is linked to, null if only generic emails used'
     },
     isActiveDomainTouched: {
-      type: GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
       description:
         'false if the activeDomain is null or was set automatically via a heuristic, true if set manually',
       resolve: ({isActiveDomainTouched}) => !!isActiveDomainTouched
@@ -50,7 +49,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     company: {
       type: Company,
       description: 'The assumed company this organizaiton belongs to',
-      resolve: async ({activeDomain}, _args, {authToken}) => {
+      resolve: async ({activeDomain}, _args: unknown, {authToken}) => {
         if (!activeDomain || !isSuperUser(authToken)) return null
         return {id: activeDomain}
       }
@@ -58,7 +57,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the billing leader for the org',
-      resolve: async ({id: orgId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         return isUserBillingLeader(viewerId, orgId, dataLoader)
       }
@@ -74,13 +73,11 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the viewer is on in the organization',
-      resolve: async ({id: orgId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: orgId}, _args: unknown, {authToken, dataLoader}) => {
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
         return isSuperUser(authToken)
           ? allTeamsOnOrg
-          : allTeamsOnOrg.filter((team: IGetTeamsByIdsQueryResult) =>
-              authToken.tms.includes(team.id)
-            )
+          : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       }
     },
     tier: {
@@ -140,7 +137,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         }
       },
       type: new GraphQLNonNull(OrganizationUserConnection),
-      resolve: async ({id: orgId}, _args, {dataLoader}) => {
+      resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         organizationUsers.sort((a: OrganizationUser, b: OrganizationUser) =>
           a.orgId > b.orgId ? 1 : -1
@@ -163,7 +160,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     orgUserCount: {
       type: new GraphQLNonNull(OrgUserCount),
       description: 'The count of active & inactive users',
-      resolve: async ({id: orgId}, _args, {dataLoader}) => {
+      resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const inactiveUserCount = organizationUsers.filter(
           ({inactive}: OrganizationUser) => inactive
@@ -177,7 +174,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
     billingLeaders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
-      resolve: async ({id: orgId}, _args, {dataLoader}) => {
+      resolve: async ({id: orgId}: {id: string}, _args: unknown, {dataLoader}: GQLContext) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const billingLeaderUserIds = organizationUsers
           .filter(

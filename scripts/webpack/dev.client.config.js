@@ -1,11 +1,11 @@
 require('./utils/dotenv')
 const path = require('path')
 const webpack = require('webpack')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -26,32 +26,32 @@ module.exports = {
     contentBase: [
       path.join(PROJECT_ROOT, 'static'),
       path.join(PROJECT_ROOT, 'build'),
+      path.join(PROJECT_ROOT, 'dev'),
       path.join(PROJECT_ROOT, 'dev', 'dll'),
       path.join(PROJECT_ROOT, 'self-hosted')
     ],
-    contentBasePublicPath: ['/static/', '/static/', '/static/', '/self-hosted/'],
+    contentBasePublicPath: ['/static/', '/static/', '/static/', '/static/', '/self-hosted/'],
     publicPath: '/',
     hot: true,
     historyApiFallback: true,
     stats: 'minimal',
     port: PORT,
-    proxy: {
-      '/graphql': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/intranet-graphql': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/sse': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/sse-ping': {
-        target: `http://localhost:${SOCKET_PORT}`
-      },
-      '/jira-attachments': {
+    proxy: [
+      'sse',
+      'sse-ping',
+      'jira-attachments',
+      'stripe',
+      'webhooks',
+      'graphql',
+      'intranet-graphql',
+      // important terminating / so saml-redirect doesn't get targeted, too
+      'saml/'
+    ].reduce((obj, name) => {
+      obj[`/${name}`] = {
         target: `http://localhost:${SOCKET_PORT}`
       }
-    }
+      return obj
+    }, {})
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
@@ -120,11 +120,7 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
-      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT),
-      __STATIC_IMAGES__: JSON.stringify(`/static/images`),
-      __DD_APPLICATIONID__: JSON.stringify(process.env.DD_APPLICATIONID),
-      __DD_CLIENTTOKEN__: JSON.stringify(process.env.DD_CLIENTTOKEN),
-      __DD_SERVICE__: JSON.stringify(process.env.DD_SERVICE)
+      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
     }),
     new webpack.HotModuleReplacementPlugin()
   ],

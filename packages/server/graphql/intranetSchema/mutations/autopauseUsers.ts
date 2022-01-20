@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLInt} from 'graphql'
 import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
@@ -9,7 +10,7 @@ const autopauseUsers = {
   type: GraphQLInt,
   description:
     'automatically pause users that have been inactive for 30 days. returns the number of users paused',
-  resolve: async (_source, _args, {authToken}) => {
+  resolve: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     // AUTH
@@ -24,11 +25,13 @@ const autopauseUsers = {
       const skip = i * BATCH_SIZE
       const userIdBatch = userIdsToPause.slice(skip, skip + BATCH_SIZE)
       if (userIdBatch.length < 1) break
-      const results = (await (r
-        .table('OrganizationUser')
-        .getAll(r.args(userIdBatch), {index: 'userId'})
-        .filter({removedAt: null})
-        .group('userId') as any)('orgId').run()) as {group: string; reduction: string[]}[]
+      const results = (await (
+        r
+          .table('OrganizationUser')
+          .getAll(r.args(userIdBatch), {index: 'userId'})
+          .filter({removedAt: null})
+          .group('userId') as any
+      )('orgId').run()) as {group: string; reduction: string[]}[]
       await Promise.allSettled(
         results.map(async ({group: userId, reduction: orgIds}) => {
           try {

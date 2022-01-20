@@ -11,7 +11,7 @@ const UpdatePokerTemplateDimensionScalePayload = new GraphQLObjectType<any, GQLC
     },
     dimension: {
       type: TemplateDimension,
-      resolve: ({dimensionId}, _args, {dataLoader}) => {
+      resolve: ({dimensionId}, _args: unknown, {dataLoader}) => {
         if (!dimensionId) return null
         return dataLoader.get('templateDimensions').load(dimensionId)
       }

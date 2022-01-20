@@ -29,7 +29,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
       (tChild) => tChild.child.key === key
     )
     if (idx === -1) return
-    const tChild = previousTransitionChildrenRef.current[idx]
+    const tChild = previousTransitionChildrenRef.current[idx]!
     const {status} = tChild
     const {current: nextChildren} = previousTransitionChildrenRef
     if (status === TransitionStatus.ENTERING) {
@@ -53,12 +53,10 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     requestDoubleAnimationFrame(() => {
       let doUpdate = false
       keys.forEach((key) => {
-        const tChildIdx = previousTransitionChildrenRef.current.findIndex(
-          ({child}) => child.key === key
-        )
+        const nextChildren = previousTransitionChildrenRef.current
+        const tChildIdx = nextChildren.findIndex(({child}) => child.key === key)
         if (tChildIdx !== -1) {
-          const nextChildren = previousTransitionChildrenRef.current
-          const tChild = {...nextChildren[tChildIdx], status: TransitionStatus.ENTERING}
+          const tChild = {...nextChildren[tChildIdx]!, status: TransitionStatus.ENTERING}
           previousTransitionChildrenRef.current = [
             ...nextChildren.slice(0, tChildIdx),
             tChild,
@@ -80,10 +78,9 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     let touched = false
     // add mounted nodes
     const mountingKeys = [] as Key[]
-    for (let i = 0; i < children.length; i++) {
-      const nextChild = children[i]
+    children.forEach((nextChild) => {
       const idxInPrev = prevTChildren.findIndex(({child}) => child.key === nextChild.key)
-      const status = idxInPrev === -1 ? TransitionStatus.MOUNTED : prevTChildren[idxInPrev].status
+      const status = idxInPrev === -1 ? TransitionStatus.MOUNTED : prevTChildren[idxInPrev]!.status
       currentTChildren.push({
         status,
         child: nextChild,
@@ -94,14 +91,13 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
         mountingKeys.push(nextChild.key)
         // beginTransition(nextChild.key)
       }
-    }
+    })
     if (touched) {
       beginTransition(mountingKeys)
     }
 
     // add exiting nodes
-    for (let i = 0; i < prevTChildren.length; i++) {
-      const prevTChild = prevTChildren[i]
+    prevTChildren.forEach((prevTChild, i) => {
       const {child} = prevTChild
       const {key} = child
       const idxInNext = children.findIndex((child) => child.key === key)
@@ -110,7 +106,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
         const exitingTChild = {...prevTChild, status: TransitionStatus.EXITING}
         currentTChildren.splice(i, 0, exitingTChild)
       }
-    }
+    })
     if (touched) {
       // keep deep equal things the same to reduce render count
       previousTransitionChildrenRef.current = currentTChildren

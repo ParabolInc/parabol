@@ -10,7 +10,8 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import SetStageTimerPayload from '../types/SetStageTimerPayload'
-import {notifySlackTimeLimitStart} from './helpers/notifySlack'
+import {notifyMattermostTimeLimitStart} from './helpers/notifications/notifyMattermost'
+import {notifySlackTimeLimitStart} from './helpers/notifications/notifySlack'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
 
 const BAD_CLOCK_THRESH = 2000
@@ -36,7 +37,7 @@ export default {
     }
   },
   async resolve(
-    _source,
+    _source: unknown,
     {
       meetingId,
       scheduledEndTime: newScheduledEndTime,
@@ -94,6 +95,9 @@ export default {
           .insert(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
           .run()
         notifySlackTimeLimitStart(newScheduledEndTime, meetingId, teamId, dataLoader).catch(
+          console.error
+        )
+        notifyMattermostTimeLimitStart(newScheduledEndTime, meetingId, teamId, dataLoader).catch(
           console.error
         )
       }

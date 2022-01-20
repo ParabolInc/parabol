@@ -11,8 +11,12 @@ interface MessageSlackUserError {
   error: string
 }
 
+interface Input {
+  message: string
+}
+
 const messageAllSlackUsers = {
-  type: GraphQLNonNull(MessageAllSlackUsersPayload),
+  type: new GraphQLNonNull(MessageAllSlackUsersPayload),
   description: 'Send a message to all authorised Slack users',
   args: {
     message: {
@@ -20,17 +24,14 @@ const messageAllSlackUsers = {
       description: 'The slack message that will be sent to all Slack users'
     }
   },
-  resolve: async (_source, {message}, {authToken}: GQLContext) => {
+  resolve: async (_source: unknown, {message}: Input, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     //AUTH
     requireSU(authToken)
 
     // RESOLUTION
-    const allSlackAuths = await r
-      .table('SlackAuth')
-      .filter({isActive: true})
-      .run()
+    const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()
     if (!allSlackAuths || !allSlackAuths.length) {
       return standardError(new Error('No authorised Slack users'))
     }
@@ -40,6 +41,13 @@ const messageAllSlackUsers = {
     const errors = [] as MessageSlackUserError[]
     for (const slackAuth of allSlackAuths) {
       const {botAccessToken, defaultTeamChannelId, userId} = slackAuth
+      if (!botAccessToken) {
+        errors.push({
+          userId,
+          error: 'No bot access token'
+        })
+        continue
+      }
       const manager = new SlackServerManager(botAccessToken)
       if (!messagedTeamChannelIds.has(defaultTeamChannelId)) {
         const postMessageRes = await manager.postMessage(defaultTeamChannelId, message)

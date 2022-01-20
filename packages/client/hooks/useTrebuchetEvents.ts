@@ -13,6 +13,7 @@ const useTrebuchetEvents = () => {
   const {history} = useRouter()
   const firewallMessageSentRef = useRef(false)
   const recentDisconnectsRef = useRef([] as number[])
+  const serverVersionRef = useRef(__APP_VERSION__)
 
   useEffect(() => {
     const setConnectedStatus = (isConnected: boolean) => {
@@ -55,16 +56,24 @@ const useTrebuchetEvents = () => {
 
     const onReconnected = () => {
       setConnectedStatus(true)
-      atmosphere.retries.forEach((retry) => retry())
       atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
     }
 
     const onData = async (payload: string | object) => {
       // hacky but that way we don't have to double parse huge json payloads. SSE graphql payloads are pre-parsed
       const obj = typeof payload === 'string' ? JSON.parse(payload) : payload
-      if (obj.version && obj.version !== __APP_VERSION__ && 'serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.getRegistration()
-        registration?.update().catch()
+
+      if (obj.version) {
+        if (obj.version !== serverVersionRef.current) {
+          serverVersionRef.current = obj.version
+          if ('serviceWorker' in navigator) {
+            const registration = await navigator.serviceWorker.getRegistration()
+            registration?.update().catch()
+          }
+        } else if (recentDisconnectsRef.current.length > 0) {
+          // retry if reconnect and versions are the same
+          atmosphere.retries.forEach((retry) => retry())
+        }
       }
       if (obj.authToken) {
         atmosphere.setAuthToken(obj.authToken)

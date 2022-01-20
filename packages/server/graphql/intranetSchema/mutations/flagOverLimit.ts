@@ -1,10 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import db from '../../../db'
+import {USER_OVERLIMIT_COPY_LIMIT} from '../../../postgres/constants'
+import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import FlagOverLimitPayload from '../../types/FlagOverLimitPayload'
-import updateUser from '../../../postgres/queries/updateUser'
-import {USER_OVERLIMIT_COPY_LIMIT} from '../../../postgres/constants'
 
 const flagOverLimit = {
   type: FlagOverLimitPayload,
@@ -20,7 +19,11 @@ const flagOverLimit = {
       description: 'the user orgId that went over the limit'
     }
   },
-  resolve: async (_source, {copy, orgId}, {authToken, dataLoader}: GQLContext) => {
+  resolve: async (
+    _source: unknown,
+    {copy, orgId}: {copy: string; orgId: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     // AUTH
     requireSU(authToken)
 
@@ -34,11 +37,12 @@ const flagOverLimit = {
 
     // RESOLUTION
     const userIds = organizationUsers.map(({userId}) => userId)
-    const updates = {
-      overLimitCopy: copy === null ? '' : copy,
-      updatedAt: new Date()
-    }
-    await Promise.all([updateUser(updates, userIds), db.writeMany('User', userIds, updates)])
+    await updateUser(
+      {
+        overLimitCopy: copy === null ? '' : copy
+      },
+      userIds
+    )
     return {userIds}
   }
 }

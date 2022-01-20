@@ -22,13 +22,13 @@ const TemplateDimensionRef = new GraphQLObjectType<any, GQLContext>({
       description: 'The name of the dimension'
     },
     scaleRefId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The md5 hash to resolve the immutable selected scale ref'
     },
     scale: {
       type: new GraphQLNonNull(TemplateScaleRef),
       description: 'scale used in this dimension',
-      resolve: async ({scaleRefId}, _args, {dataLoader}) => {
+      resolve: async ({scaleRefId}, _args: unknown, {dataLoader}) => {
         const scaleFromPg = await dataLoader.get('templateScaleRefs').load(scaleRefId)
         return scaleFromPg
       }

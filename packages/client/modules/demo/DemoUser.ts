@@ -1,4 +1,4 @@
-import {RetroDemo} from '../../types/constEnums'
+import {RetroDemo} from '~/types/constEnums'
 import {demoViewerId} from './initDB'
 
 export default class DemoUser {
@@ -8,8 +8,7 @@ export default class DemoUser {
   createdAt = new Date().toJSON()
   email: string
   featureFlags = {
-    jira: false,
-    video: false
+    gitlab: false
   }
   facilitatorUserId: string
   facilitatorName: string

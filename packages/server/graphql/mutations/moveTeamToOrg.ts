@@ -4,29 +4,32 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import Notification from '../../database/types/Notification'
 import Team from '../../database/types/Team'
-import db from '../../db'
+import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import {DataLoaderWorker, GQLContext} from '../graphql'
+import isValid from '../isValid'
 
-const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
+const moveToOrg = async (
+  teamId: string,
+  orgId: string,
+  authToken: any,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
   const [org, teams] = await Promise.all([
-    r
-      .table('Organization')
-      .get(orgId)
-      .run(),
+    r.table('Organization').get(orgId).run(),
     getTeamsByIds([teamId])
   ])
-  if (teams.length === 0) {
+  const team = teams[0]
+  if (!team) {
     return standardError(new Error('Did not find the team'))
   }
-  const team = teams[0]
   const {orgId: currentOrgId} = team
   if (!su) {
     const userId = getUserId(authToken)
@@ -72,26 +75,16 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   }
   const [rethinkResult] = await Promise.all([
     r({
-      notifications: (r
+      notifications: r
         .table('Notification')
         .filter({teamId})
-        .filter((notification) =>
-          notification('orgId')
-            .default(null)
-            .ne(null)
-        )
-        .update({orgId}) as unknown) as Notification[],
-      templates: r
-        .table('MeetingTemplate')
-        .getAll(currentOrgId, {index: 'orgId'})
-        .update({
-          orgId
-        }),
-      team: (r
-        .table('Team')
-        .get(teamId)
-        .update(updates) as unknown) as Team,
-      newToOrgUserIds: (r
+        .filter((notification) => notification('orgId').default(null).ne(null))
+        .update({orgId}) as unknown as Notification[],
+      templates: r.table('MeetingTemplate').getAll(currentOrgId, {index: 'orgId'}).update({
+        orgId
+      }),
+      team: r.table('Team').get(teamId).update(updates) as unknown as Team,
+      newToOrgUserIds: r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})
@@ -103,7 +96,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
             .count()
             .eq(0)
         })('userId')
-        .coerceTo('array') as unknown) as string[]
+        .coerceTo('array') as unknown as string[]
     }).run(),
     updateTeamByTeamId(updates, teamId)
   ])
@@ -118,9 +111,9 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
     })
   )
 
-  const newUsers = await db.readMany('User', newToOrgUserIds)
+  const newUsers = (await dataLoader.get('users').loadMany(newToOrgUserIds)).filter(isValid)
 
-  const inactiveUserIds = newUsers.filter((user) => user && user.inactive).map((user) => user!.id)
+  const inactiveUserIds = newUsers.filter((user) => user.inactive).map((user) => user!.id)
   inactiveUserIds.map((newInactiveUserId) => {
     return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
   })
@@ -143,11 +136,15 @@ export default {
       description: 'The ID of the organization you want to move the team to'
     }
   },
-  async resolve(_source, {teamIds, orgId}, {authToken}) {
+  async resolve(
+    _source: unknown,
+    {teamIds, orgId}: {teamIds: string[]; orgId: string},
+    {authToken, dataLoader}: GQLContext
+  ) {
     const results = [] as (string | any)[]
     for (let i = 0; i < teamIds.length; i++) {
-      const teamId = teamIds[i]
-      const result = await moveToOrg(teamId, orgId, authToken)
+      const teamId = teamIds[i]!
+      const result = await moveToOrg(teamId, orgId, authToken, dataLoader)
       results.push(result)
     }
     const successes = results.filter((result) => typeof result === 'string')

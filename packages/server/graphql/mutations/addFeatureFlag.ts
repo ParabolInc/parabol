@@ -1,23 +1,24 @@
+import {isSuperUser} from './../../utils/authorization'
 import {GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import IUser from '../../postgres/types/IUser'
-import db from '../../db'
-import {requireSU} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
-import UserFlagEnum from '../types/UserFlagEnum'
-import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import standardError from '../../utils/standardError'
 import getPg from '../../postgres/getPg'
-import catchAndLog from '../../postgres/utils/catchAndLog'
-import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
+import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import getUsersByDomain from '../../postgres/queries/getUsersByDomain'
+import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
+import IUser from '../../postgres/types/IUser'
+import {getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {GQLContext} from '../graphql'
+import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
+import UserFlagEnum, {UserFeatureFlagEnum} from '../types/UserFlagEnum'
 
 export default {
-  type: GraphQLNonNull(AddFeatureFlagPayload),
+  type: new GraphQLNonNull(AddFeatureFlagPayload),
   description: 'Give someone advanced features in a flag',
   args: {
     emails: {
-      type: GraphQLList(GraphQLNonNull(GraphQLString)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: `a list of the complete or partial email of the person to whom you are giving advanced features.
       Matches via a regex to support entire domains`
     },
@@ -31,15 +32,25 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {emails, domain, flag}: {emails: string[] | null; domain: string | null; flag: string},
-    {authToken, dataLoader}
+    _source: unknown,
+    {
+      emails,
+      domain,
+      flag
+    }: {emails: string[] | null; domain: string | null; flag: UserFeatureFlagEnum},
+    {authToken, dataLoader}: GQLContext
   ) {
     const operationId = dataLoader.share()
     const subOptions = {operationId}
 
     // AUTH
-    requireSU(authToken)
+    const viewerId = getUserId(authToken)
+    const isAddingFlagToViewer = !emails?.length && !domain
+    if (!isAddingFlagToViewer && !isSuperUser(authToken)) {
+      return standardError(new Error('Not authorised to add feature flag'), {
+        userId: viewerId
+      })
+    }
 
     // RESOLUTION
     const users = [] as IUser[]
@@ -51,23 +62,13 @@ export default {
       const usersByDomain = await getUsersByDomain(domain)
       users.push(...usersByDomain)
     }
-    await db.prime('User', users)
 
     if (users.length === 0) {
       return {error: {message: 'No users found matching the email or domain'}}
     }
 
-    const reqlUpdater = (user) => ({
-      featureFlags: user('featureFlags')
-        .default([])
-        .append(flag)
-        .distinct()
-    })
-    const userIds = users.map(({id}) => id)
-    await Promise.all([
-      catchAndLog(() => appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())),
-      db.writeMany('User', userIds, reqlUpdater)
-    ])
+    const userIds = isAddingFlagToViewer ? [viewerId] : users.map(({id}) => id)
+    await appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
     userIds.forEach((userId) => {
       const data = {userId}
       publish(SubscriptionChannel.NOTIFICATION, userId, 'AddFeatureFlagPayload', data, subOptions)

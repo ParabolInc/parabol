@@ -8,7 +8,7 @@ const sendMeetingJoinToSegment = async (userId: string, newMeeting: Meeting) => 
     event: 'Meeting Joined',
     properties: {
       facilitatorUserId,
-      hasIcebreaker: phases[0].phaseType === 'checkin',
+      hasIcebreaker: phases[0]?.phaseType === 'checkin',
       meetingId,
       meetingType,
       meetingNumber,

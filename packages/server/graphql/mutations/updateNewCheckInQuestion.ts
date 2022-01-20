@@ -1,3 +1,4 @@
+import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
@@ -24,9 +25,9 @@ export default {
     }
   },
   async resolve(
-    _source,
-    {meetingId, checkInQuestion},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: unknown,
+    {meetingId, checkInQuestion}: {meetingId: string; checkInQuestion: string},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()

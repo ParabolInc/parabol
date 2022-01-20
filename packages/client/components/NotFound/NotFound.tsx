@@ -50,7 +50,7 @@ let dirX = Math.round(Math.random()) * 2 - 1
 let dirY = Math.round(Math.random()) * 2 - 1
 let curX = Math.floor(Math.random() * maxX)
 let curY = Math.floor(Math.random() * maxY)
-let palette = colors[Math.floor(Math.random() * colors.length)]
+let palette = colors[Math.floor(Math.random() * colors.length)]!
 const speed = 4
 
 const move = (el: HTMLImageElement, onWin: () => void) => {
@@ -67,12 +67,12 @@ const move = (el: HTMLImageElement, onWin: () => void) => {
   if (isChange) {
     let nextPalette = palette
     while (nextPalette === palette) {
-      nextPalette = colors[Math.floor(Math.random() * colors.length)]
+      nextPalette = colors[Math.floor(Math.random() * colors.length)]!
     }
     palette = nextPalette
     const wings = Array.from((el as any).firstChild.firstChild.children) as SVGPathElement[]
     wings.forEach((wing, idx) => {
-      wing.setAttribute('fill', palette[idx])
+      wing.setAttribute('fill', palette[idx]!)
     })
     if (curX !== nextX && curY !== nextY) {
       onWin()

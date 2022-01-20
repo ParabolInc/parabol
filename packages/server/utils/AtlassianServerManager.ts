@@ -2,24 +2,11 @@ import fetch from 'node-fetch'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
-
-interface AuthQueryParams {
-  grant_type: 'authorization_code'
-  code: string
-  redirect_uri: string
-}
-
-interface RefreshQueryParams {
-  grant_type: 'refresh_token'
-  refresh_token: string
-}
-
-interface OAuth2Response {
-  access_token: string
-  refresh_token: string
-  error: any
-  scope: string
-}
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
+import {
+  OAuth2AuthorizationParams,
+  OAuth2RefreshAuthorizationParams
+} from '../integrations/OAuth2Manager'
 
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch as any
@@ -38,39 +25,21 @@ class AtlassianServerManager extends AtlassianManager {
     })
   }
 
-  static async fetchToken(partialQueryParams: AuthQueryParams | RefreshQueryParams) {
-    const queryParams = {
+  private static async fetchToken(
+    partialQueryParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
+  ) {
+    const body = {
       ...partialQueryParams,
-      client_id: process.env.ATLASSIAN_CLIENT_ID,
-      client_secret: process.env.ATLASSIAN_CLIENT_SECRET
+      client_id: process.env.ATLASSIAN_CLIENT_ID!,
+      client_secret: process.env.ATLASSIAN_CLIENT_SECRET!
     }
 
-    const uri = `https://auth.atlassian.com/oauth/token`
-
-    const tokenRes = await fetch(uri, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(queryParams)
-    })
-
-    const tokenJson = (await tokenRes.json()) as OAuth2Response
-
-    const {access_token: accessToken, refresh_token: refreshToken, error} = tokenJson
-    if (error) {
-      throw new Error(`Atlassian: ${error}`)
-    }
-
-    return new AtlassianServerManager(accessToken, refreshToken)
+    const authUrl = `https://auth.atlassian.com/oauth/token`
+    return authorizeOAuth2({authUrl, body})
   }
 
-  refreshToken?: string
-
-  constructor(accessToken: string, refreshToken?: string) {
+  constructor(accessToken: string) {
     super(accessToken)
-    this.refreshToken = refreshToken
   }
 }
 

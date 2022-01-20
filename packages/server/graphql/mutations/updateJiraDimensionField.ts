@@ -1,8 +1,8 @@
 import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import getRethink from '../../database/rethinkDriver'
-import JiraDimensionField from '../../database/types/JiraDimensionField'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -10,6 +10,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
+import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
+import MeetingPoker from '../../database/types/MeetingPoker'
 
 const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianAuth) => {
   // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled
@@ -25,7 +27,7 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianA
   const {accessToken} = auth
   const manager = new AtlassianServerManager(accessToken)
   const fields = await manager.getFields(cloudId)
-  if (fields instanceof Error) return null
+  if (fields instanceof Error || fields instanceof RateLimitError) return null
   const selectedField = fields.find((field) => field.name === fieldName)
   if (!selectedField) return null
   const {id: fieldId, schema} = selectedField
@@ -33,33 +35,45 @@ const getJiraField = async (fieldName: string, cloudId: string, auth: AtlassianA
 }
 
 const updateJiraDimensionField = {
-  type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
+  type: new GraphQLNonNull(UpdateJiraDimensionFieldPayload),
   description: `Set the jira field that the poker dimension should map to`,
   args: {
     dimensionName: {
-      type: GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString)
     },
     fieldName: {
-      type: GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The jira field name that we should push estimates to'
     },
     cloudId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The cloudId the field lives on'
     },
     projectKey: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The project the field lives on'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description:
         'The meeting the update happend in. Returns a meeting object with updated serviceField'
     }
   },
   resolve: async (
-    _source,
-    {dimensionName, fieldName, meetingId, cloudId, projectKey},
+    _source: unknown,
+    {
+      dimensionName,
+      fieldName,
+      meetingId,
+      cloudId,
+      projectKey
+    }: {
+      dimensionName: string
+      fieldName: string
+      cloudId: string
+      projectKey: string
+      meetingId: string
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -72,7 +86,7 @@ const updateJiraDimensionField = {
     if (!meeting) {
       return {error: {message: 'Invalid meetingId'}}
     }
-    const {teamId, templateRefId} = meeting
+    const {teamId, templateRefId} = meeting as MeetingPoker
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }
@@ -104,14 +118,14 @@ const updateJiraDimensionField = {
     if (!selectedField) return {error: {message: 'Invalid field name'}}
     const {fieldId, type} = selectedField
 
-    const newField = new JiraDimensionField({
+    const newField = {
       dimensionName,
       fieldName,
       fieldId,
       cloudId,
       fieldType: type,
       projectKey
-    })
+    } as JiraDimensionField
     if (existingDimensionField) {
       // mutate the existing record
       Object.assign(existingDimensionField, newField)
@@ -128,11 +142,7 @@ const updateJiraDimensionField = {
       updatedAt: new Date()
     }
     await Promise.all([
-      r
-        .table('Team')
-        .get(teamId)
-        .update(updates)
-        .run(),
+      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
 

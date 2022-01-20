@@ -10,9 +10,8 @@ import {
   IGetDiscussionsByIdQueryResult
 } from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import getGitHubAuthByUserIdTeamId, {
-  GetGitHubAuthByUserIdTeamIdResult
+  GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
@@ -21,31 +20,16 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import getTeamsByIds from '../postgres/queries/getTeamsByIds'
+import getTeamsByIds, {Team} from '../postgres/queries/getTeamsByIds'
 import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
 import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
 import getTemplateScaleRefsByIds, {
   TemplateScaleRef
 } from '../postgres/queries/getTemplateScaleRefsByIds'
+import {getUsersByIds} from '../postgres/queries/getUsersByIds'
+import IUser from '../postgres/types/IUser'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
-import ProxiedCache from './ProxiedCache'
-import RethinkDataLoader from './RethinkDataLoader'
-
-export interface UserTasksKey {
-  first: number
-  after: number | string
-  userIds: string[] | null
-  teamIds: string[]
-  archived: boolean
-  includeUnassigned: boolean
-  statusFilters?: TaskStatusEnum[]
-  filterQuery?: string
-}
-
-export interface ReactablesKey {
-  id: string
-  type: ReactableEnum
-}
+import RootDataLoader from './RootDataLoader'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -57,21 +41,45 @@ export interface MeetingTemplateKey {
   meetingType: MeetingTypeEnum
 }
 
+export interface ReactablesKey {
+  id: string
+  type: ReactableEnum
+}
+
+export interface UserTasksKey {
+  first: number
+  after?: Date
+  userIds: string[]
+  teamIds: string[]
+  archived?: boolean
+  statusFilters: TaskStatusEnum[]
+  filterQuery?: string
+  includeUnassigned?: boolean
+}
+
 const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
   {type: 'REFLECTION', loader: 'retroReflections'}
 ] as const
 
-// export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
+// export type LoaderMakerCustom<K, V, C = K> = (parent: RootDataLoader) => DataLoader<K, V, C>
 
 // TODO: refactor if the interface pattern is used a total of 3 times
 
-export const users = () => {
-  return new ProxiedCache('User')
+export const users = (parent: RootDataLoader) => {
+  return new DataLoader<string, IUser | undefined, string>(
+    async (userIds) => {
+      const users = await getUsersByIds(userIds)
+      return normalizeRethinkDbResults(userIds, users)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 }
 
-export const teams = (parent: RethinkDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdsQueryResult, string>(
+export const teams = (parent: RootDataLoader) =>
+  new DataLoader<string, Team, string>(
     async (teamIds) => {
       const teams = await getTeamsByIds(teamIds)
       return normalizeRethinkDbResults(teamIds, teams)
@@ -81,8 +89,8 @@ export const teams = (parent: RethinkDataLoader) =>
     }
   )
 
-export const teamsByOrgIds = (parent: RethinkDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdsQueryResult[], string>(
+export const teamsByOrgIds = (parent: RootDataLoader) =>
+  new DataLoader<string, Team[], string>(
     async (orgIds) => {
       const teamLoader = parent.get('teams')
       const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
@@ -95,7 +103,7 @@ export const teamsByOrgIds = (parent: RethinkDataLoader) =>
         teamsByOrgId.push(team)
         map[team.orgId] = teamsByOrgId
         return map
-      }, {} as {[key: string]: IGetTeamsByIdsQueryResult[]})
+      }, {} as {[key: string]: Team[]})
       return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
     },
     {
@@ -117,18 +125,20 @@ export const serializeUserTasksKey = (key: UserTasksKey) => {
   return parts.join(':')
 }
 
-export const commentCountByDiscussionId = (parent: RethinkDataLoader) => {
+export const commentCountByDiscussionId = (parent: RootDataLoader) => {
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
       const r = await getRethink()
-      const groups = (await (r
-        .table('Comment')
-        .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-        .group('discussionId') as any)
+      const groups = (await (
+        r
+          .table('Comment')
+          .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
+          .group('discussionId') as any
+      )
         .count()
         .ungroup()
         .run()) as {group: string; reduction: number}[]
-      const lookup = {}
+      const lookup: Record<string, number> = {}
       groups.forEach(({group, reduction}) => {
         lookup[group] = reduction
       })
@@ -140,7 +150,7 @@ export const commentCountByDiscussionId = (parent: RethinkDataLoader) => {
   )
 }
 
-export const latestTaskEstimates = (parent: RethinkDataLoader) => {
+export const latestTaskEstimates = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
     async (taskIds) => {
       const rows = await getLatestTaskEstimates(taskIds)
@@ -152,7 +162,7 @@ export const latestTaskEstimates = (parent: RethinkDataLoader) => {
   )
 }
 
-export const meetingTaskEstimates = (parent: RethinkDataLoader) => {
+export const meetingTaskEstimates = (parent: RootDataLoader) => {
   return new DataLoader<{meetingId: string; taskId: string}, MeetingTaskEstimatesResult[], string>(
     async (keys) => {
       const meetingIds = keys.map(({meetingId}) => meetingId)
@@ -170,7 +180,7 @@ export const meetingTaskEstimates = (parent: RethinkDataLoader) => {
   )
 }
 
-export const reactables = (parent: RethinkDataLoader) => {
+export const reactables = (parent: RootDataLoader) => {
   return new DataLoader<ReactablesKey, Reactable, string>(
     async (keys) => {
       const reactableResults = (await Promise.all(
@@ -191,7 +201,7 @@ export const reactables = (parent: RethinkDataLoader) => {
   )
 }
 
-export const userTasks = (parent: RethinkDataLoader) => {
+export const userTasks = (parent: RootDataLoader) => {
   return new DataLoader<UserTasksKey, Task[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -243,9 +253,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
-                  : task('tags')
-                      .contains('archived')
-                      .not()
+                  : task('tags').contains('archived').not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true
@@ -276,7 +284,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
 }
 
 // TODO abstract this out so we can use this easier with PG
-export const discussions = (parent: RethinkDataLoader) => {
+export const discussions = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetDiscussionsByIdQueryResult | null, string>(
     async (keys) => {
       const rows = await getDiscussionsByIdQuery.run({ids: keys as string[]}, getPg())
@@ -288,12 +296,8 @@ export const discussions = (parent: RethinkDataLoader) => {
   )
 }
 
-export const githubAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<
-    {teamId: string; userId: string},
-    GetGitHubAuthByUserIdTeamIdResult | null,
-    string
-  >(
+export const githubAuth = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => getGitHubAuthByUserIdTeamId(userId, teamId))
@@ -308,7 +312,7 @@ export const githubAuth = (parent: RethinkDataLoader) => {
   )
 }
 
-export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
+export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
   return new DataLoader<
     {teamId: string; dimensionName: string; nameWithOwner: string},
     GitHubDimensionFieldMap | null,
@@ -331,7 +335,7 @@ export const githubDimensionFieldMaps = (parent: RethinkDataLoader) => {
   )
 }
 
-export const meetingSettingsByType = (parent: RethinkDataLoader) => {
+export const meetingSettingsByType = (parent: RootDataLoader) => {
   return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
       const r = await getRethink()
@@ -365,7 +369,7 @@ export const meetingSettingsByType = (parent: RethinkDataLoader) => {
   )
 }
 
-export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
+export const meetingTemplatesByType = (parent: RootDataLoader) => {
   return new DataLoader<MeetingTemplateKey, MeetingTemplate[], string>(
     async (keys) => {
       const r = await getRethink()
@@ -399,7 +403,7 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
   )
 }
 
-export const templateRefs = (parent: RethinkDataLoader) => {
+export const templateRefs = (parent: RootDataLoader) => {
   return new DataLoader<string, TemplateRef, string>(
     async (refIds) => {
       const templateRefs = await getTemplateRefsById(refIds)
@@ -411,7 +415,7 @@ export const templateRefs = (parent: RethinkDataLoader) => {
   )
 }
 
-export const templateScaleRefs = (parent: RethinkDataLoader) => {
+export const templateScaleRefs = (parent: RootDataLoader) => {
   return new DataLoader<string, TemplateScaleRef, string>(
     async (refIds) => {
       const templateScaleRefs = await getTemplateScaleRefsByIds(refIds)

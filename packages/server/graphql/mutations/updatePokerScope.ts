@@ -18,6 +18,7 @@ import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import getNextFacilitatorStageAfterStageRemoved from './helpers/getNextFacilitatorStageAfterStageRemoved'
 import importTasksForPoker from './helpers/importTasksForPoker'
+import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
 
 export interface TUpdatePokerScopeItemInput {
   service: TaskServiceEnum
@@ -26,20 +27,20 @@ export interface TUpdatePokerScopeItemInput {
 }
 
 const updatePokerScope = {
-  type: GraphQLNonNull(UpdatePokerScopePayload),
+  type: new GraphQLNonNull(UpdatePokerScopePayload),
   description: `Add or remove a task and its estimate phase from the meeting`,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'the meeting with the estimate phases to modify'
     },
     updates: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(UpdatePokerScopeItemInput))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UpdatePokerScopeItemInput))),
       description: 'The list of items to add/remove to the estimate phase'
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {meetingId, updates}: {meetingId: string; updates: TUpdatePokerScopeItemInput[]},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -126,7 +127,7 @@ const updatePokerScope = {
           issueKey,
           projectKey,
           dimensionName: firstDimensionName
-        }
+        } as JiraDimensionField
       })
     await ensureJiraDimensionField(requiredJiraMappers, teamId, viewerId, dataLoader)
 

@@ -114,9 +114,11 @@ export const enum ExternalLinks {
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
+  INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
-  TEAM = 'https://www.parabol.co/team/'
+  TEAM = 'https://www.parabol.co/team/',
+  LANDING_PAGE = 'https://www.parabol.co/'
 }
 
 export const enum Filter {
@@ -235,7 +237,7 @@ export const enum NavSidebar {
 }
 
 export const enum NewMeeting {
-  ILLUSTRATION_WIDTH = 400,
+  ILLUSTRATION_WIDTH = 450,
   CONTROLS_WIDTH = 300
 }
 export const enum Pricing {
@@ -244,10 +246,12 @@ export const enum Pricing {
 
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
-  ATLASSIAN_DESC = 'Create Jira issues from Parabol',
+  ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol',
   GITHUB_NAME = 'GitHub',
-  GITHUB_DESC = 'Create issues from Parabol',
+  GITHUB_DESC = 'Use GitHub Issues from within Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
+  MATTERMOST_NAME = 'Mattermost',
+  MATTERMOST_DESC = 'Push notifications to Mattermost',
   SLACK_NAME = 'Slack',
   SLACK_DESC = 'Push notifications to Slack'
 }
@@ -285,8 +289,9 @@ export const enum Security {
 }
 
 export const enum ServerChannel {
-  GQL_EXECUTOR_REQUEST = 'gqlExRreq',
-  GQL_EXECUTOR_RESPONSE = 'gqlExRes'
+  GQL_EXECUTOR_RESPONSE = 'gqlExRes',
+  GQL_EXECUTOR_STREAM = 'gqlStream',
+  GQL_EXECUTOR_CONSUMER_GROUP = 'gqlConsumerGroup'
 }
 
 export const enum SubscriptionChannel {
@@ -372,8 +377,11 @@ export const enum Times {
   REFLECTION_COLLAPSE_DURATION = 300,
   REFLECTION_DROP_DURATION = 1000,
   REFLECTION_REMOTE_DROP_DURATION = 2000,
-  REFLECTION_STALE_LIMIT = 5000,
+  REFLECTION_DRAG_STALE_TIMEOUT = 10000,
+  REFLECTION_SPOTLIGHT_DRAG_STALE_TIMEOUT = 120000,
   REFLECTION_COLUMN_SWIPE_THRESH = 600,
+  SPOTLIGHT_SOURCE_DURATION = 300,
+  SPOTLIGHT_MODAL_DURATION = 300,
   TOUCH_LONGPRESS = 120,
   WEBSOCKET_KEEP_ALIVE = 10000
 }
@@ -423,5 +431,15 @@ export const enum Polls {
   MAX_OPTIONS = 4,
   MIN_OPTIONS = 2,
   MAX_TITLE_LENGTH = 100,
-  MIN_TITLE_LENGTH = 2
+  MIN_TITLE_LENGTH = 2,
+  MIN_OPTION_TITLE_LENGTH = 1,
+  MAX_OPTION_TITLE_LENGTH = 30
+}
+
+export const enum PollsAriaLabels {
+  POLL_TITLE_EDITOR = 'Poll Editor',
+  POLL_OPTION_EDITOR = 'Poll Option Editor',
+  POLL_SUBMIT_VOTE = 'Submit poll vote',
+  POLL_START = 'Start a poll',
+  POLL_ADD_OPTION = 'Add a poll option'
 }

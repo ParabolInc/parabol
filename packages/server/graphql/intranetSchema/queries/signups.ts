@@ -16,7 +16,7 @@ const signups = {
     }
   },
   description: 'Get the number of signups, optionally broken down by domain',
-  resolve: (_source, args) => args
+  resolve: (_source: unknown, args: unknown) => args
 }
 
 export default signups

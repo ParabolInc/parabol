@@ -12,14 +12,14 @@ const SetSlackNotificationPayload = new GraphQLObjectType<any, GQLContext>({
     },
     slackNotifications: {
       type: new GraphQLList(new GraphQLNonNull(SlackNotification)),
-      resolve: async ({slackNotificationIds}, _args, {dataLoader}) => {
+      resolve: async ({slackNotificationIds}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('slackNotifications').loadMany(slackNotificationIds)
       }
     },
     user: {
       type: User,
       description: 'The user with updated slack notifications',
-      resolve: ({userId}, _args, {dataLoader}) => {
+      resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     }
