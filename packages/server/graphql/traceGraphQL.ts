@@ -14,8 +14,8 @@ import {
   isObjectType,
   OperationDefinitionNode
 } from 'graphql'
-import {Path} from 'graphql/jsutils/Path'
 import {CompiledQuery, compileQuery, CompilerOptions, isCompiledQuery} from 'graphql-jit'
+import {Path} from 'graphql/jsutils/Path'
 
 interface ExecutionArgs {
   rootValue?: any
@@ -99,7 +99,7 @@ function wrapCompiledQuery(
   const wrappedQuery = async (
     root: any,
     context: PatchedContext,
-    variables: {[key: string]: any} | null
+    variables: {[key: string]: any} | null | undefined
   ): Promise<ExecutionResult> => {
     return tracer.trace(
       'graphql',
@@ -307,7 +307,7 @@ function pathToArray(path: Path) {
 }
 
 function withCollapse(responsePathAsArray: typeof pathToArray) {
-  return function(path: Path) {
+  return function (path: Path) {
     return responsePathAsArray(path).map((segment) => (typeof segment === 'number' ? '*' : segment))
   }
 }
