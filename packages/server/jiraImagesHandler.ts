@@ -8,13 +8,13 @@ import getRedis from './utils/getRedis'
 
 const getImageFromCache = async (imgUrlHash: string, tryAgain: boolean) => {
   const redis = getRedis()
-  const [[imageErr, imageBuffer], [mimeTypeErr, contentType]] = await redis
+  const [[imageErr, imageBuffer], [contentTypeErr, contentType]] = await redis
     .multi()
     .getBuffer(`jira-image:${imgUrlHash}`)
     .get(`jira-image:mime-type:${imgUrlHash}`)
     .exec()
 
-  if (imageErr || mimeTypeErr) return null
+  if (imageErr || contentTypeErr) return null
   if (imageBuffer === null || imageBuffer.length === 0) return null
   if (imageBuffer.length > 1) return {imageBuffer, contentType}
   if (tryAgain) {
