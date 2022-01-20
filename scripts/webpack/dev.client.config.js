@@ -20,21 +20,39 @@ module.exports = {
       config: [__filename]
     }
   },
+  stats: 'minimal',
   devServer: {
-    index: 'index.html',
-    clientLogLevel: 'silent',
-    contentBase: [
-      path.join(PROJECT_ROOT, 'static'),
-      path.join(PROJECT_ROOT, 'build'),
-      path.join(PROJECT_ROOT, 'dev'),
-      path.join(PROJECT_ROOT, 'dev', 'dll'),
-      path.join(PROJECT_ROOT, 'self-hosted')
+    client: {
+      logging: 'warn'
+    },
+    static: [
+      {
+        directory: path.join(PROJECT_ROOT, 'static'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'build'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'dev'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'dev', 'dll'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'self-hosted'),
+        publicPath: '/self-hosted/'
+      }
     ],
-    contentBasePublicPath: ['/static/', '/static/', '/static/', '/static/', '/self-hosted/'],
-    publicPath: '/',
+    devMiddleware: {
+      publicPath: '/',
+      index: 'index.html'
+    },
     hot: true,
     historyApiFallback: true,
-    stats: 'minimal',
     port: PORT,
     proxy: [
       'sse',
@@ -121,8 +139,7 @@ module.exports = {
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
-    }),
-    new webpack.HotModuleReplacementPlugin()
+    })
   ],
   module: {
     rules: [

@@ -62,7 +62,7 @@
     "graphql-typescript-definitions": "^0.21.0",
     "ignore-loader": "^0.1.2",
     "jest": "^27.0.6",
-    "jest-extended": "^0.11.5",
+    "jest-extended": "^1.2.0",
     "jsdom": "^15.1.1",
     "json-loader": "^0.5.7",
     "lint-staged": "^10.1.7",
