@@ -1,5 +1,4 @@
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
-import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import parseBody from '../parseBody'
@@ -23,7 +22,7 @@ const httpGraphQLBodyHandler = async (
   connectionId: string | undefined | null,
   ip: string
 ) => {
-  const connectionContext = connectionId
+  const connectionContext: any = connectionId
     ? sseClients.get(connectionId)
     : new StatelessContext(ip, authToken)
   if (!connectionContext) {
@@ -56,9 +55,7 @@ const httpGraphQLBodyHandler = async (
       }
     }
   }
-  const response =
-    connectionContext instanceof ConnectionContext &&
-    (await handleGraphQLTrebuchetRequest(body, connectionContext))
+  const response = await handleGraphQLTrebuchetRequest(body, connectionContext)
   res.cork(() => {
     if (response) {
       res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))
