@@ -217,7 +217,7 @@ export default {
     // remove any empty tasks
     const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId)
     ])
@@ -233,13 +233,13 @@ export default {
         new TimelineEventCheckinComplete({
           userId: teamMember.userId,
           teamId,
-          orgId: team!.orgId,
+          orgId: team.orgId,
           meetingId
         })
     )
     const timelineEventId = events[0].id as string
     await r.table('TimelineEvent').insert(events).run()
-    if (team!.isOnboardTeam) {
+    if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})

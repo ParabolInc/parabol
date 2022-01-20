@@ -63,7 +63,7 @@ const addMissingJiraField = {
 
     // RESOLUTION
     const {dimensionRefIdx, serviceTaskId} = stage
-    const templateRef = (await dataLoader.get('templateRefs').load(templateRefId))!
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef

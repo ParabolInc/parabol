@@ -72,7 +72,7 @@ export default {
     const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
       dataLoader.get('githubAuth').load({teamId, userId: viewerId}),
       userId ? dataLoader.get('githubAuth').load({teamId, userId}) : null,
-      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
     const auth = viewerAuth ?? assigneeAuth
@@ -99,7 +99,7 @@ export default {
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     // RESOLUTION
-    const {name: teamName} = team!
+    const {name: teamName} = team
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
       userId && userId !== viewerId

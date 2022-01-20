@@ -28,7 +28,7 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
     environment
   )
   const newMeeting = await dataLoader.get('newMeetings').load(meetingId)
-  const team = (await dataLoader.get('teams').load(newMeeting.teamId))!
+  const team = await dataLoader.get('teams').loadNonNull(newMeeting.teamId)
   const {name: meetingName} = newMeeting
   const {name: teamName} = team
   const subject = `${teamName} ${meetingName} ${MEETING_SUMMARY_LABEL}`

@@ -1,4 +1,4 @@
-import DataLoader from 'dataloader'
+import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 
@@ -11,7 +11,7 @@ export function primaryKeyLoaderMaker<ReturnT extends {id: string}>(
   batchFn: (ids: readonly string[]) => Promise<ReturnT[]>
 ) {
   return (parent: RootDataLoader) => {
-    return new DataLoader<string, ReturnT | undefined, string>(
+    return new NullableDataLoader<string, ReturnT, string>(
       async (ids) => {
         const result = await batchFn(ids)
         return normalizeRethinkDbResults(ids, result)

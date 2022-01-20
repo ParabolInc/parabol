@@ -63,7 +63,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         const getDimensionName = async (meetingId: string) => {
           const meeting = await dataLoader.get('newMeetings').load(meetingId)
           const {templateRefId} = meeting as MeetingPoker
-          const templateRef = (await dataLoader.get('templateRefs').load(templateRefId))!
+          const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
           const {dimensions} = templateRef
           const dimensionRef = dimensions[dimensionRefIdx]
           const {name: dimensionName} = dimensionRef
@@ -127,7 +127,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
       resolve: async ({meetingId, dimensionRefIdx}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {templateRefId} = meeting as MeetingPoker
-        const templateRef = (await dataLoader.get('templateRefs').load(templateRefId))!
+        const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
         const {dimensions} = templateRef
         const {name, scaleRefId} = dimensions[dimensionRefIdx]
         return {
@@ -147,7 +147,7 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
           dataLoader.get('meetingTaskEstimates').load({taskId, meetingId})
         ])
         const {templateRefId} = meeting as MeetingPoker
-        const templateRef = (await dataLoader.get('templateRefs').load(templateRefId))!
+        const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
         const {dimensions} = templateRef
         const dimensionRef = dimensions[dimensionRefIdx]
         const {name: dimensionName} = dimensionRef

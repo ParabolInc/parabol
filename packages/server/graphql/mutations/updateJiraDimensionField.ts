@@ -90,7 +90,7 @@ const updateJiraDimensionField = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }
-    const templateRef = (await dataLoader.get('templateRefs').load(templateRefId))!
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
     if (!matchingDimension) {
