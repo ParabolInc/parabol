@@ -4,8 +4,8 @@ import {useLazyLoadQuery} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'react-relay'
 
-const useSpotlightResults = (meetingRef: useSpotlightResults_meeting$key) => {
-  const meeting = readInlineData(
+const useSpotlightResults = (meetingRef: any) => {
+  const meeting = readInlineData<useSpotlightResults_meeting$key>(
     graphql`
       fragment useSpotlightResults_meeting on RetrospectiveMeeting @inline {
         spotlightGroup {

@@ -1,4 +1,4 @@
-import {MasterPool, r} from 'rethinkdb-ts'
+import {r} from 'rethinkdb-ts'
 import Organization from '../database/types/Organization'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
@@ -223,11 +223,11 @@ export type DBType = {
   [P in keyof RethinkSchema]: RethinkSchema[P]['type']
 }
 
-export type ParabolR = R<RethinkSchema>
+type ParabolR = R<RethinkSchema>
 const config = getRethinkConfig()
 let isLoading = false
 let isLoaded = false
-let promise: Promise<MasterPool> | undefined
+let promise
 const getRethink = async () => {
   if (!isLoaded) {
     if (!isLoading) {

@@ -162,7 +162,7 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
+  async resolve(_source: unknown, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
     const operationId = dataLoader.share()

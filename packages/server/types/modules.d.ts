@@ -9,9 +9,6 @@ declare module '*.graphql' {
   export = value
 }
 
-declare module 'draft-js-utils'
-declare module 'babel-plugin-relay/macro'
-
 declare const __PRODUCTION__: string
 declare const __SOCKET_PORT__: string
 declare const __webpack_public_path__: string

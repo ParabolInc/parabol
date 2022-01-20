@@ -6,7 +6,7 @@ import TeamNotification from './TeamNotification'
 import TeamInvitation from './TeamInvitation'
 import {GQLContext} from '../graphql'
 
-const NotificationTeamInvitation: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
+const NotificationTeamInvitation = new GraphQLObjectType<any, GQLContext>({
   name: 'NotificationTeamInvitation',
   description: 'A notification sent to a user that was invited to a new team',
   interfaces: () => [Notification, TeamNotification],

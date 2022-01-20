@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import NewMeeting from '../types/NewMeeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -14,11 +13,7 @@ export default {
       description: 'The meeting ID'
     }
   },
-  async resolve(
-    _source: unknown,
-    {meetingId}: {meetingId: string},
-    {authToken, dataLoader}: GQLContext
-  ) {
+  async resolve(_source: unknown, {meetingId}, {authToken, dataLoader}) {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {

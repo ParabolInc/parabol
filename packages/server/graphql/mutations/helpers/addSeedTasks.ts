@@ -16,7 +16,7 @@ const SEED_TASKS = [
   }
 ]
 
-export default async (userId: string, teamId: string) => {
+export default async (userId, teamId) => {
   const r = await getRethink()
   const now = new Date()
 

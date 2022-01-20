@@ -1,10 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import SlackNotificationEventEnum from './SlackNotificationEventEnum'
 import SlackNotificationEventTypeEnum from './SlackNotificationEventTypeEnum'
-import {
-  SlackNotificationEvent,
-  slackNotificationEventTypeLookup
-} from '../../database/types/SlackNotification'
+import {slackNotificationEventTypeLookup} from '../../database/types/SlackNotification'
 import {GQLContext} from '../graphql'
 
 const SlackNotification = new GraphQLObjectType<any, GQLContext>({
@@ -19,7 +16,7 @@ const SlackNotification = new GraphQLObjectType<any, GQLContext>({
     },
     eventType: {
       type: new GraphQLNonNull(SlackNotificationEventTypeEnum),
-      resolve: ({event}: {event: SlackNotificationEvent}) => {
+      resolve: ({event}) => {
         return slackNotificationEventTypeLookup[event]
       }
     },

@@ -13,7 +13,7 @@ import PokerTemplate from './PokerTemplate'
 import Team from './Team'
 import TemplateScale from './TemplateScale'
 
-const TemplateDimension: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
+const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
   name: 'TemplateDimension',
   description: 'A team-specific template dimension: e.g., effort, importance etc.',
   fields: () => ({

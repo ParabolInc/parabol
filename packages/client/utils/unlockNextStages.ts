@@ -1,4 +1,3 @@
-import GenericMeetingPhase from '~/../server/database/types/GenericMeetingPhase'
 import {DISCUSS, GROUP} from './constants'
 import findStageAfterId from './meetings/findStageAfterId'
 import findStageById from './meetings/findStageById'
@@ -6,7 +5,13 @@ import unlockAllStagesForPhase from './unlockAllStagesForPhase'
 
 const phasesWithExtraRequirements = [GROUP, DISCUSS]
 
-const unlockStagesForParticipants = (facilitatorStageId: string, phases: GenericMeetingPhase[]) => {
+const unlockStagesForParticipants = (facilitatorStageId: string, phases: {
+  phaseType: string,
+  stages: {
+    id: string
+    [key: string]: string
+  }[]
+}[]) => {
   const stageRes = findStageById(phases, facilitatorStageId)
   if (!stageRes) return []
   const {stage} = stageRes as any
@@ -14,10 +19,7 @@ const unlockStagesForParticipants = (facilitatorStageId: string, phases: Generic
   return unlockAllStagesForPhase(phases, stage.phaseType, false)
 }
 
-const unlockNextStageForFacilitator = (
-  facilitatorStageId: string,
-  phases: GenericMeetingPhase[]
-) => {
+const unlockNextStageForFacilitator = (facilitatorStageId, phases) => {
   const nextStageRes = findStageAfterId(phases, facilitatorStageId)
   if (!nextStageRes) return []
   const {stage: nextStage} = nextStageRes as any
@@ -26,7 +28,7 @@ const unlockNextStageForFacilitator = (
   return unlockAllStagesForPhase(phases, nextStage.phaseType, true)
 }
 
-const unlockNextStages = (facilitatorStageId: string, phases: GenericMeetingPhase[]) => {
+const unlockNextStages = (facilitatorStageId: string, phases: any[]) => {
   const unlockedFacilitatorStageIds = unlockNextStageForFacilitator(facilitatorStageId, phases)
   const unlockedParticipantStageIds = unlockStagesForParticipants(facilitatorStageId, phases)
   return [...unlockedFacilitatorStageIds, ...unlockedParticipantStageIds]

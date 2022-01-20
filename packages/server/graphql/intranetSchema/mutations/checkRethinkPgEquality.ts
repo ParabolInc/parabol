@@ -1,4 +1,3 @@
-import {GQLContext} from './../../graphql'
 import {GraphQLBoolean, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 import {requireSU} from '../../../utils/authorization'
 import fs from 'fs'
@@ -45,15 +44,7 @@ const checkRethinkPgEquality = {
       description: 'Whether the output should be written to file'
     }
   },
-  resolve: async (
-    _source: unknown,
-    {
-      tableName,
-      maxErrors,
-      writeToFile
-    }: {tableName: string; maxErrors?: number; writeToFile?: boolean},
-    {authToken}: GQLContext
-  ) => {
+  resolve: async (_source: unknown, {tableName, maxErrors, writeToFile}, {authToken}) => {
     // AUTH
     requireSU(authToken)
 

@@ -15,7 +15,7 @@ const validateAvatarUpload = async (
   }
   if (ext === 'svg') {
     const {window} = new JSDOM()
-    const safeBuffer = await sanitizeSVG(buffer, window as any)
+    const safeBuffer = await sanitizeSVG(buffer, window)
     if (!safeBuffer) throw new Error('Attempted Stored XSS attack')
     return [ext, safeBuffer as Buffer]
   }

@@ -59702,7 +59702,7 @@ export interface ISetPokerSpectateSuccess {
   /**
    * The stages that were updated if the viewer voted and then changed to spectating
    */
-  updatedStages: Array<IEstimateStage>;
+  updatedStages: Array<IEstimateStage> | null;
 }
 
 /**

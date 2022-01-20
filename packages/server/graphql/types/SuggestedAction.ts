@@ -44,20 +44,20 @@ export const suggestedActionInterfaceFields = () => ({
   }
 })
 
-const resolveTypeLookup = {
-  inviteYourTeam: SuggestedActionInviteYourTeam,
-  tryTheDemo: SuggestedActionTryTheDemo,
-  tryRetroMeeting: SuggestedActionTryRetroMeeting,
-  tryActionMeeting: SuggestedActionTryActionMeeting,
-  createNewTeam: SuggestedActionCreateNewTeam
-}
-
 const SuggestedAction = new GraphQLInterfaceType({
   name: 'SuggestedAction',
   description: 'A past event that is important to the viewer',
   fields: suggestedActionInterfaceFields,
-  resolveType: ({type}: {type: keyof typeof resolveTypeLookup}) => {
-    return resolveTypeLookup[type]
+  resolveType: (value) => {
+    const resolveTypeLookup = {
+      inviteYourTeam: SuggestedActionInviteYourTeam,
+      tryTheDemo: SuggestedActionTryTheDemo,
+      tryRetroMeeting: SuggestedActionTryRetroMeeting,
+      tryActionMeeting: SuggestedActionTryActionMeeting,
+      createNewTeam: SuggestedActionCreateNewTeam
+    }
+
+    return resolveTypeLookup[value.type]
   }
 })
 

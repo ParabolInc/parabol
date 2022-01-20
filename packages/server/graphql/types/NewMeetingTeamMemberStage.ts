@@ -34,7 +34,7 @@ export const newMeetingTeamMemberStageFields = () => ({
   }
 })
 
-const NewMeetingTeamMemberStage: GraphQLInterfaceType = new GraphQLInterfaceType({
+const NewMeetingTeamMemberStage = new GraphQLInterfaceType({
   name: 'NewMeetingTeamMemberStage',
   description:
     'An instance of a meeting phase item. On the client, this usually represents a single view',

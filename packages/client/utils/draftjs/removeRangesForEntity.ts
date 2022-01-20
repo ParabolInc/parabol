@@ -5,13 +5,11 @@ import {
   EditorState,
   Modifier,
   SelectionState,
-  RawDraftContentState,
-  Entity,
-  RawDraftEntityRange
+  RawDraftContentState
 } from 'draft-js'
 import unicodeSubstring from 'unicode-substring'
 
-const getUTF16Range = (text: string, range: RawDraftEntityRange) => {
+const getUTF16Range = (text, range) => {
   const offset = unicodeSubstring(text, 0, range.offset).length
   return {
     key: range.key,
@@ -20,11 +18,7 @@ const getUTF16Range = (text: string, range: RawDraftEntityRange) => {
   }
 }
 
-const getEntities = (
-  entityMap: RawDraftContentState['entityMap'],
-  entityType: string,
-  eqFn: (entityData: any) => void
-) => {
+const getEntities = (entityMap: RawDraftContentState['entityMap'], entityType, eqFn) => {
   const entities = [] as string[]
   for (const [key, entity] of Object.entries(entityMap)) {
     if (entity.type === entityType && eqFn(entity.data)) {
@@ -34,11 +28,7 @@ const getEntities = (
   return entities
 }
 
-const getRemovalRanges = (
-  entities: Entity[],
-  entityRanges: RawDraftEntityRange[],
-  text: string
-) => {
+const getRemovalRanges = (entities, entityRanges, text) => {
   const removalRanges = [] as {start: any; end: any}[]
   entityRanges.forEach((utf8Range) => {
     const entityKey = String(utf8Range.key)

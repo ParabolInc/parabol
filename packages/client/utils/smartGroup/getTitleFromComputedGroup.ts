@@ -11,10 +11,7 @@ const MAX_CHARS = 30
 const MIN_SALIENCE = 0.1
 
 type DistanceArray = number[]
-const getNameFromLemma = (
-  lemma: string,
-  reflectionEntities: {lemma?: string; name: string; salience: number}[][]
-) => {
+const getNameFromLemma = (lemma: string, reflectionEntities: {lemma?: string, name: string, salience: number}[][]) => {
   const names = new Set<string>()
   reflectionEntities.forEach((entities) => {
     entities.forEach((entity) => {
@@ -31,7 +28,7 @@ const getNameFromLemma = (
 const getTitleFromComputedGroup = (
   uniqueLemmaArr: string[],
   group: DistanceArray[],
-  reflectionEntities: {lemma?: string; name: string; salience: number}[][],
+  reflectionEntities: {lemma: string, name: string, salience: number}[][],
   reflections: any[]
 ) => {
   const sumArr = new Array(uniqueLemmaArr.length).fill(0)

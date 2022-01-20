@@ -1,16 +1,15 @@
-import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
 import getRethink from '../../database/rethinkDriver'
-import AgendaItem, {AgendaItemInput} from '../../database/types/AgendaItem'
+import AgendaItem from '../../database/types/AgendaItem'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
-import CreateAgendaItemInput, {CreateAgendaItemInputType} from '../types/CreateAgendaItemInput'
+import CreateAgendaItemInput from '../types/CreateAgendaItemInput'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
 
 export default {
@@ -22,11 +21,7 @@ export default {
       description: 'The new task including an id, teamMemberId, and content'
     }
   },
-  async resolve(
-    _source: unknown,
-    {newAgendaItem}: {newAgendaItem: CreateAgendaItemInputType},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
-  ) {
+  async resolve(_source: unknown, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -52,7 +47,7 @@ export default {
           ...validNewAgendaItem,
           id: agendaItemId,
           teamId
-        } as AgendaItemInput)
+        })
       )
       .run()
 

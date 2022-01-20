@@ -5,7 +5,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import ReflectTemplate from './ReflectTemplate'
 import Team from './Team'
 
-const ReflectPrompt: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
+const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectPrompt',
   description:
     'A team-specific reflection prompt. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.',

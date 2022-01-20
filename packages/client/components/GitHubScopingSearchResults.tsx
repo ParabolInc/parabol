@@ -148,9 +148,11 @@ const GitHubScopingSearchResults = (props: Props) => {
         .filter((edge) => edge.node.__typename === '_xGitHubIssue')
         .map(({node}) => node as GQLType<typeof node, '_xGitHubIssue'>)
     : null
+  // const issueEdges = edges!.filter((edge) => edge.node.__typename === '_xGitHubIssue') as GQLType<typeof edges[0]['node']
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
-  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
+  // const {id: meetingId, teamId, phases, githubSearchQuery} = meeting
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 

@@ -20,41 +20,22 @@ const MAX_GROUP_SIZE = 5
 const MIN_REDUCTION_PERCENT = 0.01
 const MAX_REDUCTION_PERCENT = 0.8
 
-type Tree = {
-  value: number[]
-  size: number
-}
-
-type NestedTree = {
-  dist: number
-  left: ClusterfckTree
-  right: ClusterfckTree
-  size: number
-}
-
-type ClusterfckTree = NestedTree | Tree
-
-type ClusterfckRes = {
-  clusters: (...args: any[]) => any
-  tree: ClusterfckTree
-}
-
-const traverseTree = (initialTree: ClusterfckTree, groupingOptions: GroupingOptions) => {
-  const groups = [] as number[][][]
-  const distanceSet = new Set<number>()
+const traverseTree = (initialTree, groupingOptions: GroupingOptions) => {
+  const groups = [] as any
+  const distanceSet = new Set()
   const {groupingThreshold, maxGroupSize = MAX_GROUP_SIZE} = groupingOptions
-  const visit = (tree: ClusterfckTree, group?: number[][]) => {
-    if ('dist' in tree) {
+  const visit = (tree, group?) => {
+    if (tree.dist) {
       distanceSet.add(tree.dist)
     }
-    if ('value' in tree) {
+    if (tree.value) {
       if (group) {
         group.push(tree.value)
       } else {
         groups.push([tree.value])
       }
     } else if (!group && tree.size <= maxGroupSize && tree.dist <= groupingThreshold) {
-      const newGroup = [] as number[][]
+      const newGroup = []
       visit(tree.left, newGroup)
       visit(tree.right, newGroup)
       groups.push(newGroup)
@@ -66,18 +47,14 @@ const traverseTree = (initialTree: ClusterfckTree, groupingOptions: GroupingOpti
   visit(initialTree)
   return {groups, distanceSet}
 }
-const getGroupMatrix = (distanceMatrix: number[][], groupingOptions: GroupingOptions) => {
-  const clusterfckRes: ClusterfckRes = clusterfck.hcluster(
-    distanceMatrix,
-    clusterfck.euclidean,
-    'average'
-  )
-  const {tree} = clusterfckRes
+const getGroupMatrix = (distanceMatrix, groupingOptions: GroupingOptions) => {
+  const clusters = clusterfck.hcluster(distanceMatrix, clusterfck.euclidean, 'average')
+  const {tree} = clusters
   const {groupingThreshold, maxReductionPercent = MAX_REDUCTION_PERCENT} = groupingOptions
-  if (!tree) return {groups: [] as number[][][]}
-  let groups = [] as number[][][]
+  if (!tree) return {groups: []}
+  let groups
   let thresh = groupingThreshold
-  let distancesArr = [] as number[]
+  let distancesArr
   // naive logic to make sure the grouping is AOK
   for (let i = 0; i < 5; i++) {
     const res = traverseTree(tree, groupingOptions)
@@ -98,7 +75,7 @@ const getGroupMatrix = (distanceMatrix: number[][], groupingOptions: GroupingOpt
       break
     }
   }
-  const nextDistance = distancesArr?.find((d) => d > thresh)
+  const nextDistance = distancesArr.find((d) => d > thresh)
   const nextThresh = nextDistance ? Math.ceil(nextDistance * 100) / 100 : null
   return {thresh, groups, nextThresh}
 }

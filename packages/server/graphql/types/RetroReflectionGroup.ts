@@ -19,7 +19,7 @@ import RetroReflection from './RetroReflection'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
 
-const RetroReflectionGroup: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
+const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
   description: 'A reflection group created during the group phase of a retrospective',
   fields: () => ({

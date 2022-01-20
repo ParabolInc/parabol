@@ -11,9 +11,9 @@ import isForwardProgress from '../utils/meetings/isForwardProgress'
 import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
 
-const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
+const useGotoStageId = (meetingRef: any) => {
   const atmosphere = useAtmosphere()
-  const meeting = readInlineData(
+  const meeting = readInlineData<useGotoStageId_meeting$key>(
     graphql`
       fragment useGotoStageId_meeting on NewMeeting @inline {
         endedAt

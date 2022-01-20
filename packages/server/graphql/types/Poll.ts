@@ -6,7 +6,7 @@ import PollOption from './PollOption'
 import User from './User'
 import PollId from '../../../client/shared/gqlIds/PollId'
 
-const Poll: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
+const Poll = new GraphQLObjectType<any, GQLContext>({
   name: 'Poll',
   description: 'A poll created during the meeting',
   interfaces: () => [Threadable],

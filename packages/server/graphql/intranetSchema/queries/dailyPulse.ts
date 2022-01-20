@@ -1,4 +1,3 @@
-import {GQLContext} from './../../graphql'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
@@ -92,11 +91,7 @@ const dailyPulse = {
     }
   },
   description: 'Post signup and login metrics to slack',
-  async resolve(
-    _source: unknown,
-    {after, email, channelId}: {after: Date; email: string; channelId: string},
-    {authToken}: GQLContext
-  ) {
+  async resolve(_source: unknown, {after, email, channelId}, {authToken}) {
     requireSU(authToken)
     const r = await getRethink()
     const user = await getUserByEmail(email)

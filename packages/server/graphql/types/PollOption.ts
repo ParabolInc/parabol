@@ -5,7 +5,7 @@ import PollOptionId from '../../../client/shared/gqlIds/PollOptionId'
 import Poll from './Poll'
 import PollId from 'parabol-client/shared/gqlIds/PollId'
 
-const PollOption: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
+const PollOption = new GraphQLObjectType<any, GQLContext>({
   name: 'PollOption',
   description: 'Poll options for a given poll',
   fields: () => ({

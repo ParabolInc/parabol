@@ -14,11 +14,7 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (
-    _source: unknown,
-    {invoiceId}: {invoiceId: string},
-    {authToken}: InternalContext
-  ) => {
+  resolve: async (_source: unknown, {invoiceId}, {authToken}: InternalContext) => {
     const r = await getRethink()
     const now = new Date()
 
@@ -36,7 +32,10 @@ export default {
       livemode,
       metadata: {orgId}
     } = await manager.retrieveCustomer(customerId)
-    const org = await r.table('Organization').get(orgId).run()
+    const org = await r
+      .table('Organization')
+      .get(orgId)
+      .run()
     if (!org) {
       if (livemode) {
         throw new Error(

@@ -29,7 +29,7 @@ import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/git
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 
-const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
+const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
   interfaces: () => [Threadable],
@@ -69,7 +69,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
       resolve: async (
         {id: taskId, integration, teamId}: DBTask,
         _args: unknown,
-        {dataLoader, authToken}: GQLContext
+        {dataLoader, authToken}
       ) => {
         const viewerId = getUserId(authToken)
         if (integration?.service === 'jira') {

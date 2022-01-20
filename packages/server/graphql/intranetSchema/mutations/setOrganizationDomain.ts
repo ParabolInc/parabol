@@ -17,18 +17,17 @@ const setOrganizationDomain = {
         'The top level domain of the company. Usually the part after the "@" in their email address'
     }
   },
-  resolve: async (
-    _source: unknown,
-    {orgId, domain}: {orgId: string; domain: string},
-    {authToken}: GQLContext
-  ) => {
+  resolve: async (_source: unknown, {orgId, domain}, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
 
     // VALIDATION
-    const organization = await r.table('Organization').get(orgId).run()
+    const organization = await r
+      .table('Organization')
+      .get(orgId)
+      .run()
 
     if (!organization) {
       throw new Error('Organization not found')

@@ -7,9 +7,7 @@ import protocolRelativeUrl from './protocolRelativeUrl'
  * Initializing AWS S3 implicitly uses environment variables
  * AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
  */
-const s3 =
-  typeof process.env.CDN_BASE_URL === 'string' &&
-  process.env.CDN_BASE_URL !== 'key_CDN_BASE_URL' &&
+const s3 = typeof process.env.CDN_BASE_URL === 'string' && process.env.CDN_BASE_URL !== 'key_CDN_BASE_URL' &&
   new aws.S3({
     endpoint: protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname,
     s3BucketEndpoint: true,
@@ -34,7 +32,12 @@ export function s3GetObject(url) {
   return s3.getObject({Bucket: process.env.AWS_S3_BUCKET, Key: url}).promise()
 }
 
-export function s3PutObject(url, buffer, contentType = null, acl = 'authenticated-read') {
+export function s3PutObject(
+  url,
+  buffer,
+  contentType = null, 
+  acl = 'authenticated-read'
+) {
   s3CheckInitialized()
   contentType = contentType || mime.lookup(url) || 'application/octet-stream'
   const s3Params = {

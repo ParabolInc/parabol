@@ -3,9 +3,7 @@
 // test should return true if you want to update that specific value inside the array
 // f is the updater
 
-import {ParabolR} from './rethinkDriver'
-
-const rMapIf = (r: ParabolR) => (rArr: unknown[], test: any, f: (x: unknown) => void) => {
+const rMapIf = (r) => (rArr, test, f) => {
   return rArr.map((x) => r.branch(test(x), f(x), x))
 }
 

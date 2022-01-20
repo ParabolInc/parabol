@@ -8,8 +8,6 @@ const managers = {
   local: LocalFileSystemManager
 }
 
-type ManagersKey = keyof typeof managers
-
 const getFileStoreManager = () => {
   if (!fileStoreManager) {
     const fileStoreProvider = process.env.FILE_STORE_PROVIDER
@@ -19,7 +17,7 @@ const getFileStoreManager = () => {
     if (!(fileStoreProvider in managers)) {
       throw new Error('Got invalid value for `FILE_STORE_PROVIDER` env var')
     }
-    const Manager = managers[fileStoreProvider as ManagersKey]
+    const Manager = managers[fileStoreProvider]
     fileStoreManager = new Manager()
   }
   return fileStoreManager

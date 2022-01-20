@@ -25,7 +25,7 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {orgId, stripeToken}: {orgId: string; stripeToken: string},
+    {orgId, stripeToken},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()

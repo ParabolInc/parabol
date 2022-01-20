@@ -17,18 +17,17 @@ const flagConversionModal = {
       description: 'the orgId to toggle the flag for'
     }
   },
-  resolve: async (
-    _source: unknown,
-    {active, orgId}: {active: boolean; orgId: string},
-    {authToken}: GQLContext
-  ) => {
+  resolve: async (_source: unknown, {active, orgId}, {authToken}: GQLContext) => {
     const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
 
     // VALIDATION
-    const organization = await r.table('Organization').get(orgId).run()
+    const organization = await r
+      .table('Organization')
+      .get(orgId)
+      .run()
     if (!organization) {
       return {error: {message: 'Invalid orgId'}}
     }

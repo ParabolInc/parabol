@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import NotificationEnum, {NotificationEnumType} from './NotificationEnum'
+import NotificationEnum from './NotificationEnum'
 import NotificationMeetingStageTimeLimitEnd from './NotificationMeetingStageTimeLimitEnd'
 import NotificationStatusEnum from './NotificationStatusEnum'
 import NotificationTeamInvitation from './NotificationTeamInvitation'
@@ -39,10 +39,10 @@ export const notificationInterfaceFields = {
   }
 }
 
-const Notification: GraphQLInterfaceType = new GraphQLInterfaceType({
+const Notification = new GraphQLInterfaceType({
   name: 'Notification',
   fields: () => notificationInterfaceFields,
-  resolveType({type}: {type: NotificationEnumType}) {
+  resolveType(value) {
     // type lookup needs to be resolved in a thunk since there is a circular reference when loading
     // alternative to treating it like a DB driver if GCing is an issue
     const resolveTypeLookup = {
@@ -55,7 +55,7 @@ const Notification: GraphQLInterfaceType = new GraphQLInterfaceType({
       MEETING_STAGE_TIME_LIMIT_END: NotificationMeetingStageTimeLimitEnd
     } as const
 
-    return resolveTypeLookup[type]
+    return resolveTypeLookup[value.type]
   }
 })
 

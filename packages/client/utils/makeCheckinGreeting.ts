@@ -298,13 +298,13 @@ const questions = [
   'Congratulations! You’ve been chosen to represent your country in a global competition. What sport or activity are you doing?'
 ]
 
-export const makeCheckinGreeting = (meetingCount: number, seedId = '') => {
+export const makeCheckinGreeting = (meetingCount, seedId = '') => {
   const seed = seedId.charCodeAt(0)
   const idx = (seed + meetingCount) % greetings.length
   return greetings[idx]
 }
 
-export const makeCheckinQuestion = (meetingCount: number, seedId = '') => {
+export const makeCheckinQuestion = (meetingCount, seedId = '') => {
   const seed = seedId.charCodeAt(0)
   const idx = (seed + meetingCount) % questions.length
   return questions[idx]

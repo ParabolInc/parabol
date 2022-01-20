@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import UserTiersCount from '../types/UserTiersCount'
 import {requireSU} from '../../utils/authorization'
@@ -12,7 +11,9 @@ export default {
       description: 'the user for which you want the count of tier membership'
     }
   },
-  async resolve(_source: unknown, {userId}: {userId: string}, {authToken}: GQLContext) {
+  async resolve (source, args, {authToken}) {
+    const {userId} = args
+
     // AUTH
     requireSU(authToken)
 

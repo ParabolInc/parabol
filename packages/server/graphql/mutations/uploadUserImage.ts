@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLNonNull} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import {isAuthenticated} from '../../utils/authorization'
@@ -21,7 +20,7 @@ export default {
     }
   },
   resolve: async (
-    _: unknown,
+    _,
     {
       file
     }: {
@@ -33,7 +32,7 @@ export default {
         }
       }
     },
-    context: GQLContext
+    context
   ) => {
     // AUTH
     const {authToken} = context

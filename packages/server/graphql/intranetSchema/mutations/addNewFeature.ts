@@ -1,6 +1,6 @@
-import {GQLContext} from './../../graphql'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../../../graphql/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import generateUID from '../../../generateUID'
 import getPg from '../../../postgres/getPg'

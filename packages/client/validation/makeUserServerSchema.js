@@ -1,11 +1,10 @@
-import {optionalUrl} from 'parabol-client/validation/templates'
+import { optionalUrl } from 'parabol-client/validation/templates'
 import legitify from './legitify'
-import Legitity from './Legitity'
 
 export default function makeUserServerSchema() {
   return legitify({
     picture: optionalUrl,
-    preferredName: (value: Legitity) =>
+    preferredName: (value) =>
       value
         .trim()
         .min(2, 'C’mon, you call that a name?')

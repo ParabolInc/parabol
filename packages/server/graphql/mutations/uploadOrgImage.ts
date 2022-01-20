@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import GraphQLFileType from '../types/GraphQLFileType'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
@@ -24,7 +23,7 @@ export default {
     }
   },
   resolve: async (
-    _: unknown,
+    _,
     {
       file,
       orgId
@@ -38,7 +37,7 @@ export default {
       }
       orgId: string
     },
-    context: GQLContext
+    context
   ) => {
     // AUTH
     const {authToken, dataLoader} = context

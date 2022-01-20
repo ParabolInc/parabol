@@ -33,7 +33,7 @@ import TeamMember from './TeamMember'
 import TemplateScale from './TemplateScale'
 import TierEnum from './TierEnum'
 
-const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
+const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
   description: 'A team',
   fields: () => ({

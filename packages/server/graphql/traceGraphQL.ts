@@ -170,7 +170,7 @@ function wrapSchema(tracer: Tracer, config: Config, schema: PatchedGraphQLSchema
     // ignore introspection and scalar types
     if (namedType.name.startsWith('__') || !isObjectType(namedType)) return
     const fields = namedType.getFields()
-    Object.values(fields).forEach((field: any) => {
+    Object.values(fields).forEach((field) => {
       if (field.resolve) {
         field.resolve = wrappedResolve(tracer, config, field.resolve)
       }

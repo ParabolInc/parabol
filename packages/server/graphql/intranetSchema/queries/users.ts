@@ -1,4 +1,3 @@
-import {GQLContext} from './../../graphql'
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {requireSU} from '../../../utils/authorization'
 import User from '../../types/User'
@@ -12,11 +11,7 @@ const users = {
     }
   },
   description: 'Dig into many users by providing the userId',
-  async resolve(
-    _source: unknown,
-    {userIds}: {userIds: string[]},
-    {authToken, dataLoader}: GQLContext
-  ) {
+  async resolve(_source: unknown, {userIds}, {authToken, dataLoader}) {
     requireSU(authToken)
     const users = await dataLoader.get('users').loadMany(userIds)
     return users

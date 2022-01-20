@@ -1,4 +1,3 @@
-import {GQLContext} from './../../graphql'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import {JSDOM} from 'jsdom'
 import fetch from 'node-fetch'
@@ -17,7 +16,7 @@ import {UpdateUserProfileInputType} from '../../types/UpdateUserProfileInput'
 const updateUserProfile = async (
   _source: unknown,
   {updatedUser}: {updatedUser: UpdateUserProfileInputType},
-  {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
   const operationId = dataLoader.share()
@@ -39,7 +38,7 @@ const updateUserProfile = async (
     const res = await fetch(validUpdatedUser.picture)
     const buffer = await res.buffer()
     const {window} = new JSDOM()
-    const sanitaryPicture = await sanitizeSVG(buffer, window as any)
+    const sanitaryPicture = await sanitizeSVG(buffer, window)
     if (!sanitaryPicture) {
       return {error: {message: 'Attempted Stored XSS attack'}}
     }

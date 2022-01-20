@@ -16,13 +16,13 @@ const updateStage = async (
   return r
     .table('NewMeeting')
     .get(meetingId)
-    .update((meeting: any) => ({
+    .update((meeting) => ({
       phases: mapIf(
         meeting('phases'),
-        (phase: any) => phase('phaseType').eq(phaseType),
-        (estimatePhase: any) =>
+        (phase) => phase('phaseType').eq(phaseType),
+        (estimatePhase) =>
           estimatePhase.merge({
-            stages: mapIf(estimatePhase('stages'), (stage: any) => stage('id').eq(stageId), updater)
+            stages: mapIf(estimatePhase('stages'), (stage) => stage('id').eq(stageId), updater)
           })
       )
     }))

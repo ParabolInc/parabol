@@ -8,11 +8,7 @@ import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import softDeleteUser from './helpers/softDeleteUser'
 
-const markUserSoftDeleted = async (
-  userIdToDelete: string,
-  deletedUserEmail: string,
-  validReason: string
-) => {
+const markUserSoftDeleted = async (userIdToDelete, deletedUserEmail, validReason) => {
   const update = {
     isRemoved: true,
     email: deletedUserEmail,
@@ -41,7 +37,7 @@ export default {
   },
   resolve: async (
     _source: unknown,
-    {userId, email, reason}: {userId: string; email: string; reason: string},
+    {userId, email, reason},
     {authToken, dataLoader}: GQLContext
   ) => {
     // AUTH

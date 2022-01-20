@@ -1,7 +1,7 @@
 import ConnectionContext from './socketHelpers/ConnectionContext'
 
 class SSEClients {
-  store = {} as Record<string, ConnectionContext>
+  store = {}
   get(connectionId: unknown) {
     return this.store[String(connectionId)]
   }

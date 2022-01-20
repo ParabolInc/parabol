@@ -76,7 +76,10 @@ const joinMeeting = {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
-    const {errors} = await r.table('MeetingMember').insert(meetingMember).run()
+    const {errors} = await r
+      .table('MeetingMember')
+      .insert(meetingMember)
+      .run()
     // if this is called concurrently, only 1 will be error free
     if (errors > 0) {
       return {error: {message: 'Already joined meeting'}}
@@ -91,11 +94,11 @@ const joinMeeting = {
       return r
         .table('NewMeeting')
         .get(meetingId)
-        .update((meeting: any) => ({
+        .update((meeting) => ({
           phases: mapIf(
             meeting('phases'),
-            (phase: any) => phase('phaseType').eq(phaseType),
-            (phase: any) =>
+            (phase) => phase('phaseType').eq(phaseType),
+            (phase) =>
               phase.merge({
                 stages: phase('stages').append({
                   ...stage,
@@ -104,8 +107,12 @@ const joinMeeting = {
                   isNavigableByFacilitator: true,
                   // the stage is complete if all other stages are complete & there's at least 1
                   isComplete: r.and(
-                    phase('stages')('isComplete').contains(false).not(),
-                    phase('stages').count().ge(1)
+                    phase('stages')('isComplete')
+                      .contains(false)
+                      .not(),
+                    phase('stages')
+                      .count()
+                      .ge(1)
                   )
                 })
               })

@@ -1,8 +1,7 @@
-import {ReactjiType} from '../graphql/types/Reactji'
 import Reactji from '../database/types/Reactji'
 
 const getGroupedReactjis = (reactjis: Reactji[], viewerId: string, idPrefix: string) => {
-  const agg = {} as {[key: string]: ReactjiType}
+  const agg = {}
   reactjis.forEach((reactji) => {
     const {id, userId} = reactji
     const guid = `${idPrefix}:${id}`
@@ -16,7 +15,7 @@ const getGroupedReactjis = (reactjis: Reactji[], viewerId: string, idPrefix: str
     }
   })
 
-  return Object.values(agg)
+  return Object.values(agg) as Reactji[]
 }
 
 export default getGroupedReactjis

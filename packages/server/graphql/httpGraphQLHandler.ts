@@ -1,5 +1,4 @@
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
-import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import parseBody from '../parseBody'
@@ -35,7 +34,7 @@ const httpGraphQLBodyHandler = async (
     res.end('SSE Response not found')
     return
   }
-  if (connectionId && connectionContext.authToken?.sub !== (authToken as AuthToken).sub) {
+  if (connectionId && connectionContext.authToken.sub !== (authToken as AuthToken).sub) {
     const viewerId = getUserId(authToken)
     sendToSentry(new Error('Security: Spoofed SSE connectionId'), {userId: viewerId})
     // quietly fail for cheaters
@@ -56,9 +55,7 @@ const httpGraphQLBodyHandler = async (
       }
     }
   }
-  const response =
-    connectionContext instanceof ConnectionContext &&
-    (await handleGraphQLTrebuchetRequest(body, connectionContext))
+  const response = await handleGraphQLTrebuchetRequest(body, connectionContext)
   res.cork(() => {
     if (response) {
       res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))

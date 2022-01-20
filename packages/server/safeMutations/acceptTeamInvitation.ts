@@ -10,7 +10,7 @@ import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
 import {Team} from '../postgres/queries/getTeamsByIds'
 
-const handleFirstAcceptedInvitation = async (team: Team): Promise<string | null> => {
+const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = await getRethink()
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
