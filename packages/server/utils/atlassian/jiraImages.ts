@@ -70,10 +70,11 @@ export const downloadAndCacheImage = async (
     return
   }
 
-  return Promise.all([
-    redis.setBuffer(imageKey, imageResponse.imageBuffer, 'PX', IMAGE_TTL_MS),
-    redis.set(imageMimeTypeKey, imageResponse.contentType, 'PX', IMAGE_TTL_MS)
-  ])
+  return redis
+    .multi()
+    .setBuffer(imageKey, imageResponse.imageBuffer, 'PX', IMAGE_TTL_MS)
+    .set(imageMimeTypeKey, imageResponse.contentType, 'PX', IMAGE_TTL_MS)
+    .exec()
 }
 
 export const createParabolImageUrl = (hashedImageUrl: string) => {
