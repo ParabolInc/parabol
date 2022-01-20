@@ -111,6 +111,8 @@ const CreditCardForm = (props: Props) => {
   const handleError = (param: string, fallback = 'Invalid details') => {
     const inputField = paramToInputLookup[param]
     if (inputField) {
+      // set submitting to false and clear general error
+      onCompleted()
       fields[inputField].setError(StripeError[inputField])
     } else {
       onError(new Error(fallback))
@@ -148,10 +150,7 @@ const CreditCardForm = (props: Props) => {
         handleError(error.message, error.message)
         return
       }
-
-      if (onSuccess) {
-        onSuccess()
-      }
+      onSuccess?.()
     }
 
     if (actionType === 'update') {
