@@ -48287,10 +48287,10 @@ export interface IPendingDeploymentRequestsOnXGitHubWorkflowRunArguments {
 }
 
 /**
- * An integration provider that connects via OAuth2
+ * An integration provider that connects via OAuth1.0
  */
-export interface IIntegrationProviderOAuth2 {
-  __typename: 'IntegrationProviderOAuth2';
+export interface IIntegrationProviderOAuth1 {
+  __typename: 'IntegrationProviderOAuth1';
 
   /**
    * The provider's unique identifier
@@ -48333,20 +48333,16 @@ export interface IIntegrationProviderOAuth2 {
   isActive: boolean;
 
   /**
-   * The base URL of the OAuth2 server
+   * The base URL of the OAuth1 server
    */
   serverBaseUrl: any;
-
-  /**
-   * The OAuth2 client id
-   */
-  clientId: string;
 }
 
 /**
  * An authentication provider configuration
  */
 export type IntegrationProvider =
+  | IIntegrationProviderOAuth1
   | IIntegrationProviderOAuth2
   | IIntegrationProviderWebhook;
 
@@ -48423,6 +48419,63 @@ export const enum IntegrationProviderScopeEnum {
   global = 'global',
   org = 'org',
   team = 'team',
+}
+
+/**
+ * An integration provider that connects via OAuth2
+ */
+export interface IIntegrationProviderOAuth2 {
+  __typename: 'IntegrationProviderOAuth2';
+
+  /**
+   * The provider's unique identifier
+   */
+  id: string;
+
+  /**
+   * The team that created the provider. "aGhostTeam" if global
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The name of the integration service (GitLab, Mattermost, etc)
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
+   * The kind of token used by this provider (OAuth2, PAT, Webhook)
+   */
+  authStrategy: IntegrationProviderAuthStrategyEnum;
+
+  /**
+   * The scope this provider configuration was created at (globally, org-wide, or by the team)
+   */
+  scope: IntegrationProviderScopeEnum;
+
+  /**
+   * true if the provider configuration should be used
+   */
+  isActive: boolean;
+
+  /**
+   * The base URL of the OAuth2 server
+   */
+  serverBaseUrl: any;
+
+  /**
+   * The OAuth2 client id
+   */
+  clientId: string;
 }
 
 /**
