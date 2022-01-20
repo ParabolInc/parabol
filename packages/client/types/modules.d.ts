@@ -11,12 +11,12 @@ declare module '*.woff2'
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
 declare const __SOCKET_PORT__: string
-declare const __DD_APPLICATIONID__: string
-declare const __DD_CLIENTTOKEN__: string
-declare const __DD_SERVICE__: string
 interface Window {
   __ACTION__: {
     atlassian: string
+    datadogClientToken: string | undefined
+    datadogApplicationId: string | undefined
+    datadogService: string | undefined
     logRocket: string | undefined
     github: string
     google: string
