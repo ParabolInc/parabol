@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useInitialRender from '~/hooks/useInitialRender'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import {DECELERATE} from '../../../styles/animation'
@@ -62,7 +63,8 @@ const ReflectTemplateItem = (props: Props) => {
   const description = makeTemplateDescription(lowestScope, template)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
-  useScrollIntoView(ref, isActive)
+  const isInit = useInitialRender()
+  useScrollIntoView(ref, isInit)
   const selectTemplate = () => {
     setActiveTemplate(atmosphere, teamId, templateId, 'retrospective')
   }
