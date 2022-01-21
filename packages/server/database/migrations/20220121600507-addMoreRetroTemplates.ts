@@ -1,8 +1,6 @@
 import {R} from 'rethinkdb-ts'
 import {PALETTE} from '../../../client/styles/paletteV3'
 
-const createdAt = new Date()
-
 type PromptInput = {
   question: string
   description: string
@@ -608,6 +606,7 @@ const promptsInfo = [
   }
 ] as const
 
+const createdAt = new Date()
 const makeTemplate = (name: string) => ({
   createdAt,
   id: nameToId(name, true),
