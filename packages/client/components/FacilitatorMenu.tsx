@@ -24,7 +24,8 @@ const FacilitatorMenu = (props: Props) => {
     PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
   }
   const promoteRandomPersonToFacilitator = () => {
-    const newFacilitatorId = facilitatorCandidateIds[Math.floor(Math.random() * facilitatorCandidateIds.length)]
+    // ! here because we know that facilitatorCandidateIds.length >= 1 so newFacilitatorUserId is always defined
+    const newFacilitatorId = facilitatorCandidateIds[Math.floor(Math.random() * facilitatorCandidateIds.length)]!
     PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: newFacilitatorId, meetingId})
   }
   return (
