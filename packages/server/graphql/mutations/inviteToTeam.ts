@@ -22,7 +22,7 @@ import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import appOrigin from '../../appOrigin'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 
-const randomBytes = promisify(crypto.randomBytes, crypto)
+const randomBytes = promisify(crypto.randomBytes, crypto) as (size: number) => Promise<Buffer>
 
 export default {
   type: new GraphQLNonNull(InviteToTeamPayload),
@@ -79,7 +79,7 @@ export default {
         return !(user && user.tms && user.tms.includes(teamId))
       })
       const tokens = await Promise.all(
-        newInvitees.map(async () => (await randomBytes(48)).toSting('hex'))
+        newInvitees.map(async () => (await randomBytes(48)).toString('hex'))
       )
       const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
       // insert invitation records
