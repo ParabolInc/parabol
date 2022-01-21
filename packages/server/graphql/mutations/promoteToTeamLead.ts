@@ -56,7 +56,7 @@ export default {
       .nth(0)
       .default(null)
       .run()
-    if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
+    if (!promoteeOnTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
