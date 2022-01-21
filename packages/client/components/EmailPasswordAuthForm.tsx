@@ -89,7 +89,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const {isPrimary, isSignin, invitationToken, email, goToPage} = props
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
-  const isSSODefault = Boolean(params.get('sso'))
+  const isSSODefault = !!process.env.AUTH_SSO_ENABLED && Boolean(params.get('sso'))
   const signInWithSSOOnly = !!process.env.AUTH_SSO_ENABLED && !process.env.AUTH_INTERNAL_ENABLED
   const [isSSO, setIsSSO] = useState(isSSODefault || signInWithSSOOnly)
   const [pendingDomain, setPendingDomain] = useState('')
