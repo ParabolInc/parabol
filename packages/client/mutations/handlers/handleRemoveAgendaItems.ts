@@ -12,6 +12,7 @@ const handleRemoveAgendaItem = (
   const agendaItem = store.get<AgendaItem_agendaItem>(agendaItemId)
   if (!agendaItem) return
   const teamId = agendaItem.getValue('id').split('::')[0]
+  if (!teamId) return
   const team = store.get(teamId)
   safeRemoveNodeFromArray(agendaItemId, team, 'agendaItems')
   if (meetingId) {

@@ -115,6 +115,8 @@ export const enum ExternalLinks {
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
+  INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
+  INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/',
@@ -237,7 +239,7 @@ export const enum NavSidebar {
 }
 
 export const enum NewMeeting {
-  ILLUSTRATION_WIDTH = 400,
+  ILLUSTRATION_WIDTH = 450,
   CONTROLS_WIDTH = 300
 }
 export const enum Pricing {
@@ -246,9 +248,9 @@ export const enum Pricing {
 
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
-  ATLASSIAN_DESC = 'Create Jira issues from Parabol',
+  ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol',
   GITHUB_NAME = 'GitHub',
-  GITHUB_DESC = 'Create issues from Parabol',
+  GITHUB_DESC = 'Use GitHub Issues from within Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
   MATTERMOST_NAME = 'Mattermost',
   MATTERMOST_DESC = 'Push notifications to Mattermost',

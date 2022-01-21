@@ -41,7 +41,7 @@ const PokerDiscussVoting = (props: Props) => {
     scores.forEach((score) => {
       const {label} = score
       scoreObj[label] = scoreObj[label] || []
-      const len = scoreObj[label].push(score)
+      const len = scoreObj[label]!.push(score)
       if (len > highScore) {
         highScore = len
         topLabel = label
@@ -54,12 +54,12 @@ const PokerDiscussVoting = (props: Props) => {
         return {
           key: scaleValue.label,
           scaleValue,
-          scores: scoreObj[scaleValue.label]
+          scores: scoreObj[scaleValue.label]!
         }
       })
     const questionIdx = rows.findIndex((row) => row.key === PokerCards.QUESTION_CARD)
     if (questionIdx !== -1) {
-      const questionRow = rows.splice(questionIdx, 1)[0]
+      const questionRow = rows.splice(questionIdx, 1)[0]!
       rows.unshift(questionRow)
     }
     const safeTopLabel = isSpecialPokerLabel(topLabel) ? PokerCards.QUESTION_CARD : topLabel

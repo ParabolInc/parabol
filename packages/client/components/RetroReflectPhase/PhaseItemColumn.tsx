@@ -147,7 +147,7 @@ const PhaseItemColumn = (props: Props) => {
   const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
   const {stages: groupStages} = groupPhase
   const [groupStage] = groupStages
-  const {isComplete} = groupStage
+  const {isComplete} = groupStage ?? {}
 
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -218,7 +218,7 @@ const PhaseItemColumn = (props: Props) => {
             <EditorSection data-cy={`editor-section-${question}`}>
               <EditorAndStatus
                 data-cy={`editor-status-${question}`}
-                isGroupingComplete={isComplete}
+                isGroupingComplete={!!isComplete}
               >
                 <PhaseItemEditor
                   cardsInFlightRef={cardsInFlightRef}

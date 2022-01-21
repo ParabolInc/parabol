@@ -70,7 +70,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
   const {errors} = sourceStream as ExecutionResult
   if (errors) {
     if (!hideErrors) {
-      sendToSentry(new Error(errors[0].message))
+      sendToSentry(new Error(errors[0]?.message))
     }
     return
   }
@@ -99,7 +99,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     if (!data) {
       sendGQLMessage(connectionContext, opId, 'data', false, payload)
     } else {
-      const subscriptionName = Object.keys(data)[0]
+      const subscriptionName = Object.keys(data)[0] ?? ''
       const subscriptionType = data[subscriptionName].__typename
       const syn = !reliableSubscriptionPayloadBlackList.includes(subscriptionType)
       sendGQLMessage(connectionContext, opId, 'data', syn, payload)

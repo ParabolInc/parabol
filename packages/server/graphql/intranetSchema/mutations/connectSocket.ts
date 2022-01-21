@@ -53,7 +53,7 @@ export default {
       adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
-    const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
+    const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
     if (!datesAreOnSameDay) {
       await updateUser(
         {
