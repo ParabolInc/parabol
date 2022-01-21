@@ -1,9 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {LocalStorageKey} from '~/types/constEnums'
 import Atmosphere from '../Atmosphere'
+import {SimpleMutation} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
-import {LocalStorageKey} from '~/types/constEnums'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -17,8 +18,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateImposterTokenMutation($userId: ID!) {
-    createImposterToken(userId: $userId) {
+  mutation CreateImposterTokenMutation($userId: ID, $email: Email) {
+    createImposterToken(userId: $userId, email: $email) {
       error {
         message
       }
@@ -27,7 +28,10 @@ const mutation = graphql`
   }
 `
 
-const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId) => {
+const CreateImposterTokenMutation: SimpleMutation<ICreateImposterTokenMutation> = (
+  atmosphere: Atmosphere,
+  variables
+) => {
   const onError = (err) => {
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 5,
@@ -38,7 +42,7 @@ const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId) => {
 
   return commitMutation<ICreateImposterTokenMutation>(atmosphere, {
     mutation,
-    variables: {userId},
+    variables,
     onCompleted: (res, errors) => {
       const serverError = getGraphQLError(res, errors)
       if (serverError) {
@@ -50,7 +54,7 @@ const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId) => {
       if (!authToken) return
       atmosphere.close()
       window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
-      window.location.reload()
+      window.location.href = window.location.origin
     },
     onError
   })
