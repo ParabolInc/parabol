@@ -6,7 +6,7 @@ import RetrospectiveMeetingSettings from '../../../server/database/types/Meeting
 import ITask from '../../../server/database/types/Task'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
+import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
@@ -157,6 +157,37 @@ const initSlackAuth = (userId: string) => ({
   notifications: [initSlackNotification(userId)]
 })
 
+class DemoGitLabCloudProvider {
+  id = 'demoGitLabCloudProvider'
+
+  teamId = demoTeamId
+  createdAt = new Date().toJSON()
+  updatedAt = new Date().toJSON()
+  service = 'gitlab'
+  authStrategy = 'oauth2'
+  scope = 'global'
+  isActive = true
+  serverBaseUrl = ExternalLinks.INTEGRATIONS_GITLAB
+  clientId = '123'
+}
+
+const demoGitLabCloudProvider = new DemoGitLabCloudProvider()
+
+class DemoMattermostProvider {
+  id = 'demoMattermostProvider'
+
+  teamId = demoTeamId
+  createdAt = new Date().toJSON()
+  updatedAt = new Date().toJSON()
+  service = 'gitlab'
+  authStrategy = 'webhook'
+  scope = 'team'
+  isActive = true
+  webhookUrl = ExternalLinks.INTEGRATIONS_MATTERMOST
+}
+
+const demoMattermostProvider = new DemoMattermostProvider()
+
 const initDemoTeamMember = (
   {id: userId, preferredName, picture}: {id: string; preferredName: string; picture: string},
   idx: number
@@ -175,6 +206,37 @@ const initDemoTeamMember = (
       id: 'demoTeamIntegrations',
       atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
       github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'},
+      gitlab: {
+        id: 'demoTeamGitLabIntegration',
+        auth: {
+          id: 'demoGitLabAuth',
+          teamId: demoTeamId,
+          createdAt: new Date().toJSON(),
+          updatedAt: new Date().toJSON(),
+          providerId: demoGitLabCloudProvider.id,
+          service: 'gitlab',
+          isActive: true,
+          provider: demoGitLabCloudProvider,
+          accessToken: '123',
+          scopes: 'demoScope'
+        },
+        cloudProvider: null,
+        sharedProviders: []
+      },
+      mattermost: {
+        id: 'demoMattermostIntegration',
+        auth: {
+          id: 'demoMattermostAuth',
+          teamId: demoTeamId,
+          createdAt: new Date().toJSON(),
+          updatedAt: new Date().toJSON(),
+          providerId: 'demoMattermostProvider',
+          service: 'mattermost',
+          isActive: true,
+          provider: demoMattermostProvider
+        },
+        sharedProviders: []
+      },
       slack: initSlackAuth(userId)
     },
     suggestedIntegrations: {
