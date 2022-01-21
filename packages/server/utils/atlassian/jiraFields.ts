@@ -1,7 +1,6 @@
 const VALID_TYPES = ['string', 'number']
 const INVALID_WORDS = ['color', 'name', 'description', 'environment']
-const INVALID_NOT_SIMPLIFIED_FIELD = 'story point estimate'
-const INVALID_SIMPLIFIED_FIELD = 'story points'
+import {SprintPokerDefaults} from '~/types/constEnums'
 
 export const isValidEstimationField = (
   fieldType: string,
@@ -15,8 +14,8 @@ export const isValidEstimationField = (
   }
 
   if (
-    (!simplified && fieldNameLower === INVALID_NOT_SIMPLIFIED_FIELD) ||
-    (simplified && fieldNameLower === INVALID_SIMPLIFIED_FIELD)
+    (!simplified && fieldNameLower === SprintPokerDefaults.JIRA_FIELD_DEFAULT.toLowerCase()) ||
+    (simplified && fieldNameLower === SprintPokerDefaults.JIRA_FIELD_LEGACY_DEFAULT.toLowerCase())
   ) {
     return false
   }
