@@ -3,7 +3,7 @@ import {R} from 'rethinkdb-ts'
 import dndNoise from '../../../client/utils/dndNoise'
 import convertToTaskContent from '../../../client/utils/draftjs/convertToTaskContent'
 import generateUID from '../../generateUID'
-import getTemplateRefsById from '../../postgres/queries/getTemplateRefsById'
+import getTemplateRefsByIds from '../../postgres/queries/getTemplateRefsByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import EstimatePhase from '../types/EstimatePhase'
 
