@@ -1,4 +1,3 @@
-import palettePickerOptions from '../../../client/styles/palettePickerOptions'
 import {R} from 'rethinkdb-ts'
 import {PALETTE} from '../../../client/styles/paletteV3'
 
@@ -12,6 +11,17 @@ type PromptInput = {
   promptColor?: string
   promptId?: string
 }
+
+const promptColors = [
+  PALETTE.JADE_400,
+  PALETTE.TOMATO_500,
+  PALETTE.GOLD_300,
+  PALETTE.LILAC_500,
+  PALETTE.SKY_300,
+  PALETTE.TERRA_300,
+  PALETTE.FUSCIA_400,
+  PALETTE.SLATE_700
+]
 
 const nameToId = (name: string, isTemplate: boolean) => {
   const cleanedName = name
@@ -216,7 +226,7 @@ const promptsInfo = [
   {
     templateId: nameToId('Six Thinking Hats 🎩', true),
     question: 'White Hat',
-    promptColor: PALETTE.WHITE,
+    promptColor: PALETTE.SLATE_100,
     description: 'What are the facts or information we have about the last sprint?',
     sortOrder: 1
   },
@@ -612,8 +622,8 @@ const makeTemplate = (name: string) => ({
 
 const makePrompt = (promptInfo: PromptInput, idx: number) => {
   const {question, description, promptColor, promptId, templateId, sortOrder} = promptInfo
-  const paletteIdx = idx > palettePickerOptions.length - 1 ? idx % palettePickerOptions.length : idx
-  const groupColor = promptColor ? promptColor : palettePickerOptions[paletteIdx].hex
+  const paletteIdx = idx > promptColors.length - 1 ? idx % promptColors.length : idx
+  const groupColor = promptColor ? promptColor : promptColors[paletteIdx]
   const id = promptId ? promptId : nameToId(question, false)
   return {
     createdAt,
