@@ -22,6 +22,6 @@ export async function up() {
 export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
-  await client.query(`DROP TABLE "MattermostAuth";`)
+  await client.query(`DROP TABLE IF EXISTS "MattermostAuth";`)
   await client.end()
 }

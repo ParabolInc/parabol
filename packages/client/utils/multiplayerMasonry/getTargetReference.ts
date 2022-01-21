@@ -70,12 +70,12 @@ const getTargetReference = (
     distances[i] = Math.sqrt(Math.abs(deltaX) ** 2 + Math.abs(deltaY) ** 2) - loyaltyDiscount
   })
   const minValue = Math.min(...distances)
+  const minIdx = distances.indexOf(minValue)
+  const nextTarget = targets[minIdx]
 
   // if they were off the grid, require them to get very close to a card so we can assume they're back on the grid
   const relativePlacementThresh = prevTargetId ? MAX_DIST : MAX_DIST / 2
-  if (minValue > relativePlacementThresh) return {targetId: '', targetOffset: null}
-  const minIdx = distances.indexOf(minValue)
-  const nextTarget = targets[minIdx]
+  if (minValue > relativePlacementThresh || !nextTarget) return {targetId: '', targetOffset: null}
 
   return {
     targetId: nextTarget.targetId,

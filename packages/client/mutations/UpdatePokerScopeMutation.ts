@@ -143,7 +143,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           const lastSortOrder = stages[stages.length - 1]?.getValue('sortOrder') ?? -1
 
           // create a task if it doesn't exist
-          const plaintextContent = contents[idx]
+          const plaintextContent = contents[idx] ?? ''
           const content = convertToTaskContent(plaintextContent)
           const {title, contentState} = splitDraftContent(content)
           const optimisticTask = createProxyRecord(store, 'Task', {
@@ -182,9 +182,8 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'github') {
             const bodyHTML = stateToHTML(contentState)
-            const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
-              serviceTaskId
-            )
+            const {issueNumber, nameWithOwner, repoName, repoOwner} =
+              GitHubIssueId.split(serviceTaskId)
             const repository = createProxyRecord(store, '_xGitHubRepository', {
               nameWithOwner,
               name: repoName,

@@ -109,7 +109,7 @@ const addMissingJiraField = {
             return null
           }
 
-          const [{id: tabId}] = screenTabsResponse
+          const tabId = screenTabsResponse[0]?.id
           return {screenId: screen.id, tabId, probability: evaluateProbability(screen)}
         })
       )

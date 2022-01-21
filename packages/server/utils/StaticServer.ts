@@ -17,7 +17,7 @@ class StaticFileMeta {
     this.mtime = mtime.toUTCString()
     this.size = size
     const ext = path.extname(pathname).slice(1)
-    this.type = mime.types[ext]
+    this.type = mime.types[ext] ?? 'application/octet-stream'
     if (cacheFile) {
       this.file = fs.readFileSync(pathname)
       if (PROD && isCompressible(pathname)) {

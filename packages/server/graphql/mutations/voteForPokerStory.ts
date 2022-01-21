@@ -11,7 +11,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import VoteForPokerStoryPayload from '../types/VoteForPokerStoryPayload'
 
-const removeVoteForUserId = async (userId: string, stageId: string, meetingId: string) => {
+export const removeVoteForUserId = async (userId: string, stageId: string, meetingId: string) => {
   const updater = (estimateStage) =>
     estimateStage.merge({
       scores: estimateStage('scores').deleteAt(

@@ -1,33 +1,25 @@
-import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
+import formatTime from 'parabol-client/utils/date/formatTime'
+import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
+import MeetingAction from '../../../../database/types/MeetingAction'
+import MeetingPoker from '../../../../database/types/MeetingPoker'
+import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
+import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
+import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import {toEpochSeconds} from '../../../../utils/epochTime'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import segmentIo from '../../../../utils/segmentIo'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
+import getSummaryText from './getSummaryText'
 import {
   makeFieldsAttachment,
-  makeHackedFieldButtonValue,
-  makeHackedButtonPairFields
+  makeHackedButtonPairFields,
+  makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
-import getSummaryText from './getSummaryText'
-import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
-import MeetingAction from '../../../../database/types/MeetingAction'
-import MeetingPoker from '../../../../database/types/MeetingPoker'
-import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
-import formatWeekday from 'parabol-client/utils/date/formatWeekday'
-import formatTime from 'parabol-client/utils/date/formatTime'
-import {toEpochSeconds} from '../../../../utils/epochTime'
-
-const getWebhookForUserIdTeamId = async (
-  userId: string,
-  teamId: string,
-  dataLoader: DataLoaderWorker
-) => {
-  const mattermost = await dataLoader.get('mattermostBestAuthByUserIdTeamId').load({userId, teamId})
-  return mattermost?.webhookUrl
-}
 
 const notifyMattermost = async (
   event: EventEnum,
@@ -75,7 +67,7 @@ export const notifyWebhookConfigUpdated = async (
       }
     )
   ]
-  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
+  return notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
 }
 
 export const startMattermostMeeting = async (
@@ -84,11 +76,16 @@ export const startMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const [webhookUrl, team] = await Promise.all([
-    getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader),
+  const {facilitatorUserId} = meeting
+
+  const [mattermostProvider, team] = await Promise.all([
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'mattermost', teamId, userId: facilitatorUserId}),
     dataLoader.get('teams').load(teamId)
   ])
-  if (!webhookUrl || !team) return null
+  if (!mattermostProvider || !team) return
+  const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
 
   const searchParams = {
     utm_source: 'mattermost meeting start',
@@ -96,7 +93,6 @@ export const startMattermostMeeting = async (
     utm_campaign: 'invitations'
   }
   const options = {searchParams}
-  const {facilitatorUserId: userId} = meeting
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const attachments = [
     makeFieldsAttachment(
@@ -123,7 +119,7 @@ export const startMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingStart', webhookUrl, userId, teamId, attachments)
+  return notifyMattermost('meetingStart', webhookUrl, facilitatorUserId, teamId, attachments)
 }
 
 const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
@@ -168,12 +164,15 @@ export const endMattermostMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const [webhookUrl, team] = await Promise.all([
-    getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader),
+  const {facilitatorUserId} = meeting
+  const [mattermostProvider, team] = await Promise.all([
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'mattermost', teamId, userId: facilitatorUserId}),
     dataLoader.get('teams').load(teamId)
   ])
-  if (!webhookUrl || !team) return null
-  const {facilitatorUserId: userId} = meeting
+  if (!mattermostProvider || !team) return
+  const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
   const summaryText = getSummaryText(meeting)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const attachments = [
@@ -203,7 +202,7 @@ export const endMattermostMeeting = async (
       }
     )
   ]
-  return await notifyMattermost('meetingEnd', webhookUrl, userId, teamId, attachments)
+  return notifyMattermost('meetingEnd', webhookUrl, facilitatorUserId, teamId, attachments)
 }
 
 export const notifyMattermostTimeLimitStart = async (
@@ -213,13 +212,18 @@ export const notifyMattermostTimeLimitStart = async (
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const [webhookUrl, team] = await Promise.all([
-    getWebhookForUserIdTeamId(meeting.facilitatorUserId, teamId, dataLoader),
-    await dataLoader.get('teams').load(teamId)
-  ])
-  if (!webhookUrl || !team) return null
+  const {name: meetingName, phases, facilitatorStageId, facilitatorUserId} = meeting
 
-  const {name: meetingName, phases, facilitatorStageId, facilitatorUserId: userId} = meeting
+  const [mattermostProvider, team] = await Promise.all([
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'mattermost', teamId, userId: facilitatorUserId}),
+    dataLoader.get('teams').load(teamId)
+  ])
+  if (!mattermostProvider || !team) return
+  const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
+
+
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
@@ -274,10 +278,10 @@ export const notifyMattermostTimeLimitStart = async (
     )
   ]
 
-  return await notifyMattermost(
+  return notifyMattermost(
     'MEETING_STAGE_TIME_LIMIT_START',
     webhookUrl,
-    userId,
+    facilitatorUserId,
     teamId,
     attachments
   )
@@ -286,21 +290,13 @@ export const notifyMattermostTimeLimitStart = async (
 export const notifyMattermostTimeLimitEnd = async (
   meetingId: string,
   teamId: string,
+  webhookUrl: string,
   dataLoader: DataLoaderWorker
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {facilitatorUserId: userId} = meeting
-  const webhookUrl = await getWebhookForUserIdTeamId(userId, teamId, dataLoader)
-  if (!webhookUrl) return null
-
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const messageText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
 
-  return await notifyMattermost(
-    'MEETING_STAGE_TIME_LIMIT_END',
-    webhookUrl,
-    teamId,
-    userId,
-    messageText
-  )
+  return notifyMattermost('MEETING_STAGE_TIME_LIMIT_END', webhookUrl, teamId, userId, messageText)
 }

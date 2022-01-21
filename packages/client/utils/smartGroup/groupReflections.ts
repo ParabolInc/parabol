@@ -1,8 +1,8 @@
+import Reflection from '~/../server/database/types/Reflection'
 import computeDistanceMatrix from './computeDistanceMatrix'
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import getGroupMatrix from './getGroupMatrix'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
-import Reflection from '~/../server/database/types/Reflection'
 
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes
@@ -39,27 +39,28 @@ const groupReflections = <T extends Reflection>(
   const uniqueLemmaArr = getAllLemmasFromReflections(allReflectionEntities)
   // create a distance vector for each reflection
   const distanceMatrix = computeDistanceMatrix(allReflectionEntities, uniqueLemmaArr)
-  const {groups: groupedArrays, thresh, nextThresh} = getGroupMatrix(
-    distanceMatrix,
-    groupingOptions
-  )
+  const {
+    groups: groupedArrays,
+    thresh,
+    nextThresh
+  } = getGroupMatrix(distanceMatrix, groupingOptions)
   // replace the arrays with reflections
   const updatedReflections = [] as GroupedReflectionRes[]
   const reflectionGroupMapping = {} as Record<string, string>
-  const updatedGroups = (groupedArrays as any[]).map((group) => {
+  const updatedGroups = groupedArrays.map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''
     const groupedReflectionsRes = group.map((reflectionDistanceArr, sortOrder) => {
       const idx = distanceMatrix.indexOf(reflectionDistanceArr)
       const reflection = reflections[idx]
-      reflectionGroupId = (reflectionGroupId || reflection.reflectionGroupId) as string
+      reflectionGroupId = reflectionGroupId || reflection.reflectionGroupId
       return {
         reflectionId: reflection.id,
         entities: reflection.entities,
         oldReflectionGroupId: reflection.reflectionGroupId,
         sortOrder,
         reflectionGroupId
-      }
+      } as GroupedReflectionRes
     })
 
     const groupedReflectionEntities = groupedReflectionsRes

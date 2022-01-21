@@ -20,11 +20,11 @@ const resolveTypeLookup = {
   jira: SuggestedIntegrationJira
 }
 
-const SuggestedIntegration = new GraphQLInterfaceType({
+const SuggestedIntegration: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'SuggestedIntegration',
   fields: suggestedIntegrationFields,
-  resolveType(value) {
-    return resolveTypeLookup[value.service]
+  resolveType({service}: {service: keyof typeof resolveTypeLookup}) {
+    return resolveTypeLookup[service]
   }
 })
 

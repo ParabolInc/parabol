@@ -138,9 +138,10 @@ export const resolveTeamMembers = (
     : teamMembers
 }
 
-export const resolveGQLStageFromId = (stageId: string, meeting: Meeting) => {
+export const resolveGQLStageFromId = (stageId: string | undefined, meeting: Meeting) => {
   const {id: meetingId, phases} = meeting
-  const stageRes = findStageById(phases, stageId)!
+  const stageRes = findStageById(phases, stageId)
+  if (!stageRes) return undefined
   const {stage} = stageRes
   return {
     ...stage,

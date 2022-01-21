@@ -24,8 +24,12 @@ const phaseIsMultiStage = {
 } as Record<NewMeetingPhaseTypeEnum, boolean>
 
 // I think there's a TS bug where when i make a readonly array of an omit it returns the vals
-const fromStageIdToUrl = (stageId: string, meetingRef: any, fallbackStageId: string) => {
-  const meeting = readInlineData<fromStageIdToUrl_meeting$key>(
+const fromStageIdToUrl = (
+  stageId: string,
+  meetingRef: fromStageIdToUrl_meeting$key,
+  fallbackStageId: string
+) => {
+  const meeting = readInlineData(
     graphql`
       fragment fromStageIdToUrl_meeting on NewMeeting @inline {
         phases {

@@ -3,9 +3,9 @@ import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
 import {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUsedServiceTaskIds_phase.graphql'
 
-const useGetUsedServiceTaskIds = (phaseRef: any) => {
+const useGetUsedServiceTaskIds = (phaseRef: useGetUsedServiceTaskIds_phase$key) => {
   return useMemo(() => {
-    const estimatePhase = readInlineData<useGetUsedServiceTaskIds_phase$key>(
+    const estimatePhase = readInlineData(
       graphql`
         fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
           stages {

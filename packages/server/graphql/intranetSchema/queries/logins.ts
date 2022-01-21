@@ -16,7 +16,7 @@ const logins = {
     }
   },
   description: 'Get the number of logins, optionally broken down by domain',
-  resolve: (_source: unknown, args) => args
+  resolve: (_source: unknown, args: unknown) => args
 }
 
 export default logins

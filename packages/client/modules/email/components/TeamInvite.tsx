@@ -64,7 +64,8 @@ const TeamInvite = (props: TeamInviteProps) => {
   const nameOrEmail = inviteeName || inviteeEmailBlock
   const meetingCopyLabelLookup = {
     action: 'a Check-in Meeting',
-    retrospective: 'a Retrospective Meeting'
+    retrospective: 'a Retrospective Meeting',
+    poker: 'a Sprint Poker Meeting'
   }
   return (
     <Layout maxWidth={544}>

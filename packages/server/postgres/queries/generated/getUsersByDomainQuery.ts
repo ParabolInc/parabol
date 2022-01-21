@@ -21,7 +21,7 @@ export interface IGetUsersByDomainQueryResult {
   createdAt: Date;
   updatedAt: Date;
   inactive: boolean;
-  lastSeenAt: Date | null;
+  lastSeenAt: Date;
   preferredName: string;
   tier: TierEnum;
   picture: string;

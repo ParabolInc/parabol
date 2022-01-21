@@ -77,7 +77,9 @@ const AnalyticsPage = () => {
     if (!logRocketId) return
     const errorProneAtStr = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
     const errorProneAtDate = new Date(errorProneAtStr!)
-    const isErrorProne = errorProneAtDate.toJSON() === errorProneAtStr && errorProneAtDate > new Date(Date.now() - ms('14d'))
+    const isErrorProne =
+      errorProneAtDate.toJSON() === errorProneAtStr &&
+      errorProneAtDate > new Date(Date.now() - ms('14d'))
     if (!isErrorProne) {
       window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
     }

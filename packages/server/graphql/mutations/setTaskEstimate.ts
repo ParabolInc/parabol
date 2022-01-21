@@ -132,6 +132,7 @@ const setTaskEstimate = {
         jiraFieldId = fieldId
         try {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
+
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
           const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
@@ -146,6 +147,7 @@ const setTaskEstimate = {
       }
       githubLabelName = githubPushRes
     }
+
     await insertTaskEstimate({
       changeSource: meeting ? 'meeting' : 'task',
       discussionId,

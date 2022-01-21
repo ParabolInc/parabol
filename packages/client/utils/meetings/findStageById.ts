@@ -12,10 +12,10 @@ export interface FindStageByIdPhase {
 
 const findStageById = <T extends FindStageByIdPhase>(
   phases: T[] | readonly T[] | null | undefined,
-  foreignKey: string,
+  foreignKey: string | undefined,
   stageKey = 'id'
 ) => {
-  if (!phases) return undefined
+  if (!phases || foreignKey === undefined) return undefined
   for (let ii = 0; ii < phases.length; ii++) {
     const phase = phases[ii]!
     const {stages} = phase
