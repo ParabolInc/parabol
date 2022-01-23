@@ -115,6 +115,8 @@ export const enum ExternalLinks {
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
+  INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
+  INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/',
