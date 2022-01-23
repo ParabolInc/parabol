@@ -78,10 +78,13 @@ export const startMattermostMeeting = async (
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {facilitatorUserId} = meeting
 
-  const mattermostProvider = await dataLoader
-    .get('bestTeamIntegrationProviders')
-    .load({service: 'mattermost', teamId, userId: facilitatorUserId})
-  if (!mattermostProvider) return
+  const [mattermostProvider, team] = await Promise.all([
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'mattermost', teamId, userId: facilitatorUserId}),
+    dataLoader.get('teams').load(teamId)
+  ])
+  if (!mattermostProvider || !team) return
   const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
 
   const searchParams = {
@@ -90,7 +93,6 @@ export const startMattermostMeeting = async (
     utm_campaign: 'invitations'
   }
   const options = {searchParams}
-  const team = await dataLoader.get('teams').load(teamId)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const attachments = [
     makeFieldsAttachment(
@@ -163,12 +165,14 @@ export const endMattermostMeeting = async (
 ) => {
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {facilitatorUserId} = meeting
-  const mattermostProvider = await dataLoader
-    .get('bestTeamIntegrationProviders')
-    .load({service: 'mattermost', teamId, userId: facilitatorUserId})
-  if (!mattermostProvider) return
+  const [mattermostProvider, team] = await Promise.all([
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'mattermost', teamId, userId: facilitatorUserId}),
+    dataLoader.get('teams').load(teamId)
+  ])
+  if (!mattermostProvider || !team) return
   const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
-  const team = await dataLoader.get('teams').load(teamId)
   const summaryText = getSummaryText(meeting)
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const attachments = [
@@ -210,13 +214,15 @@ export const notifyMattermostTimeLimitStart = async (
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   const {name: meetingName, phases, facilitatorStageId, facilitatorUserId} = meeting
 
-  const mattermostProvider = await dataLoader
-    .get('bestTeamIntegrationProviders')
-    .load({service: 'mattermost', teamId, userId: facilitatorUserId})
-  if (!mattermostProvider) return
+  const [mattermostProvider, team] = await Promise.all([
+    dataLoader
+      .get('bestTeamIntegrationProviders')
+      .load({service: 'mattermost', teamId, userId: facilitatorUserId}),
+    dataLoader.get('teams').load(teamId)
+  ])
+  if (!mattermostProvider || !team) return
   const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
 
-  const team = await dataLoader.get('teams').load(teamId)
 
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)

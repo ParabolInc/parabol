@@ -597,7 +597,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
             : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
-        const teams = await dataLoader.get('teams').loadMany(teamIds)
+        const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
       }

@@ -12,8 +12,8 @@ export interface TemplateScaleRef extends IGetTemplateScaleRefsByIdsQueryResult 
   }[]
 }
 
-const getTemplateScaleRefsByIds = async (scaleRefIds: MaybeReadonly<string[]>) => {
-  const templateScaleRefs = await getTemplateScaleRefsByIdsQuery.run({scaleRefIds}, getPg())
+const getTemplateScaleRefsByIds = async (ids: MaybeReadonly<string[]>) => {
+  const templateScaleRefs = await getTemplateScaleRefsByIdsQuery.run({ids}, getPg())
   return templateScaleRefs as TemplateScaleRef[]
 }
 export default getTemplateScaleRefsByIds
