@@ -63,7 +63,7 @@ const addMissingJiraField = {
 
     // RESOLUTION
     const {dimensionRefIdx, serviceTaskId} = stage
-    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
@@ -75,7 +75,7 @@ const addMissingJiraField = {
     const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
     const manager = new AtlassianServerManager(accessToken)
     const team = await dataLoader.get('teams').load(teamId)
-    const jiraDimensionFields = team.jiraDimensionFields || []
+    const jiraDimensionFields = team?.jiraDimensionFields || []
     const dimensionField = jiraDimensionFields.find(
       (dimensionField: {dimensionName: string; cloudId: string; projectKey: string}) =>
         dimensionField.dimensionName === dimensionName &&
