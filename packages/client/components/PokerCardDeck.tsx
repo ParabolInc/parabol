@@ -15,12 +15,14 @@ import {BezierCurve, PokerCards} from '../types/constEnums'
 import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
 import PokerCard from './PokerCard'
 
-const Deck = styled('div')<{left: number}>(({left}) => ({
+const Deck = styled('div')<{left: number; isSpectating: boolean}>(({left, isSpectating}) => ({
   bottom: 0,
   display: 'flex',
   left,
+  opacity: isSpectating ? 0 : 1,
   position: 'fixed',
   transition: `200ms ${BezierCurve.DECELERATE}`,
+  visibility: isSpectating ? 'hidden' : 'visible',
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
 }))
 
@@ -47,7 +49,7 @@ const PokerCardDeck = (props: Props) => {
   const {viewerId} = atmosphere
   const {meeting, estimateAreaRef} = props
   const {id: meetingId, isRightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
-  const isSpectating = viewerMeetingMember?.isSpectating
+  const isSpectating = !!viewerMeetingMember?.isSpectating
   const stageId = localStage.id!
   const {dimensionRef} = localStage
   const scores = localStage.scores!
@@ -137,6 +139,7 @@ const PokerCardDeck = (props: Props) => {
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+    if (!event) return
     const {clientX} = event
     if (swipe.isSwipe === null) {
       const dx = Math.abs(swipe.startX - clientX)
@@ -160,7 +163,7 @@ const PokerCardDeck = (props: Props) => {
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (maxSlide === 0 || isCollapsed) return
     const isTouchStart = e.type === 'touchstart'
-    let event: {clientX: number; clientY: number}
+    let event: {clientX: number; clientY: number} | undefined
     if (isTouchStart) {
       document.addEventListener('touchend', onMouseUp, {once: true})
       document.addEventListener('touchmove', onMouseMove)
@@ -170,6 +173,7 @@ const PokerCardDeck = (props: Props) => {
       document.addEventListener('mousemove', onMouseMove)
       event = e as React.MouseEvent
     }
+    if (!event) return
     const {clientX} = event
     swipe.startX = clientX
     swipe.lastX = clientX
@@ -182,11 +186,11 @@ const PokerCardDeck = (props: Props) => {
     }
   }, [maxSlide, isCollapsed])
   // const transform = maxSlide > 0 && !isCollapsed ? `translateX(${swipe.translateX}px)` : undefined
-  if (isSpectating) return null
   return (
     <Deck
       ref={deckRef}
       left={left}
+      isSpectating={isSpectating}
       // style={{transform}}
       onMouseDown={onMouseDown}
       onTouchStart={onMouseDown}

@@ -1,25 +1,25 @@
-import React, {useState} from 'react'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {MattermostProviderRow_viewer$key} from '~/__generated__/MattermostProviderRow_viewer.graphql'
-import graphql from 'babel-plugin-relay/macro'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
-import ProviderCard from '../../../../components/ProviderCard'
+import MattermostProviderLogo from '../../../../components/MattermostProviderLogo'
+import MattermostSVG from '../../../../components/MattermostSVG'
 import ProviderActions from '../../../../components/ProviderActions'
+import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
-import MattermostPanel from './MattermostPanel'
-import MattermostProviderLogo from '../../../../components/MattermostProviderLogo'
-import MattermostSVG from '../../../../components/MattermostSVG'
 import MattermostConfigMenu from './MattermostConfigMenu'
+import MattermostPanel from './MattermostPanel'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -82,6 +82,19 @@ const ExtraProviderCard = styled(ProviderCard)({
   padding: 0
 })
 
+graphql`
+  fragment MattermostProviderRowTeamMember on TeamMember {
+    integrations {
+      mattermost {
+        auth {
+          provider {
+            id
+          }
+        }
+      }
+    }
+  }
+`
 const MattermostProviderRow = (props: Props) => {
   const {viewerRef, teamId} = props
   const viewer = useFragment(
@@ -89,25 +102,21 @@ const MattermostProviderRow = (props: Props) => {
       fragment MattermostProviderRow_viewer on User {
         ...MattermostPanel_viewer
         teamMember(teamId: $teamId) {
-          integrations {
-            mattermost {
-              isActive
-            }
-          }
+          ...MattermostProviderRowTeamMember @relay(mask: false)
         }
       }
     `,
     viewerRef
   )
+  const [isConnectClicked, setConnectClicked] = useState(false)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
-  const [isConnectClicked, setConnectClicked] = useState(false)
-  const isActive = mattermost?.isActive
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {auth} = mattermost
   return (
     <ExtraProviderCard>
       <CardTop>
@@ -116,7 +125,7 @@ const MattermostProviderRow = (props: Props) => {
           <ProviderName>{Providers.MATTERMOST_NAME}</ProviderName>
           <RowInfoCopy>{Providers.MATTERMOST_DESC}</RowInfoCopy>
         </RowInfo>
-        {isActive ? (
+        {auth ? (
           <ListAndMenu>
             <MattermostLogin title='Mattermost'>
               <MattermostSVG />
@@ -128,7 +137,7 @@ const MattermostProviderRow = (props: Props) => {
               <MattermostConfigMenu
                 menuProps={menuProps}
                 mutationProps={mutationProps}
-                teamId={teamId}
+                providerId={auth.provider.id}
               />
             )}
           </ListAndMenu>
@@ -145,7 +154,7 @@ const MattermostProviderRow = (props: Props) => {
           </ProviderActions>
         )}
       </CardTop>
-      {(isActive || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
+      {(auth || isConnectClicked) && <MattermostPanel teamId={teamId} viewerRef={viewer} />}
     </ExtraProviderCard>
   )
 }

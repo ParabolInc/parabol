@@ -8,7 +8,7 @@ import roundDateToNearestHalfHour from './roundDateToNearestHalfHour'
 const description = `Our weekly meeting to update each other on our progress, build and process an agenda to unblock one another and track new tasks.
 Add your conference or dial-in bridge information here.`
 
-const getStartTime = (createdAt) => {
+const getStartTime = (createdAt: Date) => {
   const newTime = roundDateToNearestHalfHour(new Date(createdAt.getTime() + ms('7d')))
 
   // start
@@ -22,7 +22,11 @@ const getStartTime = (createdAt) => {
   return `${start}/${end}`
 }
 
-export const createGoogleCalendarInviteURL = (maybeCreatedAt, meetingUrl, teamName) => {
+export const createGoogleCalendarInviteURL = (
+  maybeCreatedAt: unknown,
+  meetingUrl: string,
+  teamName: string
+) => {
   const createdAt = ensureDate(maybeCreatedAt)
   const text = `${MEETING_NAME} for ${teamName}`
   // eslint-disable-next-line max-len
@@ -33,7 +37,7 @@ export const createGoogleCalendarInviteURL = (maybeCreatedAt, meetingUrl, teamNa
   )
 }
 
-export const createICS = (maybeCreatedAt, meetingUrl, teamName) => {
+export const createICS = (maybeCreatedAt: unknown, meetingUrl: string, teamName: string) => {
   const createdAt = ensureDate(maybeCreatedAt)
   const [startTime, endTime] = getStartTime(createdAt).split('/')
   // it's ugly, but if you mess with the indention here, you eff up the world
@@ -60,7 +64,7 @@ END:VEVENT
 END:VCALENDAR`
 }
 
-export const makeIcsUrl = (maybeCreatedAt, meetingUrl, teamName) => {
+export const makeIcsUrl = (maybeCreatedAt: unknown, meetingUrl: string, teamName: string) => {
   const createdAt = ensureDate(maybeCreatedAt)
   const baseUrl = meetingUrl.substr(0, meetingUrl.indexOf('/meeting'))
   return `${baseUrl}/email/createics?teamName=${teamName}&createdAt=${createdAt.getTime()}&meetingUrl=${meetingUrl}`

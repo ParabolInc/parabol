@@ -1,16 +1,17 @@
 {
-  "schema": "packages/server/utils/githubSchema.graphql",
-  "documents": "packages/server/utils/githubQueries/*.graphql",
+  "config": {
+    "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck"
+  },
   "generates": {
     "packages/server/types/githubTypes.ts": {
-      "plugins": [
-        "typescript",
-        "typescript-operations",
-        "add"
-      ],
-      "config": {
-        "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck"
-      }
+      "schema": "packages/server/utils/githubSchema.graphql",
+      "documents": "packages/server/utils/githubQueries/*.graphql",
+      "plugins": ["typescript", "typescript-operations", "add"]
+    },
+    "packages/server/types/gitlabTypes.ts": {
+      "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql",
+      "documents": "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
+      "plugins": ["typescript", "typescript-operations", "add"]
     }
   }
 }

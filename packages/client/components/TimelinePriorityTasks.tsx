@@ -68,13 +68,13 @@ const TimelinePriorityTasks = (props: Props) => {
     if (destination.index === 0) {
       sortOrder = dndNoise()
     } else if (destination.index === activeTasks.length) {
-      sortOrder = activeTasks[activeTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
+      sortOrder = activeTasks[activeTasks.length - 1]!.sortOrder - SORT_STEP + dndNoise()
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (activeTasks[destination.index + offset].sortOrder +
-          activeTasks[destination.index].sortOrder) /
-        2 +
+        ((activeTasks[destination.index + offset]?.sortOrder ?? 0) +
+          (activeTasks[destination.index]?.sortOrder ?? 0)) /
+          2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}

@@ -20,7 +20,7 @@
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@types/draft-js": "^0.10.24",
     "@types/json2csv": "^4.4.0",
     "@types/jwt-decode": "^2.1.0",

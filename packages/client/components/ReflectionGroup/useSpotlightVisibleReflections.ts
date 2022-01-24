@@ -17,7 +17,7 @@ const useSpotlightVisibleReflections = (
       })
 
       if (matchIndex > 0) {
-        const matchingReflection = visibleReflections.splice(matchIndex, 1)[0]
+        const matchingReflection = visibleReflections.splice(matchIndex, 1)[0]!
         visibleReflections.unshift(matchingReflection)
       }
     }

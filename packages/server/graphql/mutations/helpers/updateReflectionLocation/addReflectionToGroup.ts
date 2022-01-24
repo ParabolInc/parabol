@@ -1,3 +1,4 @@
+import {GQLContext} from './../../../graphql'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
@@ -7,17 +8,14 @@ import updateSmartGroupTitle from './updateSmartGroupTitle'
 const addReflectionToGroup = async (
   reflectionId: string,
   reflectionGroupId: string,
-  {dataLoader}
+  {dataLoader}: GQLContext
 ) => {
   const r = await getRethink()
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
-  const reflectionGroup = await r
-    .table('RetroReflectionGroup')
-    .get(reflectionGroupId)
-    .run()
+  const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
   if (!reflectionGroup || !reflectionGroup.isActive) {
     throw new Error('Reflection group not found')
   }
@@ -52,16 +50,16 @@ const addReflectionToGroup = async (
   if (oldReflectionGroupId !== reflectionGroupId) {
     // ths is not just a reorder within the same group
     const {nextReflections, oldReflections} = await r({
-      nextReflections: (r
+      nextReflections: r
         .table('RetroReflection')
         .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
         .filter({isActive: true})
-        .coerceTo('array') as unknown) as Reflection[],
-      oldReflections: (r
+        .coerceTo('array') as unknown as Reflection[],
+      oldReflections: r
         .table('RetroReflection')
         .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
         .filter({isActive: true})
-        .coerceTo('array') as unknown) as Reflection[]
+        .coerceTo('array') as unknown as Reflection[]
     }).run()
 
     const nextTitle = getGroupSmartTitle(nextReflections)

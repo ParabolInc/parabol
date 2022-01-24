@@ -78,8 +78,9 @@ export default {
         const user = users.find((user) => user.email === email)
         return !(user && user.tms && user.tms.includes(teamId))
       })
-      const bufferTokens = await Promise.all<Buffer>(newInvitees.map(() => randomBytes(48)))
-      const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
+      const tokens = await Promise.all(
+        newInvitees.map(async () => (await randomBytes(48)).toSting('hex'))
+      )
       const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
       // insert invitation records
       const teamInvitationsToInsert = newInvitees.map((email, idx) => {
@@ -89,7 +90,7 @@ export default {
           invitedBy: viewerId,
           meetingId: meetingId ?? undefined,
           teamId,
-          token: tokens[idx]
+          token: tokens[idx]!
         })
       })
       await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()

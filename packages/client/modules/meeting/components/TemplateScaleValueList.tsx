@@ -34,16 +34,17 @@ const TemplateScaleValueList = (props: Props) => {
   const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
     const {values: scaleValues} = scale
+    const sourceScaleValue = scaleValues[source.index]
     if (
       !destination ||
       destination.droppableId !== TEMPLATE_SCALE_VALUE ||
       source.droppableId !== TEMPLATE_SCALE_VALUE ||
-      destination.index === source.index
+      destination.index === source.index ||
+      !sourceScaleValue
     ) {
       return
     }
     submitMutation()
-    const sourceScaleValue = scaleValues[source.index]
 
     const variables = {scaleId: scale.id, label: sourceScaleValue.label, index: destination.index}
     MovePokerTemplateScaleValueMutation(atmosphere, variables, {onError, onCompleted})

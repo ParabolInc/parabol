@@ -10,8 +10,8 @@ import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
+import {isValidEstimationField} from '../utils/atlassian/jiraFields'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
-import {isNotNull} from '../utils/predicates'
 import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
@@ -135,9 +135,6 @@ export const jiraIssue = (
           if (!auth) return null
           const {accessToken} = auth
           const manager = new AtlassianServerManager(accessToken)
-          const estimateFieldIds = estimates
-            .map((estimate) => estimate.jiraFieldId)
-            .filter(isNotNull)
 
           const cacheImagesUpdateEstimates = async (issueRes: JiraGetIssueRes) => {
             const {fields} = issueRes
@@ -171,8 +168,25 @@ export const jiraIssue = (
                 })
               })
             )
+
+            const simplified = !!issueRes.fields.project?.simplified
+
+            const possibleEstimationFieldNames = Array.from(
+              new Set(
+                Object.entries<{type: string}>(issueRes.schema)
+                  .filter(([fieldId, fieldSchema]) =>
+                    isValidEstimationField(fieldSchema.type, issueRes.names[fieldId], simplified)
+                  )
+                  .map(([fieldId]) => {
+                    return issueRes.names[fieldId]
+                  })
+                  .sort()
+              )
+            )
+
             return {
               ...fields,
+              possibleEstimationFieldNames,
               descriptionHTML: updatedDescription,
               teamId,
               userId
@@ -188,7 +202,8 @@ export const jiraIssue = (
             cloudId,
             issueKey,
             publishUpdatedIssue,
-            estimateFieldIds
+            ['*all'],
+            ['names', 'schema']
           )
           if (issueRes instanceof Error || issueRes instanceof RateLimitError) {
             sendToSentry(issueRes, {userId, tags: {cloudId, issueKey, teamId}})

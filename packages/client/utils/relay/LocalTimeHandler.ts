@@ -5,10 +5,15 @@
 
 import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
 import initHandler from './initHandler'
+import {RecordProxy} from 'relay-runtime'
 
 const LATENCY = 200 // ms to travel from server to client
 
-const setClientClockOffset = (viewer, scheduledEndTime, timeRemaining) => {
+const setClientClockOffset = (
+  viewer: RecordProxy,
+  scheduledEndTime: number,
+  timeRemaining: number
+) => {
   const serverTime = scheduledEndTime - timeRemaining + LATENCY
   const clientTime = Date.now()
   const clientClockOffset = clientTime - serverTime
@@ -23,7 +28,7 @@ const LocalTimeHandler: Handler = {
     const viewer = store.getRoot().getLinkedRecord('viewer')
     if (!record || !viewer) return
     const scheduledEndTimeStr = record.getValue(payload.fieldKey) as string | null
-    const timeRemaining = record.getValue('timeRemaining')
+    const timeRemaining = record.getValue('timeRemaining') as number
     if (!scheduledEndTimeStr || !timeRemaining) {
       record.setValue(null, 'localScheduledEndTime')
       return

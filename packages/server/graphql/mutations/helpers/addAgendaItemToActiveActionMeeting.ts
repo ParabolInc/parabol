@@ -9,7 +9,7 @@ import {DataLoaderWorker} from '../../graphql'
  * NewMeetings have a predefined set of stages, we need to add the new agenda item manually
  */
 const addAgendaItemToActiveActionMeeting = async (
-  agendaItemId,
+  agendaItemId: string,
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {

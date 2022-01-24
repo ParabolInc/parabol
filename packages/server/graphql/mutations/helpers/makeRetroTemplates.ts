@@ -15,9 +15,7 @@ interface TemplateObject {
 const makeRetroTemplates = (teamId: string, orgId: string, templateObj: TemplateObject) => {
   const reflectPrompts: RetrospectivePrompt[] = []
   const templates: ReflectTemplate[] = []
-  const templateNames = Object.keys(templateObj)
-  templateNames.forEach((templateName) => {
-    const promptBase = templateObj[templateName]
+  Object.entries(templateObj).forEach(([templateName, promptBase]) => {
     const template = new ReflectTemplate({name: templateName, teamId, orgId})
 
     const prompts = promptBase.map(

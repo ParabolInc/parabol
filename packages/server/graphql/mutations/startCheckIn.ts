@@ -12,8 +12,9 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {startSlackMeeting} from './helpers/notifications/notifySlack'
+import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
@@ -38,6 +39,8 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
+    const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+    if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
     const meetingType: MeetingTypeEnum = 'action'
 
