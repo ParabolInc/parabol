@@ -617,7 +617,8 @@ const makeTemplate = (name: string) => ({
   scope: 'PUBLIC',
   teamId: 'aGhostTeam',
   type: 'retrospective',
-  updatedAt: createdAt
+  updatedAt: createdAt,
+  isStarter: true
 })
 
 const makePrompt = (promptInfo: PromptInput, idx: number) => {
