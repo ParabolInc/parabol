@@ -83,7 +83,8 @@ const promptsInfo = [
   {
     templateId: nameToId('WRAP 🧞', true),
     question: 'Risks',
-    description: 'What risks or challenges lie ahead? What was risky about our work in the last?',
+    description:
+      'What risks or challenges lie ahead? What was risky about our work in the last period?',
     sortOrder: 1
   },
   {
