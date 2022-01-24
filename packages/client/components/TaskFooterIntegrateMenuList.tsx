@@ -8,8 +8,7 @@ import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import CreateGitHubTaskIntegrationMutation from '../mutations/CreateGitHubTaskIntegrationMutation'
-import CreateJiraTaskIntegrationMutation from '../mutations/CreateJiraTaskIntegrationMutation'
+import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
@@ -127,11 +126,11 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         const {id, service} = suggestedIntegration
         const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira') {
-          const {cloudId, projectKey} = suggestedIntegration
+          const {projectId} = suggestedIntegration
           const onClick = () => {
-            const variables = {cloudId, projectKey, taskId}
+            const variables = {projectId, taskId, integrationProviderType: 'jira' as const}
             submitMutation()
-            CreateJiraTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
             <SuggestedIntegrationJiraMenuItem
@@ -145,9 +144,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         if (service === 'github') {
           const onClick = () => {
             const {nameWithOwner} = suggestedIntegration
-            const variables = {nameWithOwner, taskId}
+            const variables = {
+              projectId: nameWithOwner,
+              taskId,
+              integrationProviderType: 'github' as const
+            }
             submitMutation()
-            CreateGitHubTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
             <SuggestedIntegrationGitHubMenuItem
@@ -177,6 +180,7 @@ graphql`
       }
       projectKey
       cloudId
+      projectId
     }
     ... on SuggestedIntegrationGitHub {
       nameWithOwner

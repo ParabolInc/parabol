@@ -55344,6 +55344,7 @@ export interface ISuggestedIntegrationJira {
    * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
    */
   projectName: string;
+  projectId: string;
 
   /**
    * The cloud ID that the project lives on
@@ -55657,6 +55658,7 @@ export interface IMutation {
   createImposterToken: ICreateImposterTokenPayload;
   createGitHubTaskIntegration: ICreateGitHubTaskIntegrationPayload | null;
   createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
+  createTaskIntegration: ICreateTaskIntegrationPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -56417,6 +56419,23 @@ export interface ICreateJiraTaskIntegrationOnMutationArguments {
 
   /**
    * The id of the task to convert to a Jira issue
+   */
+  taskId: string;
+}
+
+export interface ICreateTaskIntegrationOnMutationArguments {
+  /**
+   * Which integration to push the task to
+   */
+  integrationProviderType: IntegrationProviderTypeEnum;
+
+  /**
+   * Jira projectId, GitHub nameWithOwner etc.
+   */
+  projectId: string;
+
+  /**
+   * The id of the task to convert to an issue
    */
   taskId: string;
 }
@@ -57875,6 +57894,20 @@ export interface ICreateJiraTaskIntegrationPayload {
   __typename: 'CreateJiraTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
+}
+
+export interface ICreateTaskIntegrationPayload {
+  __typename: 'CreateTaskIntegrationPayload';
+  error: IStandardMutationError | null;
+  task: ITask | null;
+}
+
+/**
+ * Integration provider type
+ */
+export const enum IntegrationProviderTypeEnum {
+  jira = 'jira',
+  github = 'github',
 }
 
 /**
@@ -60466,6 +60499,7 @@ export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
   | ICreateGitHubTaskIntegrationPayload
   | ICreateJiraTaskIntegrationPayload
+  | ICreateTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
