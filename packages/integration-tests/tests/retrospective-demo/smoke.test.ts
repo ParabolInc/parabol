@@ -29,14 +29,9 @@ test.describe('retrospective-demo / smoke test', () => {
     await page.type(startTextbox, 'Start doing this')
     await page.press(startTextbox, 'Enter')
 
-    // When they click the "Next" button once
-    await page.click('[data-cy="next-phase"]')
-
-    // Then they see a popover message telling them to tap "Next" again
-    await expect(page.locator(`#portal :text("Tap 'Next' again to confirm")`)).toBeVisible()
-
-    // When they click the "Next" button again
-    await page.click('[data-cy="next-phase"]')
+    // When they click the "Next" button twice
+    await page.click('[data-cy="next-phase"]:not([disabled=true])')
+    await page.click('[data-cy="next-phase"]:not([disabled=true])')
 
     // Then they transition to the group phase
     await expect(page.locator('h1:has-text("Group")')).toBeVisible()
