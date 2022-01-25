@@ -6,8 +6,8 @@ import {getUserId, isSuperUser} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
 import GraphQLEmailType from '../types/GraphQLEmailType'
+import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
 
 export default {
   type: PromoteToTeamLeadPayload,
@@ -52,28 +52,22 @@ export default {
     const promoteeOnTeam = await r
       .table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
-      .filter({email: newTeamLeadEmail})
+      .filter({email: newTeamLeadEmail, isNotRemoved: true})
       .nth(0)
       .default(null)
       .run()
-    if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
+    if (!promoteeOnTeam) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION
     await r({
-      teamLead: r
-        .table('TeamMember')
-        .get(oldLeadTeamMemberId)
-        .update({
-          isLead: false
-        }),
-      promotee: r
-        .table('TeamMember')
-        .get(promoteeOnTeam.id)
-        .update({
-          isLead: true
-        })
+      teamLead: r.table('TeamMember').get(oldLeadTeamMemberId).update({
+        isLead: false
+      }),
+      promotee: r.table('TeamMember').get(promoteeOnTeam.id).update({
+        isLead: true
+      })
     }).run()
 
     const data = {teamId, oldLeaderId: oldLeadTeamMemberId, newLeaderId: promoteeOnTeam.id}
