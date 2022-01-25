@@ -52,9 +52,9 @@ const getTitleFromComputedGroup = (
   for (let ii = 0; ii < arrWithIdx.length; ii++) {
     const [totalSalience, idx] = arrWithIdx[ii]!
     if (totalSalience < MIN_SALIENCE) continue
-    const lemma = uniqueLemmaArr[idx]
-    const name = getNameFromLemma(lemma, reflectionEntities)
-    const capName = name[0].toUpperCase() + name.slice(1)
+    const lemma = uniqueLemmaArr[idx]!
+    const name = getNameFromLemma(lemma, reflectionEntities) ?? ''
+    const capName = name && name[0]!.toUpperCase() + name.slice(1)
     // if we've used 2 words & adding this word would make it look long & ugly, abort
     if (titleArr.length > MIN_ENTITIES && titleArr.join(' ').length + capName.length > MAX_CHARS) {
       break

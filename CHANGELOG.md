@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.44.0 2021-Jan-19
+
+### Added
+
+- Add GitLab (#5829)
+- Customise release snackbar #5743
+- Add migration to fill missing plaintextContent for tasks #5869
+- add undefined to wrappedQuery vars #5898
+
+### Changed
+
+- enforce server side lock (#5840)
+- SECURITY: bump react-refresh-webpack-plugin #5896
+- Security/bump graphql jit #5897
+-
+
+### Fixed
+
+- Fix Original Estimate field can not be updated in Sprint Poker (#5865)
+- Fix isSpectating toggle & Reveal Votes count #5782
+- No implicit any fixes #5830
+- Fix alignment of Add task button in discussions #5876
+- Fix all noUncheckedIndexedAccess for parabol-client #5837
+
 ## 6.43.0 2022-Jan-12
 
 ### Fixed

@@ -182,7 +182,7 @@ const SwipeableDashSidebar = (props: Props) => {
   })
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
-    const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+    const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0]! : (e as MouseEvent)
     const {clientX, clientY} = event
     if (swipe.isSwipe === null) {
       // they don't want a peek
@@ -211,7 +211,7 @@ const SwipeableDashSidebar = (props: Props) => {
     if (isTouchStart) {
       document.addEventListener('touchend', onMouseUp, {once: true})
       document.addEventListener('touchmove', onMouseMove)
-      event = (e as React.TouchEvent).touches[0]
+      event = (e as React.TouchEvent).touches[0]!
     } else {
       document.addEventListener('mouseup', onMouseUp, {once: true})
       document.addEventListener('mousemove', onMouseMove)

@@ -74,7 +74,7 @@ export default {
       const {meetingId, teamId} = invitation
       const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
       const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
-      const team = await dataLoader.get('teams').load(teamId)
+      const team = await dataLoader.get('teams').loadNonNull(teamId)
       const {orgId} = team
 
       // make sure that same invite can't be accepted at the same moment

@@ -256,7 +256,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             startCursor: firstEdge ? firstEdge.cursor : null,
             // FIXME: the PageInfo type should be a GraphQLISO8601 type, but fixing that requires more work
             // because the type is shared all over so we'll have to verify that the change doesn't break anything
-            endCursor: firstEdge ? new Date(edges[edges.length - 1].cursor).toJSON() : null,
+            endCursor: firstEdge ? new Date(edges[edges.length - 1]!.cursor).toJSON() : null,
             hasNextPage: events.length > edges.length
           }
         }
@@ -597,7 +597,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           viewerId === userId || isSuperUser(authToken)
             ? user.tms
             : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
-        const teams = await dataLoader.get('teams').loadMany(teamIds)
+        const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams
       }

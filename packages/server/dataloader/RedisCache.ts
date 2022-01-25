@@ -120,7 +120,7 @@ export default class RedisCache<T extends keyof CacheType> {
     results.forEach((result, idx) => {
       // result will be null if the underlying document is not found
       if (!result) return
-      const write = writes[idx]
+      const write = writes[idx]!
       const {table, id} = write
       const key = `${table}:${id}`
       redisWrites.push(msetpx(key, result))

@@ -90,9 +90,9 @@ const useInitialSafeRoute = (
       }
 
       const stage = phase.stages[stageIdx]
-      const stageId = stage && stage.id
+      const stageId = stage?.id
       const isViewerFacilitator = viewerId === facilitatorUserId
-      const itemStage = findStageById(phases, stageId)
+      const itemStage = stageId && findStageById(phases, stageId)
       if (!itemStage) {
         // useful for e.g. /discuss/2, especially on the demo
         const nextUrl =

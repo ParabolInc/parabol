@@ -50037,6 +50037,11 @@ export interface IJiraIssue {
   summary: string;
 
   /**
+   * Field names that exists on the issue and can be used as estimation fields
+   */
+  possibleEstimationFieldNames: Array<string>;
+
+  /**
    * The stringified ADF of the jira issue description
    */
   description: string;

@@ -75,7 +75,7 @@ const PokerEstimateHeaderCardError = (props: Props) => {
       </HeaderCardWrapper>
     )
   }
-  const serviceName = service[0].toUpperCase() + service.slice(1)
+  const serviceName = service.charAt(0).toUpperCase() + service.slice(1)
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>

@@ -148,12 +148,12 @@ const pushEstimateToGitHub = async (
     let color = PALETTE.GRAPE_500.slice(1)
     if (meeting) {
       const {templateRefId} = meeting as MeetingPoker
-      const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+      const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
       const {dimensions} = templateRef
       const dimensionRef = dimensions.find((dimension) => dimension.name === dimensionName)
       if (!dimensionRef) return new Error('Dimension not found')
       const {scaleRefId} = dimensionRef
-      const scaleRef = await dataLoader.get('templateScaleRefs').load(scaleRefId)
+      const scaleRef = await dataLoader.get('templateScaleRefs').loadNonNull(scaleRefId)
       const {values} = scaleRef
       const matchingValue = values.find((scaleValue) => scaleValue.label === value)
       if (matchingValue) {

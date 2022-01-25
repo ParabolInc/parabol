@@ -118,7 +118,7 @@ const RetrospectiveMeeting: GraphQLObjectType<any, GQLContext> = new GraphQLObje
             sortLookup[group.id] = idx
           })
           reflectionGroups.sort((a: ReflectionGroupType, b: ReflectionGroupType) => {
-            return sortLookup[a.id] < sortLookup[b.id] ? -1 : 1
+            return sortLookup[a.id]! < sortLookup[b.id]! ? -1 : 1
           })
           return reflectionGroups
         }

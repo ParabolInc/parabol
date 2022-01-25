@@ -42,8 +42,8 @@ const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) =>
 }
 
 const getBestHook = (possibleHooks: InvoiceItemHook[]) => {
-  if (possibleHooks.length === 1) return possibleHooks[0]
-  const firstHook = possibleHooks[possibleHooks.length - 1]
+  if (possibleHooks.length === 1) return possibleHooks[0]!
+  const firstHook = possibleHooks[possibleHooks.length - 1]!
   const {id: hookId} = firstHook
   sendToSentry(new Error('Imperfect invoice item hook selected'), {tags: {hookId}})
   return firstHook

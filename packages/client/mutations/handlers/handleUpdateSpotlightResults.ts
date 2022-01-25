@@ -27,7 +27,7 @@ const handleUpdateSpotlightResults = (
   const oldReflections = oldReflectionGroup?.getLinkedRecords('reflections')
   const reflectionId = reflection.getValue('id')
   const isOldGroupEmpty =
-    oldReflections?.length === 1 && oldReflections[0].getValue('id') === reflectionId
+    oldReflections?.length === 1 && oldReflections[0]!.getValue('id') === reflectionId
   const reflectionGroupId = reflectionGroup.getValue('id')
   const groupsIds = similarReflectionGroups
     .map((group) => group.getValue('id'))

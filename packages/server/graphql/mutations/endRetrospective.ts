@@ -123,7 +123,7 @@ export default {
     const {templateId} = completedRetrospective
     const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').load(templateId)
