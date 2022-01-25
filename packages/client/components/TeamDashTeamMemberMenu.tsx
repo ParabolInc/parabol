@@ -8,10 +8,16 @@ import DropdownMenuLabel from './DropdownMenuLabel'
 import {TeamDashTeamMemberMenu_team} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import filterTeamMember from '../utils/relay/filterTeamMember'
+import {SearchMenuItem} from './SearchMenuItem'
+import useSearchFilter from '~/hooks/useSearchFilter'
 
 interface Props {
   menuProps: MenuProps
   team: TeamDashTeamMemberMenu_team
+}
+
+const getValue = (teamMember) => {
+  return teamMember.preferredName
 }
 
 const TeamDashTeamMemberMenu = (props: Props) => {
@@ -21,6 +27,9 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   const teamMemberFilterId = teamMemberFilter && teamMemberFilter.id
   const defaultActiveIdx =
     teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
+
+  const {query, filteredItems: matchedTeamMembers, onQueryChange} = useSearchFilter(teamMembers!, getValue);
+
   return (
     <Menu
       ariaLabel={'Select the team member to filter by'}
@@ -28,12 +37,19 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      <MenuItem
-        key={'teamMemberFilterNULL'}
-        label={'All team members'}
-        onClick={() => filterTeamMember(atmosphere, teamId, null)}
+      <SearchMenuItem
+        placeholder='Search team members'
+        onChange={onQueryChange}
+        value={query}
       />
-      {teamMembers.map((teamMember) => (
+      {query === '' &&
+        <MenuItem
+          key={'teamMemberFilterNULL'}
+          label={'All team members'}
+          onClick={() => filterTeamMember(atmosphere, teamId, null)}
+        />
+      }
+      {matchedTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.id}`}
           label={teamMember.preferredName}

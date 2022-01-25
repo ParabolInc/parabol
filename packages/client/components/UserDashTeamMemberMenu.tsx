@@ -5,6 +5,8 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {SearchMenuItem} from './SearchMenuItem'
 import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import useRouter from '~/hooks/useRouter'
@@ -16,6 +18,12 @@ interface Props {
   menuProps: MenuProps
   viewer: UserDashTeamMemberMenu_viewer | null
 }
+
+const getValue = (
+  item: NonNullable<{userId: string, preferredName: string}>
+) => {
+  return item.preferredName.toLowerCase();
+};
 
 const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
@@ -55,6 +63,8 @@ const UserDashTeamMemberMenu = (props: Props) => {
     }
   }, [teamIds, userIds])
 
+  const {query, filteredItems: matchedFilteredTeamMembers, onQueryChange} = useSearchFilter(filteredTeamMembers!, getValue);
+
   return (
     <Menu
       ariaLabel={'Select the team member to filter by'}
@@ -62,13 +72,18 @@ const UserDashTeamMemberMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      {showAllTeamMembers &&
+      <SearchMenuItem
+        placeholder='Search team members'
+        onChange={onQueryChange}
+        value={query}
+      />
+      {query === '' && showAllTeamMembers &&
         <MenuItem
           key={'teamMemberFilterNULL'}
           label={UserTaskViewFilterLabels.ALL_TEAM_MEMBERS}
           onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, null, showArchived))}
         />}
-      {filteredTeamMembers.map((teamMember) => (
+      {matchedFilteredTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.userId}`}
           dataCy={`team-member-filter-${teamMember.userId}`}

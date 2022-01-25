@@ -11,10 +11,16 @@ import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilte
 import useRouter from '~/hooks/useRouter'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
   viewer: UserDashTeamMenu_viewer | null
+}
+
+const getValue = (team) => {
+  return team.name;
 }
 
 const UserDashTeamMenu = (props: Props) => {
@@ -38,6 +44,9 @@ const UserDashTeamMenu = (props: Props) => {
       defaultActiveIdx: filteredTeams.findIndex((team) => teamIds?.includes(team.id)) + (showAllTeams ? 2 : 1)
     }
   }, [userIds, teamIds])
+
+  const {query, filteredItems: matchedFilteredTeams, onQueryChange} = useSearchFilter(filteredTeams!, getValue);
+
   return (
     <Menu
       ariaLabel={'Select the team to filter by'}
@@ -45,13 +54,18 @@ const UserDashTeamMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team:'}</DropdownMenuLabel>
-      {showAllTeams &&
+      <SearchMenuItem
+        placeholder='Search teams'
+        onChange={onQueryChange}
+        value={query}
+      />
+      {query === '' && showAllTeams &&
         <MenuItem
           key={'teamFilterNULL'}
           label={UserTaskViewFilterLabels.ALL_TEAMS}
           onClick={() => history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))}
         />}
-      {filteredTeams.map((team) => (
+      {matchedFilteredTeams.map((team) => (
         <MenuItem
           key={`teamFilter${team.id}`}
           dataCy={`team-filter-${team.id}`}
