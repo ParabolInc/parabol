@@ -13,7 +13,11 @@ export class Config {
   }
 
   public async goto(page: Page, path: string) {
-    return page.goto(`${this.rootUrlPath}${path}`)
+    return page.goto(this.urlForPath(path))
+  }
+
+  public urlForPath(path: string) {
+    return `${this.rootUrlPath}${path}`
   }
 }
 
