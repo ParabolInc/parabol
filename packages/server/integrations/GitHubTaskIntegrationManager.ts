@@ -1,3 +1,4 @@
+import DataLoader from 'dataloader'
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import getRethink from '../database/rethinkDriver'
@@ -6,30 +7,39 @@ import createGitHubTask from '../graphql/mutations/helpers/createGitHubTask'
 import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
 import GitHubIssueId from '../../client/shared/gqlIds/GitHubIssueId'
 import BaseTaskIntegrationManager from './BaseTaskIntegrationManager'
+import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {DataLoaderWorker} from '../graphql/graphql'
+
+type TeamUserKey = {
+  teamId: string
+  userId: string
+}
 
 export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationManager {
-  public title = 'GitHub'
-  public segmentEventName = 'Published Task to GitHub'
+  public static title = 'GitHub'
+  public static segmentEventName = 'Published Task to GitHub'
 
-  getAuthLoader() {
-    return this.dataLoader.get('githubAuth')
+  static getAuthLoader(
+    dataLoader: DataLoaderWorker
+  ): DataLoader<TeamUserKey, GitHubAuth | null, string> {
+    return dataLoader.get('githubAuth')
   }
 
-  async createRemoteTaskAndUpdateDB(taskId, projectId) {
+  async createRemoteTaskAndUpdateDB(
+    auth: GitHubAuth,
+    taskId: string,
+    projectId: string,
+    viewerName: string,
+    assigneeName: string
+  ) {
     const r = await getRethink()
     const now = new Date()
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${this.teamId}`)
 
-    const createdBySomeoneElseComment =
-      this.userId && this.userId !== this.viewerId
-        ? makeCreateGitHubTaskComment(
-            this.viewerName,
-            this.assigneeName,
-            this.team.name,
-            teamDashboardUrl
-          )
-        : undefined
+    const createdBySomeoneElseComment = this.createdBySomeoneElse
+      ? makeCreateGitHubTaskComment(viewerName, assigneeName, this.team.name, teamDashboardUrl)
+      : undefined
 
     const {repoOwner, repoName} = GitHubRepoId.split(projectId)
 
@@ -37,7 +47,7 @@ export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationMan
       this.rawContentStr,
       repoOwner,
       repoName,
-      this.auth,
+      auth,
       this.context,
       this.info,
       createdBySomeoneElseComment

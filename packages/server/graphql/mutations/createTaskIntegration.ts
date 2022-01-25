@@ -53,7 +53,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {teamId, meetingId} = task
+    const {teamId, meetingId, userId} = task
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -66,53 +66,76 @@ export default {
       )
     }
 
-    const integrationManager =
+    const integrationManagerClass =
       integrationProviderType === 'jira'
-        ? new JiraTaskIntegrationManager(task, context, info)
+        ? JiraTaskIntegrationManager
         : integrationProviderType === 'github'
-        ? new GitHubTaskIntegrationManager(task, context, info)
+        ? GitHubTaskIntegrationManager
         : undefined
 
-    if (!integrationManager) {
+    if (!integrationManagerClass) {
       return standardError(new Error('Integration provider is not supported'))
     }
 
-    await integrationManager.init()
+    const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
+      integrationManagerClass.getAuthLoader(dataLoader).load({teamId: teamId, userId: viewerId}),
+      userId
+        ? integrationManagerClass.getAuthLoader(dataLoader).load({teamId: teamId, userId})
+        : null,
+      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId)
+    ])
 
-    if (!integrationManager.auth) {
+    const auth = viewerAuth ?? assigneeAuth
+    const accessUserId = viewerAuth ? viewerId : assigneeAuth ? userId : null
+    const teamMember = teamMembers.find(({userId}) => userId === viewerId)
+
+    if (!auth) {
       return standardError(new Error('No auth exists for a given task!'), {userId: viewerId})
     }
 
-    if (!integrationManager.accessUserId) {
+    if (!accessUserId) {
       return standardError(
-        new Error(`Neither you nor the assignee has access to ${integrationManager.title}`),
+        new Error(`Neither you nor the assignee has access to ${integrationManagerClass.title}`),
         {
           userId: viewerId
         }
       )
     }
 
-    if (!integrationManager.teamMember) {
+    if (!teamMember) {
       return standardError(new Error('User is not member of the team'), {
         userId: viewerId,
         tags: {teamId}
       })
     }
 
-    const res = await integrationManager.createRemoteTaskAndUpdateDB(taskId, projectId)
+    const {preferredName: viewerName} = teamMember
+    const {preferredName: assigneeName = ''} =
+      (userId && teamMembers.find((user) => user.userId === userId)) || {}
+
+    const integrationManager = new integrationManagerClass(task, team, accessUserId, context, info)
+
+    const res = await integrationManager.createRemoteTaskAndUpdateDB(
+      auth,
+      taskId,
+      projectId,
+      viewerName,
+      assigneeName
+    )
 
     if (res.error) {
       return {error: {message: res.error.message}}
     }
 
     const data = {taskId}
-    integrationManager.teamMembers.forEach(({userId}) => {
+    teamMembers.forEach(({userId}) => {
       publish(SubscriptionChannel.TASK, userId, 'CreateTaskIntegrationPayload', data, subOptions)
     })
 
     segmentIo.track({
       userId: viewerId,
-      event: integrationManager.segmentEventName,
+      event: integrationManagerClass.segmentEventName,
       properties: {
         teamId,
         meetingId

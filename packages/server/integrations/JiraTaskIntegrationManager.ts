@@ -8,6 +8,7 @@ import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
 import getRethink from '../database/rethinkDriver'
 import BaseTaskIntegrationManager from './BaseTaskIntegrationManager'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {DataLoaderWorker} from '../graphql/graphql'
 
 type TeamUserKey = {
   teamId: string
@@ -15,28 +16,30 @@ type TeamUserKey = {
 }
 
 export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManager {
-  public title = 'Jira'
-  public segmentEventName = 'Published Task to Jira'
+  public static title = 'Jira'
+  public static segmentEventName = 'Published Task to Jira'
 
-  getAuthLoader(): DataLoader<TeamUserKey, AtlassianAuth | null, string> {
-    return this.dataLoader.get('freshAtlassianAuth')
+  public static getAuthLoader(
+    dataLoader: DataLoaderWorker
+  ): DataLoader<TeamUserKey, AtlassianAuth | null, string> {
+    return dataLoader.get('freshAtlassianAuth')
   }
 
-  async createRemoteTaskAndUpdateDB(taskId, projectId) {
+  async createRemoteTaskAndUpdateDB(
+    auth: AtlassianAuth,
+    taskId: string,
+    projectId: string,
+    viewerName: string,
+    assigneeName: string
+  ) {
     const r = await getRethink()
     const now = new Date()
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${this.teamId}`)
 
-    const createdBySomeoneElseComment =
-      this.viewerId !== this.userId
-        ? makeCreateJiraTaskComment(
-            this.viewerName,
-            this.assigneeName,
-            this.team.name,
-            teamDashboardUrl
-          )
-        : undefined
+    const createdBySomeoneElseComment = this.createdBySomeoneElse
+      ? makeCreateJiraTaskComment(viewerName, assigneeName, this.team.name, teamDashboardUrl)
+      : undefined
 
     const {cloudId, projectKey} = JiraProjectId.split(projectId)
 
@@ -44,7 +47,7 @@ export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManag
       this.rawContentStr,
       cloudId,
       projectKey,
-      this.auth,
+      auth,
       createdBySomeoneElseComment
     )
 
