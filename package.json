@@ -55,7 +55,11 @@
     "clean-css": "^5.2.2",
     "node-forge": "^1.2.1",
     "glob-parent": "^6.0.2",
-    "node-pre-gyp": "^0.17.0"
+    "node-pre-gyp": "^0.17.0",
+    "ansi-regex": "^5.0.1",
+    "json-schema": "^0.4.0",
+    "nanoid": "^3.1.31",
+    "@xmldom/xmldom": "^0.7.0"
   },
   "devDependencies": {
     "@babel/preset-env": "7.16.0",
