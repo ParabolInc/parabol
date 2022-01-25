@@ -1,14 +1,13 @@
 {
   "name": "integration-tests",
+  "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
+  "license": "AGPL-3.0",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "playwright test"
   },
-  "keywords": [],
-  "author": "Ben Limmer",
-  "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.18.0",
     "@types/node": "16"
