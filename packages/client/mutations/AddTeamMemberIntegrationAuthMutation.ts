@@ -16,12 +16,14 @@ const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID!
     $oauthCodeOrPat: ID
+    $oauthVerifier: ID
     $teamId: ID!
     $redirectUri: URL
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId
       oauthCodeOrPat: $oauthCodeOrPat
+      oauthVerifier: $oauthVerifier
       teamId: $teamId
       redirectUri: $redirectUri
     ) {

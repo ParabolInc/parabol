@@ -249,6 +249,8 @@ export const enum Pricing {
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
   ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol',
+  JIRA_SERVER_NAME = 'Jira Server',
+  JIRA_SERVER_DESC = 'Use Jira Server Issues from within Parabol',
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Use GitHub Issues from within Parabol',
   GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user,write:repo_hook',
