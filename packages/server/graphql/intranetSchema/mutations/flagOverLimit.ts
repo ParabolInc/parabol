@@ -19,7 +19,11 @@ const flagOverLimit = {
       description: 'the user orgId that went over the limit'
     }
   },
-  resolve: async (_source: unknown, {copy, orgId}, {authToken, dataLoader}: GQLContext) => {
+  resolve: async (
+    _source: unknown,
+    {copy, orgId}: {copy: string; orgId: string},
+    {authToken, dataLoader}: GQLContext
+  ) => {
     // AUTH
     requireSU(authToken)
 

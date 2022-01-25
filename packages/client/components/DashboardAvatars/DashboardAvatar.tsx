@@ -37,12 +37,12 @@ const StyledAvatar = styled(Avatar)<{isConnected: boolean; picture: string}>(
 
 const DashboardAvatar = (props: Props) => {
   const {teamMember} = props
-  const {id: teamMemberId, picture, teamId} = teamMember
+  const {id: teamMemberId, picture, teamId, preferredName} = teamMember
   const {user} = teamMember
   if (!user) {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
   }
-  const {isConnected, preferredName} = user
+  const {isConnected} = user
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
@@ -91,9 +91,9 @@ export default createFragmentContainer(DashboardAvatar, {
       id
       picture
       teamId
+      preferredName
       user {
         isConnected
-        preferredName
       }
     }
   `

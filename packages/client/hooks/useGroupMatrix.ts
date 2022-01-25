@@ -35,7 +35,7 @@ const useGroupMatrix = (
     const matrix = Array.from(new Array(columnsCount), () => []) as Group[][]
     resultsGroups.forEach((group, idx) => {
       const columnIdx = idx % columnsCount
-      matrix[columnIdx].push(group)
+      matrix[columnIdx]!.push(group)
     })
     setGroupMatrix(matrix)
   }

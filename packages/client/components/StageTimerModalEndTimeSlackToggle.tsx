@@ -1,18 +1,18 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import '../styles/daypicker.css'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import SlackClientManager from '../utils/SlackClientManager'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import Checkbox from './Checkbox'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
 import SetSlackNotificationMutation from '../mutations/SetSlackNotificationMutation'
-import {StageTimerModalEndTimeSlackToggle_facilitator} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
+import '../styles/daypicker.css'
 import {ICON_SIZE} from '../styles/typographyV2'
-import PlainButton from './PlainButton/PlainButton'
+import SlackClientManager from '../utils/SlackClientManager'
 import {SetSlackNotificationMutationVariables} from '../__generated__/SetSlackNotificationMutation.graphql'
+import {StageTimerModalEndTimeSlackToggle_facilitator} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
+import Checkbox from './Checkbox'
+import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
   facilitator: StageTimerModalEndTimeSlackToggle_facilitator
@@ -71,8 +71,8 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
-
-  const noActiveIntegrations = !slack?.isActive && !mattermost?.isActive
+  const isMattermostActive = mattermost.auth?.isActive ?? false
+  const noActiveIntegrations = !slack?.isActive && !isMattermostActive
 
   const onClick = () => {
     if (slack?.isActive) {
@@ -97,7 +97,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
           <Label>{'Notify team via Slack'}</Label>
         </ButtonRow>
       )}
-      {mattermost?.isActive && <Note>{'Notifying via Mattermost'}</Note>}
+      {isMattermostActive && <Note>{'Notifying via Mattermost'}</Note>}
       <StyledNotificationErrorMessage error={error} />
     </Block>
   )
@@ -109,7 +109,9 @@ export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
       teamId
       integrations {
         mattermost {
-          isActive
+          auth {
+            isActive
+          }
         }
         slack {
           isActive

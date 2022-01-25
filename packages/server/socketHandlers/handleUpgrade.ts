@@ -7,7 +7,6 @@ import sendToSentry from '../utils/sendToSentry'
 import uwsGetIP from '../utils/uwsGetIP'
 
 const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) => {
-  const aborted = {done: false}
   const protocol = req.getHeader('sec-websocket-protocol')
   if (protocol !== 'trebuchet-ws') {
     sendToSentry(new Error(`WebSocket error: invalid protocol: ${protocol}`))
@@ -21,7 +20,7 @@ const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) =>
     return
   }
   res.onAborted(() => {
-    aborted.done = true
+    res.aborted = true
   })
 
   const key = req.getHeader('sec-websocket-key')
@@ -30,7 +29,7 @@ const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) =>
   const {sub: userId, iat} = authToken
   // ALL async calls must come after the message listener, or we'll skip out on messages (e.g. resub after server restart)
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-  if (aborted.done) return
+  if (res.aborted) return
   if (isBlacklistedJWT) {
     res.writeStatus('401').end(TrebuchetCloseReason.EXPIRED_SESSION)
     return

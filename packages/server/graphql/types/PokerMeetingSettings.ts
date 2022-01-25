@@ -48,7 +48,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       },
       description: 'The list of templates shared across the organization to start a Poker meeting',
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
-        const team = await dataLoader.get('teams').load(teamId)
+        const team = await dataLoader.get('teams').loadNonNull(teamId)
         const {orgId} = team
         const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
         const organizationTemplates = templates.filter(
@@ -74,7 +74,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
         const [publicTemplates, team] = await Promise.all([
           db.read('publicTemplates', 'poker'),
-          dataLoader.get('teams').load(teamId)
+          dataLoader.get('teams').loadNonNull(teamId)
         ])
         const {orgId} = team
         const unownedTemplates = publicTemplates.filter((template) => template.orgId !== orgId)

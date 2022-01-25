@@ -6,11 +6,12 @@ const MAX_SYNC_STAGE_DURATION = ms('1h')
 // https://stackoverflow.com/a/20811670/3155110
 const filterOutliers = (someArray: number[]) => {
   const values = someArray.concat()
-  values.sort(function(a, b) {
+  if (values.length === 0) return []
+  values.sort(function (a, b) {
     return a - b
   })
-  const q1 = values[Math.floor(values.length / 4)]
-  const q3 = values[Math.ceil(values.length * (3 / 4))]
+  const q1 = values[Math.floor(values.length / 4)]!
+  const q3 = values[Math.ceil(values.length * (3 / 4))]!
   const iqr = q3 - q1
 
   const maxValue = q3 + iqr * 1.5
@@ -48,15 +49,8 @@ export default class GenericMeetingStage {
   readyToAdvance = [] as string[]
   phaseType: string
   constructor(input: GenericMeetingStageInput) {
-    const {
-      durations,
-      phaseType,
-      id,
-      isNavigable,
-      isNavigableByFacilitator,
-      startAt,
-      viewCount
-    } = input
+    const {durations, phaseType, id, isNavigable, isNavigableByFacilitator, startAt, viewCount} =
+      input
     this.id = id || generateUID()
     this.phaseType = phaseType
     this.isNavigable = isNavigable ?? false

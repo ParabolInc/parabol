@@ -9,7 +9,7 @@ const getPublicScoredTemplates = async (
   const scoreByTemplateId = {} as {[templateId: string]: number}
   templates.forEach((template, idx) => {
     const {id: templateId, createdAt, isStarter} = template
-    const endTimes = sharedTemplateEndTimes[idx]
+    const endTimes = sharedTemplateEndTimes[idx]!
     const starterBonus = isStarter ? 100 : 0
     const minUsagePenalty = sharedTemplateEndTimes.length < 10 && !starterBonus
     scoreByTemplateId[templateId] = minUsagePenalty
@@ -18,9 +18,9 @@ const getPublicScoredTemplates = async (
   })
   // mutative, but doesn't matter if we change the sort oder
   return templates
-    .filter((template) => scoreByTemplateId[template.id] > 0)
+    .filter((template) => scoreByTemplateId[template.id]! > 0)
     .sort((a, b) => {
-      return scoreByTemplateId[a.id] > scoreByTemplateId[b.id] ? -1 : 1
+      return scoreByTemplateId[a.id]! > scoreByTemplateId[b.id]! ? -1 : 1
     })
 }
 

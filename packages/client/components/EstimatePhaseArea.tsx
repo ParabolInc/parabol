@@ -82,7 +82,8 @@ const EstimatePhaseArea = (props: Props) => {
   const estimateAreaRef = useRef<HTMLDivElement>(null)
 
   const onChangeIdx = (idx: number) => {
-    gotoStageId(dimensionStages[idx].id)
+    const stageId = dimensionStages[idx]?.id
+    if (stageId) gotoStageId(stageId)
   }
 
   const slideContainer = {

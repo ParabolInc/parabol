@@ -3,8 +3,8 @@ import plural from 'parabol-client/utils/plural'
 import {makePokerStats_meeting$key} from 'parabol-client/__generated__/makePokerStats_meeting.graphql'
 import {readInlineData} from 'react-relay'
 
-const makePokerStats = (meetingRef: any) => {
-  const meeting = readInlineData<makePokerStats_meeting$key>(
+const makePokerStats = (meetingRef: makePokerStats_meeting$key) => {
+  const meeting = readInlineData(
     graphql`
       fragment makePokerStats_meeting on PokerMeeting @inline {
         meetingMembers {

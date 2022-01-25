@@ -23,7 +23,7 @@ const useActiveTopTemplate = (
       const listTemplateIds = edges.map(({node}) => node.id)
       const isSelectedInView = listTemplateIds.includes(selectedTemplateId)
       if (!isSelectedInView) {
-        setActiveTemplate(atmosphere, teamId, listTemplateIds[0], meetingType)
+        setActiveTemplate(atmosphere, teamId, listTemplateIds[0]!, meetingType)
         commitLocalUpdate(atmosphere, (store) => {
           store.get(teamId)?.setValue('', 'editingScaleId')
         })

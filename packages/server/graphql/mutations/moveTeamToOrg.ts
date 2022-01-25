@@ -26,10 +26,10 @@ const moveToOrg = async (
     r.table('Organization').get(orgId).run(),
     getTeamsByIds([teamId])
   ])
-  if (teams.length === 0) {
+  const team = teams[0]
+  if (!team) {
     return standardError(new Error('Did not find the team'))
   }
-  const team = teams[0]
   const {orgId: currentOrgId} = team
   if (!su) {
     const userId = getUserId(authToken)

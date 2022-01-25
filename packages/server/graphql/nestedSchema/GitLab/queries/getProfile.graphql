@@ -1,0 +1,6 @@
+query getProfile {
+  currentUser {
+    avatarUrl
+    name
+  }
+}

@@ -195,6 +195,9 @@ interface JiraAddCommentResponse {
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 interface JiraGQLFields {
+  project?: {
+    simplified: boolean
+  }
   cloudId: string
   description: any
   descriptionHTML: string
@@ -571,11 +574,18 @@ export default abstract class AtlassianManager {
     return cloudNameLookup
   }
 
-  async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
-    const baseFields = ['summary', 'description']
-    const reqFields = [...baseFields, ...extraFieldIds].join(',')
+  async getIssue(
+    cloudId: string,
+    issueKey: string,
+    extraFieldIds: string[] = [],
+    extraExpand: string[] = []
+  ) {
+    const reqFields = extraFieldIds.includes('*all')
+      ? '*all'
+      : ['summary', 'description', ...extraFieldIds].join(',')
+    const expand = ['renderedFields', ...extraExpand].join(',')
     const issueRes = await this.get<JiraIssueRaw>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
     if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
     return {
@@ -700,15 +710,41 @@ export default abstract class AtlassianManager {
     if (firstValidUpdateIdx === -1) return null
     return possibleFields[firstValidUpdateIdx]
   }
+
   async updateStoryPoints(
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
     fieldId: string
   ) {
-    const payload = {
-      fields: {
-        [fieldId]: storyPoints
+    // according to Jira docs fields related to the time tracking have to be set in a different way than other fields
+    // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
+    // more context: https://github.com/ParabolInc/parabol/issues/5705#issuecomment-1007501068
+    let payload: Record<string, any>
+    const timeTrackingFieldId = 'timetracking'
+    const timeTrackingFieldLookup = {
+      timeoriginalestimate: 'originalEstimate',
+      timeestimate: 'remainingEstimate'
+    }
+    const timeTrackingFieldName = timeTrackingFieldLookup[fieldId]
+    if (timeTrackingFieldName) {
+      payload = {
+        update: {
+          [timeTrackingFieldId]: [
+            {
+              set: {
+                // time tracking fields have to be set in time format, we're setting them in (h)ours
+                [timeTrackingFieldName]: `${storyPoints}h`
+              }
+            }
+          ]
+        }
+      }
+    } else {
+      payload = {
+        fields: {
+          [fieldId]: storyPoints
+        }
       }
     }
     const res = await this.put(
@@ -721,10 +757,11 @@ export default abstract class AtlassianManager {
         'The user who added this issue was removed from Jira. Please remove & re-add the issue'
       )
     }
-    if (res.message.startsWith(fieldId)) {
-      if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
-      }
+    if (
+      res.message.startsWith(timeTrackingFieldName ? timeTrackingFieldId : fieldId) &&
+      res.message.includes('is not on the appropriate screen')
+    ) {
+      throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
     }
     throw res
   }
