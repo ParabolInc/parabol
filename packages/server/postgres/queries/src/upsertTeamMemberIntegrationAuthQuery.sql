@@ -1,6 +1,6 @@
 /*
  @name upsertTeamMemberIntegrationAuthQuery
- @param auth -> (providerId, teamId, userId, service, accessToken, refreshToken, scopes)
+ @param auth -> (providerId, teamId, userId, service, accessToken, refreshToken, scopes, accessTokenSecret)
  */
 INSERT INTO
   "TeamMemberIntegrationAuth" (
@@ -10,7 +10,8 @@ INSERT INTO
     "service",
     "accessToken",
     "refreshToken",
-    "scopes"
+    "scopes",
+    "accessTokenSecret"
   )
 VALUES
   :auth ON CONFLICT ("userId", "teamId", "service") DO
@@ -21,6 +22,7 @@ SET
     "accessToken",
     "refreshToken",
     "scopes",
+    "accessTokenSecret",
     "isActive",
     "updatedAt"
   ) = (
@@ -28,6 +30,7 @@ SET
     EXCLUDED."accessToken",
     EXCLUDED."refreshToken",
     EXCLUDED."scopes",
+    EXCLUDED."accessTokenSecret",
     TRUE,
     CURRENT_TIMESTAMP
   );

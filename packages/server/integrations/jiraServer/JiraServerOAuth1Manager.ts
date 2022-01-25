@@ -2,6 +2,10 @@ import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
 import appOrigin from '../../appOrigin'
 
+export interface OAuth1Auth {
+  accessToken: string
+  accessTokenSecret: string
+}
 export default class JiraServerOAuth1Manager {
   serverBaseUrl: string
   oauth: OAuth
@@ -21,11 +25,11 @@ export default class JiraServerOAuth1Manager {
   }
 
   async requestToken(): Promise<Error | string> {
-    const requestTokenUrl = `${this.serverBaseUrl}/plugins/servlet/oauth/request-token`
-    const callbackUrl = `${appOrigin}/auth/jiraServer`
+    const requestTokenUrl = new URL('/plugins/servlet/oauth/request-token', this.serverBaseUrl)
+    const callbackUrl = new URL('/auth/jiraServer', appOrigin)
 
     const request = {
-      url: requestTokenUrl,
+      url: requestTokenUrl.toString(),
       method: 'POST'
     }
     const auth: any = {
@@ -34,7 +38,7 @@ export default class JiraServerOAuth1Manager {
       oauth_signature_method: 'RSA-SHA1',
       oauth_timestamp: this.oauth.getTimeStamp(),
       oauth_version: this.oauth.version,
-      oauth_callback: callbackUrl
+      oauth_callback: callbackUrl.toString()
     }
     auth.oauth_signature = this.oauth.getSignature(request, undefined, auth)
 
@@ -60,5 +64,49 @@ export default class JiraServerOAuth1Manager {
     const accessTokenUrl = `${this.serverBaseUrl}/plugins/servlet/oauth/authorize?oauth_token=${oauthToken}`
 
     return accessTokenUrl
+  }
+
+  async accessToken(temporaryToken: string, oauthVerifier: string): Promise<Error | OAuth1Auth> {
+    const accessTokenUrl = new URL('/plugins/servlet/oauth/access-token', this.serverBaseUrl)
+
+    const request = {
+      url: accessTokenUrl.toString(),
+      method: 'POST'
+    }
+    const auth: any = {
+      oauth_consumer_key: this.oauth.consumer.key,
+      oauth_nonce: this.oauth.getNonce(),
+      oauth_signature_method: 'RSA-SHA1',
+      oauth_timestamp: this.oauth.getTimeStamp(),
+      oauth_version: this.oauth.version,
+      oauth_token: temporaryToken,
+      oauth_verifier: oauthVerifier
+    }
+    auth.oauth_signature = this.oauth.getSignature(request, undefined, auth)
+
+    const response = await fetch(request.url, {
+      method: request.method,
+      headers: {
+        ...this.oauth.toHeader(auth)
+      }
+    })
+    if (response.status !== 200) {
+      return new Error(`Requesting OAuth1 access token failed with status ${response.status}`)
+    }
+
+    const body = await response.text()
+    const data = new URLSearchParams(body)
+
+    const accessToken = data.get('oauth_token')
+    const accessTokenSecret = data.get('oauth_token_secret')
+
+    if (!accessToken || !accessTokenSecret) {
+      return new Error('OAuth1 access token was missing in the reply')
+    }
+
+    return {
+      accessToken,
+      accessTokenSecret
+    }
   }
 }
