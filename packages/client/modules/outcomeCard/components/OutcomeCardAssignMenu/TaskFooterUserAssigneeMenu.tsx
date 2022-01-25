@@ -13,6 +13,8 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {SearchMenuItem} from '~/components/SearchMenuItem'
 interface Props {
   area: AreaEnum
   menuProps: MenuProps
@@ -39,6 +41,8 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area}, {})
   }
 
+  const {query, filteredItems: matchedAssignees, onQueryChange} = useSearchFilter(assignees!, assignee => assignee.preferredName);
+
   if (!team) return null
   return (
     <Menu
@@ -47,7 +51,12 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
       {...menuProps}
     >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      {assignees.map((assignee) => {
+      <SearchMenuItem
+        placeholder='Search team members'
+        onChange={onQueryChange}
+        value={query}
+      />
+      {matchedAssignees.map((assignee) => {
         return (
           <MenuItem
             key={assignee.id}

@@ -19,14 +19,10 @@ interface Props {
   viewer: UserDashTeamMenu_viewer | null
 }
 
-const getValue = (team) => {
-  return team.name;
-}
-
 const UserDashTeamMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
-  const oldTeamsRef = useRef<any>([])
+  const oldTeamsRef = useRef<UserDashTeamMenu_viewer['teams']>([])
   const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams
@@ -45,7 +41,7 @@ const UserDashTeamMenu = (props: Props) => {
     }
   }, [userIds, teamIds])
 
-  const {query, filteredItems: matchedFilteredTeams, onQueryChange} = useSearchFilter(filteredTeams!, getValue);
+  const {query, filteredItems: matchedFilteredTeams, onQueryChange} = useSearchFilter(filteredTeams!, team => team.name);
 
   return (
     <Menu

@@ -15,6 +15,8 @@ import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated_
 import useModal from '~/hooks/useModal'
 import TaskFooterTeamAssigneeAddIntegrationDialog from './TaskFooterTeamAssigneeAddIntegrationDialog'
 import useEventCallback from '~/hooks/useEventCallback'
+import {SearchMenuItem} from '~/components/SearchMenuItem'
+import useSearchFilter from '~/hooks/useSearchFilter'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery($teamId: ID!) {
@@ -123,6 +125,8 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     }
   }
 
+  const {query: searchQuery, filteredItems: matchedAssignableTeams, onQueryChange} = useSearchFilter(assignableTeams!, team => team.name);
+
   return (
     <Menu
       {...menuProps}
@@ -130,7 +134,12 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
       ariaLabel={'Assign this task to another team'}
     >
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
-      {assignableTeams.map((team) => {
+      <SearchMenuItem
+        placeholder='Search teams'
+        onChange={onQueryChange}
+        value={searchQuery}
+      />
+      {matchedAssignableTeams.map((team) => {
         return (
           <MenuItem
             key={team.id}

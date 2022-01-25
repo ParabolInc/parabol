@@ -16,10 +16,6 @@ interface Props {
   team: TeamDashTeamMemberMenu_team
 }
 
-const getValue = (teamMember) => {
-  return teamMember.preferredName
-}
-
 const TeamDashTeamMemberMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {menuProps, team} = props
@@ -28,7 +24,7 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   const defaultActiveIdx =
     teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
 
-  const {query, filteredItems: matchedTeamMembers, onQueryChange} = useSearchFilter(teamMembers!, getValue);
+  const {query, filteredItems: matchedTeamMembers, onQueryChange} = useSearchFilter(teamMembers!, teamMember => teamMember.preferredName);
 
   return (
     <Menu

@@ -19,12 +19,6 @@ interface Props {
   viewer: UserDashTeamMemberMenu_viewer | null
 }
 
-const getValue = (
-  item: NonNullable<{userId: string, preferredName: string}>
-) => {
-  return item.preferredName.toLowerCase();
-};
-
 const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
@@ -63,7 +57,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
     }
   }, [teamIds, userIds])
 
-  const {query, filteredItems: matchedFilteredTeamMembers, onQueryChange} = useSearchFilter(filteredTeamMembers!, getValue);
+  const {query, filteredItems: matchedFilteredTeamMembers, onQueryChange} = useSearchFilter(filteredTeamMembers!, item => item.preferredName.toLowerCase());
 
   return (
     <Menu
