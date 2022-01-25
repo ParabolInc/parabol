@@ -55656,8 +55656,6 @@ export interface IMutation {
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload;
-  createGitHubTaskIntegration: ICreateGitHubTaskIntegrationPayload | null;
-  createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
   createTaskIntegration: ICreateTaskIntegrationPayload | null;
 
   /**
@@ -56392,35 +56390,6 @@ export interface ICreateImposterTokenOnMutationArguments {
    * The target userId to impersonate
    */
   userId: string;
-}
-
-export interface ICreateGitHubTaskIntegrationOnMutationArguments {
-  /**
-   * The id of the task to convert to a GH issue
-   */
-  taskId: string;
-
-  /**
-   * The owner/repo string
-   */
-  nameWithOwner: string;
-}
-
-export interface ICreateJiraTaskIntegrationOnMutationArguments {
-  /**
-   * The atlassian cloudId for the site
-   */
-  cloudId: string;
-
-  /**
-   * The atlassian key of the project to put the issue in
-   */
-  projectKey: string;
-
-  /**
-   * The id of the task to convert to a Jira issue
-   */
-  taskId: string;
 }
 
 export interface ICreateTaskIntegrationOnMutationArguments {
@@ -57882,18 +57851,6 @@ export interface ICreateImposterTokenPayload {
    * The user you have assumed
    */
   user: IUser | null;
-}
-
-export interface ICreateGitHubTaskIntegrationPayload {
-  __typename: 'CreateGitHubTaskIntegrationPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
-}
-
-export interface ICreateJiraTaskIntegrationPayload {
-  __typename: 'CreateJiraTaskIntegrationPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
 }
 
 export interface ICreateTaskIntegrationPayload {
@@ -60497,8 +60454,6 @@ export interface ISetOrgUserRoleRemovedPayload {
 
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
-  | ICreateGitHubTaskIntegrationPayload
-  | ICreateJiraTaskIntegrationPayload
   | ICreateTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload

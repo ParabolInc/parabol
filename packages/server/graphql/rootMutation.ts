@@ -24,9 +24,7 @@ import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
 import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
-import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration'
 import createImposterToken from './mutations/createImposterToken'
-import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createTaskIntegration from './mutations/createTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
 import createPoll from './mutations/createPoll'
@@ -170,8 +168,6 @@ export default new GraphQLObjectType<any, Context>({
       changeTaskTeam,
       setNotificationStatus,
       createImposterToken,
-      createGitHubTaskIntegration,
-      createJiraTaskIntegration,
       createTaskIntegration,
       createMassInvitation,
       createReflection,
