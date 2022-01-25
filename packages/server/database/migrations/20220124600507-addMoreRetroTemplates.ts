@@ -42,6 +42,7 @@ const templateNames = [
   'Rose, Thorn, Bud 🌹',
   'Hopes and Fears 🎭',
   'Surprised, Worried, Inspired 😯',
+  'Superhero Retrospective 🦸',
   'Six Thinking Hats 🎩',
   'Hot Air Balloon 🎈',
   'Hero’s Journey 👑',
@@ -181,7 +182,7 @@ const promptsInfo = [
   {
     templateId: nameToId('Surprised, Worried, Inspired 😯', true),
     question: 'Worried',
-    description: 'WWhat are you anxious about?',
+    description: 'What are you anxious about?',
     sortOrder: 1
   },
   {
