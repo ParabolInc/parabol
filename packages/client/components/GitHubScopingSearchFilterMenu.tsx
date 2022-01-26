@@ -2,13 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useFilteredItems from '../hooks/useFilteredItems'
-import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {IXGitHubCreatedCommitContribution} from '../types/graphql'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 import {
@@ -16,18 +14,11 @@ import {
   GitHubScopingSearchFilterMenuQueryResponse
 } from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import Checkbox from './Checkbox'
-import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import MenuSearch from './MenuSearch'
+import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18
-})
 
 const NoResults = styled(MenuItemLabel)({
   color: PALETTE.SLATE_600,
@@ -35,21 +26,6 @@ const NoResults = styled(MenuItemLabel)({
   paddingLeft: 8,
   paddingRight: 8,
   fontStyle: 'italic'
-})
-
-const SearchItem = styled(MenuItemLabel)({
-  margin: '0 8px 8px',
-  overflow: 'visible',
-  padding: 0,
-  position: 'relative'
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  margin: 0,
-  pointerEvents: 'none',
-  top: 4
 })
 
 const StyledCheckBox = styled(Checkbox)({
@@ -142,16 +118,14 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       )
       .map((sortedContributions) => sortedContributions?.repository)
   }, [contributionsByRepo])
-  const {fields, onChange} = useForm({
-    search: {
-      getDefault: () => ''
-    }
-  })
-  const {search} = fields
-  const {value} = search
-  const searchQuery = value.toLowerCase()
+
+  const {
+    query: searchQuery,
+    filteredItems: filteredRepoContributions,
+    onQueryChange
+  } = useSearchFilter(repoContributions!, getValue)
+
   // TODO parse the query string & extract out the repositories
-  const filteredRepoContributions = useFilteredItems(searchQuery, repoContributions, getValue)
   const selectedRepos = getReposFromQueryStr(queryString)
   const selectedAndFilteredRepos = useMemo(() => {
     const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
@@ -169,12 +143,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
-      <SearchItem key='search'>
-        <StyledMenuItemIcon>
-          <SearchIcon>search</SearchIcon>
-        </StyledMenuItemIcon>
-        <MenuSearch placeholder={'Search your GitHub repos'} value={value} onChange={onChange} />
-      </SearchItem>
+      <SearchMenuItem placeholder='Search your GitHub repos' onChange={onQueryChange} value={searchQuery} />
       {repoContributions.length === 0 && <NoResults key='no-results'>No repos found!</NoResults>}
       {selectedAndFilteredRepos.map((repo) => {
         const isSelected = selectedRepos.includes(repo)
