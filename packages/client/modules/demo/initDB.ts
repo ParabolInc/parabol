@@ -4,7 +4,6 @@ import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
-import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
@@ -58,20 +57,24 @@ const initMeetingSettings = () => {
 export const JiraDemoKey = 'Demo'
 export const JiraDemoCloudName = 'jira-demo'
 const JiraSecretKey = 'jira-secret'
+const JiraDemoProjectId = '123:Demo'
+const JiraSecretProjectId = '123:jira-secret'
 
 export const JiraProjectKeyLookup = {
-  [JiraDemoKey]: {
+  [JiraDemoProjectId]: {
     projectKey: JiraDemoKey,
     projectName: 'Demo Jira Project',
     cloudId: '123',
     cloudName: JiraDemoCloudName,
+    projectId: JiraDemoProjectId,
     avatar: 'foo',
     service: 'jira'
   },
-  [JiraSecretKey]: {
+  [JiraSecretProjectId]: {
     projectKey: JiraSecretKey,
     projectName: 'Secret Jira Project',
     cloudId: '123',
+    projectId: JiraSecretProjectId,
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
     service: 'jira'
@@ -81,6 +84,7 @@ export const JiraProjectKeyLookup = {
 class DemoJiraRemoteProject {
   __typename = 'JiraRemoteProject'
   id: string
+  projectId: string
   teamId: string
   userId: string
   self = ''
@@ -99,7 +103,8 @@ class DemoJiraRemoteProject {
   constructor(key: keyof typeof JiraProjectKeyLookup) {
     const details = JiraProjectKeyLookup[key]
     const {projectKey, projectName, cloudId, avatar} = details
-    this.id = JiraProjectId.join(cloudId, projectKey)
+    this.id = key
+    this.projectId = key
     this.teamId = RetroDemo.TEAM_ID
     this.userId = demoViewerId
     this.cloudId = cloudId
@@ -242,13 +247,13 @@ const initDemoTeamMember = (
     suggestedIntegrations: {
       hasMore: true,
       items: [
-        makeSuggestedIntegrationJira(JiraDemoKey),
+        makeSuggestedIntegrationJira(JiraDemoProjectId),
         makeSuggestedIntegrationGitHub(GitHubDemoKey)
       ]
     },
     allAvailableIntegrations: [
-      makeSuggestedIntegrationJira(JiraDemoKey),
-      makeSuggestedIntegrationJira(JiraSecretKey)
+      makeSuggestedIntegrationJira(JiraDemoProjectId),
+      makeSuggestedIntegrationJira(JiraSecretProjectId)
     ],
     teamId: demoTeamId,
     userId

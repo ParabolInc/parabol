@@ -17,7 +17,6 @@ import Reflection from '../../../server/database/types/Reflection'
 import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import ITask from '../../../server/database/types/Task'
-import JiraIssueId from '../../shared/gqlIds/JiraIssueId'
 import {
   ExternalLinks,
   MeetingSettingsThreshold,
@@ -393,81 +392,71 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {addReactjiToReactable: data}
     },
-    CreateGitHubTaskIntegrationMutation: ({taskId, nameWithOwner}, userId) => {
+    CreateTaskIntegrationMutation: ({taskId, projectId, integrationProviderType}, userId) => {
+      console.log('CreateTaskIntegrationMutation', taskId, projectId, integrationProviderType)
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
       const {content} = task
       const {title, contentState} = splitDraftContent(content)
       const bodyHTML = stateToHTML(contentState)
-      Object.assign(task, {
-        updatedAt: new Date().toJSON(),
-        integration: {
-          __typename: '_xGitHubIssue',
-          id: `${taskId}:GitHub`,
-          title,
-          bodyHTML,
-          repository: {
-            __typename: '_xGitHubRepository',
-            id: `repo:${nameWithOwner}`,
-            nameWithOwner
-          },
-          number: this.getTempId('')
-        }
-      })
 
-      const data = {
-        __typename: 'CreateGitHubTaskIntegrationPayload',
-        error: null,
-        task
-      }
-      if (userId !== demoViewerId) {
-        this.emit(TASK, data)
-      }
-      return {createGitHubTaskIntegration: data}
-    },
-    CreateJiraTaskIntegrationMutation: ({projectKey, taskId}, userId) => {
-      const task = this.db.tasks.find((task) => task.id === taskId)
-      // if the human deleted the task, exit fast
-      if (!task) return null
-      const project = JiraProjectKeyLookup[projectKey]
-      const {cloudId, cloudName, projectName, avatar} = project
-      const issueKey = this.getTempId(`${projectKey}-`)
-      const {content} = task
-      const {title, contentState} = splitDraftContent(content)
-      const descriptionHTML = stateToHTML(contentState)
-      Object.assign(task, {
-        updatedAt: new Date().toJSON(),
-        integrationHash: JiraIssueId.join(cloudId, issueKey),
-        integration: {
-          __typename: 'JiraIssue',
-          id: `jira:${taskId}`,
-          issueKey,
-          projectKey,
-          cloudId,
-          cloudName,
-          descriptionHTML,
-          summary: title,
-          url: ExternalLinks.INTEGRATIONS_JIRA,
-          project: {
-            id: `${projectKey}:id`,
-            key: projectKey,
-            name: projectName,
-            avatar,
-            cloudId
+      if (integrationProviderType === 'github') {
+        Object.assign(task, {
+          updatedAt: new Date().toJSON(),
+          integration: {
+            __typename: '_xGitHubIssue',
+            id: `${taskId}:GitHub`,
+            title,
+            bodyHTML,
+            repository: {
+              __typename: '_xGitHubRepository',
+              id: `repo:${projectId}`,
+              nameWithOwner: projectId
+            },
+            number: this.getTempId('')
           }
-        }
-      })
+        })
+      }
+
+      if (integrationProviderType === 'jira') {
+        const project = JiraProjectKeyLookup[projectId]
+        const {cloudId, cloudName, projectName, avatar, projectKey} = project
+        const issueKey = this.getTempId(`${projectKey}-`)
+
+        Object.assign(task, {
+          updatedAt: new Date().toJSON(),
+          integrationHash: projectId,
+          integration: {
+            __typename: 'JiraIssue',
+            id: `jira:${taskId}`,
+            issueKey,
+            projectKey,
+            cloudId,
+            cloudName,
+            descriptionHTML: bodyHTML,
+            summary: title,
+            url: ExternalLinks.INTEGRATIONS_JIRA,
+            project: {
+              id: `${projectKey}:id`,
+              key: projectKey,
+              name: projectName,
+              avatar,
+              cloudId
+            }
+          }
+        })
+      }
 
       const data = {
-        __typename: 'CreateJiraTaskIntegrationPayload',
+        __typename: 'CreateTaskIntegrationPayload',
         error: null,
         task
       }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {createJiraTaskIntegration: data}
+      return {createTaskIntegration: data}
     },
     CreateReflectionMutation: async (
       {input: {content, promptId, sortOrder, id, groupId}},
