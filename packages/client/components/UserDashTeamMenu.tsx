@@ -32,16 +32,21 @@ const UserDashTeamMenu = (props: Props) => {
   const {teamIds, userIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
   const showAllTeams = !!userIds
   const {filteredTeams, defaultActiveIdx} = useMemo(() => {
-    const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
-      !!teamMembers.find(({userId}) => userIds.includes(userId))
-    ) : teams
+    const filteredTeams = userIds
+      ? teams.filter(({teamMembers}) => !!teamMembers.find(({userId}) => userIds.includes(userId)))
+      : teams
     return {
       filteredTeams,
-      defaultActiveIdx: filteredTeams.findIndex((team) => teamIds?.includes(team.id)) + (showAllTeams ? 2 : 1)
+      defaultActiveIdx:
+        filteredTeams.findIndex((team) => teamIds?.includes(team.id)) + (showAllTeams ? 2 : 1)
     }
   }, [userIds, teamIds])
 
-  const {query, filteredItems: matchedFilteredTeams, onQueryChange} = useSearchFilter(filteredTeams!, team => team.name);
+  const {
+    query,
+    filteredItems: matchedFilteredTeams,
+    onQueryChange
+  } = useSearchFilter(filteredTeams!, (team) => team.name)
 
   return (
     <Menu
@@ -50,23 +55,24 @@ const UserDashTeamMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team:'}</DropdownMenuLabel>
-      <SearchMenuItem
-        placeholder='Search teams'
-        onChange={onQueryChange}
-        value={query}
-      />
-      {query === '' && showAllTeams &&
+      <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={query} />
+      {query === '' && showAllTeams && (
         <MenuItem
           key={'teamFilterNULL'}
           label={UserTaskViewFilterLabels.ALL_TEAMS}
-          onClick={() => history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))}
-        />}
+          onClick={() =>
+            history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))
+          }
+        />
+      )}
       {matchedFilteredTeams.map((team) => (
         <MenuItem
           key={`teamFilter${team.id}`}
           dataCy={`team-filter-${team.id}`}
           label={team.name}
-          onClick={() => history.push(constructUserTaskFilterQueryParamURL([team.id], userIds, showArchived))}
+          onClick={() =>
+            history.push(constructUserTaskFilterQueryParamURL([team.id], userIds, showArchived))
+          }
         />
       ))}
     </Menu>

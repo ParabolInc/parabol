@@ -24,7 +24,11 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   const defaultActiveIdx =
     teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
 
-  const {query, filteredItems: matchedTeamMembers, onQueryChange} = useSearchFilter(teamMembers!, teamMember => teamMember.preferredName);
+  const {
+    query,
+    filteredItems: matchedTeamMembers,
+    onQueryChange
+  } = useSearchFilter(teamMembers!, (teamMember) => teamMember.preferredName)
 
   return (
     <Menu
@@ -33,18 +37,14 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      <SearchMenuItem
-        placeholder='Search team members'
-        onChange={onQueryChange}
-        value={query}
-      />
-      {query === '' &&
+      <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      {query === '' && (
         <MenuItem
           key={'teamMemberFilterNULL'}
           label={'All team members'}
           onClick={() => filterTeamMember(atmosphere, teamId, null)}
         />
-      }
+      )}
       {matchedTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.id}`}

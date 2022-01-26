@@ -14,7 +14,7 @@ const SearchItem = styled(MenuItemLabel)({
   overflow: 'visible',
   padding: 0,
   position: 'relative'
-});
+})
 
 const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   position: 'absolute',
@@ -22,17 +22,17 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   margin: 0,
   pointerEvents: 'none',
   top: 4
-});
+})
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
-});
+})
 
 interface Props {
-  placeholder: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: string;
+  placeholder: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  value: string
 }
 
 export const SearchMenuItem: React.FC<Props> = ({placeholder, onChange, value}) => {
@@ -43,5 +43,5 @@ export const SearchMenuItem: React.FC<Props> = ({placeholder, onChange, value}) 
       </StyledMenuItemIcon>
       <MenuSearch placeholder={placeholder} onChange={onChange} value={value} />
     </SearchItem>
-  );
+  )
 }
