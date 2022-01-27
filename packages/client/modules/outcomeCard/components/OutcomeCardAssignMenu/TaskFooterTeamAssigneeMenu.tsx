@@ -73,10 +73,10 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
       : teams
     return filteredTeams
   }, [teamIds, userIds])
-  const taskTeamIdx = useMemo(() => assignableTeams.findIndex(({id}) => id === teamId) + 1, [
-    teamId,
-    assignableTeams
-  ])
+  const taskTeamIdx = useMemo(
+    () => assignableTeams.findIndex(({id}) => id === teamId) + 1,
+    [teamId, assignableTeams]
+  )
 
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
@@ -112,11 +112,10 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const handleTaskUpdate = (nextTeam: typeof newTeam) => async () => {
     if (!submitting && teamId !== nextTeam.id) {
       if (isGitHubTask || isJiraTask) {
-        const result = await atmosphere.fetchQuery<
-          TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery
-        >(query, {
-          teamId: nextTeam.id
-        })
+        const result =
+          await atmosphere.fetchQuery<TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery>(query, {
+            teamId: nextTeam.id
+          })
         const {github, atlassian} = result?.viewer?.teamMember?.integrations ?? {}
 
         if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
@@ -136,7 +135,11 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     }
   }
 
-  const {query: searchQuery, filteredItems: matchedAssignableTeams, onQueryChange} = useSearchFilter(assignableTeams!, team => team.name);
+  const {
+    query: searchQuery,
+    filteredItems: matchedAssignableTeams,
+    onQueryChange
+  } = useSearchFilter(assignableTeams, (team) => team.name.toLowerCase())
 
   return (
     <Menu
@@ -145,14 +148,10 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
       ariaLabel={'Assign this task to another team'}
     >
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
-      <SearchMenuItem
-        placeholder='Search teams'
-        onChange={onQueryChange}
-        value={searchQuery}
-      />
-      {query && matchedAssignableTeams.length === 0 &&
+      <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
+      {query && matchedAssignableTeams.length === 0 && (
         <NoResults key='no-results'>No teams found!</NoResults>
-      }
+      )}
       {matchedAssignableTeams.map((team) => {
         return (
           <MenuItem

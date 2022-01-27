@@ -42,7 +42,7 @@ const NewGitHubIssueMenu = (props: Props) => {
     query,
     filteredItems: filteredIntegrations,
     onQueryChange
-  } = useSearchFilter(items!, getValue)
+  } = useSearchFilter(items ?? [], getValue)
 
   const atmosphere = useAtmosphere()
   const {allItems, status} = useAllIntegrations(

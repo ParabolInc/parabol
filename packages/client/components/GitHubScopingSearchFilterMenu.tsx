@@ -123,7 +123,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
     query: searchQuery,
     filteredItems: filteredRepoContributions,
     onQueryChange
-  } = useSearchFilter(repoContributions!, getValue)
+  } = useSearchFilter(repoContributions, getValue)
 
   // TODO parse the query string & extract out the repositories
   const selectedRepos = getReposFromQueryStr(queryString)
@@ -143,7 +143,11 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       portalStatus={portalStatus}
       isDropdown={isDropdown}
     >
-      <SearchMenuItem placeholder='Search your GitHub repos' onChange={onQueryChange} value={searchQuery} />
+      <SearchMenuItem
+        placeholder='Search your GitHub repos'
+        onChange={onQueryChange}
+        value={searchQuery}
+      />
       {repoContributions.length === 0 && <NoResults key='no-results'>No repos found!</NoResults>}
       {selectedAndFilteredRepos.map((repo) => {
         const isSelected = selectedRepos.includes(repo)

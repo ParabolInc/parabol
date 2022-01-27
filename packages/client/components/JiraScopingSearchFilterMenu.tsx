@@ -81,7 +81,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
     query,
     filteredItems: queryFilteredProjects,
     onQueryChange
-  } = useSearchFilter(projects!, getValue)
+  } = useSearchFilter(projects, getValue)
 
   const showSearch = projects.length > MAX_PROJECTS
   const selectedAndFilteredProjects = useMemo(() => {

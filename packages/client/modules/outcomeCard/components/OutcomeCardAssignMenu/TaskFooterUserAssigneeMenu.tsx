@@ -38,10 +38,10 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {team} = viewer
   const atmosphere = useAtmosphere()
   const teamMembers = team?.teamMembers || []
-  const taskUserIdx = useMemo(() => teamMembers.findIndex(({userId}) => userId) + 1, [
-    userId,
-    teamMembers
-  ])
+  const taskUserIdx = useMemo(
+    () => teamMembers.findIndex(({userId}) => userId) + 1,
+    [userId, teamMembers]
+  )
   const assignees = useMemo(
     () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
     [userId, teamMembers]
@@ -51,7 +51,11 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area}, {})
   }
 
-  const {query, filteredItems: matchedAssignees, onQueryChange} = useSearchFilter(assignees!, assignee => assignee.preferredName);
+  const {
+    query,
+    filteredItems: matchedAssignees,
+    onQueryChange
+  } = useSearchFilter(assignees, (assignee) => assignee.preferredName.toLowerCase())
 
   if (!team) return null
   return (
@@ -61,14 +65,10 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
       {...menuProps}
     >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      <SearchMenuItem
-        placeholder='Search team members'
-        onChange={onQueryChange}
-        value={query}
-      />
-      {query && matchedAssignees.length === 0 &&
+      <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      {query && matchedAssignees.length === 0 && (
         <NoResults key='no-results'>No team members found!</NoResults>
-      }
+      )}
       {matchedAssignees.map((assignee) => {
         return (
           <MenuItem

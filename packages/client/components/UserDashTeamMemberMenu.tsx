@@ -73,7 +73,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
     query,
     filteredItems: matchedFilteredTeamMembers,
     onQueryChange
-  } = useSearchFilter(filteredTeamMembers!, (item) => item.preferredName.toLowerCase())
+  } = useSearchFilter(filteredTeamMembers, (item) => item.preferredName.toLowerCase())
 
   return (
     <Menu
@@ -83,9 +83,9 @@ const UserDashTeamMemberMenu = (props: Props) => {
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
       <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
-      {query && matchedFilteredTeamMembers.length === 0 &&
+      {query && matchedFilteredTeamMembers.length === 0 && (
         <NoResults key='no-results'>No team members found!</NoResults>
-      }
+      )}
       {query === '' && showAllTeamMembers && (
         <MenuItem
           key={'teamMemberFilterNULL'}
