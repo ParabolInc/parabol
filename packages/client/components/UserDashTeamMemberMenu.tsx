@@ -13,11 +13,22 @@ import useRouter from '~/hooks/useRouter'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
+import styled from '@emotion/styled'
+import {PALETTE} from '~/styles/paletteV3'
+import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
   viewer: UserDashTeamMemberMenu_viewer | null
 }
+
+const NoResults = styled(MenuItemLabel)({
+  color: PALETTE.SLATE_600,
+  justifyContent: 'center',
+  paddingLeft: 8,
+  paddingRight: 8,
+  fontStyle: 'italic'
+})
 
 const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
@@ -72,6 +83,9 @@ const UserDashTeamMemberMenu = (props: Props) => {
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
       <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      {query && matchedFilteredTeamMembers.length === 0 &&
+        <NoResults key='no-results'>No team members found!</NoResults>
+      }
       {query === '' && showAllTeamMembers && (
         <MenuItem
           key={'teamMemberFilterNULL'}

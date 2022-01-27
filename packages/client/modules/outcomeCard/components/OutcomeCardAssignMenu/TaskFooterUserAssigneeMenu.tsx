@@ -15,12 +15,22 @@ import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from '~/components/SearchMenuItem'
+import styled from '@emotion/styled'
+import {PALETTE} from '~/styles/paletteV3'
 interface Props {
   area: AreaEnum
   menuProps: MenuProps
   viewer: TaskFooterUserAssigneeMenu_viewer
   task: TaskFooterUserAssigneeMenu_task
 }
+
+const NoResults = styled(MenuItemLabel)({
+  color: PALETTE.SLATE_600,
+  justifyContent: 'center',
+  paddingLeft: 8,
+  paddingRight: 8,
+  fontStyle: 'italic'
+})
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
@@ -56,6 +66,9 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
         onChange={onQueryChange}
         value={query}
       />
+      {query && matchedAssignees.length === 0 &&
+        <NoResults key='no-results'>No team members found!</NoResults>
+      }
       {matchedAssignees.map((assignee) => {
         return (
           <MenuItem
