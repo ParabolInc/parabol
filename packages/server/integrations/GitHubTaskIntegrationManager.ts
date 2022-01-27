@@ -1,4 +1,3 @@
-import DataLoader from 'dataloader'
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import getRethink from '../database/rethinkDriver'
@@ -8,22 +7,11 @@ import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
 import GitHubIssueId from '../../client/shared/gqlIds/GitHubIssueId'
 import BaseTaskIntegrationManager from './BaseTaskIntegrationManager'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
-import {DataLoaderWorker} from '../graphql/graphql'
-
-type TeamUserKey = {
-  teamId: string
-  userId: string
-}
 
 export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationManager {
   public static title = 'GitHub'
   public static segmentEventName = 'Published Task to GitHub'
-
-  static getAuthLoader(
-    dataLoader: DataLoaderWorker
-  ): DataLoader<TeamUserKey, GitHubAuth | null, string> {
-    return dataLoader.get('githubAuth')
-  }
+  public static authLoaderKey = 'githubAuth' as const
 
   async createRemoteTaskAndUpdateDB(
     auth: GitHubAuth,

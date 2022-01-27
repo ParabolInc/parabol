@@ -1,4 +1,3 @@
-import DataLoader from 'dataloader'
 import makeCreateJiraTaskComment from '../utils/makeCreateJiraTaskComment'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
 import createJiraTask from '../graphql/mutations/helpers/createJiraTask'
@@ -8,22 +7,11 @@ import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
 import getRethink from '../database/rethinkDriver'
 import BaseTaskIntegrationManager from './BaseTaskIntegrationManager'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import {DataLoaderWorker} from '../graphql/graphql'
-
-type TeamUserKey = {
-  teamId: string
-  userId: string
-}
 
 export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManager {
   public static title = 'Jira'
   public static segmentEventName = 'Published Task to Jira'
-
-  public static getAuthLoader(
-    dataLoader: DataLoaderWorker
-  ): DataLoader<TeamUserKey, AtlassianAuth | null, string> {
-    return dataLoader.get('freshAtlassianAuth')
-  }
+  public static authLoaderKey = 'freshAtlassianAuth' as const
 
   async createRemoteTaskAndUpdateDB(
     auth: AtlassianAuth,

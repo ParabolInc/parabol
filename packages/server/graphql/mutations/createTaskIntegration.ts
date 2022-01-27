@@ -77,11 +77,10 @@ export default {
       return standardError(new Error('Integration provider is not supported'))
     }
 
+    const authDataLoader = dataLoader.get(integrationManagerClass.authLoaderKey)
     const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
-      integrationManagerClass.getAuthLoader(dataLoader).load({teamId: teamId, userId: viewerId}),
-      userId
-        ? integrationManagerClass.getAuthLoader(dataLoader).load({teamId: teamId, userId})
-        : null,
+      authDataLoader.load({teamId: teamId, userId: viewerId}),
+      userId ? authDataLoader.load({teamId: teamId, userId}) : null,
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
