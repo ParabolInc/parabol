@@ -45,12 +45,12 @@ graphql`
 
 const mutation = graphql`
   mutation CreateTaskIntegrationMutation(
-    $integrationProviderType: IntegrationProviderTypeEnum!
+    $integrationProviderService: IntegrationProviderServiceEnum!
     $projectId: ID!
     $taskId: ID!
   ) {
     createTaskIntegration(
-      integrationProviderType: $integrationProviderType
+      integrationProviderService: $integrationProviderService
       projectId: $projectId
       taskId: $taskId
     ) {
@@ -159,20 +159,20 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
   variables,
   {onCompleted, onError}
 ) => {
-  const {integrationProviderType} = variables
+  const {integrationProviderService} = variables
 
   return commitMutation<TCreateTaskIntegrationMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
-      if (integrationProviderType === 'jira') {
+      if (integrationProviderService === 'jira') {
         jiraTaskIntegrationUpdater(store)
       }
     },
     optimisticUpdater: (store) => {
-      if (integrationProviderType === 'jira') {
+      if (integrationProviderService === 'jira') {
         jiraTaskIntegrationOptimisticUpdater(store, variables)
-      } else if (integrationProviderType === 'github') {
+      } else if (integrationProviderService === 'github') {
         githubTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },

@@ -48401,6 +48401,8 @@ export interface IIntegrationProvider {
  * The name of the service of the Integration Provider
  */
 export const enum IntegrationProviderServiceEnum {
+  jira = 'jira',
+  github = 'github',
   gitlab = 'gitlab',
   mattermost = 'mattermost',
 }
@@ -56396,7 +56398,7 @@ export interface ICreateTaskIntegrationOnMutationArguments {
   /**
    * Which integration to push the task to
    */
-  integrationProviderType: IntegrationProviderTypeEnum;
+  integrationProviderService: IntegrationProviderServiceEnum;
 
   /**
    * Jira projectId, GitHub nameWithOwner etc.
@@ -57857,14 +57859,6 @@ export interface ICreateTaskIntegrationPayload {
   __typename: 'CreateTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
-}
-
-/**
- * Integration provider type
- */
-export const enum IntegrationProviderTypeEnum {
-  jira = 'jira',
-  github = 'github',
 }
 
 /**

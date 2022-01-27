@@ -128,7 +128,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         if (service === 'jira') {
           const {projectId} = suggestedIntegration
           const onClick = () => {
-            const variables = {projectId, taskId, integrationProviderType: 'jira' as const}
+            const variables = {projectId, taskId, integrationProviderService: 'jira' as const}
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
@@ -147,7 +147,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             const variables = {
               projectId: nameWithOwner,
               taskId,
-              integrationProviderType: 'github' as const
+              integrationProviderService: 'github' as const
             }
             submitMutation()
             CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})

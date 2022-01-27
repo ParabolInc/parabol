@@ -7,14 +7,14 @@ import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateTaskIntegrationPayload from '../types/CreateTaskIntegrationPayload'
-import IntegrationProviderTypeEnum, {
-  IntegrationProviderTypeEnumType
-} from '../types/IntegrationProviderTypeEnum'
+import IntegrationProviderServiceEnum, {
+  IntegrationProviderServiceEnumType
+} from '../types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from '../../integrations/JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from '../../integrations/GitHubTaskIntegrationManager'
 
 type CreateTaskIntegrationMutationVariables = {
-  integrationProviderType: IntegrationProviderTypeEnumType
+  integrationProviderService: IntegrationProviderServiceEnumType
   projectId: string
   taskId: string
 }
@@ -22,8 +22,8 @@ export default {
   name: 'CreateTaskIntegration',
   type: CreateTaskIntegrationPayload,
   args: {
-    integrationProviderType: {
-      type: new GraphQLNonNull(IntegrationProviderTypeEnum),
+    integrationProviderService: {
+      type: new GraphQLNonNull(IntegrationProviderServiceEnum),
       description: 'Which integration to push the task to'
     },
     projectId: {
@@ -37,7 +37,7 @@ export default {
   },
   resolve: async (
     _source: unknown,
-    {integrationProviderType, projectId, taskId}: CreateTaskIntegrationMutationVariables,
+    {integrationProviderService, projectId, taskId}: CreateTaskIntegrationMutationVariables,
     context: GQLContext,
     info: GraphQLResolveInfo
   ) => {
@@ -67,9 +67,9 @@ export default {
     }
 
     const integrationManagerClass =
-      integrationProviderType === 'jira'
+      integrationProviderService === 'jira'
         ? JiraTaskIntegrationManager
-        : integrationProviderType === 'github'
+        : integrationProviderService === 'github'
         ? GitHubTaskIntegrationManager
         : undefined
 
