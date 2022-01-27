@@ -30,7 +30,7 @@ const TallMenu = styled(Menu)({
   maxHeight: 256
 })
 
-interface Props extends RouteComponentProps<{}> {
+interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
   menuProps: MenuProps
   viewer: StandardHubUserMenu_viewer | null
 }
