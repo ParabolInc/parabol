@@ -68,6 +68,8 @@ const ListAndMenu = styled('div')({
   top: 16
 })
 
+const GitLabLogin = styled('div')({})
+
 const ProviderName = styled('div')({
   color: PALETTE.SLATE_700,
   fontSize: 16,
@@ -185,7 +187,9 @@ const GitLabProviderRow = (props: Props) => {
       )}
       {auth && (
         <ListAndMenu>
-          <GitLabSVG />
+          <GitLabLogin title={auth.provider.scope === 'global' ? 'Cloud' : 'Self-hosted'}>
+            <GitLabSVG />
+          </GitLabLogin>
           <MenuButton onClick={togglePortal} ref={menuRef}>
             <StyledIcon>more_vert</StyledIcon>
           </MenuButton>
