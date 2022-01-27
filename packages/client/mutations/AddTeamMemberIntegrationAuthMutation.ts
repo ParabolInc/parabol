@@ -4,7 +4,7 @@ import {StandardMutation} from '../types/relayMutations'
 import {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 
 graphql`
-  fragment AddTeamMemberIntegrationAuthMutation_part on AddTeamMemberIntegrationAuthSuccess {
+  fragment AddTeamMemberIntegrationAuthMutation_teamMember on AddTeamMemberIntegrationAuthSuccess {
     teamMember {
       ...GitLabProviderRowTeamMember
       ...MattermostProviderRowTeamMember
@@ -30,7 +30,7 @@ const mutation = graphql`
           message
         }
       }
-      ...AddTeamMemberIntegrationAuthMutation_part @relay(mask: false)
+      ...AddTeamMemberIntegrationAuthMutation_teamMember @relay(mask: false)
     }
   }
 `

@@ -1,3 +1,4 @@
+import {Providers} from '~/types/constEnums'
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
@@ -5,7 +6,7 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
 class GitLabClientManager {
-  static SCOPES = 'read_api'
+  static SCOPES = Providers.GITLAB_SCOPE
   static openOAuth(
     atmosphere: Atmosphere,
     providerId: string,

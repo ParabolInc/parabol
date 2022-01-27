@@ -68,8 +68,6 @@ const ListAndMenu = styled('div')({
   top: 16
 })
 
-const GitLabLogin = styled('div')({})
-
 const ProviderName = styled('div')({
   color: PALETTE.SLATE_700,
   fontSize: 16,
@@ -157,41 +155,37 @@ const GitLabProviderRow = (props: Props) => {
       </RowInfo>
       {!auth && (
         <ProviderActions>
-          <>
-            <StyledPrimaryButton
-              onClick={() => openOAuth(cloudProviderId, clientId, serverBaseUrl)}
-              palette='warm'
-              waiting={submitting}
-              onMouseOver={cloudOpenTooltip}
-              onMouseOut={cloudCloseTooltip}
-              ref={cloudRef}
-            >
-              {isDesktop ? 'Connect' : <Icon>add</Icon>}
-            </StyledPrimaryButton>
-            {cloudTooltipPortal('Connect to GitLab Cloud')}
-            {null && (
-              <>
-                <StyledSecondaryButton
-                  onClick={() => console.log('todo')}
-                  palette='warm'
-                  waiting={submitting}
-                  onMouseOver={selfHostedOpenTooltip}
-                  onMouseOut={selfHostedCloseTooltip}
-                  ref={selfHostedRef}
-                >
-                  {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
-                </StyledSecondaryButton>
-                {selfHostedTooltipPortal(`Connect to GitLab Self-hosted`)}
-              </>
-            )}
-          </>
+          <StyledPrimaryButton
+            onClick={() => openOAuth(cloudProviderId, clientId, serverBaseUrl)}
+            palette='warm'
+            waiting={submitting}
+            onMouseOver={cloudOpenTooltip}
+            onMouseOut={cloudCloseTooltip}
+            ref={cloudRef}
+          >
+            {isDesktop ? 'Connect' : <Icon>add</Icon>}
+          </StyledPrimaryButton>
+          {cloudTooltipPortal('Connect to GitLab Cloud')}
+          {null && (
+            <>
+              <StyledSecondaryButton
+                onClick={() => console.log('todo')}
+                palette='warm'
+                waiting={submitting}
+                onMouseOver={selfHostedOpenTooltip}
+                onMouseOut={selfHostedCloseTooltip}
+                ref={selfHostedRef}
+              >
+                {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
+              </StyledSecondaryButton>
+              {selfHostedTooltipPortal(`Connect to GitLab Self-hosted`)}
+            </>
+          )}
         </ProviderActions>
       )}
       {auth && (
         <ListAndMenu>
-          <GitLabLogin title={auth.provider.scope === 'global' ? 'Cloud' : 'Self-hosted'}>
-            <GitLabSVG />
-          </GitLabLogin>
+          <GitLabSVG />
           <MenuButton onClick={togglePortal} ref={menuRef}>
             <StyledIcon>more_vert</StyledIcon>
           </MenuButton>

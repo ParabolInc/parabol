@@ -19,7 +19,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     cloudProvider: {
       description:
-        'The cloud provider the team member may choose to integrate with. Nullable based on env vars',
+        'The cloud provider the team member may choose to integrate with. Nullable based on env vars, e.g. a self-hosted instance',
       type: IntegrationProviderOAuth2,
       resolve: async (_source, _args, {dataLoader}) => {
         const [globalProvider] = await dataLoader
