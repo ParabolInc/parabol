@@ -15,7 +15,9 @@ graphql`
     integrations {
       gitlab {
         auth {
-          accessToken
+          provider {
+            scope
+          }
         }
       }
     }
@@ -40,7 +42,7 @@ const ScopePhaseAreaGitLab = (props: Props) => {
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
-  const hasAuth = !!integrations?.gitlab?.auth?.accessToken
+  const hasAuth = !!integrations?.gitlab?.auth
   if (!hasAuth) return <ScopePhaseAreaAddGitLab gotoParabol={gotoParabol} meetingRef={meeting} />
   return (
     <div
