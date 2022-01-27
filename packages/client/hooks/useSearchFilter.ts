@@ -11,7 +11,7 @@ const useSearchFilter = <T>(items: readonly T[], getValue: (item: T) => string) 
   const {search} = fields
   const {value} = search
   const query = value.toLowerCase()
-  const filteredItems = useFilteredItems(query, items, getValue)
+  const filteredItems = useFilteredItems(query, items, (item) => getValue(item).toLowerCase())
   return {query: value, filteredItems, onQueryChange: onChange}
 }
 

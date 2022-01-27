@@ -73,7 +73,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
     query,
     filteredItems: matchedFilteredTeamMembers,
     onQueryChange
-  } = useSearchFilter(filteredTeamMembers, (item) => item.preferredName.toLowerCase())
+  } = useSearchFilter(filteredTeamMembers, (item) => item.preferredName)
 
   return (
     <Menu

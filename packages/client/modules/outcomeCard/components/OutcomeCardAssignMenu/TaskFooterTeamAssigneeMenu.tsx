@@ -139,7 +139,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     query: searchQuery,
     filteredItems: matchedAssignableTeams,
     onQueryChange
-  } = useSearchFilter(assignableTeams, (team) => team.name.toLowerCase())
+  } = useSearchFilter(assignableTeams, (team) => team.name)
 
   return (
     <Menu

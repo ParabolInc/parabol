@@ -48,8 +48,7 @@ const getValue = (
 ) => {
   const jiraItemName = item?.projectKey ?? ''
   const githubName = item?.nameWithOwner ?? ''
-  const name = jiraItemName || githubName
-  return name.toLowerCase()
+  return jiraItemName || githubName
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {

@@ -30,8 +30,7 @@ interface Props {
 }
 
 const getValue = (item: {projectName?: string; nameWithOwner?: string}) => {
-  const repoName = item.projectName || item.nameWithOwner || 'Unknown Project'
-  return repoName.toLowerCase()
+  return item.projectName || item.nameWithOwner || 'Unknown Project'
 }
 
 const NewGitHubIssueMenu = (props: Props) => {

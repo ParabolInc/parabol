@@ -30,8 +30,7 @@ interface Props {
 }
 
 const getValue = (item: {remoteProject?: any; nameWithOwner?: string}) => {
-  const repoName = item.remoteProject?.name ?? item.nameWithOwner ?? 'Unknown Project'
-  return repoName.toLowerCase()
+  return item.remoteProject?.name ?? item.nameWithOwner ?? 'Unknown Project'
 }
 
 const NewJiraIssueMenu = (props: Props) => {

@@ -63,7 +63,7 @@ type JiraSearchQuery = NonNullable<
   NonNullable<JiraScopingSearchFilterMenu_viewer['meeting']>['jiraSearchQuery']
 >
 
-const getValue = (item: {name: string}) => item.name.toLowerCase()
+const getValue = (item: {name: string}) => item.name
 
 const MAX_PROJECTS = 10
 

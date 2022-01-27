@@ -55,7 +55,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     query,
     filteredItems: matchedAssignees,
     onQueryChange
-  } = useSearchFilter(assignees, (assignee) => assignee.preferredName.toLowerCase())
+  } = useSearchFilter(assignees, (assignee) => assignee.preferredName)
 
   if (!team) return null
   return (

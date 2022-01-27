@@ -48,8 +48,7 @@ type Contribution = Pick<IXGitHubCreatedCommitContribution, 'occurredAt' | 'repo
 const MAX_REPOS = 10
 
 const getValue = (item: {nameWithOwner?: string}) => {
-  const repoName = item.nameWithOwner || 'Unknown Repo'
-  return repoName.toLowerCase()
+  return item.nameWithOwner || 'Unknown Repo'
 }
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
