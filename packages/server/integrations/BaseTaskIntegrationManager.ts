@@ -1,12 +1,21 @@
 import {GraphQLResolveInfo} from 'graphql'
+import {DeepPartial} from 'rethinkdb-ts/lib/internal-types'
 import {GQLContext} from '../graphql/graphql'
 import {getUserId} from '../utils/authorization'
 import Task from '../database/types/Task'
 import Team from '../database/types/Team'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {RValue} from '../database/stricterR'
 
 type Auth = AtlassianAuth | GitHubAuth
+
+export type CreateTaskResponse = {
+  error?: {
+    message: string
+  }
+  integrationData?: RValue<DeepPartial<Task>>
+}
 
 export default abstract class BaseTaskIntegrationManager {
   readonly context: GQLContext

@@ -1,11 +1,10 @@
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../appOrigin'
-import getRethink from '../database/rethinkDriver'
 import makeCreateGitHubTaskComment from '../utils/makeCreateGitHubTaskComment'
 import createGitHubTask from '../graphql/mutations/helpers/createGitHubTask'
 import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
 import GitHubIssueId from '../../client/shared/gqlIds/GitHubIssueId'
-import BaseTaskIntegrationManager from './BaseTaskIntegrationManager'
+import BaseTaskIntegrationManager, {CreateTaskResponse} from './BaseTaskIntegrationManager'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 
 export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationManager {
@@ -15,14 +14,10 @@ export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationMan
 
   async createRemoteTaskAndUpdateDB(
     auth: GitHubAuth,
-    taskId: string,
     projectId: string,
     viewerName: string,
     assigneeName: string
-  ) {
-    const r = await getRethink()
-    const now = new Date()
-
+  ): Promise<CreateTaskResponse> {
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${this.teamId}`)
 
     const createdBySomeoneElseComment = this.createdBySomeoneElse
@@ -42,26 +37,23 @@ export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationMan
     )
 
     if (res.error) {
-      return res
+      return {
+        error: res.error
+      }
     }
 
     const {issueNumber} = res
 
-    await r
-      .table('Task')
-      .get(taskId)
-      .update({
+    return {
+      integrationData: {
         integrationHash: GitHubIssueId.join(projectId, issueNumber),
         integration: {
           accessUserId: this.accessUserId!,
           service: 'github',
           issueNumber,
           nameWithOwner: projectId
-        },
-        updatedAt: now
-      })
-      .run()
-
-    return res
+        }
+      }
+    }
   }
 }

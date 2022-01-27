@@ -44,6 +44,7 @@ export default {
     const {authToken, dataLoader, socketId: mutatorId} = context
 
     const r = await getRethink()
+    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -117,7 +118,6 @@ export default {
 
     const res = await integrationManager.createRemoteTaskAndUpdateDB(
       auth,
-      taskId,
       projectId,
       viewerName,
       assigneeName
@@ -126,6 +126,15 @@ export default {
     if (res.error) {
       return {error: {message: res.error.message}}
     }
+
+    await r
+      .table('Task')
+      .get(taskId)
+      .update({
+        ...res.integrationData,
+        updatedAt: now
+      })
+      .run()
 
     const data = {taskId}
     teamMembers.forEach(({userId}) => {

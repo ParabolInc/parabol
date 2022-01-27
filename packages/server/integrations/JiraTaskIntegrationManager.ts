@@ -4,8 +4,7 @@ import createJiraTask from '../graphql/mutations/helpers/createJiraTask'
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
-import getRethink from '../database/rethinkDriver'
-import BaseTaskIntegrationManager from './BaseTaskIntegrationManager'
+import BaseTaskIntegrationManager, {CreateTaskResponse} from './BaseTaskIntegrationManager'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 
 export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManager {
@@ -15,14 +14,10 @@ export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManag
 
   async createRemoteTaskAndUpdateDB(
     auth: AtlassianAuth,
-    taskId: string,
     projectId: string,
     viewerName: string,
     assigneeName: string
-  ) {
-    const r = await getRethink()
-    const now = new Date()
-
+  ): Promise<CreateTaskResponse> {
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${this.teamId}`)
 
     const createdBySomeoneElseComment = this.createdBySomeoneElse
@@ -40,26 +35,25 @@ export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManag
     )
 
     if (res.error) {
-      return res
+      return {
+        error: {
+          message: res.error.message
+        }
+      }
     }
 
     const {issueKey} = res
 
-    await r
-      .table('Task')
-      .get(taskId)
-      .update({
+    return {
+      integrationData: {
         integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
           accessUserId: this.accessUserId!,
           service: 'jira',
           cloudId,
           issueKey
-        },
-        updatedAt: now
-      })
-      .run()
-
-    return res
+        }
+      }
+    }
   }
 }
