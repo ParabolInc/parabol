@@ -71,13 +71,13 @@ const baseTabs = [
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
+  const [activeIdx, setActiveIdx] = useState(1)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   if (!viewerMeetingMember) return null
   const {user} = viewerMeetingMember
   const {featureFlags} = user
   const {gitlab: allowGitlab} = featureFlags
-  const [activeIdx, setActiveIdx] = useState(1)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const tabs = allowGitlab ? [...baseTabs, {icon: <GitLabSVG />, label: 'GitLab'}] : baseTabs
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {

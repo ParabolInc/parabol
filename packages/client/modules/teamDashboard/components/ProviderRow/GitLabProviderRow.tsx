@@ -167,6 +167,7 @@ const GitLabProviderRow = (props: Props) => {
           >
             {isDesktop ? 'Connect' : <Icon>add</Icon>}
           </StyledPrimaryButton>
+          {/* TODO: re-add tooltip when GitLab Cloud integration is ready */}
           {/* {cloudTooltipPortal('Connect to GitLab Cloud')} */}
           {null && (
             <>
