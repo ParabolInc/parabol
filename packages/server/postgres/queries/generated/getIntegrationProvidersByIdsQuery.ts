@@ -28,7 +28,7 @@ export interface IGetIntegrationProvidersByIdsQueryResult {
   serverBaseUrl: string | null;
   webhookUrl: string | null;
   consumerKey: string | null;
-  privateKey: string | null;
+  consumerSecret: string | null;
 }
 
 /** 'GetIntegrationProvidersByIdsQuery' query type */

@@ -30,7 +30,7 @@ export interface IGetSharedIntegrationProvidersQueryResult {
   serverBaseUrl: string | null;
   webhookUrl: string | null;
   consumerKey: string | null;
-  privateKey: string | null;
+  consumerSecret: string | null;
 }
 
 /** 'GetSharedIntegrationProvidersQuery' query type */

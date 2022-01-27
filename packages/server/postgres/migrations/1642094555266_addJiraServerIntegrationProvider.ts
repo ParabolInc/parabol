@@ -11,7 +11,7 @@ export async function up() {
     ALTER TYPE "IntegrationProviderAuthStrategyEnum" ADD VALUE 'oauth1';
     ALTER TABLE "IntegrationProvider"
       ADD COLUMN IF NOT EXISTS "consumerKey" VARCHAR(255),
-      ADD COLUMN IF NOT EXISTS "privateKey" TEXT;
+      ADD COLUMN IF NOT EXISTS "consumerSecret" TEXT;
   END $$;
   `)
   await client.end()
@@ -25,7 +25,7 @@ export async function down() {
   BEGIN
     ALTER TABLE "IntegrationProvider"
       DROP COLUMN "consumerKey",
-      DROP COLUMN "privateKey",
+      DROP COLUMN "consumerSecret",
       DROP CONSTRAINT global_provider_must_be_oauth2;
 
     DELETE FROM "IntegrationProvider" WHERE "service" = 'jiraServer' OR "authStrategy" = 'oauth1';

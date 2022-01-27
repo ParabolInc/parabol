@@ -60152,9 +60152,9 @@ export interface IIntegrationProviderMetadataInputOAuth1 {
   consumerKey: string;
 
   /**
-   * Private key of the generate private/public key pair
+   * Secret or Private key of the generate private/public key pair
    */
-  privateKey: string;
+  consumerSecret: string;
 }
 
 /**

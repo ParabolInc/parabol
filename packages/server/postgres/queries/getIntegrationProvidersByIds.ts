@@ -17,7 +17,7 @@ interface IntegrationProviderWebhook extends IntegrationProviderActive {
 interface IntegrationProviderOAuth1 extends IntegrationProviderActive {
   authStrategy: 'oauth1'
   consumerKey: string
-  privateKey: string
+  consumerSecret: string
 }
 
 interface IntegrationProviderOAuth2 extends IntegrationProviderActive {

@@ -9,7 +9,7 @@ INSERT INTO
     "clientId",
     "clientSecret",
     "consumerKey",
-    "privateKey",
+    "consumerSecret",
     "serverBaseUrl",
     "webhookUrl",
     "teamId"
@@ -22,7 +22,7 @@ VALUES
     :clientId,
     :clientSecret,
     :consumerKey,
-    :privateKey,
+    :consumerSecret,
     :serverBaseUrl,
     :webhookUrl,
     :teamId
@@ -34,7 +34,7 @@ ON CONFLICT ("teamId", "service", "authStrategy") DO UPDATE SET
   "clientId" = EXCLUDED."clientId",
   "clientSecret" = EXCLUDED."clientSecret",
   "consumerKey" = EXCLUDED."consumerKey",
-  "privateKey" = EXCLUDED."privateKey",
+  "consumerSecret" = EXCLUDED."consumerSecret",
   "serverBaseUrl" = EXCLUDED."serverBaseUrl",
   "webhookUrl" = EXCLUDED."webhookUrl",
   "updatedAt" = CURRENT_TIMESTAMP,
