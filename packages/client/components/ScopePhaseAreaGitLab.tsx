@@ -14,17 +14,8 @@ graphql`
   fragment ScopePhaseAreaGitLab_teamMember on TeamMember {
     integrations {
       gitlab {
-        cloudProvider {
-          clientId
-          scope
-          isActive
-        }
         auth {
           accessToken
-          scopes
-          provider {
-            clientId
-          }
         }
       }
     }

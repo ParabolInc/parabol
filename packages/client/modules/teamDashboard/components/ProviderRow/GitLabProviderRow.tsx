@@ -118,7 +118,7 @@ const GitLabProviderRow = (props: Props) => {
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
-    tooltipPortal: cloudTooltipPortal,
+    // tooltipPortal: cloudTooltipPortal,
     openTooltip: cloudOpenTooltip,
     closeTooltip: cloudCloseTooltip,
     originRef: cloudRef
@@ -165,7 +165,7 @@ const GitLabProviderRow = (props: Props) => {
           >
             {isDesktop ? 'Connect' : <Icon>add</Icon>}
           </StyledPrimaryButton>
-          {cloudTooltipPortal('Connect to GitLab Cloud')}
+          {/* {cloudTooltipPortal('Connect to GitLab Cloud')} */}
           {null && (
             <>
               <StyledSecondaryButton
