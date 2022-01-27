@@ -1,7 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
-import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
+import {isSuperUser, isTeamMember} from '../../utils/authorization'
 import {isNotNull} from '../../utils/predicates'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -30,14 +30,13 @@ const addIntegrationProvider = {
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
-    const viewerId = getUserId(authToken)
     const {teamId} = input
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
     if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
-      return {error: {message: 'Must be on the team that created the provider'}}
+      return {error: {message: 'Must be on the team for which the provider is created'}}
     }
 
     // VALIDATION
@@ -78,7 +77,7 @@ const addIntegrationProvider = {
     })
 
     //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
-    const data = {userId: viewerId, teamId, providerId}
+    const data = {teamId, providerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProviderSuccess', data, subOptions)
     return data
   }

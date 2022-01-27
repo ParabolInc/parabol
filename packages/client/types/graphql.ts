@@ -60069,14 +60069,14 @@ export interface IAddIntegrationProviderSuccess {
   provider: IntegrationProvider;
 
   /**
-   * The team member with the updated Integration Provider
+   * Id of the team with the updated Integration Provider
    */
-  teamMember: ITeamMember;
+  teamId: string;
 
   /**
-   * The user who updated Integration Provider object
+   * The team with the updated Integration Provider
    */
-  user: IUser;
+  team: ITeam;
 }
 
 /**
