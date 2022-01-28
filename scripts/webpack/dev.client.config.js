@@ -120,6 +120,9 @@ module.exports = {
       template: path.join(PROJECT_ROOT, 'devTemplate.html'),
       __ACTION__: JSON.stringify({
         atlassian: process.env.ATLASSIAN_CLIENT_ID,
+        datadogClientToken: process.env.DD_CLIENTTOKEN,
+        datadogApplicationId: process.env.DD_APPLICATIONID,
+        datadogService: process.env.DD_SERVICE,
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         logRocket: process.env.LOG_ROCKET,

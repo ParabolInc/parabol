@@ -1213,6 +1213,30 @@
     style-mod "^4.0.0"
     w3c-keyname "^2.2.4"
 
+"@datadog/browser-core@3.6.12":
+  version "3.6.12"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-3.6.12.tgz#6fcdbd6809656544289f7684f03b88a598cc3345"
+  integrity sha512-On/09LrlSxodRvbSPJqEvYlX8MoK9Ae4k7UezqvX2+Uk3JYfV6XBSPHFd4ZNz0rLTjvfynAr8XTOOIRMEitrSg==
+  dependencies:
+    tslib "^1.10.0"
+
+"@datadog/browser-rum-core@3.6.12":
+  version "3.6.12"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum-core/-/browser-rum-core-3.6.12.tgz#e99a3f55dd4a71c5d24786c45da95565528df2cc"
+  integrity sha512-acP2O5KIZ7hDwAJZsXoHTfE7yywW9oB9/g4GdKTiqN3yN/svymROi51JpY2k3pGo9VwcQQMNOUbg1d66RShuTA==
+  dependencies:
+    "@datadog/browser-core" "3.6.12"
+    tslib "^1.10.0"
+
+"@datadog/browser-rum@^3.6.12":
+  version "3.6.12"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum/-/browser-rum-3.6.12.tgz#7277f4f440536056a623f05ccd7da8ca4992f3aa"
+  integrity sha512-YdvxNyx1+Sl0jXTCjXd/Ia4I3dqdr8FdD0QmrIAAAkACU9ioaXkRSpsSX+g96+AiiHR6KsZdxdFglESQV43MQQ==
+  dependencies:
+    "@datadog/browser-core" "3.6.12"
+    "@datadog/browser-rum-core" "3.6.12"
+    tslib "^1.10.0"
+
 "@datadog/native-metrics@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@datadog/native-metrics/-/native-metrics-1.1.0.tgz#ef860a4cbea81b6e1559b280f5f1f3cd2cc22585"

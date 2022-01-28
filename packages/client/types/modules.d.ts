@@ -14,6 +14,9 @@ declare const __SOCKET_PORT__: string
 interface Window {
   __ACTION__: {
     atlassian: string
+    datadogClientToken: string | undefined
+    datadogApplicationId: string | undefined
+    datadogService: string | undefined
     logRocket: string | undefined
     github: string
     google: string
