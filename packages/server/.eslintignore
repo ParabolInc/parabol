@@ -1,0 +1,5 @@
+database
+postgres/queries/generated
+segmentFns/*
+types/githubTypes.ts
+postgres/migrationTemplate.ts

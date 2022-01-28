@@ -1,10 +1,8 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import IntegrationProvider from './IntegrationProvider'
 import makeMutationPayload from './makeMutationPayload'
-import TeamMember from './TeamMember'
-import User from './User'
+import Team from './Team'
 
 export const AddIntegrationProviderSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'AddIntegrationProviderSuccess',
@@ -16,19 +14,15 @@ export const AddIntegrationProviderSuccess = new GraphQLObjectType<any, GQLConte
         return dataLoader.get('integrationProviders').load(providerId)
       }
     },
-    teamMember: {
-      type: new GraphQLNonNull(TeamMember),
-      description: 'The team member with the updated Integration Provider',
-      resolve: ({teamId, userId}, _args, {dataLoader}) => {
-        const teamMemberId = TeamMemberId.join(teamId, userId)
-        return dataLoader.get('teamMembers').load(teamMemberId)
-      }
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'Id of the team with the updated Integration Provider'
     },
-    user: {
-      type: new GraphQLNonNull(User),
-      description: 'The user who updated Integration Provider object',
-      resolve: async ({userId}, _args, {dataLoader}) => {
-        return dataLoader.get('users').load(userId)
+    team: {
+      type: new GraphQLNonNull(Team),
+      description: 'The team with the updated Integration Provider',
+      resolve: ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId)
       }
     }
   })

@@ -6,51 +6,39 @@ import {MenuProps} from '../hooks/useMenu'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
-import {JiraFieldMenu_viewer} from '../__generated__/JiraFieldMenu_viewer.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
-import MockFieldList from './MockFieldList'
 
 interface Props {
   menuProps: MenuProps
-  viewer: JiraFieldMenu_viewer | null
-  error: Error | null
   stage: JiraFieldMenu_stage
   submitScore(): void
 }
 
 const JiraFieldMenu = (props: Props) => {
-  const {menuProps, viewer, stage, submitScore} = props
+  const {menuProps, stage, submitScore} = props
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
   const {meetingId, dimensionRef, serviceField, task} = stage
-  const {name: dimensionName} = dimensionRef
-  const {name: serviceFieldName} = serviceField
-  const isLoading = viewer === null
-  const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
-  const defaultActiveidx = useMemo(() => {
-    if (serverFields.length === 0) return undefined
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
-      return serverFields.length + 1
-    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL) return serverFields.length + 2
-    const idx = serverFields.indexOf(serviceFieldName)
-    return idx === -1 ? undefined : idx
-  }, [serviceFieldName, serverFields])
-
   if (task?.integration?.__typename !== 'JiraIssue') return null
   const {integration} = task
-  const {cloudId, projectKey} = integration
+  const {cloudId, projectKey, possibleEstimationFieldNames} = integration
+  const {name: dimensionName} = dimensionRef
+  const {name: serviceFieldName} = serviceField
+  const defaultActiveidx = useMemo(() => {
+    if (possibleEstimationFieldNames.length === 0) return undefined
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)
+      return possibleEstimationFieldNames.length + 1
+    if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_NULL) return possibleEstimationFieldNames.length + 2
+    const idx = possibleEstimationFieldNames.indexOf(serviceFieldName)
+    return idx === -1 ? undefined : idx
+  }, [serviceFieldName, possibleEstimationFieldNames])
 
-  if (serverFields.length === 0) {
-    const child = isLoading ? (
-      <MockFieldList />
-    ) : (
-      <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
-    )
+  if (possibleEstimationFieldNames.length === 0) {
     return (
       <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
-        {child}
+        <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
       </Menu>
     )
   }
@@ -81,7 +69,7 @@ const JiraFieldMenu = (props: Props) => {
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveidx}
     >
-      {serverFields.map((fieldName) => {
+      {possibleEstimationFieldNames.map((fieldName) => {
         return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
       })}
       <MenuItemHR />
@@ -100,17 +88,6 @@ const JiraFieldMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(JiraFieldMenu, {
-  viewer: graphql`
-    fragment JiraFieldMenu_viewer on User {
-      teamMember(teamId: $teamId) {
-        integrations {
-          atlassian {
-            jiraFields(cloudId: $cloudId)
-          }
-        }
-      }
-    }
-  `,
   stage: graphql`
     fragment JiraFieldMenu_stage on EstimateStage {
       dimensionRef {
@@ -126,6 +103,7 @@ export default createFragmentContainer(JiraFieldMenu, {
             __typename
             projectKey
             cloudId
+            possibleEstimationFieldNames
           }
         }
       }

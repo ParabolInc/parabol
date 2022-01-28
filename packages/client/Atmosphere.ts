@@ -259,6 +259,7 @@ export default class Atmosphere extends Environment {
   handleFetchPromise = async (
     request: RequestParameters,
     variables: Variables,
+    cacheConfig?: CacheConfig,
     uploadables?: UploadableMap | null,
     sink?: Sink<any> | undefined | null
   ) => {
@@ -278,6 +279,7 @@ export default class Atmosphere extends Environment {
       {
         [field]: data,
         variables,
+        cacheConfig,
         uploadables: uploadables || undefined
       },
       // if sink is nully, then the server doesn't send a response
@@ -285,9 +287,9 @@ export default class Atmosphere extends Environment {
     )
   }
 
-  handleFetch: FetchFunction = (request, variables, _, uploadables) => {
+  handleFetch: FetchFunction = (request, variables, cacheConfig, uploadables) => {
     return Observable.create((sink) => {
-      this.handleFetchPromise(request, variables, uploadables, sink)
+      this.handleFetchPromise(request, variables, cacheConfig, uploadables, sink)
     })
   }
 
@@ -326,8 +328,9 @@ export default class Atmosphere extends Environment {
     }
 
     if (!this.authObj) return
-    const {exp, sub: viewerId} = this.authObj
-    if (exp < Date.now() / 1000) {
+    const {exp, sub: viewerId, rol, iat} = this.authObj
+    // impersonation token must be < 10 seconds old (ie log them out automatically)
+    if (exp < Date.now() / 1000 || (rol === 'impersonate' && iat < Date.now() / 1000 - 10)) {
       this.authToken = null
       this.authObj = null
       window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)

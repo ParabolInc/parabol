@@ -48287,10 +48287,10 @@ export interface IPendingDeploymentRequestsOnXGitHubWorkflowRunArguments {
 }
 
 /**
- * An integration provider that connects via OAuth2
+ * An integration provider that connects via OAuth1.0
  */
-export interface IIntegrationProviderOAuth2 {
-  __typename: 'IntegrationProviderOAuth2';
+export interface IIntegrationProviderOAuth1 {
+  __typename: 'IntegrationProviderOAuth1';
 
   /**
    * The provider's unique identifier
@@ -48333,20 +48333,16 @@ export interface IIntegrationProviderOAuth2 {
   isActive: boolean;
 
   /**
-   * The base URL of the OAuth2 server
+   * The base URL of the OAuth1 server
    */
   serverBaseUrl: any;
-
-  /**
-   * The OAuth2 client id
-   */
-  clientId: string;
 }
 
 /**
  * An authentication provider configuration
  */
 export type IntegrationProvider =
+  | IIntegrationProviderOAuth1
   | IIntegrationProviderOAuth2
   | IIntegrationProviderWebhook;
 
@@ -48403,12 +48399,14 @@ export interface IIntegrationProvider {
 export const enum IntegrationProviderServiceEnum {
   gitlab = 'gitlab',
   mattermost = 'mattermost',
+  jiraServer = 'jiraServer',
 }
 
 /**
  * The kind of token provided by the service
  */
 export const enum IntegrationProviderAuthStrategyEnum {
+  oauth1 = 'oauth1',
   oauth2 = 'oauth2',
   pat = 'pat',
   webhook = 'webhook',
@@ -48421,6 +48419,63 @@ export const enum IntegrationProviderScopeEnum {
   global = 'global',
   org = 'org',
   team = 'team',
+}
+
+/**
+ * An integration provider that connects via OAuth2
+ */
+export interface IIntegrationProviderOAuth2 {
+  __typename: 'IntegrationProviderOAuth2';
+
+  /**
+   * The provider's unique identifier
+   */
+  id: string;
+
+  /**
+   * The team that created the provider. "aGhostTeam" if global
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The name of the integration service (GitLab, Mattermost, etc)
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
+   * The kind of token used by this provider (OAuth2, PAT, Webhook)
+   */
+  authStrategy: IntegrationProviderAuthStrategyEnum;
+
+  /**
+   * The scope this provider configuration was created at (globally, org-wide, or by the team)
+   */
+  scope: IntegrationProviderScopeEnum;
+
+  /**
+   * true if the provider configuration should be used
+   */
+  isActive: boolean;
+
+  /**
+   * The base URL of the OAuth2 server
+   */
+  serverBaseUrl: any;
+
+  /**
+   * The OAuth2 client id
+   */
+  clientId: string;
 }
 
 /**
@@ -49980,6 +50035,11 @@ export interface IJiraIssue {
    * The plaintext summary of the jira issue
    */
   summary: string;
+
+  /**
+   * Field names that exists on the issue and can be used as estimation fields
+   */
+  possibleEstimationFieldNames: Array<string>;
 
   /**
    * The stringified ADF of the jira issue description
@@ -56384,7 +56444,12 @@ export interface ICreateImposterTokenOnMutationArguments {
   /**
    * The target userId to impersonate
    */
-  userId: string;
+  userId?: string | null;
+
+  /**
+   * The email address of the user to impersonate
+   */
+  email?: any | null;
 }
 
 export interface ICreateGitHubTaskIntegrationOnMutationArguments {
@@ -60009,14 +60074,14 @@ export interface IAddIntegrationProviderSuccess {
   provider: IntegrationProvider;
 
   /**
-   * The team member with the updated Integration Provider
+   * Id of the team with the updated Integration Provider
    */
-  teamMember: ITeamMember;
+  teamId: string;
 
   /**
-   * The user who updated Integration Provider object
+   * The team with the updated Integration Provider
    */
-  user: IUser;
+  team: ITeam;
 }
 
 /**
@@ -60049,6 +60114,11 @@ export interface IAddIntegrationProviderInput {
   webhookProviderMetadataInput?: IIntegrationProviderMetadataInputWebhook | null;
 
   /**
+   * OAuth1 provider metadata, has to be non-null if token type is OAuth1, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+   */
+  oAuth1ProviderMetadataInput?: IIntegrationProviderMetadataInputOAuth1 | null;
+
+  /**
    * OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
    */
   oAuth2ProviderMetadataInput?: IIntegrationProviderMetadataInputOAuth2 | null;
@@ -60070,6 +60140,26 @@ export interface IIntegrationProviderMetadataInputWebhook {
    * Webhook URL to be used by the provider
    */
   webhookUrl: any;
+}
+
+/**
+ * OAuth1 provider metadata
+ */
+export interface IIntegrationProviderMetadataInputOAuth1 {
+  /**
+   * The base URL used to access the provider
+   */
+  serverBaseUrl: any;
+
+  /**
+   * The client key to give to the provider
+   */
+  consumerKey: string;
+
+  /**
+   * Secret or Private key of the generate private/public key pair
+   */
+  consumerSecret: string;
 }
 
 /**

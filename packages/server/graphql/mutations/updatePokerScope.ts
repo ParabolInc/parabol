@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {Writeable} from '../../../client/types/generics'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
+import {Writeable} from '../../../client/types/generics'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {TaskServiceEnum} from '../../database/types/Task'
+import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
 import insertDiscussions, {InputDiscussions} from '../../postgres/queries/insertDiscussions'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
@@ -18,7 +19,6 @@ import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import getNextFacilitatorStageAfterStageRemoved from './helpers/getNextFacilitatorStageAfterStageRemoved'
 import importTasksForPoker from './helpers/importTasksForPoker'
-import {JiraDimensionField} from '../../postgres/queries/getTeamsByIds'
 
 export interface TUpdatePokerScopeItemInput {
   service: TaskServiceEnum
@@ -50,6 +50,9 @@ const updatePokerScope = {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
+    // lock the meeting while the scope is updating
+    const redisLock = new RedisLockQueue(`meeting:${meetingId}`, 3000)
+    await redisLock.lock(10000)
 
     //AUTH
     const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
@@ -58,20 +61,18 @@ const updatePokerScope = {
     }
 
     const {endedAt, teamId, phases, meetingType, templateRefId, facilitatorStageId} = meeting
+    if (!isTeamMember(authToken, teamId)) {
+      // bad actors could be naughty & just lock meetings that they don't own. Limit bad actors to team members
+      await redisLock.unlock()
+      return {error: {message: `Not on team`}}
+    }
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
-    }
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: `Not on team`}}
     }
 
     if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-
-    // lock the meeting while the scope is updating
-    const redisLock = new RedisLockQueue(`meeting:${meetingId}`, 3000)
-    await redisLock.lock(10000)
 
     // RESOLUTION
 
@@ -109,7 +110,7 @@ const updatePokerScope = {
     })
 
     // add stages
-    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const firstDimensionName = dimensions[0].name
     const newDiscussions = [] as Writeable<InputDiscussions>
@@ -180,9 +181,9 @@ const updatePokerScope = {
     if (newDiscussions.length > 0) {
       await insertDiscussions(newDiscussions)
     }
-    await redisLock.unlock()
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)
+    await redisLock.unlock()
     return data
   }
 }

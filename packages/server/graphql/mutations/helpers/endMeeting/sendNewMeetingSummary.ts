@@ -13,7 +13,7 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
   const {dataLoader} = context
   const [teamMembers, team] = await Promise.all([
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    dataLoader.get('teams').load(teamId),
+    dataLoader.get('teams').loadNonNull(teamId),
     r.table('NewMeeting').get(meetingId).update({summarySentAt: now}).run()
   ])
   const {name: teamName, orgId} = team

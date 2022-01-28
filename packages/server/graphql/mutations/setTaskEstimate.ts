@@ -66,7 +66,7 @@ const setTaskEstimate = {
       if (meetingType !== 'poker') {
         return {error: {message: 'Invalid poker meeting'}}
       }
-      const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+      const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
       const {dimensions} = templateRef
       const dimensionRefIdx = dimensions.findIndex((dimension) => dimension.name === dimensionName)
       if (dimensionRefIdx === -1) {
@@ -102,7 +102,7 @@ const setTaskEstimate = {
       }
       const {accessToken} = auth
       const manager = new AtlassianServerManager(accessToken)
-      const jiraDimensionFields = team.jiraDimensionFields || []
+      const jiraDimensionFields = team?.jiraDimensionFields || []
       const dimensionField = jiraDimensionFields.find(
         (dimensionField) =>
           dimensionField.dimensionName === dimensionName &&
@@ -132,6 +132,7 @@ const setTaskEstimate = {
         jiraFieldId = fieldId
         try {
           const updatedStoryPoints = fieldType === 'string' ? value : Number(value)
+
           await manager.updateStoryPoints(cloudId, issueKey, updatedStoryPoints, fieldId)
         } catch (e) {
           const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
@@ -146,6 +147,7 @@ const setTaskEstimate = {
       }
       githubLabelName = githubPushRes
     }
+
     await insertTaskEstimate({
       changeSource: meeting ? 'meeting' : 'task',
       discussionId,

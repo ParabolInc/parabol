@@ -22,7 +22,7 @@ import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import appOrigin from '../../appOrigin'
 import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 
-const randomBytes = promisify(crypto.randomBytes, crypto)
+const randomBytes = promisify(crypto.randomBytes, crypto) as (size: number) => Promise<Buffer>
 
 export default {
   type: new GraphQLNonNull(InviteToTeamPayload),
@@ -69,6 +69,9 @@ export default {
       if (!inviter) {
         return standardError(new Error('User not found'), {userId: viewerId})
       }
+      if (!team) {
+        return standardError(new Error('Team not found'), {userId: viewerId})
+      }
       const {name: teamName, isOnboardTeam, orgId} = team
       const organization = await dataLoader.get('organizations').load(orgId)
       const {tier, name: orgName} = organization
@@ -79,7 +82,7 @@ export default {
         return !(user && user.tms && user.tms.includes(teamId))
       })
       const tokens = await Promise.all(
-        newInvitees.map(async () => (await randomBytes(48)).toSting('hex'))
+        newInvitees.map(async () => (await randomBytes(48)).toString('hex'))
       )
       const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
       // insert invitation records

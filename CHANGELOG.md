@@ -5,6 +5,50 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.45.0 2021-Jan-27
+
+### Added
+
+- Implement choosing random person as facilitator (#5857)
+- Add primary and foreign key loaders (#5847)
+
+### Changed
+
+- Show only available jira fields in story points dropdown (#5825)
+- 6.44.0 ironbank fixes (#5946)
+- Add comments on putting env vars in `__ACTION__` (#5967)
+
+### Fixed
+
+- Make sure newFaciliatorId always defined (#5909)
+- Make dependency from DasboardAvatar to AcceptTeamInvitation explicit (#5882)
+- `romoteToTeamLead` filters on isNotRemoved (#5922)
+- monkeypatch uWS res.cork (#5815)
+
+## 6.44.0 2021-Jan-19
+
+### Added
+
+- Add GitLab (#5829)
+- Customise release snackbar #5743
+- Add migration to fill missing plaintextContent for tasks #5869
+- add undefined to wrappedQuery vars #5898
+
+### Changed
+
+- enforce server side lock (#5840)
+- SECURITY: bump react-refresh-webpack-plugin #5896
+- Security/bump graphql jit #5897
+-
+
+### Fixed
+
+- Fix Original Estimate field can not be updated in Sprint Poker (#5865)
+- Fix isSpectating toggle & Reveal Votes count #5782
+- No implicit any fixes #5830
+- Fix alignment of Add task button in discussions #5876
+- Fix all noUncheckedIndexedAccess for parabol-client #5837
+
 ## 6.43.0 2022-Jan-12
 
 ### Fixed
