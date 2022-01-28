@@ -8,6 +8,7 @@ graphql`
     teamMember {
       ...GitLabProviderRowTeamMember
       ...MattermostProviderRowTeamMember
+      ...JiraServerProviderRowTeamMember
     }
   }
 `

@@ -83,23 +83,29 @@ const ExtraProviderCard = styled(ProviderCard)({
   padding: 0
 })
 
+graphql`
+  fragment JiraServerProviderRowTeamMember on TeamMember {
+    integrations {
+      jiraServer{
+        auth {
+          id
+          isActive
+        }
+        sharedProviders {
+          id
+        }
+      }
+    }
+  }
+`
+
 const JiraServerProviderRow = (props: Props) => {
   const {viewerRef, teamId} = props
   const viewer = useFragment(
     graphql`
       fragment JiraServerProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
-          integrations {
-            jiraServer{
-              auth {
-                id
-                isActive
-              }
-              sharedProviders {
-                id
-              }
-            }
-          }
+          ...JiraServerProviderRowTeamMember @relay(mask: false)
         }
       }
     `,
