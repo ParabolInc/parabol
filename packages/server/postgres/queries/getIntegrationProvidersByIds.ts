@@ -14,6 +14,12 @@ interface IntegrationProviderWebhook extends IntegrationProviderActive {
   webhookUrl: string
 }
 
+interface IntegrationProviderOAuth1 extends IntegrationProviderActive {
+  authStrategy: 'oauth1'
+  consumerKey: string
+  consumerSecret: string
+}
+
 interface IntegrationProviderOAuth2 extends IntegrationProviderActive {
   authStrategy: 'oauth2'
   clientId: string
@@ -41,10 +47,15 @@ export interface IntegrationProviderGitLabPAT extends IntegrationProviderPAT {
   service: 'gitlab'
 }
 
+export interface IntegrationProviderJiraServer extends IntegrationProviderOAuth1 {
+  service: 'jiraServer'
+}
+
 export type TIntegrationProvider =
   | IntegrationProviderMattermost
   | IntegrationProviderGitLabOAuth2
   | IntegrationProviderGitLabPAT
+  | IntegrationProviderJiraServer
 
 const getIntegrationProvidersByIds = async <T = TIntegrationProvider>(ids: readonly number[]) => {
   const providers = await getIntegrationProvidersByIdsQuery.run({ids}, getPg())

@@ -5,7 +5,8 @@ const IntegrationProviderServiceEnum = new GraphQLEnumType({
   description: 'The name of the service of the Integration Provider',
   values: {
     gitlab: {},
-    mattermost: {}
+    mattermost: {},
+    jiraServer: {}
   }
 })
 
