@@ -1,9 +1,11 @@
+import {GraphQLResolveInfo} from 'graphql'
 import makeCreateGitHubTaskComment from '../utils/makeCreateGitHubTaskComment'
 import createGitHubTask from '../graphql/mutations/helpers/createGitHubTask'
 import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
 import GitHubIssueId from '../../client/shared/gqlIds/GitHubIssueId'
 import BaseTaskIntegrationManager, {CreateTaskResponse} from './BaseTaskIntegrationManager'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {GQLContext} from '../graphql/graphql'
 
 export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationManager {
   public static title = 'GitHub'
@@ -19,20 +21,32 @@ export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationMan
     return makeCreateGitHubTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
   }
 
-  async createTask(
-    auth: GitHubAuth,
-    projectId: string,
+  async createTask({
+    auth,
+    accessUserId,
+    rawContentStr,
+    projectId,
+    createdBySomeoneElseComment,
+    context,
+    info
+  }: {
+    auth: GitHubAuth
+    accessUserId: string
+    rawContentStr: string
+    projectId: string
     createdBySomeoneElseComment?: string
-  ): Promise<CreateTaskResponse> {
+    context: GQLContext
+    info: GraphQLResolveInfo
+  }): Promise<CreateTaskResponse> {
     const {repoOwner, repoName} = GitHubRepoId.split(projectId)
 
     const res = await createGitHubTask(
-      this.rawContentStr,
+      rawContentStr,
       repoOwner,
       repoName,
       auth,
-      this.context,
-      this.info,
+      context,
+      info,
       createdBySomeoneElseComment
     )
 
@@ -48,7 +62,7 @@ export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationMan
       integrationData: {
         integrationHash: GitHubIssueId.join(projectId, issueNumber),
         integration: {
-          accessUserId: this.accessUserId!,
+          accessUserId,
           service: 'github',
           issueNumber,
           nameWithOwner: projectId

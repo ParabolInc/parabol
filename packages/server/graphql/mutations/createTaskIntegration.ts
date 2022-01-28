@@ -56,7 +56,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {teamId, meetingId, userId} = task
+    const {content: rawContentStr, teamId, meetingId, userId} = task
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -116,7 +116,7 @@ export default {
     const {preferredName: assigneeName = ''} =
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
-    const integrationManager = new integrationManagerClass(task, team, accessUserId, context, info)
+    const integrationManager = new integrationManagerClass()
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
@@ -129,12 +129,16 @@ export default {
           )
         : undefined
 
-    const res = await integrationManager.createTask(
+    const res = await integrationManager.createTask({
       auth,
+      accessUserId,
+      rawContentStr,
       projectId,
       // FIXME
-      createdBySomeoneElseComment as any
-    )
+      createdBySomeoneElseComment: createdBySomeoneElseComment as any,
+      context,
+      info
+    })
 
     if (res.error) {
       return {error: {message: res.error.message}}

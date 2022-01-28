@@ -20,15 +20,23 @@ export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManag
     return makeCreateJiraTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
   }
 
-  async createTask(
-    auth: AtlassianAuth,
-    projectId: string,
+  async createTask({
+    auth,
+    accessUserId,
+    rawContentStr,
+    projectId,
+    createdBySomeoneElseComment
+  }: {
+    auth: AtlassianAuth
+    accessUserId: string
+    rawContentStr: string
+    projectId: string
     createdBySomeoneElseComment?: Doc
-  ): Promise<CreateTaskResponse> {
+  }): Promise<CreateTaskResponse> {
     const {cloudId, projectKey} = JiraProjectId.split(projectId)
 
     const res = await createJiraTask(
-      this.rawContentStr,
+      rawContentStr,
       cloudId,
       projectKey,
       auth,
@@ -49,7 +57,7 @@ export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManag
       integrationData: {
         integrationHash: JiraIssueId.join(cloudId, issueKey),
         integration: {
-          accessUserId: this.accessUserId!,
+          accessUserId,
           service: 'jira',
           cloudId,
           issueKey
