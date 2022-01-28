@@ -2852,10 +2852,10 @@
     shortid "^2.2.12"
     tslib "^1.9.3"
 
-"@mattkrick/graphql-trebuchet-client@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-2.1.0.tgz#7c4a4e8f8b3bc3d2e6acc3081317f9059a1028ca"
-  integrity sha512-Gttlb1HFWpesvPi/oSk5ukPmxnazCqfOQ7G5BVQWi22+M5N9z4tHvbH6NpX3dqcQTjeD9X2mzzRTaXVesqVNTg==
+"@mattkrick/graphql-trebuchet-client@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-2.2.0.tgz#2bf999ba96a83e1c60919cc62616fd289f4c8ba5"
+  integrity sha512-VJc58DQuZTPdBm5TmVOD5kNUdeEs8kYPbBSzv93ZltYmnQDIsccqWX6nRL7NH60Dha5lzt7btthI2gkrSblXRg==
   dependencies:
     tslib "~2.2.0"
 
