@@ -65,7 +65,7 @@
   "devDependencies": {
     "@babel/preset-env": "7.16.0",
     "@graphql-codegen/add": "^3.1.0",
-    "@graphql-codegen/cli": "^2.3.0",
+    "@graphql-codegen/cli": "^2.3.1",
     "@graphql-codegen/typescript": "^2.4.0",
     "@graphql-codegen/typescript-operations": "^2.2.0",
     "@sucrase/webpack-loader": "^2.0.0",
