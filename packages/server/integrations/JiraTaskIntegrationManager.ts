@@ -2,14 +2,14 @@ import makeCreateJiraTaskComment from '../utils/makeCreateJiraTaskComment'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
 import createJiraTask from '../graphql/mutations/helpers/createJiraTask'
 import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
-import BaseTaskIntegrationManager, {CreateTaskResponse} from './BaseTaskIntegrationManager'
+import {CreateTaskResponse, TaskIntegrationManager} from './TaskIntegrationManagerFactory'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {Doc} from '../utils/convertContentStateToADF'
 
-export default class JiraTaskIntegrationManager extends BaseTaskIntegrationManager {
-  public static title = 'Jira'
-  public static segmentEventName = 'Published Task to Jira'
-  public static authLoaderKey = 'freshAtlassianAuth' as const
+export default class JiraTaskIntegrationManager implements TaskIntegrationManager {
+  public title = 'Jira'
+  public segmentEventName = 'Published Task to Jira'
+  public authLoaderKey = 'freshAtlassianAuth' as const
 
   getCreatedBySomeoneElseComment(
     viewerName: string,

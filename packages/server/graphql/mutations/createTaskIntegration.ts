@@ -10,10 +10,9 @@ import CreateTaskIntegrationPayload from '../types/CreateTaskIntegrationPayload'
 import IntegrationProviderServiceEnum, {
   IntegrationProviderServiceEnumType
 } from '../types/IntegrationProviderServiceEnum'
-import JiraTaskIntegrationManager from '../../integrations/JiraTaskIntegrationManager'
-import GitHubTaskIntegrationManager from '../../integrations/GitHubTaskIntegrationManager'
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
+import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
 
 type CreateTaskIntegrationMutationVariables = {
   integrationProviderService: IntegrationProviderServiceEnumType
@@ -69,18 +68,13 @@ export default {
       )
     }
 
-    const integrationManagerClass =
-      integrationProviderService === 'jira'
-        ? JiraTaskIntegrationManager
-        : integrationProviderService === 'github'
-        ? GitHubTaskIntegrationManager
-        : undefined
+    const integrationManager = TaskIntegrationManagerFactory.getManager(integrationProviderService)
 
-    if (!integrationManagerClass) {
+    if (!integrationManager) {
       return standardError(new Error('Integration provider is not supported'))
     }
 
-    const authDataLoader = dataLoader.get(integrationManagerClass.authLoaderKey)
+    const authDataLoader = dataLoader.get(integrationManager.authLoaderKey)
     const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
       authDataLoader.load({teamId: teamId, userId: viewerId}),
       userId ? authDataLoader.load({teamId: teamId, userId}) : null,
@@ -98,7 +92,7 @@ export default {
 
     if (!accessUserId) {
       return standardError(
-        new Error(`Neither you nor the assignee has access to ${integrationManagerClass.title}`),
+        new Error(`Neither you nor the assignee has access to ${integrationManager.title}`),
         {
           userId: viewerId
         }
@@ -116,8 +110,6 @@ export default {
     const {preferredName: assigneeName = ''} =
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
-    const integrationManager = new integrationManagerClass()
-
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
       userId && viewerId !== userId
@@ -134,8 +126,7 @@ export default {
       accessUserId,
       rawContentStr,
       projectId,
-      // FIXME
-      createdBySomeoneElseComment: createdBySomeoneElseComment as any,
+      createdBySomeoneElseComment,
       context,
       info
     })
@@ -160,7 +151,7 @@ export default {
 
     segmentIo.track({
       userId: viewerId,
-      event: integrationManagerClass.segmentEventName,
+      event: integrationManager.segmentEventName,
       properties: {
         teamId,
         meetingId

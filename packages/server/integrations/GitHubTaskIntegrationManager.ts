@@ -3,14 +3,14 @@ import makeCreateGitHubTaskComment from '../utils/makeCreateGitHubTaskComment'
 import createGitHubTask from '../graphql/mutations/helpers/createGitHubTask'
 import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
 import GitHubIssueId from '../../client/shared/gqlIds/GitHubIssueId'
-import BaseTaskIntegrationManager, {CreateTaskResponse} from './BaseTaskIntegrationManager'
+import {CreateTaskResponse, TaskIntegrationManager} from './TaskIntegrationManagerFactory'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {GQLContext} from '../graphql/graphql'
 
-export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationManager {
-  public static title = 'GitHub'
-  public static segmentEventName = 'Published Task to GitHub'
-  public static authLoaderKey = 'githubAuth' as const
+export default class GitHubTaskIntegrationManager implements TaskIntegrationManager {
+  public title = 'GitHub'
+  public segmentEventName = 'Published Task to GitHub'
+  public authLoaderKey = 'githubAuth' as const
 
   getCreatedBySomeoneElseComment(
     viewerName: string,
