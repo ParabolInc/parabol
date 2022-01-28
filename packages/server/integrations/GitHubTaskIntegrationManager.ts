@@ -1,5 +1,3 @@
-import makeAppURL from '~/utils/makeAppURL'
-import appOrigin from '../appOrigin'
 import makeCreateGitHubTaskComment from '../utils/makeCreateGitHubTaskComment'
 import createGitHubTask from '../graphql/mutations/helpers/createGitHubTask'
 import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
@@ -12,18 +10,20 @@ export default class GitHubTaskIntegrationManager extends BaseTaskIntegrationMan
   public static segmentEventName = 'Published Task to GitHub'
   public static authLoaderKey = 'githubAuth' as const
 
-  async createRemoteTaskAndUpdateDB(
+  getCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string
+  ): string {
+    return makeCreateGitHubTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+  }
+
+  async createTask(
     auth: GitHubAuth,
     projectId: string,
-    viewerName: string,
-    assigneeName: string
+    createdBySomeoneElseComment?: string
   ): Promise<CreateTaskResponse> {
-    const teamDashboardUrl = makeAppURL(appOrigin, `team/${this.teamId}`)
-
-    const createdBySomeoneElseComment = this.createdBySomeoneElse
-      ? makeCreateGitHubTaskComment(viewerName, assigneeName, this.team.name, teamDashboardUrl)
-      : undefined
-
     const {repoOwner, repoName} = GitHubRepoId.split(projectId)
 
     const res = await createGitHubTask(

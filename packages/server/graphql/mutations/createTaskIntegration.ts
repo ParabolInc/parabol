@@ -12,6 +12,8 @@ import IntegrationProviderServiceEnum, {
 } from '../types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from '../../integrations/JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from '../../integrations/GitHubTaskIntegrationManager'
+import makeAppURL from '~/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 
 type CreateTaskIntegrationMutationVariables = {
   integrationProviderService: IntegrationProviderServiceEnumType
@@ -116,11 +118,22 @@ export default {
 
     const integrationManager = new integrationManagerClass(task, team, accessUserId, context, info)
 
-    const res = await integrationManager.createRemoteTaskAndUpdateDB(
+    const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
+    const createdBySomeoneElseComment =
+      userId && viewerId !== userId
+        ? integrationManager.getCreatedBySomeoneElseComment(
+            viewerName,
+            assigneeName,
+            team.name,
+            teamDashboardUrl
+          )
+        : undefined
+
+    const res = await integrationManager.createTask(
       auth,
       projectId,
-      viewerName,
-      assigneeName
+      // FIXME
+      createdBySomeoneElseComment as any
     )
 
     if (res.error) {

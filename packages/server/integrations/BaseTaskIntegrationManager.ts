@@ -7,6 +7,7 @@ import Team from '../database/types/Team'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {RValue} from '../database/stricterR'
+import {Doc} from '../utils/convertContentStateToADF'
 
 type Auth = AtlassianAuth | GitHubAuth
 
@@ -53,11 +54,16 @@ export default abstract class BaseTaskIntegrationManager {
     this.userId = userId
   }
 
-  abstract createRemoteTaskAndUpdateDB(
+  abstract createTask(
     auth: Auth,
-    taskId: string,
     projectId: string,
+    createdBySomeoneElseComment?: string | Doc
+  ): Promise<CreateTaskResponse>
+
+  abstract getCreatedBySomeoneElseComment(
     viewerName: string,
-    assigneeName: string
-  )
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string
+  ): any
 }
