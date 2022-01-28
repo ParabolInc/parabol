@@ -43,7 +43,10 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       ) => {
         const viewerId = getUserId(authToken)
         const team = await dataLoader.get('teams').load(teamId)
-        if (!team) return standardError(new Error('Team not found'), {userId: viewerId})
+        if (!team) {
+          standardError(new Error('Team not found'), {userId: viewerId})
+          return []
+        }
         const {orgId} = team
         const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
         const orgTeamIds = orgTeams.map(({id}) => id)
