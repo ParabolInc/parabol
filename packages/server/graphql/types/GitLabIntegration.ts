@@ -33,13 +33,13 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderOAuth2))),
       resolve: async ({userId}, _args, {dataLoader}) => {
         const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+        const orgIds = organizationUsers.map(({orgId}) => orgId)
         const teamIds = teamMembers.map(({teamId}) => teamId)
-        const orgIds = Array.from(new Set(teamMembers.map(({orgId}) => orgId)))
-
         const orgTeams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds))
           .flat()
           .filter(isValid)
-        const orgTeamIds = orgTeams.map(({teamId}) => teamId)
+        const orgTeamIds = orgTeams.map(({id}) => id)
         return dataLoader
           .get('sharedIntegrationProviders')
           .load({service: 'gitlab', orgTeamIds, teamIds})

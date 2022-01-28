@@ -77,8 +77,12 @@ const ScopePhaseArea = (props: Props) => {
   if (!viewerMeetingMember) return null
   const {user} = viewerMeetingMember
   const {featureFlags} = user
-  const {gitlab: allowGitlab} = featureFlags
-  const tabs = allowGitlab ? [...baseTabs, {icon: <GitLabSVG />, label: 'GitLab'}] : baseTabs
+  const gitlabIntegration = viewerMeetingMember.teamMember.integrations?.gitlab
+  const hasGitLabProvider = !!(
+    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
+  )
+  const allowGitLab = hasGitLabProvider && featureFlags.gitlab
+  const tabs = allowGitLab ? [...baseTabs, {icon: <GitLabSVG />, label: 'GitLab'}] : baseTabs
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
@@ -131,7 +135,7 @@ const ScopePhaseArea = (props: Props) => {
         <TabContents>
           <ScopePhaseAreaParabolScoping isActive={activeIdx === 2} meeting={meeting} />
         </TabContents>
-        {allowGitlab && (
+        {allowGitLab && (
           <TabContents>
             <ScopePhaseAreaGitLab
               isActive={activeIdx === 3}
@@ -172,6 +176,18 @@ export default createFragmentContainer(ScopePhaseArea, {
       }
       showSidebar
       viewerMeetingMember {
+        teamMember {
+          integrations {
+            gitlab {
+              cloudProvider {
+                clientId
+              }
+              sharedProviders {
+                clientId
+              }
+            }
+          }
+        }
         user {
           featureFlags {
             gitlab

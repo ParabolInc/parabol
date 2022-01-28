@@ -50195,7 +50195,7 @@ export interface IGitLabIntegration {
   auth: ITeamMemberIntegrationAuthOAuth2 | null;
 
   /**
-   * The cloud provider the team member may choose to integrate with. Nullable based on env vars, e.g. a self-hosted instance
+   * The cloud provider the team member may choose to integrate with. Nullable based on env vars
    */
   cloudProvider: IIntegrationProviderOAuth2 | null;
 
