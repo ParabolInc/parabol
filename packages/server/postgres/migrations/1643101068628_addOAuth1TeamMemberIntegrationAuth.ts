@@ -6,7 +6,7 @@ export async function up() {
   await client.connect()
   await client.query(`
     ALTER TABLE "TeamMemberIntegrationAuth"
-      ADD COLUMN IF NOT EXISTS "accessTokenSecret" VARCHAR(1028);
+      ADD COLUMN IF NOT EXISTS "accessTokenSecret" TEXT;
   `)
   await client.end()
 }
