@@ -195,6 +195,9 @@ interface JiraAddCommentResponse {
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 interface JiraGQLFields {
+  project?: {
+    simplified: boolean
+  }
   cloudId: string
   description: any
   descriptionHTML: string
@@ -379,7 +382,7 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if (res.status == 204) return null
+    if (res.status === 204) return null
     const error = (await res.json()) as AtlassianError | JiraError
     if ('message' in error) {
       return new Error(error.message)
@@ -404,7 +407,7 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if (res.status == 204) return null
+    if (res.status === 204) return null
     const error = (await res.json()) as AtlassianError | JiraError
     if ('message' in error) {
       return new Error(error.message)
@@ -571,11 +574,18 @@ export default abstract class AtlassianManager {
     return cloudNameLookup
   }
 
-  async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
-    const baseFields = ['summary', 'description']
-    const reqFields = [...baseFields, ...extraFieldIds].join(',')
+  async getIssue(
+    cloudId: string,
+    issueKey: string,
+    extraFieldIds: string[] = [],
+    extraExpand: string[] = []
+  ) {
+    const reqFields = extraFieldIds.includes('*all')
+      ? '*all'
+      : ['summary', 'description', ...extraFieldIds].join(',')
+    const expand = ['renderedFields', ...extraExpand].join(',')
     const issueRes = await this.get<JiraIssueRaw>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
     if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
     return {

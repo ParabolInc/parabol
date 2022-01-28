@@ -15,11 +15,10 @@ const CreateImposterTokenPayload = new GraphQLObjectType<any, GQLContext>({
     authToken: {
       type: GraphQLID,
       description: 'The new JWT',
-      resolve: async (source, args, context) => {
-        const user = await resolveUser(source, args, context)
-        const {userId} = source
+      resolve: async ({userId}, _args, {dataLoader}) => {
+        const user = await dataLoader.get('users').load(userId)
         const {tms} = user!
-        return encodeAuthToken(new AuthToken({sub: userId, tms}))
+        return encodeAuthToken(new AuthToken({sub: userId, tms, rol: 'impersonate'}))
       }
     },
     user: {

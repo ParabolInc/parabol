@@ -11,7 +11,10 @@ import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 import {SuggestedActionTryTheDemo_suggestedAction} from '../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props
+  extends WithAtmosphereProps,
+    WithMutationProps,
+    RouteComponentProps<{[x: string]: string | undefined}> {
   suggestedAction: SuggestedActionTryTheDemo_suggestedAction
 }
 

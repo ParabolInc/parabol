@@ -101,7 +101,7 @@ export default {
     const {templateId} = completedMeeting
     const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not

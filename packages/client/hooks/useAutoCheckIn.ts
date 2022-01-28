@@ -37,7 +37,7 @@ const useAutoCheckIn = (meetingRef: useAutoCheckIn_meeting$key) => {
       JoinMeetingMutation(
         atmosphere,
         {meetingId},
-        {onCompleted: subscribeToMeeting, onError: () => {}}
+        {onCompleted: subscribeToMeeting, onError: () => undefined}
       )
     }
     return () => {

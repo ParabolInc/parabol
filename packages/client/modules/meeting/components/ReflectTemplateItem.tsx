@@ -29,7 +29,7 @@ const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
 const TemplateItemDetails = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '100%'
+  width: '100%'
 })
 
 const TemplateTitle = styled('div')({
@@ -62,7 +62,7 @@ const ReflectTemplateItem = (props: Props) => {
   const description = makeTemplateDescription(lowestScope, template)
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLLIElement>(null)
-  useScrollIntoView(ref, isActive)
+  useScrollIntoView(ref, isActive, true)
   const selectTemplate = () => {
     setActiveTemplate(atmosphere, teamId, templateId, 'retrospective')
   }

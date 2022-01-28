@@ -97,7 +97,8 @@ const FacilitatorMenu = lazyPreload(() =>
 
 const Facilitator = (props: Props) => {
   const {meeting} = props
-  const {endedAt, facilitatorUserId, facilitator} = meeting
+  const {endedAt, facilitatorUserId, meetingMembers, facilitator} = meeting
+  const connectedMemberIds = meetingMembers.filter(({user}) => user.isConnected).map(({user}) => user.id)
   const {user, picture, preferredName} = facilitator
   // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
   const isConnected = user?.isConnected ?? false
@@ -109,7 +110,7 @@ const Facilitator = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isReadOnly = isDemoRoute() || viewerId === facilitatorUserId || !!endedAt
+  const isReadOnly = isDemoRoute() || (viewerId === facilitatorUserId && connectedMemberIds.length === 1 && connectedMemberIds[0] === viewerId) || !!endedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
@@ -141,6 +142,12 @@ export default createFragmentContainer(Facilitator, {
       ...FacilitatorMenu_meeting
       endedAt
       facilitatorUserId
+      meetingMembers {
+        user {
+          id
+          isConnected
+        }
+      }
       facilitator {
         picture
         preferredName

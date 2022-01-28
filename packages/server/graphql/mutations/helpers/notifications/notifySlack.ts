@@ -107,6 +107,7 @@ export const startSlackMeeting = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  if (!team) return
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const button = {text: 'Join meeting', url: meetingUrl, type: 'primary'} as const
   const title = 'Meeting started :wave: '
@@ -164,6 +165,7 @@ export const endSlackMeeting = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  if (!team) return
   const summaryText = getSummaryText(meeting)
   const {name: teamName} = team
   const {name: meetingName} = meeting
@@ -187,6 +189,7 @@ export const notifySlackTimeLimitStart = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
+  if (!team) return
   const {name: meetingName, phases, facilitatorStageId} = meeting
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)

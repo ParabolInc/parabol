@@ -8,11 +8,11 @@ const pipeStreamOverResponse = (
 ) => {
   res.onAborted(() => {
     readStream.destroy()
-    res.done = true
+    res.aborted = true
   })
   readStream
     .on('data', (chunk: Buffer) => {
-      if (res.done) {
+      if (res.aborted) {
         readStream.destroy()
         return
       }
@@ -40,7 +40,7 @@ const pipeStreamOverResponse = (
     })
 
     .on('error', () => {
-      if (!res.done) {
+      if (!res.aborted) {
         res.writeStatus('500').end()
       }
       readStream.destroy()

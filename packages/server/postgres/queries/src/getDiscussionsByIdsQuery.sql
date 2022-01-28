@@ -1,5 +1,5 @@
 /*
-  @name getDiscussionsByIdQuery
+  @name getDiscussionsByIdsQuery
   @param ids -> (...)
 */
 SELECT * FROM "Discussion"

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.43.0",
+  "version": "6.45.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -23,7 +23,7 @@
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
-    "@mattkrick/graphql-trebuchet-client": "^2.1.0",
+    "@mattkrick/graphql-trebuchet-client": "^2.2.1",
     "@types/analytics-node": "^3.1.3",
     "@types/bcrypt": "^5.0.0",
     "@types/cheerio": "^0.22.30",
@@ -63,7 +63,7 @@
     "ignore-loader": "^0.1.2",
     "jest": "^27.0.6",
     "jest-extended": "^1.2.0",
-    "jsdom": "^15.1.1",
+    "jsdom": "^16.6.0",
     "json-loader": "^0.5.7",
     "lint-staged": "^10.1.7",
     "mocha": "^9.0.3",
@@ -126,12 +126,12 @@
     "mailgun.js": "^3.5.2",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
-    "nest-graphql-endpoint": "^0.3.1",
+    "nest-graphql-endpoint": "^0.3.2",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.1",
     "node-pg-migrate": "^5.9.0",
     "nodemailer": "^6.4.6",
-    "parabol-client": "^6.43.0",
+    "parabol-client": "^6.45.0",
     "pg": "^8.5.1",
     "pm2": "^5.1.1",
     "react": "^17.0.2",
