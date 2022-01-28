@@ -56444,7 +56444,12 @@ export interface ICreateImposterTokenOnMutationArguments {
   /**
    * The target userId to impersonate
    */
-  userId: string;
+  userId?: string | null;
+
+  /**
+   * The email address of the user to impersonate
+   */
+  email?: any | null;
 }
 
 export interface ICreateGitHubTaskIntegrationOnMutationArguments {

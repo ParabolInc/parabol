@@ -328,8 +328,9 @@ export default class Atmosphere extends Environment {
     }
 
     if (!this.authObj) return
-    const {exp, sub: viewerId} = this.authObj
-    if (exp < Date.now() / 1000) {
+    const {exp, sub: viewerId, rol, iat} = this.authObj
+    // impersonation token must be < 10 seconds old (ie log them out automatically)
+    if (exp < Date.now() / 1000 || (rol === 'impersonate' && iat < Date.now() / 1000 - 10)) {
       this.authToken = null
       this.authObj = null
       window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
