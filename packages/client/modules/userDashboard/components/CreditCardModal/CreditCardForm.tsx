@@ -118,19 +118,7 @@ const CreditCardForm = (props: Props) => {
       onError(new Error(fallback))
     }
   }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (submitting) return
-    setDirtyField()
-    validateField()
-    if (
-      Object.keys(fields)
-        .map((name) => fields[name].error)
-        .filter(Boolean).length !== 0
-    )
-      return
-    submitMutation()
+  const asyncValidateAndSubmit = async () => {
     const [expMonth, expYear] = fields.expiry.value.split('/')
     const {error, id: stripeToken} = await stripeClientManager.createToken({
       number: fields.creditCardNumber.value,
@@ -162,6 +150,30 @@ const CreditCardForm = (props: Props) => {
         {onError, onCompleted: handleCompleted}
       )
     }
+  }
+  useEffect(() => {
+    if (!submitting) return
+    // if any synchronous field errors, reset submitting & primary error & return
+    if (
+      Object.keys(fields)
+        .map((name) => fields[name].error)
+        .filter(Boolean).length !== 0
+    ) {
+      onCompleted()
+      return
+    }
+    asyncValidateAndSubmit()
+  }, [submitting])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (submitting) return
+    // these 3 calls internally call dispatch (or setState), which are asynchronous in nature.
+    // To get the current value of `fields`, we have to wait for the component to rerender
+    // the useEffect hook above will continue the process if submitting === true
+    setDirtyField()
+    validateField()
+    submitMutation()
   }
 
   return (
