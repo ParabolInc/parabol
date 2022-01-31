@@ -66,7 +66,9 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
       {...menuProps}
     >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      {assignees.length > 5 && (
+        <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      )}
       {query && matchedAssignees.length === 0 && (
         <NoResults key='no-results'>No team members found!</NoResults>
       )}

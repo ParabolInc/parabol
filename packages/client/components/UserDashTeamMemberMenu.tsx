@@ -83,7 +83,9 @@ const UserDashTeamMemberMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      {filteredTeamMembers.length > 5 && (
+        <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      )}
       {query && matchedFilteredTeamMembers.length === 0 && (
         <NoResults key='no-results'>No team members found!</NoResults>
       )}

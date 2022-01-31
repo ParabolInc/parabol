@@ -149,7 +149,9 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
       ariaLabel={'Assign this task to another team'}
     >
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
-      <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
+      {assignableTeams.length > 5 && (
+        <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
+      )}
       {query && matchedAssignableTeams.length === 0 && (
         <NoResults key='no-results'>No teams found!</NoResults>
       )}
