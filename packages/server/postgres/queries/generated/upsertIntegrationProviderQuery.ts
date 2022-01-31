@@ -1,11 +1,11 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/upsertIntegrationProviderQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderAuthStrategyEnum = 'oauth2' | 'pat' | 'webhook';
+export type IntegrationProviderAuthStrategyEnum = 'oauth1' | 'oauth2' | 'pat' | 'webhook';
 
 export type IntegrationProviderScopeEnum = 'global' | 'org' | 'team';
 
-export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost';
 
 /** 'UpsertIntegrationProviderQuery' parameters type */
 export interface IUpsertIntegrationProviderQueryParams {
@@ -14,6 +14,8 @@ export interface IUpsertIntegrationProviderQueryParams {
   scope: IntegrationProviderScopeEnum | null | void;
   clientId: string | null | void;
   clientSecret: string | null | void;
+  consumerKey: string | null | void;
+  consumerSecret: string | null | void;
   serverBaseUrl: string | null | void;
   webhookUrl: string | null | void;
   teamId: string | null | void;
@@ -30,7 +32,7 @@ export interface IUpsertIntegrationProviderQueryQuery {
   result: IUpsertIntegrationProviderQueryResult;
 }
 
-const upsertIntegrationProviderQueryIR: any = {"name":"upsertIntegrationProviderQuery","params":[{"name":"service","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":239,"b":245,"line":17,"col":5}]}},{"name":"authStrategy","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":253,"b":264,"line":18,"col":5}]}},{"name":"scope","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":272,"b":276,"line":19,"col":5}]}},{"name":"clientId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":284,"b":291,"line":20,"col":5}]}},{"name":"clientSecret","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":299,"b":310,"line":21,"col":5}]}},{"name":"serverBaseUrl","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":318,"b":330,"line":22,"col":5}]}},{"name":"webhookUrl","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":338,"b":347,"line":23,"col":5}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":355,"b":360,"line":24,"col":5}]}}],"usedParamSet":{"service":true,"authStrategy":true,"scope":true,"clientId":true,"clientSecret":true,"serverBaseUrl":true,"webhookUrl":true,"teamId":true},"statement":{"body":"INSERT INTO\n  \"IntegrationProvider\" (\n    \"service\",\n    \"authStrategy\",\n    \"scope\",\n    \"clientId\",\n    \"clientSecret\",\n    \"serverBaseUrl\",\n    \"webhookUrl\",\n    \"teamId\"\n  )\nVALUES\n  (\n    :service,\n    :authStrategy,\n    :scope,\n    :clientId,\n    :clientSecret,\n    :serverBaseUrl,\n    :webhookUrl,\n    :teamId\n  )\nON CONFLICT (\"teamId\", \"service\", \"authStrategy\") DO UPDATE SET\n  \"service\" = EXCLUDED.\"service\",\n  \"authStrategy\" = EXCLUDED.\"authStrategy\",\n  \"scope\" = EXCLUDED.\"scope\",\n  \"clientId\" = EXCLUDED.\"clientId\",\n  \"clientSecret\" = EXCLUDED.\"clientSecret\",\n  \"serverBaseUrl\" = EXCLUDED.\"serverBaseUrl\",\n  \"webhookUrl\" = EXCLUDED.\"webhookUrl\",\n  \"updatedAt\" = CURRENT_TIMESTAMP,\n  \"isActive\" = TRUE\n\nRETURNING id","loc":{"a":45,"b":771,"line":4,"col":0}}};
+const upsertIntegrationProviderQueryIR: any = {"name":"upsertIntegrationProviderQuery","params":[{"name":"service","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":280,"b":286,"line":19,"col":5}]}},{"name":"authStrategy","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":294,"b":305,"line":20,"col":5}]}},{"name":"scope","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":313,"b":317,"line":21,"col":5}]}},{"name":"clientId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":325,"b":332,"line":22,"col":5}]}},{"name":"clientSecret","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":340,"b":351,"line":23,"col":5}]}},{"name":"consumerKey","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":359,"b":369,"line":24,"col":5}]}},{"name":"consumerSecret","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":377,"b":390,"line":25,"col":5}]}},{"name":"serverBaseUrl","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":398,"b":410,"line":26,"col":5}]}},{"name":"webhookUrl","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":418,"b":427,"line":27,"col":5}]}},{"name":"teamId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":435,"b":440,"line":28,"col":5}]}}],"usedParamSet":{"service":true,"authStrategy":true,"scope":true,"clientId":true,"clientSecret":true,"consumerKey":true,"consumerSecret":true,"serverBaseUrl":true,"webhookUrl":true,"teamId":true},"statement":{"body":"INSERT INTO\n  \"IntegrationProvider\" (\n    \"service\",\n    \"authStrategy\",\n    \"scope\",\n    \"clientId\",\n    \"clientSecret\",\n    \"consumerKey\",\n    \"consumerSecret\",\n    \"serverBaseUrl\",\n    \"webhookUrl\",\n    \"teamId\"\n  )\nVALUES\n  (\n    :service,\n    :authStrategy,\n    :scope,\n    :clientId,\n    :clientSecret,\n    :consumerKey,\n    :consumerSecret,\n    :serverBaseUrl,\n    :webhookUrl,\n    :teamId\n  )\nON CONFLICT (\"teamId\", \"service\", \"authStrategy\") DO UPDATE SET\n  \"service\" = EXCLUDED.\"service\",\n  \"authStrategy\" = EXCLUDED.\"authStrategy\",\n  \"scope\" = EXCLUDED.\"scope\",\n  \"clientId\" = EXCLUDED.\"clientId\",\n  \"clientSecret\" = EXCLUDED.\"clientSecret\",\n  \"consumerKey\" = EXCLUDED.\"consumerKey\",\n  \"consumerSecret\" = EXCLUDED.\"consumerSecret\",\n  \"serverBaseUrl\" = EXCLUDED.\"serverBaseUrl\",\n  \"webhookUrl\" = EXCLUDED.\"webhookUrl\",\n  \"updatedAt\" = CURRENT_TIMESTAMP,\n  \"isActive\" = TRUE\n\nRETURNING id","loc":{"a":45,"b":941,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -42,6 +44,8 @@ const upsertIntegrationProviderQueryIR: any = {"name":"upsertIntegrationProvider
  *     "scope",
  *     "clientId",
  *     "clientSecret",
+ *     "consumerKey",
+ *     "consumerSecret",
  *     "serverBaseUrl",
  *     "webhookUrl",
  *     "teamId"
@@ -53,6 +57,8 @@ const upsertIntegrationProviderQueryIR: any = {"name":"upsertIntegrationProvider
  *     :scope,
  *     :clientId,
  *     :clientSecret,
+ *     :consumerKey,
+ *     :consumerSecret,
  *     :serverBaseUrl,
  *     :webhookUrl,
  *     :teamId
@@ -63,6 +69,8 @@ const upsertIntegrationProviderQueryIR: any = {"name":"upsertIntegrationProvider
  *   "scope" = EXCLUDED."scope",
  *   "clientId" = EXCLUDED."clientId",
  *   "clientSecret" = EXCLUDED."clientSecret",
+ *   "consumerKey" = EXCLUDED."consumerKey",
+ *   "consumerSecret" = EXCLUDED."consumerSecret",
  *   "serverBaseUrl" = EXCLUDED."serverBaseUrl",
  *   "webhookUrl" = EXCLUDED."webhookUrl",
  *   "updatedAt" = CURRENT_TIMESTAMP,

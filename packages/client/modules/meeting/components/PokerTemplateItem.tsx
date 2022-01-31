@@ -29,7 +29,7 @@ const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
 const TemplateItemDetails = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '100%'
+  width: '100%'
 })
 
 const TemplateTitle = styled('div')({

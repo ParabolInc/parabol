@@ -7,6 +7,9 @@ import IntegrationProviderAuthStrategyEnum from './IntegrationProviderAuthStrate
 import IntegrationProviderEditableScopeEnum, {
   TIntegrationProviderEditableScopeEnum
 } from './IntegrationProviderEditableScopeEnum'
+import IntegrationProviderMetadataInputOAuth1, {
+  IIntegrationProviderMetadataInputOAuth1
+} from './IntegrationProviderMetadataInputOAuth1'
 import IntegrationProviderMetadataInputOAuth2, {
   IIntegrationProviderMetadataInputOAuth2
 } from './IntegrationProviderMetadataInputOAuth2'
@@ -21,6 +24,7 @@ export interface IAddIntegrationProviderInput {
   authStrategy: TIntegrationProviderAuthStrategyEnum
   scope: TIntegrationProviderEditableScopeEnum
   webhookProviderMetadataInput: IIntegrationProviderMetadataInputWebhook | null
+  oAuth1ProviderMetadataInput: IIntegrationProviderMetadataInputOAuth1 | null
   oAuth2ProviderMetadataInput: IIntegrationProviderMetadataInputOAuth2 | null
 }
 
@@ -48,6 +52,11 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
       type: IntegrationProviderMetadataInputWebhook,
       description:
         'Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
+    },
+    oAuth1ProviderMetadataInput: {
+      type: IntegrationProviderMetadataInputOAuth1,
+      description:
+        'OAuth1 provider metadata, has to be non-null if token type is OAuth1, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
     },
     oAuth2ProviderMetadataInput: {
       type: IntegrationProviderMetadataInputOAuth2,

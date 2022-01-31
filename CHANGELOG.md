@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.45.0 2021-Jan-27
+
+### Added
+
+- Implement choosing random person as facilitator (#5857)
+- Add primary and foreign key loaders (#5847)
+
+### Changed
+
+- Show only available jira fields in story points dropdown (#5825)
+- 6.44.0 ironbank fixes (#5946)
+- Add comments on putting env vars in `__ACTION__` (#5967)
+
+### Fixed
+
+- Make sure newFaciliatorId always defined (#5909)
+- Make dependency from DasboardAvatar to AcceptTeamInvitation explicit (#5882)
+- `romoteToTeamLead` filters on isNotRemoved (#5922)
+- monkeypatch uWS res.cork (#5815)
+
 ## 6.44.0 2021-Jan-19
 
 ### Added
