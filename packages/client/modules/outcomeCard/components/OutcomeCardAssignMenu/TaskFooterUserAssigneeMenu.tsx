@@ -60,6 +60,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   if (!team) return null
   return (
     <Menu
+      keepParentFocus
       ariaLabel={'Assign this task to a teammate'}
       defaultActiveIdx={userId ? taskUserIdx : undefined}
       {...menuProps}

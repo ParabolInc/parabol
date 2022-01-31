@@ -43,6 +43,7 @@ const TeamDashTeamMemberMenu = (props: Props) => {
 
   return (
     <Menu
+      keepParentFocus
       ariaLabel={'Select the team member to filter by'}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}

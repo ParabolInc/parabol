@@ -143,6 +143,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
 
   return (
     <Menu
+      keepParentFocus
       {...menuProps}
       defaultActiveIdx={taskTeamIdx}
       ariaLabel={'Assign this task to another team'}

@@ -61,6 +61,7 @@ const UserDashTeamMenu = (props: Props) => {
 
   return (
     <Menu
+      keepParentFocus
       ariaLabel={'Select the team to filter by'}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
