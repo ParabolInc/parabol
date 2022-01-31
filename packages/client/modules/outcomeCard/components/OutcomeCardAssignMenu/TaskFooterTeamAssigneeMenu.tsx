@@ -17,17 +17,7 @@ import TaskFooterTeamAssigneeAddIntegrationDialog from './TaskFooterTeamAssignee
 import useEventCallback from '~/hooks/useEventCallback'
 import {SearchMenuItem} from '~/components/SearchMenuItem'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
-import MenuItemLabel from '~/components/MenuItemLabel'
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
+import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery($teamId: ID!) {
@@ -153,7 +143,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
       )}
       {query && matchedAssignableTeams.length === 0 && (
-        <NoResults key='no-results'>No teams found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>No teams found!</EmptyDropdownMenuItemLabel>
       )}
       {matchedAssignableTeams.map((team) => {
         return (

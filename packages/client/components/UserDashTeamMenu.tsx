@@ -13,22 +13,12 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from './SearchMenuItem'
-import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
-import MenuItemLabel from './MenuItemLabel'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
   viewer: UserDashTeamMenu_viewer | null
 }
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
 
 const UserDashTeamMenu = (props: Props) => {
   const {history} = useRouter()
@@ -71,7 +61,7 @@ const UserDashTeamMenu = (props: Props) => {
         <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={query} />
       )}
       {query && matchedFilteredTeams.length === 0 && (
-        <NoResults key='no-results'>No teams found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>No teams found!</EmptyDropdownMenuItemLabel>
       )}
       {query === '' && showAllTeams && (
         <MenuItem

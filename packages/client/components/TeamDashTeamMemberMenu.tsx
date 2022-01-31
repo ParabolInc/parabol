@@ -10,22 +10,12 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import filterTeamMember from '../utils/relay/filterTeamMember'
 import {SearchMenuItem} from './SearchMenuItem'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
-import MenuItemLabel from './MenuItemLabel'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
   team: TeamDashTeamMemberMenu_team
 }
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
 
 const TeamDashTeamMemberMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -53,7 +43,9 @@ const TeamDashTeamMemberMenu = (props: Props) => {
         <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
       )}
       {query && matchedTeamMembers.length === 0 && (
-        <NoResults key='no-results'>No team members found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No team members found!
+        </EmptyDropdownMenuItemLabel>
       )}
       {query === '' && (
         <MenuItem

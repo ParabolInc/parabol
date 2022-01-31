@@ -5,7 +5,6 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {PALETTE} from '../styles/paletteV3'
 import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -17,17 +16,10 @@ import MockFieldList from './MockFieldList'
 import TypeAheadLabel from './TypeAheadLabel'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from './SearchMenuItem'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 const StyledMenu = styled(Menu)({
   width: 250
-})
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
 })
 
 const ProjectAvatar = styled('img')({
@@ -131,7 +123,9 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
-        <NoResults key='no-results'>No Jira Projects found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No Jira Projects found!
+        </EmptyDropdownMenuItemLabel>
       )) ||
         null}
       {selectedAndFilteredProjects.map((project) => {

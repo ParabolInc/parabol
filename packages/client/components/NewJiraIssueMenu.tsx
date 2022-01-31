@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -6,20 +5,11 @@ import useAllIntegrations from '~/hooks/useAllIntegrations'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {PALETTE} from '~/styles/paletteV3'
 import {NewJiraIssueMenu_suggestedIntegrations} from '~/__generated__/NewJiraIssueMenu_suggestedIntegrations.graphql'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
-import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
 
 interface Props {
   handleSelectProjectKey: (key: string) => void
@@ -62,7 +52,9 @@ const NewJiraIssueMenu = (props: Props) => {
     >
       <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       {(query && allItems.length === 0 && status !== 'loading' && (
-        <NoResults key='no-results'>No integrations found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No integrations found!
+        </EmptyDropdownMenuItemLabel>
       )) ||
         null}
 

@@ -6,7 +6,6 @@ import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {PALETTE} from '../styles/paletteV3'
 import {IXGitHubCreatedCommitContribution} from '../types/graphql'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 import {
@@ -14,19 +13,12 @@ import {
   GitHubScopingSearchFilterMenuQueryResponse
 } from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import Checkbox from './Checkbox'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
 
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
@@ -147,7 +139,9 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         onChange={onQueryChange}
         value={searchQuery}
       />
-      {repoContributions.length === 0 && <NoResults key='no-results'>No repos found!</NoResults>}
+      {repoContributions.length === 0 && (
+        <EmptyDropdownMenuItemLabel key='no-results'>No repos found!</EmptyDropdownMenuItemLabel>
+      )}
       {selectedAndFilteredRepos.map((repo) => {
         const isSelected = selectedRepos.includes(repo)
         const handleClick = () => {

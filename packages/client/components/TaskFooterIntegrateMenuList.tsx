@@ -12,10 +12,10 @@ import CreateJiraTaskIntegrationMutation from '../mutations/CreateJiraTaskIntegr
 import {PALETTE} from '../styles/paletteV3'
 import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
-import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
@@ -28,14 +28,6 @@ interface Props {
   task: TaskFooterIntegrateMenuList_task
   label?: string
 }
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
 
 const Label = styled('div')({
   color: PALETTE.SLATE_600,
@@ -87,7 +79,9 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       )}
       <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
       {(query && allItems.length === 0 && status !== 'loading' && (
-        <NoResults key='no-results'>No integrations found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No integrations found!
+        </EmptyDropdownMenuItemLabel>
       )) ||
         null}
       {allItems.slice(0, 10).map((suggestedIntegration) => {
