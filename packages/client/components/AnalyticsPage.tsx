@@ -95,6 +95,7 @@ const AnalyticsPage = () => {
 
     setupLogRocket(viewerInfo)
     identifyUserWithDatadog(viewerInfo, metadata)
+    identifyUserWithSegment(viewerInfo)
   }, [viewerInfo, atmosphere.authObj])
 
   /* Segment */
@@ -127,16 +128,6 @@ const AnalyticsPage = () => {
       safeIdentify(atmosphere.viewerId, email)
       return
     }
-    const cacheEmail = async () => {
-      const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-      if (!res) return
-      const {viewer} = res
-      const {email} = viewer
-      if (!email) return
-      window.localStorage.setItem(LocalStorageKey.EMAIL, email)
-      safeIdentify(atmosphere.viewerId, email)
-    }
-    cacheEmail().catch()
   }, [isSegmentLoaded])
 
   useEffect(() => {
@@ -162,6 +153,15 @@ const AnalyticsPage = () => {
   }, [isSegmentLoaded, pathname])
 
   return null
+}
+
+function identifyUserWithSegment(viewerInfo?: ViewerInfo) {
+  const segmentKey = window.__ACTION__.segment
+  if (!segmentKey) return
+  if (!viewerInfo) return
+
+  const {id, email} = viewerInfo
+  safeIdentify(id, email)
 }
 
 function setupLogRocket(viewerInfo?: ViewerInfo) {
