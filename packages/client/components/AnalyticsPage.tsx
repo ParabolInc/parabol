@@ -4,11 +4,14 @@ import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
-import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
+import {
+  AnalyticsPageQuery,
+  AnalyticsPageQueryResponse
+} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import makeHref from '../utils/makeHref'
@@ -66,11 +69,29 @@ if (datadogEnabled) {
 const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
-  if (!__PRODUCTION__) {
-    return null
-  }
+  // TODO: re-enable
+  // if (!__PRODUCTION__) {
+  //   return null
+  // }
 
-  /* eslint-disable */
+  const atmosphere = useAtmosphere()
+  const [viewerInfo, setViewerInfo] = useState<AnalyticsPageQueryResponse | null>(null)
+  const fetchViewerInfo = async () => {
+    const analyticsQueryRes = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
+    setViewerInfo(analyticsQueryRes)
+  }
+  useEffect(() => {
+    fetchViewerInfo()
+  }, [atmosphere.viewerId])
+
+  useEffect(() => {
+    // TODO: identify with all the things!
+    const foo = viewerInfo
+    debugger
+    console.dir(foo)
+  }, [viewerInfo])
+
+  /* Segment */
   const {href, pathname} = location
   const pathnameRef = useRef(pathname)
   const segmentKey = window.__ACTION__.segment
@@ -90,36 +111,6 @@ const AnalyticsPage = () => {
       crossOrigin: true
     }
   )
-  const atmosphere = useAtmosphere()
-
-  const initLogRocket = async () => {
-    const logRocketId = window.__ACTION__.logRocket
-    if (!logRocketId) return
-    const errorProneAtStr = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
-    const errorProneAtDate = new Date(errorProneAtStr!)
-    const isErrorProne =
-      errorProneAtDate.toJSON() === errorProneAtStr &&
-      errorProneAtDate > new Date(Date.now() - ms('14d'))
-    if (!isErrorProne) {
-      window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
-    }
-    const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-    if (!res) {
-      if (isErrorProne) {
-        safeInitLogRocket()
-      }
-    } else {
-      const {viewer} = res
-      const {isWatched, email, id: viewerId} = viewer
-      if (isErrorProne || isWatched) {
-        safeInitLogRocket(viewerId, email)
-      }
-    }
-  }
-  useEffect(() => {
-    initLogRocket()
-  }, [])
-
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return
     const token = window.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
@@ -164,6 +155,36 @@ const AnalyticsPage = () => {
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
 
+  /* LogRocket */
+  const initLogRocket = async () => {
+    const logRocketId = window.__ACTION__.logRocket
+    if (!logRocketId) return
+    const errorProneAtStr = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
+    const errorProneAtDate = new Date(errorProneAtStr!)
+    const isErrorProne =
+      errorProneAtDate.toJSON() === errorProneAtStr &&
+      errorProneAtDate > new Date(Date.now() - ms('14d'))
+    if (!isErrorProne) {
+      window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
+    }
+    const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
+    if (!res) {
+      if (isErrorProne) {
+        safeInitLogRocket()
+      }
+    } else {
+      const {viewer} = res
+      const {isWatched, email, id: viewerId} = viewer
+      if (isErrorProne || isWatched) {
+        safeInitLogRocket(viewerId, email)
+      }
+    }
+  }
+  useEffect(() => {
+    initLogRocket()
+  }, [])
+
+  /* Datadog */
   useEffect(() => {
     if (!datadogEnabled) {
       return
