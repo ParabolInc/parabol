@@ -27,6 +27,11 @@ const query = graphql`
   }
 `
 
+type ViewerInfo = AnalyticsPageQueryResponse['viewer']
+interface ViewerInfoMetadata {
+  isImpersonating: boolean
+}
+
 declare global {
   interface Window {
     analytics: SegmentAnalytics.AnalyticsJS
@@ -75,21 +80,21 @@ const AnalyticsPage = () => {
   // }
 
   const atmosphere = useAtmosphere()
-  const [viewerInfo, setViewerInfo] = useState<AnalyticsPageQueryResponse | null>(null)
+  const [viewerInfo, setViewerInfo] = useState<ViewerInfo | undefined>(undefined)
   const fetchViewerInfo = async () => {
     const analyticsQueryRes = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-    setViewerInfo(analyticsQueryRes)
+    setViewerInfo(analyticsQueryRes?.viewer)
   }
   useEffect(() => {
     fetchViewerInfo()
   }, [atmosphere.viewerId])
-
   useEffect(() => {
-    // TODO: identify with all the things!
-    const foo = viewerInfo
-    debugger
-    console.dir(foo)
-  }, [viewerInfo])
+    const metadata: ViewerInfoMetadata = {
+      isImpersonating: atmosphere.authObj?.rol === 'impersonate' ? true : false
+    }
+
+    identifyUserWithDatadog(viewerInfo, metadata)
+  }, [viewerInfo, atmosphere.authObj])
 
   /* Segment */
   const {href, pathname} = location
@@ -184,23 +189,26 @@ const AnalyticsPage = () => {
     initLogRocket()
   }, [])
 
-  /* Datadog */
-  useEffect(() => {
-    if (!datadogEnabled) {
-      return
-    }
-
-    const {viewerId} = atmosphere
-    if (viewerId) {
-      datadogRum.setUser({
-        id: atmosphere.viewerId
-      })
-    } else {
-      datadogRum.removeUser()
-    }
-  }, [atmosphere, atmosphere.viewerId])
-
   return null
+}
+
+function identifyUserWithDatadog(viewerInfo: ViewerInfo | undefined, metadata: ViewerInfoMetadata) {
+  if (!datadogEnabled) {
+    return
+  }
+
+  if (viewerInfo) {
+    const {id, email, isWatched} = viewerInfo
+    const {isImpersonating} = metadata
+    datadogRum.setUser({
+      id,
+      email,
+      isWatched,
+      isImpersonating
+    })
+  } else {
+    datadogRum.removeUser()
+  }
 }
 
 export default AnalyticsPage
