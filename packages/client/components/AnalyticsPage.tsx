@@ -28,9 +28,6 @@ const query = graphql`
 `
 
 type ViewerInfo = AnalyticsPageQueryResponse['viewer']
-interface ViewerInfoMetadata {
-  isImpersonating: boolean
-}
 
 declare global {
   interface Window {
@@ -84,13 +81,13 @@ const AnalyticsPage = () => {
     fetchViewerInfo()
   }, [atmosphere.viewerId])
   useEffect(() => {
-    const metadata: ViewerInfoMetadata = {
-      isImpersonating: atmosphere.authObj?.rol === 'impersonate' ? true : false
-    }
-
     setupLogRocket(viewerInfo)
-    identifyUserWithDatadog(viewerInfo, metadata)
+    identifyUserWithDatadog(viewerInfo)
     identifyUserWithSegment(viewerInfo)
+
+    if (viewerInfo) {
+      window.localStorage.setItem(LocalStorageKey.EMAIL, viewerInfo.email)
+    }
   }, [viewerInfo])
 
   /* Segment */
@@ -176,19 +173,17 @@ function setupLogRocket(viewerInfo?: ViewerInfo) {
   }
 }
 
-function identifyUserWithDatadog(viewerInfo: ViewerInfo | undefined, metadata: ViewerInfoMetadata) {
+function identifyUserWithDatadog(viewerInfo: ViewerInfo | undefined) {
   if (!datadogEnabled) {
     return
   }
 
   if (viewerInfo) {
     const {id, email, isWatched} = viewerInfo
-    const {isImpersonating} = metadata
     datadogRum.setUser({
       id,
       email,
-      isWatched,
-      isImpersonating
+      isWatched
     })
   } else {
     datadogRum.removeUser()
