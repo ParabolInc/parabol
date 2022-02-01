@@ -3,7 +3,6 @@
 import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
-import ms from 'ms'
 import {useEffect, useRef, useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
@@ -14,6 +13,7 @@ import {
 } from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
+import {getIsErrorProne, maybeRemoveIsErrorProneFlag} from '../utils/errorProne'
 import makeHref from '../utils/makeHref'
 import safeInitLogRocket from '../utils/safeInitLogRocket'
 
@@ -93,6 +93,7 @@ const AnalyticsPage = () => {
       isImpersonating: atmosphere.authObj?.rol === 'impersonate' ? true : false
     }
 
+    setupLogRocket(viewerInfo)
     identifyUserWithDatadog(viewerInfo, metadata)
   }, [viewerInfo, atmosphere.authObj])
 
@@ -160,36 +161,24 @@ const AnalyticsPage = () => {
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
 
-  /* LogRocket */
-  const initLogRocket = async () => {
-    const logRocketId = window.__ACTION__.logRocket
-    if (!logRocketId) return
-    const errorProneAtStr = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
-    const errorProneAtDate = new Date(errorProneAtStr!)
-    const isErrorProne =
-      errorProneAtDate.toJSON() === errorProneAtStr &&
-      errorProneAtDate > new Date(Date.now() - ms('14d'))
-    if (!isErrorProne) {
-      window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
-    }
-    const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-    if (!res) {
-      if (isErrorProne) {
-        safeInitLogRocket()
-      }
-    } else {
-      const {viewer} = res
-      const {isWatched, email, id: viewerId} = viewer
-      if (isErrorProne || isWatched) {
-        safeInitLogRocket(viewerId, email)
-      }
-    }
-  }
-  useEffect(() => {
-    initLogRocket()
-  }, [])
-
   return null
+}
+
+function setupLogRocket(viewerInfo?: ViewerInfo) {
+  const logRocketId = window.__ACTION__.logRocket
+  if (!logRocketId) return
+
+  maybeRemoveIsErrorProneFlag()
+  const isErrorProne = getIsErrorProne()
+  const isLoggedOutAndErrorProne = !viewerInfo && isErrorProne
+  const isLoggedInAndErrorProneOrWatched = viewerInfo && (isErrorProne || viewerInfo.isWatched)
+
+  if (isLoggedOutAndErrorProne) {
+    safeInitLogRocket()
+  } else if (isLoggedInAndErrorProneOrWatched) {
+    const {id, email} = viewerInfo
+    safeInitLogRocket(id, email)
+  }
 }
 
 function identifyUserWithDatadog(viewerInfo: ViewerInfo | undefined, metadata: ViewerInfoMetadata) {

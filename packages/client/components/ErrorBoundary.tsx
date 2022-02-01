@@ -3,8 +3,8 @@ import LogRocket from 'logrocket'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
 import withAtmosphere, {WithAtmosphereProps} from '~/decorators/withAtmosphere/withAtmosphere'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
-import {LocalStorageKey} from '~/types/constEnums'
 import safeInitLogRocket from '../utils/safeInitLogRocket'
+import {setIsErrorProne} from '~/utils/errorProne'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
 
@@ -51,7 +51,7 @@ class ErrorBoundary extends Component<Props, State> {
     if (logRocketId) {
       safeInitLogRocket(viewerId, email)
       if (!isOldBrowserErr) {
-        window.localStorage.setItem(LocalStorageKey.ERROR_PRONE_AT, new Date().toJSON())
+        setIsErrorProne()
         LogRocket.captureException(error)
         LogRocket.track('Fatal error')
       }
