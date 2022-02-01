@@ -91,7 +91,7 @@ const AnalyticsPage = () => {
     setupLogRocket(viewerInfo)
     identifyUserWithDatadog(viewerInfo, metadata)
     identifyUserWithSegment(viewerInfo)
-  }, [viewerInfo, atmosphere.authObj])
+  }, [viewerInfo])
 
   /* Segment */
   const {href, pathname} = location
