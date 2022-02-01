@@ -56,6 +56,13 @@ export interface FetchHTTPData {
   payload: OperationPayload
 }
 
+interface LoginPayload {
+  user?: {
+    id?: string | null
+    email?: string | null
+  } | null
+}
+
 const noop = (): any => {
   /* noop */
 }
@@ -106,6 +113,7 @@ export default class Atmosphere extends Environment {
   viewerId: string = null!
   /** @deprecated */
   userId: string | null = null
+
   constructor() {
     super({
       store,
@@ -314,11 +322,10 @@ export default class Atmosphere extends Environment {
     this.setAuthToken(authToken)
   }
 
-  setAuthToken = (authToken: string | null) => {
+  setAuthToken = (authToken: string | null, loginPayload?: LoginPayload) => {
     this.authToken = authToken
     if (!authToken) {
-      this.authObj = null
-      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+      this.resetAuth()
       return
     }
     try {
@@ -332,12 +339,13 @@ export default class Atmosphere extends Environment {
     const {exp, sub: viewerId, rol, iat} = this.authObj
     // impersonation token must be < 10 seconds old (ie log them out automatically)
     if (exp < Date.now() / 1000 || (rol === 'impersonate' && iat < Date.now() / 1000 - 10)) {
-      this.authToken = null
-      this.authObj = null
-      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+      this.resetAuth()
     } else {
       this.viewerId = viewerId!
       window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
+      if (loginPayload?.user?.email) {
+        window.localStorage.setItem(LocalStorageKey.EMAIL, loginPayload.user.email)
+      }
       // deprecated! will be removed soon
       this.userId = viewerId
     }
@@ -437,5 +445,12 @@ export default class Atmosphere extends Environment {
     this.subscriptions = {}
     this.viewerId = null!
     this.userId = null // DEPRECATED
+  }
+
+  private resetAuth() {
+    this.authToken = null
+    this.authObj = null
+    window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+    window.localStorage.removeItem(LocalStorageKey.EMAIL)
   }
 }
