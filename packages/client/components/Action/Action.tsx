@@ -44,7 +44,7 @@ const Action = memo(() => {
       <ErrorBoundary>
         <Snackbar />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
-          <AnalyticsPage />
+          {__PRODUCTION__ && <AnalyticsPage />}
           <Switch>
             <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
             <Route

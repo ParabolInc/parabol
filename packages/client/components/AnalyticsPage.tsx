@@ -74,11 +74,6 @@ if (datadogEnabled) {
 const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
-  // TODO: re-enable
-  // if (!__PRODUCTION__) {
-  //   return null
-  // }
-
   const atmosphere = useAtmosphere()
   const [viewerInfo, setViewerInfo] = useState<ViewerInfo | undefined>(undefined)
   const fetchViewerInfo = async () => {
