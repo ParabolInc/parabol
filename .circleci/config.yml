@@ -27,6 +27,7 @@ jobs:
       S3_DB_BACKUPS_BUCKET: 'db-backups.parabol.co'
       SERVER_ID: '0'
     working_directory: ~/action
+    resource_class: medium+
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -60,15 +61,28 @@ jobs:
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
-          name: GraphQL server tests
+          name: Start dev server
           command: |
             cp $DEVOPS_WORKDIR/environments/cypress .env
             echo SOCKET_PORT=3001 >> .env
-            yarn dev &
-            DEV_PID=$!
-            curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
-            yarn workspace parabol-server test --forceExit
-            kill $DEV_PID
+            yarn dev || true
+          background: true
+      - run:
+          name: Wait for dev server to be healthy
+          command: curl -4 --retry 30 --retry-connrefused --retry-delay 10 http://localhost:3000/graphql
+      - run:
+          name: Run server tests
+          command: yarn workspace parabol-server test --runInBand --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./reports/junit
+      - store_test_results:
+          path: ./packages/server/reports/junit/
+      - store_artifacts:
+          path: ./packages/server/reports/junit
+      - run:
+          name: Kill server
+          command: pkill node
+          when: always
       - run:
           name: Build Assets
           command: |
