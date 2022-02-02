@@ -172,13 +172,12 @@ const AnalyticsPage = () => {
     const {viewerId} = atmosphere
     if (viewerId) {
       datadogRum.setUser({
-        id: atmosphere.viewerId,
-        isImpersonating: atmosphere.authObj?.rol === 'impersonate' ? true : false
+        id: atmosphere.viewerId
       })
     } else {
       datadogRum.removeUser()
     }
-  }, [atmosphere, atmosphere.viewerId, atmosphere.authObj])
+  }, [atmosphere, atmosphere.viewerId])
 
   return null
 }
