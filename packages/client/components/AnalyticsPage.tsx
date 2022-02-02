@@ -84,6 +84,7 @@ const AnalyticsPage = () => {
     setupLogRocket(viewerInfo)
     identifyUserWithDatadog(viewerInfo)
     identifyUserWithSegment(viewerInfo)
+    identifyUserWithSentry(viewerInfo)
 
     if (viewerInfo) {
       window.localStorage.setItem(LocalStorageKey.EMAIL, viewerInfo.email)
@@ -173,10 +174,8 @@ function setupLogRocket(viewerInfo?: ViewerInfo) {
   }
 }
 
-function identifyUserWithDatadog(viewerInfo: ViewerInfo | undefined) {
-  if (!datadogEnabled) {
-    return
-  }
+function identifyUserWithDatadog(viewerInfo?: ViewerInfo) {
+  if (!datadogEnabled) return
 
   if (viewerInfo) {
     const {id, email, isWatched} = viewerInfo
@@ -188,6 +187,19 @@ function identifyUserWithDatadog(viewerInfo: ViewerInfo | undefined) {
   } else {
     datadogRum.removeUser()
   }
+}
+
+function identifyUserWithSentry(viewerInfo?: ViewerInfo) {
+  if (!dsn) return
+
+  Sentry.configureScope((scope) => {
+    if (viewerInfo) {
+      const {id, email} = viewerInfo
+      scope.setUser({id, email})
+    } else {
+      scope.setUser(null)
+    }
+  })
 }
 
 export default AnalyticsPage
