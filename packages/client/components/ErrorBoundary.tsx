@@ -1,12 +1,11 @@
 import * as Sentry from '@sentry/browser'
-import LogRocket from 'logrocket'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
 import withAtmosphere, {WithAtmosphereProps} from '~/decorators/withAtmosphere/withAtmosphere'
 import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
-import safeInitLogRocket from '../utils/safeInitLogRocket'
 import {setIsErrorProne} from '~/utils/errorProne'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
+import LogRocketManager from '~/utils/LogRocketManager'
 
 interface Props extends WithAtmosphereProps {
   fallback?: (error: Error, eventId: string) => ReactNode
@@ -47,13 +46,13 @@ class ErrorBoundary extends Component<Props, State> {
         scope.setUser({email, id: viewerId})
       })
     }
-    const logRocketId = window.__ACTION__.logRocket
-    if (logRocketId) {
-      safeInitLogRocket(viewerId, email)
+
+    const logRocket = LogRocketManager.getInstance()
+    if (logRocket) {
       if (!isOldBrowserErr) {
         setIsErrorProne()
-        LogRocket.captureException(error)
-        LogRocket.track('Fatal error')
+        logRocket.captureException(error)
+        logRocket.track('Fatal error')
       }
     }
     // Catch errors in any components below and re-render with error message

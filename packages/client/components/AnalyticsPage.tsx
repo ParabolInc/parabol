@@ -15,7 +15,7 @@ import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import {getIsErrorProne, maybeRemoveIsErrorProneFlag} from '../utils/errorProne'
 import makeHref from '../utils/makeHref'
-import safeInitLogRocket from '../utils/safeInitLogRocket'
+import LogRocketManager from '../utils/LogRocketManager'
 
 const query = graphql`
   query AnalyticsPageQuery {
@@ -157,19 +157,19 @@ function identifyUserWithSegment(viewerInfo?: ViewerInfo) {
 }
 
 function setupLogRocket(viewerInfo?: ViewerInfo) {
-  const logRocketId = window.__ACTION__.logRocket
-  if (!logRocketId) return
+  if (viewerInfo) {
+    const {id, email} = viewerInfo
+    LogRocketManager.setUser(id, email)
+  }
 
   maybeRemoveIsErrorProneFlag()
+
   const isErrorProne = getIsErrorProne()
   const isLoggedOutAndErrorProne = !viewerInfo && isErrorProne
   const isLoggedInAndErrorProneOrWatched = viewerInfo && (isErrorProne || viewerInfo.isWatched)
 
-  if (isLoggedOutAndErrorProne) {
-    safeInitLogRocket()
-  } else if (isLoggedInAndErrorProneOrWatched) {
-    const {id, email} = viewerInfo
-    safeInitLogRocket(id, email)
+  if (isLoggedOutAndErrorProne || isLoggedInAndErrorProneOrWatched) {
+    LogRocketManager.initialize()
   }
 }
 
