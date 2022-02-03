@@ -21,14 +21,12 @@ graphql`
       }
     }
     meeting {
+      ...useGotoStageId_meeting
       phases {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
         stages {
           ...ActionMeetingAgendaItemsStage @relay(mask: false)
           # For useGotoStageId
-          id
-          isComplete
-          isNavigable
           isNavigableByFacilitator
         }
       }
