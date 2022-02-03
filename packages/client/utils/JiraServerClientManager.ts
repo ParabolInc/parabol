@@ -21,12 +21,9 @@ class JiraServerClientManager {
     )
 
     const onUrlCompleted = (result: any) => {
-      const uri = result.createOAuth1AuthorizeUrl.url
-      window.open(
-        uri,
-        'OAuth',
-        getOAuthPopupFeatures({width: 500, height: 750, top: 56})
-      )
+      if (popup) {
+        popup.location.href = result.createOAuth1AuthorizeUrl.url
+      }
     }
 
     CreateOAuth1AuthorizeUrlMutation(atmosphere, {providerId, teamId}, {onCompleted: onUrlCompleted})
