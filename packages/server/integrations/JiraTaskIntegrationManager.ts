@@ -8,7 +8,6 @@ import {Doc} from '../utils/convertContentStateToADF'
 
 export default class JiraTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira'
-  public segmentEventName = 'Published Task to Jira'
   public authLoaderKey = 'freshAtlassianAuth' as const
 
   getCreatedBySomeoneElseComment(

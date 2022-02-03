@@ -121,7 +121,7 @@ export default {
           )
         : undefined
 
-    const res = await integrationManager.createTask({
+    const {error, integrationData} = await integrationManager.createTask({
       auth,
       accessUserId,
       rawContentStr,
@@ -131,15 +131,15 @@ export default {
       info
     })
 
-    if (res.error) {
-      return {error: {message: res.error.message}}
+    if (error) {
+      return {error: {message: error.message}}
     }
 
     await r
       .table('Task')
       .get(taskId)
       .update({
-        ...res.integrationData,
+        ...integrationData,
         updatedAt: now
       })
       .run()
@@ -151,7 +151,7 @@ export default {
 
     segmentIo.track({
       userId: viewerId,
-      event: integrationManager.segmentEventName,
+      event: `Published Task to ${integrationManager.title}`,
       properties: {
         teamId,
         meetingId

@@ -20,7 +20,6 @@ export type CreateTaskResponse = {
 
 export interface TaskIntegrationManager {
   title: string
-  segmentEventName: string
   authLoaderKey: Loaders
 
   createTask(params: {

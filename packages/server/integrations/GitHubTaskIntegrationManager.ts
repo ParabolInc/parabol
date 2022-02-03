@@ -9,7 +9,6 @@ import {GQLContext} from '../graphql/graphql'
 
 export default class GitHubTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'GitHub'
-  public segmentEventName = 'Published Task to GitHub'
   public authLoaderKey = 'githubAuth' as const
 
   getCreatedBySomeoneElseComment(
