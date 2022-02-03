@@ -89,8 +89,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const {isPrimary, isSignin, invitationToken, email, goToPage} = props
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
-  const isSSODefault = !!process.env.AUTH_SSO_ENABLED && Boolean(params.get('sso'))
-  const signInWithSSOOnly = !!process.env.AUTH_SSO_ENABLED && !process.env.AUTH_INTERNAL_ENABLED
+  const isSSODefault = !!window.__ACTION__.AUTH_SSO_ENABLED && Boolean(params.get('sso'))
+  const signInWithSSOOnly = !!window.__ACTION__.AUTH_SSO_ENABLED && !window.__ACTION__.AUTH_INTERNAL_ENABLED
   const [isSSO, setIsSSO] = useState(isSSODefault || signInWithSSOOnly)
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
@@ -237,7 +237,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
             />
           </FieldBlock>
           {
-            process.env.AUTH_INTERNAL_ENABLED &&
+            window.__ACTION__.AUTH_INTERNAL_ENABLED &&
             <FieldBlock isSSO={isSSO}>
               <PasswordInputField
                 autoFocus={hasEmail}
@@ -252,7 +252,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}{signInWithSSOOnly ? " with SSO" : ""}
         </Button>
       </Form>
-      {process.env.AUTH_SSO_ENABLED && process.env.AUTH_INTERNAL_ENABLED &&
+      {window.__ACTION__.AUTH_SSO_ENABLED && window.__ACTION__.AUTH_INTERNAL_ENABLED &&
         <UseSSO onClick={toggleSSO}>
           {`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}
         </UseSSO>
