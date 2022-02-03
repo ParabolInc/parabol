@@ -3,8 +3,12 @@ import {DBType} from '../database/rethinkDriver'
 import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
+import * as githubLoaders from './githubLoaders'
+import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
+import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
+import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
@@ -16,10 +20,15 @@ interface LoaderDict {
 
 // Register all loaders
 const loaderMakers = {
-  ...rethinkPrimaryKeyLoaderMakers,
   ...rethinkForeignKeyLoaderMakers,
+  ...rethinkPrimaryKeyLoaderMakers,
+  ...primaryKeyLoaderMakers,
+  ...foreignKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
+  ...customLoaderMakers,
+  ...githubLoaders,
+  ...integrationAuthLoaders,
   ...pollLoaders
 } as const
 
@@ -36,7 +45,16 @@ type ForeignLoaders = keyof ForeignLoaderMakers
 type Unforeign<T> = T extends RethinkForeignKeyLoaderMaker<infer U> ? U : never
 type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
 
-type CustomLoaderMakers = typeof customLoaderMakers & typeof atlassianLoaders & typeof pollLoaders
+/**
+ * When adding a new loaders file like {@link atlassianLoaders} or {@link githubLoaders}
+ * this type has to include a typeof of newly added loaders
+ */
+type CustomLoaderMakers = typeof customLoaderMakers &
+  typeof atlassianLoaders &
+  typeof pollLoaders &
+  typeof integrationAuthLoaders &
+  typeof primaryKeyLoaderMakers &
+  typeof foreignKeyLoaderMakers
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
@@ -69,7 +87,6 @@ export default class RootDataLoader {
     if (loaderMaker instanceof RethinkPrimaryKeyLoaderMaker) {
       const {table} = loaderMaker
       loader = rethinkPrimaryKeyLoader(this.dataLoaderOptions, table)
-      this.loaders[loaderName]
     } else if (loaderMaker instanceof RethinkForeignKeyLoaderMaker) {
       const {fetch, field, pk} = loaderMaker
       const basePkLoader = this.get(pk as PrimaryLoaders)

@@ -14,8 +14,8 @@ interface StageSummary {
   finalScores: (string | null)[]
 }
 
-const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
-  const estimatePhase = readInlineData<useMakeStageSummaries_phase$key>(
+const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localStageId: string) => {
+  const estimatePhase = readInlineData(
     graphql`
       fragment useMakeStageSummaries_phase on EstimatePhase @inline {
         phaseType

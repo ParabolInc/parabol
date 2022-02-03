@@ -30,7 +30,7 @@ const TallMenu = styled(Menu)({
   maxHeight: 256
 })
 
-interface Props extends RouteComponentProps<{}> {
+interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
   menuProps: MenuProps
   viewer: StandardHubUserMenu_viewer | null
 }
@@ -54,7 +54,7 @@ const StandardHubUserMenu = (props: Props) => {
   const showUpgradeCTA = ownedFreeOrgs.length > 0
 
   const handleUpgradeClick = () => {
-    const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0].id}` : ''
+    const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
     history.push(`/me/organizations${routeSuffix}`)
   }
 

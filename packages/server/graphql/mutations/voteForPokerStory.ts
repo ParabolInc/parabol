@@ -11,7 +11,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import VoteForPokerStoryPayload from '../types/VoteForPokerStoryPayload'
 
-const removeVoteForUserId = async (userId: string, stageId: string, meetingId: string) => {
+export const removeVoteForUserId = async (userId: string, stageId: string, meetingId: string) => {
   const updater = (estimateStage) =>
     estimateStage.merge({
       scores: estimateStage('scores').deleteAt(
@@ -99,11 +99,11 @@ const voteForPokerStory = {
 
     // RESOLUTION
     const {dimensionRefIdx} = stage
-    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {scaleRefId} = dimensionRef
-    const scaleRef = await dataLoader.get('templateScaleRefs').load(scaleRefId)
+    const scaleRef = await dataLoader.get('templateScaleRefs').loadNonNull(scaleRefId)
     const {values} = scaleRef
     if (score) {
       // validate the score is a value on the scale

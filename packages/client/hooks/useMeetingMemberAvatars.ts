@@ -4,9 +4,9 @@ import {readInlineData, _FragmentRefs} from 'relay-runtime'
 import {useMeetingMemberAvatars_meeting$key} from '../__generated__/useMeetingMemberAvatars_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 
-const useMeetingMemberAvatars = (meetingRef: _FragmentRefs<string>) => {
+const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key) => {
   const atmosphere = useAtmosphere()
-  const meeting = readInlineData<useMeetingMemberAvatars_meeting$key>(
+  const meeting = readInlineData(
     graphql`
       fragment useMeetingMemberAvatars_meeting on NewMeeting @inline {
         id

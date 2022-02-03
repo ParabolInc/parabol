@@ -39,7 +39,7 @@ const ParabolScopingSearchResults = (props: Props) => {
     setEdges(unintegratedTaskEdges)
   }, [incomingEdges])
   const {id: meetingId, phases, teamId} = meeting
-  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()

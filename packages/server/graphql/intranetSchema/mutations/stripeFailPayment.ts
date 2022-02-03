@@ -20,7 +20,11 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (_source: unknown, {invoiceId}, {authToken}: InternalContext) => {
+  resolve: async (
+    _source: unknown,
+    {invoiceId}: {invoiceId: string},
+    {authToken}: InternalContext
+  ) => {
     // AUTH
     if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
@@ -79,10 +83,7 @@ export default {
     )
 
     await r({
-      update: r
-        .table('Invoice')
-        .get(invoiceId)
-        .update({status: 'FAILED'}),
+      update: r.table('Invoice').get(invoiceId).update({status: 'FAILED'}),
       insert: r.table('Notification').insert(notifications)
     }).run()
 

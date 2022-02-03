@@ -43,7 +43,7 @@ interface SetValue<T extends string> {
 
 type FormAction<T extends string> = SetError<T> | SetDirty<T> | SetValue<T>
 
-const reducer = (state: FieldState<any>, action: FormAction<string>) => {
+const reducer = <T,>(state: FieldState<T>, action: FormAction<FieldStateKey<T>>) => {
   switch (action.type) {
     case 'setDirty':
       if (state[action.name].dirty) return state
@@ -80,9 +80,9 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
     reducer,
     useMemo(
       () =>
-        Object.keys(fieldInputDict).reduce((obj, name) => {
-          obj[name as FieldStateKey<T>] = {
-            value: fieldInputDict[name].getDefault(),
+        Object.keys(fieldInputDict).reduce((obj, name: FieldStateKey<T>) => {
+          obj[name] = {
+            value: fieldInputDict[name]!.getDefault(),
             error: undefined,
             dirty: false,
             resetValue: (value = '') => {
@@ -102,7 +102,7 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
 
   const normalize = useCallback(
     (name: FieldStateKey<T>, value: any) => {
-      const normalizeField = fieldInputDict[name].normalize
+      const normalizeField = fieldInputDict[name]!.normalize
       const prevValue = state[name].value
       return normalizeField ? normalizeField(value, prevValue) : value
     },
@@ -110,7 +110,7 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
   )
 
   const validate = useEventCallback((name: string, value: any) => {
-    const validateField = fieldInputDict[name].validate
+    const validateField = fieldInputDict[name]!.validate
     if (!validateField) return {error: undefined, value}
     const res: Legitity = validateField(value)
     dispatch({type: 'setError', name, error: res.error})

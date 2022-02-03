@@ -1,22 +1,52 @@
-import FileStoreManager from './FileStoreManager'
-import {s3PutObject} from '../utils/s3'
-import protocolRelativeUrl from '../utils/protocolRelativeUrl'
-import path from 'path'
+import aws from 'aws-sdk'
+import mime from 'mime-types'
 import {APP_CDN_USER_ASSET_SUBDIR} from 'parabol-client/utils/constants'
+import path from 'path'
+import protocolRelativeUrl from '../utils/protocolRelativeUrl'
+import FileStoreManager from './FileStoreManager'
 
 export default class S3Manager extends FileStoreManager {
-  protected prependPath(partialPath: string): string {
-    const baseUrl = protocolRelativeUrl.parse(process.env.CDN_BASE_URL)
-    return path.join(baseUrl.pathname, APP_CDN_USER_ASSET_SUBDIR, partialPath)
+  private baseUrl: {hostname: string; pathname: string}
+  private bucket: string
+  private s3: AWS.S3
+  constructor() {
+    super()
+    const {CDN_BASE_URL, AWS_S3_BUCKET} = process.env
+    if (!CDN_BASE_URL || CDN_BASE_URL === 'key_CDN_BASE_URL') {
+      throw new Error('CDN_BASE_URL ENV VAR NOT SET')
+    }
+    if (!AWS_S3_BUCKET) {
+      throw new Error('AWS_S3_BUCKET ENV VAR NOT SET')
+    }
+    const baseUrl = protocolRelativeUrl.parse(CDN_BASE_URL)
+    if (!baseUrl.hostname || !baseUrl.pathname) {
+      throw new Error('CDN_BASE_URL ENV VAR IS INVALID')
+    }
+
+    this.baseUrl = baseUrl
+    this.bucket = AWS_S3_BUCKET
+    this.s3 = new aws.S3({
+      endpoint: this.baseUrl.hostname,
+      s3BucketEndpoint: true,
+      signatureVersion: 'v4'
+    })
+  }
+  protected prependPath(partialPath: string) {
+    return path.join(this.baseUrl.pathname, APP_CDN_USER_ASSET_SUBDIR, partialPath)
   }
 
-  protected getPublicFileLocation(fullPath: string): string {
-    const bucket = process.env.AWS_S3_BUCKET
-    if (!bucket) throw new Error('`AWS_S3_BUCKET` env var is not configured')
-    return encodeURI(`https://${bucket}${fullPath}`)
+  protected getPublicFileLocation(fullPath: string) {
+    return encodeURI(`https://${this.bucket}${fullPath}`)
   }
 
   protected async _putFile(fullPath: string, buffer: Buffer): Promise<void> {
-    await s3PutObject(fullPath, buffer)
+    const keyifyPath = (path: string) => path.replace(/^\//, '')
+    const s3Params = {
+      Body: buffer,
+      Bucket: this.bucket,
+      Key: keyifyPath(fullPath),
+      ContentType: mime.lookup(fullPath) || 'application/octet-stream'
+    }
+    await this.s3.putObject(s3Params).promise()
   }
 }

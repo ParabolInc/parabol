@@ -11,8 +11,8 @@ const getUsersToIgnore = async (viewerId: string, teamId: string) => {
     .exec((execErr) => {
       if (execErr) throw new Error(`Failed to execute redis command: ${execErr}`)
     })
-  const userPresence = lrangeRes[1]
-  const activeTeamMemberIds = sMembersRes[1]
+  const userPresence = lrangeRes![1]
+  const activeTeamMemberIds = sMembersRes![1]
   const parsedUserPresence = userPresence.map((socket) => JSON.parse(socket)) as UserPresence[]
   const userLastSeenAtURLs = parsedUserPresence.map(({lastSeenAtURL}) => lastSeenAtURL)
 

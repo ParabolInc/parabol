@@ -162,7 +162,7 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve(_source: unknown, {meetingId}, context: GQLContext) {
+  async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const r = await getRethink()
     const operationId = dataLoader.share()
@@ -217,7 +217,7 @@ export default {
     // remove any empty tasks
     const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId)
     ])

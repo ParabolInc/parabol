@@ -5,8 +5,11 @@ import {useGotoPrev_meeting$key} from '~/__generated__/useGotoPrev_meeting.graph
 import findStageBeforeId from '../utils/meetings/findStageBeforeId'
 import useGotoStageId from './useGotoStageId'
 
-export const useGotoPrev = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {
-  const meeting = readInlineData<useGotoPrev_meeting$key>(
+export const useGotoPrev = (
+  meetingRef: useGotoPrev_meeting$key,
+  gotoStageId: ReturnType<typeof useGotoStageId>
+) => {
+  const meeting = readInlineData(
     graphql`
       fragment useGotoPrev_meeting on NewMeeting @inline {
         localStage {

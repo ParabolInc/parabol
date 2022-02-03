@@ -39,7 +39,7 @@ class EmojiMenu extends Component<Props, State> {
         .sort((a, b) => (a.score < b.score ? 1 : -1))
         .slice(0, 6)
         // ":place of worship:" shouldn't pop up when i type ":poop"
-        .filter((obj, _idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3)
+        .filter((obj, _idx, arr) => obj.score > 0 && arr[0]?.score - obj.score < 0.3)
     )
   }
 

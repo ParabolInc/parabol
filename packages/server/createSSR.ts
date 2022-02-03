@@ -7,9 +7,12 @@ import acceptsBrotli from './acceptsBrotli'
 import PROD from './PROD'
 import dehydrate from './utils/dehydrate'
 
-export const getClientKeys = () => {
+const getClientKeys = () => {
   return {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
+    datadogClientToken: process.env.DD_CLIENTTOKEN,
+    datadogApplicationId: process.env.DD_APPLICATIONID,
+    datadogService: process.env.DD_SERVICE,
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     segment: process.env.SEGMENT_WRITE_KEY,

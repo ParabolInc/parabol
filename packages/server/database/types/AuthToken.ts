@@ -1,19 +1,19 @@
-import {toEpochSeconds} from '../../utils/epochTime'
 import {Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from '../../../client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
+import {toEpochSeconds} from '../../utils/epochTime'
 
 interface Input {
   sub: string
   tms: string[]
-  rol?: 'su' | null
+  rol?: 'su' | 'impersonate' | null
   bet?: 1
 }
 
 export default class AuthToken {
   sub: string
   tms: string[]
-  rol: 'su' | null
+  rol: 'su' | 'impersonate' | null
   bet?: 1
   iat: number
   iss: string

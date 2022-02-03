@@ -10,6 +10,7 @@ import TimelineFeedList from './TimelineFeedList'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
 import TimelineRightDrawer from './TimelineRightDrawer'
 import TimelineSuggestedAction from './TimelineSuggestedAction'
+import useNewFeatureSnackbar from '../hooks/useNewFeatureSnackbar'
 
 interface Props {
   queryRef: PreloadedQuery<MyDashboardTimelineQuery>
@@ -45,6 +46,7 @@ const MyDashboardTimeline = (props: Props) => {
           ...TimelineSuggestedAction_viewer
           ...TimelineFeedList_viewer
           ...TimelineRightDrawer_viewer
+          ...useNewFeatureSnackbar_viewer
         }
       }
     `,
@@ -54,6 +56,7 @@ const MyDashboardTimeline = (props: Props) => {
     }
   )
   const {viewer} = data
+  useNewFeatureSnackbar(viewer)
   useDocumentTitle('My Timeline | Parabol', 'Timeline')
   return (
     <FeedAndDrawer>

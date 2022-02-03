@@ -29,7 +29,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
       (tChild) => tChild.child.key === key
     )
     if (idx === -1) return
-    const tChild = previousTransitionChildrenRef.current[idx]
+    const tChild = previousTransitionChildrenRef.current[idx]!
     const {status} = tChild
     const {current: nextChildren} = previousTransitionChildrenRef
     if (status === TransitionStatus.ENTERING) {
@@ -53,12 +53,10 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     requestDoubleAnimationFrame(() => {
       let doUpdate = false
       keys.forEach((key) => {
-        const tChildIdx = previousTransitionChildrenRef.current.findIndex(
-          ({child}) => child.key === key
-        )
+        const nextChildren = previousTransitionChildrenRef.current
+        const tChildIdx = nextChildren.findIndex(({child}) => child.key === key)
         if (tChildIdx !== -1) {
-          const nextChildren = previousTransitionChildrenRef.current
-          const tChild = {...nextChildren[tChildIdx], status: TransitionStatus.ENTERING}
+          const tChild = {...nextChildren[tChildIdx]!, status: TransitionStatus.ENTERING}
           previousTransitionChildrenRef.current = [
             ...nextChildren.slice(0, tChildIdx),
             tChild,

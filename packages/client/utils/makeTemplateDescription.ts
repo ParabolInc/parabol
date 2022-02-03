@@ -3,8 +3,11 @@ import {readInlineData} from 'relay-runtime'
 import {makeTemplateDescription_template$key} from '../__generated__/makeTemplateDescription_template.graphql'
 import relativeDate from './date/relativeDate'
 
-const makeTemplateDescription = (lowestScope: string, templateRef: any) => {
-  const template = readInlineData<makeTemplateDescription_template$key>(
+const makeTemplateDescription = (
+  lowestScope: string,
+  templateRef: makeTemplateDescription_template$key
+) => {
+  const template = readInlineData(
     graphql`
       fragment makeTemplateDescription_template on MeetingTemplate @inline {
         lastUsedAt
