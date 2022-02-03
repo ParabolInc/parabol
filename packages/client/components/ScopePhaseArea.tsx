@@ -75,13 +75,13 @@ const ScopePhaseArea = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   if (!viewerMeetingMember) return null
-  const {user} = viewerMeetingMember
+  const {user, teamMember} = viewerMeetingMember
   const {featureFlags} = user
-  const gitlabIntegration = viewerMeetingMember.teamMember.integrations?.gitlab
-  const hasGitLabProvider = !!(
-    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
+  const gitlabIntegration = teamMember.integrations.gitlab
+  const isGitLabProviderAvailable = !!(
+    gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
   )
-  const allowGitLab = hasGitLabProvider && featureFlags.gitlab
+  const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
   const tabs = allowGitLab ? [...baseTabs, {icon: <GitLabSVG />, label: 'GitLab'}] : baseTabs
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {

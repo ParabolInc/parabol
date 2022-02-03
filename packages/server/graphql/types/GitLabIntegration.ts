@@ -1,6 +1,4 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {getUserId} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
@@ -15,7 +13,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async (
         {teamId, userId}: {teamId: string; userId: string},
         _args: unknown,
-        {dataLoader}: GQLContext
+        {dataLoader}
       ) => {
         return dataLoader
           .get('teamMemberIntegrationAuths')
@@ -26,7 +24,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The cloud provider the team member may choose to integrate with. Nullable based on env vars',
       type: IntegrationProviderOAuth2,
-      resolve: async (_source: unknown, _args: unknown, {dataLoader}: GQLContext) => {
+      resolve: async (_source: unknown, _args: unknown, {dataLoader}) => {
         const [globalProvider] = await dataLoader
           .get('sharedIntegrationProviders')
           .load({service: 'gitlab', orgTeamIds: ['aGhostTeam'], teamIds: []})
@@ -36,17 +34,8 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     sharedProviders: {
       description: 'The non-global providers shared with the team or organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderOAuth2))),
-      resolve: async (
-        {teamId}: {teamId: string},
-        _args: unknown,
-        {authToken, dataLoader}: GQLContext
-      ) => {
-        const viewerId = getUserId(authToken)
-        const team = await dataLoader.get('teams').load(teamId)
-        if (!team) {
-          standardError(new Error('Team not found'), {userId: viewerId})
-          return []
-        }
+      resolve: async ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
+        const team = await dataLoader.get('teams').loadNonNull(teamId)
         const {orgId} = team
         const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
         const orgTeamIds = orgTeams.map(({id}) => id)
