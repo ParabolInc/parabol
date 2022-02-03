@@ -9,7 +9,7 @@ import GitLabIntegration from './GitLabIntegration'
 import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
 
-const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
+const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'TeamMemberIntegrations',
   description: 'All the available integrations available for this team member',
   fields: () => ({
