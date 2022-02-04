@@ -3,6 +3,7 @@ import React from 'react'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import useModal from '~/hooks/useModal'
+import {isOldBrowserError} from '~/utils/isOldBrowserError'
 
 const ErrorBlock = styled('div')({
   alignItems: 'center',
@@ -25,13 +26,13 @@ const Link = styled('a')({
 interface Props {
   error: Error
   eventId: string
-  isOldBrowserErr?: boolean
 }
 
 const ErrorComponent = (props: Props) => {
-  const {error, eventId, isOldBrowserErr = false} = props
+  const {error, eventId} = props
   console.error(error)
   const {modalPortal, openPortal, closePortal} = useModal()
+  const isOldBrowserErr = isOldBrowserError(error.message)
 
   if (isOldBrowserErr) {
     const url = 'https://browser-update.org/update-browser.html'

@@ -6,6 +6,7 @@ import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMu
 import {LocalStorageKey} from '~/types/constEnums'
 import safeInitLogRocket from '../utils/safeInitLogRocket'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
+import {isOldBrowserError} from '../utils/isOldBrowserError'
 
 interface Props extends WithAtmosphereProps {
   fallback?: (error: Error, eventId: string) => ReactNode
@@ -40,8 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
     const {viewerId} = atmosphere
     const store = atmosphere.getStore()
     const email = (store as any)?._recordSource?._records?.[viewerId]?.email ?? ''
-    const oldBrowserErrors = ['flatMap is not a function']
-    const isOldBrowserErr = !!oldBrowserErrors.find((err) => error.message.includes(err))
+    const isOldBrowserErr = isOldBrowserError(error.message)
     if (viewerId) {
       Sentry.configureScope((scope) => {
         scope.setUser({email, id: viewerId})
@@ -71,13 +71,13 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   render() {
-    const {error, eventId, isOldBrowserErr} = this.state
+    const {error, eventId} = this.state
     if (error && eventId) {
       const {fallback} = this.props
       return fallback ? (
         fallback(error, eventId)
       ) : (
-        <ErrorComponent error={error} eventId={eventId} isOldBrowserErr={isOldBrowserErr} />
+        <ErrorComponent error={error} eventId={eventId} />
       )
     }
     // Normally, just render children
