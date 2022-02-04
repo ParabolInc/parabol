@@ -3,13 +3,10 @@ import {GraphQLResolveInfo} from 'graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from './JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from './GitHubTaskIntegrationManager'
-import {Loaders} from '../dataloader/RootDataLoader'
 import {RValue} from '../database/stricterR'
 import Task from '../database/types/Task'
-import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {Doc} from '../utils/convertContentStateToADF'
-import {GQLContext} from '../graphql/graphql'
-import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 
 export type CreateTaskResponse = {
   error?: {
@@ -20,10 +17,8 @@ export type CreateTaskResponse = {
 
 export interface TaskIntegrationManager {
   title: string
-  authLoaderKey: Loaders
 
   createTask(params: {
-    auth: AtlassianAuth | GitHubAuth
     accessUserId: string
     rawContentStr: string
     projectId: string
@@ -41,13 +36,28 @@ export interface TaskIntegrationManager {
 }
 
 export default class TaskIntegrationManagerFactory {
-  public static getManager(
-    service: IntegrationProviderServiceEnumType
-  ): TaskIntegrationManager | undefined {
-    return service === 'jira'
-      ? new JiraTaskIntegrationManager()
-      : service === 'github'
-      ? new GitHubTaskIntegrationManager()
-      : undefined
+  public static async initManager(
+    dataLoader: DataLoaderWorker,
+    service: IntegrationProviderServiceEnumType,
+    {teamId, userId}: {teamId: string; userId: string}
+  ): Promise<TaskIntegrationManager | undefined | null> {
+    let auth
+    let manager
+
+    if (service === 'jira') {
+      auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+      manager = new JiraTaskIntegrationManager(auth)
+    }
+
+    if (service === 'github') {
+      auth = await dataLoader.get('githubAuth').load({teamId, userId})
+      manager = new GitHubTaskIntegrationManager(auth)
+    }
+
+    if (!auth) {
+      return null
+    }
+
+    return manager
   }
 }

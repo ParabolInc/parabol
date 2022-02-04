@@ -68,31 +68,32 @@ export default {
       )
     }
 
-    const integrationManager = TaskIntegrationManagerFactory.getManager(integrationProviderService)
-
-    if (!integrationManager) {
-      return standardError(new Error('Integration provider is not supported'))
-    }
-
-    const authDataLoader = dataLoader.get(integrationManager.authLoaderKey)
-    const [viewerAuth, assigneeAuth, team, teamMembers] = await Promise.all([
-      authDataLoader.load({teamId: teamId, userId: viewerId}),
-      userId ? authDataLoader.load({teamId: teamId, userId}) : null,
+    const [viewerTaskManager, assigneeTaskManager, team, teamMembers] = await Promise.all([
+      TaskIntegrationManagerFactory.initManager(dataLoader, integrationProviderService, {
+        teamId: teamId,
+        userId: viewerId
+      }),
+      userId
+        ? TaskIntegrationManagerFactory.initManager(dataLoader, integrationProviderService, {
+            teamId: teamId,
+            userId
+          })
+        : null,
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
 
-    const auth = viewerAuth ?? assigneeAuth
-    const accessUserId = viewerAuth ? viewerId : assigneeAuth ? userId : null
+    const taskIntegrationManager = viewerTaskManager ?? assigneeTaskManager
+    const accessUserId = viewerTaskManager ? viewerId : assigneeTaskManager ? userId : null
     const teamMember = teamMembers.find(({userId}) => userId === viewerId)
 
-    if (!auth) {
+    if (!taskIntegrationManager) {
       return standardError(new Error('No auth exists for a given task!'), {userId: viewerId})
     }
 
     if (!accessUserId) {
       return standardError(
-        new Error(`Neither you nor the assignee has access to ${integrationManager.title}`),
+        new Error(`Neither you nor the assignee has access to ${taskIntegrationManager.title}`),
         {
           userId: viewerId
         }
@@ -113,7 +114,7 @@ export default {
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
       userId && viewerId !== userId
-        ? integrationManager.getCreatedBySomeoneElseComment(
+        ? taskIntegrationManager.getCreatedBySomeoneElseComment(
             viewerName,
             assigneeName,
             team.name,
@@ -121,8 +122,7 @@ export default {
           )
         : undefined
 
-    const {error, integrationData} = await integrationManager.createTask({
-      auth,
+    const {error, integrationData} = await taskIntegrationManager.createTask({
       accessUserId,
       rawContentStr,
       projectId,
@@ -151,7 +151,7 @@ export default {
 
     segmentIo.track({
       userId: viewerId,
-      event: `Published Task to ${integrationManager.title}`,
+      event: `Published Task to ${taskIntegrationManager.title}`,
       properties: {
         teamId,
         meetingId

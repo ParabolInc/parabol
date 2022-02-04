@@ -8,7 +8,11 @@ import {Doc} from '../utils/convertContentStateToADF'
 
 export default class JiraTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira'
-  public authLoaderKey = 'freshAtlassianAuth' as const
+  private readonly auth: AtlassianAuth
+
+  constructor(auth: AtlassianAuth) {
+    this.auth = auth
+  }
 
   getCreatedBySomeoneElseComment(
     viewerName: string,
@@ -20,13 +24,11 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
   }
 
   async createTask({
-    auth,
     accessUserId,
     rawContentStr,
     projectId,
     createdBySomeoneElseComment
   }: {
-    auth: AtlassianAuth
     accessUserId: string
     rawContentStr: string
     projectId: string
@@ -38,7 +40,7 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
       rawContentStr,
       cloudId,
       projectKey,
-      auth,
+      this.auth,
       createdBySomeoneElseComment
     )
 

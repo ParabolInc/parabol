@@ -9,7 +9,11 @@ import {GQLContext} from '../graphql/graphql'
 
 export default class GitHubTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'GitHub'
-  public authLoaderKey = 'githubAuth' as const
+  private readonly auth: GitHubAuth
+
+  constructor(auth: GitHubAuth) {
+    this.auth = auth
+  }
 
   getCreatedBySomeoneElseComment(
     viewerName: string,
@@ -21,7 +25,6 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
   }
 
   async createTask({
-    auth,
     accessUserId,
     rawContentStr,
     projectId,
@@ -29,7 +32,6 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
     context,
     info
   }: {
-    auth: GitHubAuth
     accessUserId: string
     rawContentStr: string
     projectId: string
@@ -43,7 +45,7 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
       rawContentStr,
       repoOwner,
       repoName,
-      auth,
+      this.auth,
       context,
       info,
       createdBySomeoneElseComment
