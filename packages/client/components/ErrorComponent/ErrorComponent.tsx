@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {useEffect} from 'react'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useModal from '~/hooks/useModal'
+import SendClientSegmentEventMutation from '~/mutations/SendClientSegmentEventMutation'
 
 const ErrorBlock = styled('div')({
   alignItems: 'center',
@@ -29,10 +31,20 @@ interface Props {
 
 const ErrorComponent = (props: Props) => {
   const {error, eventId} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   console.error(error)
   const {modalPortal, openPortal, closePortal} = useModal()
   const oldBrowserErrs = ['flatMap is not a function']
-  const isOldBrowserErr = oldBrowserErrs.find((err) => error.message.includes(err))
+  const isOldBrowserErr = !!oldBrowserErrs.find((err) => error.message.includes(err))
+
+  useEffect(() => {
+    if (isOldBrowserErr) return
+    SendClientSegmentEventMutation(atmosphere, 'Fatal Error', {
+      viewerId
+    })
+  }, [])
+
   if (isOldBrowserErr) {
     const url = 'https://browser-update.org/update-browser.html'
     return (
