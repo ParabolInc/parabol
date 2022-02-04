@@ -141,9 +141,7 @@ module.exports = {
       __CLIENT__: true,
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
-      'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
       // Environment variables go in the __ACTION__ object above, not here
       // This build may be deployed to many different environments

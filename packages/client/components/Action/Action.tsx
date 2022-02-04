@@ -33,6 +33,7 @@ const InvitationLink = lazy(() =>
 const Action = memo(() => {
   useTrebuchetEvents()
   useServiceWorkerUpdater()
+  const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   return (
     <>
       <Global
@@ -63,13 +64,13 @@ const Action = memo(() => {
               component={DemoMeeting}
             />
             <Route path='/retrospective-demo-summary/:urlAction?' component={DemoSummary} />
-            {window.__ACTION__.AUTH_INTERNAL_ENABLED &&
+            {isInternalAuthEnabled &&
               <Route
               exact
               path={`/forgot-password`}
               render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
             />}
-            {window.__ACTION__.AUTH_INTERNAL_ENABLED && <Route
+            {isInternalAuthEnabled && <Route
               path={`/forgot-password/submitted`}
               render={(p) => <AuthenticationPage {...p} page={`forgot-password/submitted`} />}
             />}

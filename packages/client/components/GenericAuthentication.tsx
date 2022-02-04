@@ -70,6 +70,10 @@ const GenericAuthentication = (props: Props) => {
   const params = new URLSearchParams(location.search)
   const email = params.get('email')
 
+  const isGoogleAuthEnabled = window.__ACTION__.AUTH_GOOGLE_ENABLED
+  const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
+  const isSSOAuthEnabled = window.__ACTION__.AUTH_SSO_ENABLED
+
   if (page === 'forgot-password') {
     return <ForgotPasswordPage goToPage={goToPage} />
   }
@@ -99,13 +103,13 @@ const GenericAuthentication = (props: Props) => {
           {counterAction}
         </BrandedLink>
       </DialogSubTitle>
-      {window.__ACTION__.AUTH_GOOGLE_ENABLED && <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />}
+      {isGoogleAuthEnabled && <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />}
       {
-        (window.__ACTION__.AUTH_GOOGLE_ENABLED && (window.__ACTION__.AUTH_INTERNAL_ENABLED || window.__ACTION__.AUTH_SSO_ENABLED)) &&
+        (isGoogleAuthEnabled && (isInternalAuthEnabled || isSSOAuthEnabled)) &&
         <HorizontalSeparator margin='1rem 0 0' text='or' />
       }
       {
-        (window.__ACTION__.AUTH_INTERNAL_ENABLED || window.__ACTION__.AUTH_SSO_ENABLED) &&
+        (isInternalAuthEnabled || isSSOAuthEnabled) &&
         <EmailPasswordAuthForm
           email={email || ''}
           isSignin={!isCreate}
@@ -116,7 +120,7 @@ const GenericAuthentication = (props: Props) => {
       }
       {isCreate ? (
         <AuthPrivacyFooter />
-      ) : window.__ACTION__.AUTH_INTERNAL_ENABLED && (
+      ) : isInternalAuthEnabled && (
         <ForgotPasswordLink onClick={onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
       )}
     </AuthenticationDialog>
