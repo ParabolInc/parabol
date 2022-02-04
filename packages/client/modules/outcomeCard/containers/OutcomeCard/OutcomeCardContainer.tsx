@@ -15,7 +15,6 @@ import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent
 import isAndroid from '../../../../utils/draftjs/isAndroid'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
-import {matchPath} from 'react-router'
 
 const Wrapper = styled('div')({
   outline: 'none'
@@ -30,10 +29,12 @@ interface Props {
   task: OutcomeCardContainer_task
   clearIsCreatingNewTask?: () => void
   dataCy: string
+  isMyMeetingSection?: boolean
+  meetingId?: string
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy} = props
+  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy, isMyMeetingSection, meetingId} = props
   const {id: taskId, team, content} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
@@ -45,19 +46,14 @@ const OutcomeCardContainer = memo((props: Props) => {
   const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 
   React.useEffect(() => {
-    const {pathname} = window.location
-    const meetingRoute = matchPath<{meetingId: string}>(pathname, {path: '/meet/:meetingId/update'})
-    // TODO get meetingId from somewhere else maybe?
-    const {meetingId} = meetingRoute?.params ?? {}
-    if (!meetingId) return
+    if (!isMyMeetingSection || !meetingId) return
 
-    // TODO skip update when task owner !== viewer
     SetTaskHighlightMutation(atmosphere, {
       taskId,
       meetingId,
       isHighlighted: isTaskHovered
     })
-  }, [isTaskHovered])
+  }, [isTaskHovered, isMyMeetingSection])
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
@@ -125,6 +121,7 @@ const OutcomeCardContainer = memo((props: Props) => {
 export default createFragmentContainer(OutcomeCardContainer, {
   task: graphql`
     fragment OutcomeCardContainer_task on Task {
+      userId
       editors {
         userId
       }

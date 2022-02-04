@@ -106,7 +106,12 @@ class TaskColumn extends Component<Props> {
               </StatusLabelBlock>
             </ColumnHeader>
             <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
-              <TaskColumnInner area={area} tasks={tasks} />
+              <TaskColumnInner
+                area={area}
+                tasks={tasks}
+                isMyMeetingSection={isMyMeetingSection}
+                meetingId={meetingId}
+              />
               {dropProvided.placeholder}
             </ColumnBody>
           </Column>

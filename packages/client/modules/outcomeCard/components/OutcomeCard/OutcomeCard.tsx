@@ -4,7 +4,6 @@ import {EditorState} from 'draft-js'
 import React, {memo, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
-import {PALETTE} from '~/styles/paletteV3'
 import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
@@ -22,7 +21,6 @@ import {taskStatusLabels} from '../../../../utils/taskStatus'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 
-const HIGHLIGHT_COLOR = PALETTE.TERRA_300
 const RootCard = styled('div')<{
   isTaskHovered: boolean
   isTaskFocused: boolean
@@ -37,8 +35,8 @@ const RootCard = styled('div')<{
   // hover before focus, it matters
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
-    : isTaskHighlighted ?
-    `${HIGHLIGHT_COLOR} 0px 3px 5px -1px, ${HIGHLIGHT_COLOR} 0px 5px 8px 0px, ${HIGHLIGHT_COLOR} 0px 1px 14px 0px`
+    : isTaskHighlighted
+    ? Elevation.CARD_HIGHLIGHTED
     : isTaskFocused
     ? cardFocusShadow
     : isTaskHovered

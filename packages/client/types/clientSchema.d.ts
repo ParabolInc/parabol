@@ -1,7 +1,6 @@
 import {
   INewMeeting,
   IRemoteReflectionDrag,
-
   IRetroReflection,
   IRetrospectiveMeeting,
   NewMeetingPhase,
@@ -11,6 +10,7 @@ import {
 export interface ClientNewMeeting extends INewMeeting {
   localPhase: NewMeetingPhase
   localStage: NewMeetingStage
+  highlightedTaskId?: string
 }
 
 export interface ClientRetrospectiveMeeting extends IRetrospectiveMeeting {
@@ -18,6 +18,7 @@ export interface ClientRetrospectiveMeeting extends IRetrospectiveMeeting {
   localPhase: NewMeetingPhase
   localStage: NewMeetingStage
   reflectionsInFlight: IRetroReflection[]
+  highlightedTaskId?: string
 }
 
 export interface ClientReflectPrompt extends IReflectPrompt {
@@ -33,7 +34,7 @@ export interface ClientRetroReflection extends IRetroReflection {
 }
 
 export interface ParabolSearchQuery {
-  id: String!
-  queryString: String
+  id: string
+  queryString: string
   statusFilters: [TaskStatusEnum!]
 }

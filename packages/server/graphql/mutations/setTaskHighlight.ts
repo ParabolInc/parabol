@@ -17,7 +17,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     },
     isHighlighted: {
-      type: GraphQLBoolean
+      type: new GraphQLNonNull(GraphQLBoolean)
     }
   },
   async resolve(
@@ -39,7 +39,7 @@ export default {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
     if (task.userId !== viewerId) {
-      return standardError(new Error('Task not found'), {userId: viewerId})
+      return standardError(new Error('Not your turn'), {userId: viewerId})
     }
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {

@@ -17,10 +17,12 @@ interface Props {
   area: AreaEnum
   idx: number
   task: DraggableTask_task
+  isMyMeetingSection?: boolean
+  meetingId?: string
 }
 
 const DraggableTask = (props: Props) => {
-  const {area, idx, task} = props
+  const {area, idx, task, isMyMeetingSection, meetingId} = props
   return (
     <Draggable draggableId={task.id} index={idx} disableInteractiveElementBlocking={false}>
       {(dragProvided: DraggableProvided, dragSnapshot: DraggableStateSnapshot) => (
@@ -34,6 +36,8 @@ const DraggableTask = (props: Props) => {
             area={area}
             task={task}
             isDraggingOver={dragSnapshot.draggingOver as TaskStatusEnum}
+            isMyMeetingSection={isMyMeetingSection}
+            meetingId={meetingId}
           />
         </DraggableStyles>
       )}

@@ -16,6 +16,7 @@ import {
   NavigateMeetingMutationVariables
 } from '../__generated__/NavigateMeetingMutation.graphql'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
+import {ITask} from '~/types/graphql'
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
@@ -99,6 +100,14 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     .getValue('id')!
   const meeting = store.get<ClientRetrospectiveMeeting>(meetingId)
   if (!meeting) return
+
+  // clear all highlights
+  const highlightedTaskId = meeting.getValue('highlightedTaskId')
+  if (highlightedTaskId) {
+    const task = store.get<ITask>(highlightedTaskId)
+    task?.setValue(false, 'isHighlighted')
+  }
+
   const viewerStageId = safeProxy(meeting)
     .getLinkedRecord('localStage')
     .getValue('id')
