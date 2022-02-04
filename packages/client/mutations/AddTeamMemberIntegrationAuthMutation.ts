@@ -3,16 +3,6 @@ import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 import {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 
-graphql`
-  fragment AddTeamMemberIntegrationAuthMutation_part on AddTeamMemberIntegrationAuthSuccess {
-    teamMember {
-      ...GitLabProviderRowTeamMember
-      ...MattermostProviderRowTeamMember
-      ...JiraServerProviderRowTeamMember
-    }
-  }
-`
-
 const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID!
@@ -33,7 +23,13 @@ const mutation = graphql`
           message
         }
       }
-      ...AddTeamMemberIntegrationAuthMutation_part @relay(mask: false)
+      ... on AddTeamMemberIntegrationAuthSuccess {
+        teamMember {
+          ...GitLabProviderRowTeamMember
+          ...ScopePhaseAreaGitLab_teamMember
+          ...MattermostProviderRowTeamMember
+        }
+      }
     }
   }
 `
