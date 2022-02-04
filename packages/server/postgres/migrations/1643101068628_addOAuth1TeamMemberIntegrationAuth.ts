@@ -16,7 +16,7 @@ export async function down() {
   await client.connect()
   await client.query(`
     ALTER TABLE "TeamMemberIntegrationAuth"
-      DROP COLUMN "accessTokenSecret";
+      DROP COLUMN IF EXISTS "accessTokenSecret";
   `)
   await client.end()
 }

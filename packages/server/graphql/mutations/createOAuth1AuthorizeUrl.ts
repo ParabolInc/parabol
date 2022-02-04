@@ -40,18 +40,21 @@ export default {
       })
     }
 
-    const manager = new JiraServerOAuth1Manager(
-      provider.serverBaseUrl,
-      provider.consumerKey,
-      provider.consumerSecret
-    )
-    const url = await manager.requestToken()
+    if (provider.service === 'jiraServer') {
+      const manager = new JiraServerOAuth1Manager(
+        provider.serverBaseUrl,
+        provider.consumerKey,
+        provider.consumerSecret
+      )
+      const url = await manager.requestToken()
 
-    if (url instanceof Error) {
-      return standardError(url)
+      if (url instanceof Error) {
+        return standardError(url)
+      }
+      return {
+        url
+      }
     }
-    return {
-      url
-    }
+    return standardError(new Error('Service not supported'), {tags: {service: provider.service}})
   }
 }
