@@ -24,8 +24,8 @@ export async function down() {
   DO $$
   BEGIN
     ALTER TABLE "IntegrationProvider"
-      DROP COLUMN "consumerKey",
-      DROP COLUMN "consumerSecret",
+      DROP COLUMN IF EXISTS "consumerKey",
+      DROP COLUMN IF EXISTS "consumerSecret",
       DROP CONSTRAINT global_provider_must_be_oauth2;
 
     DELETE FROM "IntegrationProvider" WHERE "service" = 'jiraServer' OR "authStrategy" = 'oauth1';
@@ -45,7 +45,7 @@ export async function down() {
 
     ALTER TABLE "IntegrationProvider"
       ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum",
-      ALTER COLUMN "authStrategy" TYPE "IntegrationProviderAuthStrategyEnum" USING "service"::text::"IntegrationProviderAuthStrategyEnum",
+      ALTER COLUMN "authStrategy" TYPE "IntegrationProviderAuthStrategyEnum" USING "authStrategy"::text::"IntegrationProviderAuthStrategyEnum",
       ADD CONSTRAINT global_provider_must_be_oauth2 CHECK (
         "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "authStrategy" = 'oauth2')
       );

@@ -22,6 +22,7 @@ export interface IGetBestTeamIntegrationAuthQueryResult {
   accessToken: string | null;
   refreshToken: string | null;
   scopes: string | null;
+  accessTokenSecret: string | null;
   isUser: boolean | null;
 }
 
