@@ -59,7 +59,7 @@ const useMutationProps = () => {
     setSubmitting(true)
   }, [])
 
-  return {submitting, submitMutation, error, setError, onError, onCompleted}
+  return {submitting, submitMutation, error, onError, onCompleted}
 }
 
 export default useMutationProps

@@ -95,7 +95,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
   const [ssoDomain, setSSODomain] = useState('')
-  const {submitMutation, onCompleted, submitting, error, setError, onError} = useMutationProps()
+  const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {fields, onChange, setDirtyField, validateField} = useForm({
@@ -194,7 +194,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     const {value: email} = emailRes
     const signInWithSSOSucceeded = await tryLoginWithSSO(email)
     if (isSSO && !signInWithSSOSucceeded) {
-      setError(new Error('This domain is not configured for SSO. Please contact support@parabol.co'))
+      onError(new Error('This domain is not configured for SSO. Please contact support@parabol.co'))
       return
     }
     if (signInWithSSOSucceeded || passwordRes.error) return
