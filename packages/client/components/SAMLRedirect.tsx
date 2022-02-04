@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import DialogTitle from './DialogTitle'
-import DialogContent from './DialogContent'
-import StyledError from './StyledError'
-import InviteDialog from './InviteDialog'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import InviteDialog from './InviteDialog'
+import StyledError from './StyledError'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 const SAMLRedirect = () => {
@@ -15,7 +15,15 @@ const SAMLRedirect = () => {
     const params = new URLSearchParams(location.search)
     const token = params.get('token')
     const error = params.get('error')
+    let isSameOriginPopup = false
     if (window.opener) {
+      try {
+        // cross-domain attempts to access opener.location.origin will throw
+        // this makes sure that Parabol opened the popup
+        isSameOriginPopup = !!window.opener.location.origin
+      } catch {}
+    }
+    if (isSameOriginPopup) {
       // SP-initiated
       window.opener.postMessage({token, error}, window.location.origin)
     } else {

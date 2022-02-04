@@ -9,10 +9,19 @@ const AuthProvider = () => {
   useEffect(() => {
     const callOpener = async () => {
       const params = new URLSearchParams(window.location.search)
-      const state = params.get('state')
-      const code = params.get('code')
-      if (window.opener && state && code) {
-        window.opener.postMessage({state, code}, window.location.origin)
+      if (window.opener) {
+        // OAuth2
+        const state = params.get('state')
+        const code = params.get('code')
+        if (state && code) {
+          return window.opener.postMessage({state, code}, window.location.origin)
+        }
+        // OAuth1
+        const oauthToken = params.get('oauth_token')
+        const oauthVerifier = params.get('oauth_verifier')
+        if (oauthToken && oauthVerifier) {
+          return window.opener.postMessage({oauthToken, oauthVerifier}, window.location.origin)
+        }
       } else {
         setError('Error logging in')
       }

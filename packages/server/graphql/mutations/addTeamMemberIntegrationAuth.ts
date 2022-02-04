@@ -1,4 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import JiraServerOAuth1Manager, {
+  OAuth1Auth
+} from '../../integrations/jiraServer/JiraServerOAuth1Manager'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
 import upsertTeamMemberIntegrationAuth from '../../postgres/queries/upsertTeamMemberIntegrationAuth'
@@ -29,6 +32,10 @@ const addTeamMemberIntegrationAuth = {
       type: GraphQLID,
       description: 'The OAuth2 code or personal access token. Null for webhook auth'
     },
+    oauthVerifier: {
+      type: GraphQLID,
+      description: 'OAuth1 token verifier'
+    },
     redirectUri: {
       type: GraphQLURLType,
       description: 'The URL the OAuth2 token will be sent to. Null for webhook auth'
@@ -39,11 +46,13 @@ const addTeamMemberIntegrationAuth = {
     {
       providerId,
       oauthCodeOrPat,
+      oauthVerifier,
       teamId,
       redirectUri
     }: {
       providerId: string
       oauthCodeOrPat: string | null
+      oauthVerifier: string | null
       teamId: string
       redirectUri: string | null
     },
@@ -84,7 +93,7 @@ const addTeamMemberIntegrationAuth = {
       }
     }
 
-    let tokenMetadata: OAuth2Auth | Error | undefined = undefined
+    let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined = undefined
     if (authStrategy === 'oauth2') {
       if (!oauthCodeOrPat || !redirectUri)
         return {error: {message: 'Missing OAuth2 code or redirect URI'}}
@@ -92,6 +101,15 @@ const addTeamMemberIntegrationAuth = {
         const {clientId, clientSecret, serverBaseUrl} = integrationProvider
         const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
+      }
+    }
+    if (authStrategy === 'oauth1') {
+      if (!oauthCodeOrPat || !oauthVerifier)
+        return {error: {message: 'Missing OAuth1 token or verifier'}}
+      if (service === 'jiraServer') {
+        const {serverBaseUrl, consumerKey, consumerSecret} = integrationProvider
+        const manager = new JiraServerOAuth1Manager(serverBaseUrl, consumerKey, consumerSecret)
+        tokenMetadata = await manager.accessToken(oauthCodeOrPat, oauthVerifier)
       }
     }
 

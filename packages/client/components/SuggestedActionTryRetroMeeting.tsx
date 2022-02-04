@@ -8,7 +8,7 @@ import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
   suggestedAction: SuggestedActionTryRetroMeeting_suggestedAction
 }
 

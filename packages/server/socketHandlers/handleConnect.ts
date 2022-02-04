@@ -37,6 +37,11 @@ mutation ConnectSocket {
 
 const handleConnect = async (connectionContext: ConnectionContext) => {
   const {authToken, ip, id: socketId} = connectionContext
+  const {rol} = authToken
+  if (rol === 'impersonate') {
+    connectionContext.ready()
+    return null
+  }
   const result = await publishInternalGQL({authToken, ip, query, socketId})
   if (!result) return null
   const {data} = result

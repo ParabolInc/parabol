@@ -1,17 +1,19 @@
 import crypto from 'crypto'
-import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import util from 'util'
 import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
+import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import getMailManager from '../../email/getMailManager'
 import teamInviteEmailCreator from '../../email/teamInviteEmailCreator'
+import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -19,10 +21,8 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
-import appOrigin from '../../appOrigin'
-import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 
-const randomBytes = promisify(crypto.randomBytes, crypto) as (size: number) => Promise<Buffer>
+const randomBytes = util.promisify(crypto.randomBytes)
 
 export default {
   type: new GraphQLNonNull(InviteToTeamPayload),
