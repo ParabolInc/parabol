@@ -22,6 +22,7 @@ export interface IGetTeamMemberIntegrationAuthQueryResult {
   accessToken: string | null;
   refreshToken: string | null;
   scopes: string | null;
+  accessTokenSecret: string | null;
 }
 
 /** 'GetTeamMemberIntegrationAuthQuery' query type */

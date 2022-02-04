@@ -28,6 +28,7 @@ import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration
 import createImposterToken from './mutations/createImposterToken'
 import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
+import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
@@ -172,6 +173,7 @@ export default new GraphQLObjectType<any, Context>({
       createGitHubTaskIntegration,
       createJiraTaskIntegration,
       createMassInvitation,
+      createOAuth1AuthorizeUrl,
       createReflection,
       createTask,
       deleteComment,

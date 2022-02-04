@@ -20,6 +20,7 @@ interface TeamMemberIntegrationAuthPrimaryKey {
 
 interface SharedIntegrationProviderKey {
   service: IntegrationProviderServiceEnum
+  /// All team ids belonging to the organization, used for scope === 'org'
   orgTeamIds: string[]
   teamIds: string[]
 }

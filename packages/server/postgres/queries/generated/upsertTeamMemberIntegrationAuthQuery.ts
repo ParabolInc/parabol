@@ -12,7 +12,8 @@ export interface IUpsertTeamMemberIntegrationAuthQueryParams {
     service: IntegrationProviderServiceEnum | null | void,
     accessToken: string | null | void,
     refreshToken: string | null | void,
-    scopes: string | null | void
+    scopes: string | null | void,
+    accessTokenSecret: string | null | void
   };
 }
 
@@ -25,7 +26,7 @@ export interface IUpsertTeamMemberIntegrationAuthQueryQuery {
   result: IUpsertTeamMemberIntegrationAuthQueryResult;
 }
 
-const upsertTeamMemberIntegrationAuthQueryIR: any = {"name":"upsertTeamMemberIntegrationAuthQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":55,"b":58,"line":3,"col":8},"used":[{"a":311,"b":314,"line":16,"col":3}]},"transform":{"type":"pick_tuple","keys":["providerId","teamId","userId","service","accessToken","refreshToken","scopes"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO\n  \"TeamMemberIntegrationAuth\" (\n    \"providerId\",\n    \"teamId\",\n    \"userId\",\n    \"service\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"scopes\"\n  )\nVALUES\n  :auth ON CONFLICT (\"userId\", \"teamId\", \"service\") DO\nUPDATE\nSET\n  (\n    \"providerId\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"scopes\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"providerId\",\n    EXCLUDED.\"accessToken\",\n    EXCLUDED.\"refreshToken\",\n    EXCLUDED.\"scopes\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  )","loc":{"a":140,"b":630,"line":5,"col":0}}};
+const upsertTeamMemberIntegrationAuthQueryIR: any = {"name":"upsertTeamMemberIntegrationAuthQuery","params":[{"name":"auth","codeRefs":{"defined":{"a":55,"b":58,"line":3,"col":8},"used":[{"a":355,"b":358,"line":17,"col":3}]},"transform":{"type":"pick_tuple","keys":["providerId","teamId","userId","service","accessToken","refreshToken","scopes","accessTokenSecret"]}}],"usedParamSet":{"auth":true},"statement":{"body":"INSERT INTO\n  \"TeamMemberIntegrationAuth\" (\n    \"providerId\",\n    \"teamId\",\n    \"userId\",\n    \"service\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"scopes\",\n    \"accessTokenSecret\"\n  )\nVALUES\n  :auth ON CONFLICT (\"userId\", \"teamId\", \"service\") DO\nUPDATE\nSET\n  (\n    \"providerId\",\n    \"accessToken\",\n    \"refreshToken\",\n    \"scopes\",\n    \"accessTokenSecret\",\n    \"isActive\",\n    \"updatedAt\"\n  ) = (\n    EXCLUDED.\"providerId\",\n    EXCLUDED.\"accessToken\",\n    EXCLUDED.\"refreshToken\",\n    EXCLUDED.\"scopes\",\n    EXCLUDED.\"accessTokenSecret\",\n    TRUE,\n    CURRENT_TIMESTAMP\n  )","loc":{"a":159,"b":733,"line":5,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -38,7 +39,8 @@ const upsertTeamMemberIntegrationAuthQueryIR: any = {"name":"upsertTeamMemberInt
  *     "service",
  *     "accessToken",
  *     "refreshToken",
- *     "scopes"
+ *     "scopes",
+ *     "accessTokenSecret"
  *   )
  * VALUES
  *   :auth ON CONFLICT ("userId", "teamId", "service") DO
@@ -49,6 +51,7 @@ const upsertTeamMemberIntegrationAuthQueryIR: any = {"name":"upsertTeamMemberInt
  *     "accessToken",
  *     "refreshToken",
  *     "scopes",
+ *     "accessTokenSecret",
  *     "isActive",
  *     "updatedAt"
  *   ) = (
@@ -56,6 +59,7 @@ const upsertTeamMemberIntegrationAuthQueryIR: any = {"name":"upsertTeamMemberInt
  *     EXCLUDED."accessToken",
  *     EXCLUDED."refreshToken",
  *     EXCLUDED."scopes",
+ *     EXCLUDED."accessTokenSecret",
  *     TRUE,
  *     CURRENT_TIMESTAMP
  *   )

@@ -49818,9 +49818,14 @@ export interface ITeamMemberIntegrations {
   id: string;
 
   /**
-   * All things associated with an atlassian integration for a team member
+   * All things associated with an Atlassian integration for a team member
    */
   atlassian: IAtlassianIntegration | null;
+
+  /**
+   * All things associated with a Jira Server integration for a team member
+   */
+  jiraServer: IJiraServerIntegration | null;
 
   /**
    * All things associated with a GitHub integration for a team member
@@ -50159,6 +50164,125 @@ export interface IJiraSearchQuery {
 }
 
 /**
+ * Jira Server integration data for a given team member
+ */
+export interface IJiraServerIntegration {
+  __typename: 'JiraServerIntegration';
+
+  /**
+   * The OAuth1 Authorization for this team member
+   */
+  auth: ITeamMemberIntegrationAuthOAuth1 | null;
+
+  /**
+   * The non-global providers shared with the team or organization
+   */
+  sharedProviders: Array<IIntegrationProviderOAuth1>;
+}
+
+/**
+ * An integration token that connects via OAuth1
+ */
+export interface ITeamMemberIntegrationAuthOAuth1 {
+  __typename: 'TeamMemberIntegrationAuthOAuth1';
+
+  /**
+   * The token's unique identifier
+   */
+  id: string;
+
+  /**
+   * The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The GQL GUID of the DB providerId foreign key
+   */
+  providerId: string;
+
+  /**
+   * The service this token is associated with, denormalized from the provider
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
+   * true if the token configuration should be used
+   */
+  isActive: boolean;
+
+  /**
+   * The provider strategy this token connects to
+   */
+  provider: IIntegrationProviderOAuth1;
+}
+
+/**
+ * The auth credentials for a token, specific to a team member
+ */
+export type TeamMemberIntegrationAuth =
+  | ITeamMemberIntegrationAuthOAuth1
+  | ITeamMemberIntegrationAuthOAuth2
+  | ITeamMemberIntegrationAuthWebhook;
+
+/**
+ * The auth credentials for a token, specific to a team member
+ */
+export interface ITeamMemberIntegrationAuth {
+  __typename: 'TeamMemberIntegrationAuth';
+
+  /**
+   * The token's unique identifier
+   */
+  id: string;
+
+  /**
+   * The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was created
+   */
+  createdAt: any;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The GQL GUID of the DB providerId foreign key
+   */
+  providerId: string;
+
+  /**
+   * The service this token is associated with, denormalized from the provider
+   */
+  service: IntegrationProviderServiceEnum;
+
+  /**
+   * true if the token configuration should be used
+   */
+  isActive: boolean;
+
+  /**
+   * The provider to connect to
+   */
+  provider: IntegrationProvider;
+}
+
+/**
  * OAuth token for a team member
  */
 export interface IGitHubIntegration {
@@ -50316,60 +50440,6 @@ export interface ITeamMemberIntegrationAuthOAuth2 {
    * The scopes allowed on the provider
    */
   scopes: string;
-}
-
-/**
- * The auth credentials for a token, specific to a team member
- */
-export type TeamMemberIntegrationAuth =
-  | ITeamMemberIntegrationAuthOAuth2
-  | ITeamMemberIntegrationAuthWebhook;
-
-/**
- * The auth credentials for a token, specific to a team member
- */
-export interface ITeamMemberIntegrationAuth {
-  __typename: 'TeamMemberIntegrationAuth';
-
-  /**
-   * The token's unique identifier
-   */
-  id: string;
-
-  /**
-   * The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was created
-   */
-  createdAt: any;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The GQL GUID of the DB providerId foreign key
-   */
-  providerId: string;
-
-  /**
-   * The service this token is associated with, denormalized from the provider
-   */
-  service: IntegrationProviderServiceEnum;
-
-  /**
-   * true if the token configuration should be used
-   */
-  isActive: boolean;
-
-  /**
-   * The provider to connect to
-   */
-  provider: IntegrationProvider;
 }
 
 /**
@@ -55719,6 +55789,11 @@ export interface IMutation {
   createMassInvitation: CreateMassInvitationPayload;
 
   /**
+   * Generate a new OAuth1 request token and encode it in the authorization URL to start an oauth1 flow
+   */
+  createOAuth1AuthorizeUrl: ICreateOAuth1AuthorizationURLPayload | null;
+
+  /**
    * Create a new reflection
    */
   createReflection: ICreateReflectionPayload | null;
@@ -56496,6 +56571,18 @@ export interface ICreateMassInvitationOnMutationArguments {
    * If true, will void all existing mass invitations for the team member
    */
   voidOld?: boolean | null;
+}
+
+export interface ICreateOAuth1AuthorizeUrlOnMutationArguments {
+  /**
+   * Id of the integration provider with OAuth1 auth strategy
+   */
+  providerId: string;
+
+  /**
+   * Id of the team where the integration should be added
+   */
+  teamId: string;
 }
 
 export interface ICreateReflectionOnMutationArguments {
@@ -57435,6 +57522,11 @@ export interface IAddTeamMemberIntegrationAuthOnMutationArguments {
   oauthCodeOrPat?: string | null;
 
   /**
+   * OAuth1 token verifier
+   */
+  oauthVerifier?: string | null;
+
+  /**
    * The URL the OAuth2 token will be sent to. Null for webhook auth
    */
   redirectUri?: any | null;
@@ -57951,6 +58043,19 @@ export interface ICreateMassInvitationSuccess {
    * the team with the updated mass inivtation
    */
   team: ITeam;
+}
+
+/**
+ * Authorization URL constructed after creating a new request token
+ */
+export interface ICreateOAuth1AuthorizationURLPayload {
+  __typename: 'CreateOAuth1AuthorizationURLPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * Authorization URL including oauth_token to start authorization flow
+   */
+  url: string | null;
 }
 
 export interface ICreateReflectionPayload {

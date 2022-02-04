@@ -127,6 +127,7 @@
     "node-fetch": "^2.6.1",
     "node-pg-migrate": "^5.9.0",
     "nodemailer": "^6.4.6",
+    "oauth-1.0a": "^2.2.6",
     "parabol-client": "^6.45.0",
     "pg": "^8.5.1",
     "pm2": "^5.1.1",
