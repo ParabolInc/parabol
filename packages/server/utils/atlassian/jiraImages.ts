@@ -15,9 +15,10 @@ if (!serverSecret) {
 
 /**
  * Parses a JIRA issue description and replaces the image urls with Parabol's image urls
- * where the image urls are hashed and look like this: `/jira-attachements/<hash>.[ext]`
+ * where the image urls are hashed and look like this: `/jira-attachements/<image-url-hash>`
+ * @param {string} cloudId
  * @param {string} descriptionHTML - HTML string of related Jira issue description
- * @returns {UpdateJiraImagesResult} - Record of orginal image urls to hashed image urls
+ * @returns record of orginal image urls to hashed image urls
  */
 export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) => {
   const imageUrlToHash = {} as Record<string, string>
@@ -57,24 +58,22 @@ export const downloadAndCacheImage = async (
   imageUrl: string
 ) => {
   const imageKey = `jira-image:${imageUrlHash}`
-  const imageMimeTypeKey = `jira-image:mime-type:${imageUrlHash}`
-
   const redis = getRedis()
   const isImageAlreadyCached = await redis.exists(imageKey)
   if (isImageAlreadyCached) return
 
-  await redis.setBuffer(imageKey, NO_IMAGE_BUFFER, 'PX', IMAGE_TTL_MS)
+  await redis
+    .multi()
+    .hset(imageKey, {imageBuffer: NO_IMAGE_BUFFER, contentType: 'image/png'})
+    .pexpire(imageKey, IMAGE_TTL_MS)
+    .exec()
   const imageResponse = await manager.getImage(imageUrl)
-  if (!imageResponse || !imageResponse.contentType) {
-    await redis.del(imageKey)
+  if (!imageResponse?.contentType) {
+    await redis.hdel(imageKey)
     return
   }
 
-  return redis
-    .multi()
-    .setBuffer(imageKey, imageResponse.imageBuffer, 'PX', IMAGE_TTL_MS)
-    .set(imageMimeTypeKey, imageResponse.contentType, 'PX', IMAGE_TTL_MS)
-    .exec()
+  return redis.multi().hset(imageKey, imageResponse).pexpire(imageKey, IMAGE_TTL_MS).exec()
 }
 
 export const createParabolImageUrl = (hashedImageUrl: string) => {

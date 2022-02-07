@@ -6,15 +6,19 @@ import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getRedis from './utils/getRedis'
 
-const getImageFromCache = async (imgUrlHash: string, tryAgain: boolean) => {
+const getImageFromCache = async (
+  imgUrlHash: string,
+  tryAgain: boolean
+): Promise<{imageBuffer: Buffer; contentType: string} | null> => {
   const redis = getRedis()
-  const [[imageErr, imageBuffer], [contentTypeErr, contentType]] = await redis
+  const [[imageBufferErr, imageBuffer], [contentTypeErr, contentType]] = await redis
     .multi()
-    .getBuffer(`jira-image:${imgUrlHash}`)
-    .get(`jira-image:mime-type:${imgUrlHash}`)
+    .hgetBuffer(`jira-image:${imgUrlHash}`, 'imageBuffer')
+    .hget(`jira-image:${imgUrlHash}`, 'contentType')
     .exec()
 
-  if (imageErr || contentTypeErr) return null
+  if (imageBufferErr || contentTypeErr) return null
+  if (contentType === null || contentType.length === 0) return null
   if (imageBuffer === null || imageBuffer.length === 0) return null
   if (imageBuffer.length > 1) return {imageBuffer, contentType}
   if (tryAgain) {
@@ -44,7 +48,7 @@ const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpReq
   }
 
   const cachedImage = await getImageFromCache(imgUrlHash, true)
-  if (!cachedImage || !cachedImage.imageBuffer || !cachedImage.contentType) {
+  if (!cachedImage?.imageBuffer || !cachedImage?.contentType) {
     await servePlaceholderImage(res)
     return
   }
