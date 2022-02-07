@@ -30,7 +30,7 @@ export default {
     const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
     const [userIntegrationIds, allIntegrations] = await Promise.all([
       getUserIntegrationIds(userId, teamId, permLookup),
-      fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+      fetchAllIntegrations(teamId, userId, context, info)
     ])
     const orderedIntegrations: Integration[] = []
     const idSet = new Set()

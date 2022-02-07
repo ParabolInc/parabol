@@ -1,20 +1,20 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
 import {JiraProject} from 'parabol-client/utils/AtlassianManager'
-import {DataLoaderWorker} from '../../graphql'
 import fetchAtlassianProjects from './fetchAtlassianProjects'
 import fetchGitHubRepos, {GitHubRepo} from './fetchGitHubRepos'
 
 export type Integration = JiraProject | GitHubRepo
 
 const fetchAllIntegrations = async (
-  dataLoader: DataLoaderWorker,
   teamId: string,
   userId: string,
-  context: any,
+  context: GQLContext,
   info: GraphQLResolveInfo
 ) => {
+  const {dataLoader} = context
   const results = (await Promise.allSettled([
-    fetchAtlassianProjects(dataLoader, teamId, userId),
+    fetchAtlassianProjects(teamId, userId, context),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info)
   ])) as PromiseSettledResult<Integration[]>[]
 

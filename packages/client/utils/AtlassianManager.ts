@@ -491,7 +491,7 @@ export default abstract class AtlassianManager {
   }
 
   async getAllProjects(cloudIds: string[]) {
-    const projects = [] as (JiraProject & {cloudId: string})[]
+    const projects = [] as JiraProject[]
     let error: Error | undefined
     const getProjectPage = async (cloudId: string, url: string) => {
       const res = await this.get<JiraProjectResponse>(url)
