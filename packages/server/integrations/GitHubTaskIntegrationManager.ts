@@ -25,14 +25,12 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
   }
 
   async createTask({
-    accessUserId,
     rawContentStr,
     projectId,
     createdBySomeoneElseComment,
     context,
     info
   }: {
-    accessUserId: string
     rawContentStr: string
     projectId: string
     createdBySomeoneElseComment?: string
@@ -60,14 +58,12 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
     const {issueNumber} = res
 
     return {
-      integrationData: {
-        integrationHash: GitHubIssueId.join(projectId, issueNumber),
-        integration: {
-          accessUserId,
-          service: 'github',
-          issueNumber,
-          nameWithOwner: projectId
-        }
+      integrationHash: GitHubIssueId.join(projectId, issueNumber),
+      integration: {
+        accessUserId: this.auth.userId,
+        service: 'github',
+        issueNumber,
+        nameWithOwner: projectId
       }
     }
   }

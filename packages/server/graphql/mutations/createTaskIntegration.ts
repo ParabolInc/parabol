@@ -122,8 +122,7 @@ export default {
           )
         : undefined
 
-    const {error, integrationData} = await taskIntegrationManager.createTask({
-      accessUserId,
+    const createTaskResponse = await taskIntegrationManager.createTask({
       rawContentStr,
       projectId,
       createdBySomeoneElseComment,
@@ -131,15 +130,15 @@ export default {
       info
     })
 
-    if (error) {
-      return {error: {message: error.message}}
+    if ('error' in createTaskResponse) {
+      return {error: {message: createTaskResponse.error.message}}
     }
 
     await r
       .table('Task')
       .get(taskId)
       .update({
-        ...integrationData,
+        ...createTaskResponse,
         updatedAt: now
       })
       .run()

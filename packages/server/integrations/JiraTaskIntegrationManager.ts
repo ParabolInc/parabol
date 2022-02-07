@@ -24,12 +24,10 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
   }
 
   async createTask({
-    accessUserId,
     rawContentStr,
     projectId,
     createdBySomeoneElseComment
   }: {
-    accessUserId: string
     rawContentStr: string
     projectId: string
     createdBySomeoneElseComment?: Doc
@@ -55,14 +53,12 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
     const {issueKey} = res
 
     return {
-      integrationData: {
-        integrationHash: JiraIssueId.join(cloudId, issueKey),
-        integration: {
-          accessUserId,
-          service: 'jira',
-          cloudId,
-          issueKey
-        }
+      integrationHash: JiraIssueId.join(cloudId, issueKey),
+      integration: {
+        accessUserId: this.auth.userId,
+        service: 'jira',
+        cloudId,
+        issueKey
       }
     }
   }

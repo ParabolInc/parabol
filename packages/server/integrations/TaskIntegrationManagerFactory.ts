@@ -3,23 +3,22 @@ import {GraphQLResolveInfo} from 'graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from './JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from './GitHubTaskIntegrationManager'
-import {RValue} from '../database/stricterR'
 import Task from '../database/types/Task'
 import {Doc} from '../utils/convertContentStateToADF'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 
-export type CreateTaskResponse = {
-  error?: {
-    message: string
-  }
-  integrationData?: RValue<DeepPartial<Task>>
-}
+export type CreateTaskResponse =
+  | DeepPartial<Task>
+  | {
+      error: {
+        message: string
+      }
+    }
 
 export interface TaskIntegrationManager {
   title: string
 
   createTask(params: {
-    accessUserId: string
     rawContentStr: string
     projectId: string
     createdBySomeoneElseComment?: Doc | string
@@ -40,24 +39,17 @@ export default class TaskIntegrationManagerFactory {
     dataLoader: DataLoaderWorker,
     service: IntegrationProviderServiceEnumType,
     {teamId, userId}: {teamId: string; userId: string}
-  ): Promise<TaskIntegrationManager | undefined | null> {
-    let auth
-    let manager
-
+  ): Promise<TaskIntegrationManager | null> {
     if (service === 'jira') {
-      auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
-      manager = new JiraTaskIntegrationManager(auth)
+      const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+      return auth && new JiraTaskIntegrationManager(auth)
     }
 
     if (service === 'github') {
-      auth = await dataLoader.get('githubAuth').load({teamId, userId})
-      manager = new GitHubTaskIntegrationManager(auth)
+      const auth = await dataLoader.get('githubAuth').load({teamId, userId})
+      return auth && new GitHubTaskIntegrationManager(auth)
     }
 
-    if (!auth) {
-      return null
-    }
-
-    return manager
+    return null
   }
 }
