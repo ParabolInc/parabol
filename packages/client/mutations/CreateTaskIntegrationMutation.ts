@@ -34,7 +34,7 @@ graphql`
           }
         }
         ...TaskIntegrationLinkIntegrationGitHub
-        ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationJira
       }
       updatedAt
       teamId
