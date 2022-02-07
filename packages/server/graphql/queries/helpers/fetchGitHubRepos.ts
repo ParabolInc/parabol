@@ -1,3 +1,4 @@
+import {GQLContext} from './../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
 import {GetRepositoriesQuery} from '../../../types/githubTypes'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
@@ -10,48 +11,12 @@ export interface GitHubRepo {
   hasIssuesEnabled?: boolean
   service: 'github'
 }
-interface GetRepoOrg {
-  repositories: {
-    nodes: GitHubRepo[]
-  }
-}
-
-const getUniqueRepos = <T extends GetRepoOrg, V extends GitHubRepo>(
-  orgs: T[],
-  personalRepos: V[]
-) => {
-  const repoSet = new Set()
-  const repos = [] as GitHubRepo[]
-
-  // add in the organization repos
-  for (let i = 0; i < orgs.length; i++) {
-    const organization = orgs[i]
-    if (!organization) continue
-    const orgRepos = organization.repositories.nodes
-    if (!orgRepos) continue
-    for (let j = 0; j < orgRepos.length; j++) {
-      const repo = orgRepos[j]
-      if (!repo) continue
-      repoSet.add(repo.nameWithOwner)
-      repos.push(repo)
-    }
-  }
-  // add in repos from personal & collaborations
-  for (let i = 0; i < personalRepos.length; i++) {
-    const repo = personalRepos[i]
-    if (!repo) continue
-    if (!repoSet.has(repo.nameWithOwner)) {
-      repos.push(repo)
-    }
-  }
-  return repos
-}
 
 const fetchGitHubRepos = async (
   teamId: string,
   userId: string,
   dataLoader: DataLoaderWorker,
-  context: any,
+  context: GQLContext,
   info: GraphQLResolveInfo
 ) => {
   const auth = await dataLoader.get('githubAuth').load({teamId, userId})
@@ -65,16 +30,24 @@ const fetchGitHubRepos = async (
   }
   const {viewer} = data
   const {organizations, repositories} = viewer
-  const orgs = organizations.nodes || []
-  const personalRepos = repositories.nodes || []
-  const uniqueRepos = getUniqueRepos(orgs as any, personalRepos as any)
-  return uniqueRepos
-    .filter(({hasIssuesEnabled}) => hasIssuesEnabled)
-    .map((repo) => ({
-      id: repo.nameWithOwner,
+  const orgs = organizations.nodes
+  const orgRepos = orgs?.flatMap((org) => org?.repositories.nodes) || []
+  const viewerRepos = repositories.nodes || []
+  const allRepos = [...viewerRepos, ...orgRepos]
+  const repoSet = new Set<string>()
+  const repos = [] as {id: string; service: 'github'; nameWithOwner: string}[]
+  allRepos.forEach((repo) => {
+    if (!repo) return
+    const {nameWithOwner, hasIssuesEnabled} = repo
+    if (repoSet.has(nameWithOwner) || !hasIssuesEnabled) return
+    repoSet.add(nameWithOwner)
+    repos.push({
+      id: nameWithOwner,
       service: 'github',
-      nameWithOwner: repo.nameWithOwner
-    }))
+      nameWithOwner
+    })
+  })
+  return repos
 }
 
 export default fetchGitHubRepos
