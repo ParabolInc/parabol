@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {captureException} from '@sentry/minimal'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -83,7 +84,9 @@ const GroupingKanban = (props: Props) => {
       const {reflections, promptId} = group
       container[promptId] = container[promptId] ?? []
       container[promptId]!.push(group)
-      if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
+      if (!reflections) {
+        captureException(new Error('Invalid invariant: reflectionGroup.reflections is null'))
+      } else if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }
     })
