@@ -1,8 +1,11 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import EstimateStage from './EstimateStage'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import PokerMeetingMember from './PokerMeetingMember'
+import {augmentDBStage} from '../resolvers'
+import EstimateStageDB from '../../database/types/EstimateStage'
 
 export const SetPokerSpectateSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetPokerSpectateSuccess',
@@ -20,6 +23,22 @@ export const SetPokerSpectateSuccess = new GraphQLObjectType<any, GQLContext>({
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
         return meetingMember
+      }
+    },
+    updatedStages: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(EstimateStage))),
+      description:
+        'The stages that were updated if the viewer voted and then changed to spectating',
+      resolve: async ({
+        dirtyStages,
+        teamId,
+        meetingId
+      }: {
+        dirtyStages: EstimateStageDB[]
+        teamId: string
+        meetingId: string
+      }) => {
+        return dirtyStages.map((stage) => augmentDBStage(stage, meetingId, 'ESTIMATE', teamId))
       }
     }
   })

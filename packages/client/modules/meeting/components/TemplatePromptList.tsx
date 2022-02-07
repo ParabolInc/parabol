@@ -40,6 +40,7 @@ const TemplatePromptList = (props: Props) => {
 
     const sourcePrompt = prompts[source.index]
     const destinationPrompt = prompts[destination.index]
+    if (!sourcePrompt || !destinationPrompt) return
 
     let sortOrder
     if (destination.index === 0) {
@@ -49,7 +50,7 @@ const TemplatePromptList = (props: Props) => {
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (prompts[destination.index + offset].sortOrder + destinationPrompt.sortOrder) / 2 +
+        ((prompts[destination.index + offset]?.sortOrder ?? 0) + destinationPrompt.sortOrder) / 2 +
         dndNoise()
     }
 

@@ -26,7 +26,7 @@ const resolveThreadableConnection = async (
     } else if ((threadable as TaskDB).status || (threadable as Comment).isActive) {
       // if it's a task or it's a non-deleted comment, add it
       threadablesByParentId[threadParentId] = threadablesByParentId[threadParentId] || []
-      threadablesByParentId[threadParentId].push(threadable)
+      threadablesByParentId[threadParentId]!.push(threadable)
     }
   })
 

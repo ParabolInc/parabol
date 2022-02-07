@@ -2,13 +2,14 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import {getUserId} from '../../../utils/authorization'
+import AuthToken from '../../../database/types/AuthToken'
 
 const safelyCastVote = async (
-  authToken,
-  meetingId,
-  userId,
-  reflectionGroupId,
-  maxVotesPerGroup
+  authToken: AuthToken,
+  meetingId: string,
+  userId: string,
+  reflectionGroupId: string,
+  maxVotesPerGroup: number
 ) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   const r = await getRethink()
@@ -38,9 +39,7 @@ const safelyCastVote = async (
     .get(reflectionGroupId)
     .update((group) => {
       return r.branch(
-        group('voterIds')
-          .count(userId)
-          .lt(maxVotesPerGroup),
+        group('voterIds').count(userId).lt(maxVotesPerGroup),
         {
           updatedAt: now,
           voterIds: group('voterIds').append(userId)

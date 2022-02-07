@@ -1,9 +1,12 @@
+import dotenv from 'dotenv'
+import dotenvExpand from 'dotenv-expand'
 import fs from 'fs'
 import path from 'path'
 import getRethink from '../../packages/server/database/rethinkDriver'
-import getProjectRoot from '../webpack/utils/getProjectRoot'
 import getRedis from '../../packages/server/utils/getRedis'
 import sendToSentry from '../../packages/server/utils/sendToSentry'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
+import primeIntegrations from './primeIntegrations'
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -33,7 +36,7 @@ const flushSocketConnections = async () => {
     })
     redis.multi(writes).exec()
   })
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     onlineTeamsStream.on('end', () => {
       resolve()
     })
@@ -55,19 +58,21 @@ const storePersistedQueries = async () => {
   }))
 
   const r = await getRethink()
-  const res = await r
-    .table('QueryMap')
-    .insert(records, {conflict: 'replace'})
-    .run()
+  const res = await r.table('QueryMap').insert(records, {conflict: 'replace'}).run()
   console.log(`Added ${res.inserted} records to the queryMap`)
 }
 
 const postDeploy = async () => {
+  const envPath = path.join(PROJECT_ROOT, '.env')
+  const myEnv = dotenv.config({path: envPath})
+  dotenvExpand(myEnv)
+
   try {
     const r = await getRethink()
     await flushSocketConnections()
     await storePersistedQueries()
     await r.getPoolMaster().drain()
+    await primeIntegrations()
   } catch (e) {
     console.log('Post deploy error', e)
   }

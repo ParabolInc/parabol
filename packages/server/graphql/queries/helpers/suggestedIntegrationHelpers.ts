@@ -29,7 +29,7 @@ export const useOnlyUserIntegrations = (
   // the user has 3+ active integrations, use those
   if (
     userIntegrationsForTeam.length >= MAX_RECENT_INTEGRATIONS &&
-    userIntegrationsForTeam[MAX_RECENT_INTEGRATIONS - 1].lastUsedAt >= aMonthAgo
+    userIntegrationsForTeam[MAX_RECENT_INTEGRATIONS - 1]!.lastUsedAt >= aMonthAgo
   ) {
     return userIntegrationsForTeam
   }

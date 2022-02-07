@@ -142,8 +142,7 @@ const CreditCardForm = (props: Props) => {
     }
 
     const handleCompleted = (data) => {
-      const [mutationName] = Object.keys(data)
-      const {error} = data[mutationName]
+      const {error} = Object.values<any>(data)[0] ?? {}
       onCompleted()
       if (error) {
         handleError(error.message, error.message)

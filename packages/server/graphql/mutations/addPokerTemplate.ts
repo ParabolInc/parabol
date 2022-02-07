@@ -49,6 +49,9 @@ const addPokerTemplate = {
     }
 
     const viewerTeam = await dataLoader.get('teams').load(teamId)
+    if (!viewerTeam) {
+      return standardError(new Error('Team not found'), {userId: viewerId})
+    }
     let data
     if (parentTemplateId) {
       const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
@@ -61,7 +64,7 @@ const addPokerTemplate = {
           return standardError(new Error('Template is scoped to team'), {userId: viewerId})
       } else if (scope === 'ORGANIZATION') {
         const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
-        if (viewerTeam.orgId !== parentTemplateTeam.orgId) {
+        if (viewerTeam.orgId !== parentTemplateTeam?.orgId) {
           return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
         }
       }
@@ -104,8 +107,7 @@ const addPokerTemplate = {
       if (allTemplates.find((template) => template.name === '*New Template')) {
         return standardError(new Error('Template already created'), {userId: viewerId})
       }
-      const team = await dataLoader.get('teams').load(teamId)
-      const {orgId} = team
+      const {orgId} = viewerTeam
 
       const newTemplate = new PokerTemplate({name: '*New Template', teamId, orgId})
       const templateId = newTemplate.id

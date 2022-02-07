@@ -52,11 +52,11 @@ const JiraScopingSearchResultItem = (props: Props) => {
   const {id: serviceTaskId, issueKey, summary, url} = issue
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation} = useMutationProps()
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const isTemp = isTempId(serviceTaskId)
   const onClick = () => {
-    if (submitting || disabled || isTemp) return
+    if (disabled || isTemp) return
     submitMutation()
     const variables = {
       meetingId,

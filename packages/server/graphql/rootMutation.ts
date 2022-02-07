@@ -6,7 +6,7 @@ import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
-import addMattermostAuth from './mutations/addMattermostAuth'
+import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addMissingJiraField from './mutations/addMissingJiraField'
 import addOrg from './mutations/addOrg'
 import addPokerTemplate from './mutations/addPokerTemplate'
@@ -18,6 +18,7 @@ import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
 import addTeam from './mutations/addTeam'
+import addTeamMemberIntegrationAuth from './mutations/addTeamMemberIntegrationAuth'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
@@ -27,6 +28,7 @@ import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration
 import createImposterToken from './mutations/createImposterToken'
 import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
+import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
@@ -75,6 +77,7 @@ import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePr
 import removeAgendaItem from './mutations/removeAgendaItem'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
+import removeIntegrationProvider from './mutations/removeIntegrationProvider'
 import removeOrgUser from './mutations/removeOrgUser'
 import removePokerTemplate from './mutations/removePokerTemplate'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
@@ -83,9 +86,9 @@ import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleV
 import removeReflection from './mutations/removeReflection'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
-import removeMattermostAuth from './mutations/removeMattermostAuth'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
+import removeTeamMemberIntegrationAuth from './mutations/removeTeamMemberIntegrationAuth'
 import renameMeeting from './mutations/renameMeeting'
 import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
@@ -116,6 +119,7 @@ import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
+import updateIntegrationProvider from './mutations/updateIntegrationProvider'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
@@ -147,7 +151,6 @@ export default new GraphQLObjectType<any, Context>({
       addAgendaItem,
       addAtlassianAuth,
       addComment,
-      addMattermostAuth,
       addPokerTemplate,
       addPokerTemplateDimension,
       addPokerTemplateScale,
@@ -170,6 +173,7 @@ export default new GraphQLObjectType<any, Context>({
       createGitHubTaskIntegration,
       createJiraTaskIntegration,
       createMassInvitation,
+      createOAuth1AuthorizeUrl,
       createReflection,
       createTask,
       deleteComment,
@@ -223,7 +227,6 @@ export default new GraphQLObjectType<any, Context>({
       renamePokerTemplateScale,
       removePokerTemplateScale,
       removePokerTemplateScaleValue,
-      removeMattermostAuth,
       removeReflection,
       removeSlackAuth,
       removeTeamMember,
@@ -278,6 +281,11 @@ export default new GraphQLObjectType<any, Context>({
       setTaskEstimate,
       toggleTeamDrawer,
       updateGitHubDimensionField,
-      createPoll
+      createPoll,
+      addTeamMemberIntegrationAuth,
+      addIntegrationProvider,
+      updateIntegrationProvider,
+      removeIntegrationProvider,
+      removeTeamMemberIntegrationAuth
     } as any)
 })

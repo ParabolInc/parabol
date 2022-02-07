@@ -1,31 +1,41 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {getUserId} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import GraphQLURLType from './GraphQLURLType'
+import IntegrationProviderWebhook from './IntegrationProviderWebhook'
+import TeamMemberIntegrationAuthWebhook from './TeamMemberIntegrationAuthWebhook'
 
 const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'MattermostIntegration',
-  description: 'OAuth token for a team member',
+  description: 'Integration Auth and shared providers available to the team member',
   fields: () => ({
-    isActive: {
-      description: 'true if the auth is updated & ready to use for all features, else false',
-      type: new GraphQLNonNull(GraphQLBoolean)
+    auth: {
+      description: 'The OAuth2 Authorization for this team member',
+      type: TeamMemberIntegrationAuthWebhook,
+      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+        return dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'mattermost', teamId, userId})
+      }
     },
-    webhookUrl: {
-      type: new GraphQLNonNull(GraphQLURLType),
-      description: 'the Mattermost server to integrate against'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The team that the token is linked to'
-    },
-    updatedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The timestamp the token was updated at'
-    },
-    userId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the user that integrated Mattermost'
+    sharedProviders: {
+      description: 'The non-global providers shared with the team or organization',
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderWebhook))),
+      resolve: async (
+        {teamId}: {teamId: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) => {
+        const viewerId = getUserId(authToken)
+        const team = await dataLoader.get('teams').load(teamId)
+        if (!team) return standardError(new Error('Team not found'), {userId: viewerId})
+        const {orgId} = team
+        const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
+        const orgTeamIds = orgTeams.map(({id}) => id)
+        return dataLoader
+          .get('sharedIntegrationProviders')
+          .load({service: 'mattermost', orgTeamIds, teamIds: [teamId]})
+      }
     }
   })
 })

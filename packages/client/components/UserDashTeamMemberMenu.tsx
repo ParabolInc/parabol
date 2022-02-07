@@ -5,12 +5,15 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {SearchMenuItem} from './SearchMenuItem'
 import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import useRouter from '~/hooks/useRouter'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {UserTaskViewFilterLabels} from '~/types/constEnums'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
@@ -50,30 +53,53 @@ const UserDashTeamMemberMenu = (props: Props) => {
     filteredTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
     return {
       filteredTeamMembers,
-      defaultActiveIdx: filteredTeamMembers.findIndex((teamMember) => userIds?.includes(teamMember.userId))
-        + (showAllTeamMembers ? 2 : 1)
+      defaultActiveIdx:
+        filteredTeamMembers.findIndex((teamMember) => userIds?.includes(teamMember.userId)) +
+        (showAllTeamMembers ? 2 : 1)
     }
   }, [teamIds, userIds])
 
+  const {
+    query,
+    filteredItems: matchedFilteredTeamMembers,
+    onQueryChange
+  } = useSearchFilter(filteredTeamMembers, (item) => item.preferredName)
+
   return (
     <Menu
+      keepParentFocus
       ariaLabel={'Select the team member to filter by'}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      {showAllTeamMembers &&
+      {filteredTeamMembers.length > 5 && (
+        <SearchMenuItem placeholder='Search team members' onChange={onQueryChange} value={query} />
+      )}
+      {query && matchedFilteredTeamMembers.length === 0 && (
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No team members found!
+        </EmptyDropdownMenuItemLabel>
+      )}
+      {query === '' && showAllTeamMembers && (
         <MenuItem
           key={'teamMemberFilterNULL'}
           label={UserTaskViewFilterLabels.ALL_TEAM_MEMBERS}
-          onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, null, showArchived))}
-        />}
-      {filteredTeamMembers.map((teamMember) => (
+          onClick={() =>
+            history.push(constructUserTaskFilterQueryParamURL(teamIds, null, showArchived))
+          }
+        />
+      )}
+      {matchedFilteredTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.userId}`}
           dataCy={`team-member-filter-${teamMember.userId}`}
           label={teamMember.preferredName}
-          onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))}
+          onClick={() =>
+            history.push(
+              constructUserTaskFilterQueryParamURL(teamIds, [teamMember.userId], showArchived)
+            )
+          }
         />
       ))}
     </Menu>

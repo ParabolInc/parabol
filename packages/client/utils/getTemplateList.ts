@@ -3,8 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
 import {getTemplateList_template$key} from '../__generated__/getTemplateList_template.graphql'
 
-const getTemplateList = (viewerTeamId: string, viewerOrgId: string, templateRef: any) => {
-  const template = readInlineData<getTemplateList_template$key>(
+const getTemplateList = (
+  viewerTeamId: string,
+  viewerOrgId: string,
+  templateRef: getTemplateList_template$key
+) => {
+  const template = readInlineData(
     graphql`
       fragment getTemplateList_template on MeetingTemplate @inline {
         id

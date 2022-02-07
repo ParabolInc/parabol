@@ -11,7 +11,10 @@ const MAX_CHARS = 30
 const MIN_SALIENCE = 0.1
 
 type DistanceArray = number[]
-const getNameFromLemma = (lemma: string, reflectionEntities: {lemma?: string, name: string, salience: number}[][]) => {
+const getNameFromLemma = (
+  lemma: string,
+  reflectionEntities: {lemma?: string; name: string; salience: number}[][]
+) => {
   const names = new Set<string>()
   reflectionEntities.forEach((entities) => {
     entities.forEach((entity) => {
@@ -28,7 +31,7 @@ const getNameFromLemma = (lemma: string, reflectionEntities: {lemma?: string, na
 const getTitleFromComputedGroup = (
   uniqueLemmaArr: string[],
   group: DistanceArray[],
-  reflectionEntities: {lemma: string, name: string, salience: number}[][],
+  reflectionEntities: {lemma?: string; name: string; salience: number}[][],
   reflections: any[]
 ) => {
   const sumArr = new Array(uniqueLemmaArr.length).fill(0)
@@ -49,9 +52,9 @@ const getTitleFromComputedGroup = (
   for (let ii = 0; ii < arrWithIdx.length; ii++) {
     const [totalSalience, idx] = arrWithIdx[ii]!
     if (totalSalience < MIN_SALIENCE) continue
-    const lemma = uniqueLemmaArr[idx]
-    const name = getNameFromLemma(lemma, reflectionEntities)
-    const capName = name[0].toUpperCase() + name.slice(1)
+    const lemma = uniqueLemmaArr[idx]!
+    const name = getNameFromLemma(lemma, reflectionEntities) ?? ''
+    const capName = name && name[0]!.toUpperCase() + name.slice(1)
     // if we've used 2 words & adding this word would make it look long & ugly, abort
     if (titleArr.length > MIN_ENTITIES && titleArr.join(' ').length + capName.length > MAX_CHARS) {
       break

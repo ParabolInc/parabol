@@ -36,12 +36,13 @@ const getIssueFromJira = async (
     issue: JiraGetIssueRes
   ) => void /* cb invoked when we get a fresher jira issue */,
   extraFieldIds: string[],
+  extraExpand: string[] = [],
   redisKey: string,
   requests: StoreAndNetworkRequests, // resolve originally created promise in outer fn
   tryUntil: Date
 ) => {
   // get issue from external network (jira api)
-  const res = await manager.getIssue(cloudId, issueKey, extraFieldIds)
+  const res = await manager.getIssue(cloudId, issueKey, extraFieldIds, extraExpand)
 
   if (res instanceof RateLimitError) {
     const {retryAt} = res
@@ -57,6 +58,7 @@ const getIssueFromJira = async (
       issueKey,
       pushUpdateToClient,
       extraFieldIds,
+      extraExpand,
       redisKey,
       requests,
       tryUntil
@@ -95,7 +97,8 @@ export const getIssue = async (
   pushUpdateToClient: (
     issue: JiraGetIssueRes
   ) => void /* cb invoked when we get a fresher issue from jira */,
-  extraFieldIds: string[] = []
+  extraFieldIds: string[] = [],
+  extraExpand: string[] = []
 ) => {
   return new Promise<Unpromise<ReturnType<typeof manager['getIssue']>>>((resolve) => {
     const requests = {
@@ -103,7 +106,10 @@ export const getIssue = async (
       cachedIssue: undefined
     } as StoreAndNetworkRequests
 
-    const redisKey = `jira:${cloudId}:${issueKey}:${stringify(extraFieldIds)}`
+    const redisKey = `jira:${cloudId}:${issueKey}:${stringify(extraFieldIds)}${
+      extraExpand.length > 0 ? stringify(extraExpand) : ''
+    }`
+
     const redis = getRedis()
     // get issue from redis
     redis.get(redisKey).then((res) => {
@@ -119,6 +125,7 @@ export const getIssue = async (
       issueKey,
       pushUpdateToClient,
       extraFieldIds,
+      extraExpand,
       redisKey,
       requests, // pass requests obj so jira retries resolve the originally returned promise
       tryUntil

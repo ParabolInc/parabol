@@ -3,7 +3,7 @@ import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerGoogle extends MailManager {
-  transport = new nodemailer.createTransport({
+  transport = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.MAIL_GOOGLE_USER,

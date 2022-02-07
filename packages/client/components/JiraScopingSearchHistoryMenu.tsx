@@ -13,14 +13,7 @@ import MenuItemLabel from './MenuItemLabel'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import IconButton from './IconButton'
 import {ICON_SIZE} from '../styles/typographyV2'
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 const QueryString = styled('span')({
   color: PALETTE.SLATE_600
@@ -81,7 +74,9 @@ const JiraScopingSearchHistoryMenu = (props: Props) => {
       closePortal={closePortal}
     >
       {jiraSearchQueries.length === 0 && (
-        <NoResults key='no-results'>No saved queries yet!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No saved queries yet!
+        </EmptyDropdownMenuItemLabel>
       )}
       {jiraSearchQueries.map((jiraSearchQuery) => {
         const {id: queryId, queryString, isJQL, projectKeyFilters} = jiraSearchQuery

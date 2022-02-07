@@ -15,13 +15,10 @@ interface IntranetPayload {
 
 const TOKEN_LIFE = ms('5m')
 const webhookGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  const [timestampStr, signature] = req
-    .getHeader('authorization')
-    .slice(7)
-    .split('.')
-  const timestamp = parseInt(timestampStr, 10)
+  const [timestampStr, signature] = req.getHeader('authorization').slice(7).split('.')
+  const timestamp = timestampStr && parseInt(timestampStr, 10)
   // check out
-  if (!timestamp || !signature) {
+  if (!timestampStr || !timestamp || !signature) {
     console.log('bad timestamp or sig', timestampStr, signature)
     res.writeStatus('401').end()
     return
@@ -38,12 +35,7 @@ const webhookGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: Htt
   // verify timestamp
   const segmentSig = crypto
     .createHmac('sha256', SEGMENT_FN_KEY!)
-    .update(
-      crypto
-        .createHmac('sha256', SERVER_SECRET!)
-        .update(timestampStr)
-        .digest('base64')
-    )
+    .update(crypto.createHmac('sha256', SERVER_SECRET!).update(timestampStr).digest('base64'))
     .digest('base64')
 
   if (segmentSig !== signature) {
@@ -67,7 +59,7 @@ const webhookGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: Htt
     return
   }
 
-  const {query, variables} = (body as any) as IntranetPayload
+  const {query, variables} = body as any as IntranetPayload
 
   const result = await publishWebhookGQL(query, variables)
   res.cork(() => {

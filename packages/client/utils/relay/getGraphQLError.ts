@@ -4,8 +4,7 @@ const getServerError = (errors: ReadonlyArray<PayloadError> | null | undefined) 
   (errors && errors[0]) || undefined
 const getPayloadError = (res: {[key: string]: any} | null) => {
   if (!res) return undefined
-  const [operationName] = Object.keys(res)
-  const payload = res[operationName]
+  const payload = Object.values(res)[0]
   return payload && payload.error
 }
 

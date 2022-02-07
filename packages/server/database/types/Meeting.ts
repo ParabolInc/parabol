@@ -25,7 +25,7 @@ export default abstract class Meeting {
   updatedAt = new Date()
   createdBy: string
   endedAt: Date | undefined | null = undefined
-  facilitatorStageId: string
+  facilitatorStageId: string | undefined
   facilitatorUserId: string
   meetingCount: number
   meetingNumber: number
@@ -49,7 +49,7 @@ export default abstract class Meeting {
     } = input
     this.id = id ?? generateUID()
     this.createdBy = facilitatorUserId
-    this.facilitatorStageId = phases[0].stages[0].id
+    this.facilitatorStageId = phases[0]?.stages[0]?.id
     this.facilitatorUserId = facilitatorUserId
     this.meetingCount = meetingCount
     this.meetingNumber = meetingCount + 1
