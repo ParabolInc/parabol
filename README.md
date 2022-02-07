@@ -2,7 +2,6 @@
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/parabol.svg?style=svg)](https://circleci.com/gh/ParabolInc/parabol)
-[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/parabol-inc/parabol-multiplayer-web-app)
 
 ## Overview
 
@@ -47,36 +46,33 @@ $ yarn db:start
 $ yarn dev
 ```
 
-By default, the app will run at: http://localhost:3000/
+- By default, the app will run at: http://localhost:3000/
 
-If `yarn db:start` failed and `localhost:5050` isn't working, a docker
-container, volume or image may be corrupted and need to be pruned.
+- If `yarn db:start` failed and `localhost:5050` isn't working, a docker
+  container, volume or image may be corrupted and need to be pruned.
 
-Build for production and start application:
+### Development
+
+- [Code Reviews](./docs/codeReview.md)
+- [Create new GraphQL Mutations](./scripts/codeshift/README.md)
+- [Docker](./docker/README.md)
+- [Dev.js](./scripts/README.md)
+- [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
+- [GraphiQL, Private Schema Admin](./packages/server/graphql/intranetSchema/README.md)
+- [GraphQL Executor](./packages/gql-executor/README.md)
+- [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
+- [PostgreSQL](./packages/server/postgres/README.md)
+- [RethinkDB](./packages/server/db/README.md)
+- [Shared Scripts](./packages/client/shared/README.md)
+- [VS Code Tips](.vscode/tips.md)
+
+### Deploy
 
 ```bash
 $ yarn && yarn build && yarn start
 ```
 
-### RethinkDB
-
-- Migrations are stored in `packages/server/database/migrations`
-- RethinkDB Dashboard is at [http://localhost:8080](http://localhost:8080)
-
-### PostgreSQL
-
-- pgadmin is at [http://localhost:5050](http://localhost:5050)
-- Connect using the values of `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` from your `.env`
-- Click "Add New Server" and fill out the forms with your `.env` values
-
-  - General.name = POSTGRES_DB
-  - Connection.host = 'postgres' (hardcoded from docker-compose dev.yml, not from .env!)
-  - Connection.username = POSTGRES_USER
-  - Connection.password = POSTGRES_PASSWORD
-  - Connection.maintenanceDatabase = POSTGRES_DB
-  - Connection.port = POSTGRES_PORT
-
-- Fill out the form with values from your `.env`. Set the host to `postgres`
+- [How to Ship](./docs/deployment.md)
 
 ## Getting Involved
 
@@ -88,10 +84,6 @@ get involved and how to get compensated.
 ## Have feedback, ideas or feature requests?
 
 Please review our [Discussions](https://github.com/ParabolInc/parabol/discussions) to see if there's already a similar suggestion, and if not please feel free to [start a new one](https://github.com/ParabolInc/parabol/discussions/new).
-
-## Helpful VSCode extensions
-
-We use [GraphQL](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) for IntelliSense and syntax highlighting.
 
 ## Releases
 
