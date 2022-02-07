@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import JiraProjectId from '../../../client/shared/gqlIds/JiraProjectId'
 import JiraRemoteProject from './JiraRemoteProject'
 import SuggestedIntegration, {suggestedIntegrationFields} from './SuggestedIntegration'
 import {getUserId} from '../../utils/authorization'
@@ -22,6 +23,12 @@ const SuggestedIntegrationJira = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description:
         'The name of the project, prefixed with the cloud name if more than 1 cloudId exists'
+    },
+    projectId: {
+      type: new GraphQLNonNull(GraphQLID),
+      resolve: async ({cloudId, projectKey}) => {
+        return JiraProjectId.join(cloudId, projectKey)
+      }
     },
     cloudId: {
       type: new GraphQLNonNull(GraphQLID),
