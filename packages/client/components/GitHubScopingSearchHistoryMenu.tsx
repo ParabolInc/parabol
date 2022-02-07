@@ -9,18 +9,11 @@ import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {GitHubScopingSearchHistoryMenu_teamMember$key} from '../__generated__/GitHubScopingSearchHistoryMenu_teamMember.graphql'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import IconButton from './IconButton'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
 
 const QueryString = styled('span')({
   color: PALETTE.SLATE_600,
@@ -95,7 +88,9 @@ const GitHubScopingSearchHistoryMenu = (props: Props) => {
       closePortal={closePortal}
     >
       {githubSearchQueries.length === 0 && (
-        <NoResults key='no-results'>No saved queries yet!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No saved queries yet!
+        </EmptyDropdownMenuItemLabel>
       )}
       {githubSearchQueries.map((githubSearchQuery) => {
         const {id: queryId, queryString} = githubSearchQuery

@@ -11,7 +11,7 @@ import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
   timelineEvent: TimelineEventCompletedActionMeeting_timelineEvent
 }
 

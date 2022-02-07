@@ -11,10 +11,12 @@ const getDemoEntities = {
       description: 'the reflection bodies to entitize'
     }
   },
-  resolve: rateLimit({perMinute: 5, perHour: 50})(async (_source: unknown, {text}) => {
-    const entities = await getReflectionEntities(text)
-    return {entities}
-  })
+  resolve: rateLimit({perMinute: 5, perHour: 50})(
+    async (_source: unknown, {text}: {text: string}) => {
+      const entities = await getReflectionEntities(text)
+      return {entities}
+    }
+  )
 }
 
 export default getDemoEntities

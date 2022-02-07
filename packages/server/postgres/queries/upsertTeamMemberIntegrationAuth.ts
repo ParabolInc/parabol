@@ -11,6 +11,11 @@ interface ITeamMemberIntegrationAuthBaseInput {
   userId: string
 }
 
+export interface ITeamMemberIntegrationAuthOAuth1Input extends ITeamMemberIntegrationAuthBaseInput {
+  accessToken: string
+  accessTokenSecret: string
+}
+
 export interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegrationAuthBaseInput {
   accessToken: string
   refreshToken: string
@@ -18,6 +23,7 @@ export interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegr
 }
 
 type ITeamMemberIntegrationAuthInput =
+  | ITeamMemberIntegrationAuthOAuth1Input
   | ITeamMemberIntegrationAuthOAuth2Input
   | ITeamMemberIntegrationAuthBaseInput
 

@@ -27,6 +27,7 @@ import changeTaskTeam from './mutations/changeTaskTeam'
 import createImposterToken from './mutations/createImposterToken'
 import createTaskIntegration from './mutations/createTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
+import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
@@ -170,6 +171,7 @@ export default new GraphQLObjectType<any, Context>({
       createImposterToken,
       createTaskIntegration,
       createMassInvitation,
+      createOAuth1AuthorizeUrl,
       createReflection,
       createTask,
       deleteComment,

@@ -25,7 +25,9 @@ const handleDisconnect = (connectionContext: ConnectionContext, options: Options
   // check if isClosing & if isClosing bail
   clearInterval(cancelKeepAlive!)
   relayUnsubscribeAll(connectionContext)
-  publishInternalGQL({authToken, ip, query, socketId})
+  if (authToken.rol !== 'impersonate') {
+    publishInternalGQL({authToken, ip, query, socketId})
+  }
   if (connectionContext.id.startsWith('sse')) {
     sseClients.delete(connectionContext.id)
   }

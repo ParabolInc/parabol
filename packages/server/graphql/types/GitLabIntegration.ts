@@ -1,6 +1,5 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import isValid from '../isValid'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
@@ -11,7 +10,11 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     auth: {
       description: 'The OAuth2 Authorization for this team member',
       type: TeamMemberIntegrationAuthOAuth2,
-      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        _args: unknown,
+        {dataLoader}
+      ) => {
         return dataLoader
           .get('teamMemberIntegrationAuths')
           .load({service: 'gitlab', teamId, userId})
@@ -21,7 +24,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The cloud provider the team member may choose to integrate with. Nullable based on env vars',
       type: IntegrationProviderOAuth2,
-      resolve: async (_source, _args, {dataLoader}) => {
+      resolve: async (_source: unknown, _args: unknown, {dataLoader}) => {
         const [globalProvider] = await dataLoader
           .get('sharedIntegrationProviders')
           .load({service: 'gitlab', orgTeamIds: ['aGhostTeam'], teamIds: []})
@@ -31,18 +34,14 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     sharedProviders: {
       description: 'The non-global providers shared with the team or organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderOAuth2))),
-      resolve: async ({userId}, _args, {dataLoader}) => {
-        const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
-        const teamIds = teamMembers.map(({teamId}) => teamId)
-        const orgIds = Array.from(new Set(teamMembers.map(({orgId}) => orgId)))
-
-        const orgTeams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds))
-          .flat()
-          .filter(isValid)
-        const orgTeamIds = orgTeams.map(({teamId}) => teamId)
+      resolve: async ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
+        const team = await dataLoader.get('teams').loadNonNull(teamId)
+        const {orgId} = team
+        const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
+        const orgTeamIds = orgTeams.map(({id}) => id)
         return dataLoader
           .get('sharedIntegrationProviders')
-          .load({service: 'gitlab', orgTeamIds, teamIds})
+          .load({service: 'gitlab', orgTeamIds, teamIds: [teamId]})
       }
     }
     // The GitLab schema get injected here as 'api'
