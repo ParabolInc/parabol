@@ -18,7 +18,7 @@ export interface TaskIntegrationManager {
 
   createTask(params: {
     rawContentStr: string
-    projectId: string
+    integrationRepoId: string
     createdBySomeoneElseComment?: Doc | string
     context?: GQLContext
     info?: GraphQLResolveInfo

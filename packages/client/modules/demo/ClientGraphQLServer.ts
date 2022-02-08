@@ -392,7 +392,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {addReactjiToReactable: data}
     },
-    CreateTaskIntegrationMutation: ({taskId, projectId, integrationProviderService}, userId) => {
+    CreateTaskIntegrationMutation: ({taskId, integrationRepoId, integrationProviderService}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -410,8 +410,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             bodyHTML,
             repository: {
               __typename: '_xGitHubRepository',
-              id: `repo:${projectId}`,
-              nameWithOwner: projectId
+              id: `repo:${integrationRepoId}`,
+              nameWithOwner: integrationRepoId
             },
             number: this.getTempId('')
           }
@@ -419,13 +419,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
 
       if (integrationProviderService === 'jira') {
-        const project = JiraProjectKeyLookup[projectId]
+        const project = JiraProjectKeyLookup[integrationRepoId]
         const {cloudId, cloudName, projectName, avatar, projectKey} = project
         const issueKey = this.getTempId(`${projectKey}-`)
 
         Object.assign(task, {
           updatedAt: new Date().toJSON(),
-          integrationHash: projectId,
+          integrationHash: integrationRepoId,
           integration: {
             __typename: 'JiraIssue',
             id: `jira:${taskId}`,

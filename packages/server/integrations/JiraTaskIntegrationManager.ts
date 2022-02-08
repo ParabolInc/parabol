@@ -25,14 +25,14 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
 
   async createTask({
     rawContentStr,
-    projectId,
+    integrationRepoId,
     createdBySomeoneElseComment
   }: {
     rawContentStr: string
-    projectId: string
+    integrationRepoId: string
     createdBySomeoneElseComment?: Doc
   }): Promise<CreateTaskResponse> {
-    const {cloudId, projectKey} = JiraProjectId.split(projectId)
+    const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
 
     const res = await createJiraTask(
       rawContentStr,

@@ -16,7 +16,7 @@ import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationMan
 
 type CreateTaskIntegrationMutationVariables = {
   integrationProviderService: IntegrationProviderServiceEnumType
-  projectId: string
+  integrationRepoId: string
   taskId: string
 }
 export default {
@@ -27,7 +27,7 @@ export default {
       type: new GraphQLNonNull(IntegrationProviderServiceEnum),
       description: 'Which integration to push the task to'
     },
-    projectId: {
+    integrationRepoId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'Jira projectId, GitHub nameWithOwner etc.'
     },
@@ -38,7 +38,7 @@ export default {
   },
   resolve: async (
     _source: unknown,
-    {integrationProviderService, projectId, taskId}: CreateTaskIntegrationMutationVariables,
+    {integrationProviderService, integrationRepoId, taskId}: CreateTaskIntegrationMutationVariables,
     context: GQLContext,
     info: GraphQLResolveInfo
   ) => {
@@ -124,7 +124,7 @@ export default {
 
     const createTaskResponse = await taskIntegrationManager.createTask({
       rawContentStr,
-      projectId,
+      integrationRepoId,
       createdBySomeoneElseComment,
       context,
       info
