@@ -36,6 +36,12 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
+interface JiraProjectDataLoader extends JiraProject {
+  cloudId: string
+  teamId: string
+  userId: string
+}
+
 export const freshAtlassianAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
@@ -95,8 +101,8 @@ export const freshAtlassianAuth = (
 
 export const jiraRemoteProject = (
   parent: RootDataLoader
-): DataLoader<JiraRemoteProjectKey, JiraProject | null, string> => {
-  return new DataLoader<JiraRemoteProjectKey, JiraProject | null, string>(
+): DataLoader<JiraRemoteProjectKey, JiraProjectDataLoader | null, string> => {
+  return new DataLoader<JiraRemoteProjectKey, JiraProjectDataLoader | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, cloudId, projectKey}) => {

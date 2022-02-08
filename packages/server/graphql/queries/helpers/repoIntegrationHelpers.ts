@@ -20,7 +20,7 @@ type RepoIntegrationItemRes = (JiraItem | GitHubItem) & {
   lastUsedAt: Date
 }
 
-export const getUserIntegrations = async (
+export const getPrevRepoIntegrations = async (
   userId: string,
   teamId: string,
   permLookup: Unpromise<ReturnType<typeof getPermsByTaskService>>

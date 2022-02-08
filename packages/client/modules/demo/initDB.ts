@@ -234,7 +234,7 @@ const initDemoTeamMember = (
       hasMore: true,
       items: [new DemoJiraRemoteProject(JiraDemoKey), makeRepoIntegrationGitHub(GitHubDemoKey)]
     },
-    allAvailableIntegrations: [
+    allAvailableRepoIntegrations: [
       new DemoJiraRemoteProject(JiraDemoKey),
       new DemoJiraRemoteProject(JiraSecretKey)
     ],

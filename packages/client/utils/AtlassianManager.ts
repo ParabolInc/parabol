@@ -42,9 +42,6 @@ export interface JiraProject {
   }
   simplified: boolean
   style: string
-  cloudId: string
-  teamId: string
-  userId: string
 }
 
 export interface JiraProjectResponse {
@@ -491,7 +488,7 @@ export default abstract class AtlassianManager {
   }
 
   async getAllProjects(cloudIds: string[]) {
-    const projects = [] as JiraProject[]
+    const projects = [] as (JiraProject & {cloudId: string})[]
     let error: Error | undefined
     const getProjectPage = async (cloudId: string, url: string) => {
       const res = await this.get<JiraProjectResponse>(url)

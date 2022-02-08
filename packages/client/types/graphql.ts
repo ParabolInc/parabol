@@ -49623,7 +49623,7 @@ export interface ITeamMember {
   /**
    * All the integrations that the user could possibly use
    */
-  allAvailableIntegrations: Array<RepoIntegration>;
+  allAvailableRepoIntegrations: Array<RepoIntegration>;
 
   /**
    * The datetime the team member was created

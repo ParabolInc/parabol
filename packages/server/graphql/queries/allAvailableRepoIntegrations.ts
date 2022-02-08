@@ -2,7 +2,7 @@ import {GraphQLList, GraphQLNonNull} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import RepoIntegration from '../types/RepoIntegration'
-import fetchAllIntegrations from './helpers/fetchAllIntegrations'
+import fetchAllRepoIntegrations from './helpers/fetchAllRepoIntegrations'
 
 export default {
   description: 'All the integrations that the user could possibly use',
@@ -20,6 +20,6 @@ export default {
         return []
       }
     }
-    return fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+    return fetchAllRepoIntegrations(teamId, userId, context, info)
   }
 }

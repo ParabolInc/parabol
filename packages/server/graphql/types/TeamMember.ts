@@ -30,8 +30,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'An ID for the teamMember. userId::teamId'
     },
-    allAvailableIntegrations: require('../queries/allAvailableIntegrations').default,
-
+    allAvailableRepoIntegrations: require('../queries/allAvailableRepoIntegrations').default,
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team member was created'

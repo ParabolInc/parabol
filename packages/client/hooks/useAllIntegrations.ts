@@ -9,13 +9,13 @@ import useFilteredItems from './useFilteredItems'
 
 type FetchedItems = NonNullable<
   NonNullable<useAllIntegrationsQueryResponse['viewer']>['teamMember']
->['allAvailableIntegrations']
+>['allAvailableRepoIntegrations']
 
 const gqlQuery = graphql`
   query useAllIntegrationsQuery($teamId: ID!, $userId: ID) {
     viewer {
       teamMember(userId: $userId, teamId: $teamId) {
-        allAvailableIntegrations {
+        allAvailableRepoIntegrations {
           ... on JiraRemoteProject {
             id
             __typename
@@ -72,9 +72,9 @@ const useAllIntegrations = (
         return
       }
       const {teamMember} = res.viewer
-      const {allAvailableIntegrations} = teamMember
+      const {allAvailableRepoIntegrations} = teamMember
       if (isMountedRef.current) {
-        setFetchedItems(allAvailableIntegrations)
+        setFetchedItems(allAvailableRepoIntegrations)
         setStatus('loaded')
       }
     }

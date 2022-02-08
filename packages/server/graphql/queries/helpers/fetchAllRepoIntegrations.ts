@@ -1,9 +1,9 @@
-import {GQLContext} from './../../graphql'
+import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
 import fetchAtlassianProjects from './fetchAtlassianProjects'
 import fetchGitHubRepos from './fetchGitHubRepos'
 
-const fetchAllIntegrations = async (
+const fetchAllRepoIntegrations = async (
   teamId: string,
   userId: string,
   context: GQLContext,
@@ -20,4 +20,4 @@ const fetchAllIntegrations = async (
   })
 }
 
-export default fetchAllIntegrations
+export default fetchAllRepoIntegrations
