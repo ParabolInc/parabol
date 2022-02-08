@@ -49,11 +49,7 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
       createdBySomeoneElseComment
     )
 
-    if (res.error) {
-      return {
-        error: res.error
-      }
-    }
+    if (res.error) return res.error
 
     const {issueNumber} = res
 
