@@ -1,34 +1,29 @@
-Copyright 2020 Parabol, Inc.
+Copyright 2022 Parabol, Inc.
 
-Parabol is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0
-and is also available under alternative licenses negotiated directly with
-Parabol, Inc. If you obtained Action under the GPL, then the GPL applies to all
-loadable Parabol modules used on your system as well, except as defined below.
-The GPL (version 3) is included in this source tree in the file COPYING.
+The Parabol application ("The Software") is distributed under the
+GNU AFFERO GENERAL PUBLIC LICENSE ("AGPL"), Version 3.0 and is also available
+under alternative licenses negotiated directly with Parabol the organization
+("The Company"). If you obtained Parabol under the AGPL, then the GPL applies to
+all loadable modules used in conjunction with The Software on your system as well,
+except as defined below. The GPL (version 3) is included in this source tree in
+the file COPYING.
 
-Parabol, Inc. holds copyright and/or sufficient licenses to all components of
-the Parabol package, and therefore can grant, at its sole discretion, the ability
-for companies, individuals, or organizations to create proprietary or Open
-Source (even if not GPL) modules which may be dynamically linked at runtime with
-the portions of Parabol which fall under our copyright/license umbrella, or are
-distributed under more flexible licenses than GPL.
+Parabol holds copyright and/or sufficient licenses to all components of
+The Software, and therefore can grant, at its sole discretion, the ability
+for organizations, individuals, or other legal entities to alternative licenses
+(even if not GPL) to The Software and/or modules which may be used in conjunction
+with The Software.
 
-If you wish to use our code in other GPL programs, don't worry -- there is no
-requirement that you provide the same exception in your GPL'd products (although
-if you've written a module for Parabol we would strongly encourage you to make
-the same exception that we do).
-
-The 'Parabol' name and logos are reserved for use by Parabol, Inc., and use of
+The 'Parabol' name and logos are reserved for use by The Company, and use of
 them is subject to our trademark licensing policies. If you wish to use these
 trademarks for purposes other than simple redistribution of source code obtained
-from Parabol, you should contact our licensing department to determine the
-necessary steps you must take.
+from Parabol, you must contact The Company.
 
 If you have any questions regarding our licensing policy, please contact us:
 
-	love@parabol.com (via email)
+    love@parabol.com (via email)
 
-	Parabol, Inc.
-	W 2900 Shorb Street
-	Alhambra, CA  91803
-	USA
+    Parabol
+    8605 Santa Monica Blvd
+    West Hollywood, CA 90069-4109
+    USA

@@ -1,4 +1,4 @@
-# Parabol - We're [hiring](https://www.parabol.co/join)!
+# Parabol Hardened Container for Platform One Iron Bank
 
 [![Slack Status](https://slackin.parabol.co/badge.svg)](https://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/parabol.svg?style=svg)](https://circleci.com/gh/ParabolInc/parabol)
@@ -10,12 +10,21 @@
 agile meetings such as team retrospectives or Sprint Poker™. You may try
 a single-player demo of Parabol (no logincreation required) at: https://parabol.co/retro-demo
 
-We endeaver to be a
-transparent organization and publish
-our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-ship).
+**⚠️ If you've found this README.MD in the root of the Parabol source listing,
+this is the hardened container version of Parabol on Platform One's Repo1 Iron Bank for
+the U.S. Department of Defense.**
 
-![Dashboard](./docs/images/d2.gif)
-![Discuss](./docs/images/d1.gif)
+### Usage License and DoD-specific Information
+
+You may install and evaluate this container for non-production use free of
+charge. For production deployments supporting more than two teams, you will
+require a license. Parabol is sensitive to mission success and can support
+uncertain/difficult procurement cycles with extended gratis trial agreements.
+
+[Big Bang](https://github.com/DoD-Platform-One/big-bang) configurations are also
+available, making a secure deployment of Parabol within the DoD easy.
+
+For all matters, please contact: support@parabol.co
 
 ## Stack Information
 
@@ -83,13 +92,6 @@ $ yarn && yarn build && yarn start
 
 - Fill out the form with values from your `.env`. Set the host to `postgres`
 
-## Getting Involved
-
-Parabol offers equity for qualified contributions.
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to
-get involved and how to get compensated.
-
 ## Have feedback, ideas or feature requests?
 
 Please review our [Discussions](https://github.com/ParabolInc/parabol/discussions) to see if there's already a similar suggestion, and if not please feel free to [start a new one](https://github.com/ParabolInc/parabol/discussions/new).
@@ -97,10 +99,6 @@ Please review our [Discussions](https://github.com/ParabolInc/parabol/discussion
 ## Helpful VSCode extensions
 
 We use [GraphQL](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) for IntelliSense and syntax highlighting.
-
-## Releases
-
-For details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
 
 ## Parabol Core Team
 
