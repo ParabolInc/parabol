@@ -51,14 +51,14 @@ const ScopePhaseAreaAddGitHub = (props: Props) => {
   )
   const {teamId} = meeting
 
-  const importStories = () => {
+  const authGitHub = () => {
     GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   return (
     <AddGitHubArea>
-      <AddGitHubButton onClick={importStories} size={'medium'}>
+      <AddGitHubButton onClick={authGitHub} size={'medium'}>
         <GitHubSVG />
-        Import stories from GitHub
+        Import issues from GitHub
       </AddGitHubButton>
       <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
     </AddGitHubArea>

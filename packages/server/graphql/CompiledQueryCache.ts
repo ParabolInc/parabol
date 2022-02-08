@@ -15,11 +15,15 @@ const compileQuery = tracedCompileQuery(tracer, {
 export default class CompiledQueryCache {
   store = {} as {[docId: string]: CompiledQuery}
   private set(docId: string, queryString: string, schema: GraphQLSchema) {
-    const document = parse(queryString)
-    const compiledQuery = compileQuery(schema, document)
-    if (!('query' in compiledQuery)) return null
-    this.store[docId] = compiledQuery
-    return compiledQuery
+    try {
+      const document = parse(queryString)
+      const compiledQuery = compileQuery(schema, document)
+      if (!('query' in compiledQuery)) return null
+      this.store[docId] = compiledQuery
+      return compiledQuery
+    } catch (e) {
+      return null
+    }
   }
   async fromID(docId: string, schema: GraphQLSchema) {
     const compiledQuery = this.store[docId]

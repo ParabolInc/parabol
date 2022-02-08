@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/getBestTeamIntegrationAuthQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type IntegrationProviderServiceEnum = 'gitlab' | 'mattermost';
+export type IntegrationProviderServiceEnum = 'gitlab' | 'jiraServer' | 'mattermost';
 
 /** 'GetBestTeamIntegrationAuthQuery' parameters type */
 export interface IGetBestTeamIntegrationAuthQueryParams {
@@ -22,6 +22,7 @@ export interface IGetBestTeamIntegrationAuthQueryResult {
   accessToken: string | null;
   refreshToken: string | null;
   scopes: string | null;
+  accessTokenSecret: string | null;
   isUser: boolean | null;
 }
 

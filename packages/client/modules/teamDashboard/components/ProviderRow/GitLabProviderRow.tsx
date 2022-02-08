@@ -120,7 +120,7 @@ const GitLabProviderRow = (props: Props) => {
   )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
-    tooltipPortal: cloudTooltipPortal,
+    // tooltipPortal: cloudTooltipPortal,
     openTooltip: cloudOpenTooltip,
     closeTooltip: cloudCloseTooltip,
     originRef: cloudRef
@@ -157,34 +157,33 @@ const GitLabProviderRow = (props: Props) => {
       </RowInfo>
       {!auth && (
         <ProviderActions>
-          <>
-            <StyledPrimaryButton
-              onClick={() => openOAuth(cloudProviderId, clientId, serverBaseUrl)}
-              palette='warm'
-              waiting={submitting}
-              onMouseOver={cloudOpenTooltip}
-              onMouseOut={cloudCloseTooltip}
-              ref={cloudRef}
-            >
-              {isDesktop ? 'Connect' : <Icon>add</Icon>}
-            </StyledPrimaryButton>
-            {cloudTooltipPortal('Connect to GitLab Cloud')}
-            {null && (
-              <>
-                <StyledSecondaryButton
-                  onClick={() => console.log('todo')}
-                  palette='warm'
-                  waiting={submitting}
-                  onMouseOver={selfHostedOpenTooltip}
-                  onMouseOut={selfHostedCloseTooltip}
-                  ref={selfHostedRef}
-                >
-                  {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
-                </StyledSecondaryButton>
-                {selfHostedTooltipPortal(`Connect to GitLab Self-hosted`)}
-              </>
-            )}
-          </>
+          <StyledPrimaryButton
+            onClick={() => openOAuth(cloudProviderId, clientId, serverBaseUrl)}
+            palette='warm'
+            waiting={submitting}
+            onMouseOver={cloudOpenTooltip}
+            onMouseOut={cloudCloseTooltip}
+            ref={cloudRef}
+          >
+            {isDesktop ? 'Connect' : <Icon>add</Icon>}
+          </StyledPrimaryButton>
+          {/* TODO: re-add tooltip when GitLab Cloud integration is ready */}
+          {/* {cloudTooltipPortal('Connect to GitLab Cloud')} */}
+          {null && (
+            <>
+              <StyledSecondaryButton
+                onClick={() => console.log('todo')}
+                palette='warm'
+                waiting={submitting}
+                onMouseOver={selfHostedOpenTooltip}
+                onMouseOut={selfHostedCloseTooltip}
+                ref={selfHostedRef}
+              >
+                {isDesktop ? 'Self-hosted' : <Icon>enhanced_encryption</Icon>}
+              </StyledSecondaryButton>
+              {selfHostedTooltipPortal(`Connect to GitLab Self-hosted`)}
+            </>
+          )}
         </ProviderActions>
       )}
       {auth && (

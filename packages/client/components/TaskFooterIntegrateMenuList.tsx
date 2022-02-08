@@ -2,27 +2,23 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useSearchFilter from '~/hooks/useSearchFilter'
 import useAllIntegrations from '../hooks/useAllIntegrations'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useFilteredItems from '../hooks/useFilteredItems'
-import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateGitHubTaskIntegrationMutation from '../mutations/CreateGitHubTaskIntegrationMutation'
 import CreateJiraTaskIntegrationMutation from '../mutations/CreateJiraTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
-import Icon from './Icon'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemHR from './MenuItemHR'
-import MenuItemLabel from './MenuItemLabel'
-import MenuSearch from './MenuSearch'
 import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
 import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
+import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
@@ -33,34 +29,6 @@ interface Props {
   label?: string
 }
 
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18
-})
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
-
-const SearchItem = styled(MenuItemLabel)({
-  margin: '0 8px 8px',
-  overflow: 'visible',
-  padding: 0,
-  position: 'relative'
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  margin: 0,
-  pointerEvents: 'none',
-  top: 4
-})
-
 const Label = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 14,
@@ -70,8 +38,7 @@ const Label = styled('div')({
 const getValue = (item: NonNullable<TaskFooterIntegrateMenuList_repoIntegrations['items']>[0]) => {
   const jiraItemName = item?.name ?? ''
   const githubName = item?.nameWithOwner ?? ''
-  const name = jiraItemName || githubName
-  return name.toLowerCase()
+  return jiraItemName || githubName
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
@@ -80,16 +47,12 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const items = repoIntegrations.items || []
   const {id: taskId, teamId, userId} = task
 
-  const {fields, onChange} = useForm({
-    search: {
-      getDefault: () => ''
-    }
-  })
-  const {search} = fields
-  const {value} = search
-  const query = value.toLowerCase()
+  const {query, filteredItems: filteredIntegrations, onQueryChange} = useSearchFilter(
+    items,
+    getValue
+  )
+
   const atmosphere = useAtmosphere()
-  const filteredIntegrations = useFilteredItems(query, items, getValue)
   const {allItems, status} = useAllIntegrations(
     atmosphere,
     query,
@@ -111,14 +74,11 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           <MenuItemHR />
         </>
       )}
-      <SearchItem key='search'>
-        <StyledMenuItemIcon>
-          <SearchIcon>search</SearchIcon>
-        </StyledMenuItemIcon>
-        <MenuSearch placeholder={placeholder} value={value} onChange={onChange} />
-      </SearchItem>
+      <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
       {(query && allItems.length === 0 && status !== 'loading' && (
-        <NoResults key='no-results'>No integrations found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No integrations found!
+        </EmptyDropdownMenuItemLabel>
       )) ||
         null}
       {allItems.slice(0, 10).map((repoIntegration) => {

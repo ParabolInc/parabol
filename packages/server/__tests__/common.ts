@@ -136,3 +136,36 @@ export const signUp = async () => {
   const email = faker.internet.email()
   return signUpWithEmail(email)
 }
+
+export const getUserTeams = async (userId: string) => {
+  const user = await sendIntranet({
+    query: `
+      query User($userId: ID!) {
+        user(userId: $userId) {
+          id
+          teams {
+            id
+          }
+        }
+      }
+    `,
+    variables: {
+      userId
+    },
+    isPrivate: true
+  })
+
+  expect(user).toMatchObject({
+    data: {
+      user: {
+        id: userId,
+        teams: expect.arrayContaining([
+          {
+            id: expect.anything()
+          }
+        ])
+      }
+    }
+  })
+  return user.data.user.teams
+}

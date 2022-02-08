@@ -9,10 +9,12 @@ import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.gra
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import GitHubSVG from './GitHubSVG'
+import GitLabSVG from './GitLabSVG'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
+import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import Tab from './Tab/Tab'
@@ -61,7 +63,7 @@ const TabContents = styled('div')({
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
 
-const tabs = [
+const baseTabs = [
   {icon: <GitHubSVG />, label: 'GitHub'},
   {icon: <JiraSVG />, label: 'Jira'},
   {icon: <ParabolLogoSVG />, label: 'Parabol'}
@@ -71,33 +73,43 @@ const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {viewerMeetingMember} = meeting
+  if (!viewerMeetingMember) return null
+  const {user, teamMember} = viewerMeetingMember
+  const {featureFlags} = user
+  const gitlabIntegration = teamMember.integrations.gitlab
+  const isGitLabProviderAvailable = !!(
+    gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
+  )
+  const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
+  const tabs = allowGitLab ? [...baseTabs, {icon: <GitLabSVG />, label: 'GitLab'}] : baseTabs
 
-  const updateActiveIdx = (idx: number) => {
-    setActiveIdx(idx)
-  }
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
     setActiveIdx(idx)
   }
+
+  const goToParabol = () => {
+    setActiveIdx(2)
+  }
+
   return (
     <ScopingArea isDesktop={isDesktop}>
       <StyledTabsBar activeIdx={activeIdx}>
-        {tabs.map((tab, idx) => {
-          return (
-            <Tab
-              key={tab.label}
-              label={
-                <TabLabel>
-                  <TabIcon>{tab.icon}</TabIcon>
-                  {tab.label}
-                </TabLabel>
-              }
-              onClick={() => updateActiveIdx(idx)}
-            />
-          )
-        })}
+        {tabs.map((tab, idx) => (
+          <Tab
+            key={tab.label}
+            label={
+              <TabLabel>
+                <TabIcon>{tab.icon}</TabIcon>
+                {tab.label}
+              </TabLabel>
+            }
+            onClick={() => setActiveIdx(idx)}
+          />
+        ))}
       </StyledTabsBar>
       <SwipeableViews
         enableMouseEvents={false} // disable because this works even if a modal is on top of it
@@ -109,20 +121,29 @@ const ScopePhaseArea = (props: Props) => {
         <TabContents>
           <ScopePhaseAreaGitHub
             isActive={activeIdx === 0}
-            gotoParabol={() => setActiveIdx(2)}
+            gotoParabol={goToParabol}
             meetingRef={meeting}
           />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaJira
             isActive={activeIdx === 1}
-            gotoParabol={() => setActiveIdx(2)}
+            gotoParabol={goToParabol}
             meeting={meeting}
           />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaParabolScoping isActive={activeIdx === 2} meeting={meeting} />
         </TabContents>
+        {allowGitLab && (
+          <TabContents>
+            <ScopePhaseAreaGitLab
+              isActive={activeIdx === 3}
+              gotoParabol={goToParabol}
+              meetingRef={meeting}
+            />
+          </TabContents>
+        )}
       </SwipeableViews>
     </ScopingArea>
   )
@@ -140,6 +161,7 @@ export default createFragmentContainer(ScopePhaseArea, {
       ...StageTimerDisplay_meeting
       ...StageTimerControl_meeting
       ...ScopePhaseAreaGitHub_meeting
+      ...ScopePhaseAreaGitLab_meeting
       ...ScopePhaseAreaJira_meeting
       ...ScopePhaseAreaParabolScoping_meeting
       endedAt
@@ -153,6 +175,25 @@ export default createFragmentContainer(ScopePhaseArea, {
         ...ScopePhaseArea_phase @relay(mask: false)
       }
       showSidebar
+      viewerMeetingMember {
+        teamMember {
+          integrations {
+            gitlab {
+              cloudProvider {
+                clientId
+              }
+              sharedProviders {
+                clientId
+              }
+            }
+          }
+        }
+        user {
+          featureFlags {
+            gitlab
+          }
+        }
+      }
     }
   `
 })

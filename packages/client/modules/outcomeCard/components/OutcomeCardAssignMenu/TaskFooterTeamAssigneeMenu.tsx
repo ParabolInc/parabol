@@ -15,6 +15,9 @@ import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated_
 import useModal from '~/hooks/useModal'
 import TaskFooterTeamAssigneeAddIntegrationDialog from './TaskFooterTeamAssigneeAddIntegrationDialog'
 import useEventCallback from '~/hooks/useEventCallback'
+import {SearchMenuItem} from '~/components/SearchMenuItem'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery($teamId: ID!) {
@@ -60,10 +63,10 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
       : teams
     return filteredTeams
   }, [teamIds, userIds])
-  const taskTeamIdx = useMemo(() => assignableTeams.findIndex(({id}) => id === teamId) + 1, [
-    teamId,
-    assignableTeams
-  ])
+  const taskTeamIdx = useMemo(
+    () => assignableTeams.findIndex(({id}) => id === teamId) + 1,
+    [teamId, assignableTeams]
+  )
 
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
@@ -99,11 +102,10 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const handleTaskUpdate = (nextTeam: typeof newTeam) => async () => {
     if (!submitting && teamId !== nextTeam.id) {
       if (isGitHubTask || isJiraTask) {
-        const result = await atmosphere.fetchQuery<
-          TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery
-        >(query, {
-          teamId: nextTeam.id
-        })
+        const result =
+          await atmosphere.fetchQuery<TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery>(query, {
+            teamId: nextTeam.id
+          })
         const {github, atlassian} = result?.viewer?.teamMember?.integrations ?? {}
 
         if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
@@ -123,14 +125,27 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     }
   }
 
+  const {
+    query: searchQuery,
+    filteredItems: matchedAssignableTeams,
+    onQueryChange
+  } = useSearchFilter(assignableTeams, (team) => team.name)
+
   return (
     <Menu
+      keepParentFocus
       {...menuProps}
       defaultActiveIdx={taskTeamIdx}
       ariaLabel={'Assign this task to another team'}
     >
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
-      {assignableTeams.map((team) => {
+      {assignableTeams.length > 5 && (
+        <SearchMenuItem placeholder='Search teams' onChange={onQueryChange} value={searchQuery} />
+      )}
+      {query && matchedAssignableTeams.length === 0 && (
+        <EmptyDropdownMenuItemLabel key='no-results'>No teams found!</EmptyDropdownMenuItemLabel>
+      )}
+      {matchedAssignableTeams.map((team) => {
         return (
           <MenuItem
             key={team.id}

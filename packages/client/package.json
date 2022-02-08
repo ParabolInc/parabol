@@ -50,12 +50,13 @@
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "4.4.2",
     "webpack": "5.64.1",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.7.3"
   },
   "dependencies": {
+    "@datadog/browser-rum": "^3.6.12",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
-    "@mattkrick/graphql-trebuchet-client": "^2.1.0",
+    "@mattkrick/graphql-trebuchet-client": "^2.2.1",
     "@mattkrick/sanitize-svg": "0.3.1",
     "@mattkrick/trebuchet-client": "^3.0.1",
     "@sentry/browser": "^5.8.0",

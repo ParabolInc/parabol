@@ -1,6 +1,7 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {getUserId} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import isValid from '../isValid'
 import IntegrationProviderWebhook from './IntegrationProviderWebhook'
 import TeamMemberIntegrationAuthWebhook from './TeamMemberIntegrationAuthWebhook'
 
@@ -20,18 +21,20 @@ const MattermostIntegration = new GraphQLObjectType<any, GQLContext>({
     sharedProviders: {
       description: 'The non-global providers shared with the team or organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderWebhook))),
-      resolve: async ({userId}, _args, {dataLoader}) => {
-        const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
-        const teamIds = teamMembers.map(({teamId}) => teamId)
-        const orgIds = Array.from(new Set(teamMembers.map(({orgId}) => orgId)))
-
-        const orgTeams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds))
-          .flat()
-          .filter(isValid)
-        const orgTeamIds = orgTeams.map(({teamId}) => teamId)
+      resolve: async (
+        {teamId}: {teamId: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) => {
+        const viewerId = getUserId(authToken)
+        const team = await dataLoader.get('teams').load(teamId)
+        if (!team) return standardError(new Error('Team not found'), {userId: viewerId})
+        const {orgId} = team
+        const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
+        const orgTeamIds = orgTeams.map(({id}) => id)
         return dataLoader
           .get('sharedIntegrationProviders')
-          .load({service: 'mattermost', orgTeamIds, teamIds})
+          .load({service: 'mattermost', orgTeamIds, teamIds: [teamId]})
       }
     }
   })

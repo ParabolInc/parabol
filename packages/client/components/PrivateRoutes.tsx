@@ -45,7 +45,7 @@ const PrivateRoutes = () => {
       <Route path='/new-meeting/:teamId?' component={NewMeetingRoot} />
       <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />
-      <Route path='/admin/impersonate/:newUserId' component={Impersonate} />
+      <Route path='/admin/impersonate' component={Impersonate} />
       <Route path='/invitation-required' component={ViewerNotOnTeamRoot} />
       <Route path='/signout' component={Signout} />
       <Route component={NotFound} />

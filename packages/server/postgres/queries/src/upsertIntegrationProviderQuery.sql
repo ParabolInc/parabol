@@ -8,6 +8,8 @@ INSERT INTO
     "scope",
     "clientId",
     "clientSecret",
+    "consumerKey",
+    "consumerSecret",
     "serverBaseUrl",
     "webhookUrl",
     "teamId"
@@ -19,6 +21,8 @@ VALUES
     :scope,
     :clientId,
     :clientSecret,
+    :consumerKey,
+    :consumerSecret,
     :serverBaseUrl,
     :webhookUrl,
     :teamId
@@ -29,6 +33,8 @@ ON CONFLICT ("teamId", "service", "authStrategy") DO UPDATE SET
   "scope" = EXCLUDED."scope",
   "clientId" = EXCLUDED."clientId",
   "clientSecret" = EXCLUDED."clientSecret",
+  "consumerKey" = EXCLUDED."consumerKey",
+  "consumerSecret" = EXCLUDED."consumerSecret",
   "serverBaseUrl" = EXCLUDED."serverBaseUrl",
   "webhookUrl" = EXCLUDED."webhookUrl",
   "updatedAt" = CURRENT_TIMESTAMP,
