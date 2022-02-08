@@ -130,8 +130,8 @@ export default {
       info
     })
 
-    if ('error' in createTaskResponse) {
-      return {error: {message: createTaskResponse.error.message}}
+    if (createTaskResponse instanceof Error) {
+      return {error: {message: createTaskResponse.message}}
     }
 
     await r

@@ -42,13 +42,7 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
       createdBySomeoneElseComment
     )
 
-    if (res.error) {
-      return {
-        error: {
-          message: res.error.message
-        }
-      }
-    }
+    if (res.error) return res.error
 
     const {issueKey} = res
 
@@ -58,7 +52,8 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
         accessUserId: this.auth.userId,
         service: 'jira',
         cloudId,
-        issueKey
+        issueKey,
+        projectKey
       }
     }
   }
