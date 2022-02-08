@@ -61,10 +61,6 @@ jobs:
           name: DevOps checkout
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
-
-            # TODO: remove this after merging the linked upstream PR
-            cd "$DEVOPS_WORKDIR"
-            git checkout feature/create-test-env
       - run:
           name: Start dev server
           command: |
