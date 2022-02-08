@@ -1,10 +1,11 @@
 import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import RepoIntegrationQueryPayload from '../types/RepoIntegrationQueryPayload'
-import fetchAllIntegrations, {Integration} from './helpers/fetchAllIntegrations'
-import {getPermsByTaskService, getUserIntegrationIds} from './helpers/repoIntegrationHelpers'
+import fetchAllIntegrations from './helpers/fetchAllIntegrations'
+import {getPermsByTaskService, getUserIntegrations} from './helpers/repoIntegrationHelpers'
 
 export default {
   description: 'The integrations that the user would probably like to use',
@@ -28,24 +29,48 @@ export default {
       }
     }
     const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-    const [userIntegrationIds, allIntegrations] = await Promise.all([
-      getUserIntegrationIds(userId, teamId, permLookup),
+    const [userIntegrations, repos] = await Promise.all([
+      getUserIntegrations(userId, teamId, permLookup),
       fetchAllIntegrations(teamId, userId, context, info)
     ])
-    const orderedIntegrations: Integration[] = []
-    const idSet = new Set()
-    allIntegrations.forEach((integration) => {
-      if (idSet.has(integration.id)) return
-      idSet.add(integration.id)
-      userIntegrationIds.includes(integration.id)
-        ? orderedIntegrations.unshift(integration)
-        : orderedIntegrations.push(integration)
+    const userIntegrationIds = new Set<string>()
+    userIntegrations.forEach((integration) => {
+      const integrationId = IntegrationRepoId.join(integration)
+      if (!integrationId) return
+      userIntegrationIds.add(integrationId)
+    })
+    // always have lastUsedAt be a Date (to make the sort easier below)
+    const reposWithLastUsedAt = repos.map((repo) => {
+      if (userIntegrationIds.has(repo.id)) {
+        const existingIntegration = userIntegrations.find((integration) => {
+          const integrationId = IntegrationRepoId.join(integration)
+          return repo.id === integrationId
+        })
+        return {
+          ...repo,
+          lastUsedAt: existingIntegration?.lastUsedAt || new Date(0)
+        }
+      }
+      return {
+        ...repo,
+        lastUsedAt: new Date(0)
+      }
     })
 
-    if (orderedIntegrations.length > first) {
-      return {hasMore: true, items: orderedIntegrations.slice(0, first)}
+    reposWithLastUsedAt.sort((a, b) =>
+      a.lastUsedAt > b.lastUsedAt
+        ? -1
+        : a.service < b.service
+        ? -1
+        : a.id.toLowerCase() < b.id.toLowerCase()
+        ? -1
+        : 1
+    )
+
+    if (reposWithLastUsedAt.length > first) {
+      return {hasMore: true, items: reposWithLastUsedAt.slice(0, first)}
     } else {
-      return {hasMore: false, items: orderedIntegrations}
+      return {hasMore: false, items: reposWithLastUsedAt}
     }
   }
 }

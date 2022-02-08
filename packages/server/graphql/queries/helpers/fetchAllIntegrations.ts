@@ -1,10 +1,7 @@
 import {GQLContext} from './../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
-import {JiraProject} from 'parabol-client/utils/AtlassianManager'
 import fetchAtlassianProjects from './fetchAtlassianProjects'
-import fetchGitHubRepos, {GitHubRepo} from './fetchGitHubRepos'
-
-export type Integration = JiraProject | GitHubRepo
+import fetchGitHubRepos from './fetchGitHubRepos'
 
 const fetchAllIntegrations = async (
   teamId: string,
@@ -13,20 +10,14 @@ const fetchAllIntegrations = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
-  const results = (await Promise.allSettled([
+  const [jiraProjects, githubRepos] = await Promise.all([
     fetchAtlassianProjects(teamId, userId, context),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info)
-  ])) as PromiseSettledResult<Integration[]>[]
-
-  const allIntegrations = results.flatMap((result) => {
-    return result.status === 'fulfilled' ? result.value : []
-  })
-
-  const getValue = (item) => (item.nameWithOwner || item.name)?.toLowerCase()
-  allIntegrations.sort((a, b) => {
+  ])
+  const getValue = (item) => (item.nameWithOwner || item.name).toLowerCase()
+  return [...jiraProjects, ...githubRepos].sort((a, b) => {
     return getValue(a) < getValue(b) ? -1 : 1
   })
-  return allIntegrations
 }
 
 export default fetchAllIntegrations

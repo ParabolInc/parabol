@@ -1,6 +1,7 @@
 import {GQLContext} from './../../graphql'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {getUserId} from '../../../utils/authorization'
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 
 const getCloudIds = async (manager: AtlassianServerManager) => {
   const sites = await manager.getAccessibleResources()
@@ -29,8 +30,10 @@ const fetchAtlassianProjects = async (
   const projects = await manager.getAllProjects(jiraCloudIds)
   return projects.map((project) => ({
     ...project,
+    id: IntegrationRepoId.join({...project, projectKey: project.key, service: 'jira'}),
     teamId,
-    userId
+    userId,
+    service: 'jira'
   }))
 }
 

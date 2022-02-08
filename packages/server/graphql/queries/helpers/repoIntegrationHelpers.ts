@@ -2,10 +2,7 @@ import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
-import IntegrationRepoId, {
-  GitHubItem,
-  JiraItem
-} from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import {GitHubItem, JiraItem} from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 
 export interface IntegrationByTeamId {
   id: string
@@ -23,7 +20,7 @@ type RepoIntegrationItemRes = (JiraItem | GitHubItem) & {
   lastUsedAt: Date
 }
 
-export const getUserIntegrationIds = async (
+export const getUserIntegrations = async (
   userId: string,
   teamId: string,
   permLookup: Unpromise<ReturnType<typeof getPermsByTaskService>>
@@ -56,14 +53,12 @@ export const getUserIntegrationIds = async (
     .run()) as RepoIntegrationItemRes[]
 
   const threeMonthsAgo = new Date(Date.now() - ms('90d'))
-  return res
-    .filter(
-      (res) =>
-        permLookup[res.service] &&
-        (res.service !== 'jira' || res.projectKey) && // jira integrations are making it through that don't have a projectKey
-        res.lastUsedAt > threeMonthsAgo
-    )
-    .map((item) => IntegrationRepoId.join(item))
+  return res.filter(
+    (res) =>
+      permLookup[res.service] &&
+      (res.service !== 'jira' || res.projectKey) && // jira integrations are making it through that don't have a projectKey
+      res.lastUsedAt > threeMonthsAgo
+  )
 }
 
 export const getPermsByTaskService = async (
