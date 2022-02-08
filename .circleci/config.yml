@@ -80,6 +80,18 @@ jobs:
       - store_artifacts:
           path: ./packages/server/reports/junit
       - run:
+          name: Install Playwright browsers
+          command: yarn workspace integration-tests playwright install
+      - run:
+          name: Run Playwright tests
+          command: yarn workspace integration-tests test --workers 2 --reporter list,junit
+          environment:
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
+      - store_test_results:
+          path: ./packages/integration-tests/test-results/junit/
+      - store_artifacts:
+          path: ./packages/integration-tests/test-results
+      - run:
           name: Kill server
           command: pkill node
           when: always
