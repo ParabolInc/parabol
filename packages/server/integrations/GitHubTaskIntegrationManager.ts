@@ -26,18 +26,18 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
 
   async createTask({
     rawContentStr,
-    projectId,
+    integrationRepoId,
     createdBySomeoneElseComment,
     context,
     info
   }: {
     rawContentStr: string
-    projectId: string
+    integrationRepoId: string
     createdBySomeoneElseComment?: string
     context: GQLContext
     info: GraphQLResolveInfo
   }): Promise<CreateTaskResponse> {
-    const {repoOwner, repoName} = GitHubRepoId.split(projectId)
+    const {repoOwner, repoName} = GitHubRepoId.split(integrationRepoId)
 
     const res = await createGitHubTask(
       rawContentStr,
@@ -49,21 +49,17 @@ export default class GitHubTaskIntegrationManager implements TaskIntegrationMana
       createdBySomeoneElseComment
     )
 
-    if (res.error) {
-      return {
-        error: res.error
-      }
-    }
+    if (res.error) return res.error
 
     const {issueNumber} = res
 
     return {
-      integrationHash: GitHubIssueId.join(projectId, issueNumber),
+      integrationHash: GitHubIssueId.join(integrationRepoId, issueNumber),
       integration: {
         accessUserId: this.auth.userId,
         service: 'github',
         issueNumber,
-        nameWithOwner: projectId
+        nameWithOwner: integrationRepoId
       }
     }
   }

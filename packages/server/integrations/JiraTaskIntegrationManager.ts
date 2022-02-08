@@ -25,14 +25,14 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
 
   async createTask({
     rawContentStr,
-    projectId,
+    integrationRepoId,
     createdBySomeoneElseComment
   }: {
     rawContentStr: string
-    projectId: string
+    integrationRepoId: string
     createdBySomeoneElseComment?: Doc
   }): Promise<CreateTaskResponse> {
-    const {cloudId, projectKey} = JiraProjectId.split(projectId)
+    const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
 
     const res = await createJiraTask(
       rawContentStr,
@@ -42,13 +42,7 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
       createdBySomeoneElseComment
     )
 
-    if (res.error) {
-      return {
-        error: {
-          message: res.error.message
-        }
-      }
-    }
+    if (res.error) return res.error
 
     const {issueKey} = res
 
@@ -58,7 +52,8 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
         accessUserId: this.auth.userId,
         service: 'jira',
         cloudId,
-        issueKey
+        issueKey,
+        projectKey
       }
     }
   }

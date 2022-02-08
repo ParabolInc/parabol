@@ -34,7 +34,7 @@ graphql`
           }
         }
         ...TaskIntegrationLinkIntegrationGitHub
-        ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationJira
       }
       updatedAt
       teamId
@@ -46,12 +46,12 @@ graphql`
 const mutation = graphql`
   mutation CreateTaskIntegrationMutation(
     $integrationProviderService: IntegrationProviderServiceEnum!
-    $projectId: ID!
+    $integrationRepoId: ID!
     $taskId: ID!
   ) {
     createTaskIntegration(
       integrationProviderService: $integrationProviderService
-      projectId: $projectId
+      integrationRepoId: $integrationRepoId
       taskId: $taskId
     ) {
       error {
