@@ -67,7 +67,10 @@ const executeGraphQL = async (req: GQLRequest) => {
         variableValues
       )) as any as FormattedExecutionResult
     } else {
-      response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
+      const message = docId
+        ? `DocumentID not found: ${docId}`
+        : `Error parsing query: ${source.slice(0, 40)}...`
+      response = {errors: [new Error(message)] as any}
     }
   }
   if (!PROD && response.errors) {
