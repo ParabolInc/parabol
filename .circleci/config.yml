@@ -6,32 +6,33 @@ jobs:
       - image: rethinkdb:2.4.0
       - image: circleci/postgres:12.3
         environment:
-          POSTGRES_PASSWORD: 'EcLtsBMRtra33jqUCQWtSZwt4zfGBzdUvJE74fzSxX'
-          POSTGRES_USER: 'parabol'
-          POSTGRES_DB: 'web'
-          POSTGRES_HOST: 'localhost'
-          POSTGRES_PORT: '5432'
+          # These env values need to be synced up with the `test` environment file
+          POSTGRES_PASSWORD: "p9_p455w02d_f02_73575"
+          POSTGRES_USER: "pgparaboladmin"
+          POSTGRES_DB: "parabol-saas"
+          POSTGRES_HOST: "localhost"
+          POSTGRES_PORT: "5432"
       - image: redis:6.2.6-alpine
         environment:
           TERM: xterm
     environment:
-      DEVOPS_REPO: 'git@github.com:ParabolInc/action-devops.git'
-      DEVOPS_WORKDIR: '~/action-devops'
-      GITHUB_REMOTE_DEVELOPMENT: 'dokku@action-dev-nyc1-01.parabol.co:web'
-      GITHUB_REMOTE_PRODUCTION: 'dokku@action-production.parabol.co:web'
-      GITHUB_REMOTE_STAGING: 'dokku@action-staging.parabol.co:web'
-      PRODUCTION_BACKUP_LOCATION: 'dokku@backups.action-production.parabol.co'
-      PRODUCTION_BACKUP_VOLUME: '/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01'
-      SENTRY_ORG: 'parabol'
-      SENTRY_PROJECT: 'action-production'
-      S3_DB_BACKUPS_BUCKET: 'db-backups.parabol.co'
-      SERVER_ID: '0'
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_WORKDIR: "~/action-devops"
+      GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
+      GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
+      GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
+      PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
+      PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
+      SENTRY_ORG: "parabol"
+      SENTRY_PROJECT: "action-production"
+      S3_DB_BACKUPS_BUCKET: "db-backups.parabol.co"
+      SERVER_ID: "0"
     working_directory: ~/action
     resource_class: medium+
     steps:
       - add_ssh_keys:
           fingerprints:
-            - '53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da'
+            - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
       - run:
           name: Slack setup
           command: |
@@ -60,11 +61,14 @@ jobs:
           name: DevOps checkout
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+
+            # TODO: remove this after merging the linked upstream PR
+            cd "$DEVOPS_WORKDIR"
+            git checkout feature/create-test-env
       - run:
           name: Start dev server
           command: |
-            cp $DEVOPS_WORKDIR/environments/cypress .env
-            echo SOCKET_PORT=3001 >> .env
+            cp $DEVOPS_WORKDIR/environments/test .env
             yarn dev || true
           background: true
       - run:
