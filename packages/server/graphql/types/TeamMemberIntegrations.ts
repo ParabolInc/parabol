@@ -29,7 +29,12 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
     jiraServer: {
       type: JiraServerIntegration,
       description: 'All things associated with a Jira Server integration for a team member',
-      resolve: (source) => source
+      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+        return {teamId, userId, auth}
+      }
     },
     github: {
       type: GitHubIntegration,

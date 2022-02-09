@@ -1,7 +1,26 @@
 import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
 
-export default class JiraServerOAuth1Manager {
+interface JiraServerProject {
+  /// more available fields
+  expand: string
+  /// project url
+  self: string
+  id: string
+  key: string
+  name: string
+  avatarUrls: {
+    '48x48': string
+    '24x24': string
+    '16x16': string
+    '32x32': string
+  }
+  /// 'software'
+  projectTypeKey: string
+  archived: boolean
+}
+
+export default class JiraServerRestManager {
   serverBaseUrl: string
   oauth: OAuth
   token: OAuth.Token
@@ -46,7 +65,12 @@ export default class JiraServerOAuth1Manager {
     return response
   }
 
-  async getProjects() {
-    return this.request('GET', '/rest/api/latest/project')
+  async getProjects(): Promise<JiraServerProject[] | Error> {
+    const response = await this.request('GET', '/rest/api/latest/project')
+    if (response.status !== 200) {
+      return new Error(`Fetching projects failed with status ${response.status}`)
+    }
+    const body = await response.json()
+    return body
   }
 }

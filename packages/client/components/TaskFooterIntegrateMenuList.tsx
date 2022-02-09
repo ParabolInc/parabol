@@ -18,6 +18,7 @@ import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
 import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
 import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
+import RepoIntegrationJiraServerMenuItem from './RepoIntegrationJiraServerMenuItem'
 import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
@@ -100,6 +101,19 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
+        if (__typename === 'JiraServerRemoteProject') {
+          const onClick = () => {
+            // TODO
+          }
+          return (
+            <RepoIntegrationJiraServerMenuItem
+              key={id}
+              query={query}
+              repoIntegration={repoIntegration}
+              onClick={onClick}
+            />
+          )
+        }
         if (__typename === '_xGitHubRepository') {
           const onClick = () => {
             const {nameWithOwner} = repoIntegration
@@ -127,19 +141,19 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
 
 graphql`
   fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
+    __typename
     id
+    service
     ... on JiraRemoteProject {
-      __typename
-      id
       cloudId
       key
       name
     }
     ... on _xGitHubRepository {
-      __typename
       nameWithOwner
     }
     ...RepoIntegrationJiraMenuItem_repoIntegration
+    ...RepoIntegrationJiraServerMenuItem_repoIntegration
     ...RepoIntegrationGitHubMenuItem_repoIntegration
   }
 `

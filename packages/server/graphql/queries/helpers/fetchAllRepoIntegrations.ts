@@ -2,6 +2,7 @@ import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
 import fetchAtlassianProjects from './fetchAtlassianProjects'
 import fetchGitHubRepos from './fetchGitHubRepos'
+import fetchJiraServerProjects from './fetchJiraServerProjects'
 
 const fetchAllRepoIntegrations = async (
   teamId: string,
@@ -10,14 +11,16 @@ const fetchAllRepoIntegrations = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
-  const [jiraProjects, githubRepos] = await Promise.all([
+  const [jiraProjects, githubRepos, jiraServerProjects] = await Promise.all([
     fetchAtlassianProjects(teamId, userId, context),
-    fetchGitHubRepos(teamId, userId, dataLoader, context, info)
+    fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+    fetchJiraServerProjects(teamId, userId, dataLoader)
   ])
   const getValue = (item) => (item.nameWithOwner || item.name).toLowerCase()
-  return [...jiraProjects, ...githubRepos].sort((a, b) => {
+  const repoIntegrations = [...jiraProjects, ...githubRepos, ...jiraServerProjects].sort((a, b) => {
     return getValue(a) < getValue(b) ? -1 : 1
   })
+  return repoIntegrations
 }
 
 export default fetchAllRepoIntegrations
