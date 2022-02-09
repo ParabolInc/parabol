@@ -54,7 +54,13 @@ export default {
     // MUTATIVE
     draggedStages.forEach((draggedStage) => (draggedStage.sortOrder = sortOrder))
     stages.sort((a, b) => {
-      return a.sortOrder > b.sortOrder ? 1 : -1
+      if (a.sortOrder > b.sortOrder) {
+        return 1
+      } else if (a.sortOrder === b.sortOrder) {
+        return a.dimensionRefIdx > b.dimensionRefIdx ? 1 : -1
+      } else {
+        return -1
+      }
     })
     await r
       .table('NewMeeting')

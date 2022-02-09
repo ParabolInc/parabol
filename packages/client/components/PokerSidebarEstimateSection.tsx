@@ -189,6 +189,7 @@ export default createFragmentContainer(PokerSidebarEstimateSection, {
             scores {
               userId
             }
+            dimensionRefIdx
           }
         }
         phaseType

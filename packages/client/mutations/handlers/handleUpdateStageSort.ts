@@ -7,7 +7,17 @@ const handleUpdateStageSort = (store: RecordSourceSelectorProxy, meetingId: stri
   const phase = phases.find((phase) => phase.getValue('phaseType') === phaseType)!
   const stages = phase.getLinkedRecords('stages')!
   stages.sort((a, b) => {
-    return a.getValue('sortOrder')! > b.getValue('sortOrder')! ? 1 : -1
+    if (a.getValue('sortOrder')! > b.getValue('sortOrder')!) {
+      return 1
+    } else if (a.getValue('sortOrder')! === b.getValue('sortOrder')!) {
+      if (a.getValue('dimensionRefIdx')) {
+        return a.getValue('dimensionRefIdx')! > b.getValue('dimensionRefIdx')! ? 1 : -1
+      } else {
+        return -1
+      }
+    } else {
+      return -1
+    }
   })
   phase.setLinkedRecords(stages, 'stages')
 }
