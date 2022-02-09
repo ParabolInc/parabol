@@ -2,7 +2,7 @@ import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
-import {GitHubItem, JiraItem} from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 
 export interface IntegrationByTeamId {
   id: string
@@ -16,9 +16,25 @@ export interface IntegrationByTeamId {
   lastUsedAt: Date
 }
 
-type RepoIntegrationItemRes = (JiraItem | GitHubItem) & {
+type PrevJiraRepoIntegration = {
+  service: 'jira'
+  userId: string
+  issueKey: string
+  cloudId: string
+  nameWithOwner: null
   lastUsedAt: Date
 }
+
+type PrevGitHubRepoIntegration = {
+  service: 'github'
+  userId: string
+  projectKey: null
+  cloudId: null
+  nameWithOwner: string
+  lastUsedAt: Date
+}
+
+type PrevRepoIntegrationRes = PrevGitHubRepoIntegration | PrevJiraRepoIntegration
 
 export const getPrevRepoIntegrations = async (
   userId: string,
@@ -34,7 +50,7 @@ export const getPrevRepoIntegrations = async (
       .group((row) => [
         row('userId').default(null),
         row('integration')('service'),
-        row('integration')('projectKey').default(null),
+        row('integration')('issueKey').default(null),
         row('integration')('cloudId').default(null),
         row('integration')('nameWithOwner').default(null)
       ]) as any
@@ -45,20 +61,19 @@ export const getPrevRepoIntegrations = async (
     .map((row) => ({
       userId: row('group')(0),
       service: row('group')(1),
-      projectKey: row('group')(2),
+      issueKey: row('group')(2),
       cloudId: row('group')(3),
       nameWithOwner: row('group')(4),
       lastUsedAt: row('reduction')
     }))
-    .run()) as RepoIntegrationItemRes[]
+    .run()) as PrevRepoIntegrationRes[]
 
   const threeMonthsAgo = new Date(Date.now() - ms('90d'))
-  return res.filter(
-    (res) =>
-      permLookup[res.service] &&
-      (res.service !== 'jira' || res.projectKey) && // jira integrations are making it through that don't have a projectKey
-      res.lastUsedAt > threeMonthsAgo
-  )
+  return res
+    .filter((res) => permLookup[res.service] && res.lastUsedAt > threeMonthsAgo)
+    .map((res) =>
+      res.service === 'jira' ? {...res, projectKey: JiraProjectKeyId.join(res.issueKey)} : res
+    )
 }
 
 export const getPermsByTaskService = async (

@@ -1,27 +1,24 @@
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 
-export type GitHubItem = {
-  cloudId?: null
+type GitHubRepoIntegration = {
   nameWithOwner: string
-  projectKey?: null
   service: 'github'
 }
 
-export type JiraItem = {
+type JiraRepoIntegration = {
   cloudId: string
-  nameWithOwner?: null
   projectKey: string
   service: 'jira'
 }
 
 const IntegrationRepoId = {
-  join: (item: GitHubItem | JiraItem) => {
-    const {service} = item
+  join: (integration: GitHubRepoIntegration | JiraRepoIntegration) => {
+    const {service} = integration
     switch (service) {
       case 'github':
-        return item.nameWithOwner
+        return integration.nameWithOwner
       case 'jira':
-        return JiraProjectId.join(item.cloudId, item.projectKey)
+        return JiraProjectId.join(integration.cloudId, integration.projectKey)
       default:
         return ''
     }
