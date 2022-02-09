@@ -1,10 +1,10 @@
 /*
  @name getSharedIntegrationProvidersQuery
- @param orgTeamIds -> (...)
+ @param orgIds -> (...)
  @param teamIds -> (...)
  */
 SELECT * FROM "IntegrationProvider"
-WHERE "teamId" in :orgTeamIds
-AND "service" = :service
+WHERE "service" = :service
 AND "isActive" = TRUE
-AND ("scope" != 'team' OR "teamId" in :teamIds);
+AND ("scope" != 'team' OR "teamId" in :teamIds)
+AND ("scope" != 'org' OR "orgId" in :orgIds);

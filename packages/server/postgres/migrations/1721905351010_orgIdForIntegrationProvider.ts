@@ -22,7 +22,7 @@ export async function up() {
     ALTER TABLE "IntegrationProvider"
       ADD CONSTRAINT "scope_org_has_only_orgId" CHECK
         ("scope" <> 'org' OR ("orgId" IS NOT NULL AND "teamId" IS NULL)),
-      ADD CONSTRAINT "scope_team_has_only_reamId" CHECK
+      ADD CONSTRAINT "scope_team_has_only_teamId" CHECK
         ("scope" <> 'team' OR ("teamId" IS NOT NULL AND "orgId" IS NULL)),
       ADD CONSTRAINT "scope_global_has_neither_teamId_orgId" CHECK
         ("scope" <> 'global' OR ("orgId" IS NULL AND "teamId" IS NULL));
@@ -39,7 +39,7 @@ export async function down() {
   BEGIN
     ALTER TABLE "IntegrationProvider"
       DROP CONSTRAINT "scope_org_has_only_orgId",
-      DROP CONSTRAINT "scope_team_has_only_reamId",
+      DROP CONSTRAINT "scope_team_has_only_teamId",
       DROP CONSTRAINT "scope_global_has_neither_teamId_orgId";
     UPDATE "IntegrationProvider" AS "ip"
       SET

@@ -49,6 +49,10 @@ const updateIntegrationProvider = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Must be on the team that owns the provider'}}
     }
+    const orgId = (await dataLoader.get('teams').load(teamId))?.orgId
+    if (!orgId) {
+      return {error: {message: 'Organization does not exist'}}
+    }
 
     // VALIDATION
     if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {
@@ -64,8 +68,7 @@ const updateIntegrationProvider = {
       ...webhookProviderMetadataInput,
       service,
       authStrategy,
-      teamId,
-      scope
+      ...(scope === 'org' ? {orgId, teamId: null} : {orgId: null, teamId})
     })
 
     if (currentProvider.service === 'mattermost') {
