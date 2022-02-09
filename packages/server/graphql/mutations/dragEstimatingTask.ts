@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
@@ -15,8 +15,8 @@ export default {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    stageId: {
-      type: new GraphQLNonNull(GraphQLID)
+    stageIds: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat)
@@ -24,7 +24,7 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {meetingId, stageId, sortOrder}: {meetingId: string; stageId: string; sortOrder: number},
+    {meetingId, stageIds, sortOrder}: {meetingId: string; stageIds: string[]; sortOrder: number},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -33,10 +33,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -48,14 +45,14 @@ export default {
       return standardError(new Error('Meeting phase not found'), {userId: viewerId})
     }
     const {stages} = estimatePhase
-    const draggedStage = stages.find((stage) => stage.id === stageId)
-    if (!draggedStage) {
+    const draggedStages = stages.filter((stage) => stageIds.includes(stage.id))
+    if (!draggedStages) {
       return standardError(new Error('Meeting stage not found'), {userId: viewerId})
     }
 
     // RESOLUTION
     // MUTATIVE
-    draggedStage.sortOrder = sortOrder
+    draggedStages.forEach((draggedStage) => (draggedStage.sortOrder = sortOrder))
     stages.sort((a, b) => {
       return a.sortOrder > b.sortOrder ? 1 : -1
     })
@@ -69,7 +66,7 @@ export default {
 
     const data = {
       meetingId,
-      stageId
+      stageIds
     }
     publish(SubscriptionChannel.MEETING, meetingId, 'DragEstimatingTaskSuccess', data, subOptions)
     return data

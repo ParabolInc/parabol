@@ -89,8 +89,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
     }
 
     const {stageIds} = sourceTopic
-    const [firstStageId] = stageIds
-    const variables = {meetingId, stageId: firstStageId, sortOrder}
+    const variables = {meetingId, stageIds: stageIds, sortOrder}
     DragEstimatingTaskMutation(atmosphere, variables)
   }
 

@@ -7,7 +7,7 @@ import handleUpdateStageSort from './handlers/handleUpdateStageSort'
 
 graphql`
   fragment DragEstimatingTaskMutation_meeting on DragEstimatingTaskSuccess {
-    stage {
+    stages {
       id
       sortOrder
     }
@@ -16,8 +16,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation DragEstimatingTaskMutation($meetingId: ID!, $stageId: ID!, $sortOrder: Float!) {
-    dragEstimatingTask(meetingId: $meetingId, stageId: $stageId, sortOrder: $sortOrder) {
+  mutation DragEstimatingTaskMutation($meetingId: ID!, $stageIds: [ID!]!, $sortOrder: Float!) {
+    dragEstimatingTask(meetingId: $meetingId, stageIds: $stageIds, sortOrder: $sortOrder) {
       ...DragEstimatingTaskMutation_meeting @relay(mask: false)
     }
   }
@@ -44,10 +44,12 @@ const DragEstimatingTaskMutation: SimpleMutation<IDragEstimatingTaskMutation> = 
       dragEstimatingTaskMeetingUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
-      const {meetingId, stageId, sortOrder} = variables
-      const stage = store.get(stageId)
-      if (!stage) return
-      stage.setValue(sortOrder, 'sortOrder')
+      const {meetingId, stageIds, sortOrder} = variables
+      stageIds.forEach((stageId) => {
+        const stage = store.get(stageId)
+        if (!stage) return
+        stage.setValue(sortOrder, 'sortOrder')
+      })
       handleUpdateStageSort(store, meetingId, 'ESTIMATE')
     }
   })
