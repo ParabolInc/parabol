@@ -20,7 +20,6 @@ interface Props {
 }
 
 const getValue = (item: {remoteProject?: any; nameWithOwner?: string}) => {
-  console.log('🚀  ~ item', item)
   return item.remoteProject?.name ?? item.nameWithOwner ?? 'Unknown Project'
 }
 
