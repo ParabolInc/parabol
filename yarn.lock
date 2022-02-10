@@ -4764,6 +4764,14 @@ are-we-there-yet@^2.0.0:
     delegates "^1.0.0"
     readable-stream "^3.6.0"
 
+are-we-there-yet@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/are-we-there-yet/-/are-we-there-yet-3.0.0.tgz#ba20bd6b553e31d62fc8c31bd23d22b95734390d"
+  integrity sha512-0GWpv50YSOcLXaN6/FAKY3vfRbllXWV2xvfA/oKJF8pzFhWXPV+yjhJXDBbjscDYowv7Yw1A3uigpzn5iEGTyw==
+  dependencies:
+    delegates "^1.0.0"
+    readable-stream "^3.6.0"
+
 are-we-there-yet@~1.1.2:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/are-we-there-yet/-/are-we-there-yet-1.1.7.tgz#b15474a932adab4ff8a50d9adfa7e4e926f21146"
@@ -9237,6 +9245,11 @@ import-local@^3.0.2:
     pkg-dir "^4.2.0"
     resolve-cwd "^3.0.0"
 
+improved-yarn-audit@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/improved-yarn-audit/-/improved-yarn-audit-3.0.0.tgz#dfb09cea1a3a92c790ea2b4056431f6fb1b99bfa"
+  integrity sha512-b7CrBYYwMidtPciCBkW62C7vqGjAV10bxcAWHeJvGrltrcMSEnG5I9CQgi14nmAlUKUQiSvpz47Lo3d7Z3Vjcg==
+
 imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
@@ -12353,11 +12366,11 @@ npmlog@^5.0.1:
     set-blocking "^2.0.0"
 
 npmlog@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-6.0.0.tgz#ba9ef39413c3d936ea91553db7be49c34ad0520c"
-  integrity sha512-03ppFRGlsyUaQFbGC2C8QWJN/C/K7PsfyD9aQdhVKAQIH4sQBc8WASqFBP7O+Ut4d2oo5LoeoboB3cGdBZSp6Q==
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-6.0.1.tgz#06f1344a174c06e8de9c6c70834cfba2964bba17"
+  integrity sha512-BTHDvY6nrRHuRfyjt1MAufLxYdVXZfd099H4+i1f0lPywNQyI4foeNXJRObB/uy+TYqUW0vAD9gbdSOXPst7Eg==
   dependencies:
-    are-we-there-yet "^2.0.0"
+    are-we-there-yet "^3.0.0"
     console-control-strings "^1.1.0"
     gauge "^4.0.0"
     set-blocking "^2.0.0"

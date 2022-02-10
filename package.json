@@ -76,6 +76,7 @@
     "babel-loader": "8.2.3",
     "graphql": "15.7.2",
     "husky": "^7.0.4",
+    "improved-yarn-audit": "^3.0.0",
     "jscodeshift": "^0.13.0",
     "lerna": "^4.0.0",
     "minimist": "^1.2.5",
