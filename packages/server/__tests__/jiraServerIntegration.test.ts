@@ -2,7 +2,7 @@ import {getUserTeams, sendPublic, signUp} from './common'
 
 const serverBaseUrl = 'https://jira.example.com/'
 const consumerKey = 'CvSE+9fww8PLH07mWTHKUZMiGyX7liUSFbB1pRLVDyQ='
-const privateKey = `-----BEGIN RSA PRIVATE KEY-----
+const consumerSecret = `-----BEGIN RSA PRIVATE KEY-----
 MIICXAIBAAKBgQC7pZ1qCXvNq2DnTtD3d7X913IhJTwaKhWsu5/qgSsb1J7fVZFL
 XlkvHCxhB0Lu/ByMzzQ5t0PJR3mkSjNV68j1TjM8Z4d+F+0+kxrUn8HteiBqVhlA
 oYZeHljcvULWm9tVOFAk7CmEskQ3JQQhvPsAkpTvgaBrLdYAJILic9EymQIDAQAB
@@ -51,7 +51,7 @@ test('Add integration provider', async () => {
         oAuth1ProviderMetadataInput: {
           serverBaseUrl,
           consumerKey,
-          privateKey
+          consumerSecret
         }
       }
     },
