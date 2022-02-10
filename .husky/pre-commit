@@ -7,7 +7,7 @@ vulnerabilities=$?
 if [ $vulnerabilities -eq 0 ]; then
   echo "No vulnerabilities found."
 else
-  echo "Vulnerabilities moderate or above found. Resolve issues before commiting code. See console output for more details."
+  echo "Vulnerabilities moderate or above found. Resolve issues before committing code. See console output for more details."
   exit 1
 fi
 
