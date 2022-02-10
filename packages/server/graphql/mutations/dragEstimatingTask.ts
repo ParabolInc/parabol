@@ -46,8 +46,8 @@ export default {
     }
     const {stages} = estimatePhase
     const draggedStages = stages.filter((stage) => stageIds.includes(stage.id))
-    if (!draggedStages) {
-      return standardError(new Error('Meeting stage not found'), {userId: viewerId})
+    if (!draggedStages.length) {
+      return standardError(new Error('No meeting stages were found'), {userId: viewerId})
     }
 
     // RESOLUTION

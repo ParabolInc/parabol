@@ -29,8 +29,10 @@ export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>(
         const {phases, teamId} = meeting
         const phase = phases.find((phase: GenericMeetingPhase) => phase.phaseType === 'ESTIMATE')!
         const {stages} = phase
-        const dbStages = stages.filter((stage: GenericMeetingStage) => stageIds.includes(stage.id))!
-        dbStages.forEach((dbStage) => augmentDBStage(dbStage, meetingId, 'ESTIMATE', teamId))
+        const dbStages = stages.filter((stage: GenericMeetingStage) => stageIds.includes(stage.id))
+        dbStages.forEach((dbStage: GenericMeetingStage) =>
+          augmentDBStage(dbStage, meetingId, 'ESTIMATE', teamId)
+        )
         return dbStages
       }
     }
