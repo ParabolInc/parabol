@@ -613,13 +613,45 @@ export default abstract class AtlassianManager {
       const projectFilter = projectKeys.length
         ? `project in (${projectKeys.map((val) => `\"${val}\"`).join(', ')})`
         : ''
-      const textFilter = queryString ? `text ~ \"${queryString}\"` : ''
+
+      var issueKeyJQL = ''
+      if (queryString) {
+        const maybeIssueKeys = queryString.split(/[\s,]+/)
+        if (maybeIssueKeys.length > 0) {
+          const validIssueKeys = maybeIssueKeys.map((maybeIssueKey) => {
+            const match = maybeIssueKey.match(/(?<projectKey>[A-Za-z][A-Za-z_0-9]+)*-*(?<issueNumber>\d+)/)
+            if (!match || !match.groups) return ""
+
+            const {projectKey: maybeProjectKey, issueNumber: maybeIssueNumber} = match.groups
+            if (maybeProjectKey && !maybeIssueNumber) return ""
+            else if (maybeProjectKey && maybeIssueNumber) {
+              if (projectKeys.length == 0 || (projectKeys.length != 0 && projectKeys.includes(maybeProjectKey.toUpperCase()))) {
+                return `${maybeProjectKey}-${maybeIssueNumber}`
+              } else {
+                return ""
+              }
+            } else if (!maybeProjectKey && maybeIssueNumber) {
+              if (projectKeys.length == 0) {
+                return ""
+              } else {
+                return projectKeys.map((projectKey) => `${projectKey}-${maybeIssueNumber}`)
+              }
+            } else {
+              return ""
+            }
+          }).flat().filter(String).map((issueKey) => `\"${issueKey.toUpperCase()}\"`)
+          issueKeyJQL = validIssueKeys.length > 0 ? ` OR issueKey in (${validIssueKeys.join(', ')})` : ''
+        }
+      }
+
+      const textFilter = queryString ? `text ~ \"${queryString}\"${issueKeyJQL}` : ''
       const and = projectFilter && textFilter ? ' AND ' : ''
       return `${projectFilter}${and}${textFilter} ${orderBy}`
     }
     const reqs = Object.entries(projectFiltersByCloudId).map(async ([cloudId, projectKeys]) => {
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const jql = composeJQL(queryString, isJQL, projectKeys)
+      console.log(jql)
       const payload = {
         jql,
         maxResults: 100,
