@@ -3,10 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
+import {isNotNull} from '../../server/utils/predicates'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {IXGitHubCreatedCommitContribution} from '../types/graphql'
 import getReposFromQueryStr from '../utils/getReposFromQueryStr'
 import {
   GitHubScopingSearchFilterMenuQuery,
@@ -34,8 +34,6 @@ interface Props {
 type GitHubSearchQuery = NonNullable<
   NonNullable<GitHubScopingSearchFilterMenuQueryResponse['viewer']['meeting']>['githubSearchQuery']
 >
-
-type Contribution = Pick<IXGitHubCreatedCommitContribution, 'occurredAt' | 'repository'>
 
 const MAX_REPOS = 10
 
@@ -102,7 +100,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       contributionByRepo.contributions.nodes ? contributionByRepo.contributions.nodes[0] : null
     )
     return contributions
-      .filter((contribution): contribution is Contribution => !!contribution)
+      .filter(isNotNull)
       .sort(
         (a, b) =>
           new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
