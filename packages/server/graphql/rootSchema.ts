@@ -62,11 +62,15 @@ const withNestedSchema = mergeSchemas({
   typeDefs: `
      type _xGitHubIssue implements TaskIntegration
      type _xGitHubRepository implements RepoIntegration
+     extend type _xGitHubRepository {
+       service: IntegrationProviderServiceEnum!
+     }
     `,
   resolvers: {
     _xGitHubRepository: {
       __interfaces: () => ['RepoIntegration'],
-      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner
+      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner,
+      service: () => 'github'
     }
   }
 })

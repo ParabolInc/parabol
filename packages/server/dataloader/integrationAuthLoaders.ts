@@ -10,6 +10,7 @@ import getIntegrationProvidersByIds, {
 } from '../postgres/queries/getIntegrationProvidersByIds'
 import getSharedIntegrationProviders from '../postgres/queries/getSharedIntegrationProviders'
 import getTeamMemberIntegrationAuth from '../postgres/queries/getTeamMemberIntegrationAuth'
+import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 
 interface TeamMemberIntegrationAuthPrimaryKey {
@@ -29,11 +30,11 @@ const teamMemberIntegrationAuthCacheKeyFn = ({service, teamId, userId}) =>
   TeamMemberIntegrationAuthId.join(service, teamId, userId)
 
 export const integrationProviders = (parent: RootDataLoader) => {
-  return new DataLoader<number, TIntegrationProvider | null, string>(
+  return new NullableDataLoader<number, TIntegrationProvider, string>(
     async (providerIds) => {
       const integrationProviders = await getIntegrationProvidersByIds(providerIds)
-      return providerIds.map(
-        (providerId) => integrationProviders.find((row) => row.id === providerId) || null
+      return providerIds.map((providerId) =>
+        integrationProviders.find((row) => row.id === providerId)
       )
     },
     {
