@@ -56643,7 +56643,7 @@ export interface IStartSprintPokerOnMutationArguments {
 export interface ISetTaskHighlightOnMutationArguments {
   taskId: string;
   meetingId: string;
-  isHighlighted?: boolean | null;
+  isHighlighted: boolean;
 }
 
 export interface IUpdateAgendaItemOnMutationArguments {
