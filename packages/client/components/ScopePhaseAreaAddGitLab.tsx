@@ -68,8 +68,8 @@ const ScopePhaseAreaAddGitLab = (props: Props) => {
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const {gitlab} = integrations
+  if (!gitlab?.cloudProvider) return null
   const {cloudProvider} = gitlab
-  if (!cloudProvider) return null
   const {id: providerId, clientId, serverBaseUrl} = cloudProvider
 
   const authGitLab = () => {

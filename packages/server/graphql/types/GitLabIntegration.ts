@@ -1,4 +1,5 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import sendToSentry from '../../utils/sendToSentry'
 import {GQLContext} from '../graphql'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
@@ -34,14 +35,24 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
     sharedProviders: {
       description: 'The non-global providers shared with the team or organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(IntegrationProviderOAuth2))),
-      resolve: async ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        _args: unknown,
+        {dataLoader}
+      ) => {
         const team = await dataLoader.get('teams').loadNonNull(teamId)
         const {orgId} = team
         const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
         const orgTeamIds = orgTeams.map(({id}) => id)
-        return dataLoader
+        const sharedProviders = await dataLoader
           .get('sharedIntegrationProviders')
           .load({service: 'gitlab', orgTeamIds, teamIds: [teamId]})
+        if (!sharedProviders) {
+          sendToSentry(new Error('Shared providers is undefined'), {
+            userId,
+            tags: {teamId, orgTeamIds: JSON.stringify(orgTeamIds), userId}
+          })
+        }
       }
     }
     // The GitLab schema get injected here as 'api'

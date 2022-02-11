@@ -40,7 +40,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
       }
     },
     gitlab: {
-      type: new GraphQLNonNull(GitLabIntegration),
+      type: GitLabIntegration,
       description: 'All things associated with a GitLab integration for a team member',
       resolve: (source) => source
     },
