@@ -651,7 +651,6 @@ export default abstract class AtlassianManager {
     const reqs = Object.entries(projectFiltersByCloudId).map(async ([cloudId, projectKeys]) => {
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const jql = composeJQL(queryString, isJQL, projectKeys)
-      console.log(jql)
       const payload = {
         jql,
         maxResults: 100,
