@@ -55430,55 +55430,6 @@ export interface IActionMeetingSettings {
 }
 
 /**
- * The details associated with a task integrated with GitHub
- */
-export interface ISuggestedIntegrationGitHub {
-  __typename: 'SuggestedIntegrationGitHub';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * The name of the repo. Follows format of OWNER/NAME
-   */
-  nameWithOwner: string;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ISuggestedIntegrationJira {
-  __typename: 'SuggestedIntegrationJira';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * URL to a 24x24 avatar icon
-   */
-  avatar: string;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
-   */
-  projectName: string;
-  projectId: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The full project document fetched from Jira
-   */
-  remoteProject: IJiraRemoteProject | null;
-}
-
-/**
  * A comment on a thread
  */
 export interface IComment {
@@ -56532,7 +56483,7 @@ export interface ICreateTaskIntegrationOnMutationArguments {
   /**
    * Jira projectId, GitHub nameWithOwner etc.
    */
-  projectId: string;
+  integrationRepoId: string;
 
   /**
    * The id of the task to convert to an issue
