@@ -9,7 +9,8 @@ export async function up() {
   BEGIN
     ALTER TABLE "IntegrationProvider"
       ADD COLUMN IF NOT EXISTS "orgId" VARCHAR(100),
-      ALTER COLUMN "teamId" DROP NOT NULL;
+      ALTER COLUMN "teamId" DROP NOT NULL,
+      DROP CONSTRAINT "IntegrationProvider_teamId_service_authStrategy_key";
     UPDATE "IntegrationProvider"
       SET
         "orgId" = (SELECT "orgId" FROM "Team" WHERE "id" = "teamId"),
@@ -20,6 +21,7 @@ export async function up() {
         "teamId" = NULL
       WHERE "scope" = 'global';
     ALTER TABLE "IntegrationProvider"
+      ADD CONSTRAINT "unique_per_team_and_org" UNIQUE ("orgId", "teamId", "service", "authStrategy"),
       ADD CONSTRAINT "scope_org_has_only_orgId" CHECK
         ("scope" <> 'org' OR ("orgId" IS NOT NULL AND "teamId" IS NULL)),
       ADD CONSTRAINT "scope_team_has_only_teamId" CHECK
@@ -50,8 +52,10 @@ export async function down() {
         "teamId" = 'aGhostTeam'
       WHERE "scope" = 'global';
     ALTER TABLE "IntegrationProvider"
+      DROP CONSTRAINT "unique_per_team_and_org",
       DROP COLUMN "orgId",
-      ALTER COLUMN "teamId" SET NOT NULL;
+      ALTER COLUMN "teamId" SET NOT NULL,
+      ADD CONSTRAINT "IntegrationProvider_teamId_service_authStrategy_key" UNIQUE ("teamId", "service", "authStrategy");
   END $$;
   `)
   await client.end()
