@@ -1,3 +1,4 @@
+import {_xGitHubRepositoryNode} from './../../client/types/graphql'
 import {mergeSchemas} from '@graphql-tools/merge'
 import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
@@ -59,8 +60,15 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
 const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],
   typeDefs: `
-    type _xGitHubIssue implements TaskIntegration
-  `
+     type _xGitHubIssue implements TaskIntegration
+     type _xGitHubRepository implements RepoIntegration
+    `,
+  resolvers: {
+    _xGitHubRepository: {
+      __interfaces: () => ['RepoIntegration'],
+      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner
+    }
+  }
 })
 const addRequestors = (schema: GraphQLSchema) => {
   const finalSchema = schema as any

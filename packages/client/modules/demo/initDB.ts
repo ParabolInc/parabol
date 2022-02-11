@@ -4,6 +4,7 @@ import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
+import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
@@ -62,8 +63,8 @@ const JiraSecretProjectId = '123:jira-secret'
 
 export const JiraProjectKeyLookup = {
   [JiraDemoProjectId]: {
-    projectKey: JiraDemoKey,
-    projectName: 'Demo Jira Project',
+    key: JiraDemoKey,
+    name: 'Demo Jira Project',
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     projectId: JiraDemoProjectId,
@@ -71,8 +72,8 @@ export const JiraProjectKeyLookup = {
     service: 'jira'
   },
   [JiraSecretProjectId]: {
-    projectKey: JiraSecretKey,
-    projectName: 'Secret Jira Project',
+    key: JiraSecretKey,
+    name: 'Secret Jira Project',
     cloudId: '123',
     projectId: JiraSecretProjectId,
     cloudName: JiraDemoCloudName,
@@ -84,7 +85,6 @@ export const JiraProjectKeyLookup = {
 class DemoJiraRemoteProject {
   __typename = 'JiraRemoteProject'
   id: string
-  projectId: string
   teamId: string
   userId: string
   self = ''
@@ -102,14 +102,13 @@ class DemoJiraRemoteProject {
   style = ''
   constructor(key: keyof typeof JiraProjectKeyLookup) {
     const details = JiraProjectKeyLookup[key]
-    const {projectKey, projectName, cloudId, avatar} = details
-    this.id = key
-    this.projectId = key
+    const {key: projectKey, name, cloudId, avatar} = details
+    this.id = JiraProjectId.join(cloudId, projectKey)
     this.teamId = RetroDemo.TEAM_ID
     this.userId = demoViewerId
     this.cloudId = cloudId
     this.key = projectKey
-    this.name = projectName
+    this.name = name
     this.avatar = avatar
   }
 }
@@ -121,17 +120,8 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeSuggestedIntegrationJira = (key: keyof typeof JiraProjectKeyLookup) => {
-  return {
-    __typename: 'SuggestedIntegrationJira',
-    id: key,
-    remoteProject: new DemoJiraRemoteProject(key),
-    ...JiraProjectKeyLookup[key]
-  }
-}
-
-const makeSuggestedIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
-  __typename: 'SuggestedIntegrationGitHub',
+const makeRepoIntegrationGitHub = (nameWithOwner: keyof typeof GitHubProjectKeyLookup) => ({
+  __typename: '_xGitHubRepository',
   id: `si:${nameWithOwner}`,
   ...GitHubProjectKeyLookup[nameWithOwner]
 })
@@ -244,16 +234,16 @@ const initDemoTeamMember = (
       },
       slack: initSlackAuth(userId)
     },
-    suggestedIntegrations: {
+    repoIntegrations: {
       hasMore: true,
       items: [
-        makeSuggestedIntegrationJira(JiraDemoProjectId),
-        makeSuggestedIntegrationGitHub(GitHubDemoKey)
+        new DemoJiraRemoteProject(JiraDemoProjectId),
+        makeRepoIntegrationGitHub(GitHubDemoKey)
       ]
     },
-    allAvailableIntegrations: [
-      makeSuggestedIntegrationJira(JiraDemoProjectId),
-      makeSuggestedIntegrationJira(JiraSecretProjectId)
+    allAvailableRepoIntegrations: [
+      new DemoJiraRemoteProject(JiraDemoProjectId),
+      new DemoJiraRemoteProject(JiraSecretProjectId)
     ],
     teamId: demoTeamId,
     userId

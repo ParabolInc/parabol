@@ -64,7 +64,15 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       description: 'The project fetched from jira',
       resolve: async ({issueKey, teamId, userId, cloudId}, _args: unknown, {dataLoader}) => {
         const projectKey = JiraProjectKeyId.join(issueKey)
-        return dataLoader.get('jiraRemoteProject').load({cloudId, projectKey, teamId, userId})
+        const jiraRemoteProjectRes = await dataLoader
+          .get('jiraRemoteProject')
+          .load({cloudId, projectKey, teamId, userId})
+        return {
+          ...jiraRemoteProjectRes,
+          cloudId,
+          userId,
+          teamId
+        }
       }
     },
     summary: {
