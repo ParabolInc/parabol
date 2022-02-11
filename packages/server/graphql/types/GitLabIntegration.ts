@@ -53,6 +53,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
             tags: {teamId, orgTeamIds: JSON.stringify(orgTeamIds), userId}
           })
         }
+        return sharedProviders
       }
     }
     // The GitLab schema get injected here as 'api'
