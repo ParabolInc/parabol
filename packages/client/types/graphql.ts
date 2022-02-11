@@ -49680,7 +49680,7 @@ export interface ITeamMember {
   /**
    * All the integrations that the user could possibly use
    */
-  allAvailableIntegrations: Array<SuggestedIntegration>;
+  allAvailableRepoIntegrations: Array<RepoIntegration>;
 
   /**
    * The datetime the team member was created
@@ -49740,7 +49740,7 @@ export interface ITeamMember {
   /**
    * The integrations that the user would probably like to use
    */
-  suggestedIntegrations: ISuggestedIntegrationQueryPayload;
+  repoIntegrations: IRepoIntegrationQueryPayload;
 
   /**
    * Tasks owned by the team member
@@ -49781,23 +49781,17 @@ export interface ITasksOnTeamMemberArguments {
   after?: any | null;
 }
 
-export type SuggestedIntegration =
-  | ISuggestedIntegrationGitHub
-  | ISuggestedIntegrationJira;
-
-export interface ISuggestedIntegration {
-  __typename: 'SuggestedIntegration';
-  id: string;
-  service: TaskServiceEnum;
-}
+/**
+ * The suggested repos and projects a user can integrate with
+ */
+export type RepoIntegration = IXGitHubRepository | IJiraRemoteProject;
 
 /**
- * The list of services for task integrations
+ * The suggested repos and projects a user can integrate with
  */
-export const enum TaskServiceEnum {
-  github = 'github',
-  jira = 'jira',
-  PARABOL = 'PARABOL',
+export interface IRepoIntegration {
+  __typename: 'RepoIntegration';
+  id: string;
 }
 
 /**
@@ -50674,21 +50668,21 @@ export const enum MeetingTypeEnum {
 }
 
 /**
- * The details associated with a task integrated with GitHub
+ * The details associated with the possible repo and project integrations
  */
-export interface ISuggestedIntegrationQueryPayload {
-  __typename: 'SuggestedIntegrationQueryPayload';
+export interface IRepoIntegrationQueryPayload {
+  __typename: 'RepoIntegrationQueryPayload';
   error: IStandardMutationError | null;
 
   /**
    * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
    */
-  hasMore: boolean | null;
+  hasMore: boolean;
 
   /**
    * All the integrations that are likely to be integrated
    */
-  items: Array<SuggestedIntegration> | null;
+  items: Array<RepoIntegration> | null;
 }
 
 /**
@@ -58188,6 +58182,15 @@ export interface ICreateTaskIntegrationInput {
    * The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
    */
   serviceProjectHash: string;
+}
+
+/**
+ * The list of services for task integrations
+ */
+export const enum TaskServiceEnum {
+  github = 'github',
+  jira = 'jira',
+  PARABOL = 'PARABOL',
 }
 
 /**

@@ -3,7 +3,6 @@ import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 import splitDraftContent from '../utils/draftjs/splitDraftContent'
-import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 
@@ -62,53 +61,6 @@ const mutation = graphql`
   }
 `
 
-const jiraTaskIntegrationUpdater = (store) => {
-  // TODO break out into subscription & also reorder suggested items (put newest on top if exists)
-  const payload = store.getRootField('createTaskIntegration')
-  if (!payload) return
-  const task = payload.getLinkedRecord('task')
-  if (!task) return
-  const userId = task.getValue('userId')
-  const teamId = task.getValue('teamId')
-  const integration = task.getLinkedRecord('integration')
-  if (!userId) return
-  const user = store.get(userId)
-  if (!user || !integration) return
-  const suggestedIntegrations = user.getLinkedRecord('suggestedIntegrations', {teamId})
-  const projectKey = integration.getValue('projectKey')
-  if (!suggestedIntegrations || !projectKey) return
-  const items = suggestedIntegrations.getLinkedRecords('items')
-  if (!items) return
-  const existingIntegration = items.find(
-    (item) => item && item.getValue('projectKey') === projectKey
-  )
-  const hasMore = suggestedIntegrations.getValue('hasMore')
-  if (!existingIntegration || !hasMore) {
-    const project = integration.getLinkedRecord('project')
-    if (!project) return
-    const projectName = project.getValue('projectName')
-    const cloudId = integration.getValue('cloudId')
-    if (!projectName || !cloudId) return
-    const nextItem = {
-      cloudId,
-      projectKey,
-      projectName,
-      service: 'jira'
-    } as const
-    const id = makeSuggestedIntegrationId(nextItem)
-    // the fallback is likely never used
-    const latestIntegration =
-      store.get(id) ||
-      createProxyRecord(store, 'SuggestedIntegrationJira', {
-        id,
-        ...nextItem
-      })
-    const nextSuggestedIntegrations = [latestIntegration, ...items].slice(0, hasMore ? 3 : 1)
-    suggestedIntegrations.setLinkedRecords(nextSuggestedIntegrations, 'items')
-    suggestedIntegrations.setValue(true, 'hasMore')
-  }
-}
-
 const jiraTaskIntegrationOptimisticUpdater = (store, variables) => {
   const {cloudId, projectKey, taskId} = variables
   const now = new Date()
@@ -164,11 +116,6 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
   return commitMutation<TCreateTaskIntegrationMutation>(atmosphere, {
     mutation,
     variables,
-    updater: (store) => {
-      if (integrationProviderService === 'jira') {
-        jiraTaskIntegrationUpdater(store)
-      }
-    },
     optimisticUpdater: (store) => {
       if (integrationProviderService === 'jira') {
         jiraTaskIntegrationOptimisticUpdater(store, variables)

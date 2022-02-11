@@ -420,8 +420,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       if (integrationProviderService === 'jira') {
         const project = JiraProjectKeyLookup[integrationRepoId]
-        const {cloudId, cloudName, projectName, avatar, projectKey} = project
-        const issueKey = this.getTempId(`${projectKey}-`)
+        const {cloudId, cloudName, name, avatar, key} = project
+        const issueKey = this.getTempId(`${key}-`)
 
         Object.assign(task, {
           updatedAt: new Date().toJSON(),
@@ -430,16 +430,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             __typename: 'JiraIssue',
             id: `jira:${taskId}`,
             issueKey,
-            projectKey,
+            projectKey: key,
             cloudId,
             cloudName,
             descriptionHTML: bodyHTML,
             summary: title,
             url: ExternalLinks.INTEGRATIONS_JIRA,
             project: {
-              id: `${projectKey}:id`,
-              key: projectKey,
-              name: projectName,
+              id: `${key}:id`,
+              key,
+              name,
               avatar,
               cloudId
             }

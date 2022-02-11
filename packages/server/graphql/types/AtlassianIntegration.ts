@@ -22,6 +22,7 @@ import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQuer
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import fetchAtlassianProjects from '../queries/helpers/fetchAtlassianProjects'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -157,17 +158,9 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async (
         {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
         _args: unknown,
-        {authToken}: GQLContext
+        context
       ) => {
-        const viewerId = getUserId(authToken)
-        if (viewerId !== userId) return []
-        const manager = new AtlassianServerManager(accessToken)
-        const projects = await manager.getAllProjects(cloudIds)
-        return projects.map((project) => ({
-          ...project,
-          teamId,
-          userId
-        }))
+        return fetchAtlassianProjects(teamId, userId, context, cloudIds, accessToken)
       }
     },
     jiraFields: {
