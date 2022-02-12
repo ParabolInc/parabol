@@ -1,5 +1,5 @@
 import {mergeSchemas} from '@graphql-tools/merge'
-import {GraphQLSchema} from 'graphql'
+import {GraphQLResolveInfo, GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import {IntegrationProviderGitLabOAuth2} from '../postgres/queries/getIntegrationProvidersByIds'
 import githubSchema from '../utils/githubSchema.graphql'
@@ -56,11 +56,29 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
   schemaIDL: gitlabSchema
 })
 
+// Use
+const resolveToFieldNameOrAlias = (
+  source: any,
+  _args: unknown,
+  _context: unknown,
+  info: GraphQLResolveInfo
+) => {
+  const key = info.fieldNodes[0].alias?.value ?? info.fieldName
+  return source[key]
+}
+
 const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],
   typeDefs: `
     type _xGitHubIssue implements TaskIntegration
-  `
+  `,
+  // TODO apply this resolver to every type in the GitHub schema
+  // It is necessary any time client code uses an alias inside a wrapper
+  resolvers: {
+    _xGitHubIssue: {
+      url: resolveToFieldNameOrAlias
+    }
+  }
 })
 const addRequestors = (schema: GraphQLSchema) => {
   const finalSchema = schema as any

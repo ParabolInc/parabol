@@ -1,4 +1,3 @@
-import {IGetLatestTaskEstimatesQueryResult} from './../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {
   GraphQLFloat,
   GraphQLID,
@@ -9,10 +8,16 @@ import {
 } from 'graphql'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
+import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
+import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
+import {getUserId} from '../../utils/authorization'
 import getGitHubRequest from '../../utils/getGitHubRequest'
+import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
+import sendToSentry from '../../utils/sendToSentry'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import {IGetLatestTaskEstimatesQueryResult} from './../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -22,12 +27,6 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import sendToSentry from '../../utils/sendToSentry'
-import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
-import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
-import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId} from '../../utils/authorization'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -148,13 +147,9 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
                 const {githubLabelName, name: dimensionName} = estimate
                 const existingLabel = ghIssueLabels.includes(githubLabelName)
                 if (existingLabel) return
-                const r = await getRethink()
-                const taskIds = await r
-                  .table('Task')
-                  .getAll(teamId, {index: 'teamId'})
-                  .filter((row) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
-                  .run()
-
+                const taskIds = await dataLoader
+                  .get('taskIdsByTeamAndGitHubRepo')
+                  .load({teamId, nameWithOwner})
                 const similarEstimate = await getSimilarTaskEstimate(
                   taskIds,
                   dimensionName,
