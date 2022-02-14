@@ -113,7 +113,7 @@ export default {
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
-      userId && viewerId !== userId
+      userId && viewerId !== userId && taskIntegrationManager.getCreatedBySomeoneElseComment
         ? taskIntegrationManager.getCreatedBySomeoneElseComment(
             viewerName,
             assigneeName,

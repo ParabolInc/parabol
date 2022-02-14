@@ -2,6 +2,7 @@ import {GraphQLResolveInfo} from 'graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from './JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from './GitHubTaskIntegrationManager'
+import JiraServerTaskIntegrationManager from './JiraServerTaskIntegrationManager'
 import {TaskIntegration} from '../database/types/Task'
 import {Doc} from '../utils/convertContentStateToADF'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
@@ -25,7 +26,7 @@ export interface TaskIntegrationManager {
   }): Promise<CreateTaskResponse>
 
   // TODO: implement addCreatedBySomeoneElseComment instead
-  getCreatedBySomeoneElseComment(
+  getCreatedBySomeoneElseComment?(
     viewerName: string,
     assigneeName: string,
     teamName: string,
@@ -47,6 +48,15 @@ export default class TaskIntegrationManagerFactory {
     if (service === 'github') {
       const auth = await dataLoader.get('githubAuth').load({teamId, userId})
       return auth && new GitHubTaskIntegrationManager(auth)
+    }
+
+    if (service === 'jiraServer') {
+      const auth = await dataLoader
+        .get('teamMemberIntegrationAuths')
+        .load({service: 'jiraServer', teamId, userId})
+      const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+
+      return auth && provider && new JiraServerTaskIntegrationManager(auth, provider)
     }
 
     return null

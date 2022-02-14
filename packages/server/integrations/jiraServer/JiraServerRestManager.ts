@@ -20,6 +20,22 @@ interface JiraServerProject {
   archived: boolean
 }
 
+interface JiraServerCreateMeta {
+  projects: Array<{
+    id: string
+    issuetypes: Array<{
+      name: string
+      id: string
+    }>
+  }>
+}
+
+interface JiraServerCreateIssueResponse {
+  id: string
+  key: string
+  self: string
+}
+
 export default class JiraServerRestManager {
   serverBaseUrl: string
   oauth: OAuth
@@ -49,7 +65,7 @@ export default class JiraServerRestManager {
     }
   }
 
-  async request(method: string, path: string) {
+  async request(method: string, path: string, body?: any) {
     const url = new URL(path, this.serverBaseUrl)
     const request = {
       url: url.toString(),
@@ -58,19 +74,67 @@ export default class JiraServerRestManager {
     const auth = this.oauth.authorize(request, this.token)
     const response = await fetch(request.url, {
       method: request.method,
+      body: body ? JSON.stringify(body) : undefined,
       headers: {
+        'Content-Type': 'application/json',
         ...this.oauth.toHeader(auth)
       }
     })
-    return response
+
+    const json = await response.json()
+
+    if (
+      (method === 'POST' && response.status !== 201) ||
+      (method === 'GET' && response.status !== 200)
+    ) {
+      console.error(`Jira server error ${response.status}`, json)
+      throw new Error('Jira Server request failed')
+    }
+
+    return json
   }
 
-  async getProjects(): Promise<JiraServerProject[] | Error> {
-    const response = await this.request('GET', '/rest/api/latest/project')
-    if (response.status !== 200) {
-      return new Error(`Fetching projects failed with status ${response.status}`)
+  async getCreateMeta(): Promise<JiraServerCreateMeta | Error> {
+    return this.request('GET', '/rest/api/2/issue/createmeta')
+  }
+
+  async createIssue(
+    projectId: string,
+    summary: string,
+    description: string
+  ): Promise<JiraServerCreateIssueResponse | Error> {
+    const meta = await this.getCreateMeta()
+    if (meta instanceof Error) {
+      throw meta
     }
-    const body = await response.json()
-    return body
+    const project = meta.projects.find((project) => project.id === projectId)
+
+    if (!project) {
+      throw new Error('Project not found')
+    }
+
+    const {issuetypes} = project
+    const bestIssueType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
+
+    return this.request('POST', '/rest/api/2/issue', {
+      fields: {
+        project: {
+          id: projectId
+        },
+        issuetype: {
+          id: bestIssueType.id
+        },
+        summary,
+        description
+      }
+    })
+  }
+
+  // async addComment() {
+  //   // TODO:
+  // }
+
+  async getProjects(): Promise<JiraServerProject[] | Error> {
+    return this.request('GET', '/rest/api/latest/project')
   }
 }
