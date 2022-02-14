@@ -48397,6 +48397,8 @@ export interface IIntegrationProvider {
  * The name of the service of the Integration Provider
  */
 export const enum IntegrationProviderServiceEnum {
+  jira = 'jira',
+  github = 'github',
   gitlab = 'gitlab',
   mattermost = 'mattermost',
   jiraServer = 'jiraServer',
@@ -55726,8 +55728,7 @@ export interface IMutation {
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload;
-  createGitHubTaskIntegration: ICreateGitHubTaskIntegrationPayload | null;
-  createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
+  createTaskIntegration: ICreateTaskIntegrationPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -56473,31 +56474,19 @@ export interface ICreateImposterTokenOnMutationArguments {
   email?: any | null;
 }
 
-export interface ICreateGitHubTaskIntegrationOnMutationArguments {
+export interface ICreateTaskIntegrationOnMutationArguments {
   /**
-   * The id of the task to convert to a GH issue
+   * Which integration to push the task to
    */
-  taskId: string;
+  integrationProviderService: IntegrationProviderServiceEnum;
 
   /**
-   * The owner/repo string
+   * Jira projectId, GitHub nameWithOwner etc.
    */
-  nameWithOwner: string;
-}
-
-export interface ICreateJiraTaskIntegrationOnMutationArguments {
-  /**
-   * The atlassian cloudId for the site
-   */
-  cloudId: string;
+  integrationRepoId: string;
 
   /**
-   * The atlassian key of the project to put the issue in
-   */
-  projectKey: string;
-
-  /**
-   * The id of the task to convert to a Jira issue
+   * The id of the task to convert to an issue
    */
   taskId: string;
 }
@@ -57963,14 +57952,8 @@ export interface ICreateImposterTokenPayload {
   user: IUser | null;
 }
 
-export interface ICreateGitHubTaskIntegrationPayload {
-  __typename: 'CreateGitHubTaskIntegrationPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
-}
-
-export interface ICreateJiraTaskIntegrationPayload {
-  __typename: 'CreateJiraTaskIntegrationPayload';
+export interface ICreateTaskIntegrationPayload {
+  __typename: 'CreateTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -60609,8 +60592,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
-  | ICreateGitHubTaskIntegrationPayload
-  | ICreateJiraTaskIntegrationPayload
+  | ICreateTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
