@@ -2,6 +2,21 @@ import config from '../config'
 import {test, expect} from '@playwright/test'
 
 test.describe('restrospective-demo / reflect page', () => {
+  test('it shows an explanation popup', async ({page}) => {
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    await expect(page.locator('[aria-label="Meeting tips"]')).toBeVisible()
+    await expect(
+      page.locator('[aria-label="Meeting tips"] :text("It Starts with Brutal Honesty")')
+    ).toBeVisible()
+    await expect(
+      page.locator(
+        '[aria-label="Meeting tips"] :text("When you’re ready to move on, hit the Next button below.")'
+      )
+    ).toBeVisible()
+  })
+
   test('allows the user to enter feedback in start column', async ({page}) => {
     await config.goto(page, '/retrospective-demo')
     await page.click('text=Start Demo')
@@ -197,5 +212,38 @@ test.describe('restrospective-demo / reflect page', () => {
     await expect(
       page.locator('[data-cy=reflection-column-Continue] :text("1 team member reflection")')
     ).toBeVisible()
+  })
+
+  test('transitions to the group phase after clicking "next" twice', async ({page}) => {
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    const nextButton = page.locator('button :text("Next")')
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+    await nextButton.click()
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
+  })
+
+  test('marks the group phase as completed after transitioning to group phase', async ({
+    page,
+    isMobile
+  }) => {
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    const nextButton = page.locator('button :text("Next")')
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+    await nextButton.click()
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
+
+    if (isMobile) {
+      await page.click('button[aria-label="Toggle the sidebar"]')
+    }
+
+    await page.click('[data-cy=sidebar] :text("Reflect")')
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/reflect`)
+    await expect(page.locator(':text("Phase Completed")')).toBeVisible()
   })
 })
