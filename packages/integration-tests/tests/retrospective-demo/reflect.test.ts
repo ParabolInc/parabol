@@ -16,9 +16,55 @@ test.describe('restrospective-demo / reflect page', () => {
     ).toBeVisible()
   })
 
-  // test('allows the user to enter feedback in the stop column')
-  // test('allows the user to enter feedback in the continue column')
-  // test('allows the user to delete previously entered feedback')
+  test('allows the user to enter feedback in the stop column', async ({page}) => {
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    const startTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
+    await page.click(startTextbox)
+    await page.type(startTextbox, 'Stop doing this')
+    await page.press(startTextbox, 'Enter')
+
+    await expect(
+      page.locator('[data-cy="reflection-stack-Stop"] :text("Stop doing this")')
+    ).toBeVisible()
+  })
+
+  test('allows the user to enter feedback in the continue column', async ({page}) => {
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    const startTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
+    await page.click(startTextbox)
+    await page.type(startTextbox, 'Continue doing this')
+    await page.press(startTextbox, 'Enter')
+
+    await expect(
+      page.locator('[data-cy="reflection-stack-Continue"] :text("Continue doing this")')
+    ).toBeVisible()
+  })
+
+  test('allows the user to delete previously entered feedback', async ({page}) => {
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
+    await page.click(startTextbox)
+    await page.type(startTextbox, 'Start doing this')
+    await page.press(startTextbox, 'Enter')
+
+    await expect(
+      page.locator('[data-cy="reflection-stack-Start"] :text("Start doing this")')
+    ).toBeVisible()
+
+    await page.click(
+      '[data-cy="reflection-stack-Start"] [aria-label="Delete this reflection card"]'
+    )
+
+    await expect(
+      page.locator('[data-cy="reflection-stack-Start"] :text("Start doing this")')
+    ).not.toBeVisible()
+  })
 
   test('displays simulated users writing reflections in the start column', async ({page}) => {
     await config.goto(page, '/retrospective-demo')
