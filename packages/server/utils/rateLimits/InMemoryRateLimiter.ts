@@ -14,15 +14,22 @@ interface LastCall {
   [userId: string]: number
 }
 
+export interface InMemoryRateLimiterConfig {
+  scheduleGc?: boolean
+}
+
 export class InMemoryRateLimiter implements RateLimiter {
   private _records: Records = {}
   private _lastCall: LastCall = {}
 
-  constructor() {
-    // careful! this is not unreffed, so it can keep a process alive
-    setInterval(() => {
-      this.gc()
-    }, HOUR)
+  constructor(config: InMemoryRateLimiterConfig = {}) {
+    const {scheduleGc = true} = config
+    if (scheduleGc) {
+      // careful! this is not unreffed, so it can keep a process alive
+      setInterval(() => {
+        this.gc()
+      }, HOUR)
+    }
   }
 
   public log(userId: string, fieldName: string, isExtendedLog: boolean): RateLimitStats {
