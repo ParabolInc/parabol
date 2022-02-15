@@ -36,6 +36,10 @@ interface JiraServerCreateIssueResponse {
   self: string
 }
 
+interface JiraServerAddCommentResponse {
+  id: string
+}
+
 export default class JiraServerRestManager {
   serverBaseUrl: string
   oauth: OAuth
@@ -130,9 +134,14 @@ export default class JiraServerRestManager {
     })
   }
 
-  // async addComment() {
-  //   // TODO:
-  // }
+  async addComment(
+    comment: string,
+    issueId: string
+  ): Promise<JiraServerAddCommentResponse | Error> {
+    return this.request('POST', `/rest/api/2/issue/${issueId}/comment`, {
+      body: comment
+    })
+  }
 
   async getProjects(): Promise<JiraServerProject[] | Error> {
     return this.request('GET', '/rest/api/latest/project')

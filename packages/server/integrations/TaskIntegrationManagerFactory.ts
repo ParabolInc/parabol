@@ -25,13 +25,21 @@ export interface TaskIntegrationManager {
     info?: GraphQLResolveInfo
   }): Promise<CreateTaskResponse>
 
-  // TODO: implement addCreatedBySomeoneElseComment instead
+  // TODO: replace with addCreatedBySomeoneElseComment everywhere
   getCreatedBySomeoneElseComment?(
     viewerName: string,
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string
   ): Doc | string
+
+  addCreatedBySomeoneElseComment?(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    integrationHash: string
+  )
 }
 
 export default class TaskIntegrationManagerFactory {
@@ -54,6 +62,10 @@ export default class TaskIntegrationManagerFactory {
       const auth = await dataLoader
         .get('teamMemberIntegrationAuths')
         .load({service: 'jiraServer', teamId, userId})
+
+      if (!auth) {
+        return null
+      }
       const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
 
       return auth && provider && new JiraServerTaskIntegrationManager(auth, provider)

@@ -134,6 +134,16 @@ export default {
       return {error: {message: createTaskResponse.message}}
     }
 
+    if (userId && viewerId !== userId && taskIntegrationManager.addCreatedBySomeoneElseComment) {
+      await taskIntegrationManager.addCreatedBySomeoneElseComment(
+        viewerName,
+        assigneeName,
+        team.name,
+        teamDashboardUrl,
+        createTaskResponse.integrationHash
+      )
+    }
+
     await r
       .table('Task')
       .get(taskId)
