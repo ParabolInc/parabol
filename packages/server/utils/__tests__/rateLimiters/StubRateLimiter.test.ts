@@ -1,4 +1,4 @@
-import {StubRateLimiter} from '../../rateLimits/StubRateLimiter'
+import {StubRateLimiter} from '../../rateLimiters'
 
 describe('StubRateLimiter', () => {
   describe('always-allow mode', () => {
