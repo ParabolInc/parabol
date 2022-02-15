@@ -5,7 +5,7 @@ type StubRateLimiterMode = 'always-allow'
 export class StubRateLimiter implements RateLimiter {
   constructor(private mode: StubRateLimiterMode = 'always-allow') {}
 
-  public log(userId: string, fieldName: string, isExtendedLog: boolean): RateLimitStats {
+  public log(_userId: string, _fieldName: string, _isExtendedLog: boolean): RateLimitStats {
     if (this.mode === 'always-allow') {
       return {
         lastHour: 0,
