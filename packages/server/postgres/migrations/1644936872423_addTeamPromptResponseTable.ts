@@ -1,0 +1,72 @@
+import {Client} from 'pg'
+import getPgConfig from '../getPgConfig'
+
+export async function up() {
+  const client = new Client(getPgConfig())
+  await client.connect()
+  await client.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Reactji') THEN
+        CREATE TYPE "Reactji" AS (id text, userId text);
+      END IF;
+
+      ALTER TYPE "DiscussionTopicTypeEnum" ADD VALUE 'teamPromptResponse';
+
+      ALTER TYPE "MeetingTypeEnum" ADD VALUE 'teamPrompt';
+
+      CREATE TABLE IF NOT EXISTS "TeamPromptResponse" (
+        "id" VARCHAR(50) PRIMARY KEY,
+        "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "meetingId" VARCHAR(100) NOT NULL,
+        "userId" VARCHAR(100) NOT NULL,
+        "content" TEXT NOT NULL,
+        "plainTextContent" TEXT NOT NULL,
+        "reactjis" "Reactji"[] NOT NULL DEFAULT array[]::"Reactji"[],
+        CONSTRAINT "fk_userId"
+        FOREIGN KEY("userId")
+          REFERENCES "User"("id")
+          ON DELETE CASCADE
+      );
+
+      CREATE INDEX IF NOT EXISTS "idx_TeamPromptResponse_meetingId" ON "TeamPromptResponse"("meetingId");
+    END $$;
+  `)
+  await client.end()
+}
+
+export async function down() {
+  const client = new Client(getPgConfig())
+  await client.connect()
+  await client.query(`
+    ALTER TYPE "DiscussionTopicTypeEnum" RENAME TO "DiscussionTopicTypeEnum_delete";
+    CREATE TYPE "DiscussionTopicTypeEnum" AS ENUM (
+      'agendaItem',
+      'reflectionGroup',
+      'task',
+      'githubIssue',
+      'jiraIssue'
+    );
+    ALTER TABLE "Discussion"
+      ALTER COLUMN "discussionTopicType" TYPE "DiscussionTopicTypeEnum" USING "discussionTopicType"::text::"DiscussionTopicTypeEnum";
+    DROP TYPE "DiscussionTopicTypeEnum_delete";
+
+    ALTER TYPE "MeetingTypeEnum" RENAME TO "MeetingTypeEnum_delete";
+    CREATE TYPE "MeetingTypeEnum" AS ENUM (
+      'action',
+      'retrospective',
+      'poker'
+    );
+    ALTER TABLE "Team"
+      ALTER COLUMN "lastMeetingType" DROP DEFAULT,
+      ALTER COLUMN "lastMeetingType" TYPE "MeetingTypeEnum" USING "lastMeetingType"::text::"MeetingTypeEnum",
+      ALTER COLUMN "lastMeetingType" SET DEFAULT 'retrospective';
+    DROP TYPE "MeetingTypeEnum_delete";
+
+    DROP TABLE IF EXISTS "TeamPromptResponse";
+
+    DROP TYPE "Reactji";
+  `)
+  await client.end()
+}
