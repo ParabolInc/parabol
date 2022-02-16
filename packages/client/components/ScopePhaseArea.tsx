@@ -30,7 +30,7 @@ const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flexDirection: 'column',
   margin: isDesktop ? undefined : '0 auto',
-  width: '80%',
+  width: isDesktop ? '80%' : 'calc(100% - 16px)',
   maxWidth: 1040,
   height: '70%',
   boxShadow: Elevation.Z3
