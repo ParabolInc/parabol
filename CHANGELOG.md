@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.47.0 2022-Feb-16
+
+### Fixed
+
+- GitLab is null fatal error on meeting join (#6038)
+- Security: Bump follow-redirects (#6044)
+- Security: Bup vm2 (#6057)
+- ID users with datadog (#5990)
+- Log when reflections is null (#6010)
+- Send CC errors to client (#5906)
+
+### Added
+
+- Cached Jira Project Avatars (#5884)
+- Track fatals per 1000 (#5996)
+- generic createTaskMutation (#5938)
+- Env-based signup/login options (#5877)
+
+### Changed
+
+- Added table of contents to root readme (#6011)
+
 ## 6.46.0 2022-Feb-09
 
 ### Added
