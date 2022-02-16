@@ -42,7 +42,8 @@ $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
 $ yarn
-$ yarn db:start
+$ yarn 
+:start
 $ yarn dev
 ```
 
@@ -62,7 +63,7 @@ $ yarn dev
 - [GraphQL Executor](./packages/gql-executor/README.md)
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
-- [RethinkDB](./packages/server/db/README.md)
+- [RethinkDB](./packages/server/database/README.md)
 - [Shared Scripts](./packages/client/shared/README.md)
 - [VS Code Tips](.vscode/tips.md)
 
