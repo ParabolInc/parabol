@@ -79,7 +79,7 @@ const ScopePhaseArea = (props: Props) => {
   const {featureFlags} = user
   const gitlabIntegration = teamMember.integrations.gitlab
   const isGitLabProviderAvailable = !!(
-    gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
+    gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
   )
   const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
   const tabs = allowGitLab ? [...baseTabs, {icon: <GitLabSVG />, label: 'GitLab'}] : baseTabs

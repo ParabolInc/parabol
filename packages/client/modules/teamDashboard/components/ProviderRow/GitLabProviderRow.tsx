@@ -145,8 +145,8 @@ const GitLabProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {gitlab} = integrations
-  if (!gitlab?.cloudProvider) return null
   const {auth, cloudProvider} = gitlab
+  if (!cloudProvider) return null
   const {clientId, id: cloudProviderId, serverBaseUrl} = cloudProvider
   return (
     <ProviderCard>
