@@ -1,5 +1,9 @@
 import {InMemoryRateLimiter, StubRateLimiter, RateLimiter} from '../utils/rateLimiters'
 
+interface GetRateLimiterConfig {
+  memoize?: boolean
+}
+
 const RATE_LIMITERS = Object.freeze({
   'in-memory': InMemoryRateLimiter,
   stub: StubRateLimiter
@@ -7,11 +11,18 @@ const RATE_LIMITERS = Object.freeze({
 type RateLimiterType = keyof typeof RATE_LIMITERS
 
 let rateLimiter: RateLimiter
-const getRateLimiter = () => {
-  if (!rateLimiter) {
-    rateLimiter = new RATE_LIMITERS[getRateLimiterFromEnv() || 'in-memory']()
+export default function getRateLimiter(config: GetRateLimiterConfig = {}) {
+  const {memoize = true} = config
+
+  if (memoize) {
+    if (!rateLimiter) {
+      rateLimiter = new RATE_LIMITERS[getRateLimiterFromEnv() || 'in-memory']()
+    }
+    return rateLimiter
+  } else {
+    // exposed for testing
+    return new RATE_LIMITERS[getRateLimiterFromEnv() || 'in-memory']()
   }
-  return rateLimiter
 }
 
 function getRateLimiterFromEnv(): RateLimiterType | undefined {
@@ -25,11 +36,9 @@ function getRateLimiterFromEnv(): RateLimiterType | undefined {
     return rateLimiterEnvVar as RateLimiterType
   } else {
     throw new Error(
-      `Specified RateLimiter ${rateLimiterEnvVar} was not understood! Options are ${possibleRateLimiters.join(
+      `Specified RateLimiter '${rateLimiterEnvVar}' was not understood! Options are ${possibleRateLimiters.join(
         ', '
       )}`
     )
   }
 }
-
-export default getRateLimiter
