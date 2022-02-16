@@ -71,7 +71,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#​\u200b$1')
 
     return `Created by ${sanitizedCreator} for ${sanitizedAssignee}
-    See the dashboard of [${teamName}](${teamDashboardUrl})
+    See the dashboard of [${teamName}|${teamDashboardUrl}]
   
     *Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]*`
   }
