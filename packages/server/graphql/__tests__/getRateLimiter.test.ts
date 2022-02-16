@@ -1,4 +1,4 @@
-import getRateLimiter from '../getRateLimiter'
+import {_getRateLimiter} from '../getRateLimiter'
 import {InMemoryRateLimiter, StubRateLimiter} from '../../utils/rateLimiters'
 
 const originalRateLimiterEnvVariable = process.env.RATE_LIMITER
@@ -23,7 +23,7 @@ describe('getRateLimiter', () => {
 
     // When getting the rate limiter
     // Then it is an in-memory rate limiter
-    expect(getRateLimiter({memoize: false})).toBeInstanceOf(InMemoryRateLimiter)
+    expect(_getRateLimiter()).toBeInstanceOf(InMemoryRateLimiter)
   })
 
   it('uses the in-memory rate limiter when specified in the env variable', () => {
@@ -32,7 +32,7 @@ describe('getRateLimiter', () => {
 
     // When getting the rate limiter
     // Then it is an stub rate limiter
-    expect(getRateLimiter({memoize: false})).toBeInstanceOf(InMemoryRateLimiter)
+    expect(_getRateLimiter()).toBeInstanceOf(InMemoryRateLimiter)
   })
 
   it('uses the stub rate limiter when specified in the env variable', () => {
@@ -41,7 +41,7 @@ describe('getRateLimiter', () => {
 
     // When getting the rate limiter
     // Then it is an stub rate limiter
-    expect(getRateLimiter({memoize: false})).toBeInstanceOf(StubRateLimiter)
+    expect(_getRateLimiter()).toBeInstanceOf(StubRateLimiter)
   })
 
   it('throws an error if the rate limiter env variable is set to an unknown value', () => {
@@ -50,7 +50,7 @@ describe('getRateLimiter', () => {
 
     // When getting the rate limiter
     // Then it throws a runtime exception
-    expect(() => getRateLimiter({memoize: false})).toThrowError(
+    expect(() => _getRateLimiter()).toThrowError(
       "Specified RateLimiter 'oddball' was not understood!"
     )
   })

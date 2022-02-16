@@ -1,39 +1,36 @@
 import {InMemoryRateLimiter, StubRateLimiter, RateLimiter} from '../utils/rateLimiters'
 
-interface GetRateLimiterConfig {
-  memoize?: boolean
-}
-
 const RATE_LIMITERS = Object.freeze({
   'in-memory': InMemoryRateLimiter,
   stub: StubRateLimiter
 })
-type RateLimiterType = keyof typeof RATE_LIMITERS
 
 let rateLimiter: RateLimiter
-export default function getRateLimiter(config: GetRateLimiterConfig = {}) {
-  const {memoize = true} = config
-
-  if (memoize) {
-    if (!rateLimiter) {
-      rateLimiter = new RATE_LIMITERS[getRateLimiterFromEnv() || 'in-memory']()
-    }
-    return rateLimiter
-  } else {
-    // exposed for testing
-    return new RATE_LIMITERS[getRateLimiterFromEnv() || 'in-memory']()
+export default function getRateLimiter() {
+  if (!rateLimiter) {
+    rateLimiter = _getRateLimiter()
   }
+  return rateLimiter
 }
 
-function getRateLimiterFromEnv(): RateLimiterType | undefined {
+/**
+ * This function returns the appropriate rate limited based on the RATE_LIMITER
+ * environment variable, falling back to the InMemoryRateLimiter (the previous,
+ * uncustomizable default).
+ *
+ * Exposed for testing. Use the default export outside of test.
+ *
+ * @private
+ */
+export function _getRateLimiter(): RateLimiter {
   const rateLimiterEnvVar = process.env.RATE_LIMITER
   if (!rateLimiterEnvVar) {
-    return
+    return new InMemoryRateLimiter()
   }
 
   const possibleRateLimiters = Object.keys(RATE_LIMITERS)
   if (possibleRateLimiters.includes(rateLimiterEnvVar)) {
-    return rateLimiterEnvVar as RateLimiterType
+    return new RATE_LIMITERS[rateLimiterEnvVar]()
   } else {
     throw new Error(
       `Specified RateLimiter '${rateLimiterEnvVar}' was not understood! Options are ${possibleRateLimiters.join(
