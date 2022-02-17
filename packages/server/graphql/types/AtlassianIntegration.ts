@@ -155,8 +155,9 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async ({teamId, userId}: AtlassianAuth, _args: unknown, context) => {
-        const {dataLoader} = context
+      resolve: async ({teamId, userId}: AtlassianAuth, _args: unknown, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId) return []
         const jiraProjectsRes = await dataLoader
           .get('fetchAtlassianProjects')
           .load({teamId, userId})
