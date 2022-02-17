@@ -93,6 +93,33 @@ export const freshAtlassianAuth = (
   )
 }
 
+export const fetchAtlassianProjects = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, (JiraProject & {cloudId: string})[] | null, string> => {
+  return new DataLoader<TeamUserKey, (JiraProject & {cloudId: string})[] | null, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
+          if (!auth) return null
+          const cloudNameLookup = await parent
+            .get('atlassianCloudNameLookup')
+            .load({teamId, userId})
+          const cloudIds = Object.keys(cloudNameLookup)
+          const {accessToken} = auth
+          const manager = new AtlassianServerManager(accessToken)
+          return await manager.getAllProjects(cloudIds)
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
+    }
+  )
+}
+
 export const jiraRemoteProject = (
   parent: RootDataLoader
 ): DataLoader<JiraRemoteProjectKey, JiraProject | null, string> => {
