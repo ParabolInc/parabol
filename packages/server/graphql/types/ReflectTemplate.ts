@@ -3,7 +3,7 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import ReflectPrompt from './ReflectPrompt'
 import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({

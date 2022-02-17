@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import MeetingTemplate from './MeetingTemplate'

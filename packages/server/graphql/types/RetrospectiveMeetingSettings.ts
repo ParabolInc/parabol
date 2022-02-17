@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import db from '../../db'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
