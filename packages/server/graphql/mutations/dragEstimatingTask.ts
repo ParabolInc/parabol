@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
@@ -15,8 +15,8 @@ export default {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    stageIds: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID)))
+    taskId: {
+      type: new GraphQLNonNull(GraphQLID)
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat)
@@ -24,7 +24,7 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {meetingId, stageIds, sortOrder}: {meetingId: string; stageIds: string[]; sortOrder: number},
+    {meetingId, taskId, sortOrder}: {meetingId: string; taskId: string; sortOrder: number},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -45,22 +45,21 @@ export default {
       return standardError(new Error('Meeting phase not found'), {userId: viewerId})
     }
     const {stages} = estimatePhase
-    const draggedStages = stages.filter((stage) => stageIds.includes(stage.id))
+    const draggedStages = stages.filter((stage) => stage.taskId === taskId)
     if (!draggedStages.length) {
       return standardError(new Error('No meeting stages were found'), {userId: viewerId})
     }
+    const stageIds = draggedStages.map((stage) => stage.id)
 
     // RESOLUTION
     // MUTATIVE
-    draggedStages.forEach((draggedStage) => (draggedStage.sortOrder = sortOrder))
+    const noise = Math.random() / 1e10
+    draggedStages.forEach((stage, i) => {
+      stage.sortOrder = sortOrder + noise * i
+    })
+
     stages.sort((a, b) => {
-      if (a.sortOrder > b.sortOrder) {
-        return 1
-      } else if (a.sortOrder === b.sortOrder) {
-        return a.dimensionRefIdx > b.dimensionRefIdx ? 1 : -1
-      } else {
-        return -1
-      }
+      return a.sortOrder > b.sortOrder ? 1 : -1
     })
     await r
       .table('NewMeeting')

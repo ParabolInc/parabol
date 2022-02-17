@@ -78,18 +78,20 @@ const PokerSidebarEstimateSection = (props: Props) => {
 
     let sortOrder
     if (destination.index === 0) {
-      sortOrder = destinationTopic.sortOrder - SORT_STEP + dndNoise()
+      sortOrder = destinationTopic.sortOrderFirstDimension - SORT_STEP + dndNoise()
     } else if (destination.index === stageSummaries!.length - 1) {
-      sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
+      sortOrder = destinationTopic.sortOrderLastDimension + SORT_STEP + dndNoise()
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stageSummaries[destination.index + offset]!.sortOrder + destinationTopic.sortOrder) / 2 +
+        (stageSummaries[destination.index + offset]!.sortOrderLastDimension + destinationTopic.sortOrderFirstDimension) / 2 +
         dndNoise()
     }
 
-    const {stageIds} = sourceTopic
-    const variables = {meetingId, stageIds: stageIds, sortOrder}
+    console.log(`Dragging task from ${source.index} to ${destination.index}. New sortOrder = ${sortOrder}`)
+
+    const {taskId} = sourceTopic
+    const variables = {meetingId, taskId, sortOrder}
     DragEstimatingTaskMutation(atmosphere, variables)
   }
 
@@ -189,7 +191,6 @@ export default createFragmentContainer(PokerSidebarEstimateSection, {
             scores {
               userId
             }
-            dimensionRefIdx
           }
         }
         phaseType

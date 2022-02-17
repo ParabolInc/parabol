@@ -16,8 +16,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation DragEstimatingTaskMutation($meetingId: ID!, $stageIds: [ID!]!, $sortOrder: Float!) {
-    dragEstimatingTask(meetingId: $meetingId, stageIds: $stageIds, sortOrder: $sortOrder) {
+  mutation DragEstimatingTaskMutation($meetingId: ID!, $taskId: ID!, $sortOrder: Float!) {
+    dragEstimatingTask(meetingId: $meetingId, taskId: $taskId, sortOrder: $sortOrder) {
       ...DragEstimatingTaskMutation_meeting @relay(mask: false)
     }
   }
@@ -44,12 +44,14 @@ const DragEstimatingTaskMutation: SimpleMutation<IDragEstimatingTaskMutation> = 
       dragEstimatingTaskMeetingUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
-      const {meetingId, stageIds, sortOrder} = variables
-      stageIds.forEach((stageId) => {
-        const stage = store.get(stageId)
-        if (!stage) return
-        stage.setValue(sortOrder, 'sortOrder')
-      })
+      const {meetingId, taskId, sortOrder} = variables
+      const meeting = store.get(meetingId)
+      if (!meeting) return
+      const phases = meeting.getLinkedRecords('phases')!
+      const phase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
+      const stages = phase.getLinkedRecords('stages')!.filter((stage) => stage.getValue('taskId') === taskId)
+      const noise = Math.random() / 1e10
+      stages.forEach((stage, i) => { stage.setValue(sortOrder + noise * i, 'sortOrder') })
       handleUpdateStageSort(store, meetingId, 'ESTIMATE')
     }
   })
