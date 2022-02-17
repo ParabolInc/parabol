@@ -42,15 +42,14 @@ $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
 $ yarn
-$ yarn 
-:start
+$ yarn db:start
 $ yarn dev
 ```
 
 - By default, the app will run at: http://localhost:3000/
 
 - If `yarn db:start` failed and `localhost:5050` isn't working, a docker
-  container, volume or image may be corrupted and need to be pruned.
+  container, volume, or image may be corrupted and need to be pruned.
 
 ### Development
 
