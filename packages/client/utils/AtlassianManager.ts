@@ -471,20 +471,10 @@ export default abstract class AtlassianManager {
 
     if (!imageRes || imageRes instanceof Error) return null
     const arrayBuffer = await imageRes.arrayBuffer()
-    return Buffer.from(arrayBuffer)
-  }
-
-  async getProjectAvatar(avatarUrl: string) {
-    // use fetchWithTimeout because we want a buffer
-    const imageRes = await this.fetchWithTimeout(avatarUrl, {
-      headers: {Authorization: this.headers.Authorization}
-    })
-
-    if (!imageRes || imageRes instanceof Error) return ''
-    const arrayBuffer = await imageRes.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer).toString('base64')
-    const contentType = imageRes.headers.get('content-type')
-    return `data:${contentType};base64,${buffer}`
+    return {
+      imageBuffer: Buffer.from(arrayBuffer),
+      contentType: imageRes.headers.get('content-type')
+    }
   }
 
   async getAllProjects(cloudIds: string[]) {
