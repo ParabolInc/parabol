@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
+import getPhase from '../../utils/getPhase'
 import {GQLContext} from '../graphql'
 import {augmentDBStage} from '../resolvers'
 import EstimateStage from './EstimateStage'
@@ -27,13 +27,12 @@ export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>(
       resolve: async ({meetingId, stageIds}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {phases, teamId} = meeting
-        const phase = phases.find((phase: GenericMeetingPhase) => phase.phaseType === 'ESTIMATE')!
+        const phase = getPhase(phases, 'ESTIMATE')
         const {stages} = phase
         const dbStages = stages.filter((stage: GenericMeetingStage) => stageIds.includes(stage.id))
-        dbStages.forEach((dbStage: GenericMeetingStage) =>
+        return dbStages.map((dbStage: GenericMeetingStage) =>
           augmentDBStage(dbStage, meetingId, 'ESTIMATE', teamId)
         )
-        return dbStages
       }
     }
   })
