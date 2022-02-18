@@ -15,6 +15,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - ID users with datadog (#5990)
 - Log when reflections is null (#6010)
 - Send CC errors to client (#5906)
+- Promote to team lead works for users who just joined the team (#6078)
 
 ### Added
 

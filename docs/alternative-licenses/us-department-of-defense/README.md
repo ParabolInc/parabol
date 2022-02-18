@@ -1,7 +1,8 @@
-# Parabol - We're [hiring](https://www.parabol.co/join)!
+# Parabol Hardened Container for Platform One Iron Bank
 
 [![Slack Status](https://slackin.parabol.co/badge.svg)](https://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/parabol.svg?style=svg)](https://circleci.com/gh/ParabolInc/parabol)
+[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/parabol-inc/parabol-multiplayer-web-app)
 
 ## Overview
 
@@ -9,12 +10,21 @@
 agile meetings such as team retrospectives or Sprint Poker™. You may try
 a single-player demo of Parabol (no logincreation required) at: https://parabol.co/retro-demo
 
-We endeaver to be a
-transparent organization and publish
-our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-ship).
+**⚠️ If you've found this README.MD in the root of the Parabol source listing,
+this is the hardened container version of Parabol on Platform One's Repo1 Iron Bank for
+the U.S. Department of Defense.**
 
-![Dashboard](./docs/images/d2.gif)
-![Discuss](./docs/images/d1.gif)
+### Usage License and DoD-specific Information
+
+You may install and evaluate this container for non-production use free of
+charge. For production deployments supporting more than two teams, you will
+require a license. Parabol is sensitive to mission success and can support
+uncertain/difficult procurement cycles with extended gratis trial agreements.
+
+[Big Bang](https://github.com/DoD-Platform-One/big-bang) configurations are also
+available, making a secure deployment of Parabol within the DoD easy.
+
+For all matters, please contact: support@parabol.co
 
 ## Stack Information
 
@@ -51,48 +61,44 @@ $ yarn db:start
 $ yarn dev
 ```
 
-- By default, the app will run at: http://localhost:3000/
+By default, the app will run at: http://localhost:3000/
 
-- If `yarn db:start` failed and `localhost:5050` isn't working, a docker
-  container, volume, or image may be corrupted and need to be pruned.
+If `yarn db:start` failed and `localhost:5050` isn't working, a docker
+container, volume or image may be corrupted and need to be pruned.
 
-### Development
-
-- [Code Reviews](./docs/codeReview.md)
-- [Create new GraphQL Mutations](./scripts/codeshift/README.md)
-- [Docker](./docker/README.md)
-- [Dev.js](./scripts/README.md)
-- [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
-- [GraphiQL, Private Schema Admin](./packages/server/graphql/intranetSchema/README.md)
-- [GraphQL Executor](./packages/gql-executor/README.md)
-- [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
-- [PostgreSQL](./packages/server/postgres/README.md)
-- [RethinkDB](./packages/server/database/README.md)
-- [Shared Scripts](./packages/client/shared/README.md)
-- [VS Code Tips](.vscode/tips.md)
-
-### Deploy
+Build for production and start application:
 
 ```bash
 $ yarn && yarn build && yarn start
 ```
 
-- [How to Ship](./docs/deployment.md)
+### RethinkDB
 
-## Getting Involved
+- Migrations are stored in `packages/server/database/migrations`
+- RethinkDB Dashboard is at [http://localhost:8080](http://localhost:8080)
 
-Parabol offers equity for qualified contributions.
+### PostgreSQL
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to
-get involved and how to get compensated.
+- pgadmin is at [http://localhost:5050](http://localhost:5050)
+- Connect using the values of `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` from your `.env`
+- Click "Add New Server" and fill out the forms with your `.env` values
+
+  - General.name = POSTGRES_DB
+  - Connection.host = 'postgres' (hardcoded from docker-compose dev.yml, not from .env!)
+  - Connection.username = POSTGRES_USER
+  - Connection.password = POSTGRES_PASSWORD
+  - Connection.maintenanceDatabase = POSTGRES_DB
+  - Connection.port = POSTGRES_PORT
+
+- Fill out the form with values from your `.env`. Set the host to `postgres`
 
 ## Have feedback, ideas or feature requests?
 
 Please review our [Discussions](https://github.com/ParabolInc/parabol/discussions) to see if there's already a similar suggestion, and if not please feel free to [start a new one](https://github.com/ParabolInc/parabol/discussions/new).
 
-## Releases
+## Helpful VSCode extensions
 
-For details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
+We use [GraphQL](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) for IntelliSense and syntax highlighting.
 
 ## Parabol Core Team
 
