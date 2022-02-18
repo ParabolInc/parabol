@@ -1,4 +1,3 @@
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -22,7 +21,7 @@ import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianInteg
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import {JiraProject, RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -155,18 +154,10 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async ({teamId, userId}: AtlassianAuth, _args: unknown, {authToken, dataLoader}) => {
+      resolve: ({teamId, userId}: AtlassianAuth, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
-        const jiraProjectsRes = await dataLoader
-          .get('fetchAtlassianProjects')
-          .load({teamId, userId})
-        return jiraProjectsRes?.map((project: JiraProject & {cloudId: string}) => ({
-          ...project,
-          id: JiraProjectId.join(project.cloudId, project.key),
-          teamId,
-          userId
-        }))
+        return dataLoader.get('allJiraProjects').load({teamId, userId})
       }
     },
     jiraFields: {

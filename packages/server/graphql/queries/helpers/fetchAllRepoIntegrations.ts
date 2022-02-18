@@ -1,9 +1,7 @@
 import {getPermsByTaskService, getPrevRepoIntegrations} from './repoIntegrationHelpers'
-import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
 import fetchGitHubRepos from './fetchGitHubRepos'
-import {JiraProject} from 'parabol-client/utils/AtlassianManager'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 
 const fetchAllRepoIntegrations = async (
@@ -15,19 +13,13 @@ const fetchAllRepoIntegrations = async (
   const {dataLoader} = context
   const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
   // get prevRepoIntegrations to determine when the repo was last used
-  const [prevRepoIntegrations, jiraProjectsRes, githubRepos] = await Promise.all([
+  const [prevRepoIntegrations, jiraProjects, githubRepos] = await Promise.all([
     getPrevRepoIntegrations(userId, teamId, permLookup),
-    dataLoader.get('fetchAtlassianProjects').load({teamId, userId}),
+    dataLoader.get('allJiraProjects').load({teamId, userId}),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info)
   ])
-  const jiraProjects = jiraProjectsRes.map((project: JiraProject & {cloudId: string}) => ({
-    ...project,
-    id: JiraProjectId.join(project.cloudId, project.key),
-    teamId,
-    userId
-  }))
 
-  const allRepoIntegrations = [...jiraProjects, ...githubRepos]
+  const fetchedRepoIntegrations = [...jiraProjects, ...githubRepos]
   const prevRepoIntegrationsIds = new Set<string>()
   prevRepoIntegrations.forEach((integration) => {
     const integrationId = IntegrationRepoId.join(integration)
@@ -35,7 +27,7 @@ const fetchAllRepoIntegrations = async (
     prevRepoIntegrationsIds.add(integrationId)
   })
   // always have lastUsedAt be a Date (to make the sort easier below)
-  const repos = allRepoIntegrations.map((repo) => {
+  const repoIntegrations = fetchedRepoIntegrations.map((repo) => {
     if (prevRepoIntegrationsIds.has(repo.id)) {
       const prevRepoIntegration = prevRepoIntegrations.find((repoIntegration) => {
         const integrationId = IntegrationRepoId.join(repoIntegration)
@@ -52,7 +44,7 @@ const fetchAllRepoIntegrations = async (
     }
   })
 
-  return repos.sort((a, b) =>
+  return repoIntegrations.sort((a, b) =>
     a.lastUsedAt > b.lastUsedAt
       ? -1
       : a.service < b.service

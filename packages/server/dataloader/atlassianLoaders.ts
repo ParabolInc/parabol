@@ -1,3 +1,4 @@
+import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
@@ -93,10 +94,18 @@ export const freshAtlassianAuth = (
   )
 }
 
-export const fetchAtlassianProjects = (
+export const allJiraProjects = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, (JiraProject & {cloudId: string})[] | null, string> => {
-  return new DataLoader<TeamUserKey, (JiraProject & {cloudId: string})[] | null, string>(
+): DataLoader<
+  TeamUserKey,
+  (JiraProject & {cloudId: string; teamId: string; userId: string})[] | null,
+  string
+> => {
+  return new DataLoader<
+    TeamUserKey,
+    (JiraProject & {cloudId: string; teamId: string; userId: string})[] | null,
+    string
+  >(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
@@ -108,7 +117,13 @@ export const fetchAtlassianProjects = (
           const cloudIds = Object.keys(cloudNameLookup)
           const {accessToken} = auth
           const manager = new AtlassianServerManager(accessToken)
-          return await manager.getAllProjects(cloudIds)
+          const projects = await manager.getAllProjects(cloudIds)
+          return projects.map((project) => ({
+            ...project,
+            id: JiraProjectId.join(project.cloudId, project.key),
+            userId,
+            teamId
+          }))
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
