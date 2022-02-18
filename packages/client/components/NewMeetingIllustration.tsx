@@ -6,6 +6,7 @@ import {virtualize} from 'react-swipeable-views-utils'
 import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
+import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
@@ -20,13 +21,14 @@ const MeetingImage = styled('img')({
 interface Props {
   idx: number
   setIdx: (idx: number) => void
-  newMeetingOrder: readonly [MeetingTypeEnum, ...MeetingTypeEnum[]]
+  newMeetingOrder: readonly MeetingTypeEnum[]
 }
 
 const ILLUSTRATIONS = {
   retrospective,
   action,
-  poker
+  poker,
+  teamPrompt
 } as Record<MeetingTypeEnum, string>
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews)
@@ -42,7 +44,8 @@ const TabContents = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 const BACKGROUND_COLORS = {
   retrospective: PALETTE.GRAPE_500,
   action: PALETTE.AQUA_400,
-  poker: PALETTE.TOMATO_400
+  poker: PALETTE.TOMATO_400,
+  teamPrompt: `#91E8B7` // TODO: there's no such color in our palette
 }
 
 const ImageWithPadding = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
