@@ -25,6 +25,12 @@ const STEPS = {
     'Invite your team to vote on effort/value',
     'Discuss differences in scores',
     'Export final score to your tracker'
+  ],
+  teamPrompt: [
+    'Open the board and share it with your team',
+    'Share what you’re working on',
+    'Give feedback or get unstuck using threads',
+    'Create tasks that can be synced to your backlog'
   ]
 }
 
