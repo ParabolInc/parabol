@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {mod} from 'react-swipeable-views-core'
 import WaveSVG from 'static/images/wave.svg'
@@ -107,10 +107,20 @@ const useInnerWidth = () => {
   return innerWidth
 }
 
+const createMeetingOrder = ({standups}: {standups: boolean}): readonly MeetingTypeEnum[] => {
+  const meetingOrder: MeetingTypeEnum[] = ['poker', 'retrospective', 'action']
+
+  if (standups) {
+    meetingOrder.push('teamPrompt')
+  }
+
+  return meetingOrder
+}
+
 const NewMeeting = (props: Props) => {
   const {teamId, viewer, retry} = props
-  const {teams} = viewer
-  const newMeetingOrder = ['poker', 'retrospective', 'action'] as const
+  const {teams, featureFlags} = viewer
+  const newMeetingOrder = useMemo(() => createMeetingOrder(featureFlags), [featureFlags])
 
   useStoreQueryRetry(retry)
   const {history} = useRouter()
@@ -160,6 +170,9 @@ export default createFragmentContainer(NewMeeting, {
   viewer: graphql`
     fragment NewMeeting_viewer on User {
       ...NewMeetingExistingMeetings_viewer
+      featureFlags {
+        standups
+      }
       teams {
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingSettings_selectedTeam
