@@ -9,7 +9,7 @@ interface TemplatePrompt {
 }
 
 interface TemplateObject {
-  [templateName: string]: TemplatePrompt[]
+  [templateName: string]: readonly [TemplatePrompt, ...TemplatePrompt[]]
 }
 
 const makeRetroTemplates = (teamId: string, orgId: string, templateObj: TemplateObject) => {

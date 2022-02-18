@@ -212,7 +212,7 @@ export const userTasks = (parent: RootDataLoader) => {
       tasks.flat().forEach((task) => {
         taskLoader.clear(task.id).prime(task.id, task)
       })
-      return keys.map((key) => tasksByKey[serializeUserTasksKey(key)])
+      return keys.map((key) => tasksByKey[serializeUserTasksKey(key)]!)
     },
     {
       ...parent.dataLoaderOptions,

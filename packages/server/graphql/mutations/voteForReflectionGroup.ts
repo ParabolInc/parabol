@@ -13,6 +13,7 @@ import {GQLContext} from '../graphql'
 import VoteForReflectionGroupPayload from '../types/VoteForReflectionGroupPayload'
 import safelyCastVote from './helpers/safelyCastVote'
 import safelyWithdrawVote from './helpers/safelyWithdrawVote'
+import getPhase from '../../utils/getPhase'
 
 export default {
   type: VoteForReflectionGroupPayload,
@@ -37,10 +38,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r
-      .table('RetroReflectionGroup')
-      .get(reflectionGroupId)
-      .run()
+    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
     if (!reflectionGroup || !reflectionGroup.isActive) {
       return standardError(new Error('Reflection group not found'), {
         userId: viewerId,
@@ -48,10 +46,7 @@ export default {
       })
     }
     const {meetingId} = reflectionGroup
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()) as MeetingRetrospective
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
     const {endedAt, phases, maxVotesPerGroup, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -104,7 +99,7 @@ export default {
     let unlockedStageIds
 
     if (!isUnvote) {
-      const discussPhase = phases.find((phase) => phase.phaseType === 'discuss')!
+      const discussPhase = getPhase(phases, 'discuss')
       const {stages} = discussPhase
       const [firstStage] = stages
       const {isNavigableByFacilitator} = firstStage

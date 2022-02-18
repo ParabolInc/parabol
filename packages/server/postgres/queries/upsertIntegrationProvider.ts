@@ -18,7 +18,8 @@ interface IUpsertIntegrationProviderInput {
 }
 const upsertIntegrationProvider = async (provider: IUpsertIntegrationProviderInput) => {
   const result = await upsertIntegrationProviderQuery.run(provider as any, getPg())
-  return result[0].id
+  // guaranteed result because upsert will always result in a row
+  return result[0]!.id
 }
 
 export default upsertIntegrationProvider

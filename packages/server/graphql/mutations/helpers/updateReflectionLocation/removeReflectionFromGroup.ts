@@ -1,10 +1,10 @@
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import getRethink from '../../../../database/rethinkDriver'
+import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import {GQLContext} from '../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
-import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const r = await getRethink()
@@ -28,14 +28,16 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
     (group) => group.id === oldReflectionGroup.id
   )
   const sortOrderAtBottom =
-    reflectionGroupsInColumn[reflectionGroupsInColumn.length - 1]?.sortOrder + 1 + dndNoise() ?? 1e6
+    (reflectionGroupsInColumn[reflectionGroupsInColumn.length - 1]?.sortOrder ?? 1e6) +
+    1 +
+    dndNoise()
   if (oldReflectionGroupIdx === -1 || reflection.promptId !== oldReflectionGroup.promptId) {
     newSortOrder = sortOrderAtBottom
   } else if (oldReflectionGroupIdx === reflectionGroupsInColumn.length - 1) {
     newSortOrder = oldReflectionGroup.sortOrder + 1 + dndNoise()
   } else {
     const {sortOrder: oldSortOrder} = oldReflectionGroup
-    const afterSortOrder = reflectionGroupsInColumn[oldReflectionGroupIdx + 1].sortOrder
+    const afterSortOrder = reflectionGroupsInColumn[oldReflectionGroupIdx + 1]?.sortOrder ?? 0
     newSortOrder = (oldSortOrder + afterSortOrder) / 2 + dndNoise()
   }
 

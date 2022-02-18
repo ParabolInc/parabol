@@ -119,7 +119,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           projectKeyFilters.forEach((globalProjectKey) => {
             const [cloudId, projectKey] = globalProjectKey.split(':')
             projectKeyFiltersByCloudId[cloudId] = projectKeyFiltersByCloudId[cloudId] || []
-            projectKeyFiltersByCloudId[cloudId].push(projectKey)
+            // guaranteed from line above
+            projectKeyFiltersByCloudId[cloudId]!.push(projectKey)
           })
         } else {
           cloudIds.forEach((cloudId) => {

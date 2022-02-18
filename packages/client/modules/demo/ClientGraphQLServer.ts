@@ -1394,7 +1394,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {dragDiscussionTopic: data}
     },
     EndRetrospectiveMutation: ({meetingId}, userId) => {
-      const phases = (this.db.newMeeting.phases as unknown) as INewMeetingPhase[]
+      const phases = this.db.newMeeting.phases as INewMeetingPhase[]
       const lastPhase = phases[phases.length - 1] as IDiscussPhase
       const currentStage = lastPhase.stages.find(
         (stage) => stage.startAt && !stage.endAt
