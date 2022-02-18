@@ -74,7 +74,8 @@ const Meta = styled('span')({
 const BACKGROUND_COLORS = {
   retrospective: PALETTE.GRAPE_500,
   action: PALETTE.AQUA_400,
-  poker: PALETTE.TOMATO_400
+  poker: PALETTE.TOMATO_400,
+  teamPrompt: `#91E8B7` // TODO: there's no such color in our palette
 }
 const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
   ({meetingType}) => ({
