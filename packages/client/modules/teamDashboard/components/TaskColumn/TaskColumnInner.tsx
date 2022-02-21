@@ -8,19 +8,19 @@ import DraggableTask from '../../../../containers/TaskCard/DraggableTask'
 interface Props {
   area: AreaEnum
   tasks: TaskColumnInner_tasks
-  isMyMeetingSection?: boolean
+  isViewerMeetingSection?: boolean
   meetingId?: string
 }
 
 const TaskColumnInner = memo((props: Props) => {
-  const {area, tasks, isMyMeetingSection, meetingId} = props
+  const {area, tasks, isViewerMeetingSection, meetingId} = props
   return tasks.map((task, idx) => (
     <DraggableTask
       key={task.id}
       area={area}
       task={task}
       idx={idx}
-      isMyMeetingSection={isMyMeetingSection}
+      isViewerMeetingSection={isViewerMeetingSection}
       meetingId={meetingId}
     />
   )) as any

@@ -29,7 +29,7 @@ const ColumnsBlock = styled('div')({
 
 interface Props {
   area: AreaEnum
-  isMyMeetingSection?: boolean
+  isViewerMeetingSection?: boolean
   meetingId?: string
   myTeamMemberId?: string
   tasks: TaskColumns_tasks
@@ -40,7 +40,7 @@ interface Props {
 const TaskColumns = (props: Props) => {
   const {
     area,
-    isMyMeetingSection,
+    isViewerMeetingSection,
     meetingId,
     myTeamMemberId,
     teamMemberFilterId,
@@ -90,7 +90,7 @@ const TaskColumns = (props: Props) => {
           <TaskColumn
             key={status}
             area={area}
-            isMyMeetingSection={isMyMeetingSection}
+            isViewerMeetingSection={isViewerMeetingSection}
             meetingId={meetingId}
             myTeamMemberId={myTeamMemberId}
             teamMemberFilterId={teamMemberFilterId}

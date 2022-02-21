@@ -68,7 +68,7 @@ const ActionMeetingUpdates = (props: Props) => {
             <InnerColumnsWrapper>
               <TaskColumns
                 area='meeting'
-                isMyMeetingSection={userId === viewerId}
+                isViewerMeetingSection={userId === viewerId}
                 meetingId={meetingId}
                 myTeamMemberId={toTeamMemberId(teamId, viewerId)}
                 tasks={teamMemberTasks}

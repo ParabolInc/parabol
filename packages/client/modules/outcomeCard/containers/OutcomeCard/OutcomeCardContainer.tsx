@@ -29,12 +29,12 @@ interface Props {
   task: OutcomeCardContainer_task
   clearIsCreatingNewTask?: () => void
   dataCy: string
-  isMyMeetingSection?: boolean
+  isViewerMeetingSection?: boolean
   meetingId?: string
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy, isMyMeetingSection, meetingId} = props
+  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy, isViewerMeetingSection, meetingId} = props
   const {id: taskId, team, content} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
@@ -46,14 +46,14 @@ const OutcomeCardContainer = memo((props: Props) => {
   const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 
   useEffect(() => {
-    if (!isMyMeetingSection || !meetingId) return
+    if (!isViewerMeetingSection || !meetingId) return
 
     SetTaskHighlightMutation(atmosphere, {
       taskId,
       meetingId,
       isHighlighted: isTaskHovered
     })
-  }, [isTaskHovered, isMyMeetingSection])
+  }, [isTaskHovered, isViewerMeetingSection])
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()

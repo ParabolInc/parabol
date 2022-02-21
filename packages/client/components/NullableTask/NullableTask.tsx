@@ -17,12 +17,12 @@ interface Props {
   measure?: () => void
   task: NullableTask_task
   dataCy: string
-  isMyMeetingSection?: boolean
+  isViewerMeetingSection?: boolean
   meetingId?: string
 }
 
 const NullableTask = (props: Props) => {
-  const {area, className, isAgenda, task, isDraggingOver, dataCy, isMyMeetingSection, meetingId} = props
+  const {area, className, isAgenda, task, isDraggingOver, dataCy, isViewerMeetingSection, meetingId} = props
   const {content, createdBy, createdByUser, integration} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -59,7 +59,7 @@ const NullableTask = (props: Props) => {
       isDraggingOver={isDraggingOver}
       isAgenda={isAgenda}
       task={task}
-      isMyMeetingSection={isMyMeetingSection}
+      isViewerMeetingSection={isViewerMeetingSection}
       meetingId={meetingId}
     />
   ) : (

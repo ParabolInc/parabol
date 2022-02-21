@@ -62,7 +62,7 @@ const StatusLabelBlock = styled('div')<{userCanAdd: boolean | undefined}>(({user
 
 interface Props extends WithAtmosphereProps {
   area: AreaEnum
-  isMyMeetingSection?: boolean
+  isViewerMeetingSection?: boolean
   meetingId?: string
   myTeamMemberId?: string
   tasks: TaskColumn_tasks
@@ -75,7 +75,7 @@ class TaskColumn extends Component<Props> {
   render() {
     const {
       area,
-      isMyMeetingSection,
+      isViewerMeetingSection,
       meetingId,
       myTeamMemberId,
       teamMemberFilterId,
@@ -84,7 +84,7 @@ class TaskColumn extends Component<Props> {
       teams
     } = this.props
     const label = taskStatusLabels[status]
-    const userCanAdd = area === TEAM_DASH || area === USER_DASH || isMyMeetingSection
+    const userCanAdd = area === TEAM_DASH || area === USER_DASH || isViewerMeetingSection
     return (
       <Droppable droppableId={status} type={DroppableType.TASK}>
         {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
@@ -92,7 +92,7 @@ class TaskColumn extends Component<Props> {
             <ColumnHeader>
               <TaskColumnAddTask
                 area={area}
-                isMyMeetingSection={isMyMeetingSection}
+                isViewerMeetingSection={isViewerMeetingSection}
                 status={status}
                 tasks={tasks}
                 meetingId={meetingId}
@@ -109,7 +109,7 @@ class TaskColumn extends Component<Props> {
               <TaskColumnInner
                 area={area}
                 tasks={tasks}
-                isMyMeetingSection={isMyMeetingSection}
+                isViewerMeetingSection={isViewerMeetingSection}
                 meetingId={meetingId}
               />
               {dropProvided.placeholder}
