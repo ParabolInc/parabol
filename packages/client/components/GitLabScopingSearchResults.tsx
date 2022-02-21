@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 // import useAtmosphere from '../hooks/useAtmosphere'
 // import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
@@ -11,10 +11,10 @@ import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 // import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
-// import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
+import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
 // import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
-// import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
+import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 // import Ellipsis from './Ellipsis/Ellipsis'
 // import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 // import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
@@ -72,15 +72,14 @@ const GitLabScopingSearchResults = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  // const paginationRes = usePaginationFragment<
-  //   GitLabScopingSearchResultsPaginationQuery,
-  //   GitLabScopingSearchResults_query$key
-  // >(
-  // # @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
-  // # @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
-  const paginationRes = useFragment(
+  const paginationRes = usePaginationFragment<
+    GitLabScopingSearchResultsPaginationQuery,
+    GitLabScopingSearchResults_query$key
+  >(
     graphql`
-      fragment GitLabScopingSearchResults_query on Query {
+      fragment GitLabScopingSearchResults_query on Query
+        @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
+        @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
@@ -95,7 +94,8 @@ const GitLabScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    projects(membership: true) {
+                    projects(membership: true, first: $count, after: $cursor)
+                      @connection(key: "GitLabScopingSearchResults_projects") {
                       edges {
                         node {
                           issues {
@@ -119,10 +119,11 @@ const GitLabScopingSearchResults = (props: Props) => {
       }
     `,
     query
-  ) as any
+  )
   // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
-  // const {data, hasNext} = paginationRes
-  const {viewer} = paginationRes
+  const {data} = paginationRes
+  // const {viewer} = paginationRes
+  const {viewer} = data
   // const meeting = useFragment(
   //   graphql`
   //     fragment GitLabScopingSearchResults_meeting on PokerMeeting {
@@ -147,10 +148,9 @@ const GitLabScopingSearchResults = (props: Props) => {
   // const {phases} = meeting
   // const {queryString} = gitlabSearchQuery
   // const errors = gitlab?.api?.errors ?? null
-  const nullableEdges =
-    gitlab?.api?.query?.projects?.edges.flatMap((project) => project.node.issues.edges) ?? null
-  // const projectEdges = getNonNullEdges(nullableProjectEdges)
-  // const nullableIssueEdges = projectEdges?.flatMap((edge) => edge.node.issues.edges)
+  const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
+    (project) => project?.node?.issues?.edges ?? null
+  )
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
         .filter((edge) => edge.node.__typename === '_xGitLabIssue')
