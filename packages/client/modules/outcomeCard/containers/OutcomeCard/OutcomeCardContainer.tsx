@@ -45,15 +45,16 @@ const OutcomeCardContainer = memo((props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
   const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 
+  const isHighlighted = isTaskHovered || !!isDraggingOver
   useEffect(() => {
     if (!isViewerMeetingSection || !meetingId) return
 
     SetTaskHighlightMutation(atmosphere, {
       taskId,
       meetingId,
-      isHighlighted: isTaskHovered
+      isHighlighted
     })
-  }, [isTaskHovered, isViewerMeetingSection])
+  }, [isHighlighted])
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
