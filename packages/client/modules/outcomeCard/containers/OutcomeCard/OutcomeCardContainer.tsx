@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw} from 'draft-js'
-import React, {memo, useRef, useState} from 'react'
+import React, {memo, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import {OutcomeCardContainer_task} from '~/__generated__/OutcomeCardContainer_task.graphql'
@@ -45,7 +45,7 @@ const OutcomeCardContainer = memo((props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
   const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isMyMeetingSection || !meetingId) return
 
     SetTaskHighlightMutation(atmosphere, {

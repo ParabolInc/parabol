@@ -81,7 +81,7 @@ const updateHandlers = {
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
-  SetTaskHighlightPayload: setTaskHighlightUpdater,
+  SetTaskHighlightSuccess: setTaskHighlightUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater
 }
 

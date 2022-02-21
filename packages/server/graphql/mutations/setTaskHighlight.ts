@@ -52,7 +52,7 @@ export default {
       taskId,
       isHighlighted
     }
-    publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskHighlightPayload', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskHighlightSuccess', data, subOptions)
 
     return data
   }

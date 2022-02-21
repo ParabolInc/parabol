@@ -55650,7 +55650,7 @@ export interface IMutation {
   /**
    * Broadcast that the viewer highlights a task
    */
-  setTaskHighlight: ISetTaskHighlightPayload | null;
+  setTaskHighlight: SetTaskHighlightPayload | null;
 
   /**
    * Update an agenda item
@@ -58792,14 +58792,28 @@ export interface IStartSprintPokerSuccess {
   teamId: string;
 }
 
-export interface ISetTaskHighlightPayload {
-  __typename: 'SetTaskHighlightPayload';
-  error: IStandardMutationError | null;
-  meeting: NewMeeting | null;
+/**
+ * Return object for SetTaskHighlightPayload
+ */
+export type SetTaskHighlightPayload = IErrorPayload | ISetTaskHighlightSuccess;
+
+export interface ISetTaskHighlightSuccess {
+  __typename: 'SetTaskHighlightSuccess';
+
+  /**
+   * Meeting where the task is highlighted
+   */
   meetingId: string | null;
+
+  /**
+   * Task which highlight changed
+   */
   taskId: string | null;
-  task: ITask | null;
-  isHighlighted: boolean | null;
+
+  /**
+   * Is the task highlighted?
+   */
+  isHighlighted: boolean;
 }
 
 export interface IUpdateAgendaItemPayload {
@@ -59635,7 +59649,7 @@ export type MeetingSubscriptionPayload =
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
-  | ISetTaskHighlightPayload
+  | ISetTaskHighlightSuccess
   | IUpdateCommentContentSuccess
   | IUpdateDragLocationPayload
   | IUpdateNewCheckInQuestionPayload

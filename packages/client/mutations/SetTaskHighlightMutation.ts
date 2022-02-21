@@ -13,7 +13,7 @@ import {ITask} from '../types/graphql'
 import {ClientNewMeeting} from '~/types/clientSchema'
 
 graphql`
-  fragment SetTaskHighlightMutation_meeting on SetTaskHighlightPayload{
+  fragment SetTaskHighlightMutation_meeting on SetTaskHighlightSuccess {
     meetingId
     taskId
     isHighlighted
