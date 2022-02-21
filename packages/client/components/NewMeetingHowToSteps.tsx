@@ -37,13 +37,15 @@ const STEPS = {
 const LINKS = {
   retrospective: ExternalLinks.GETTING_STARTED_RETROS,
   action: ExternalLinks.GETTING_STARTED_CHECK_INS,
-  poker: ExternalLinks.GETTING_STARTED_SPRINT_POKER
+  poker: ExternalLinks.GETTING_STARTED_SPRINT_POKER,
+  teamPrompt: ExternalLinks.GETTING_STARTED_ASYNC_STANDUP
 }
 
 const TITLES = {
   retrospective: 'How to Run a Retro Meeting',
   action: 'How to Run a Check-in Meeting',
-  poker: 'How to Run Sprint Poker'
+  poker: 'How to Run Sprint Poker',
+  teamPrompt: 'How to Run Async Standup'
 }
 
 const LearnMoreLink = styled(LinkButton)({
