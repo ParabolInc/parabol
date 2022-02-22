@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import defaultJiraProjectAvatar from '../../utils/defaultJiraProjectAvatar'
 import {GQLContext} from '../graphql'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
@@ -38,10 +38,18 @@ const JiraServerRemoteProject = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: async ({avatarUrls, teamId, userId}, _args: unknown, {dataLoader}) => {
         const url = avatarUrls['48x48']
-        const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
-        if (!auth) return null
-        const {accessToken} = auth
-        const manager = new AtlassianServerManager(accessToken)
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+        if (!auth) return defaultJiraProjectAvatar
+        const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+        const manager = new JiraServerRestManager(
+          provider.serverBaseUrl,
+          provider.consumerKey,
+          provider.consumerSecret,
+          auth.accessToken,
+          auth.accessTokenSecret
+        )
         const avatar = await manager.getProjectAvatar(url)
         return avatar || defaultJiraProjectAvatar
       }

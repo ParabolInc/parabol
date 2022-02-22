@@ -73,4 +73,14 @@ export default class JiraServerRestManager {
     const body = await response.json()
     return body
   }
+
+  async getProjectAvatar(avatarUrl: string) {
+    const imageRes = await this.request('GET', avatarUrl)
+
+    if (!imageRes || imageRes instanceof Error) return ''
+    const arrayBuffer = await imageRes.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer).toString('base64')
+    const contentType = imageRes.headers.get('content-type')
+    return `data:${contentType};base64,${buffer}`
+  }
 }
