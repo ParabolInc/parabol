@@ -1,15 +1,17 @@
+import '../../../scripts/webpack/utils/dotenv'
 import {Page} from '@playwright/test'
+import {newConfig, string, number} from 'ts-app-env'
 
-type TestingMode = 'production' | 'local'
+const EnvConfig = {
+  HOST: string(),
+  PORT: number({optional: true})
+}
 
 export class Config {
-  readonly testingMode: TestingMode
   readonly rootUrlPath: string
 
-  constructor(env = process.env) {
-    this.testingMode = env.INTEGRATION_TESTING_MODE === 'production' ? 'production' : 'local'
-    this.rootUrlPath =
-      this.testingMode === 'production' ? 'https://action.parabol.co' : 'http://localhost:3000'
+  constructor(env = newConfig(EnvConfig, process.env)) {
+    this.rootUrlPath = this.rootUrlPathFromEnv(env)
   }
 
   public async goto(page: Page, path: string) {
@@ -18,6 +20,11 @@ export class Config {
 
   public urlForPath(path: string) {
     return `${this.rootUrlPath}${path}`
+  }
+
+  private rootUrlPathFromEnv({HOST, PORT}: typeof EnvConfig): string {
+    const scheme = HOST === 'localhost' ? 'http' : 'https'
+    return `${scheme}://${HOST}${PORT ? `:${PORT}` : ''}`
   }
 }
 
