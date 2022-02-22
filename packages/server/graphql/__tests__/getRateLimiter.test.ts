@@ -31,7 +31,7 @@ describe('getRateLimiter', () => {
     process.env.RATE_LIMITER = 'in-memory'
 
     // When getting the rate limiter
-    // Then it is an stub rate limiter
+    // Then it is an in-memory rate limiter
     expect(_getRateLimiter()).toBeInstanceOf(InMemoryRateLimiter)
   })
 
@@ -40,7 +40,7 @@ describe('getRateLimiter', () => {
     process.env.RATE_LIMITER = 'stub'
 
     // When getting the rate limiter
-    // Then it is an stub rate limiter
+    // Then it is a stub rate limiter
     expect(_getRateLimiter()).toBeInstanceOf(StubRateLimiter)
   })
 

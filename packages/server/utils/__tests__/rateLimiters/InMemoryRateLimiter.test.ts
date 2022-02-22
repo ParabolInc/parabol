@@ -23,7 +23,7 @@ describe('InMemoryRateLimiter', () => {
 
   describe('when not using extended logging', () => {
     it('returns 1 call for last minute & hour on the first call', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const userId = '123'
       const fieldName = 'FieldName'
@@ -36,7 +36,7 @@ describe('InMemoryRateLimiter', () => {
     })
 
     it('returns 2 calls for last minute & undefined for last hour on the second call', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const userId = '123'
       const fieldName = 'FieldName'
@@ -51,7 +51,7 @@ describe('InMemoryRateLimiter', () => {
     })
 
     it('returns 1 call last minute when two calls occur a minute apart', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const userId = '123'
       const fieldName = 'FieldName'
@@ -66,7 +66,7 @@ describe('InMemoryRateLimiter', () => {
     })
 
     it('does not reuse the same rate limit for different users', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const firstUserId = '123'
       const secondUserId = '456'
@@ -84,7 +84,7 @@ describe('InMemoryRateLimiter', () => {
 
   describe('when using extended logging', () => {
     it('returns 1 call for last minute & hour on the first call', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const userId = '123'
       const fieldName = 'FieldName'
@@ -97,7 +97,7 @@ describe('InMemoryRateLimiter', () => {
     })
 
     it('returns 2 calls for last minute & 1 for last hour on the second call', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const userId = '123'
       const fieldName = 'FieldName'
@@ -112,7 +112,7 @@ describe('InMemoryRateLimiter', () => {
     })
 
     it('returns 1 call last minute, 2 calls last hour when two calls occur a minute apart', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const userId = '123'
       const fieldName = 'FieldName'
@@ -127,7 +127,7 @@ describe('InMemoryRateLimiter', () => {
     })
 
     it('returns 1 call last minute, 1 calls last hour when two calls occur an hour apart', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const userId = '123'
       const fieldName = 'FieldName'
@@ -142,7 +142,7 @@ describe('InMemoryRateLimiter', () => {
     })
 
     it('does not reuse the same rate limit for different users', () => {
-      // Given an InMemoryRateLimiter
+      // Given
       const inMemoryRateLimiter = subject()
       const firstUserId = '123'
       const secondUserId = '456'
@@ -165,9 +165,8 @@ describe('InMemoryRateLimiter', () => {
       const userId = '123'
       const fieldName = 'FieldName'
 
-      // When a user requested a field
+      // When a user requested a field, triggering gc twice
       inMemoryRateLimiter.log(userId, fieldName, false)
-      // When two hours elapse (triggering GC twice)
       jest.advanceTimersByTime(ms('1h'))
       jest.advanceTimersByTime(ms('1h'))
       // When the same user requests the same field two hours later
