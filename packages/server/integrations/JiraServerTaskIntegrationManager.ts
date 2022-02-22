@@ -61,6 +61,11 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     }
   }
 
+  async getIssue(issueId: string) {
+    const manager = this.getManager()
+    return manager.getIssue(issueId)
+  }
+
   private static makeCreateJiraServerTaskComment(
     creator: string,
     assignee: string,

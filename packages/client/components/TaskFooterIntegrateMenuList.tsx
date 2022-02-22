@@ -106,7 +106,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         }
         if (__typename === 'JiraServerRemoteProject') {
           const onClick = () => {
-            // TODO
+            const variables = {
+              integrationRepoId: repoIntegration.id,
+              taskId,
+              integrationProviderService: 'jiraServer' as const
+            }
+            submitMutation()
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
             <RepoIntegrationJiraServerMenuItem

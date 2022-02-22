@@ -26,6 +26,8 @@ const IntegrationRepoId = {
         return item.nameWithOwner
       case 'jira':
         return JiraProjectId.join(item.cloudId, item.projectKey)
+      case 'jiraServer':
+        return item.id
       default:
         return `${item.service}:${item.providerId}:${item.id}`
     }

@@ -40,6 +40,22 @@ interface JiraServerAddCommentResponse {
   id: string
 }
 
+export interface JiraServerIssue {
+  id: string
+  key: string
+  self: string
+  fields: {
+    summary: string
+    description: string | null
+    project: {
+      key: string
+    }
+  }
+  renderedFields: {
+    description: string
+  }
+}
+
 export default class JiraServerRestManager {
   serverBaseUrl: string
   oauth: OAuth
@@ -100,6 +116,10 @@ export default class JiraServerRestManager {
 
   async getCreateMeta(): Promise<JiraServerCreateMeta | Error> {
     return this.request('GET', '/rest/api/2/issue/createmeta')
+  }
+
+  async getIssue(issueId: string): Promise<JiraServerIssue | Error> {
+    return this.request('GET', `/rest/api/latest/issue/${issueId}?expand=renderedFields`)
   }
 
   async createIssue(

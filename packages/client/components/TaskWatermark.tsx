@@ -5,7 +5,8 @@ import JiraSVG from './JiraSVG'
 
 const iconLookup = {
   _xGitHubIssue: GitHubSVG,
-  JiraIssue: JiraSVG
+  JiraIssue: JiraSVG,
+  JiraServerIssue: JiraSVG
 }
 
 const WatermarkBlock = styled('div')({
