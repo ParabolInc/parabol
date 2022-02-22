@@ -150,8 +150,7 @@ const AnalyticsPage = () => {
 
 function identifyUserWithSegment(viewerInfo?: ViewerInfo) {
   const segmentKey = window.__ACTION__.segment
-  if (!segmentKey) return
-  if (!viewerInfo) return
+  if (!segmentKey || !viewerInfo) return
 
   const {id, email} = viewerInfo
   safeIdentify(id, email)
