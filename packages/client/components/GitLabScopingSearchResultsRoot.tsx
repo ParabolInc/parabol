@@ -17,7 +17,7 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResultsRoot_meeting on PokerMeeting {
-        # ...GitLabScopingSearchResults_meeting
+        ...GitLabScopingSearchResults_meeting
         teamId
         # gitlabSearchQuery {
         #   queryString
@@ -37,7 +37,7 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
   return (
     <Suspense fallback={''}>
       {/* {queryRef && <GitLabScopingSearchResults queryRef={queryRef} meetingRef={meeting} />} */}
-      {queryRef && <GitLabScopingSearchResults queryRef={queryRef} />}
+      {queryRef && <GitLabScopingSearchResults queryRef={queryRef} meetingRef={meeting} />}
     </Suspense>
   )
 }

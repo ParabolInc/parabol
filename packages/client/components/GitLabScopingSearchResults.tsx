@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import React, {useState} from 'react'
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import {GitLabScopingSearchResultsRoot_meeting$key} from '~/__generated__/GitLabScopingSearchResultsRoot_meeting.graphql'
 // import useAtmosphere from '../hooks/useAtmosphere'
 // import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 // import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
@@ -16,11 +17,11 @@ import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSea
 // import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
 import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 // import Ellipsis from './Ellipsis/Ellipsis'
-// import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
+import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 // import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
-// import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 // import NewGitLabIssueInput from './NewGitLabIssueInput'
-// import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -36,11 +37,11 @@ const ResultScroller = styled('div')({
 
 interface Props {
   queryRef: PreloadedQuery<GitLabScopingSearchResultsQuery>
-  // meetingRef: GitLabScopingSearchResults_meeting$key
+  meetingRef: GitLabScopingSearchResultsRoot_meeting$key
 }
 
 const GitLabScopingSearchResults = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
     graphql`
       query GitLabScopingSearchResultsQuery($teamId: ID!) {
@@ -98,12 +99,18 @@ const GitLabScopingSearchResults = (props: Props) => {
                       @connection(key: "GitLabScopingSearchResults_projects") {
                       edges {
                         node {
-                          issues {
-                            edges {
-                              node {
-                                __typename
-                                id
-                                title
+                          ... on _xGitLabProject {
+                            name
+                            issues {
+                              edges {
+                                node {
+                                  __typename
+                                  ... on _xGitLabIssue {
+                                    ...GitLabScopingSearchResultItem_issue
+                                    id
+                                    title
+                                  }
+                                }
                               }
                             }
                           }
@@ -124,30 +131,36 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {data} = paginationRes
   // const {viewer} = paginationRes
   const {viewer} = data
-  // const meeting = useFragment(
-  //   graphql`
-  //     fragment GitLabScopingSearchResults_meeting on PokerMeeting {
-  //       # ...NewGitLabIssueInput_meeting
-  //       id
-  //       teamId
-  //       # gitlabSearchQuery {
-  //       #   queryString
-  //       # }
-  //       phases {
-  //         # ...useGetUsedServiceTaskIds_phase
-  //         phaseType
-  //       }
-  //     }
-  //   `,
-  //   meetingRef
-  // )
+  const meeting = useFragment(
+    graphql`
+      fragment GitLabScopingSearchResults_meeting on PokerMeeting {
+        # ...NewGitLabIssueInput_meeting
+        id
+        teamId
+        # gitlabSearchQuery {
+        #   queryString
+        # }
+        phases {
+          # ...useGetUsedServiceTaskIds_phase
+          phaseType
+        }
+      }
+    `,
+    meetingRef
+  )
   const teamMember = viewer.teamMember!
   const {integrations} = teamMember
   const {gitlab} = integrations
   // const {id: meetingId, gitlabSearchQuery, teamId, phases} = meeting
+  const {id: meetingId} = meeting
   // const {phases} = meeting
   // const {queryString} = gitlabSearchQuery
   // const errors = gitlab?.api?.errors ?? null
+  // const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
+  //   (project) => {
+  //     ...project?.node?.issues?.edges ?? null
+  //   }
+  // )
   const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
     (project) => project?.node?.issues?.edges ?? null
   )
@@ -214,16 +227,15 @@ const GitLabScopingSearchResults = (props: Props) => {
         )} */}
         {issues.map((node) => {
           const {id, title} = node
-          return <div key={id}>{title}</div>
-          // return (
-          //   <GitLabScopingSearchResultItem
-          //     key={node.id}
-          //     issue={node}
-          //     usedServiceTaskIds={usedServiceTaskIds}
-          //     meetingId={meetingId}
-          //     // persistQuery={persistQuery}
-          //   />
-          // )
+          return (
+            <GitLabScopingSearchResultItem
+              key={node.id}
+              issueRef={node}
+              // usedServiceTaskIds={usedServiceTaskIds}
+              meetingId={meetingId}
+              // persistQuery={persistQuery}
+            />
+          )
         })}
         {/* {lastItem} */}
         {/* {hasNext && (
