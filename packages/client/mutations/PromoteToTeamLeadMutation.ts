@@ -1,7 +1,7 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {PromoteToTeamLeadMutation as TPromoteToTeamLeadMutation} from '../__generated__/PromoteToTeamLeadMutation.graphql'
+import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
+import {PromoteToTeamLeadMutation as TPromoteToTeamLeadMutation} from '../__generated__/PromoteToTeamLeadMutation.graphql'
 graphql`
   fragment PromoteToTeamLeadMutation_team on PromoteToTeamLeadPayload {
     team {
@@ -19,8 +19,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation PromoteToTeamLeadMutation($teamId: ID!, $newTeamLeadEmail: Email!) {
-    promoteToTeamLead(teamId: $teamId, newTeamLeadEmail: $newTeamLeadEmail) {
+  mutation PromoteToTeamLeadMutation($teamId: ID!, $userId: ID!) {
+    promoteToTeamLead(teamId: $teamId, userId: $userId) {
       error {
         message
       }

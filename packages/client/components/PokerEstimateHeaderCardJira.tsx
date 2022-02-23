@@ -83,7 +83,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {issueKey, summary, descriptionHTML, url} = issue
+  const {issueKey, summary, descriptionHTML, jiraUrl} = issue
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -100,7 +100,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
           dangerouslySetInnerHTML={{__html: descriptionHTML}}
         />
         <StyledLink
-          href={url}
+          href={jiraUrl}
           rel='noopener noreferrer'
           target='_blank'
           title={`Jira Issue #${issueKey}`}
@@ -119,7 +119,7 @@ export default createFragmentContainer(PokerEstimateHeaderCardJira, {
       issueKey
       summary
       descriptionHTML
-      url
+      jiraUrl: url
     }
   `
 })

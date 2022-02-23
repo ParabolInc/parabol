@@ -22,19 +22,16 @@ const MockTemplateItemBody = styled('div')({
   height: 56
 })
 
-const MockTemplateItemTitle = styled('div')<{delay: number; randomWidth: number}>(
-  ({delay, randomWidth}) => ({
-    animation: `${skeletonShine.toString()} 2400ms infinite linear ${delay}ms`,
-    height: 16,
-    borderRadius: '20px',
-    backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
-    backgroundSize: 1200,
-    marginLeft: 8,
-    marginTop: 4,
-    maxWidth: '80%',
-    width: `${randomWidth}%`
-  })
-)
+const MockTemplateItemTitle = styled('div')<{delay: number}>(({delay}) => ({
+  animation: `${skeletonShine.toString()} 2400ms infinite linear ${delay}ms`,
+  height: 16,
+  borderRadius: '20px',
+  backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
+  backgroundSize: 1200,
+  marginLeft: 8,
+  marginTop: 4,
+  width: '80%'
+}))
 
 interface Props {
   idx: number
@@ -44,7 +41,7 @@ const MockScopingTask = (props: Props) => {
   return (
     <MockTemplateItemBody>
       <Checkbox active={false} onClick={() => {}} />
-      <MockTemplateItemTitle randomWidth={Math.floor(Math.random() * 80) + 20} delay={idx * 20} />
+      <MockTemplateItemTitle delay={idx * 20} />
     </MockTemplateItemBody>
   )
 }

@@ -62,9 +62,16 @@ const ThreadedCommentBase = (props: Props) => {
   } = props
   const isReply = !!props.isReply
   const {id: discussionId, meetingId, replyingToCommentId, teamId} = discussion
-  const {id: commentId, content, createdByUser, isActive, reactjis, threadParentId} = comment
+  const {
+    id: commentId,
+    content,
+    createdByUserNullable,
+    isActive,
+    reactjis,
+    threadParentId
+  } = comment
   const ownerId = threadParentId || commentId
-  const picture = isActive ? createdByUser?.picture ?? anonymousAvatar : deletedAvatar
+  const picture = isActive ? createdByUserNullable?.picture ?? anonymousAvatar : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -103,8 +110,8 @@ const ThreadedCommentBase = (props: Props) => {
   }
 
   const onReply = () => {
-    if (createdByUser && threadParentId) {
-      const {id: userId, preferredName} = createdByUser
+    if (createdByUserNullable && threadParentId) {
+      const {id: userId, preferredName} = createdByUserNullable
       setReplyMention({userId, preferredName})
     }
 
@@ -222,7 +229,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
       id
       isActive
       content
-      createdByUser {
+      createdByUserNullable: createdByUser {
         id
         preferredName
         picture

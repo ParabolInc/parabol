@@ -227,6 +227,7 @@ function wrappedResolve(
       return result
     } catch (error) {
       field.error = field.error || error
+      throw field.error
     } finally {
       field.finishTime = (field.span as any)._getTime?.() ?? 0
     }
