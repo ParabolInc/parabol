@@ -49266,6 +49266,18 @@ export interface ITask {
    * The user the task is assigned to. Null if it is not assigned to anyone.
    */
   user: IUser | null;
+
+  /**
+   * The owner hovers over the task in their solo update of a checkin
+   */
+  isHighlighted: boolean;
+}
+
+export interface IIsHighlightedOnTaskArguments {
+  /**
+   * Meeting for which the highlight is checked
+   */
+  meetingId?: string | null;
 }
 
 /**
@@ -55650,7 +55662,7 @@ export interface IMutation {
   /**
    * Broadcast that the viewer highlights a task
    */
-  setTaskHighlight: SetTaskHighlightPayload | null;
+  setTaskHighlight: SetTaskHighlightPayload;
 
   /**
    * Update an agenda item
@@ -58803,17 +58815,13 @@ export interface ISetTaskHighlightSuccess {
   /**
    * Meeting where the task is highlighted
    */
-  meetingId: string | null;
+  meetingId: string;
 
   /**
    * Task which highlight changed
    */
-  taskId: string | null;
-
-  /**
-   * Is the task highlighted?
-   */
-  isHighlighted: boolean;
+  taskId: string;
+  task: ITask;
 }
 
 export interface IUpdateAgendaItemPayload {

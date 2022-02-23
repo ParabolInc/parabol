@@ -47,8 +47,8 @@ const DraggableTask = (props: Props) => {
 
 export default createFragmentContainer(DraggableTask, {
   task: graphql`
-    fragment DraggableTask_task on Task {
-      ...NullableTask_task
+    fragment DraggableTask_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
+      ...NullableTask_task @arguments(meetingId: $meetingId)
       id
       content
       status

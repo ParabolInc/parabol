@@ -1,21 +1,27 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import {resolveTask} from '../resolvers'
 import makeMutationPayload from './makeMutationPayload'
+import Task from './Task'
 
-export const SetTaskHighlightSuccess = new GraphQLObjectType<any, GQLContext>({
+export const SetTaskHighlightSuccess = new GraphQLObjectType<
+  {taskId: string; meetingId: string},
+  GQLContext
+>({
   name: 'SetTaskHighlightSuccess',
   fields: () => ({
     meetingId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'Meeting where the task is highlighted'
     },
     taskId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'Task which highlight changed'
     },
-    isHighlighted: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'Is the task highlighted?'
+    task: {
+      type: new GraphQLNonNull(Task),
+      description: 'Task which highlight changed',
+      resolve: resolveTask
     }
   })
 })

@@ -2,7 +2,6 @@ extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
-  highlightedTaskId: ID
 }
 
 extend type ActionMeeting {
@@ -63,7 +62,6 @@ extend type User {
 }
 
 extend type Task {
-  isHighlighted: Boolean
   error: String
 }
 

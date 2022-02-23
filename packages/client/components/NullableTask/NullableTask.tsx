@@ -69,7 +69,7 @@ const NullableTask = (props: Props) => {
 
 export default createFragmentContainer(NullableTask, {
   task: graphql`
-    fragment NullableTask_task on Task {
+    fragment NullableTask_task on Task @argumentDefinitions(meetingId: {type: "ID", defaultValue: null}) {
       content
       createdBy
       createdByUser {
@@ -79,7 +79,7 @@ export default createFragmentContainer(NullableTask, {
         __typename
       }
       status
-      ...OutcomeCardContainer_task
+      ...OutcomeCardContainer_task @arguments(meetingId: $meetingId)
     }
   `
 })

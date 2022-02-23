@@ -107,8 +107,8 @@ const TaskColumns = (props: Props) => {
 
 export default createFragmentContainer(TaskColumns, {
   tasks: graphql`
-    fragment TaskColumns_tasks on Task @relay(plural: true) {
-      ...TaskColumn_tasks
+    fragment TaskColumns_tasks on Task @relay(plural: true)  @argumentDefinitions(meetingId: {type: "ID"}) {
+      ...TaskColumn_tasks @arguments(meetingId: $meetingId)
       status
       sortOrder
     }

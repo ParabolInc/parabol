@@ -117,7 +117,7 @@ export default createFragmentContainer(ActionMeetingUpdates, {
         tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
           edges {
             node {
-              ...TaskColumns_tasks
+              ...TaskColumns_tasks @arguments(meetingId: $meetingId)
               # grab these so we can sort correctly
               id
               status

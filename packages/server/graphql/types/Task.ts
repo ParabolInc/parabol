@@ -1,5 +1,6 @@
 import {IGetLatestTaskEstimatesQueryResult} from './../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLList,
@@ -243,6 +244,21 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       resolve: ({userId}, _args: unknown, {dataLoader}) => {
         if (!userId) return null
         return dataLoader.get('users').load(userId)
+      }
+    },
+    isHighlighted: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'The owner hovers over the task in their solo update of a checkin',
+      args: {
+        meetingId: {
+          type: GraphQLID,
+          description: 'Meeting for which the highlight is checked'
+        }
+      },
+      resolve: async ({id: taskId}, {meetingId}: {meetingId?: string | null}, {dataLoader}) => {
+        if (!meetingId) return false
+        const highlightedTaskId = await dataLoader.get('meetingHighlightedTaskId').load(meetingId)
+        return taskId === highlightedTaskId
       }
     }
   })

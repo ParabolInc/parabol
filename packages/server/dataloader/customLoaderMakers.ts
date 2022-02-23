@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import getRedis from '../utils/getRedis'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
@@ -466,6 +467,20 @@ export const templateScaleRefs = (parent: RootDataLoader) => {
     async (refIds) => {
       const templateScaleRefs = await getTemplateScaleRefsByIds(refIds)
       return refIds.map((refId) => templateScaleRefs.find((ref) => ref.id === refId)!)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const meetingHighlightedTaskId = (parent: RootDataLoader) => {
+  return new DataLoader<string, string | null, string>(
+    async (meetingIds) => {
+      const redis = getRedis()
+      const redisKeys = meetingIds.map((id) => `meetingTaskHighlight:${id}`)
+      const highlightedTaskIds = await redis.mget(redisKeys)
+      return highlightedTaskIds
     },
     {
       ...parent.dataLoaderOptions

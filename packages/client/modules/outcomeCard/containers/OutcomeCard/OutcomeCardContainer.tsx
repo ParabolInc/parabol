@@ -121,7 +121,7 @@ const OutcomeCardContainer = memo((props: Props) => {
 
 export default createFragmentContainer(OutcomeCardContainer, {
   task: graphql`
-    fragment OutcomeCardContainer_task on Task {
+    fragment OutcomeCardContainer_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
       userId
       editors {
         userId
@@ -131,7 +131,7 @@ export default createFragmentContainer(OutcomeCardContainer, {
       team {
         id
       }
-      ...OutcomeCard_task
+      ...OutcomeCard_task @arguments(meetingId: $meetingId)
     }
   `
 })

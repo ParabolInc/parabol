@@ -123,9 +123,9 @@ class TaskColumn extends Component<Props> {
 
 export default createFragmentContainer(withAtmosphere(TaskColumn), {
   tasks: graphql`
-    fragment TaskColumn_tasks on Task @relay(plural: true) {
+    fragment TaskColumn_tasks on Task @relay(plural: true) @argumentDefinitions(meetingId: {type: "ID"}) {
       ...TaskColumnAddTask_tasks
-      ...TaskColumnInner_tasks
+      ...TaskColumnInner_tasks @arguments(meetingId: $meetingId)
       id
     }
   `,

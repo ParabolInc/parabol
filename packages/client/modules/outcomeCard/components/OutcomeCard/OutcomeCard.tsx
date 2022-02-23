@@ -155,7 +155,7 @@ const OutcomeCard = memo((props: Props) => {
 
 export default createFragmentContainer(OutcomeCard, {
   task: graphql`
-    fragment OutcomeCard_task on Task {
+    fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
       ...IntegratedTaskContent_task
       id
       integration {
@@ -169,7 +169,7 @@ export default createFragmentContainer(OutcomeCard, {
       }
       # grab userId to ensure sorting on connections works
       userId
-      isHighlighted
+      isHighlighted(meetingId: $meetingId)
       ...EditingStatus_task
       ...TaskFooter_task
     }

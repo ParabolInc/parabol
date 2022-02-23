@@ -10,7 +10,6 @@ import {
 export interface ClientNewMeeting extends INewMeeting {
   localPhase: NewMeetingPhase
   localStage: NewMeetingStage
-  highlightedTaskId?: string
 }
 
 export interface ClientRetrospectiveMeeting extends IRetrospectiveMeeting {
