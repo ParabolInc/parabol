@@ -6,6 +6,14 @@ import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
+import styled from '@emotion/styled'
+
+const CopyBlock = styled('div')({
+  marginBottom: 48,
+  width: 'calc(100vw - 48)',
+  maxWidth: 500,
+  textAlign: 'center'
+})
 
 interface Props {
   page: AuthPageSlug
@@ -30,6 +38,14 @@ const AuthenticationPage = (props: Props) => {
   }
   return (
     <TeamInvitationWrapper>
+      <CopyBlock>
+        <h1>Free online retrospectives that get teams talking</h1>
+        <p>
+          Make your good team great by sharing feedback, deciding on what to do, and continuously
+          improving. Parabol is Free and Open Source, so there's nothing standing between you and
+          better teamwork.
+        </p>
+      </CopyBlock>
       <GenericAuthentication page={page} goToPage={goToPage} />
     </TeamInvitationWrapper>
   )
