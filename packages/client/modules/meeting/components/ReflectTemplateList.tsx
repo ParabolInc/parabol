@@ -35,7 +35,8 @@ const Label = styled('div')({
 })
 
 const StyledTabsBar = styled(Tabs)({
-  boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`
+  boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
+  flexShrink: 0
 })
 
 const FullTab = styled(Tab)({
@@ -63,7 +64,7 @@ const TabIcon = styled(Icon)({
   marginRight: 4
 })
 
-const containerStyle = {width: '100%', height: '85%'}
+const containerStyle = {height: '85%'}
 const innerStyle = {width: '100%', height: '100%', maxWidth: 'calc(100vw - 48px)'}
 interface Props {
   activeIdx: number

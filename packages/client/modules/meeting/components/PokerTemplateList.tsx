@@ -63,7 +63,7 @@ const TabIcon = styled(Icon)({
   marginRight: 4
 })
 
-const containerStyle = {width: '100%', height: '85%'}
+const containerStyle = {height: '85%'}
 const innerStyle = {width: '100%', height: '100%', maxWidth: 'calc(100vw - 48px)'}
 interface Props {
   activeIdx: number
