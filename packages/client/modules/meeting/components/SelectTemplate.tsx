@@ -9,7 +9,7 @@ import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
-import {BezierCurve} from '../../../types/constEnums'
+import {BezierCurve, ZIndex} from '../../../types/constEnums'
 import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
 
 const fadein = keyframes`
@@ -28,6 +28,7 @@ const ButtonBlock = styled('div')({
   right: 16,
   bottom: 16,
   width: '100%',
+  zIndex: ZIndex.DIALOG
 })
 
 const Button = styled(FloatingActionButton)({

@@ -63,8 +63,8 @@ const TabIcon = styled(Icon)({
   marginRight: 4
 })
 
-const containerStyle = {height: '100%'}
-const innerStyle = {width: '100%', height: '100%'}
+const containerStyle = {width: '100%', height: '85%'}
+const innerStyle = {width: '100%', height: '100%', maxWidth: 'calc(100vw - 48px)'}
 interface Props {
   activeIdx: number
   setActiveIdx: (idx: number) => void
@@ -75,7 +75,7 @@ const PokerTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
   const {team, teamTemplates} = settings
   const {id: teamId} = team
-  const activeTemplateId = settings.activeTemplate?.id ?? "-tmp"
+  const activeTemplateId = settings.activeTemplate?.id ?? '-tmp'
 
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
@@ -118,7 +118,11 @@ const PokerTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
-      <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
+      <AddNewPokerTemplate
+        teamId={teamId}
+        pokerTemplates={teamTemplates}
+        gotoTeamTemplates={gotoTeamTemplates}
+      />
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
