@@ -1,5 +1,25 @@
 import {R} from 'rethinkdb-ts'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+
+const enum MeetingTypeEnum {
+  action = 'action',
+  retrospective = 'retrospective',
+  poker = 'poker',
+}
+const enum NewMeetingPhaseTypeEnum {
+  lobby = 'lobby',
+  checkin = 'checkin',
+  updates = 'updates',
+  firstcall = 'firstcall',
+  agendaitems = 'agendaitems',
+  lastcall = 'lastcall',
+  reflect = 'reflect',
+  group = 'group',
+  vote = 'vote',
+  discuss = 'discuss',
+  SUMMARY = 'SUMMARY',
+  SCOPE = 'SCOPE',
+  ESTIMATE = 'ESTIMATE',
+}
 
 export const up = async function(r: R) {
   try {
