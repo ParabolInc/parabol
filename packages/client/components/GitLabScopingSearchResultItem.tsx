@@ -44,15 +44,13 @@ const StyledLink = styled('a')({
 })
 
 interface Props {
-  meetingId: string
-  usedServiceTaskIds: Set<string>
+  // usedServiceTaskIds: Set<string>
   issueRef: GitLabScopingSearchResultItem_issue
-  persistQuery: () => void
+  // persistQuery: () => void
 }
 
 const GitLabScopingSearchResultItem = (props: Props) => {
-  // const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {meetingId, issueRef, projectId} = props
+  const {issueRef} = props
   // const {number: issueNumber, repository, title} = issue
   const issue = useFragment(
     graphql`
@@ -68,7 +66,6 @@ const GitLabScopingSearchResultItem = (props: Props) => {
   )
   const {iid, title, webPath, webUrl} = issue
   const nameWithOwner = webPathToNameWithOwner(webPath)
-  console.log('🚀  ~ item ___', {props, meetingId, webPath, issue, nameWithOwner})
 
   // const url = issue.url as string
   // const {nameWithOwner} = repository

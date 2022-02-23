@@ -8,7 +8,7 @@ import TaskIntegrationJira from './TaskIntegrationJira'
 export type AreaEnum = 'meeting' | 'teamDash' | 'userDash'
 export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTagEnum = 'private' | 'archived'
-export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira'
+export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira' | 'gitlab'
 
 export type TaskIntegration = TaskIntegrationJira | TaskIntegrationGitHub
 export interface TaskInput {

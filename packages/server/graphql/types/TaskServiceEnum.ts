@@ -6,6 +6,7 @@ const TaskServiceEnum = new GraphQLEnumType({
   values: {
     github: {},
     jira: {},
+    gitlab: {},
     PARABOL: {}
   }
 })
