@@ -12,47 +12,33 @@ const fetchAllRepoIntegrations = async (
 ) => {
   const {dataLoader} = context
   const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-  // get prevRepoIntegrations to determine when the repo was last used
   const [prevRepoIntegrations, jiraProjects, githubRepos] = await Promise.all([
     getPrevRepoIntegrations(userId, teamId, permLookup),
     dataLoader.get('allJiraProjects').load({teamId, userId}),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info)
   ])
-
   const fetchedRepoIntegrations = [...jiraProjects, ...githubRepos]
-  const prevRepoIntegrationsIds = new Set<string>()
+  const repoIntegrationsLastUsedAt = {} as {[repoIntegrationId: string]: Date}
   prevRepoIntegrations.forEach((integration) => {
     const integrationId = IntegrationRepoId.join(integration)
     if (!integrationId) return
-    prevRepoIntegrationsIds.add(integrationId)
+    repoIntegrationsLastUsedAt[integrationId] = integration.lastUsedAt
   })
-  // always have lastUsedAt be a Date (to make the sort easier below)
-  const repoIntegrations = fetchedRepoIntegrations.map((repo) => {
-    if (prevRepoIntegrationsIds.has(repo.id)) {
-      const prevRepoIntegration = prevRepoIntegrations.find((repoIntegration) => {
-        const integrationId = IntegrationRepoId.join(repoIntegration)
-        return repo.id === integrationId
-      })
-      return {
-        ...repo,
-        lastUsedAt: prevRepoIntegration?.lastUsedAt || new Date(0)
-      }
-    }
-    return {
+  return fetchedRepoIntegrations
+    .map((repo) => ({
       ...repo,
-      lastUsedAt: new Date(0)
-    }
-  })
-
-  return repoIntegrations.sort((a, b) =>
-    a.lastUsedAt > b.lastUsedAt
-      ? -1
-      : a.service < b.service
-      ? -1
-      : a.id.toLowerCase() < b.id.toLowerCase()
-      ? -1
-      : 1
-  )
+      // always have lastUsedAt be a Date (to make the sort easier below)
+      lastUsedAt: repoIntegrationsLastUsedAt[repo.id] ?? new Date(0)
+    }))
+    .sort((a, b) =>
+      a.lastUsedAt > b.lastUsedAt
+        ? -1
+        : a.service < b.service
+        ? -1
+        : a.id.toLowerCase() < b.id.toLowerCase()
+        ? -1
+        : 1
+    )
 }
 
 export default fetchAllRepoIntegrations
