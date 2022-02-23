@@ -18,20 +18,23 @@ export const skeletonShine = keyframes`
 const MockTemplateItemBody = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  padding: '8px 16px',
+  padding: '16px',
   height: 56
 })
 
-const MockTemplateItemTitle = styled('div')<{delay: number}>(({delay}) => ({
-  animation: `${skeletonShine.toString()} 2400ms infinite linear ${delay}ms`,
-  height: 16,
-  borderRadius: '20px',
-  backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
-  backgroundSize: 1200,
-  marginLeft: 8,
-  marginTop: 2,
-  width: '80%'
-}))
+const MockTemplateItemTitle = styled('div')<{delay: number; randomWidth: number}>(
+  ({delay, randomWidth}) => ({
+    animation: `${skeletonShine.toString()} 2400ms infinite linear ${delay}ms`,
+    height: 16,
+    borderRadius: '20px',
+    backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
+    backgroundSize: 1200,
+    marginLeft: 8,
+    marginTop: 4,
+    maxWidth: '80%',
+    width: `${randomWidth}%`
+  })
+)
 
 interface Props {
   idx: number
@@ -41,7 +44,7 @@ const MockScopingTask = (props: Props) => {
   return (
     <MockTemplateItemBody>
       <Checkbox active={false} onClick={() => {}} />
-      <MockTemplateItemTitle delay={idx * 20} />
+      <MockTemplateItemTitle randomWidth={Math.floor(Math.random() * 80) + 20} delay={idx * 20} />
     </MockTemplateItemBody>
   )
 }
