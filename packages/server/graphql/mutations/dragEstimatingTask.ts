@@ -53,9 +53,8 @@ export default {
 
     // RESOLUTION
     // MUTATIVE
-    const noise = Math.random() / 1e10
     draggedStages.forEach((stage, i) => {
-      stage.sortOrder = sortOrder + noise * i
+      stage.sortOrder = sortOrder + i
     })
 
     stages.sort((a, b) => {

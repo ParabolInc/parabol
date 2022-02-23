@@ -148,7 +148,7 @@ const updatePokerScope = {
             creatorUserId: viewerId,
             // integrationHash if integrated, else taskId
             serviceTaskId,
-            sortOrder: lastSortOrder + 1 + idx,
+            sortOrder: lastSortOrder + 2 ** 43 + idx,
             taskId,
             durations: undefined,
             dimensionRefIdx: idx

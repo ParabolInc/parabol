@@ -50,8 +50,7 @@ const DragEstimatingTaskMutation: SimpleMutation<IDragEstimatingTaskMutation> = 
       const phases = meeting.getLinkedRecords('phases')!
       const phase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
       const stages = phase.getLinkedRecords('stages')!.filter((stage) => stage.getValue('taskId') === taskId)
-      const noise = Math.random() / 1e10
-      stages.forEach((stage, i) => { stage.setValue(sortOrder + noise * i, 'sortOrder') })
+      stages.forEach((stage, i) => { stage.setValue(sortOrder + i, 'sortOrder') })
       handleUpdateStageSort(store, meetingId, 'ESTIMATE')
     }
   })

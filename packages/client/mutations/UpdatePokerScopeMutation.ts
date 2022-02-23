@@ -201,7 +201,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           }
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
             const nextStage = createProxyRecord(store, 'EstimateStage', {
-              sortOrder: lastSortOrder + 1,
+              sortOrder: lastSortOrder + 2**43 + dimensionRefIdx,
               durations: undefined,
               dimensionRefIdx,
               teamId,

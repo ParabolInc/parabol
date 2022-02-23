@@ -10,8 +10,6 @@ import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
 import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {SORT_STEP} from '../utils/constants'
-import dndNoise from '../utils/dndNoise'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
 import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
@@ -78,17 +76,14 @@ const PokerSidebarEstimateSection = (props: Props) => {
 
     let sortOrder
     if (destination.index === 0) {
-      sortOrder = destinationTopic.sortOrderFirstDimension - SORT_STEP + dndNoise()
+      sortOrder = Math.floor(destinationTopic.sortOrderFirstDimension / 2)
     } else if (destination.index === stageSummaries!.length - 1) {
-      sortOrder = destinationTopic.sortOrderLastDimension + SORT_STEP + dndNoise()
+      sortOrder = Math.floor(destinationTopic.sortOrderLastDimension + 2 ** 43)
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stageSummaries[destination.index + offset]!.sortOrderLastDimension + destinationTopic.sortOrderFirstDimension) / 2 +
-        dndNoise()
+      Math.floor((stageSummaries[destination.index + offset]!.sortOrderLastDimension + destinationTopic.sortOrderFirstDimension) / 2)
     }
-
-    console.log(`Dragging task from ${source.index} to ${destination.index}. New sortOrder = ${sortOrder}`)
 
     const {taskId} = sourceTopic
     const variables = {meetingId, taskId, sortOrder}
