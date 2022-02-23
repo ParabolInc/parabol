@@ -10,7 +10,7 @@ import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTem
 import IUser from '../../../postgres/types/IUser'
 import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
-import {isNotNull} from '../../../utils/predicates'
+import {isNotNull} from 'parabol-client/utils/predicates'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]

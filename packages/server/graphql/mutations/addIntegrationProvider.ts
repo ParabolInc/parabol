@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
 import {isSuperUser, isTeamMember} from '../../utils/authorization'
-import {isNotNull} from '../../utils/predicates'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddIntegrationProviderInput, {
