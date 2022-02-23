@@ -1,3 +1,4 @@
+import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
@@ -34,12 +35,6 @@ export interface JiraIssueKey {
   issueKey: string
   viewerId: string
   taskId?: string
-}
-
-interface JiraProjectDataLoader extends JiraProject {
-  cloudId: string
-  teamId: string
-  userId: string
 }
 
 export const freshAtlassianAuth = (
@@ -99,10 +94,51 @@ export const freshAtlassianAuth = (
   )
 }
 
+export const allJiraProjects = (
+  parent: RootDataLoader
+): DataLoader<
+  TeamUserKey,
+  (JiraProject & {cloudId: string; teamId: string; userId: string})[] | null,
+  string
+> => {
+  return new DataLoader<
+    TeamUserKey,
+    (JiraProject & {cloudId: string; teamId: string; userId: string})[] | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
+          if (!auth) return null
+          const cloudNameLookup = await parent
+            .get('atlassianCloudNameLookup')
+            .load({teamId, userId})
+          const cloudIds = Object.keys(cloudNameLookup)
+          const {accessToken} = auth
+          const manager = new AtlassianServerManager(accessToken)
+          const projects = await manager.getAllProjects(cloudIds)
+          return projects.map((project) => ({
+            ...project,
+            id: JiraProjectId.join(project.cloudId, project.key),
+            userId,
+            teamId
+          }))
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
+    }
+  )
+}
+
 export const jiraRemoteProject = (
   parent: RootDataLoader
-): DataLoader<JiraRemoteProjectKey, JiraProjectDataLoader | null, string> => {
-  return new DataLoader<JiraRemoteProjectKey, JiraProjectDataLoader | null, string>(
+): DataLoader<JiraRemoteProjectKey, JiraProject | null, string> => {
+  return new DataLoader<JiraRemoteProjectKey, JiraProject | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, cloudId, projectKey}) => {
@@ -115,7 +151,7 @@ export const jiraRemoteProject = (
             sendToSentry(projectRes, {userId, tags: {teamId, projectKey}})
             return null
           }
-          return {...projectRes, cloudId, userId, teamId}
+          return projectRes
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))

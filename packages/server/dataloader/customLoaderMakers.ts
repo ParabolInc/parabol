@@ -327,3 +327,27 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
     }
   )
 }
+
+export const taskIdsByTeamAndGitHubRepo = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((key) => {
+          const {teamId, nameWithOwner} = key
+          // This is very expensive! We should move tasks to PG ASAP
+          return r
+            .table('Task')
+            .getAll(teamId, {index: 'teamId'})
+            .filter((row) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
+            .run()
+        })
+      )
+      return res
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.nameWithOwner}`
+    }
+  )
+}

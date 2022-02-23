@@ -1,8 +1,9 @@
+import {getPermsByTaskService, getPrevRepoIntegrations} from './repoIntegrationHelpers'
 import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
-import fetchAtlassianProjects from './fetchAtlassianProjects'
 import fetchGitHubRepos from './fetchGitHubRepos'
 import fetchJiraServerProjects from './fetchJiraServerProjects'
+import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 
 const fetchAllRepoIntegrations = async (
   teamId: string,
@@ -11,16 +12,36 @@ const fetchAllRepoIntegrations = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
-  const [jiraProjects, githubRepos, jiraServerProjects] = await Promise.all([
-    fetchAtlassianProjects(teamId, userId, context),
+
+  const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
+  const [prevRepoIntegrations, jiraProjects, githubRepos, jiraServerProjects] = await Promise.all([
+    getPrevRepoIntegrations(userId, teamId, permLookup),
+    dataLoader.get('allJiraProjects').load({teamId, userId}),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info),
     fetchJiraServerProjects(teamId, userId, dataLoader)
   ])
-  const getValue = (item) => (item.nameWithOwner || item.name).toLowerCase()
-  const repoIntegrations = [...jiraProjects, ...githubRepos, ...jiraServerProjects].sort((a, b) => {
-    return getValue(a) < getValue(b) ? -1 : 1
+  const fetchedRepoIntegrations = [...jiraProjects, ...githubRepos, ...jiraServerProjects]
+  const repoIntegrationsLastUsedAt = {} as {[repoIntegrationId: string]: Date}
+  prevRepoIntegrations.forEach((integration) => {
+    const integrationId = IntegrationRepoId.join(integration)
+    if (!integrationId) return
+    repoIntegrationsLastUsedAt[integrationId] = integration.lastUsedAt
   })
-  return repoIntegrations
+  return fetchedRepoIntegrations
+    .map((repo) => ({
+      ...repo,
+      // always have lastUsedAt be a Date (to make the sort easier below)
+      lastUsedAt: repoIntegrationsLastUsedAt[repo.id] ?? new Date(0)
+    }))
+    .sort((a, b) =>
+      a.lastUsedAt > b.lastUsedAt
+        ? -1
+        : a.service < b.service
+        ? -1
+        : a.id.toLowerCase() < b.id.toLowerCase()
+        ? -1
+        : 1
+    )
 }
 
 export default fetchAllRepoIntegrations

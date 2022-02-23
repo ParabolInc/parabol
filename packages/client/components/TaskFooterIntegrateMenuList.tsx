@@ -7,8 +7,7 @@ import useAllIntegrations from '../hooks/useAllIntegrations'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import CreateGitHubTaskIntegrationMutation from '../mutations/CreateGitHubTaskIntegrationMutation'
-import CreateJiraTaskIntegrationMutation from '../mutations/CreateJiraTaskIntegrationMutation'
+import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
@@ -48,10 +47,11 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
   const items = repoIntegrations.items || []
   const {id: taskId, teamId, userId} = task
 
-  const {query, filteredItems: filteredIntegrations, onQueryChange} = useSearchFilter(
-    items,
-    getValue
-  )
+  const {
+    query,
+    filteredItems: filteredIntegrations,
+    onQueryChange
+  } = useSearchFilter(items, getValue)
 
   const atmosphere = useAtmosphere()
   const {allItems, status} = useAllIntegrations(
@@ -86,11 +86,14 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         const {id, __typename} = repoIntegration
         const {submitMutation, onError, onCompleted} = mutationProps
         if (__typename === 'JiraRemoteProject') {
-          const {cloudId, key: projectKey} = repoIntegration
           const onClick = () => {
-            const variables = {cloudId, projectKey, taskId}
+            const variables = {
+              integrationRepoId: repoIntegration.id,
+              taskId,
+              integrationProviderService: 'jira' as const
+            }
             submitMutation()
-            CreateJiraTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
             <RepoIntegrationJiraMenuItem
@@ -117,9 +120,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         if (__typename === '_xGitHubRepository') {
           const onClick = () => {
             const {nameWithOwner} = repoIntegration
-            const variables = {nameWithOwner, taskId}
+            const variables = {
+              integrationRepoId: nameWithOwner,
+              taskId,
+              integrationProviderService: 'github' as const
+            }
             submitMutation()
-            CreateGitHubTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
             <RepoIntegrationGitHubMenuItem

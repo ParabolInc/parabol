@@ -1,4 +1,17 @@
-# PostGreSQL
+# PostgreSQL
+
+## Setup
+
+- pgadmin is at [http://localhost:5050](http://localhost:5050)
+- Connect using the values of `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` from your `.env`
+- Click "Add New Server" and fill out the forms with your `.env` values
+
+  - General.name = POSTGRES_DB
+  - Connection.host = 'postgres' (hardcoded from docker-compose dev.yml, not from .env!)
+  - Connection.username = POSTGRES_USER
+  - Connection.password = POSTGRES_PASSWORD
+  - Connection.maintenanceDatabase = POSTGRES_DB
+  - Connection.port = POSTGRES_PORT
 
 ## Migrations
 
@@ -7,6 +20,10 @@ If your migration also requires a connection to RethinkDB, you can do that here,
 The recommended way to write a migration is to call `yarn pg:migrate create NAME`
 We no longer use pgm because we want every migration to run independently.
 In other words, migration 3 should have a guarantee that migration 2 has already run. PGM doesn't do this.
+
+### Queries
+
+- [Queries](./queries/README.md)
 
 ### Gotchas
 

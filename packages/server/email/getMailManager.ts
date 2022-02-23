@@ -9,7 +9,8 @@ let mailManager: MailManager
 const managers = {
   mailgun: MailManagerMailgun,
   google: MailManagerGoogle,
-  smtp: MailManagerSMTP
+  smtp: MailManagerSMTP,
+  debug: MailManagerDebug
 }
 
 const getMailManager = () => {

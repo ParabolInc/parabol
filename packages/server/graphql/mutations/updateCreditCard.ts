@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import UpdateCreditCardPayload from '../types/UpdateCreditCardPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import upgradeToPro from './helpers/upgradeToPro'
 import {GQLContext} from '../graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import UpdateCreditCardPayload from '../types/UpdateCreditCardPayload'
+import upgradeToPro from './helpers/upgradeToPro'
 
 export default {
   type: UpdateCreditCardPayload,
@@ -36,7 +36,14 @@ export default {
 
     // RESOLUTION
     const viewer = (await dataLoader.get('users').load(viewerId))! // authenticated user
-    await upgradeToPro(orgId, stripeToken, viewer.email)
+    try {
+      await upgradeToPro(orgId, stripeToken, viewer.email)
+    } catch (e) {
+      const param = (e as any)?.param
+      const error: any = param ? new Error(param) : e
+      return standardError(error, {userId: viewerId, tags: error})
+    }
+
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const data = {teamIds, orgId}

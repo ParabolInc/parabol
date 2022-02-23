@@ -58,20 +58,24 @@ const initMeetingSettings = () => {
 export const JiraDemoKey = 'Demo'
 export const JiraDemoCloudName = 'jira-demo'
 const JiraSecretKey = 'jira-secret'
+const JiraDemoProjectId = '123:Demo'
+const JiraSecretProjectId = '123:jira-secret'
 
 export const JiraProjectKeyLookup = {
-  [JiraDemoKey]: {
+  [JiraDemoProjectId]: {
     key: JiraDemoKey,
     name: 'Demo Jira Project',
     cloudId: '123',
     cloudName: JiraDemoCloudName,
+    projectId: JiraDemoProjectId,
     avatar: 'foo',
     service: 'jira'
   },
-  [JiraSecretKey]: {
+  [JiraSecretProjectId]: {
     key: JiraSecretKey,
     name: 'Secret Jira Project',
     cloudId: '123',
+    projectId: JiraSecretProjectId,
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
     service: 'jira'
@@ -232,11 +236,14 @@ const initDemoTeamMember = (
     },
     repoIntegrations: {
       hasMore: true,
-      items: [new DemoJiraRemoteProject(JiraDemoKey), makeRepoIntegrationGitHub(GitHubDemoKey)]
+      items: [
+        new DemoJiraRemoteProject(JiraDemoProjectId),
+        makeRepoIntegrationGitHub(GitHubDemoKey)
+      ]
     },
     allAvailableRepoIntegrations: [
-      new DemoJiraRemoteProject(JiraDemoKey),
-      new DemoJiraRemoteProject(JiraSecretKey)
+      new DemoJiraRemoteProject(JiraDemoProjectId),
+      new DemoJiraRemoteProject(JiraSecretProjectId)
     ],
     teamId: demoTeamId,
     userId
