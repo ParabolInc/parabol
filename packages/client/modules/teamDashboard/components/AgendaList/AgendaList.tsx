@@ -50,16 +50,17 @@ const AgendaList = (props: Props) => {
 
   const onDragEnd = useEventCallback((result) => {
     const {source, destination} = result
-    const destinationItem = agendaItems[destination.index]
-    const sourceItem = agendaItems[source.index]
     if (
       !destination ||
       destination.droppableId !== AGENDA_ITEM ||
       source.droppableId !== AGENDA_ITEM ||
-      destination.index === source.index ||
-      !destinationItem ||
-      !sourceItem
+      destination.index === source.index
     ) {
+      return
+    }
+    const destinationItem = agendaItems[destination.index]
+    const sourceItem = agendaItems[source.index]
+    if (!destinationItem || !sourceItem) {
       return
     }
 

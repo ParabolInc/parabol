@@ -62,17 +62,18 @@ const PokerSidebarEstimateSection = (props: Props) => {
 
   const onDragEnd = (result) => {
     const {source, destination} = result
-    const sourceTopic = stageSummaries[source.index]
-    const destinationTopic = stageSummaries[destination.index]
 
     if (
       !destination ||
       destination.droppableId !== 'TASK' ||
       source.droppableId !== 'TASK' ||
-      destination.index === source.index ||
-      !sourceTopic ||
-      !destinationTopic
+      destination.index === source.index
     ) {
+      return
+    }
+    const sourceTopic = stageSummaries[source.index]
+    const destinationTopic = stageSummaries[destination.index]
+    if (!sourceTopic ||!destinationTopic) {
       return
     }
 

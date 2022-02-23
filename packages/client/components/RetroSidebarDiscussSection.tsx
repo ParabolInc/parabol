@@ -73,17 +73,18 @@ const RetroSidebarDiscussSection = (props: Props) => {
 
   const onDragEnd = (result) => {
     const {source, destination} = result
-    const sourceTopic = stages[source.index]
-    const destinationTopic = stages[destination.index]
 
     if (
       !destination ||
       destination.droppableId !== DISCUSSION_TOPIC ||
       source.droppableId !== DISCUSSION_TOPIC ||
-      destination.index === source.index ||
-      !sourceTopic ||
-      !destinationTopic
+      destination.index === source.index
     ) {
+      return
+    }
+    const sourceTopic = stages[source.index]
+    const destinationTopic = stages[destination.index]
+    if (!sourceTopic || !destinationTopic) {
       return
     }
 
