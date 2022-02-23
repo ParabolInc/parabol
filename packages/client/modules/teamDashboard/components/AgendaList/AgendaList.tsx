@@ -51,7 +51,7 @@ const AgendaList = (props: Props) => {
   const onDragEnd = useEventCallback((result) => {
     const {source, destination} = result
     if (
-      !destination ||
+      !destination || !source ||
       destination.droppableId !== AGENDA_ITEM ||
       source.droppableId !== AGENDA_ITEM ||
       destination.index === source.index

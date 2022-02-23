@@ -75,7 +75,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
     const {source, destination} = result
 
     if (
-      !destination ||
+      !destination || !source ||
       destination.droppableId !== DISCUSSION_TOPIC ||
       source.droppableId !== DISCUSSION_TOPIC ||
       destination.index === source.index
