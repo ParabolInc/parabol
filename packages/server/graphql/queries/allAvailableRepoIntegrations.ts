@@ -1,12 +1,12 @@
 import {GraphQLList, GraphQLNonNull} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
-import SuggestedIntegration from '../types/SuggestedIntegration'
-import fetchAllIntegrations from './helpers/fetchAllIntegrations'
+import RepoIntegration from '../types/RepoIntegration'
+import fetchAllRepoIntegrations from './helpers/fetchAllRepoIntegrations'
 
 export default {
   description: 'All the integrations that the user could possibly use',
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SuggestedIntegration))),
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RepoIntegration))),
   resolve: async ({teamId, userId}, _args: unknown, context: GQLContext, info) => {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
@@ -20,6 +20,6 @@ export default {
         return []
       }
     }
-    return fetchAllIntegrations(dataLoader, teamId, userId, context, info)
+    return fetchAllRepoIntegrations(teamId, userId, context, info)
   }
 }

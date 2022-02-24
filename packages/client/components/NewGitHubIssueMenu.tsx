@@ -4,17 +4,17 @@ import {createFragmentContainer} from 'react-relay'
 import useAllIntegrations from '~/hooks/useAllIntegrations'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
+import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
+import {NewGitHubIssueMenu_repoIntegrations} from '~/__generated__/NewGitHubIssueMenu_repoIntegrations.graphql'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {NewGitHubIssueMenu_suggestedIntegrations} from '~/__generated__/NewGitHubIssueMenu_suggestedIntegrations.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import {SearchMenuItem} from './SearchMenuItem'
-import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
 
 interface Props {
   handleSelectNameWithOwner: (key: string) => void
   menuProps: MenuProps
-  suggestedIntegrations: NewGitHubIssueMenu_suggestedIntegrations
+  repoIntegrations: NewGitHubIssueMenu_repoIntegrations
   teamId: string
   userId: string
 }
@@ -24,14 +24,13 @@ const getValue = (item: {projectName?: string; nameWithOwner?: string}) => {
 }
 
 const NewGitHubIssueMenu = (props: Props) => {
-  const {handleSelectNameWithOwner, menuProps, suggestedIntegrations, teamId, userId} = props
-  const {hasMore, items} = suggestedIntegrations
+  const {handleSelectNameWithOwner, menuProps, repoIntegrations, teamId, userId} = props
+  const {hasMore, items} = repoIntegrations
 
-  const {
-    query,
-    filteredItems: filteredIntegrations,
-    onQueryChange
-  } = useSearchFilter(items ?? [], getValue)
+  const {query, filteredItems: filteredIntegrations, onQueryChange} = useSearchFilter(
+    items ?? [],
+    getValue
+  )
 
   const atmosphere = useAtmosphere()
   const {allItems, status} = useAllIntegrations(
@@ -58,18 +57,18 @@ const NewGitHubIssueMenu = (props: Props) => {
       )) ||
         null}
 
-      {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, service} = suggestedIntegration
-        if (service === 'github') {
-          const {nameWithOwner} = suggestedIntegration
+      {allItems.slice(0, 10).map((repoIntegration) => {
+        const {id, __typename} = repoIntegration
+        if (__typename === '_xGitHubRepository') {
+          const {nameWithOwner} = repoIntegration
           const onClick = () => {
             handleSelectNameWithOwner(nameWithOwner)
           }
           return (
-            <SuggestedIntegrationGitHubMenuItem
+            <RepoIntegrationGitHubMenuItem
               key={id}
               query={query}
-              suggestedIntegration={suggestedIntegration}
+              repoIntegration={repoIntegration}
               onClick={onClick}
             />
           )
@@ -81,16 +80,16 @@ const NewGitHubIssueMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(NewGitHubIssueMenu, {
-  suggestedIntegrations: graphql`
-    fragment NewGitHubIssueMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+  repoIntegrations: graphql`
+    fragment NewGitHubIssueMenu_repoIntegrations on RepoIntegrationQueryPayload {
       hasMore
       items {
-        ... on SuggestedIntegrationGitHub {
+        ... on _xGitHubRepository {
+          __typename
           id
           nameWithOwner
-          service
         }
-        ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
+        ...RepoIntegrationGitHubMenuItem_repoIntegration
       }
     }
   `

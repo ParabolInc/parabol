@@ -117,10 +117,10 @@ const NewGitHubIssueInput = (props: Props) => {
         }
         teamMember(teamId: $teamId) {
           ... on TeamMember {
-            suggestedIntegrations {
-              ...NewGitHubIssueMenu_suggestedIntegrations
+            repoIntegrations {
+              ...NewGitHubIssueMenu_repoIntegrations
               items {
-                ... on SuggestedIntegrationGitHub {
+                ... on _xGitHubRepository {
                   id
                   nameWithOwner
                 }
@@ -143,12 +143,12 @@ const NewGitHubIssueInput = (props: Props) => {
   const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
-  const {suggestedIntegrations} = teamMember!
+  const {repoIntegrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const {items} = suggestedIntegrations
-  const suggestedIntegration = items?.find((item) => item.nameWithOwner)
-  const nameWithOwner = suggestedIntegration?.nameWithOwner
+  const {items} = repoIntegrations
+  const repoIntegration = items?.find((item) => item.nameWithOwner)
+  const nameWithOwner = repoIntegration?.nameWithOwner
   const [selectedNameWithOwner, setSelectedNameWithOwner] = useState(nameWithOwner)
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
@@ -248,7 +248,7 @@ const NewGitHubIssueInput = (props: Props) => {
         <NewGitHubIssueMenu
           handleSelectNameWithOwner={setSelectedNameWithOwner}
           menuProps={menuProps}
-          suggestedIntegrations={suggestedIntegrations}
+          repoIntegrations={repoIntegrations}
           teamId={teamId}
           userId={userId}
         />
