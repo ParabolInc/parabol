@@ -72,11 +72,11 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {
     integrations: viewerIntegrations,
-    suggestedIntegrations: viewerSuggestedIntegrations
+    repoIntegrations: viewerRepoIntegrations
   } = viewerTeamMember
   const {
     integrations: assigneeIntegrations,
-    suggestedIntegrations: assigneeSuggestedIntegrations,
+    repoIntegrations: assigneeRepoIntegrations,
     preferredName: assigneeName
   } = assigneeTeamMember
   const {teamId, userId} = task
@@ -95,7 +95,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         menuProps={menuProps}
         mutationProps={mutationProps}
         placeholder={placeholder}
-        suggestedIntegrations={viewerSuggestedIntegrations}
+        repoIntegrations={viewerRepoIntegrations}
         task={task}
         label={label}
       />
@@ -113,7 +113,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         menuProps={menuProps}
         mutationProps={mutationProps}
         placeholder={placeholder}
-        suggestedIntegrations={assigneeSuggestedIntegrations}
+        repoIntegrations={assigneeRepoIntegrations}
         task={task}
         label={label}
       />
@@ -146,9 +146,9 @@ graphql`
 `
 
 graphql`
-  fragment TaskFooterIntegrateMenuViewerSuggestedIntegrations on TeamMember {
-    suggestedIntegrations {
-      ...TaskFooterIntegrateMenuList_suggestedIntegrations
+  fragment TaskFooterIntegrateMenuViewerRepoIntegrations on TeamMember {
+    repoIntegrations {
+      ...TaskFooterIntegrateMenuList_repoIntegrations
     }
   }
 `
@@ -163,7 +163,7 @@ graphql`
         ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
       }
     }
-    ...TaskFooterIntegrateMenuViewerSuggestedIntegrations @relay(mask: false)
+    ...TaskFooterIntegrateMenuViewerRepoIntegrations @relay(mask: false)
   }
 `
 

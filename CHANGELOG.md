@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.47.1 2022-Feb-22
+
+### Fixed
+
+- Fix unresponsive GitHub poker meeting (#6042)
+
+### Added
+
+- DoD docs for Ironbank (#6013)
+- Sprint Poker Scoping Jira Integration: Support for comma separated issue keys (#6040)
+- Upgrade to Node 16.14.0 (#6083)
+
 ## 6.47.0 2022-Feb-16
 
 ### Fixed

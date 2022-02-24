@@ -4,17 +4,17 @@ import {createFragmentContainer} from 'react-relay'
 import useAllIntegrations from '~/hooks/useAllIntegrations'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuProps} from '~/hooks/useMenu'
+import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
+import {NewJiraIssueMenu_repoIntegrations} from '~/__generated__/NewJiraIssueMenu_repoIntegrations.graphql'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {NewJiraIssueMenu_suggestedIntegrations} from '~/__generated__/NewJiraIssueMenu_suggestedIntegrations.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import {SearchMenuItem} from './SearchMenuItem'
-import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
 
 interface Props {
   handleSelectProjectKey: (key: string) => void
   menuProps: MenuProps
-  suggestedIntegrations: NewJiraIssueMenu_suggestedIntegrations
+  repoIntegrations: NewJiraIssueMenu_repoIntegrations
   teamId: string
   userId: string
 }
@@ -24,14 +24,12 @@ const getValue = (item: {remoteProject?: any; nameWithOwner?: string}) => {
 }
 
 const NewJiraIssueMenu = (props: Props) => {
-  const {handleSelectProjectKey, menuProps, suggestedIntegrations, teamId, userId} = props
-  const {hasMore, items} = suggestedIntegrations
-
-  const {
-    query,
-    filteredItems: filteredIntegrations,
-    onQueryChange
-  } = useSearchFilter(items ?? [], getValue)
+  const {handleSelectProjectKey, menuProps, repoIntegrations, teamId, userId} = props
+  const {hasMore, items} = repoIntegrations
+  const {query, filteredItems: filteredIntegrations, onQueryChange} = useSearchFilter(
+    items ?? [],
+    getValue
+  )
 
   const atmosphere = useAtmosphere()
   const {allItems, status} = useAllIntegrations(
@@ -58,18 +56,18 @@ const NewJiraIssueMenu = (props: Props) => {
       )) ||
         null}
 
-      {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, service} = suggestedIntegration
-        if (service === 'jira') {
-          const {projectKey} = suggestedIntegration
+      {allItems.slice(0, 10).map((repoIntegration) => {
+        const {id, __typename} = repoIntegration
+        if (__typename === 'JiraRemoteProject') {
+          const {key} = repoIntegration
           const onClick = () => {
-            handleSelectProjectKey(projectKey)
+            handleSelectProjectKey(key)
           }
           return (
-            <SuggestedIntegrationJiraMenuItem
+            <RepoIntegrationJiraMenuItem
               key={id}
               query={query}
-              suggestedIntegration={suggestedIntegration}
+              repoIntegration={repoIntegration}
               onClick={onClick}
             />
           )
@@ -81,19 +79,20 @@ const NewJiraIssueMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(NewJiraIssueMenu, {
-  suggestedIntegrations: graphql`
-    fragment NewJiraIssueMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+  repoIntegrations: graphql`
+    fragment NewJiraIssueMenu_repoIntegrations on RepoIntegrationQueryPayload {
       hasMore
       items {
-        ... on SuggestedIntegrationJira {
+        ... on JiraRemoteProject {
+          __typename
           id
-          projectKey
-          service
-          remoteProject {
-            name
-          }
+          name
+          key
         }
-        ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
+        ... on _xGitHubRepository {
+          nameWithOwner
+        }
+        ...RepoIntegrationJiraMenuItem_repoIntegration
       }
     }
   `

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "sourceMap": true
+  },
+  "include": ["playwright.config.ts", "tests/**/*.ts"]
+}
