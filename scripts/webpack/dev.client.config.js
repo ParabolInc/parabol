@@ -130,7 +130,10 @@ module.exports = {
         sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-        prblIn: process.env.INVITATION_SHORTLINK
+        prblIn: process.env.INVITATION_SHORTLINK,
+        AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
+        AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
+        AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
       })
     }),
     new ReactRefreshWebpackPlugin(),
@@ -138,7 +141,6 @@ module.exports = {
       __CLIENT__: true,
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
       // Environment variables go in the __ACTION__ object above, not here

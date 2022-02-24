@@ -86,11 +86,15 @@ const validatePassword = (password: string) => {
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
+  const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
+  const isSSOAuthEnabled = window.__ACTION__.AUTH_SSO_ENABLED
+
   const {isPrimary, isSignin, invitationToken, email, goToPage} = props
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
-  const isSSODefault = Boolean(params.get('sso'))
-  const [isSSO, setIsSSO] = useState(isSSODefault)
+  const isSSODefault = isSSOAuthEnabled && Boolean(params.get('sso'))
+  const signInWithSSOOnly = isSSOAuthEnabled && !isInternalAuthEnabled
+  const [isSSO, setIsSSO] = useState(isSSODefault || signInWithSSOOnly)
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoURL, setSSOURL] = useState('')
   const [ssoDomain, setSSODomain] = useState('')
@@ -191,8 +195,12 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     const {email: emailRes, password: passwordRes} = validateField()
     if (emailRes.error) return
     const {value: email} = emailRes
-    const isSSO = await tryLoginWithSSO(email)
-    if (isSSO || passwordRes.error) return
+    const signInWithSSOSucceeded = await tryLoginWithSSO(email)
+    if (isSSO && !signInWithSSOSucceeded) {
+      onError(new Error('This domain is not configured for SSO. Please contact support@parabol.co'))
+      return
+    }
+    if (signInWithSSOSucceeded || passwordRes.error) return
     const {value: password} = passwordRes
     submitMutation()
     if (isSignin) {
@@ -231,22 +239,27 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
               onBlur={handleBlur}
             />
           </FieldBlock>
-          <FieldBlock isSSO={isSSO}>
-            <PasswordInputField
-              autoFocus={hasEmail}
-              {...fields.password}
-              onChange={onChange}
-              onBlur={handleBlur}
-            />
-          </FieldBlock>
+          {
+            isInternalAuthEnabled &&
+            <FieldBlock isSSO={isSSO}>
+              <PasswordInputField
+                autoFocus={hasEmail}
+                {...fields.password}
+                onChange={onChange}
+                onBlur={handleBlur}
+              />
+            </FieldBlock>
+          }
         </FieldGroup>
         <Button size='medium' disabled={false} waiting={submitting}>
-          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
+          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}{signInWithSSOOnly ? " with SSO" : ""}
         </Button>
       </Form>
-      <UseSSO onClick={toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${
-        isSSO ? 'without' : 'with'
-      } SSO`}</UseSSO>
+      {isSSOAuthEnabled && isInternalAuthEnabled &&
+        <UseSSO onClick={toggleSSO}>
+          {`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}
+        </UseSSO>
+      }
     </>
   )
 })

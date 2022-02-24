@@ -1,7 +1,6 @@
 import cheerio from 'cheerio'
 import base64url from 'base64url'
 import crypto from 'crypto'
-import path from 'path'
 import ms from 'ms'
 import getRedis from '../getRedis'
 import AtlassianManager from 'parabol-client/utils/AtlassianManager'
@@ -16,9 +15,10 @@ if (!serverSecret) {
 
 /**
  * Parses a JIRA issue description and replaces the image urls with Parabol's image urls
- * where the image urls are hashed and look like this: `/jira-attachements/<hash>.[ext]`
+ * where the image urls are hashed and look like this: `/jira-attachements/<image-url-hash>`
+ * @param {string} cloudId
  * @param {string} descriptionHTML - HTML string of related Jira issue description
- * @returns {UpdateJiraImagesResult} - Record of orginal image urls to hashed image urls
+ * @returns record of orginal image urls to hashed image urls
  */
 export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) => {
   const imageUrlToHash = {} as Record<string, string>
@@ -32,13 +32,10 @@ export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) =>
       if (!imageUrl) return
 
       const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
-      const extname = path.extname(absoluteImageUrl)
-      const imageUrlWithoutExt = absoluteImageUrl.slice(0, absoluteImageUrl.length - extname.length)
-      const hashedImageUrl = createImageUrlHash(imageUrlWithoutExt)
-      const hashedImageWithExt = `${hashedImageUrl}${extname}`
-      imageUrlToHash[absoluteImageUrl] = hashedImageWithExt
+      const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
+      imageUrlToHash[absoluteImageUrl] = hashedImageUrl
 
-      $(img).attr('src', createParabolImageUrl(hashedImageWithExt))
+      $(img).attr('src', createParabolImageUrl(hashedImageUrl))
     })
 
   return {updatedDescription: $.html(), imageUrlToHash}
@@ -48,40 +45,41 @@ export const downloadAndCacheImages = async (
   manager: AtlassianManager,
   imageUrlToHash: Record<string, string>
 ) => {
-  await Promise.all(
+  return Promise.all(
     Object.entries(imageUrlToHash).map(([imageUrl, hash]) =>
       downloadAndCacheImage(manager, hash, imageUrl)
     )
   )
 }
 
-const createParabolImageUrl = (hashedImageUrl: string) => {
+export const downloadAndCacheImage = async (
+  manager: AtlassianManager,
+  imageUrlHash: string,
+  imageUrl: string
+) => {
+  const imageKey = `jira-image:${imageUrlHash}`
+  const redis = getRedis()
+  const isImageAlreadyCached = await redis.exists(imageKey)
+  if (isImageAlreadyCached) return
+
+  await redis
+    .multi()
+    .hset(imageKey, {imageBuffer: NO_IMAGE_BUFFER, contentType: 'image/png'})
+    .pexpire(imageKey, IMAGE_TTL_MS)
+    .exec()
+  const imageResponse = await manager.getImage(imageUrl)
+  if (!imageResponse?.contentType) {
+    await redis.hdel(imageKey)
+    return
+  }
+
+  return redis.multi().hset(imageKey, imageResponse).pexpire(imageKey, IMAGE_TTL_MS).exec()
+}
+
+export const createParabolImageUrl = (hashedImageUrl: string) => {
   return `/jira-attachments/${hashedImageUrl}`
 }
 
-const downloadAndCacheImage = async (
-  manager: AtlassianManager,
-  hashedImageUrl: string,
-  imageUrl: string
-) => {
-  const redis = getRedis()
-  const isImageAlreadyCached = await redis.exists(hashedImageUrl)
-  if (isImageAlreadyCached) return
-
-  await redis.setBuffer(hashedImageUrl, NO_IMAGE_BUFFER, 'PX', IMAGE_TTL_MS)
-  const imageBuffer = await manager.getImage(imageUrl)
-  if (!imageBuffer) {
-    await redis.del(hashedImageUrl)
-    return
-  }
-  return redis.setBuffer(hashedImageUrl, imageBuffer, 'PX', IMAGE_TTL_MS)
-}
-
-const createImageUrlHash = (imageUrl: string) => {
-  return base64url.encode(
-    crypto
-      .createHmac('sha256', serverSecret)
-      .update(imageUrl)
-      .digest()
-  )
+export const createImageUrlHash = (imageUrl: string) => {
+  return base64url.encode(crypto.createHmac('sha256', serverSecret).update(imageUrl).digest())
 }

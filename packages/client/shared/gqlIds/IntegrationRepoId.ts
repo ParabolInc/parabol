@@ -1,35 +1,33 @@
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {IntegrationProviderServiceEnum} from 'parabol-client/types/graphql'
 
-export type GitHubItem = {
+type GitHubRepoIntegration = {
   nameWithOwner: string
   service: 'github'
 }
 
-export type JiraItem = {
+type JiraRepoIntegration = {
   cloudId: string
   projectKey: string
   service: 'jira'
 }
 
-export type IntegrationRepoItem = {
+export type RepoIntegration = {
   id: string
   providerId: string
   service: Exclude<IntegrationProviderServiceEnum, 'jira' | 'github'>
 }
 
 const IntegrationRepoId = {
-  join: (item: GitHubItem | JiraItem | IntegrationRepoItem) => {
-    const {service} = item
+  join: (integration: GitHubRepoIntegration | JiraRepoIntegration | RepoIntegration) => {
+    const {service} = integration
     switch (service) {
       case 'github':
-        return item.nameWithOwner
+        return integration.nameWithOwner
       case 'jira':
-        return JiraProjectId.join(item.cloudId, item.projectKey)
-      case 'jiraServer':
-        return item.id
+        return JiraProjectId.join(integration.cloudId, integration.projectKey)
       default:
-        return `${item.service}:${item.providerId}:${item.id}`
+        return `${integration.service}:${integration.providerId}:${integration.id}`
     }
   }
 }
