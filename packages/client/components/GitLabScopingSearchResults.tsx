@@ -206,7 +206,8 @@ const GitLabScopingSearchResults = (props: Props) => {
           <GitLabScopingSearchResultItem
             key={issue.id}
             issueRef={issue}
-            // usedServiceTaskIds={usedServiceTaskIds}
+            meetingId={meetingId}
+            usedServiceTaskIds={usedServiceTaskIds}
             // persistQuery={persistQuery}
           />
         ))}

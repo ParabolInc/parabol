@@ -21,7 +21,8 @@ const defaultExecutor: Executor<{
     controller.abort()
   }, endpointTimeout)
   try {
-    const result = await fetch(`${baseUri}/api/graphql`, {
+    const uri = baseUri || 'https://gitlab.com' // TODO: why is baseUri not set?
+    const result = await fetch(`${uri}/api/graphql`, {
       signal: signal as any,
       method: 'POST',
       headers: {

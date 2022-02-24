@@ -6,12 +6,12 @@ import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-// import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {GitLabScopingSelectAllIssues_issues$key} from '../__generated__/GitLabScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
+import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 
 const Item = styled('div')({
   display: 'flex',
@@ -45,8 +45,11 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
     graphql`
       fragment GitLabScopingSelectAllIssues_issues on _xGitLabIssue @relay(plural: true) {
         id
+        iid
         # number
         title
+        webPath
+        webUrl
         # repository {
         #   nameWithOwner
         # }
@@ -54,21 +57,15 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
     `,
     issuesRef
   )
-  console.log('🚀  ~ issues', issues)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const issueIds = issues.map(({id}) => id)
-  // const serviceTaskIds = issues.map(
-  //   (issue) =>
-  //     // GitLabIssueId.join(issue.repository.nameWithOwner, issue.number)
-  //     ''
-  // )
-  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(issueIds, usedServiceTaskIds)
+  const serviceTaskIds = issues.map((issue) => GitLabIssueId.join(issue.webPath, issue.id))
+  const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = allSelected === true ? issueIds : unusedServiceTaskIds
+    const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
     const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
@@ -86,9 +83,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
     }
     const contents = updates.map((update) => {
       const issue = issues.find(
-        (issue) =>
-          // GitLabIssueId.join(issue.repository.nameWithOwner, issue.number) === update.serviceTaskId
-          issue.id === update.serviceTaskId
+        (issue) => GitLabIssueId.join(issue.webPath, issue.id) === update.serviceTaskId
       )
       return issue?.title ?? 'Unknown Story'
     })
@@ -98,15 +93,13 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
   const title = getSelectAllTitle(issues.length, usedServiceTaskIds.size, 'issue')
 
   return (
-    <>
-      <Item onClick={onClick}>
-        <Checkbox active={allSelected} />
-        <TitleAndError>
-          <Title>{title}</Title>
-          {error && <ErrorMessage>{error.message}</ErrorMessage>}
-        </TitleAndError>
-      </Item>
-    </>
+    <Item onClick={onClick}>
+      <Checkbox active={allSelected} />
+      <TitleAndError>
+        <Title>{title}</Title>
+        {error && <ErrorMessage>{error.message}</ErrorMessage>}
+      </TitleAndError>
+    </Item>
   )
 }
 

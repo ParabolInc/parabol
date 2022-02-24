@@ -44,13 +44,14 @@ const StyledLink = styled('a')({
 })
 
 interface Props {
-  // usedServiceTaskIds: Set<string>
+  usedServiceTaskIds: Set<string>
   issueRef: GitLabScopingSearchResultItem_issue
+  meetingId: string
   // persistQuery: () => void
 }
 
 const GitLabScopingSearchResultItem = (props: Props) => {
-  const {issueRef} = props
+  const {issueRef, meetingId, usedServiceTaskIds} = props
   // const {number: issueNumber, repository, title} = issue
   const issue = useFragment(
     graphql`
@@ -64,44 +65,41 @@ const GitLabScopingSearchResultItem = (props: Props) => {
     `,
     issueRef
   )
-  const {iid, title, webPath, webUrl} = issue
+  const {id: guid, iid, title, webPath, webUrl: url} = issue
   const nameWithOwner = webPathToNameWithOwner(webPath)
+  const serviceTaskId = GitLabIssueId.join(webPath, guid)
+  const isSelected = usedServiceTaskIds.has(serviceTaskId)
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
+  const isTemp = isTempId(serviceTaskId)
 
-  // const url = issue.url as string
-  // const {nameWithOwner} = repository
-  // const serviceTaskId = GitLabIssueId.join(nameWithOwner, issueNumber)
-  // const isSelected = usedServiceTaskIds.has(serviceTaskId)
-  // const atmosphere = useAtmosphere()
-  // const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  // const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
-  // const isTemp = isTempId(serviceTaskId)
-  // const onClick = () => {
-  //   if (submitting || disabled || isTemp) return
-  //   submitMutation()
-  //   const variables = {
-  //     meetingId,
-  //     updates: [
-  //       {
-  //         service: 'gitlab',
-  //         serviceTaskId,
-  //         action: isSelected ? 'DELETE' : 'ADD'
-  //       }
-  //     ]
-  //   } as UpdatePokerScopeMutationVariables
-  //   UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [title]})
-  //   if (!isSelected) {
-  //     // if they are adding an item, then their search criteria must be good, so persist it
-  //     persistQuery()
-  //   }
-  // }
+  const onClick = () => {
+    if (submitting || disabled || isTemp) return
+    submitMutation()
+    const variables = {
+      meetingId,
+      updates: [
+        {
+          service: 'gitlab',
+          serviceTaskId,
+          action: isSelected ? 'DELETE' : 'ADD'
+        }
+      ]
+    } as UpdatePokerScopeMutationVariables
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [title]})
+    if (!isSelected) {
+      // if they are adding an item, then their search criteria must be good, so persist it
+      // persistQuery()
+    }
+  }
 
   return (
-    <Item onClick={() => {}}>
-      {/* <Checkbox active={isSelected || isTemp} disabled={disabled} /> */}
-      <Checkbox active={false} disabled={false} />
+    <Item onClick={onClick}>
+      <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
         <Title>{title}</Title>
-        <StyledLink href={webUrl} rel='noopener noreferrer' target='_blank'>
+        <StyledLink href={url} rel='noopener noreferrer' target='_blank'>
           {`#${iid} ${nameWithOwner}`}
           {/* {isTemp && <Ellipsis />} */}
         </StyledLink>

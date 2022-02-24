@@ -3,6 +3,7 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import generateUID from '../../generateUID'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
+import TaskIntegrationGitLab from './TaskIntegrationGitLab'
 import TaskIntegrationJira from './TaskIntegrationJira'
 
 export type AreaEnum = 'meeting' | 'teamDash' | 'userDash'
@@ -10,7 +11,7 @@ export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTagEnum = 'private' | 'archived'
 export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira' | 'gitlab'
 
-export type TaskIntegration = TaskIntegrationJira | TaskIntegrationGitHub
+export type TaskIntegration = TaskIntegrationJira | TaskIntegrationGitHub | TaskIntegrationGitLab
 export interface TaskInput {
   id?: string
   content: string

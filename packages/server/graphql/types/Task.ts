@@ -13,6 +13,7 @@ import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
 import {getUserId} from '../../utils/authorization'
 import getGitHubRequest from '../../utils/getGitHubRequest'
+import getGitLabRequest from '../../utils/getGitLabRequest'
 import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
 import sendToSentry from '../../utils/sendToSentry'
 import connectionDefinitions from '../connectionDefinitions'
@@ -180,6 +181,28 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             sendToSentry(error, {userId: accessUserId})
           }
           return data
+        } else if (integration.service === 'gitlab') {
+          const gitlabAuth = await dataLoader
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'gitlab', teamId, userId: viewerId})
+          if (!gitlabAuth) return null
+          const {guid} = integration
+          const {accessToken} = gitlabAuth
+          const query = `
+          {
+             issue(id: "${guid}"){
+                   __typename
+                   id
+                   iid
+                   title
+                  }
+                }`
+          const gitlabRequest = getGitLabRequest(info, context, {accessToken})
+          const [data, error] = await gitlabRequest(query)
+          if (error) {
+            sendToSentry(error, {userId: accessUserId})
+          }
+          return data.issue
         }
         return null
       }

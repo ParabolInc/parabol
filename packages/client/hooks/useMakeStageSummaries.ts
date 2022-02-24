@@ -39,6 +39,11 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
                 title
                 number
               }
+              ... on _xGitLabIssue {
+                __typename
+                title
+                iid
+              }
             }
           }
         }
@@ -83,6 +88,11 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
           return {
             title: integration.title,
             subtitle: `#${integration.number}`
+          }
+        } else if (integration.__typename === '_xGitLabIssue') {
+          return {
+            title: integration.title,
+            subtitle: `#${integration.iid}`
           }
         }
         return {
