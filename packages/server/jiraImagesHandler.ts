@@ -1,5 +1,4 @@
 import {promises as fsp} from 'fs'
-import mime from 'mime-types'
 import path from 'path'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
@@ -7,14 +6,24 @@ import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getRedis from './utils/getRedis'
 
-const getImageFromCache = async (fileName: string, tryAgain: boolean) => {
+const getImageFromCache = async (
+  imgUrlHash: string,
+  tryAgain: boolean
+): Promise<{imageBuffer: Buffer; contentType: string} | null> => {
   const redis = getRedis()
-  const imageBuffer = await redis.getBuffer(fileName)
+  const [[imageBufferErr, imageBuffer], [contentTypeErr, contentType]] = await redis
+    .multi()
+    .hgetBuffer(`jira-image:${imgUrlHash}`, 'imageBuffer')
+    .hget(`jira-image:${imgUrlHash}`, 'contentType')
+    .exec()
+
+  if (imageBufferErr || contentTypeErr) return null
+  if (contentType === null || contentType.length === 0) return null
   if (imageBuffer === null || imageBuffer.length === 0) return null
-  if (imageBuffer.length > 1) return imageBuffer
+  if (imageBuffer.length > 1) return {imageBuffer, contentType}
   if (tryAgain) {
     await sleep(500)
-    return getImageFromCache(fileName, false)
+    return getImageFromCache(imgUrlHash, false)
   }
   return null
 }
@@ -32,26 +41,23 @@ const servePlaceholderImage = async (res: HttpResponse) => {
 }
 
 const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  const fileName = req.getParameter(0)
-  if (!fileName) {
+  const imgUrlHash = req.getParameter(0)
+  if (!imgUrlHash) {
     await servePlaceholderImage(res)
     return
   }
 
-  const mimeType = mime.lookup(fileName)
-  if (!mimeType || !mimeType.startsWith('image/')) {
-    await servePlaceholderImage(res)
-    return
-  }
-
-  const imageBuffer = await getImageFromCache(fileName, true)
-  if (!imageBuffer) {
+  const cachedImage = await getImageFromCache(imgUrlHash, true)
+  if (!cachedImage?.imageBuffer || !cachedImage?.contentType) {
     await servePlaceholderImage(res)
     return
   }
 
   res.cork(() => {
-    res.writeStatus('200').writeHeader('Content-Type', mimeType).end(imageBuffer)
+    res
+      .writeStatus('200')
+      .writeHeader('Content-Type', cachedImage.contentType)
+      .end(cachedImage.imageBuffer)
   })
 })
 

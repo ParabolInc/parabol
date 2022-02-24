@@ -26,7 +26,11 @@ const fetchJiraServerProjects = async (
   }
   return projects
     .filter((project) => !project.archived)
-    .map((project) => ({...project, service: 'jiraServer'}))
+    .map((project) => ({
+      ...project,
+      service: 'jiraServer' as const,
+      providerId: provider.id
+    }))
 }
 
 export default fetchJiraServerProjects

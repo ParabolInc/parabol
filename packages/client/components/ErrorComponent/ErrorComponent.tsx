@@ -3,6 +3,7 @@ import React from 'react'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import useModal from '~/hooks/useModal'
+import {isOldBrowserError} from '~/utils/isOldBrowserError'
 
 const ErrorBlock = styled('div')({
   alignItems: 'center',
@@ -31,8 +32,8 @@ const ErrorComponent = (props: Props) => {
   const {error, eventId} = props
   console.error(error)
   const {modalPortal, openPortal, closePortal} = useModal()
-  const oldBrowserErrs = ['flatMap is not a function']
-  const isOldBrowserErr = oldBrowserErrs.find((err) => error.message.includes(err))
+  const isOldBrowserErr = isOldBrowserError(error.message)
+
   if (isOldBrowserErr) {
     const url = 'https://browser-update.org/update-browser.html'
     return (
