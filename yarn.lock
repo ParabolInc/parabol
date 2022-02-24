@@ -1327,6 +1327,15 @@
     "@datadog/browser-rum-core" "3.6.12"
     tslib "^1.10.0"
 
+"@datadog/native-appsec@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@datadog/native-appsec/-/native-appsec-0.8.1.tgz#50cb6ef2e75ea13cd9e837e64971deff3673c638"
+  integrity sha512-0jewxGPoRxFd/UYY5+9uisTsTfctwRZy19fU5wo+psejhlxflDnupSDamtnr0nF72s4dbX1z1uAwGWGkuxnV3Q==
+  dependencies:
+    detect-libc "^1.0.3"
+    minimist "^1.2.5"
+    tar "^6.1.11"
+
 "@datadog/native-metrics@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@datadog/native-metrics/-/native-metrics-1.1.0.tgz#ef860a4cbea81b6e1559b280f5f1f3cd2cc22585"
@@ -6907,16 +6916,18 @@ dayjs@~1.8.24, dayjs@~1.8.25:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.36.tgz#be36e248467afabf8f5a86bae0de0cdceecced50"
   integrity sha512-3VmRXEtw7RZKAf+4Tv1Ym9AGeo8r8+CjDi26x+7SYQil1UqtqdaokhzoEJohqlzt0m5kacJSDhJQkG/LWhpRBw==
 
-dd-trace@^1.5.1:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-1.6.0.tgz#8c6ff7f7f810b635757b343a5019055afc69371c"
-  integrity sha512-8ZrZSwJZAhT2RCBR7AKxWmM/9tAuDzZoN6Z+y8Yo0Ai51VhpZIbKqEkMvz77Tla5j+RUkvUB5VYRphxB+KhsNg==
+dd-trace@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-2.2.0.tgz#414b02a05c2ea8f6a9304f267d92834fb00cc7ce"
+  integrity sha512-PEYucl6bQoyz4CF6kCu1LBbJ9p8qec7sl6cbnfV+wZoMgdQrf30q/iV+5YbyzVCZVnkY5xsFqR8f08/V/ygIBw==
   dependencies:
+    "@datadog/native-appsec" "^0.8.1"
     "@datadog/native-metrics" "^1.1.0"
     "@datadog/pprof" "^0.3.0"
     "@datadog/sketches-js" "^1.0.4"
     "@types/node" ">=12"
     crypto-randomuuid "^1.0.0"
+    diagnostics_channel "^1.1.0"
     form-data "^3.0.0"
     import-in-the-middle "^1.1.2"
     koalas "^1.0.2"
@@ -7222,6 +7233,11 @@ dezalgo@^1.0.0:
   dependencies:
     asap "^2.0.0"
     wrappy "1"
+
+diagnostics_channel@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/diagnostics_channel/-/diagnostics_channel-1.1.0.tgz#bd66c49124ce3bac697dff57466464487f57cea5"
+  integrity sha512-OE1ngLDjSBPG6Tx0YATELzYzy3RKHC+7veQ8gLa8yS7AAgw65mFbVdcsu3501abqOZCEZqZyAIemB0zXlqDSuw==
 
 dicer@0.2.5:
   version "0.2.5"
