@@ -10,7 +10,7 @@ import styled from '@emotion/styled'
 
 const CopyBlock = styled('div')({
   marginBottom: 48,
-  width: 'calc(100vw - 48)',
+  width: 'calc(100vw - 16px)',
   maxWidth: 500,
   textAlign: 'center'
 })
@@ -39,12 +39,11 @@ const AuthenticationPage = (props: Props) => {
   return (
     <TeamInvitationWrapper>
       <CopyBlock>
-        <h1>Free online retrospectives that get teams talking</h1>
-        <p>
-          Make your good team great by sharing feedback, deciding on what to do, and continuously
-          improving. Parabol is Free and Open Source, so there's nothing standing between you and
-          better teamwork.
-        </p>
+        <h1>
+          Better Meetings, <br />
+          Less Effort
+        </h1>
+        <p>Help your team connect &amp; improve with an agile meeting co-pilot</p>
       </CopyBlock>
       <GenericAuthentication page={page} goToPage={goToPage} />
     </TeamInvitationWrapper>
