@@ -8,7 +8,7 @@ const normalizeRethinkDbResults = <T extends {id: string}>(
   })
   const mappedResults = [] as T[]
   keys.forEach((key) => {
-    mappedResults.push(map[key])
+    mappedResults.push(map[key]!)
   })
   return mappedResults
 }

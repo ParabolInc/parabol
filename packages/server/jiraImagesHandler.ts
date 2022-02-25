@@ -4,18 +4,18 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
 import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
-import getRedis from './utils/getRedis'
+import getRedis, {RedisPipelineResponse} from './utils/getRedis'
 
 const getImageFromCache = async (
   imgUrlHash: string,
   tryAgain: boolean
 ): Promise<{imageBuffer: Buffer; contentType: string} | null> => {
   const redis = getRedis()
-  const [[imageBufferErr, imageBuffer], [contentTypeErr, contentType]] = await redis
+  const [[imageBufferErr, imageBuffer], [contentTypeErr, contentType]] = (await redis
     .multi()
     .hgetBuffer(`jira-image:${imgUrlHash}`, 'imageBuffer')
     .hget(`jira-image:${imgUrlHash}`, 'contentType')
-    .exec()
+    .exec()) as [RedisPipelineResponse<Buffer>, RedisPipelineResponse<string>]
 
   if (imageBufferErr || contentTypeErr) return null
   if (contentType === null || contentType.length === 0) return null

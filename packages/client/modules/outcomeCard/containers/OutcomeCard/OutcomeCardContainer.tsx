@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw} from 'draft-js'
-import React, {memo, useRef, useState} from 'react'
+import React, {memo, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import {OutcomeCardContainer_task} from '~/__generated__/OutcomeCardContainer_task.graphql'
@@ -14,6 +14,7 @@ import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graph
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../../../utils/draftjs/isAndroid'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
+import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 
 const Wrapper = styled('div')({
   outline: 'none'
@@ -28,10 +29,12 @@ interface Props {
   task: OutcomeCardContainer_task
   clearIsCreatingNewTask?: () => void
   dataCy: string
+  isViewerMeetingSection?: boolean
+  meetingId?: string
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy} = props
+  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy, isViewerMeetingSection, meetingId} = props
   const {id: taskId, team, content} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
@@ -41,6 +44,17 @@ const OutcomeCardContainer = memo((props: Props) => {
 
   const [editorState, setEditorState] = useEditorState(content)
   const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
+
+  const isHighlighted = isTaskHovered || !!isDraggingOver
+  useEffect(() => {
+    if (!isViewerMeetingSection || !meetingId) return
+
+    SetTaskHighlightMutation(atmosphere, {
+      taskId,
+      meetingId,
+      isHighlighted
+    })
+  }, [isHighlighted])
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
@@ -107,7 +121,7 @@ const OutcomeCardContainer = memo((props: Props) => {
 
 export default createFragmentContainer(OutcomeCardContainer, {
   task: graphql`
-    fragment OutcomeCardContainer_task on Task {
+    fragment OutcomeCardContainer_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
       editors {
         userId
       }
@@ -116,7 +130,7 @@ export default createFragmentContainer(OutcomeCardContainer, {
       team {
         id
       }
-      ...OutcomeCard_task
+      ...OutcomeCard_task @arguments(meetingId: $meetingId)
     }
   `
 })

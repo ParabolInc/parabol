@@ -49512,6 +49512,18 @@ export interface ITask {
    * The user the task is assigned to. Null if it is not assigned to anyone.
    */
   user: IUser | null;
+
+  /**
+   * The owner hovers over the task in their solo update of a checkin
+   */
+  isHighlighted: boolean;
+}
+
+export interface IIsHighlightedOnTaskArguments {
+  /**
+   * Meeting for which the highlight is checked
+   */
+  meetingId?: string | null;
 }
 
 /**
@@ -56094,6 +56106,11 @@ export interface IMutation {
   startSprintPoker: StartSprintPokerPayload;
 
   /**
+   * Broadcast that the viewer highlights a task
+   */
+  setTaskHighlight: SetTaskHighlightPayload;
+
+  /**
    * Update an agenda item
    */
   updateAgendaItem: IUpdateAgendaItemPayload | null;
@@ -57090,6 +57107,12 @@ export interface IStartSprintPokerOnMutationArguments {
    * The team starting the meeting
    */
   teamId: string;
+}
+
+export interface ISetTaskHighlightOnMutationArguments {
+  taskId: string;
+  meetingId: string;
+  isHighlighted: boolean;
 }
 
 export interface IUpdateAgendaItemOnMutationArguments {
@@ -59266,6 +59289,26 @@ export interface IStartSprintPokerSuccess {
   teamId: string;
 }
 
+/**
+ * Return object for SetTaskHighlightPayload
+ */
+export type SetTaskHighlightPayload = IErrorPayload | ISetTaskHighlightSuccess;
+
+export interface ISetTaskHighlightSuccess {
+  __typename: 'SetTaskHighlightSuccess';
+
+  /**
+   * Meeting where the task is highlighted
+   */
+  meetingId: string;
+
+  /**
+   * Task which highlight changed
+   */
+  taskId: string;
+  task: ITask;
+}
+
 export interface IUpdateAgendaItemPayload {
   __typename: 'UpdateAgendaItemPayload';
   agendaItem: IAgendaItem | null;
@@ -60352,6 +60395,7 @@ export type MeetingSubscriptionPayload =
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
+  | ISetTaskHighlightSuccess
   | IUpdateCommentContentSuccess
   | IUpdateDragLocationPayload
   | IUpdateNewCheckInQuestionPayload

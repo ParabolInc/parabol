@@ -101,7 +101,7 @@ interface CreateIssueFields {
 
 interface IssueCreateMetadata {
   projects: (Pick<JiraProject, 'self' | 'id' | 'key' | 'name' | 'avatarUrls'> & {
-    issuetypes: JiraIssueType[]
+    issuetypes: [JiraIssueType, ...JiraIssueType[]]
   })[]
 }
 
@@ -808,7 +808,8 @@ export default abstract class AtlassianManager {
   }
 
   async getScreenTabs(cloudId: string, screenId: string) {
-    return this.get<JiraScreenTab[]>(
+    // a screen has at least 1 tab
+    return this.get<[JiraScreenTab, ...JiraScreenTab[]]>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs`
     )
   }

@@ -1327,6 +1327,15 @@
     "@datadog/browser-rum-core" "3.6.12"
     tslib "^1.10.0"
 
+"@datadog/native-appsec@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@datadog/native-appsec/-/native-appsec-0.8.1.tgz#50cb6ef2e75ea13cd9e837e64971deff3673c638"
+  integrity sha512-0jewxGPoRxFd/UYY5+9uisTsTfctwRZy19fU5wo+psejhlxflDnupSDamtnr0nF72s4dbX1z1uAwGWGkuxnV3Q==
+  dependencies:
+    detect-libc "^1.0.3"
+    minimist "^1.2.5"
+    tar "^6.1.11"
+
 "@datadog/native-metrics@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@datadog/native-metrics/-/native-metrics-1.1.0.tgz#ef860a4cbea81b6e1559b280f5f1f3cd2cc22585"
@@ -6907,16 +6916,18 @@ dayjs@~1.8.24, dayjs@~1.8.25:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.36.tgz#be36e248467afabf8f5a86bae0de0cdceecced50"
   integrity sha512-3VmRXEtw7RZKAf+4Tv1Ym9AGeo8r8+CjDi26x+7SYQil1UqtqdaokhzoEJohqlzt0m5kacJSDhJQkG/LWhpRBw==
 
-dd-trace@^1.5.1:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-1.6.0.tgz#8c6ff7f7f810b635757b343a5019055afc69371c"
-  integrity sha512-8ZrZSwJZAhT2RCBR7AKxWmM/9tAuDzZoN6Z+y8Yo0Ai51VhpZIbKqEkMvz77Tla5j+RUkvUB5VYRphxB+KhsNg==
+dd-trace@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-2.2.0.tgz#414b02a05c2ea8f6a9304f267d92834fb00cc7ce"
+  integrity sha512-PEYucl6bQoyz4CF6kCu1LBbJ9p8qec7sl6cbnfV+wZoMgdQrf30q/iV+5YbyzVCZVnkY5xsFqR8f08/V/ygIBw==
   dependencies:
+    "@datadog/native-appsec" "^0.8.1"
     "@datadog/native-metrics" "^1.1.0"
     "@datadog/pprof" "^0.3.0"
     "@datadog/sketches-js" "^1.0.4"
     "@types/node" ">=12"
     crypto-randomuuid "^1.0.0"
+    diagnostics_channel "^1.1.0"
     form-data "^3.0.0"
     import-in-the-middle "^1.1.2"
     koalas "^1.0.2"
@@ -7222,6 +7233,11 @@ dezalgo@^1.0.0:
   dependencies:
     asap "^2.0.0"
     wrappy "1"
+
+diagnostics_channel@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/diagnostics_channel/-/diagnostics_channel-1.1.0.tgz#bd66c49124ce3bac697dff57466464487f57cea5"
+  integrity sha512-OE1ngLDjSBPG6Tx0YATELzYzy3RKHC+7veQ8gLa8yS7AAgw65mFbVdcsu3501abqOZCEZqZyAIemB0zXlqDSuw==
 
 dicer@0.2.5:
   version "0.2.5"
@@ -10801,6 +10817,11 @@ jest-snapshot@^27.4.5:
     pretty-format "^27.4.2"
     semver "^7.3.2"
 
+jest-transform-graphql@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/jest-transform-graphql/-/jest-transform-graphql-2.1.0.tgz#903cb66bb27bc2772fd3e5dd4f7e9b57230f5829"
+  integrity sha1-kDy2a7J7wncv0+XdT36bVyMPWCk=
+
 jest-util@^27.0.0, jest-util@^27.4.2:
   version "27.4.2"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-27.4.2.tgz#ed95b05b1adfd761e2cda47e0144c6a58e05a621"
@@ -12431,10 +12452,10 @@ neo-async@^2.5.0, neo-async@^2.6.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nest-graphql-endpoint@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/nest-graphql-endpoint/-/nest-graphql-endpoint-0.4.1.tgz#624bc97667f89fcaec5116e7027ae832b8fb5149"
-  integrity sha512-kOcoiDXVOX5BFZPfd4oWOdoEgcFmQ2KnoEu8aVS+xhVRsPYDLSgzumLQwEU9dAMZDZoTf8JtqY6tV+FZ/v+sBQ==
+nest-graphql-endpoint@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/nest-graphql-endpoint/-/nest-graphql-endpoint-0.4.3.tgz#e5239c7b7c771c852f7ecb181237be5772ede901"
+  integrity sha512-RAUQIi25QyUM6Dp/7ccIn0b4mGF7bWazuvGla+uQOhu8Ljt5kg5L2aIZ6mc6ocQ8LkZ0S5ImwhvleJ5drrSlUA==
   dependencies:
     "@graphql-tools/merge" "^6.2.13"
     "@graphql-tools/schema" "^7.1.5"

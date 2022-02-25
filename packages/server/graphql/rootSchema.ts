@@ -63,7 +63,8 @@ const resolveToFieldNameOrAlias = (
   _context: unknown,
   info: GraphQLResolveInfo
 ) => {
-  const key = info.fieldNodes[0].alias?.value ?? info.fieldName
+  // fieldNodes will always have 1+ node
+  const key = info.fieldNodes[0]!.alias?.value ?? info.fieldName
   return source[key]
 }
 

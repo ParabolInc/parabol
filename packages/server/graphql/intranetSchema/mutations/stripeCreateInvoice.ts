@@ -1,8 +1,8 @@
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import StripeManager from '../../../utils/StripeManager'
 import {isSuperUser} from '../../../utils/authorization'
+import StripeManager from '../../../utils/StripeManager'
 import {InternalContext} from '../../graphql'
 
 export default {
@@ -32,6 +32,7 @@ export default {
     const {
       metadata: {orgId}
     } = await manager.retrieveCustomer(invoice.customer as string)
+    if (!orgId) throw new Error(`orgId not found on metadata for invoice ${invoiceId}`)
     await Promise.all([
       generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader),
       manager.updateInvoice(invoiceId, orgId)

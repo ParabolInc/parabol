@@ -75,7 +75,8 @@ export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
  */
 export default class RootDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
-  loaders: LoaderDict = {}
+  // casted to any because access to the loaders will results in a creation if needed
+  loaders: LoaderDict = {} as any
   constructor(dataLoaderOptions: DataLoader.Options<any, any> = {}) {
     this.dataLoaderOptions = dataLoaderOptions
   }

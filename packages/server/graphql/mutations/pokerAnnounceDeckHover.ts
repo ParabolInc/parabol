@@ -2,10 +2,10 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getPhase from '../../utils/getPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import getRedis from '../../utils/getRedis'
+import getPhase from '../../utils/getPhase'
+import getRedis, {RedisPipelineResponse} from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerAnnounceDeckHoverPayload from '../types/PokerAnnounceDeckHoverPayload'
@@ -66,11 +66,11 @@ const pokerAnnounceDeckHover = {
     const redis = getRedis()
     const key = `pokerHover:${stageId}`
     if (isHover) {
-      const [numAddedRes] = await redis
+      const [numAddedRes] = (await redis
         .multi()
         .sadd(key, viewerId)
         .pexpire(key, ms('1h'))
-        .exec()
+        .exec()) as [RedisPipelineResponse<1 | 0>]
       const numAdded = numAddedRes[1]
       if (numAdded !== 1) {
         // this is primarily to avoid publishing a useless message to the pubsub

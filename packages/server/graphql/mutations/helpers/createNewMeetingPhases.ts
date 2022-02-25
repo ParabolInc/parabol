@@ -41,7 +41,7 @@ export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
 const getPastStageDurations = async (teamId: string) => {
   const r = await getRethink()
   return (
-    (r
+    r
       .table('NewMeeting')
       .getAll(teamId, {index: 'teamId'})
       .filter({isLegacy: false}, {default: true})
@@ -51,10 +51,7 @@ const getPastStageDurations = async (teamId: string) => {
       .filter((row) => row.hasFields('startAt', 'endAt'))
       // convert seconds to ms
       .merge((row) => ({
-        duration: r
-          .sub(row('endAt'), row('startAt'))
-          .mul(1000)
-          .floor()
+        duration: r.sub(row('endAt'), row('startAt')).mul(1000).floor()
       }))
       // remove stages that took under 1 minute
       .filter((row) => row('duration').ge(60000))
@@ -63,7 +60,7 @@ const getPastStageDurations = async (teamId: string) => {
       .ungroup()
       .map((row) => [row('group'), row('reduction')('duration')])
       .coerceTo('object')
-      .run() as unknown) as {[key: string]: number[]}
+      .run() as unknown as {[key: string]: number[]}
   )
 }
 
@@ -138,7 +135,7 @@ const createNewMeetingPhases = async (
           throw new Error(`Unhandled phaseType: ${phaseType}`)
       }
     })
-  )) as GenericMeetingPhase[]
+  )) as [GenericMeetingPhase, ...GenericMeetingPhase[]]
   primePhases(phases)
   await Promise.all(asyncSideEffects)
   return phases

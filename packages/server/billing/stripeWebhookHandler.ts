@@ -71,11 +71,11 @@ const eventLookup = {
 }
 
 const splitType = (type = '') => {
-  const names = type.split('.')
+  const names = type.split('.') as [string, string, string?]
   return {
     event: names[0],
     subEvent: names.length === 3 ? names[1] : undefined,
-    action: names[names.length - 1]
+    action: names[names.length - 1]!
   }
 }
 
