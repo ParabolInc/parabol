@@ -95,7 +95,7 @@ export default class RootDataLoader {
     } else {
       loader = (loaderMaker as any)(this)
     }
-    this.loaders[loaderName] = loader
+    this.loaders[loaderName] = loader!
     return loader as TypedDataLoader<LoaderName>
   }
 }

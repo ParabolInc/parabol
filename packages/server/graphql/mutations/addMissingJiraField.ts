@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
 import {SprintPokerDefaults, SubscriptionChannel} from '~/types/constEnums'
 import {JiraScreen, RateLimitError} from '~/utils/AtlassianManager'
@@ -6,7 +7,6 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
-import {isNotNull} from 'parabol-client/utils/predicates'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -65,7 +65,7 @@ const addMissingJiraField = {
     const {dimensionRefIdx, serviceTaskId} = stage
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
-    const dimensionRef = dimensions[dimensionRefIdx]
+    const dimensionRef = dimensions[dimensionRefIdx]!
     const {name: dimensionName} = dimensionRef
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (!auth) {
