@@ -116,7 +116,7 @@ const BottomControlBarReady = (props: Props) => {
       gotoNext()
     } else {
       setConfirmingButton('next')
-      // let the above flush so isConfirming is set before opejning
+      // let the above flush so isConfirming is set before opening
       setTimeout(openTooltip)
     }
   }

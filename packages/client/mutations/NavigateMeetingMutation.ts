@@ -111,6 +111,7 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     .getValue('id')!
   const meeting = store.get<NavigateMeetingMutation_meeting>(meetingId)
   if (!meeting) return
+
   const viewerStageId = safeProxy(meeting)
     .getLinkedRecord('localStage')
     .getValue('id')

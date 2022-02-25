@@ -22,7 +22,7 @@ import {Team} from '../postgres/queries/getTeamsByIds'
 
 export const resolveAgendaItem = (
   {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
@@ -36,7 +36,7 @@ export const resolveNewMeeting = (
     meetingId: string
     meeting: MeetingRetrospective | MeetingAction | MeetingPoker
   },
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   return meetingId ? dataLoader.get('newMeetings').load(meetingId) : meeting
@@ -44,7 +44,7 @@ export const resolveNewMeeting = (
 
 export const resolveNotification = (
   {notificationId, notification}: {notificationId: string; notification: Notification},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification
@@ -52,7 +52,7 @@ export const resolveNotification = (
 
 export const resolveMeetingMember = (
   {meetingId, userId}: {meetingId: string; userId: string},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   if (!meetingId || !userId) return null
@@ -62,15 +62,15 @@ export const resolveMeetingMember = (
 
 export const resolveOrganization = (
   {orgId, organization}: {orgId: string; organization: Organization},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   return orgId ? dataLoader.get('organizations').load(orgId) : organization
 }
 
 export const resolveTask = async (
-  {task, taskId}: {taskId: string; task: Task},
-  _args: any,
+  {task, taskId}: {taskId: string; task?: Task | null},
+  _args: unknown,
   {authToken, dataLoader}: GQLContext
 ) => {
   const taskDoc = taskId ? await dataLoader.get('tasks').load(taskId) : task
@@ -83,7 +83,7 @@ export const resolveTask = async (
 
 export const resolveTasks = async (
   {taskIds}: {taskIds: string[]},
-  _args: any,
+  _args: unknown,
   {authToken, dataLoader}: GQLContext
 ) => {
   if (!taskIds || taskIds.length === 0) return null
@@ -98,7 +98,7 @@ export const resolveTasks = async (
 
 export const resolveTeam = (
   {team, teamId}: {teamId: string; team: IGetTeamsByIdsQueryResult},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   // TODO figure out how to lock this down without using the tms, since the mutation may have invalidated it
@@ -110,7 +110,7 @@ export const resolveTeam = (
 
 export const resolveTeams = (
   {teamIds, teams}: {teamIds: string; teams: Team[]},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   // TODO figure out how to lock this down without using the tms, since the mutation may have invalidated it
@@ -122,7 +122,7 @@ export const resolveTeams = (
 
 export const resolveTeamMember = (
   {teamMemberId, teamMember}: {teamMemberId: string; teamMember: TeamMember},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   return teamMemberId ? dataLoader.get('teamMembers').load(teamMemberId) : teamMember
@@ -130,7 +130,7 @@ export const resolveTeamMember = (
 
 export const resolveTeamMembers = (
   {teamMemberIds, teamMembers}: {teamMemberIds: string; teamMembers: TeamMember[]},
-  _args: any,
+  _args: unknown,
   {dataLoader}: GQLContext
 ) => {
   return teamMemberIds && teamMemberIds.length > 0
