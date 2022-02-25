@@ -36,7 +36,7 @@ export const addLemmaToEntity = (entityName: string, tokens: GoogleAnalyzedSynta
   // we only care about the first match since the lemma will be the same for all
   const firstTokenIdx = tokenIndices[0]!
   const {end} = firstTokenIdx
-  const {lemma: partialLemma} = tokens[end]
+  const {lemma: partialLemma} = tokens[end]!
   const namePieces = entityName.split(' ')
   namePieces[namePieces.length - 1] = partialLemma
   return namePieces.join(' ').toLowerCase()

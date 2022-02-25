@@ -1,22 +1,18 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
-import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
+import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
-import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
-import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
+import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
-import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
-import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
-import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
+import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
+import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
-
-interface LoaderDict {
-  [loaderName: string]: DataLoader<any, any>
-}
+import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
+import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
 // Register all loaders
 const loaderMakers = {
@@ -70,12 +66,15 @@ type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
         : never
     >
 
+type LoaderDict = Record<Loaders, DataLoader<any, any>>
+
 /**
  * This is the main dataloader
  */
 export default class RootDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
-  loaders: LoaderDict = {}
+  // casted to any because access to the loaders will results in a creation if needed
+  loaders: LoaderDict = {} as any
   constructor(dataLoaderOptions: DataLoader.Options<any, any> = {}) {
     this.dataLoaderOptions = dataLoaderOptions
   }

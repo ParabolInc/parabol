@@ -6,6 +6,7 @@ import DiscussPhase from '../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -34,7 +35,7 @@ const resetRetroMeetingToGroupStage = {
     const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {createdBy, facilitatorUserId, phases, meetingType} = meeting
-    if (meetingType != 'retrospective') {
+    if (meetingType !== 'retrospective') {
       return standardError(new Error('Meeting type is not retrospective'), {userId: viewerId})
     }
     if (viewerId !== facilitatorUserId) {
@@ -56,7 +57,7 @@ const resetRetroMeetingToGroupStage = {
       return standardError(new Error('The meeting has already ended'), {userId: viewerId})
 
     // RESOLUTION
-    const discussionPhase = phases.find((phase) => phase.phaseType === DISCUSS) as DiscussPhase
+    const discussionPhase = getPhase(phases, DISCUSS)
     const discussionIdsToDelete =
       discussionPhase?.stages?.map(({discussionId}) => discussionId) ?? []
     let resetToPhaseIndex = -1
@@ -70,7 +71,8 @@ const resetRetroMeetingToGroupStage = {
           resetToPhaseIndex = index
           const newGroupPhase = new GenericMeetingPhase(phase.phaseType)
           newGroupPhase.id = phase.id
-          newGroupPhase.stages[0].id = phase.stages[0].id
+          // group phase always has a stage
+          newGroupPhase.stages[0]!.id = phase.stages[0]!.id
           return newGroupPhase
         }
         case VOTE: {
@@ -104,21 +106,13 @@ const resetRetroMeetingToGroupStage = {
         .getAll(r.args(discussionIdsToDelete), {index: 'discussionId'})
         .delete()
         .run(),
-      r
-        .table('Task')
-        .getAll(r.args(discussionIdsToDelete), {index: 'discussionId'})
-        .delete()
-        .run(),
+      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
       r
         .table('RetroReflectionGroup')
         .getAll(r.args(reflectionGroupIds))
         .update({voterIds: []})
         .run(),
-      r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({phases: newPhases})
-        .run(),
+      r.table('NewMeeting').get(meetingId).update({phases: newPhases}).run(),
       (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
         .update({votesRemaining: meeting.totalVotes})
         .run()
