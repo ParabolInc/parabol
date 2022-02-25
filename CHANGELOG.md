@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.48.0 2022-Feb-25
+
+### Fixed
+
+- Bump nest-graphql-endpoint (#6127)
+- Fix jest transforms (#6104)
+- Rethrow exceptions in traceGraphQL (#6090)
+
+### Added
+
+- Add more 2-minute demo tests (#6094)
+- Display GitLab issues in Sprint Poker (#6091)
+- Enable application security for datadog monitoring (#6087)
+- Add integration tests using Playwright (#5961)
+
+### Changed
+
+- Replace suggested integration with new interface (#5883)
+- Remove graphql.ts (#6035)
+
 ## 6.47.1 2022-Feb-22
 
 ### Fixed
