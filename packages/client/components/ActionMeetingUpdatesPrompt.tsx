@@ -46,7 +46,7 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   )
   if (!currentMeetingMember) return null
   const {teamMember, user} = currentMeetingMember
-  const {isSelf: isMyMeetingSection, picture, preferredName} = teamMember
+  const {isSelf: isViewerMeetingSection, picture, preferredName} = teamMember
   const {isConnected} = user
   const prefix = isConnected ? `${preferredName}, ` : ''
   const taskCount = tasks.edges.length
@@ -59,9 +59,9 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
           <i>{getQuestion(isConnected, taskCount, preferredName)}</i>
         </StyledHeader>
         <PhaseHeaderDescription>
-          {isMyMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
-          {isMyMeetingSection && taskCount > 0 && 'Your turn to share! Quick updates only, please.'}
-          {!isMyMeetingSection && (
+          {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
+          {isViewerMeetingSection && taskCount > 0 && 'Your turn to share! Quick updates only, please.'}
+          {!isViewerMeetingSection && (
             <ActionMeetingUpdatesPromptTeamHelpText currentMeetingMember={currentMeetingMember} />
           )}
         </PhaseHeaderDescription>

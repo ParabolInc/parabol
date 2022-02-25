@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import getRedis from '../utils/getRedis'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
@@ -348,6 +349,20 @@ export const taskIdsByTeamAndGitHubRepo = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.nameWithOwner}`
+    }
+  )
+}
+
+export const meetingHighlightedTaskId = (parent: RootDataLoader) => {
+  return new DataLoader<string, string | null, string>(
+    async (meetingIds) => {
+      const redis = getRedis()
+      const redisKeys = meetingIds.map((id) => `meetingTaskHighlight:${id}`)
+      const highlightedTaskIds = await redis.mget(redisKeys)
+      return highlightedTaskIds
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

@@ -1,3 +1,4 @@
+import {_xGitHubRepositoryNode} from './../../client/types/graphql'
 import {mergeSchemas} from '@graphql-tools/merge'
 import {GraphQLResolveInfo, GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
@@ -72,12 +73,17 @@ const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],
   typeDefs: `
     type _xGitHubIssue implements TaskIntegration
+    type _xGitHubRepository implements RepoIntegration
   `,
   // TODO apply this resolver to every type in the GitHub schema
   // It is necessary any time client code uses an alias inside a wrapper
   resolvers: {
     _xGitHubIssue: {
       url: resolveToFieldNameOrAlias
+    },
+    _xGitHubRepository: {
+      __interfaces: () => ['RepoIntegration'],
+      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner
     }
   }
 })

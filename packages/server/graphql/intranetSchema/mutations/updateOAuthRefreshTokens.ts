@@ -2,7 +2,7 @@ import {GraphQLInt, GraphQLNonNull} from 'graphql'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import getAtlassianAuthsToUpdate from '../../../postgres/queries/getAtlassianAuthsToUpdate'
-import {isNotNull} from '../../../utils/predicates'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import isNotError from '../../errorFilter'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 

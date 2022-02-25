@@ -15,7 +15,7 @@ import TaskColumnAddTaskSelectTeam from './TaskColumnAddTaskSelectTeam'
 
 interface Props {
   area: AreaEnum
-  isMyMeetingSection?: boolean
+  isViewerMeetingSection?: boolean
   meetingId?: string
   status: TaskStatusEnum
   tasks: TaskColumnAddTask_tasks
@@ -27,7 +27,7 @@ interface Props {
 const TaskColumnAddTask = (props: Props) => {
   const {
     area,
-    isMyMeetingSection,
+    isViewerMeetingSection,
     status,
     tasks,
     meetingId,
@@ -61,7 +61,7 @@ const TaskColumnAddTask = (props: Props) => {
         userId={userId || viewerId}
       />
     )
-  } else if (area === 'teamDash' || isMyMeetingSection) {
+  } else if (area === 'teamDash' || isViewerMeetingSection) {
     const handleAddTask = () =>
       CreateTaskMutation(atmosphere, {newTask: {status, teamId, userId, sortOrder, meetingId}}, {})
     return <AddTaskButton onClick={handleAddTask} label={label} />

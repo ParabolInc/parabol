@@ -17,10 +17,12 @@ interface Props {
   area: AreaEnum
   idx: number
   task: DraggableTask_task
+  isViewerMeetingSection?: boolean
+  meetingId?: string
 }
 
 const DraggableTask = (props: Props) => {
-  const {area, idx, task} = props
+  const {area, idx, task, isViewerMeetingSection, meetingId} = props
   return (
     <Draggable draggableId={task.id} index={idx} disableInteractiveElementBlocking={false}>
       {(dragProvided: DraggableProvided, dragSnapshot: DraggableStateSnapshot) => (
@@ -34,6 +36,8 @@ const DraggableTask = (props: Props) => {
             area={area}
             task={task}
             isDraggingOver={dragSnapshot.draggingOver as TaskStatusEnum}
+            isViewerMeetingSection={isViewerMeetingSection}
+            meetingId={meetingId}
           />
         </DraggableStyles>
       )}
@@ -43,8 +47,8 @@ const DraggableTask = (props: Props) => {
 
 export default createFragmentContainer(DraggableTask, {
   task: graphql`
-    fragment DraggableTask_task on Task {
-      ...NullableTask_task
+    fragment DraggableTask_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
+      ...NullableTask_task @arguments(meetingId: $meetingId)
       id
       content
       status

@@ -48397,6 +48397,8 @@ export interface IIntegrationProvider {
  * The name of the service of the Integration Provider
  */
 export const enum IntegrationProviderServiceEnum {
+  jira = 'jira',
+  github = 'github',
   gitlab = 'gitlab',
   mattermost = 'mattermost',
   jiraServer = 'jiraServer',
@@ -49510,6 +49512,18 @@ export interface ITask {
    * The user the task is assigned to. Null if it is not assigned to anyone.
    */
   user: IUser | null;
+
+  /**
+   * The owner hovers over the task in their solo update of a checkin
+   */
+  isHighlighted: boolean;
+}
+
+export interface IIsHighlightedOnTaskArguments {
+  /**
+   * Meeting for which the highlight is checked
+   */
+  meetingId?: string | null;
 }
 
 /**
@@ -49678,7 +49692,7 @@ export interface ITeamMember {
   /**
    * All the integrations that the user could possibly use
    */
-  allAvailableIntegrations: Array<SuggestedIntegration>;
+  allAvailableRepoIntegrations: Array<RepoIntegration>;
 
   /**
    * The datetime the team member was created
@@ -49738,7 +49752,7 @@ export interface ITeamMember {
   /**
    * The integrations that the user would probably like to use
    */
-  suggestedIntegrations: ISuggestedIntegrationQueryPayload;
+  repoIntegrations: IRepoIntegrationQueryPayload;
 
   /**
    * Tasks owned by the team member
@@ -49779,23 +49793,17 @@ export interface ITasksOnTeamMemberArguments {
   after?: any | null;
 }
 
-export type SuggestedIntegration =
-  | ISuggestedIntegrationGitHub
-  | ISuggestedIntegrationJira;
-
-export interface ISuggestedIntegration {
-  __typename: 'SuggestedIntegration';
-  id: string;
-  service: TaskServiceEnum;
-}
+/**
+ * The suggested repos and projects a user can integrate with
+ */
+export type RepoIntegration = IXGitHubRepository | IJiraRemoteProject;
 
 /**
- * The list of services for task integrations
+ * The suggested repos and projects a user can integrate with
  */
-export const enum TaskServiceEnum {
-  github = 'github',
-  jira = 'jira',
-  PARABOL = 'PARABOL',
+export interface IRepoIntegration {
+  __typename: 'RepoIntegration';
+  id: string;
 }
 
 /**
@@ -50672,21 +50680,21 @@ export const enum MeetingTypeEnum {
 }
 
 /**
- * The details associated with a task integrated with GitHub
+ * The details associated with the possible repo and project integrations
  */
-export interface ISuggestedIntegrationQueryPayload {
-  __typename: 'SuggestedIntegrationQueryPayload';
+export interface IRepoIntegrationQueryPayload {
+  __typename: 'RepoIntegrationQueryPayload';
   error: IStandardMutationError | null;
 
   /**
    * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
    */
-  hasMore: boolean | null;
+  hasMore: boolean;
 
   /**
    * All the integrations that are likely to be integrated
    */
-  items: Array<SuggestedIntegration> | null;
+  items: Array<RepoIntegration> | null;
 }
 
 /**
@@ -55434,54 +55442,6 @@ export interface IActionMeetingSettings {
 }
 
 /**
- * The details associated with a task integrated with GitHub
- */
-export interface ISuggestedIntegrationGitHub {
-  __typename: 'SuggestedIntegrationGitHub';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * The name of the repo. Follows format of OWNER/NAME
-   */
-  nameWithOwner: string;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ISuggestedIntegrationJira {
-  __typename: 'SuggestedIntegrationJira';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * URL to a 24x24 avatar icon
-   */
-  avatar: string;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
-   */
-  projectName: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The full project document fetched from Jira
-   */
-  remoteProject: IJiraRemoteProject | null;
-}
-
-/**
  * A comment on a thread
  */
 export interface IComment {
@@ -55780,8 +55740,7 @@ export interface IMutation {
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload;
-  createGitHubTaskIntegration: ICreateGitHubTaskIntegrationPayload | null;
-  createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
+  createTaskIntegration: ICreateTaskIntegrationPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -56145,6 +56104,11 @@ export interface IMutation {
    * Start a new sprint poker meeting
    */
   startSprintPoker: StartSprintPokerPayload;
+
+  /**
+   * Broadcast that the viewer highlights a task
+   */
+  setTaskHighlight: SetTaskHighlightPayload;
 
   /**
    * Update an agenda item
@@ -56527,31 +56491,19 @@ export interface ICreateImposterTokenOnMutationArguments {
   email?: any | null;
 }
 
-export interface ICreateGitHubTaskIntegrationOnMutationArguments {
+export interface ICreateTaskIntegrationOnMutationArguments {
   /**
-   * The id of the task to convert to a GH issue
+   * Which integration to push the task to
    */
-  taskId: string;
+  integrationProviderService: IntegrationProviderServiceEnum;
 
   /**
-   * The owner/repo string
+   * Jira projectId, GitHub nameWithOwner etc.
    */
-  nameWithOwner: string;
-}
-
-export interface ICreateJiraTaskIntegrationOnMutationArguments {
-  /**
-   * The atlassian cloudId for the site
-   */
-  cloudId: string;
+  integrationRepoId: string;
 
   /**
-   * The atlassian key of the project to put the issue in
-   */
-  projectKey: string;
-
-  /**
-   * The id of the task to convert to a Jira issue
+   * The id of the task to convert to an issue
    */
   taskId: string;
 }
@@ -57155,6 +57107,12 @@ export interface IStartSprintPokerOnMutationArguments {
    * The team starting the meeting
    */
   teamId: string;
+}
+
+export interface ISetTaskHighlightOnMutationArguments {
+  taskId: string;
+  meetingId: string;
+  isHighlighted: boolean;
 }
 
 export interface IUpdateAgendaItemOnMutationArguments {
@@ -58017,14 +57975,8 @@ export interface ICreateImposterTokenPayload {
   user: IUser | null;
 }
 
-export interface ICreateGitHubTaskIntegrationPayload {
-  __typename: 'CreateGitHubTaskIntegrationPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
-}
-
-export interface ICreateJiraTaskIntegrationPayload {
-  __typename: 'CreateJiraTaskIntegrationPayload';
+export interface ICreateTaskIntegrationPayload {
+  __typename: 'CreateTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -58204,6 +58156,15 @@ export interface ICreateTaskIntegrationInput {
    * The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
    */
   serviceProjectHash: string;
+}
+
+/**
+ * The list of services for task integrations
+ */
+export const enum TaskServiceEnum {
+  github = 'github',
+  jira = 'jira',
+  PARABOL = 'PARABOL',
 }
 
 /**
@@ -59328,6 +59289,26 @@ export interface IStartSprintPokerSuccess {
   teamId: string;
 }
 
+/**
+ * Return object for SetTaskHighlightPayload
+ */
+export type SetTaskHighlightPayload = IErrorPayload | ISetTaskHighlightSuccess;
+
+export interface ISetTaskHighlightSuccess {
+  __typename: 'SetTaskHighlightSuccess';
+
+  /**
+   * Meeting where the task is highlighted
+   */
+  meetingId: string;
+
+  /**
+   * Task which highlight changed
+   */
+  taskId: string;
+  task: ITask;
+}
+
 export interface IUpdateAgendaItemPayload {
   __typename: 'UpdateAgendaItemPayload';
   agendaItem: IAgendaItem | null;
@@ -60414,6 +60395,7 @@ export type MeetingSubscriptionPayload =
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
+  | ISetTaskHighlightSuccess
   | IUpdateCommentContentSuccess
   | IUpdateDragLocationPayload
   | IUpdateNewCheckInQuestionPayload
@@ -60654,8 +60636,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
-  | ICreateGitHubTaskIntegrationPayload
-  | ICreateJiraTaskIntegrationPayload
+  | ICreateTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
