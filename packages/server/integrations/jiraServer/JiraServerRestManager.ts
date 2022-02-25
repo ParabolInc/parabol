@@ -21,13 +21,13 @@ interface JiraServerProject {
 }
 
 interface JiraServerCreateMeta {
-  projects: Array<{
+  projects: {
     id: string
-    issuetypes: Array<{
+    issuetypes: {
       name: string
       id: string
-    }>
-  }>
+    }[]
+  }[]
 }
 
 interface JiraServerCreateIssueResponse {
