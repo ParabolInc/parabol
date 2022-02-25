@@ -64,7 +64,7 @@ export default {
       meetingType,
       dataLoader
     )
-    const team = await dataLoader.get('teams').load(teamId)
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
     const organization = await r.table('Organization').get(team.orgId).run()
     const {showConversionModal} = organization
 

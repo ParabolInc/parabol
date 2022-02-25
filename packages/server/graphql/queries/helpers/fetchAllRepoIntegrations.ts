@@ -1,8 +1,8 @@
-import {getPermsByTaskService, getPrevRepoIntegrations} from './repoIntegrationHelpers'
-import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
-import fetchGitHubRepos from './fetchGitHubRepos'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
+import {GQLContext} from '../../graphql'
+import fetchGitHubRepos from './fetchGitHubRepos'
+import {getPermsByTaskService, getPrevRepoIntegrations} from './repoIntegrationHelpers'
 
 const fetchAllRepoIntegrations = async (
   teamId: string,

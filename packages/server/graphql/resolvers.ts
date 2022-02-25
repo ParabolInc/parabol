@@ -88,7 +88,7 @@ export const resolveTasks = async (
 ) => {
   if (!taskIds || taskIds.length === 0) return null
   const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
-  const {userId} = tasks[0]
+  const {userId} = tasks[0]!
   const isViewer = userId === getUserId(authToken)
   const teamTasks = tasks.filter(({teamId}: {teamId: string}) => authToken.tms.includes(teamId))
   return isViewer

@@ -21,7 +21,7 @@ const TeamMemberIntegrationAuthOAuth1 = new GraphQLObjectType<any, GQLContext>({
     provider: {
       description: 'The provider strategy this token connects to',
       type: new GraphQLNonNull(IntegrationProviderOAuth1),
-      resolve: async ({providerId}: {providerId: string}, _args, {dataLoader}) => {
+      resolve: async ({providerId}: {providerId: number}, _args, {dataLoader}) => {
         return dataLoader.get('integrationProviders').load(providerId)
       }
     }

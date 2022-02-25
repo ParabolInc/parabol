@@ -14,6 +14,10 @@ import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
 import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
+interface LoaderDict {
+  [loaderName: string]: DataLoader<any, any>
+}
+
 // Register all loaders
 const loaderMakers = {
   ...rethinkForeignKeyLoaderMakers,
@@ -55,7 +59,7 @@ type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
 
-type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
+export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
   ? TypeFromCustom<LoaderName>
   : DataLoader<
       string,
@@ -65,8 +69,6 @@ type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
         ? TypeFromPrimary<LoaderName>
         : never
     >
-
-type LoaderDict = Record<Loaders, DataLoader<any, any>>
 
 /**
  * This is the main dataloader
@@ -93,7 +95,7 @@ export default class RootDataLoader {
     } else {
       loader = (loaderMaker as any)(this)
     }
-    this.loaders[loaderName] = loader
+    this.loaders[loaderName] = loader!
     return loader as TypedDataLoader<LoaderName>
   }
 }
