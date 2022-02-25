@@ -12,6 +12,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Bump nest-graphql-endpoint (#6127)
 - Fix jest transforms (#6104)
 - Rethrow exceptions in traceGraphQL (#6090)
+- Fix TypeError: jiraProjects is not iterable (#6121)
 
 ### Added
 
