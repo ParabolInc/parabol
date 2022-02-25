@@ -98,19 +98,19 @@ export const allJiraProjects = (
   parent: RootDataLoader
 ): DataLoader<
   TeamUserKey,
-  (JiraProject & {cloudId: string; teamId: string; userId: string})[] | null,
+  (JiraProject & {cloudId: string; teamId: string; userId: string})[],
   string
 > => {
   return new DataLoader<
     TeamUserKey,
-    (JiraProject & {cloudId: string; teamId: string; userId: string})[] | null,
+    (JiraProject & {cloudId: string; teamId: string; userId: string})[],
     string
   >(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
-          if (!auth) return null
+          if (!auth) return []
           const cloudNameLookup = await parent
             .get('atlassianCloudNameLookup')
             .load({teamId, userId})
@@ -126,7 +126,7 @@ export const allJiraProjects = (
           }))
         })
       )
-      return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
     },
     {
       ...parent.dataLoaderOptions,
