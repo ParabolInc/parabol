@@ -7,16 +7,22 @@ import acceptsBrotli from './acceptsBrotli'
 import PROD from './PROD'
 import dehydrate from './utils/dehydrate'
 
-export const getClientKeys = () => {
+const getClientKeys = () => {
   return {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
+    datadogClientToken: process.env.DD_CLIENTTOKEN,
+    datadogApplicationId: process.env.DD_APPLICATIONID,
+    datadogService: process.env.DD_SERVICE,
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-    prblIn: process.env.INVITATION_SHORTLINK
+    prblIn: process.env.INVITATION_SHORTLINK,
+    AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
+    AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
+    AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
   }
 }
 

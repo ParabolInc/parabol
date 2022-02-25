@@ -30,7 +30,7 @@ export default class User {
   preferredName: string
   email: string
   featureFlags: string[]
-  lastSeenAt: Date | null
+  lastSeenAt: Date
   lastSeenAtURLs: string[] | null
   updatedAt: Date
   newFeatureId?: string | null
@@ -83,7 +83,7 @@ export default class User {
     this.identities = identities || []
     this.inactive = inactive || false
     this.isWatched = isWatched || false
-    this.lastSeenAt = lastSeenAt ?? null
+    this.lastSeenAt = lastSeenAt ?? new Date()
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
     this.segmentId = segmentId ?? undefined

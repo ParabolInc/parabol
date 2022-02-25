@@ -31,7 +31,7 @@ export const normalizeExpiry = (value = '', previousValue = '') => {
     const year = numValue.substr(2)
     const currentYear = String(new Date().getFullYear()).substr(2)
     // only 201x+
-    if (year.length === 0 || (year.length === 1 && year < currentYear[0])) {
+    if (year.length === 0 || (year.length === 1 && year < currentYear[0]!)) {
       return prefix
     }
     // only 2017+

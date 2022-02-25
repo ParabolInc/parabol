@@ -30,7 +30,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'Composite key in atlassiani:teamId:userId format',
-      resolve: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId)
+      resolve: ({teamId, userId}: {teamId: string; userId: string}) =>
+        AtlassianIntegrationId.join(teamId, userId)
     },
     isActive: {
       description: 'true if the auth is valid, else false',
@@ -41,7 +42,11 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user',
       type: GraphQLID,
-      resolve: async ({accessToken, userId}: AtlassianAuth, _args: unknown, {authToken}) => {
+      resolve: async (
+        {accessToken, userId}: AtlassianAuth,
+        _args: unknown,
+        {authToken}: GQLContext
+      ) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
@@ -100,9 +105,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async (
         {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
         {first, queryString, isJQL, projectKeyFilters},
-        context
+        {authToken}: GQLContext
       ) => {
-        const {authToken} = context
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -110,7 +114,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromTasks([], 0, err)
         }
         const manager = new AtlassianServerManager(accessToken)
-        const projectKeyFiltersByCloudId = {}
+        const projectKeyFiltersByCloudId = {} as {[cloudId: string]: string[]}
         if (projectKeyFilters?.length > 0) {
           projectKeyFilters.forEach((globalProjectKey) => {
             const [cloudId, projectKey] = globalProjectKey.split(':')
@@ -150,20 +154,10 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async (
-        {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
-        _args: unknown,
-        {authToken}
-      ) => {
+      resolve: ({teamId, userId}: AtlassianAuth, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
-        const manager = new AtlassianServerManager(accessToken)
-        const projects = await manager.getAllProjects(cloudIds)
-        return projects.map((project) => ({
-          ...project,
-          teamId,
-          userId
-        }))
+        return dataLoader.get('allJiraProjects').load({teamId, userId})
       }
     },
     jiraFields: {

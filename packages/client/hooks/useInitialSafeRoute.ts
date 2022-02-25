@@ -12,10 +12,13 @@ import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
-const useInitialSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, meetingRef: any) => {
+const useInitialSafeRoute = (
+  setSafeRoute: Dispatch<SetStateAction<boolean>>,
+  meetingRef: useInitialSafeRoute_meeting$key
+) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  const meeting = readInlineData<useInitialSafeRoute_meeting$key>(
+  const meeting = readInlineData(
     graphql`
       fragment useInitialSafeRoute_meeting on NewMeeting @inline {
         ...fromStageIdToUrl_meeting
@@ -87,9 +90,9 @@ const useInitialSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, me
       }
 
       const stage = phase.stages[stageIdx]
-      const stageId = stage && stage.id
+      const stageId = stage?.id
       const isViewerFacilitator = viewerId === facilitatorUserId
-      const itemStage = findStageById(phases, stageId)
+      const itemStage = stageId && findStageById(phases, stageId)
       if (!itemStage) {
         // useful for e.g. /discuss/2, especially on the demo
         const nextUrl =

@@ -64,6 +64,7 @@ export type UnshiftToTuple<V, T extends any[]> = Parameters<(a: V, ...args: T) =
 export type Unpromise<T> = T extends Promise<infer U> ? U : T
 export type Unref<T> = T extends MutableRefObject<infer U> ? U : T
 export type RefCallbackInstance<T extends HTMLElement = HTMLElement> = T | null
+export type Unarray<T> = T extends ArrayLike<infer U> ? U : T
 
 type PrependNextNum<A extends Array<unknown>> = A['length'] extends infer T
   ? ((t: T, ...a: A) => void) extends (...x: infer X) => void

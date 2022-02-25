@@ -1,7 +1,7 @@
 import dns, {MxRecord} from 'dns'
-import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import util from 'util'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
@@ -13,7 +13,7 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 
-const resolveMx = promisify(dns.resolveMx, dns)
+const resolveMx = util.promisify(dns.resolveMx)
 
 const getIsGoogleProvider = async (user: IUser | null, email: string) => {
   const identities = user?.identities

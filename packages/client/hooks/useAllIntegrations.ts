@@ -9,24 +9,22 @@ import useFilteredItems from './useFilteredItems'
 
 type FetchedItems = NonNullable<
   NonNullable<useAllIntegrationsQueryResponse['viewer']>['teamMember']
->['allAvailableIntegrations']
+>['allAvailableRepoIntegrations']
 
 const gqlQuery = graphql`
   query useAllIntegrationsQuery($teamId: ID!, $userId: ID) {
     viewer {
       teamMember(userId: $userId, teamId: $teamId) {
-        allAvailableIntegrations {
-          ... on SuggestedIntegrationJira {
+        allAvailableRepoIntegrations {
+          ... on JiraRemoteProject {
             id
             __typename
-            remoteProject {
-              name
-            }
-            projectKey
+            name
+            key
             cloudId
             ...TaskFooterIntegrateMenuListItem @relay(mask: false)
           }
-          ... on SuggestedIntegrationGitHub {
+          ... on _xGitHubRepository {
             __typename
             id
             nameWithOwner
@@ -39,9 +37,9 @@ const gqlQuery = graphql`
 `
 
 const getValue = (item: FetchedItems[0]) => {
-  if (item.__typename == 'SuggestedIntegrationJira') {
-    return item.projectKey.toLowerCase()
-  } else if (item.__typename === 'SuggestedIntegrationGitHub') {
+  if (item.__typename == 'JiraRemoteProject') {
+    return item.key.toLowerCase()
+  } else if (item.__typename === '_xGitHubRepository') {
     return item.nameWithOwner.toLowerCase()
   }
   return ''
@@ -74,9 +72,9 @@ const useAllIntegrations = (
         return
       }
       const {teamMember} = res.viewer
-      const {allAvailableIntegrations} = teamMember
+      const {allAvailableRepoIntegrations} = teamMember
       if (isMountedRef.current) {
-        setFetchedItems(allAvailableIntegrations)
+        setFetchedItems(allAvailableRepoIntegrations)
         setStatus('loaded')
       }
     }

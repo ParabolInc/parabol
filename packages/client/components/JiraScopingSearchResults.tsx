@@ -32,7 +32,7 @@ const JiraScopingSearchResults = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
-  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 

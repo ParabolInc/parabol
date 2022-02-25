@@ -50,14 +50,14 @@ const ScopePhaseAreaAddJira = (props: Props) => {
     meetingRef
   )
   const {teamId} = meeting
-  const importStories = () => {
+  const authJira = () => {
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   return (
     <AddJiraArea>
-      <AddJiraButton onClick={importStories} size={'medium'}>
+      <AddJiraButton onClick={authJira} size={'medium'}>
         <JiraSVG />
-        Import stories from Jira
+        Import issues from Jira
       </AddJiraButton>
       <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
     </AddJiraArea>

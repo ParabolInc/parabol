@@ -1,11 +1,11 @@
 require('./utils/dotenv')
 const path = require('path')
 const webpack = require('webpack')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -20,21 +20,39 @@ module.exports = {
       config: [__filename]
     }
   },
+  stats: 'minimal',
   devServer: {
-    index: 'index.html',
-    clientLogLevel: 'silent',
-    contentBase: [
-      path.join(PROJECT_ROOT, 'static'),
-      path.join(PROJECT_ROOT, 'build'),
-      path.join(PROJECT_ROOT, 'dev'),
-      path.join(PROJECT_ROOT, 'dev', 'dll'),
-      path.join(PROJECT_ROOT, 'self-hosted')
+    client: {
+      logging: 'warn'
+    },
+    static: [
+      {
+        directory: path.join(PROJECT_ROOT, 'static'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'build'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'dev'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'dev', 'dll'),
+        publicPath: '/static/'
+      },
+      {
+        directory: path.join(PROJECT_ROOT, 'self-hosted'),
+        publicPath: '/self-hosted/'
+      }
     ],
-    contentBasePublicPath: ['/static/', '/static/', '/static/', '/static/', '/self-hosted/'],
-    publicPath: '/',
+    devMiddleware: {
+      publicPath: '/',
+      index: 'index.html'
+    },
     hot: true,
     historyApiFallback: true,
-    stats: 'minimal',
     port: PORT,
     proxy: [
       'sse',
@@ -102,6 +120,9 @@ module.exports = {
       template: path.join(PROJECT_ROOT, 'devTemplate.html'),
       __ACTION__: JSON.stringify({
         atlassian: process.env.ATLASSIAN_CLIENT_ID,
+        datadogClientToken: process.env.DD_CLIENTTOKEN,
+        datadogApplicationId: process.env.DD_APPLICATIONID,
+        datadogService: process.env.DD_SERVICE,
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         logRocket: process.env.LOG_ROCKET,
@@ -109,7 +130,10 @@ module.exports = {
         sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-        prblIn: process.env.INVITATION_SHORTLINK
+        prblIn: process.env.INVITATION_SHORTLINK,
+        AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
+        AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
+        AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
       })
     }),
     new ReactRefreshWebpackPlugin(),
@@ -117,12 +141,11 @@ module.exports = {
       __CLIENT__: true,
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
-      'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
       __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
+      // Environment variables go in the __ACTION__ object above, not here
+      // This build may be deployed to many different environments
     }),
-    new webpack.HotModuleReplacementPlugin()
   ],
   module: {
     rules: [

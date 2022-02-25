@@ -14,8 +14,8 @@ import {
   isObjectType,
   OperationDefinitionNode
 } from 'graphql'
-import {Path} from 'graphql/jsutils/Path'
 import {CompiledQuery, compileQuery, CompilerOptions, isCompiledQuery} from 'graphql-jit'
+import {Path} from 'graphql/jsutils/Path'
 
 interface ExecutionArgs {
   rootValue?: any
@@ -99,7 +99,7 @@ function wrapCompiledQuery(
   const wrappedQuery = async (
     root: any,
     context: PatchedContext,
-    variables: {[key: string]: any} | null
+    variables: {[key: string]: any} | null | undefined
   ): Promise<ExecutionResult> => {
     return tracer.trace(
       'graphql',
@@ -170,7 +170,7 @@ function wrapSchema(tracer: Tracer, config: Config, schema: PatchedGraphQLSchema
     // ignore introspection and scalar types
     if (namedType.name.startsWith('__') || !isObjectType(namedType)) return
     const fields = namedType.getFields()
-    Object.values(fields).forEach((field) => {
+    Object.values(fields).forEach((field: any) => {
       if (field.resolve) {
         field.resolve = wrappedResolve(tracer, config, field.resolve)
       }
@@ -227,6 +227,7 @@ function wrappedResolve(
       return result
     } catch (error) {
       field.error = field.error || error
+      throw field.error
     } finally {
       field.finishTime = (field.span as any)._getTime?.() ?? 0
     }

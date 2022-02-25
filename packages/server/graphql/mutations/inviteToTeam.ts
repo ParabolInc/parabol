@@ -1,17 +1,19 @@
 import crypto from 'crypto'
-import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import util from 'util'
 import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
+import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import getMailManager from '../../email/getMailManager'
 import teamInviteEmailCreator from '../../email/teamInviteEmailCreator'
+import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -19,10 +21,8 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
-import appOrigin from '../../appOrigin'
-import {getUsersByEmails} from '../../postgres/queries/getUsersByEmails'
 
-const randomBytes = promisify(crypto.randomBytes, crypto)
+const randomBytes = util.promisify(crypto.randomBytes)
 
 export default {
   type: new GraphQLNonNull(InviteToTeamPayload),
@@ -69,6 +69,9 @@ export default {
       if (!inviter) {
         return standardError(new Error('User not found'), {userId: viewerId})
       }
+      if (!team) {
+        return standardError(new Error('Team not found'), {userId: viewerId})
+      }
       const {name: teamName, isOnboardTeam, orgId} = team
       const organization = await dataLoader.get('organizations').load(orgId)
       const {tier, name: orgName} = organization
@@ -78,8 +81,9 @@ export default {
         const user = users.find((user) => user.email === email)
         return !(user && user.tms && user.tms.includes(teamId))
       })
-      const bufferTokens = await Promise.all<Buffer>(newInvitees.map(() => randomBytes(48)))
-      const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
+      const tokens = await Promise.all(
+        newInvitees.map(async () => (await randomBytes(48)).toString('hex'))
+      )
       const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
       // insert invitation records
       const teamInvitationsToInsert = newInvitees.map((email, idx) => {
@@ -89,7 +93,7 @@ export default {
           invitedBy: viewerId,
           meetingId: meetingId ?? undefined,
           teamId,
-          token: tokens[idx]
+          token: tokens[idx]!
         })
       })
       await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()

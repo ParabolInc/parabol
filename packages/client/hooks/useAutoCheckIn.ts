@@ -7,13 +7,13 @@ import MeetingSubscription from '../subscriptions/MeetingSubscription'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
-const useAutoCheckIn = (meetingRef: any) => {
+const useAutoCheckIn = (meetingRef: useAutoCheckIn_meeting$key) => {
   const atmosphere = useAtmosphere()
   const {history, location} = useRouter()
   const router = {history, location}
   const queryKey = 'useAutoCheckIn'
   useEffect(() => {
-    const meeting = readInlineData<useAutoCheckIn_meeting$key>(
+    const meeting = readInlineData(
       graphql`
         fragment useAutoCheckIn_meeting on NewMeeting @inline {
           id
@@ -37,7 +37,7 @@ const useAutoCheckIn = (meetingRef: any) => {
       JoinMeetingMutation(
         atmosphere,
         {meetingId},
-        {onCompleted: subscribeToMeeting, onError: () => { }}
+        {onCompleted: subscribeToMeeting, onError: () => undefined}
       )
     }
     return () => {

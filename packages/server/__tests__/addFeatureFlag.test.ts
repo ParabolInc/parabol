@@ -12,7 +12,7 @@ const ADD_FEATURE_FLAG = `
       users {
         id
         featureFlags {
-          poker
+          standups
         }
       }
     }
@@ -27,7 +27,7 @@ test('Add feature flag by email', async () => {
     query: ADD_FEATURE_FLAG,
     variables: {
       emails: [email],
-      flag: 'poker'
+      flag: 'standups'
     },
     authToken
   })
@@ -40,7 +40,7 @@ test('Add feature flag by email', async () => {
           {
             id: userId,
             featureFlags: {
-              poker: true
+              standups: true
             }
           }
         ]

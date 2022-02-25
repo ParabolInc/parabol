@@ -46,8 +46,8 @@ const extractStyle = (
     const es = extractedStyles.length === 0 ? getNextState() : editorState
     const contentState = es.getCurrentContent()
     const selectionState = es.getSelection()
-    const beforePhrase = result[0]
-    const afterPhrase = result[matchIdx]
+    const beforePhrase = result[0]!
+    const afterPhrase = result[matchIdx] ?? ''
     const selectionToReplace = selectionState.merge({
       anchorKey: blockKey,
       focusKey: blockKey,
@@ -207,7 +207,7 @@ const useMarkdown = (
     const triggerPhrase = matchedBlockQuote[1]
     const selectionToRemove = selectionState.merge({
       anchorOffset: 0,
-      focusOffset: triggerPhrase.length
+      focusOffset: triggerPhrase?.length
     }) as SelectionState
     const contentWithoutTrigger = Modifier.removeRange(contentState, selectionToRemove, 'forward')
     const fullBlockSelection = selectionToRemove.merge({
@@ -234,10 +234,10 @@ const useMarkdown = (
     const matchedLink = linkRegex.exec(textToLeft)
     if (!matchedLink) return undefined
     // now that we're doing something, let's spend the cycles and manually exec the command
+    const [phrase, text, link] = matchedLink as string[] as [string, string, string]
     const addWhiteSpace = command === 'split-block' ? splitBlock : addSpace
     const preSplitES = addWhiteSpace(editorState)
     const contentState = preSplitES.getCurrentContent()
-    const [phrase, text, link] = matchedLink
     const selectionToRemove = selectionState.merge({
       anchorOffset: matchedLink.index,
       focusOffset: matchedLink.index + phrase.length

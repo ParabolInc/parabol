@@ -1,14 +1,16 @@
 import {TaskStatus, TaskStatusLabel} from '../types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
 
-export const taskStatusLabels: Record<string, string> = {
+export const taskStatusLabels: Record<TaskStatus, TaskStatusLabel> = {
   [TaskStatus.DONE]: TaskStatusLabel.DONE,
   [TaskStatus.ACTIVE]: TaskStatusLabel.ACTIVE,
   [TaskStatus.STUCK]: TaskStatusLabel.STUCK,
-  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE
+  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE,
+  [TaskStatus.ARCHIVED]: TaskStatusLabel.ARCHIVED,
+  [TaskStatus.PRIVATE]: TaskStatusLabel.PRIVATE
 } as const
 
-export const taskStatusColors: Record<string, string> = {
+export const taskStatusColors: Record<TaskStatus, PALETTE> = {
   [TaskStatus.DONE]: PALETTE.GRAPE_600,
   [TaskStatus.ACTIVE]: PALETTE.JADE_400,
   [TaskStatus.STUCK]: PALETTE.TOMATO_500,

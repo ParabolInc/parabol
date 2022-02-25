@@ -47,7 +47,10 @@ const enableSAMLForDomain = {
       description: 'A big chunk of XML data containing the redirect URL and X.509 certificate'
     }
   },
-  async resolve(_source: unknown, {name, domains, metadata}) {
+  async resolve(
+    _source: unknown,
+    {name, domains, metadata}: {name: string; domains: string[]; metadata: string}
+  ) {
     const r = await getRethink()
     const normalizedDomains = domains.map((domain) => domain.toLowerCase())
     const normalizedName = name.trim().toLowerCase()

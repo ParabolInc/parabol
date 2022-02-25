@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLList} from 'graphql'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import connectionDefinitions from '../connectionDefinitions'
@@ -64,12 +64,25 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       description: 'The project fetched from jira',
       resolve: async ({issueKey, teamId, userId, cloudId}, _args: unknown, {dataLoader}) => {
         const projectKey = JiraProjectKeyId.join(issueKey)
-        return dataLoader.get('jiraRemoteProject').load({cloudId, projectKey, teamId, userId})
+        const jiraRemoteProjectRes = await dataLoader
+          .get('jiraRemoteProject')
+          .load({cloudId, projectKey, teamId, userId})
+        return {
+          ...jiraRemoteProjectRes,
+          cloudId,
+          userId,
+          teamId
+        }
       }
     },
     summary: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The plaintext summary of the jira issue'
+    },
+    possibleEstimationFieldNames: {
+      // The field is computed in the atlassian data loader
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
+      description: 'Field names that exists on the issue and can be used as estimation fields'
     },
     description: {
       type: new GraphQLNonNull(GraphQLString),

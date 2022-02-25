@@ -107,6 +107,7 @@ const subscription = graphql`
         user {
           id
           featureFlags {
+            gitlab
             spotlight
           }
         }
@@ -116,7 +117,8 @@ const subscription = graphql`
       ... on AddNewFeaturePayload {
         newFeature {
           id
-          copy
+          actionButtonCopy
+          snackbarMessage
           url
         }
       }

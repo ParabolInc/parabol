@@ -3,11 +3,13 @@ import TeamMemberIntegrationsId from '../../../client/shared/gqlIds/TeamMemberIn
 import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
+import JiraServerIntegration from './JiraServerIntegration'
 import GitHubIntegration from './GitHubIntegration'
+import GitLabIntegration from './GitLabIntegration'
 import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
 
-const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
+const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'TeamMemberIntegrations',
   description: 'All the available integrations available for this team member',
   fields: () => ({
@@ -18,11 +20,16 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     },
     atlassian: {
       type: AtlassianIntegration,
-      description: 'All things associated with an atlassian integration for a team member',
+      description: 'All things associated with an Atlassian integration for a team member',
       resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       }
+    },
+    jiraServer: {
+      type: JiraServerIntegration,
+      description: 'All things associated with a Jira Server integration for a team member',
+      resolve: (source) => source
     },
     github: {
       type: GitHubIntegration,
@@ -32,13 +39,15 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('githubAuth').load({teamId, userId})
       }
     },
+    gitlab: {
+      type: new GraphQLNonNull(GitLabIntegration),
+      description: 'All things associated with a GitLab integration for a team member',
+      resolve: (source) => source
+    },
     mattermost: {
-      type: MattermostIntegration,
+      type: new GraphQLNonNull(MattermostIntegration),
       description: 'All things associated with a Mattermost integration for a team member',
-      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        return dataLoader.get('mattermostAuthByUserIdTeamId').load({userId, teamId})
-      }
+      resolve: (source) => source
     },
     slack: {
       type: SlackIntegration,

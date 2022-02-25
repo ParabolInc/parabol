@@ -5,6 +5,123 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.47.1 2022-Feb-22
+
+### Fixed
+
+- Fix unresponsive GitHub poker meeting (#6042)
+
+### Added
+
+- DoD docs for Ironbank (#6013)
+- Sprint Poker Scoping Jira Integration: Support for comma separated issue keys (#6040)
+- Upgrade to Node 16.14.0 (#6083)
+
+## 6.47.0 2022-Feb-16
+
+### Fixed
+
+- GitLab is null fatal error on meeting join (#6038)
+- Security: Bump follow-redirects (#6044)
+- Security: Bup vm2 (#6057)
+- ID users with datadog (#5990)
+- Log when reflections is null (#6010)
+- Send CC errors to client (#5906)
+- Promote to team lead works for users who just joined the team (#6078)
+
+### Added
+
+- Cached Jira Project Avatars (#5884)
+- Track fatals per 1000 (#5996)
+- generic createTaskMutation (#5938)
+- Env-based signup/login options (#5877)
+
+### Changed
+
+- Added table of contents to root readme (#6011)
+
+## 6.46.0 2022-Feb-09
+
+### Added
+
+- Implement Datadog RUM for front-end session data (#5574)
+- add strict eq eslint rule (#5848)
+- Add JiraServer integration provider fields (#5874)
+- New retro templates (#5920)
+- Add string filtering to team / team member filter dropdowns (#5945)
+- Add JiraServerOAuth1Manager and mutation to perform first OAuth1 step (#5881)
+- GitLab Oauth2 Poker Integration (#5973)
+- Add GraphQL server tests to circle ci (#5481)
+
+### Changed
+
+- Upgrade nest-graphql-endpoint to 0.3.2
+- chore: improve GH issue templates (#5962)
+- better impersonation (#5924)
+- Bump packages to secure version (#5899)
+- Ironbank 6.25.0 security fixes
+- Bump samlify, remove unused server deps, remove gql2ts (20%) (#5974)
+
+### Fixed
+
+- Fix missing jira field dialog on mini card click (#5878)
+- Adding Jira tasks in fast succession In Sprint Poker Scope stage is unreliable (#5554)
+- ensure window.opener is same-origin (#5907)
+- Check-in meeting navigation can't rejoin or click left nav item sometimes (#5400)
+- fix old migrations, pg:build
+- fix gql executor with bad queries in dev
+
+## 6.45.0 2022-Jan-27
+
+### Added
+
+- Implement choosing random person as facilitator (#5857)
+- Add primary and foreign key loaders (#5847)
+
+### Changed
+
+- Show only available jira fields in story points dropdown (#5825)
+- 6.44.0 ironbank fixes (#5946)
+- Add comments on putting env vars in `__ACTION__` (#5967)
+
+### Fixed
+
+- Make sure newFaciliatorId always defined (#5909)
+- Make dependency from DasboardAvatar to AcceptTeamInvitation explicit (#5882)
+- `romoteToTeamLead` filters on isNotRemoved (#5922)
+- monkeypatch uWS res.cork (#5815)
+
+## 6.44.0 2022-Jan-19
+
+### Added
+
+- Add GitLab (#5829)
+- Customise release snackbar #5743
+- Add migration to fill missing plaintextContent for tasks #5869
+- add undefined to wrappedQuery vars #5898
+
+### Changed
+
+- enforce server side lock (#5840)
+- SECURITY: bump react-refresh-webpack-plugin #5896
+- Security/bump graphql jit #5897
+-
+
+### Fixed
+
+- Fix Original Estimate field can not be updated in Sprint Poker (#5865)
+- Fix isSpectating toggle & Reveal Votes count #5782
+- No implicit any fixes #5830
+- Fix alignment of Add task button in discussions #5876
+- Fix all noUncheckedIndexedAccess for parabol-client #5837
+
+## 6.43.0 2022-Jan-12
+
+### Fixed
+
+- Fix demo retrospective task integration menu (#5827)
+- Fix undefined in team invitation emails (@5853)
+
 ## 6.42.0 2022-Jan-06
 
 ### Changed

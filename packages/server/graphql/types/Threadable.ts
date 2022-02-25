@@ -66,7 +66,7 @@ export const threadableFields = () => ({
   }
 })
 
-const Threadable = new GraphQLInterfaceType({
+const Threadable: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'Threadable',
   description: 'An item that can be put in a thread',
   fields: threadableFields,

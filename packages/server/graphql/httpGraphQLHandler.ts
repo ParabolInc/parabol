@@ -22,7 +22,7 @@ const httpGraphQLBodyHandler = async (
   connectionId: string | undefined | null,
   ip: string
 ) => {
-  const connectionContext = connectionId
+  const connectionContext: any = connectionId
     ? sseClients.get(connectionId)
     : new StatelessContext(ip, authToken)
   if (!connectionContext) {
@@ -34,7 +34,7 @@ const httpGraphQLBodyHandler = async (
     res.end('SSE Response not found')
     return
   }
-  if (connectionId && connectionContext.authToken.sub !== (authToken as AuthToken).sub) {
+  if (connectionId && connectionContext.authToken?.sub !== (authToken as AuthToken).sub) {
     const viewerId = getUserId(authToken)
     sendToSentry(new Error('Security: Spoofed SSE connectionId'), {userId: viewerId})
     // quietly fail for cheaters

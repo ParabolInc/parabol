@@ -3,55 +3,23 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useFilteredItems from '../hooks/useFilteredItems'
-import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
 import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
-import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
-import MenuSearch from './MenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18
-})
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {SearchMenuItem} from './SearchMenuItem'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 
 const StyledMenu = styled(Menu)({
   width: 250
-})
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
-
-const SearchItem = styled(MenuItemLabel)({
-  margin: '0 8px 8px',
-  overflow: 'visible',
-  padding: 0,
-  position: 'relative'
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  margin: 0,
-  pointerEvents: 'none',
-  top: 4
 })
 
 const ProjectAvatar = styled('img')({
@@ -87,7 +55,7 @@ type JiraSearchQuery = NonNullable<
   NonNullable<JiraScopingSearchFilterMenu_viewer['meeting']>['jiraSearchQuery']
 >
 
-const getValue = (item: {name: string}) => item.name.toLowerCase()
+const getValue = (item: {name: string}) => item.name
 
 const MAX_PROJECTS = 10
 
@@ -100,16 +68,14 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const jiraSearchQuery = meeting?.jiraSearchQuery ?? null
   const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
   const isJQL = jiraSearchQuery?.isJQL ?? false
-  const {fields, onChange} = useForm({
-    search: {
-      getDefault: () => ''
-    }
-  })
-  const {search} = fields
-  const {value} = search
-  const query = value.toLowerCase()
+
+  const {
+    query,
+    filteredItems: queryFilteredProjects,
+    onQueryChange
+  } = useSearchFilter(projects, getValue)
+
   const showSearch = projects.length > MAX_PROJECTS
-  const queryFilteredProjects = useFilteredItems(query, projects, getValue)
   const selectedAndFilteredProjects = useMemo(() => {
     const selectedProjects = projects.filter((project) => projectKeyFilters.includes(project.id))
     const adjustedMax =
@@ -154,15 +120,12 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && (
-        <SearchItem key='search'>
-          <StyledMenuItemIcon>
-            <SearchIcon>search</SearchIcon>
-          </StyledMenuItemIcon>
-          <MenuSearch placeholder={'Search Jira'} value={value} onChange={onChange} />
-        </SearchItem>
+        <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
       {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
-        <NoResults key='no-results'>No Jira Projects found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No Jira Projects found!
+        </EmptyDropdownMenuItemLabel>
       )) ||
         null}
       {selectedAndFilteredProjects.map((project) => {

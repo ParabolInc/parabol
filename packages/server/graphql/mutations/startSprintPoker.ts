@@ -4,6 +4,7 @@ import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
 import getPg from '../../postgres/getPg'
@@ -15,13 +16,13 @@ import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
+import isValid from '../isValid'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import isValid from '../isValid'
-import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -86,6 +87,8 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
+    const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+    if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
     const meetingType: MeetingTypeEnum = 'poker'
 

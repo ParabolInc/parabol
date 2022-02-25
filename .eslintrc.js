@@ -7,7 +7,8 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    '@typescript-eslint/ban-ts-ignore': 'off',
+    eqeqeq: 'error',
+    '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',

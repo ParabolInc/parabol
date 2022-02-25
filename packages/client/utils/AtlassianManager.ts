@@ -195,6 +195,9 @@ interface JiraAddCommentResponse {
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 interface JiraGQLFields {
+  project?: {
+    simplified: boolean
+  }
   cloudId: string
   description: any
   descriptionHTML: string
@@ -379,7 +382,7 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if (res.status == 204) return null
+    if (res.status === 204) return null
     const error = (await res.json()) as AtlassianError | JiraError
     if ('message' in error) {
       return new Error(error.message)
@@ -404,7 +407,7 @@ export default abstract class AtlassianManager {
       return res
     }
 
-    if (res.status == 204) return null
+    if (res.status === 204) return null
     const error = (await res.json()) as AtlassianError | JiraError
     if ('message' in error) {
       return new Error(error.message)
@@ -468,20 +471,10 @@ export default abstract class AtlassianManager {
 
     if (!imageRes || imageRes instanceof Error) return null
     const arrayBuffer = await imageRes.arrayBuffer()
-    return Buffer.from(arrayBuffer)
-  }
-
-  async getProjectAvatar(avatarUrl: string) {
-    // use fetchWithTimeout because we want a buffer
-    const imageRes = await this.fetchWithTimeout(avatarUrl, {
-      headers: {Authorization: this.headers.Authorization}
-    })
-
-    if (!imageRes || imageRes instanceof Error) return ''
-    const arrayBuffer = await imageRes.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer).toString('base64')
-    const contentType = imageRes.headers.get('content-type')
-    return `data:${contentType};base64,${buffer}`
+    return {
+      imageBuffer: Buffer.from(arrayBuffer),
+      contentType: imageRes.headers.get('content-type')
+    }
   }
 
   async getAllProjects(cloudIds: string[]) {
@@ -571,11 +564,18 @@ export default abstract class AtlassianManager {
     return cloudNameLookup
   }
 
-  async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
-    const baseFields = ['summary', 'description']
-    const reqFields = [...baseFields, ...extraFieldIds].join(',')
+  async getIssue(
+    cloudId: string,
+    issueKey: string,
+    extraFieldIds: string[] = [],
+    extraExpand: string[] = []
+  ) {
+    const reqFields = extraFieldIds.includes('*all')
+      ? '*all'
+      : ['summary', 'description', ...extraFieldIds].join(',')
+    const expand = ['renderedFields', ...extraExpand].join(',')
     const issueRes = await this.get<JiraIssueRaw>(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=renderedFields`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
     if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
     return {
@@ -588,6 +588,49 @@ export default abstract class AtlassianManager {
         id: JiraIssueId.join(cloudId, issueKey)
       }
     }
+  }
+
+  private readonly buildIssueKeyJQL = (
+    queryString: string | null,
+    filteredProjectKeys: string[]
+  ) => {
+    if (!queryString) return ''
+    const maybeIssueKeys = queryString.split(/[\s,]+/)
+    if (maybeIssueKeys.length === 0) return ''
+
+    const validIssueKeys = maybeIssueKeys
+      .map((rawIssueKey) => {
+        const maybeIssueKey = rawIssueKey.toUpperCase()
+        const match = maybeIssueKey.match(
+          /(?<projectKey>[A-Za-z][A-Za-z_0-9]+)*-*(?<issueNumber>\d+)/
+        )
+        if (!match || !match.groups) return ''
+
+        const {projectKey: maybeProjectKey, issueNumber: maybeIssueNumber} = match.groups
+        if (maybeProjectKey && !maybeIssueNumber) return ''
+        else if (maybeProjectKey && maybeIssueNumber) {
+          if (
+            filteredProjectKeys.length === 0 ||
+            (filteredProjectKeys.length !== 0 && filteredProjectKeys.includes(maybeProjectKey))
+          ) {
+            return `${maybeProjectKey}-${maybeIssueNumber}`
+          } else {
+            return ''
+          }
+        } else if (!maybeProjectKey && maybeIssueNumber) {
+          if (filteredProjectKeys.length === 0) {
+            return ''
+          } else {
+            return filteredProjectKeys.map((projectKey) => `${projectKey}-${maybeIssueNumber}`)
+          }
+        } else {
+          return ''
+        }
+      })
+      .flat()
+      .filter(String)
+      .map((issueKey) => `\"${issueKey}\"`)
+    return validIssueKeys.length > 0 ? ` OR issueKey in (${validIssueKeys.join(', ')})` : ''
   }
 
   async getIssues(
@@ -603,7 +646,9 @@ export default abstract class AtlassianManager {
       const projectFilter = projectKeys.length
         ? `project in (${projectKeys.map((val) => `\"${val}\"`).join(', ')})`
         : ''
-      const textFilter = queryString ? `text ~ \"${queryString}\"` : ''
+
+      const issueKeyJQL = this.buildIssueKeyJQL(queryString, projectKeys)
+      const textFilter = queryString ? `text ~ \"${queryString}\"${issueKeyJQL}` : ''
       const and = projectFilter && textFilter ? ' AND ' : ''
       return `${projectFilter}${and}${textFilter} ${orderBy}`
     }
@@ -700,15 +745,41 @@ export default abstract class AtlassianManager {
     if (firstValidUpdateIdx === -1) return null
     return possibleFields[firstValidUpdateIdx]
   }
+
   async updateStoryPoints(
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
     fieldId: string
   ) {
-    const payload = {
-      fields: {
-        [fieldId]: storyPoints
+    // according to Jira docs fields related to the time tracking have to be set in a different way than other fields
+    // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
+    // more context: https://github.com/ParabolInc/parabol/issues/5705#issuecomment-1007501068
+    let payload: Record<string, any>
+    const timeTrackingFieldId = 'timetracking'
+    const timeTrackingFieldLookup = {
+      timeoriginalestimate: 'originalEstimate',
+      timeestimate: 'remainingEstimate'
+    }
+    const timeTrackingFieldName = timeTrackingFieldLookup[fieldId]
+    if (timeTrackingFieldName) {
+      payload = {
+        update: {
+          [timeTrackingFieldId]: [
+            {
+              set: {
+                // time tracking fields have to be set in time format, we're setting them in (h)ours
+                [timeTrackingFieldName]: `${storyPoints}h`
+              }
+            }
+          ]
+        }
+      }
+    } else {
+      payload = {
+        fields: {
+          [fieldId]: storyPoints
+        }
       }
     }
     const res = await this.put(
@@ -721,10 +792,11 @@ export default abstract class AtlassianManager {
         'The user who added this issue was removed from Jira. Please remove & re-add the issue'
       )
     }
-    if (res.message.startsWith(fieldId)) {
-      if (res.message.includes('is not on the appropriate screen')) {
-        throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
-      }
+    if (
+      res.message.startsWith(timeTrackingFieldName ? timeTrackingFieldId : fieldId) &&
+      res.message.includes('is not on the appropriate screen')
+    ) {
+      throw new Error(SprintPokerDefaults.JIRA_FIELD_UPDATE_ERROR)
     }
     throw res
   }

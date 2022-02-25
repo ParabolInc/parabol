@@ -119,9 +119,9 @@ module.exports = ({isDeploy, isStats}) => ({
       __CLIENT__: true,
       __PRODUCTION__: true,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.DEBUG': false,
-      'process.env.NODE_ENV': JSON.stringify('production'),
-      'process.env.PROTOO_LISTEN_PORT': JSON.stringify((process.env.PROTOO_LISTEN_PORT || 4444) - 1)
+      'process.env.DEBUG': false
+      // Environment variables go in createSSR.ts, not here
+      // This build may be deployed to many different environments
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[contenthash].js.map',

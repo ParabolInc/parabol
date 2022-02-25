@@ -5,11 +5,6 @@ import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
-import getPg from '../postgres/getPg'
-import {
-  getDiscussionsByIdQuery,
-  IGetDiscussionsByIdQueryResult
-} from '../postgres/queries/generated/getDiscussionsByIdQuery'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -18,25 +13,26 @@ import getGitHubDimensionFieldMaps, {
   GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
-import getMattermostAuthByUserIdTeamId, {
-  GetMattermostAuthByUserIdTeamIdResult
-} from '../postgres/queries/getMattermostAuthByUserIdTeamId'
-import getMattermostBestAuthByUserIdTeamId, {
-  GetMattermostBestAuthByUserIdTeamIdResult
-} from '../postgres/queries/getMattermostBestAuthByUserIdTeamId'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import getTeamsByIds, {Team} from '../postgres/queries/getTeamsByIds'
-import getTeamsByOrgIds from '../postgres/queries/getTeamsByOrgIds'
-import getTemplateRefsById, {TemplateRef} from '../postgres/queries/getTemplateRefsById'
-import getTemplateScaleRefsByIds, {
-  TemplateScaleRef
-} from '../postgres/queries/getTemplateScaleRefsByIds'
-import {getUsersByIds} from '../postgres/queries/getUsersByIds'
-import IUser from '../postgres/types/IUser'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RootDataLoader from './RootDataLoader'
+
+export interface MeetingSettingsKey {
+  teamId: string
+  meetingType: MeetingTypeEnum
+}
+
+export interface MeetingTemplateKey {
+  teamId: string
+  meetingType: MeetingTypeEnum
+}
+
+export interface ReactablesKey {
+  id: string
+  type: ReactableEnum
+}
 
 export interface UserTasksKey {
   first: number
@@ -49,74 +45,10 @@ export interface UserTasksKey {
   includeUnassigned?: boolean
 }
 
-export interface ReactablesKey {
-  id: string
-  type: ReactableEnum
-}
-
-export interface MeetingSettingsKey {
-  teamId: string
-  meetingType: MeetingTypeEnum
-}
-
-export interface MeetingTemplateKey {
-  teamId: string
-  meetingType: MeetingTypeEnum
-}
-
 const reactableLoaders = [
   {type: 'COMMENT', loader: 'comments'},
   {type: 'REFLECTION', loader: 'retroReflections'}
 ] as const
-
-// export type LoaderMakerCustom<K, V, C = K> = (parent: RootDataLoader) => DataLoader<K, V, C>
-
-// TODO: refactor if the interface pattern is used a total of 3 times
-
-export const users = (parent: RootDataLoader) => {
-  return new DataLoader<string, IUser | undefined, string>(
-    async (userIds) => {
-      const users = await getUsersByIds(userIds)
-      return normalizeRethinkDbResults(userIds, users)
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const teams = (parent: RootDataLoader) =>
-  new DataLoader<string, Team, string>(
-    async (teamIds) => {
-      const teams = await getTeamsByIds(teamIds)
-      return normalizeRethinkDbResults(teamIds, teams)
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-
-export const teamsByOrgIds = (parent: RootDataLoader) =>
-  new DataLoader<string, Team[], string>(
-    async (orgIds) => {
-      const teamLoader = parent.get('teams')
-      const teams = await getTeamsByOrgIds(orgIds, {isArchived: false})
-      teams.forEach((team) => {
-        teamLoader.clear(team.id).prime(team.id, team)
-      })
-
-      const teamsByOrgIds = teams.reduce((map, team) => {
-        const teamsByOrgId = map[team.orgId] ?? []
-        teamsByOrgId.push(team)
-        map[team.orgId] = teamsByOrgId
-        return map
-      }, {} as {[key: string]: Team[]})
-      return orgIds.map((orgId) => teamsByOrgIds[orgId] ?? [])
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
@@ -290,19 +222,6 @@ export const userTasks = (parent: RootDataLoader) => {
   )
 }
 
-// TODO abstract this out so we can use this easier with PG
-export const discussions = (parent: RootDataLoader) => {
-  return new DataLoader<string, IGetDiscussionsByIdQueryResult | null, string>(
-    async (keys) => {
-      const rows = await getDiscussionsByIdQuery.run({ids: keys as string[]}, getPg())
-      return keys.map((key) => rows.find((row) => row.id === key) || null)
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
 export const githubAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
     async (keys) => {
@@ -338,46 +257,6 @@ export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
         `${teamId}:${dimensionName}:${nameWithOwner}`
-    }
-  )
-}
-
-export const mattermostAuthByUserIdTeamId = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {userId: string; teamId: string},
-    GetMattermostAuthByUserIdTeamIdResult | null | undefined,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => getMattermostAuthByUserIdTeamId(userId, teamId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
-    }
-  )
-}
-
-export const mattermostBestAuthByUserIdTeamId = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {userId: string; teamId: string},
-    GetMattermostBestAuthByUserIdTeamIdResult | null | undefined,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId}) => getMattermostBestAuthByUserIdTeamId(userId, teamId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({userId, teamId}) => `${userId}:${teamId}`
     }
   )
 }
@@ -450,26 +329,26 @@ export const meetingTemplatesByType = (parent: RootDataLoader) => {
   )
 }
 
-export const templateRefs = (parent: RootDataLoader) => {
-  return new DataLoader<string, TemplateRef, string>(
-    async (refIds) => {
-      const templateRefs = await getTemplateRefsById(refIds)
-      return refIds.map((refId) => templateRefs.find((ref) => ref.id === refId)!)
+export const taskIdsByTeamAndGitHubRepo = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
+    async (keys) => {
+      const r = await getRethink()
+      const res = await Promise.all(
+        keys.map((key) => {
+          const {teamId, nameWithOwner} = key
+          // This is very expensive! We should move tasks to PG ASAP
+          return r
+            .table('Task')
+            .getAll(teamId, {index: 'teamId'})
+            .filter((row) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
+            .run()
+        })
+      )
+      return res
     },
     {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const templateScaleRefs = (parent: RootDataLoader) => {
-  return new DataLoader<string, TemplateScaleRef, string>(
-    async (refIds) => {
-      const templateScaleRefs = await getTemplateScaleRefsByIds(refIds)
-      return refIds.map((refId) => templateScaleRefs.find((ref) => ref.id === refId)!)
-    },
-    {
-      ...parent.dataLoaderOptions
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.nameWithOwner}`
     }
   )
 }

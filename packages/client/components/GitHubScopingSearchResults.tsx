@@ -47,9 +47,9 @@ const GitHubScopingSearchResults = (props: Props) => {
         viewer {
           ...NewGitHubIssueInput_viewer
           teamMember(teamId: $teamId) {
-            suggestedIntegrations {
+            repoIntegrations {
               items {
-                ... on SuggestedIntegrationGitHub {
+                ... on _xGitHubRepository {
                   id
                   nameWithOwner
                 }
@@ -148,11 +148,9 @@ const GitHubScopingSearchResults = (props: Props) => {
         .filter((edge) => edge.node.__typename === '_xGitHubIssue')
         .map(({node}) => node as GQLType<typeof node, '_xGitHubIssue'>)
     : null
-  // const issueEdges = edges!.filter((edge) => edge.node.__typename === '_xGitHubIssue') as GQLType<typeof edges[0]['node']
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
-  // const {id: meetingId, teamId, phases, githubSearchQuery} = meeting
-  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 

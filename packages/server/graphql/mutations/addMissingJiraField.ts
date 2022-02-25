@@ -6,7 +6,7 @@ import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import {isNotNull} from '../../utils/predicates'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -63,7 +63,7 @@ const addMissingJiraField = {
 
     // RESOLUTION
     const {dimensionRefIdx, serviceTaskId} = stage
-    const templateRef = await dataLoader.get('templateRefs').load(templateRefId)
+    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
@@ -75,7 +75,7 @@ const addMissingJiraField = {
     const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
     const manager = new AtlassianServerManager(accessToken)
     const team = await dataLoader.get('teams').load(teamId)
-    const jiraDimensionFields = team.jiraDimensionFields || []
+    const jiraDimensionFields = team?.jiraDimensionFields || []
     const dimensionField = jiraDimensionFields.find(
       (dimensionField: {dimensionName: string; cloudId: string; projectKey: string}) =>
         dimensionField.dimensionName === dimensionName &&
@@ -109,7 +109,7 @@ const addMissingJiraField = {
             return null
           }
 
-          const [{id: tabId}] = screenTabsResponse
+          const tabId = screenTabsResponse[0]?.id
           return {screenId: screen.id, tabId, probability: evaluateProbability(screen)}
         })
       )

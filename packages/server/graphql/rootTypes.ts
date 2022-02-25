@@ -9,6 +9,9 @@ import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
 import EstimatePhase from './types/EstimatePhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
+import IntegrationProviderOAuth1 from './types/IntegrationProviderOAuth1'
+import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
+import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
@@ -23,8 +26,6 @@ import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
 import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
-import SuggestedIntegrationGitHub from './types/SuggestedIntegrationGitHub'
-import SuggestedIntegrationJira from './types/SuggestedIntegrationJira'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
@@ -33,6 +34,9 @@ import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
 const rootTypes = [
+  IntegrationProviderOAuth1,
+  IntegrationProviderOAuth2,
+  IntegrationProviderWebhook,
   AuthIdentityGoogle,
   AuthIdentityLocal,
   CheckInPhase,
@@ -64,8 +68,6 @@ const rootTypes = [
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
   ActionMeetingSettings,
-  SuggestedIntegrationGitHub,
-  SuggestedIntegrationJira,
   Comment
 ]
 export default rootTypes

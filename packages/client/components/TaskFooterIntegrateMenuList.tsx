@@ -2,64 +2,31 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useSearchFilter from '~/hooks/useSearchFilter'
 import useAllIntegrations from '../hooks/useAllIntegrations'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useFilteredItems from '../hooks/useFilteredItems'
-import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import CreateGitHubTaskIntegrationMutation from '../mutations/CreateGitHubTaskIntegrationMutation'
-import CreateJiraTaskIntegrationMutation from '../mutations/CreateJiraTaskIntegrationMutation'
+import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
+import {TaskFooterIntegrateMenuList_repoIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_repoIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
-import Icon from './Icon'
+import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemHR from './MenuItemHR'
-import MenuItemLabel from './MenuItemLabel'
-import MenuSearch from './MenuSearch'
-import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
-import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
+import RepoIntegrationGitHubMenuItem from './RepoIntegrationGitHubMenuItem'
+import RepoIntegrationJiraMenuItem from './RepoIntegrationJiraMenuItem'
+import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   placeholder: string
-  suggestedIntegrations: TaskFooterIntegrateMenuList_suggestedIntegrations
+  repoIntegrations: TaskFooterIntegrateMenuList_repoIntegrations
   task: TaskFooterIntegrateMenuList_task
   label?: string
 }
-
-const SearchIcon = styled(Icon)({
-  color: PALETTE.SLATE_600,
-  fontSize: ICON_SIZE.MD18
-})
-
-const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
-  justifyContent: 'center',
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontStyle: 'italic'
-})
-
-const SearchItem = styled(MenuItemLabel)({
-  margin: '0 8px 8px',
-  overflow: 'visible',
-  padding: 0,
-  position: 'relative'
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  margin: 0,
-  pointerEvents: 'none',
-  top: 4
-})
 
 const Label = styled('div')({
   color: PALETTE.SLATE_600,
@@ -67,31 +34,25 @@ const Label = styled('div')({
   padding: '8px 8px 0'
 })
 
-const getValue = (
-  item: NonNullable<TaskFooterIntegrateMenuList_suggestedIntegrations['items']>[0]
-) => {
-  const jiraItemName = item?.projectKey ?? ''
+const getValue = (item: NonNullable<TaskFooterIntegrateMenuList_repoIntegrations['items']>[0]) => {
+  const jiraItemName = item?.name ?? ''
   const githubName = item?.nameWithOwner ?? ''
-  const name = jiraItemName || githubName
-  return name.toLowerCase()
+  return jiraItemName || githubName
 }
 
 const TaskFooterIntegrateMenuList = (props: Props) => {
-  const {mutationProps, menuProps, placeholder, suggestedIntegrations, task, label} = props
-  const {hasMore} = suggestedIntegrations
-  const items = suggestedIntegrations.items || []
+  const {mutationProps, menuProps, placeholder, repoIntegrations, task, label} = props
+  const {hasMore} = repoIntegrations
+  const items = repoIntegrations.items || []
   const {id: taskId, teamId, userId} = task
 
-  const {fields, onChange} = useForm({
-    search: {
-      getDefault: () => ''
-    }
-  })
-  const {search} = fields
-  const {value} = search
-  const query = value.toLowerCase()
+  const {
+    query,
+    filteredItems: filteredIntegrations,
+    onQueryChange
+  } = useSearchFilter(items, getValue)
+
   const atmosphere = useAtmosphere()
-  const filteredIntegrations = useFilteredItems(query, items, getValue)
   const {allItems, status} = useAllIntegrations(
     atmosphere,
     query,
@@ -113,47 +74,51 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           <MenuItemHR />
         </>
       )}
-      <SearchItem key='search'>
-        <StyledMenuItemIcon>
-          <SearchIcon>search</SearchIcon>
-        </StyledMenuItemIcon>
-        <MenuSearch placeholder={placeholder} value={value} onChange={onChange} />
-      </SearchItem>
+      <SearchMenuItem placeholder={placeholder} onChange={onQueryChange} value={query} />
       {(query && allItems.length === 0 && status !== 'loading' && (
-        <NoResults key='no-results'>No integrations found!</NoResults>
+        <EmptyDropdownMenuItemLabel key='no-results'>
+          No integrations found!
+        </EmptyDropdownMenuItemLabel>
       )) ||
         null}
-      {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, service} = suggestedIntegration
+      {allItems.slice(0, 10).map((repoIntegration) => {
+        const {id, __typename} = repoIntegration
         const {submitMutation, onError, onCompleted} = mutationProps
-        if (service === 'jira') {
-          const {cloudId, projectKey} = suggestedIntegration
+        if (__typename === 'JiraRemoteProject') {
           const onClick = () => {
-            const variables = {cloudId, projectKey, taskId}
+            const variables = {
+              integrationRepoId: repoIntegration.id,
+              taskId,
+              integrationProviderService: 'jira' as const
+            }
             submitMutation()
-            CreateJiraTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <SuggestedIntegrationJiraMenuItem
+            <RepoIntegrationJiraMenuItem
               key={id}
               query={query}
-              suggestedIntegration={suggestedIntegration}
+              repoIntegration={repoIntegration}
               onClick={onClick}
             />
           )
         }
-        if (service === 'github') {
+        if (__typename === '_xGitHubRepository') {
           const onClick = () => {
-            const {nameWithOwner} = suggestedIntegration
-            const variables = {nameWithOwner, taskId}
+            const {nameWithOwner} = repoIntegration
+            const variables = {
+              integrationRepoId: nameWithOwner,
+              taskId,
+              integrationProviderService: 'github' as const
+            }
             submitMutation()
-            CreateGitHubTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+            CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
-            <SuggestedIntegrationGitHubMenuItem
+            <RepoIntegrationGitHubMenuItem
               key={id}
               query={query}
-              suggestedIntegration={suggestedIntegration}
+              repoIntegration={repoIntegration}
               onClick={onClick}
             />
           )
@@ -168,27 +133,27 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
 }
 
 graphql`
-  fragment TaskFooterIntegrateMenuListItem on SuggestedIntegration {
+  fragment TaskFooterIntegrateMenuListItem on RepoIntegration {
     id
-    service
-    ... on SuggestedIntegrationJira {
-      remoteProject {
-        name
-      }
-      projectKey
+    ... on JiraRemoteProject {
+      __typename
+      id
       cloudId
+      key
+      name
     }
-    ... on SuggestedIntegrationGitHub {
+    ... on _xGitHubRepository {
+      __typename
       nameWithOwner
     }
-    ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
-    ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
+    ...RepoIntegrationJiraMenuItem_repoIntegration
+    ...RepoIntegrationGitHubMenuItem_repoIntegration
   }
 `
 
 export default createFragmentContainer(TaskFooterIntegrateMenuList, {
-  suggestedIntegrations: graphql`
-    fragment TaskFooterIntegrateMenuList_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+  repoIntegrations: graphql`
+    fragment TaskFooterIntegrateMenuList_repoIntegrations on RepoIntegrationQueryPayload {
       hasMore
       items {
         ...TaskFooterIntegrateMenuListItem @relay(mask: false)

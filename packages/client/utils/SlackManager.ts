@@ -180,7 +180,7 @@ abstract class SlackManager {
         delete this.cache[url]
       }, this.timeout)
     }
-    return this.cache[url].result
+    return this.cache[url]!.result
   }
 
   getConversationInfo(channelId: string) {
