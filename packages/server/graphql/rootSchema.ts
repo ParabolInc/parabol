@@ -1,4 +1,3 @@
-import {_xGitHubRepositoryNode} from './../../client/types/graphql'
 import {mergeSchemas} from '@graphql-tools/merge'
 import {GraphQLResolveInfo, GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
@@ -49,7 +48,7 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
     if (!provider) throw new Error('No GitLab provider found')
     const {serverBaseUrl} = provider as IntegrationProviderGitLabOAuth2
     return {
-      accessToken,
+      accessToken: accessToken!,
       baseUri: serverBaseUrl
     }
   },

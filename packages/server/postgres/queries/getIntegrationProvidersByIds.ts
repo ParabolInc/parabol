@@ -18,6 +18,7 @@ interface IntegrationProviderOAuth1 extends IntegrationProviderActive {
   authStrategy: 'oauth1'
   consumerKey: string
   consumerSecret: string
+  serverBaseUrl: string
 }
 
 interface IntegrationProviderOAuth2 extends IntegrationProviderActive {

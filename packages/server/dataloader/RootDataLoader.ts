@@ -1,18 +1,18 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
-import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
+import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
-import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
-import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
+import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
-import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
-import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
-import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
+import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
+import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
+import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
+import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -59,7 +59,7 @@ type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
 
-type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
+export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
   ? TypeFromCustom<LoaderName>
   : DataLoader<
       string,
