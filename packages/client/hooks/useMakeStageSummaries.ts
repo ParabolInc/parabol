@@ -9,8 +9,6 @@ interface StageSummary {
   isComplete: boolean
   isNavigable: boolean
   isActive: boolean
-  sortOrderFirstDimension: number
-  sortOrderLastDimension: number
   stageIds: [string, ...string[]]
   finalScores: (string | null)[]
   taskId: string
@@ -26,7 +24,6 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
           finalScore
           isComplete
           isNavigable
-          sortOrder
           taskId
           task {
             title
@@ -53,14 +50,11 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
     const summaries = [] as StageSummary[]
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i]!
-      const sortOrderFirstDimension = stage.sortOrder
-      let sortOrderLastDimension = stage.sortOrder
       const {taskId, task} = stage
       const batch = [stage]
       for (let j = i + 1; j < stages.length; j++) {
         const nextStage = stages[j]
         if (nextStage?.taskId !== taskId) break
-        sortOrderLastDimension = nextStage.sortOrder
         batch.push(nextStage)
       }
       const getSummary = () => {
@@ -100,8 +94,6 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
-        sortOrderFirstDimension,
-        sortOrderLastDimension,
         stageIds: batch.map(({id}) => id) as [string, ...string[]],
         finalScores: batch.map(({finalScore}) => finalScore),
         taskId

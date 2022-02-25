@@ -74,19 +74,8 @@ const PokerSidebarEstimateSection = (props: Props) => {
       return
     }
 
-    let sortOrder
-    if (destination.index === 0) {
-      sortOrder = Math.floor(destinationTopic.sortOrderFirstDimension / 2)
-    } else if (destination.index === stageSummaries!.length - 1) {
-      sortOrder = Math.floor(destinationTopic.sortOrderLastDimension + 2 ** 43)
-    } else {
-      const offset = source.index > destination.index ? -1 : 1
-      sortOrder =
-      Math.floor((stageSummaries[destination.index + offset]!.sortOrderLastDimension + destinationTopic.sortOrderFirstDimension) / 2)
-    }
-
     const {taskId} = sourceTopic
-    const variables = {meetingId, taskId, sortOrder}
+    const variables = {meetingId, taskId, newPositionIndex: destination.index}
     DragEstimatingTaskMutation(atmosphere, variables)
   }
 
