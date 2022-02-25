@@ -69,6 +69,7 @@ const NullableTask = (props: Props) => {
 
 export default createFragmentContainer(NullableTask, {
   task: graphql`
+    # from this place upward the tree, the task components are also used outside of meetings, thus we default to null here
     fragment NullableTask_task on Task @argumentDefinitions(meetingId: {type: "ID", defaultValue: null}) {
       content
       createdBy
