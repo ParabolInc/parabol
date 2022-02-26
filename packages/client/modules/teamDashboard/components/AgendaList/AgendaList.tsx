@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
@@ -48,19 +48,17 @@ const AgendaList = (props: Props) => {
       : agendaItems.filter(({content}) => content)
   }, [dashSearch, agendaItems])
 
-  const onDragEnd = useEventCallback((result) => {
+  const onDragEnd = useEventCallback((result: DropResult) => {
     const {source, destination} = result
-    if (
-      !destination || !source ||
-      destination.droppableId !== AGENDA_ITEM ||
-      source.droppableId !== AGENDA_ITEM ||
-      destination.index === source.index
-    ) {
-      return
-    }
+    if (!destination) return
     const destinationItem = agendaItems[destination.index]
     const sourceItem = agendaItems[source.index]
-    if (!destinationItem || !sourceItem) {
+    if (
+      destination.droppableId !== AGENDA_ITEM ||
+      source.droppableId !== AGENDA_ITEM ||
+      destination.index === source.index ||
+      !destinationItem || !sourceItem
+    ) {
       return
     }
 
