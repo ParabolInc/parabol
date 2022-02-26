@@ -23,7 +23,7 @@ import {
   RetroDemo,
   SubscriptionChannel
 } from '../../types/constEnums'
-import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
+import {DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
@@ -453,7 +453,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         task
       }
       if (userId !== demoViewerId) {
-        this.emit(TASK, data)
+        this.emit(SubscriptionChannel.TASK, data)
       }
       return {createTaskIntegration: data}
     },
@@ -830,7 +830,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         slackNotificationIds
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.TEAM, data)
       }
       return {setSlackNotification: data}
     },
@@ -1214,7 +1214,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         involvementNotification: null
       }
       if (userId !== demoViewerId) {
-        this.emit(TASK, data)
+        this.emit(SubscriptionChannel.TASK, data)
       }
       // a strange error occurs without sleep.
       // To reproduce, get to the discuss phase & quickly add a task before the bots do
@@ -1276,7 +1276,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isEditing
       }
       if (userId !== demoViewerId) {
-        this.emit(TASK, data)
+        this.emit(SubscriptionChannel.TASK, data)
       }
       return {editTask: data}
     },
@@ -1324,7 +1324,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         addedNotification: null
       }
       if (userId !== demoViewerId) {
-        this.emit(TASK, data)
+        this.emit(SubscriptionChannel.TASK, data)
       }
       return {updateTask: data}
     },
@@ -1346,7 +1346,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         involvementNotification: null
       }
       if (userId !== demoViewerId) {
-        this.emit(TASK, data)
+        this.emit(SubscriptionChannel.TASK, data)
       }
       return {deleteTask: data}
     },
@@ -1356,7 +1356,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const data = {__typename: 'UpdateTaskDueDatePayload', error: null, task}
       if (userId !== demoViewerId) {
-        this.emit(TASK, data)
+        this.emit(SubscriptionChannel.TASK, data)
       }
       return {updateTaskDueDate: data}
     },
@@ -1409,7 +1409,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'EndRetrospectiveSuccess'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.TEAM, data)
       }
       return {endRetrospective: data}
     },

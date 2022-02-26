@@ -40,8 +40,7 @@ export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE] as TaskStatusEnu
 /* Scoping Task Search Filter */
 export const taskScopingStatusFilters = [ACTIVE, STUCK, FUTURE] as TaskStatusEnum[]
 
-/* Drag-n-Drop Items */
-export const TASK = 'TASK'
+/* Drag-n-Drop Items DroppableId */
 export const AGENDA_ITEM = 'AGENDA_ITEM'
 export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 export const ESTIMATING_TASK = 'ESTIMATING_TASK'
@@ -121,11 +120,6 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 
 /* JavaScript specifics */
 export const MAX_INT = 2147483647
-
-/* Relay Subscription Channels */
-export const NOTIFICATION = 'notification'
-export const ORGANIZATION = 'organization'
-export const TEAM = 'team'
 
 /* Relay Subscription Event Types */
 export const UPDATED = 'updated'
