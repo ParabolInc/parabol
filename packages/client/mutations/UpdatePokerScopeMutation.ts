@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
-import {webPathToNameWithOwner} from '~/utils/webPathToProjectName'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
@@ -202,12 +201,9 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'gitlab') {
-            const {webPath, guid} = GitLabIssueId.split(serviceTaskId)
-            if (!webPath || !guid) return
-            const nameWithOwner = webPathToNameWithOwner(webPath)
-            const owner = nameWithOwner.split('/').slice(-1)[0]
-            const iid = webPath.split('/').slice(-1)[0]
-            if (!iid || !owner) return
+            const {webPath} = GitLabIssueId.split(serviceTaskId)
+            const iid = webPath?.split('/').slice(-1)[0]
+            if (!webPath || !iid) return
             const optimisticGitLabIssue = createProxyRecord(store, '_xGitLabIssue', {
               title,
               webPath,

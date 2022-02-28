@@ -195,7 +195,6 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
                    id
                    iid
                    title
-                   webPath
                   }
                 }`
           const gitlabRequest = getGitLabRequest(info, context, {accessToken})
