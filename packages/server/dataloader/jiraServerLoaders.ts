@@ -20,7 +20,7 @@ interface JiraServerIssue {
   project: {
     key: string
   }
-  type: 'JiraServer'
+  type: 'jiraServer'
 }
 
 export const jiraServerIssue = (
@@ -51,7 +51,7 @@ export const jiraServerIssue = (
             key: issueRes.key,
             descriptionHTML: issueRes.renderedFields.description,
             ...issueRes.fields,
-            type: 'JiraServer'
+            type: 'jiraServer'
           }
         })
       )
