@@ -21,7 +21,7 @@ export async function up() {
         "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
         "meetingId" VARCHAR(100) NOT NULL,
         "userId" VARCHAR(100) NOT NULL,
-        "content" TEXT NOT NULL,
+        "content" JSONB NOT NULL,
         "plaintextContent" TEXT NOT NULL,
         "reactjis" "Reactji"[] NOT NULL DEFAULT array[]::"Reactji"[],
         CONSTRAINT "fk_userId"
