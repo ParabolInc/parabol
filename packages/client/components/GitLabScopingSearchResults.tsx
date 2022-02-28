@@ -102,7 +102,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                       edges {
                         node {
                           ... on _xGitLabProject {
-                            name
                             issues {
                               edges {
                                 node {

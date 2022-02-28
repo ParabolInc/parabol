@@ -7160,6 +7160,7 @@ draft-js-utils@^1.4.0:
 
 "draft-js@https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6":
   version "0.10.5"
+  uid "025fddba56f21aaf3383aee778e0b17025c9a7bc"
   resolved "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6#025fddba56f21aaf3383aee778e0b17025c9a7bc"
   dependencies:
     fbjs "^0.8.15"
@@ -12010,10 +12011,10 @@ neo-async@^2.5.0, neo-async@^2.6.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nest-graphql-endpoint@^0.3.2:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/nest-graphql-endpoint/-/nest-graphql-endpoint-0.3.3.tgz#1f6470d16ed79de1bc0740e770e52668dbe9caf0"
-  integrity sha512-M15PmQnvJyD9PaIMy5Fe9AeEPofQWiVl4xqNJQsKPG4MiLlDs5UgJhKRrtsPYBQxT64UyADxX+fq0jGWcAgQaQ==
+nest-graphql-endpoint@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/nest-graphql-endpoint/-/nest-graphql-endpoint-0.4.3.tgz#e5239c7b7c771c852f7ecb181237be5772ede901"
+  integrity sha512-RAUQIi25QyUM6Dp/7ccIn0b4mGF7bWazuvGla+uQOhu8Ljt5kg5L2aIZ6mc6ocQ8LkZ0S5ImwhvleJ5drrSlUA==
   dependencies:
     "@graphql-tools/merge" "^6.2.13"
     "@graphql-tools/schema" "^7.1.5"
