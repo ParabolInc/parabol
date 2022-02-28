@@ -8,7 +8,8 @@ interface Input {
   meetingType: MeetingTypeEnum
   meetingCount: number
   name?: string
-  phases: GenericMeetingPhase[]
+  // Every meeting has at least one phase
+  phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
 }

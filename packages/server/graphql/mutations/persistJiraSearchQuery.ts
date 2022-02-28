@@ -59,7 +59,7 @@ const persistJiraSearchQuery = {
         // MUTATIVE
         jiraSearchQueries.splice(existingIdx, 1)
       } else {
-        const queryToUpdate = jiraSearchQueries[existingIdx]
+        const queryToUpdate = jiraSearchQueries[existingIdx]!
         // MUTATIVE
         queryToUpdate.lastUsedAt = new Date()
         jiraSearchQueries.sort((a, b) => (a.lastUsedAt > b.lastUsedAt ? -1 : 1))

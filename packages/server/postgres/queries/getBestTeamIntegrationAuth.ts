@@ -8,7 +8,7 @@ const getBestTeamIntegrationAuth = async (
   userId: string
 ) => {
   const [res] = await getBestTeamIntegrationAuthQuery.run({service, teamId, userId}, getPg())
-  return res
+  return res ?? null
 }
 
 export default getBestTeamIntegrationAuth

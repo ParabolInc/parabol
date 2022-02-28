@@ -14,14 +14,12 @@ const SSEPingHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpReques
     if ((authToken as AuthToken).sub === connectionContext.authToken.sub) {
       connectionContext.isAlive = true
     }
+    const parser = (buffer: Buffer) => buffer
+    const messageBuffer = await parseBody({res, parser})
+    if (messageBuffer?.length === 4) {
+      handleReliableMessage(messageBuffer, connectionContext)
+    }
   }
-
-  const parser = (buffer: Buffer) => buffer
-  const messageBuffer = await parseBody({res, parser})
-  if (messageBuffer?.length === 4) {
-    handleReliableMessage(messageBuffer, connectionContext)
-  }
-
   res.end()
 })
 

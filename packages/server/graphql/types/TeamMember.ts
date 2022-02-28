@@ -11,7 +11,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import suggestedIntegrations from '../queries/suggestedIntegrations'
+import repoIntegrations from '../queries/repoIntegrations'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -30,8 +30,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'An ID for the teamMember. userId::teamId'
     },
-    allAvailableIntegrations: require('../queries/allAvailableIntegrations').default,
-
+    allAvailableRepoIntegrations: require('../queries/allAvailableRepoIntegrations').default,
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team member was created'
@@ -95,7 +94,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the assignee'
     },
-    suggestedIntegrations,
+    repoIntegrations,
     tasks: {
       type: TaskConnection,
       description: 'Tasks owned by the team member',

@@ -5,6 +5,62 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.48.0 2022-Feb-25
+
+### Fixed
+
+- Bump nest-graphql-endpoint (#6127)
+- Fix jest transforms (#6104)
+- Rethrow exceptions in traceGraphQL (#6090)
+- Fix TypeError: jiraProjects is not iterable (#6121)
+
+### Added
+
+- Add more 2-minute demo tests (#6094)
+- Display GitLab issues in Sprint Poker (#6091)
+- Enable application security for datadog monitoring (#6087)
+- Add integration tests using Playwright (#5961)
+
+### Changed
+
+- Replace suggested integration with new interface (#5883)
+- Remove graphql.ts (#6035)
+
+## 6.47.1 2022-Feb-22
+
+### Fixed
+
+- Fix unresponsive GitHub poker meeting (#6042)
+
+### Added
+
+- DoD docs for Ironbank (#6013)
+- Sprint Poker Scoping Jira Integration: Support for comma separated issue keys (#6040)
+- Upgrade to Node 16.14.0 (#6083)
+
+## 6.47.0 2022-Feb-16
+
+### Fixed
+
+- GitLab is null fatal error on meeting join (#6038)
+- Security: Bump follow-redirects (#6044)
+- Security: Bup vm2 (#6057)
+- ID users with datadog (#5990)
+- Log when reflections is null (#6010)
+- Send CC errors to client (#5906)
+- Promote to team lead works for users who just joined the team (#6078)
+
+### Added
+
+- Cached Jira Project Avatars (#5884)
+- Track fatals per 1000 (#5996)
+- generic createTaskMutation (#5938)
+- Env-based signup/login options (#5877)
+
+### Changed
+
+- Added table of contents to root readme (#6011)
+
 ## 6.46.0 2022-Feb-09
 
 ### Added

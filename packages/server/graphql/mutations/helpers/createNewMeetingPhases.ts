@@ -135,7 +135,7 @@ const createNewMeetingPhases = async (
           throw new Error(`Unhandled phaseType: ${phaseType}`)
       }
     })
-  )) as GenericMeetingPhase[]
+  )) as [GenericMeetingPhase, ...GenericMeetingPhase[]]
   primePhases(phases)
   await Promise.all(asyncSideEffects)
   return phases

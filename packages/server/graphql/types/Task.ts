@@ -1,5 +1,5 @@
-import {IGetLatestTaskEstimatesQueryResult} from './../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLList,
@@ -9,10 +9,17 @@ import {
 } from 'graphql'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
 import DBTask from '../../database/types/Task'
+import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
+import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
+import {getUserId} from '../../utils/authorization'
 import getGitHubRequest from '../../utils/getGitHubRequest'
+import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
+import sendToSentry from '../../utils/sendToSentry'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
+import isValid from '../isValid'
+import {IGetLatestTaskEstimatesQueryResult} from './../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -22,12 +29,6 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import sendToSentry from '../../utils/sendToSentry'
-import getSimilarTaskEstimate from '../../postgres/queries/getSimilarTaskEstimate'
-import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
-import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId} from '../../utils/authorization'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -66,11 +67,8 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
     estimates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEstimate))),
       description: 'A list of the most recent estimates for the task',
-      resolve: async (
-        {id: taskId, integration, teamId}: DBTask,
-        _args: unknown,
-        {dataLoader, authToken}: GQLContext
-      ) => {
+      resolve: async ({id: taskId, integration, teamId}: DBTask, _args: unknown, context, info) => {
+        const {dataLoader, authToken} = context
         const viewerId = getUserId(authToken)
         if (integration?.service === 'jira') {
           const {accessUserId, cloudId, issueKey} = integration
@@ -78,6 +76,68 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           await dataLoader
             .get('jiraIssue')
             .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
+        } else if (integration?.service === 'github') {
+          const {accessUserId, nameWithOwner, issueNumber} = integration
+          const [githubAuth, estimates] = await Promise.all([
+            dataLoader.get('githubAuth').load({userId: accessUserId, teamId}),
+            dataLoader.get('latestTaskEstimates').load(taskId)
+          ])
+          if (estimates.length === 0) return estimates
+          // TODO schedule this work to be done & pump in the updates via subcription
+          if (!githubAuth) return estimates
+          // fetch fresh estimates from GH
+          const {accessToken} = githubAuth
+          const {repoOwner, repoName} = GitHubRepoId.split(nameWithOwner)
+          const githubRequest = getGitHubRequest(info, context, {accessToken})
+          const [labelsData, labelsError] = await githubRequest<
+            GetIssueLabelsQuery,
+            GetIssueLabelsQueryVariables
+          >(getIssueLabels, {
+            first: 100,
+            repoName,
+            repoOwner,
+            issueNumber
+          })
+          if (!labelsData) {
+            if (labelsError) {
+              sendToSentry(labelsError, {userId: accessUserId})
+            }
+            return estimates
+          }
+          const labelNodes = labelsData.repository?.issue?.labels?.nodes
+          if (!labelNodes) return estimates
+          const ghIssueLabels = labelNodes.map((node) => node?.name).filter(isValid)
+          await Promise.all(
+            estimates.map(async (estimate: IGetLatestTaskEstimatesQueryResult) => {
+              const {githubLabelName, name: dimensionName} = estimate
+              const existingLabel = ghIssueLabels.includes(githubLabelName!)
+              if (existingLabel) return
+              // VERY EXPENSIVE. We do this only if we're darn sure we need to
+              const taskIds = await dataLoader
+                .get('taskIdsByTeamAndGitHubRepo')
+                .load({teamId, nameWithOwner})
+              const similarEstimate = await getSimilarTaskEstimate(
+                taskIds,
+                dimensionName,
+                ghIssueLabels
+              )
+              if (!similarEstimate) return
+              dataLoader.get('latestTaskEstimates').clear(taskId)
+              return insertTaskEstimate({
+                changeSource: 'external',
+                // keep the link to the discussion alive, if possible
+                discussionId: estimate.discussionId,
+                jiraFieldId: undefined,
+                label: similarEstimate.label,
+                name: estimate.name,
+                meetingId: null,
+                stageId: null,
+                taskId,
+                userId: accessUserId,
+                githubLabelName: similarEstimate.githubLabelName!
+              })
+            })
+          )
         }
         return dataLoader.get('latestTaskEstimates').load(taskId)
       }
@@ -102,11 +162,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             .get('jiraIssue')
             .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
         } else if (integration.service === 'github') {
-          const [githubAuth, estimates] = await Promise.all([
-            dataLoader.get('githubAuth').load({userId: accessUserId, teamId}),
-            dataLoader.get('latestTaskEstimates').load(taskId)
-          ])
-
+          const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
           if (!githubAuth) return null
           const {accessToken} = githubAuth
           const {nameWithOwner, issueNumber} = integration
@@ -120,64 +176,9 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
                   }
                 }`
           const githubRequest = getGitHubRequest(info, context, {accessToken})
-          const [[data, error], [labelsData, labelsError]] = await Promise.all([
-            githubRequest(query),
-            estimates.length > 0
-              ? githubRequest<GetIssueLabelsQuery, GetIssueLabelsQueryVariables>(getIssueLabels, {
-                  first: 100,
-                  repoName,
-                  repoOwner,
-                  issueNumber
-                })
-              : [null, null]
-          ])
-
-          if (error || labelsError) {
-            if (error) {
-              sendToSentry(error, {userId: accessUserId})
-            }
-            if (labelsError) {
-              sendToSentry(labelsError, {userId: accessUserId})
-            }
-          } else if (estimates.length) {
-            const ghIssueLabels = labelsData.repository.issue.labels.nodes.map(
-              ({name}: {name: string}) => name
-            )
-            await Promise.all(
-              estimates.map(async (estimate: IGetLatestTaskEstimatesQueryResult) => {
-                const {githubLabelName, name: dimensionName} = estimate
-                const existingLabel = ghIssueLabels.includes(githubLabelName)
-                if (existingLabel) return
-                const r = await getRethink()
-                const taskIds = await r
-                  .table('Task')
-                  .getAll(teamId, {index: 'teamId'})
-                  .filter((row) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
-                  .run()
-
-                const similarEstimate = await getSimilarTaskEstimate(
-                  taskIds,
-                  dimensionName,
-                  ghIssueLabels
-                )
-
-                if (!similarEstimate) return
-
-                return insertTaskEstimate({
-                  changeSource: 'external',
-                  // keep the link to the discussion alive, if possible
-                  discussionId: estimate.discussionId,
-                  jiraFieldId: undefined,
-                  label: similarEstimate.label,
-                  name: estimate.name,
-                  meetingId: null,
-                  stageId: null,
-                  taskId,
-                  userId: accessUserId,
-                  githubLabelName: similarEstimate.githubLabelName!
-                })
-              })
-            )
+          const [data, error] = await githubRequest(query)
+          if (error) {
+            sendToSentry(error, {userId: accessUserId})
           }
           return data
         }
@@ -243,6 +244,21 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
       resolve: ({userId}, _args: unknown, {dataLoader}) => {
         if (!userId) return null
         return dataLoader.get('users').load(userId)
+      }
+    },
+    isHighlighted: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'The owner hovers over the task in their solo update of a checkin',
+      args: {
+        meetingId: {
+          type: GraphQLID,
+          description: 'Meeting for which the highlight is checked'
+        }
+      },
+      resolve: async ({id: taskId}, {meetingId}: {meetingId?: string | null}, {dataLoader}) => {
+        if (!meetingId) return false
+        const highlightedTaskId = await dataLoader.get('meetingHighlightedTaskId').load(meetingId)
+        return taskId === highlightedTaskId
       }
     }
   })

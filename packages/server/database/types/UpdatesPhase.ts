@@ -3,10 +3,10 @@ import UpdatesStage from './UpdatesStage'
 
 interface Input {
   durations: number[] | undefined
-  stages: UpdatesStage[]
+  stages: [UpdatesStage, ...UpdatesStage[]]
 }
 export default class UpdatesPhase extends GenericMeetingPhase {
-  stages: UpdatesStage[]
+  stages: [UpdatesStage, ...UpdatesStage[]]
   durations: number[] | undefined
   phaseType!: 'updates'
   constructor(input: Input) {

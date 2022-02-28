@@ -116,13 +116,14 @@ const addReflectTemplate = {
             groupColor: PALETTE.JADE_400
           }
         ]
-      }
+      } as const
       const {reflectPrompts: newTemplatePrompts, templates} = makeRetroTemplates(
         teamId,
         orgId,
         base
       )
-      const [newTemplate] = templates
+      // guaranteed since base has 1 key
+      const newTemplate = templates[0]!
       const {id: templateId} = newTemplate
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),

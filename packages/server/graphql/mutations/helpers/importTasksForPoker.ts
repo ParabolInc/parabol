@@ -1,7 +1,7 @@
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import getRethink from '../../../database/rethinkDriver'
 import ImportedTask from '../../../database/types/ImportedTask'
-import {isNotNull} from '../../../utils/predicates'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import {TUpdatePokerScopeItemInput} from '../updatePokerScope'
 
 const importTasksForPoker = async (
@@ -46,10 +46,7 @@ const importTasksForPoker = async (
     .filter(isNotNull)
 
   if (newIntegrationUpdates.length > 0) {
-    await r
-      .table('Task')
-      .insert(tasksToAdd)
-      .run()
+    await r.table('Task').insert(tasksToAdd).run()
   }
   const integratedTasks = [...existingTasks, ...tasksToAdd]
 

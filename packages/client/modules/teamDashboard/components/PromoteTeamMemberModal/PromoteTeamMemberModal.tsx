@@ -1,18 +1,18 @@
-import {PromoteTeamMemberModal_teamMember} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import IconLabel from '../../../../components/IconLabel'
-import DialogTitle from '../../../../components/DialogTitle'
-import DialogContent from '../../../../components/DialogContent'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../../components/DialogContainer'
+import DialogContent from '../../../../components/DialogContent'
+import DialogTitle from '../../../../components/DialogTitle'
+import IconLabel from '../../../../components/IconLabel'
+import PrimaryButton from '../../../../components/PrimaryButton'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
+import {PromoteTeamMemberModal_teamMember} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 420
@@ -36,10 +36,10 @@ const PromoteTeamMemberModal = (props: Props) => {
     onCompleted,
     teamMember
   } = props
-  const {preferredName, teamId, newTeamLeadEmail} = teamMember
+  const {preferredName, teamId, userId} = teamMember
   const handleClick = () => {
     submitMutation()
-    PromoteToTeamLeadMutation(atmosphere, {teamId, newTeamLeadEmail}, {onError, onCompleted})
+    PromoteToTeamLeadMutation(atmosphere, {teamId, userId}, {onError, onCompleted})
     closePortal()
   }
   return (
@@ -58,7 +58,7 @@ const PromoteTeamMemberModal = (props: Props) => {
 export default createFragmentContainer(withMutationProps(withAtmosphere(PromoteTeamMemberModal)), {
   teamMember: graphql`
     fragment PromoteTeamMemberModal_teamMember on TeamMember {
-      newTeamLeadEmail: email
+      userId
       teamId
       preferredName
     }

@@ -42,8 +42,8 @@ const handleCompletedRetrospectiveStage = async (
       })
 
       const sortedReflectionGroups = reflectionGroups.slice().sort((groupA, groupB) => {
-        const newGroupIdA = reflectionGroupMapping[groupA.id]
-        const newGroupIdB = reflectionGroupMapping[groupB.id]
+        const newGroupIdA = reflectionGroupMapping[groupA.id]!
+        const newGroupIdB = reflectionGroupMapping[groupB.id]!
         return newGroupIdA < newGroupIdB ? -1 : 1
       })
 

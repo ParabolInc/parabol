@@ -26,8 +26,6 @@ import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
 import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
-import SuggestedIntegrationGitHub from './types/SuggestedIntegrationGitHub'
-import SuggestedIntegrationJira from './types/SuggestedIntegrationJira'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
@@ -70,8 +68,6 @@ const rootTypes = [
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
   ActionMeetingSettings,
-  SuggestedIntegrationGitHub,
-  SuggestedIntegrationJira,
   Comment
 ]
 export default rootTypes

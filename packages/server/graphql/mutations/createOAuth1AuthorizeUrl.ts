@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import JiraServerOAuth1Manager from '../../integrations/jiraServer/JiraServerOAuth1Manager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import JiraServerOAuth1Manager from '../../integrations/jiraServer/JiraServerOAuth1Manager'
-import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import CreateOAuth1AuthorizationURLPayload from '../types/CreateOAuth1AuthorizationURLPayload'
 
 export default {
@@ -55,6 +55,8 @@ export default {
         url
       }
     }
-    return standardError(new Error('Service not supported'), {tags: {service: provider.service}})
+    return standardError(new Error('Service not supported'), {
+      tags: {service: (provider as any).service}
+    })
   }
 }

@@ -1,5 +1,10 @@
 # Integrations
 
+## Development Setup
+
+- To set up integrations, just change the corresponding CLIENT_ID and CLIENT_SECRET in the .env
+- We keep all client IDs and client secrets stored in a secure location. If you need test credentials, just ask!
+
 ## Jira and GitHub
 
 Some guidelines how we handle the user's integration of GitHub or Jira, especially in which cases the user's authentication might be used by someone else than the user.

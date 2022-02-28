@@ -10,7 +10,7 @@ interface Input {
   teamId: string
   meetingCount: number
   name?: string
-  phases: CheckInMeetingPhase[]
+  phases: [CheckInMeetingPhase, ...CheckInMeetingPhase[]]
   facilitatorUserId: string
 }
 
