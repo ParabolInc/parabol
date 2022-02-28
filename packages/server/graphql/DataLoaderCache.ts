@@ -1,4 +1,5 @@
 import getLoaderNameByTable from '../dataloader/getLoaderNameByTable'
+import {Loaders, TypedDataLoader} from '../dataloader/RootDataLoader'
 
 export interface DataLoaderBase {
   get: (loaderName: any) => unknown
@@ -22,8 +23,13 @@ export class CacheWorker<T extends DataLoaderBase> {
     this.cache = cache
   }
 
-  get: T['get'] = (dataLoaderName) => {
-    return this.dataLoaderBase.get(dataLoaderName)
+  get = <LoaderName extends Loaders>(dataLoaderName: LoaderName) => {
+    // Using Loaders here breaks the abstraction.
+    // However, when using T['get'], typescript control flow analysis breaks
+    // e.g. loader.load() // null | any[], but doesn't catch the null!
+    // I'm OK with breaking the abstraction because we only have 1 RootDataLoader
+    // Given more time, could probably use a refactor here
+    return this.dataLoaderBase.get(dataLoaderName) as TypedDataLoader<LoaderName>
   }
 
   clear = (table: string, id: string) => {

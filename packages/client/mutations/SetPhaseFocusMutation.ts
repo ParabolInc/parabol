@@ -18,11 +18,11 @@ const mutation = graphql`
     }
   }
 `
-interface LocalHanders {
+interface LocalHandlers {
   phaseId: string
 }
 
-const SetPhaseFocusMutation: StandardMutation<TSetPhaseFocusMutation, LocalHanders> = (
+const SetPhaseFocusMutation: StandardMutation<TSetPhaseFocusMutation, LocalHandlers> = (
   atmosphere,
   variables,
   {phaseId}

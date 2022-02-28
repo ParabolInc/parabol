@@ -47,7 +47,7 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
     dimensions: activeDimensions.map((dimension) => {
       const {name, scaleId} = dimension
       const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
-      const templateScale = templateScales[scaleIdx]
+      const templateScale = templateScales[scaleIdx]!
       const {id: scaleRefId} = templateScale
       return {
         name,

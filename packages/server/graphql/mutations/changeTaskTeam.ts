@@ -119,9 +119,11 @@ export default {
     }
 
     // filter mentions of old team members from task content
-    const [oldTeamMembers, newTeamMembers] = (
+    const teamMemberRes = (
       await dataLoader.get('teamMembersByTeamId').loadMany([oldTeamId, teamId])
     ).filter(isValid)
+    const oldTeamMembers = teamMemberRes[0]!
+    const newTeamMembers = teamMemberRes[1]!
     const oldTeamUserIds = oldTeamMembers.map(({userId}) => userId)
     const newTeamUserIds = newTeamMembers.map(({userId}) => userId)
     const userIdsOnlyOnOldTeam = oldTeamUserIds.filter((oldTeamUserId) => {

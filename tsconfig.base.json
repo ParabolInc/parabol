@@ -24,7 +24,7 @@
     "pretty": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
-    // "noUncheckedIndexedAccess": true
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true
   }
 }

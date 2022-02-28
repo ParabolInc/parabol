@@ -7,8 +7,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint tests --ext .ts",
-    "test": "playwright test",
-    "precommit": "lint-staged"
+    "test": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.18.0",

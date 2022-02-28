@@ -38,7 +38,7 @@ export default {
       metadata: {orgId}
     } = await manager.retrieveCustomer(customerId)
     const org = await r.table('Organization').get(orgId).run()
-    if (!org) {
+    if (!org || !orgId) {
       if (livemode) {
         throw new Error(
           `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`

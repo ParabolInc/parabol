@@ -6,12 +6,12 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 interface Input {
   teamId: string
   meetingCount: number
-  stages: CheckInStage[]
+  stages: [CheckInStage, ...CheckInStage[]]
 }
 export default class CheckInPhase extends GenericMeetingPhase {
   checkInGreeting: {content: string; language: string}
   checkInQuestion: string
-  stages: CheckInStage[]
+  stages: [CheckInStage, ...CheckInStage[]]
   phaseType!: 'checkin'
 
   constructor(input: Input) {
