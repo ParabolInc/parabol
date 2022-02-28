@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/insertDiscussionsQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type DiscussionTopicTypeEnum = 'agendaItem' | 'githubIssue' | 'jiraIssue' | 'reflectionGroup' | 'task';
+export type DiscussionTopicTypeEnum = 'agendaItem' | 'githubIssue' | 'jiraIssue' | 'reflectionGroup' | 'task' | 'teamPromptResponse';
 
 /** 'InsertDiscussionsQuery' parameters type */
 export interface IInsertDiscussionsQueryParams {

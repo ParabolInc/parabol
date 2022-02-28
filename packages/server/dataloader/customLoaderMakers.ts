@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
+import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
-import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'

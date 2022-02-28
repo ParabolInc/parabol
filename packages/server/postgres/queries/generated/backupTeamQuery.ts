@@ -1,7 +1,7 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/backupTeamQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
 
-export type MeetingTypeEnum = 'action' | 'poker' | 'retrospective';
+export type MeetingTypeEnum = 'action' | 'poker' | 'retrospective' | 'teamPrompt';
 
 export type TierEnum = 'enterprise' | 'personal' | 'pro';
 

@@ -9,6 +9,7 @@ import {
   UPDATES,
   VOTE
 } from 'parabol-client/utils/constants'
+import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
@@ -17,7 +18,6 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import {MeetingTypeEnum} from '../../../database/types/Meeting'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'

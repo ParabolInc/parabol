@@ -1,7 +1,6 @@
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import generateUID from '../../generateUID'
 import GenericMeetingPhase from './GenericMeetingPhase'
-
-export type MeetingTypeEnum = 'poker' | 'retrospective' | 'action'
 
 interface Input {
   id?: string

@@ -1,8 +1,8 @@
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import generateUID from '../../generateUID'
 import {TEAM_NAME_LIMIT} from '../../postgres/constants'
 import {TierEnum} from './Invoice'
 import JiraDimensionField from './JiraDimensionField'
-import {MeetingTypeEnum} from './Meeting'
 
 interface Input {
   id?: string
