@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
@@ -47,7 +47,7 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
     dimensions: activeDimensions.map((dimension) => {
       const {name, scaleId} = dimension
       const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
-      const templateScale = templateScales[scaleIdx]
+      const templateScale = templateScales[scaleIdx]!
       const {id: scaleRefId} = templateScale
       return {
         name,

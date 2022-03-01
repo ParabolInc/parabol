@@ -96,6 +96,6 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
       teamDashboardUrl
     )
     const manager = this.getManager()
-    return manager.addComment(comment, issueId)
+    return manager.addComment(comment, issueId ?? '')
   }
 }

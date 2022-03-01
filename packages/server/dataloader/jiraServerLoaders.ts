@@ -7,7 +7,7 @@ export interface JiraServerIssueKey {
   teamId: string
   userId: string
   issueId: string
-  providerId: string
+  providerId: number
 }
 
 interface JiraServerIssue {

@@ -44,11 +44,11 @@ const JiraServerRemoteProject = new GraphQLObjectType<any, GQLContext>({
         if (!auth) return defaultJiraProjectAvatar
         const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
         const manager = new JiraServerRestManager(
-          provider.serverBaseUrl,
-          provider.consumerKey,
-          provider.consumerSecret,
-          auth.accessToken,
-          auth.accessTokenSecret
+          provider.serverBaseUrl!,
+          provider.consumerKey!,
+          provider.consumerSecret!,
+          auth.accessToken!,
+          auth.accessTokenSecret!
         )
         const avatar = await manager.getProjectAvatar(url)
         return avatar || defaultJiraProjectAvatar

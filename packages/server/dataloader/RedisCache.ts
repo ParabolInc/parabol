@@ -66,12 +66,12 @@ export default class RedisCache<T extends keyof CacheType> {
     for (let i = 0; i < cachedDocs.length; i++) {
       const cachedDoc = cachedDocs[i]
       if (cachedDoc === null) {
-        const fetch = fetches[i]
+        const fetch = fetches[i]!
         const {table, id} = fetch
         const customQuery = customRedisQueries[table as string]
         if (customQuery) {
           customQueriesByType[table] = customQueriesByType[table] || []
-          customQueriesByType[table].push(id)
+          customQueriesByType[table]!.push(id)
         } else {
           missingKeysForRethinkDB.push(fetch)
         }
@@ -79,23 +79,23 @@ export default class RedisCache<T extends keyof CacheType> {
     }
     const customTypes = Object.keys(customQueriesByType)
     if (missingKeysForRethinkDB.length + customTypes.length === 0) {
-      return cachedDocs.map((doc, idx) => hydrateRedisDoc(doc!, fetches[idx].table))
+      return cachedDocs.map((doc, idx) => hydrateRedisDoc(doc!, fetches[idx]!.table))
     }
 
     customTypes.forEach((type) => {
       const customQuery = customRedisQueries[type as keyof typeof customRedisQueries]
-      const ids = customQueriesByType[type]
+      const ids = customQueriesByType[type]!
       customQueries.push(customQuery(ids))
     })
     const [docsByKey, ...customResults] = await Promise.all([
       missingKeysForRethinkDB.length === 0
-        ? {}
+        ? ({} as any)
         : this.rethinkDBCache.read(missingKeysForRethinkDB as any),
       ...customQueries
     ])
     customResults.forEach((resultByTypeIdx, idx) => {
-      const type = customTypes[idx]
-      const ids = customQueriesByType[type]
+      const type = customTypes[idx]!
+      const ids = customQueriesByType[type]!
       ids.forEach((id, idx) => {
         const key = `${type}:${id}`
         docsByKey[key] = resultByTypeIdx[idx]
@@ -104,13 +104,13 @@ export default class RedisCache<T extends keyof CacheType> {
 
     const writes = [] as string[][]
     Object.keys(docsByKey).forEach((key) => {
-      writes.push(msetpx(key, docsByKey[key]))
+      writes.push(msetpx(key, docsByKey[key]!))
     })
     // don't wait for redis to populate the local cache
     this.getRedis().multi(writes).exec()
     return fetchKeys.map((key, idx) => {
       const cachedDoc = cachedDocs[idx]
-      return cachedDoc ? hydrateRedisDoc(cachedDoc, fetches[idx].table) : docsByKey[key]
+      return cachedDoc ? hydrateRedisDoc(cachedDoc, fetches[idx]!.table) : docsByKey[key]!
     })
   }
 

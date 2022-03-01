@@ -59,7 +59,7 @@ const persistGitHubSearchQuery = {
         // MUTATIVE
         githubSearchQueries.splice(existingIdx, 1)
       } else {
-        const queryToUpdate = githubSearchQueries[existingIdx]
+        const queryToUpdate = githubSearchQueries[existingIdx]!
         // MUTATIVE
         queryToUpdate.lastUsedAt = new Date()
         githubSearchQueries.sort((a, b) => (a.lastUsedAt > b.lastUsedAt ? -1 : 1))

@@ -21,7 +21,7 @@ import PokerMeeting from './PokerMeeting'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
 import TeamMember from './TeamMember'
-import {MeetingTypeEnum as MeetingTypeEnumType} from '../../database/types/Meeting'
+import {MeetingTypeEnum as MeetingTypeEnumType} from '../../postgres/types/Meeting'
 
 export const newMeetingFields = () => ({
   id: {

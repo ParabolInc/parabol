@@ -140,6 +140,10 @@ export default class JiraServerRestManager {
     const {issuetypes} = project
     const bestIssueType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
 
+    if (!bestIssueType) {
+      throw new Error('No issue types specified')
+    }
+
     return this.request('POST', '/rest/api/2/issue', {
       fields: {
         project: {

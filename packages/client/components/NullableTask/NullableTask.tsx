@@ -17,10 +17,12 @@ interface Props {
   measure?: () => void
   task: NullableTask_task
   dataCy: string
+  isViewerMeetingSection?: boolean
+  meetingId?: string
 }
 
 const NullableTask = (props: Props) => {
-  const {area, className, isAgenda, task, isDraggingOver, dataCy} = props
+  const {area, className, isAgenda, task, isDraggingOver, dataCy, isViewerMeetingSection, meetingId} = props
   const {content, createdBy, createdByUser, integration} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -57,6 +59,8 @@ const NullableTask = (props: Props) => {
       isDraggingOver={isDraggingOver}
       isAgenda={isAgenda}
       task={task}
+      isViewerMeetingSection={isViewerMeetingSection}
+      meetingId={meetingId}
     />
   ) : (
     <NullCard className={className} preferredName={preferredName} />
@@ -65,7 +69,8 @@ const NullableTask = (props: Props) => {
 
 export default createFragmentContainer(NullableTask, {
   task: graphql`
-    fragment NullableTask_task on Task {
+    # from this place upward the tree, the task components are also used outside of meetings, thus we default to null here
+    fragment NullableTask_task on Task @argumentDefinitions(meetingId: {type: "ID", defaultValue: null}) {
       content
       createdBy
       createdByUser {
@@ -75,7 +80,7 @@ export default createFragmentContainer(NullableTask, {
         __typename
       }
       status
-      ...OutcomeCardContainer_task
+      ...OutcomeCardContainer_task @arguments(meetingId: $meetingId)
     }
   `
 })

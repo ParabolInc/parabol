@@ -79,7 +79,7 @@ export default {
             userId
           })
         : null,
-      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId)
     ])
 

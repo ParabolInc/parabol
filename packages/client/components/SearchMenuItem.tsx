@@ -1,9 +1,7 @@
 import styled from '@emotion/styled'
-import React from 'react'
-
+import React, {forwardRef} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-
 import Icon from './Icon'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
@@ -35,13 +33,14 @@ interface Props {
   value: string
 }
 
-export const SearchMenuItem: React.FC<Props> = ({placeholder, onChange, value}) => {
+export const SearchMenuItem = forwardRef((props: Props, ref: any) => {
+  const {placeholder, onChange, value} = props
   return (
-    <SearchItem>
+    <SearchItem ref={ref}>
       <StyledMenuItemIcon>
         <SearchIcon>search</SearchIcon>
       </StyledMenuItemIcon>
       <MenuSearch placeholder={placeholder} onChange={onChange} value={value} />
     </SearchItem>
   )
-}
+})

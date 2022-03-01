@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'grap
 import {resolveTeam} from '../resolvers'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import MeetingTypeEnum from './MeetingTypeEnum'
-import {MeetingTypeEnum as TMeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum as TMeetingTypeEnum} from '../../postgres/types/Meeting'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import PokerMeetingSettings from './PokerMeetingSettings'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'

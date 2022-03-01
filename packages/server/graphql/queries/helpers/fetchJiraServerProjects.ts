@@ -13,11 +13,11 @@ const fetchJiraServerProjects = async (
   const provider = await dataLoader.get('integrationProviders').loadNonNull(token.providerId)
 
   const manager = new JiraServerRestManager(
-    provider.serverBaseUrl,
-    provider.consumerKey,
-    provider.consumerSecret,
-    token.accessToken,
-    token.accessTokenSecret
+    provider.serverBaseUrl!,
+    provider.consumerKey!,
+    provider.consumerSecret!,
+    token.accessToken!,
+    token.accessTokenSecret!
   )
   const projects = await manager.getProjects()
   if (projects instanceof Error) {

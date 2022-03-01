@@ -19,7 +19,7 @@ export interface GitHubAuth
 
 const getGitHubAuthByUserIdTeamId = async (userId: string, teamId: string) => {
   const [res] = await getGitHubAuthByUserIdTeamIdQuery.run({teamId, userId}, getPg())
-  if (!res) return res
+  if (!res) return null
   res.githubSearchQueries.forEach((query) => {
     ;(query as any).lastUsedAt = new Date((query as any).lastUsedAt)
   })

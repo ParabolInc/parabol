@@ -14,7 +14,7 @@ const sanitizeAnalyzedEntitiesResponse = (response: GoogleAnalyzedEntities | nul
   })
   return Object.keys(validEntities).map((name) => ({
     name,
-    salience: validEntities[name]
+    salience: validEntities[name]!
   }))
 }
 

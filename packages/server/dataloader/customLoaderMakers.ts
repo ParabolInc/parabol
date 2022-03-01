@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
+import {MeetingTypeEnum} from '../postgres/types/Meeting'
+import getRedis from '../utils/getRedis'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
-import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
@@ -212,7 +213,7 @@ export const userTasks = (parent: RootDataLoader) => {
       tasks.flat().forEach((task) => {
         taskLoader.clear(task.id).prime(task.id, task)
       })
-      return keys.map((key) => tasksByKey[serializeUserTasksKey(key)])
+      return keys.map((key) => tasksByKey[serializeUserTasksKey(key)]!)
     },
     {
       ...parent.dataLoaderOptions,
@@ -348,6 +349,20 @@ export const taskIdsByTeamAndGitHubRepo = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.nameWithOwner}`
+    }
+  )
+}
+
+export const meetingHighlightedTaskId = (parent: RootDataLoader) => {
+  return new DataLoader<string, string | null, string>(
+    async (meetingIds) => {
+      const redis = getRedis()
+      const redisKeys = meetingIds.map((id) => `meetingTaskHighlight:${id}`)
+      const highlightedTaskIds = await redis.mget(redisKeys)
+      return highlightedTaskIds
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
