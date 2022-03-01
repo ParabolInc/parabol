@@ -68,7 +68,7 @@ const ActionMeetingUpdates = (props: Props) => {
             <InnerColumnsWrapper>
               <TaskColumns
                 area='meeting'
-                isMyMeetingSection={userId === viewerId}
+                isViewerMeetingSection={userId === viewerId}
                 meetingId={meetingId}
                 myTeamMemberId={toTeamMemberId(teamId, viewerId)}
                 tasks={teamMemberTasks}
@@ -117,7 +117,7 @@ export default createFragmentContainer(ActionMeetingUpdates, {
         tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
           edges {
             node {
-              ...TaskColumns_tasks
+              ...TaskColumns_tasks @arguments(meetingId: $meetingId)
               # grab these so we can sort correctly
               id
               status

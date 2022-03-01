@@ -31,7 +31,7 @@ const getSlackDetails = async (
   const usedChannelIds = new Set()
   const distinctChannelNotifications = [] as SlackNotification[]
   for (let ii = 0; ii < notifications.length; ii++) {
-    const notification = notifications[ii]
+    const notification = notifications[ii]!
     const {channelId} = notification
     if (!channelId || usedChannelIds.has(channelId)) continue
     usedChannelIds.add(channelId)
@@ -43,7 +43,7 @@ const getSlackDetails = async (
   ).filter(errorFilter)
   return userSlackAuths.map((userSlackAuthArr, idx) => {
     const auth = userSlackAuthArr.find((val) => val.teamId === teamId) as SlackAuth
-    return {auth, notification: distinctChannelNotifications[idx]}
+    return {auth, notification: distinctChannelNotifications[idx]!}
   })
 }
 
@@ -59,7 +59,7 @@ const notifySlack = async (
   const slackDetails = await getSlackDetails(event, teamId, dataLoader)
   // for each slack channel, send a notification
   for (let i = 0; i < slackDetails.length; i++) {
-    const {notification, auth} = slackDetails[i]
+    const {notification, auth} = slackDetails[i]!
     const {channelId} = notification
     const {botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken!)

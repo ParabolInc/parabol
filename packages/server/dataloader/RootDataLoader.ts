@@ -1,18 +1,19 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
-import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
+import * as jiraServerLoaders from './jiraServerLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
+import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
-import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
-import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
+import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
-import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
-import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
-import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
+import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
+import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
+import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
+import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -26,6 +27,7 @@ const loaderMakers = {
   ...foreignKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
+  ...jiraServerLoaders,
   ...customLoaderMakers,
   ...githubLoaders,
   ...integrationAuthLoaders,
@@ -51,6 +53,7 @@ type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<Forei
  */
 type CustomLoaderMakers = typeof customLoaderMakers &
   typeof atlassianLoaders &
+  typeof jiraServerLoaders &
   typeof pollLoaders &
   typeof integrationAuthLoaders &
   typeof primaryKeyLoaderMakers &
@@ -59,7 +62,7 @@ type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
 
-type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
+export type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
   ? TypeFromCustom<LoaderName>
   : DataLoader<
       string,
@@ -75,7 +78,8 @@ type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
  */
 export default class RootDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
-  loaders: LoaderDict = {}
+  // casted to any because access to the loaders will results in a creation if needed
+  loaders: LoaderDict = {} as any
   constructor(dataLoaderOptions: DataLoader.Options<any, any> = {}) {
     this.dataLoaderOptions = dataLoaderOptions
   }
@@ -94,7 +98,7 @@ export default class RootDataLoader {
     } else {
       loader = (loaderMaker as any)(this)
     }
-    this.loaders[loaderName] = loader
+    this.loaders[loaderName] = loader!
     return loader as TypedDataLoader<LoaderName>
   }
 }

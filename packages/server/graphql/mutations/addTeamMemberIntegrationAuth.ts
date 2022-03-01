@@ -85,8 +85,8 @@ const addTeamMemberIntegrationAuth = {
       }
     } else if (scope === 'org' && teamId !== integrationProvider.teamId) {
       const [providerTeam, authTeam] = await Promise.all([
-        dataLoader.get('teams').load(integrationProvider.teamId),
-        dataLoader.get('teams').load(teamId)
+        dataLoader.get('teams').loadNonNull(integrationProvider.teamId),
+        dataLoader.get('teams').loadNonNull(teamId)
       ])
       if (providerTeam.orgId !== authTeam.orgId) {
         return {error: {message: 'provider not available for this team'}}

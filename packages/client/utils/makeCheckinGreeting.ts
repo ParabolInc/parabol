@@ -301,11 +301,13 @@ const questions = [
 export const makeCheckinGreeting = (meetingCount: number, seedId = '') => {
   const seed = seedId.charCodeAt(0)
   const idx = (seed + meetingCount) % greetings.length
-  return greetings[idx]
+  // Guaranteed not out of bounds
+  return greetings[idx]!
 }
 
 export const makeCheckinQuestion = (meetingCount: number, seedId = '') => {
   const seed = seedId.charCodeAt(0)
   const idx = (seed + meetingCount) % questions.length
-  return questions[idx]
+  // Guaranteed not out of bounds
+  return questions[idx]!
 }

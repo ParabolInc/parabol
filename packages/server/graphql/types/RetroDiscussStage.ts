@@ -55,7 +55,7 @@ const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
           return new ReflectionGroup({
             id: `${meetingId}:dummyGroup`,
             meetingId,
-            promptId: prompts[0]?.id,
+            promptId: prompts[0]!.id,
             title: 'Unknown'
           })
         }

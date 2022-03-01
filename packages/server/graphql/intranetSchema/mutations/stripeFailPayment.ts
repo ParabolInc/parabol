@@ -37,14 +37,16 @@ export default {
     const invoice = await manager.retrieveInvoice(invoiceId)
     const {amount_due: amountDue, customer, metadata, subscription, paid} = invoice
     const customerId = customer as string
-    let orgId = metadata.orgId
-    if (!orgId) {
+    let maybeOrgId = metadata.orgId
+    if (!maybeOrgId) {
       const customer = await manager.retrieveCustomer(customerId)
-      orgId = customer.metadata.orgid
-      if (!orgId) {
-        throw new Error(`Could not find orgId on invoice ${invoiceId}`)
-      }
+      maybeOrgId = customer.metadata.orgid
     }
+    if (!maybeOrgId) {
+      throw new Error(`Could not find orgId on invoice ${invoiceId}`)
+    }
+    // TS Error doesn't know if orgId stays a string or not
+    const orgId = maybeOrgId
     const org = await r
       .table('Organization')
       .get(orgId)

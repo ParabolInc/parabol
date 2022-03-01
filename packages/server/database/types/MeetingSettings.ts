@@ -1,4 +1,4 @@
-import {MeetingTypeEnum} from './Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import generateUID from '../../generateUID'
 import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
 

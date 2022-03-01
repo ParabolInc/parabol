@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {isNotNull} from 'parabol-client/utils/predicates'
 import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
 import {SprintPokerDefaults, SubscriptionChannel} from '~/types/constEnums'
 import {JiraScreen, RateLimitError} from '~/utils/AtlassianManager'
-import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import {isNotNull} from 'parabol-client/utils/predicates'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -54,7 +54,7 @@ const addMissingJiraField = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {
@@ -65,7 +65,7 @@ const addMissingJiraField = {
     const {dimensionRefIdx, serviceTaskId} = stage
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
-    const dimensionRef = dimensions[dimensionRefIdx]
+    const dimensionRef = dimensions[dimensionRefIdx]!
     const {name: dimensionName} = dimensionRef
     const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
     if (!auth) {

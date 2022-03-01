@@ -1,8 +1,8 @@
-import GenericMeetingPhase from '../database/types/GenericMeetingPhase'
-import EstimatePhase from '../database/types/EstimatePhase'
 import AgendaItemsPhase from '../database/types/AgendaItemsPhase'
 import CheckInPhase from '../database/types/CheckInPhase'
 import DiscussPhase from '../database/types/DiscussPhase'
+import EstimatePhase from '../database/types/EstimatePhase'
+import GenericMeetingPhase from '../database/types/GenericMeetingPhase'
 import ReflectPhase from '../database/types/ReflectPhase'
 import UpdatesPhase from '../database/types/UpdatesPhase'
 
@@ -16,7 +16,7 @@ interface PhaseTypeLookup {
 }
 
 const getPhase = <T extends keyof PhaseTypeLookup>(phases: GenericMeetingPhase[], phaseType: T) => {
-  return phases.find((phase) => phase.phaseType === phaseType) as PhaseTypeLookup[T]
+  return phases.find((phase) => phase.phaseType === phaseType) as unknown as PhaseTypeLookup[T]
 }
 
 export default getPhase
