@@ -49,6 +49,13 @@ export default class JiraServerRestManager {
     }
   }
 
+  readError(json: any) {
+    if (json.id === 'https://docs.atlassian.com/jira/REST/schema/error-collection#') {
+      return JSON.stringify(json.properties, undefined, '  ')
+    }
+    return ''
+  }
+
   async request(method: string, path: string) {
     const url = new URL(path, this.serverBaseUrl)
     const request = {
@@ -65,13 +72,25 @@ export default class JiraServerRestManager {
     return response
   }
 
+  async parseJsonResponse(response: Response) {
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return new Error('Received non-JSON Jira Server Response')
+    }
+    const json = await response.json()
+    if (response.status !== 200) {
+      return new Error(
+        `Fetching projects failed with status ${response.status}, ${this.readError(json)}`
+      )
+    }
+
+    return json
+  }
+
   async getProjects(): Promise<JiraServerRestProject[] | Error> {
     const response = await this.request('GET', '/rest/api/latest/project')
-    if (response.status !== 200) {
-      return new Error(`Fetching projects failed with status ${response.status}`)
-    }
-    const body = await response.json()
-    return body
+    const projects = this.parseJsonResponse(response)
+    return projects
   }
 
   async getProjectAvatar(avatarUrl: string) {
