@@ -1,9 +1,9 @@
-import RateLimiter from './RateLimiter'
+import {InMemoryRateLimiter} from './InMemoryRateLimiter'
 
-let rateLimiter: RateLimiter
+let rateLimiter: InMemoryRateLimiter
 const getRateLimiter = () => {
   if (!rateLimiter) {
-    rateLimiter = new RateLimiter()
+    rateLimiter = new InMemoryRateLimiter()
   }
   return rateLimiter
 }

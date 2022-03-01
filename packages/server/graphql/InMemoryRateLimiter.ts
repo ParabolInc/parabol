@@ -1,5 +1,10 @@
 import ms from 'ms'
 
+interface RateLimitStats {
+  lastHour?: number
+  lastMinute: number
+}
+
 const HOUR = ms('1h')
 const MINUTE = ms('1m')
 
@@ -13,18 +18,25 @@ interface LastCall {
   [userId: string]: number
 }
 
-class RateLimiter {
-  private _records = {} as Records
-  private _lastCall = {} as LastCall
+export interface InMemoryRateLimiterConfig {
+  scheduleGc?: boolean
+}
 
-  constructor() {
-    // careful! this is not unreffed, so it can keep a process alive
-    setInterval(() => {
-      this.gc()
-    }, HOUR)
+export class InMemoryRateLimiter {
+  private _records: Records = {}
+  private _lastCall: LastCall = {}
+
+  constructor(config: InMemoryRateLimiterConfig = {}) {
+    const {scheduleGc = true} = config
+    if (scheduleGc) {
+      // careful! this is not unreffed, so it can keep a process alive
+      setInterval(() => {
+        this.gc()
+      }, HOUR)
+    }
   }
 
-  log(userId: string, fieldName: string, isExtendedLog: boolean) {
+  public log(userId: string, fieldName: string, isExtendedLog: boolean): RateLimitStats {
     const now = Date.now()
     this._lastCall[userId] = now
     if (!this._records[userId]) {
@@ -50,7 +62,7 @@ class RateLimiter {
 
   // Garbage collecting by userId is not safe because there is no good trigger
   // If we use a signout/socket disconnect, then it encourages attackers to simply refresh
-  gc() {
+  private gc() {
     const now = Date.now()
     const userIds = Object.keys(this._lastCall)
     userIds.forEach((userId) => {
@@ -62,5 +74,3 @@ class RateLimiter {
     })
   }
 }
-
-export default RateLimiter
