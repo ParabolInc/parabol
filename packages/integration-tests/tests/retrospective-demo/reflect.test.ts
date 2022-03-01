@@ -35,10 +35,10 @@ test.describe('restrospective-demo / reflect page', () => {
     await config.goto(page, '/retrospective-demo')
     await page.click('text=Start Demo')
 
-    const startTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Stop doing this')
-    await page.press(startTextbox, 'Enter')
+    const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
+    await page.click(stopTextbox)
+    await page.type(stopTextbox, 'Stop doing this')
+    await page.press(stopTextbox, 'Enter')
 
     await expect(
       page.locator('[data-cy="reflection-stack-Stop"] :text("Stop doing this")')
@@ -49,10 +49,10 @@ test.describe('restrospective-demo / reflect page', () => {
     await config.goto(page, '/retrospective-demo')
     await page.click('text=Start Demo')
 
-    const startTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
-    await page.click(startTextbox)
-    await page.type(startTextbox, 'Continue doing this')
-    await page.press(startTextbox, 'Enter')
+    const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
+    await page.click(continueTextbox)
+    await page.type(continueTextbox, 'Continue doing this')
+    await page.press(continueTextbox, 'Enter')
 
     await expect(
       page.locator('[data-cy="reflection-stack-Continue"] :text("Continue doing this")')
