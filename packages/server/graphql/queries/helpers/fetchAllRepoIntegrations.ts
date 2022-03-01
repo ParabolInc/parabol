@@ -20,7 +20,7 @@ const fetchAllRepoIntegrations = async (
     fetchGitHubRepos(teamId, userId, dataLoader, context, info),
     fetchJiraServerProjects(teamId, userId, dataLoader)
   ])
-  const fetchedRepoIntegrations = [...(jiraProjects ?? []), ...githubRepos, ...jiraServerProjects]
+  const fetchedRepoIntegrations = [...jiraProjects, ...githubRepos, ...jiraServerProjects]
   const repoIntegrationsLastUsedAt = {} as {[repoIntegrationId: string]: Date}
   prevRepoIntegrations.forEach((integration) => {
     const integrationId = IntegrationRepoId.join(integration)
