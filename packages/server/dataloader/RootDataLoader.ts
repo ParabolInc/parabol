@@ -2,6 +2,7 @@ import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
 import * as pollLoaders from './pollsLoaders'
 import * as atlassianLoaders from './atlassianLoaders'
+import * as jiraServerLoaders from './jiraServerLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import * as githubLoaders from './githubLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
@@ -26,6 +27,7 @@ const loaderMakers = {
   ...foreignKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
+  ...jiraServerLoaders,
   ...customLoaderMakers,
   ...githubLoaders,
   ...integrationAuthLoaders,
@@ -51,6 +53,7 @@ type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<Forei
  */
 type CustomLoaderMakers = typeof customLoaderMakers &
   typeof atlassianLoaders &
+  typeof jiraServerLoaders &
   typeof pollLoaders &
   typeof integrationAuthLoaders &
   typeof primaryKeyLoaderMakers &

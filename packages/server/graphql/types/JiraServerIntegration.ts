@@ -1,7 +1,6 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import TeamMember from '../../database/types/TeamMember'
 import {GQLContext} from '../graphql'
-import fetchJiraServerProjects from '../queries/helpers/fetchJiraServerProjects'
 import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
 import JiraServerRemoteProject from './JiraServerRemoteProject'
@@ -46,7 +45,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
       resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
-        return fetchJiraServerProjects(teamId, userId, dataLoader)
+        return dataLoader.get('allJiraServerProjects').load({teamId, userId})
       }
     }
   })

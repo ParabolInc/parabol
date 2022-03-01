@@ -1,7 +1,7 @@
 import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
 
-interface JiraServerProject {
+export interface JiraServerRestProject {
   /// more available fields
   expand: string
   /// project url
@@ -65,7 +65,7 @@ export default class JiraServerRestManager {
     return response
   }
 
-  async getProjects(): Promise<JiraServerProject[] | Error> {
+  async getProjects(): Promise<JiraServerRestProject[] | Error> {
     const response = await this.request('GET', '/rest/api/latest/project')
     if (response.status !== 200) {
       return new Error(`Fetching projects failed with status ${response.status}`)
