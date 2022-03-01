@@ -37,7 +37,35 @@ test.describe('restrospective-demo / group page', () => {
   })
 
   test('it allows grouping user-entered input from the reflect phase', async ({page}) => {
-    // todo
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
+    await page.click(startTextbox)
+    await page.type(startTextbox, 'Documenting things in Notion')
+    await page.press(startTextbox, 'Enter')
+
+    const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
+    await page.click(stopTextbox)
+    await page.type(stopTextbox, 'Making decisions in one-on-one meetings')
+    await page.press(stopTextbox, 'Enter')
+
+    const nextButton = page.locator('button :text("Next")')
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+    await nextButton.click()
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
+
+    const decisionsInOneOnOnesCard = page.locator('text=Making decisions in one-on-one meetings')
+    const documentingInNotionCard = page.locator('text=Documenting things in notion')
+    await decisionsInOneOnOnesCard.dragTo(documentingInNotionCard)
+
+    // Then it auto-generates a header
+    expect(
+      page.locator(
+        '[data-cy=group-column-Start] [data-cy="Start-group-*"] :text("Documenting things in")'
+      )
+    )
   })
 
   test('it shows all cards in the group when clicked', async ({page}) => {
