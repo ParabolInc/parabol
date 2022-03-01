@@ -1,13 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
 import getRethink from '../../database/rethinkDriver'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import SelectTemplatePayload from '../types/SelectTemplatePayload'
 import {GQLContext} from '../graphql'
-import isValid from '../isValid'
+import SelectTemplatePayload from '../types/SelectTemplatePayload'
 
 const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -45,9 +44,10 @@ const selectTemplate = {
       if (!isTeamMember(authToken, template.teamId))
         return standardError(new Error('Template is scoped to team'), {userId: viewerId})
     } else if (scope === 'ORGANIZATION') {
-      const [viewerTeam, templateTeam] = (
-        await dataLoader.get('teams').loadMany([teamId, template.teamId])
-      ).filter(isValid)
+      const [viewerTeam, templateTeam] = await Promise.all([
+        dataLoader.get('teams').loadNonNull(teamId),
+        dataLoader.get('teams').loadNonNull(template.teamId)
+      ])
       if (viewerTeam.orgId !== templateTeam.orgId) {
         return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
       }

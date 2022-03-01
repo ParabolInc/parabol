@@ -1,4 +1,3 @@
-import {GQLContext} from './../graphql'
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -10,14 +9,15 @@ import {
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import Task from '../../database/types/Task'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
+import Task from '../../database/types/Task'
 import ITeam from '../../database/types/Team'
 import db from '../../db'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import {GQLContext} from './../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MassInvitation from './MassInvitation'
@@ -86,7 +86,8 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           .load(teamMemberId)
         const [newestInvitationToken] = invitationTokens
         // if the token is valid, return it
-        if (newestInvitationToken?.expiration > new Date()) return newestInvitationToken
+        if (newestInvitationToken?.expiration ?? new Date(0) > new Date())
+          return newestInvitationToken
         // if the token is not valid, delete it to keep the table clean of expired things
         if (newestInvitationToken) {
           await r

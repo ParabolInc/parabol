@@ -7,7 +7,7 @@ export interface ClientRetroReflection {
 }
 
 export interface ParabolSearchQuery {
-  id: String!
-  queryString: String
+  id: string
+  queryString: string
   statusFilters: [TaskStatusEnum!]
 }

@@ -9,7 +9,7 @@ interface Input {
   teamId: string
   meetingCount: number
   name?: string
-  phases: PokerPhase[]
+  phases: [PokerPhase, ...PokerPhase[]]
   facilitatorUserId: string
   templateId: string
   templateRefId: string

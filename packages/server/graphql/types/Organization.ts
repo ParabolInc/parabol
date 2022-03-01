@@ -151,7 +151,7 @@ const Organization: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<a
         return {
           edges,
           pageInfo: {
-            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
+            endCursor: firstEdge ? edges[edges.length - 1]!.cursor : null,
             hasNextPage: false
           }
         }

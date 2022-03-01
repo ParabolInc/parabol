@@ -6,7 +6,7 @@ import {
   GraphQLObjectType
 } from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {MeetingTypeEnum as TMeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum as TMeetingTypeEnum} from '../../postgres/types/Meeting'
 import {GQLContext} from '../graphql'
 import {resolveUser} from '../resolvers'
 import ActionMeetingMember from './ActionMeetingMember'
