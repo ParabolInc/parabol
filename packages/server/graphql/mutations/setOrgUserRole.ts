@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
 import {OrgUserRole} from '../../database/types/OrganizationUser'
-import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -38,8 +38,13 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader, {clearCache: true}))) {
-      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
+    if (
+      !(await isUserBillingLeader(viewerId, orgId, dataLoader, {clearCache: true})) &&
+      !isSuperUser(authToken)
+    ) {
+      return standardError(new Error('Must be the organization leader or admin'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
@@ -71,19 +76,12 @@ export default {
     if (organizationUser.role === role) return null
     const {id: organizationUserId} = organizationUser
     // RESOLUTION
-    await r
-      .table('OrganizationUser')
-      .get(organizationUserId)
-      .update({role})
-      .run()
+    await r.table('OrganizationUser').get(organizationUserId).update({role}).run()
 
     if (role === 'BILLING_LEADER') {
       const promotionNotification = new NotificationPromoteToBillingLeader({orgId, userId})
       const {id: promotionNotificationId} = promotionNotification
-      await r
-        .table('Notification')
-        .insert(promotionNotification)
-        .run()
+      await r.table('Notification').insert(promotionNotification).run()
       const notificationIdsAdded = [promotionNotificationId]
       // add the org to the list of owned orgs
       const data = {orgId, userId, organizationUserId, notificationIdsAdded}
