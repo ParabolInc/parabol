@@ -8,7 +8,7 @@ const NewTeamInput = new GraphQLInputObjectType({
       description: 'The name of the team'
     },
     orgId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The unique orginization ID that pays for the team'
     }
   })
@@ -16,7 +16,7 @@ const NewTeamInput = new GraphQLInputObjectType({
 
 export type NewTeamInputType = {
   name: string
-  orgId: string
+  orgId?: string
 }
 
 export default NewTeamInput

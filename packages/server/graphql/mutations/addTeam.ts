@@ -38,7 +38,7 @@ export default {
       const subOptions = {mutatorId, operationId}
 
       // AUTH
-      const {orgId} = args.newTeam
+      const orgId = args.newTeam.orgId ?? ''
       const viewerId = getUserId(authToken)
       const viewer = await dataLoader.get('users').load(viewerId)
 
