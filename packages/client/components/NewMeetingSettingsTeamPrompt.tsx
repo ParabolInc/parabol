@@ -14,8 +14,8 @@ const NewMeetingSettingsTeamPrompt = (_props: Props) => {
 export default createFragmentContainer(NewMeetingSettingsTeamPrompt, {
   team: graphql`
     fragment NewMeetingSettingsTeamPrompt_team on Team {
-      actionSettings: meetingSettings(meetingType: action) {
-        ...NewMeetingSettingsToggleCheckIn_settings
+      teamPromptSettings: meetingSettings(meetingType: teamPrompt) {
+        id
       }
     }
   `

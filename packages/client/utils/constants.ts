@@ -22,6 +22,7 @@ export const FIRST_CALL = 'firstcall'
 export const AGENDA_ITEMS = 'agendaitems'
 export const LAST_CALL = 'lastcall'
 export const SUMMARY = 'summary'
+export const RESPONSES = 'responses'
 
 /* Retrospective Phases */
 export const REFLECT = 'reflect'

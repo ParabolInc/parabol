@@ -285,6 +285,15 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
       const docs = resultsByType.flat()
       return keys.map((key) => {
         const {teamId, meetingType} = key
+        // until we decide the final shape of the team prompt settings, let's return a temporary hardcoded value
+        if (meetingType === 'teamPrompt') {
+          return {
+            id: `${teamId}:${meetingType}:tempId`,
+            phaseTypes: ['responses'],
+            meetingType,
+            teamId
+          }
+        }
         return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
       })
     },

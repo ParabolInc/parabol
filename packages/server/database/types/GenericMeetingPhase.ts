@@ -15,6 +15,7 @@ export type NewMeetingPhaseTypeEnum =
   | 'reflect'
   | 'updates'
   | 'vote'
+  | 'responses'
 
 export default class GenericMeetingPhase {
   id = generateUID()

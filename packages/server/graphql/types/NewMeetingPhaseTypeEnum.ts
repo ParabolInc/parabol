@@ -9,7 +9,8 @@ import {
   LOBBY,
   REFLECT,
   UPDATES,
-  VOTE
+  VOTE,
+  RESPONSES
 } from 'parabol-client/utils/constants'
 
 const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
@@ -32,7 +33,9 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
     [DISCUSS]: {},
     SUMMARY: {},
     SCOPE: {},
-    ESTIMATE: {}
+    ESTIMATE: {},
+    // team prompt
+    [RESPONSES]: {}
   }
 })
 

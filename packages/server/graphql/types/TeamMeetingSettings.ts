@@ -6,6 +6,7 @@ import {MeetingTypeEnum as TMeetingTypeEnum} from '../../postgres/types/Meeting'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import PokerMeetingSettings from './PokerMeetingSettings'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
+import TeamPromptMeetingSettings from './TeamPromptMeetingSettings'
 import Team from './Team'
 
 export const teamMeetingSettingsFields = () => ({
@@ -39,7 +40,8 @@ const TeamMeetingSettings: GraphQLInterfaceType = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       action: ActionMeetingSettings,
       retrospective: RetrospectiveMeetingSettings,
-      poker: PokerMeetingSettings
+      poker: PokerMeetingSettings,
+      teamPrompt: TeamPromptMeetingSettings
     }
     return resolveTypeLookup[meetingType]
   }
