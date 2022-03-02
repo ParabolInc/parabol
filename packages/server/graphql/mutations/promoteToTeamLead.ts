@@ -6,7 +6,6 @@ import {getUserId, isSuperUser} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import GraphQLEmailType from '../types/GraphQLEmailType'
 import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
 
 export default {
@@ -17,14 +16,14 @@ export default {
       type: new GraphQLNonNull(GraphQLID),
       description: 'Team id of the team which is about to get a new team leader'
     },
-    newTeamLeadEmail: {
-      type: new GraphQLNonNull(GraphQLEmailType),
-      description: 'Email of the user who will be set as a new team leader'
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'userId who will be set as a new team leader'
     }
   },
   async resolve(
     _source: unknown,
-    {teamId, newTeamLeadEmail}: {teamId: string; newTeamLeadEmail: string},
+    {teamId, userId}: {teamId: string; userId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -52,7 +51,7 @@ export default {
     const promoteeOnTeam = await r
       .table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
-      .filter({email: newTeamLeadEmail, isNotRemoved: true})
+      .filter({userId, isNotRemoved: true})
       .nth(0)
       .default(null)
       .run()

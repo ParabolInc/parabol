@@ -55,7 +55,7 @@ const NewMeetingCheckIn = (props: Props) => {
   // in case the checkin is the last phase of the meeting
   if (!nextStageRes) return null
   const {viewerId} = atmosphere
-  const isMyMeetingSection = userId === viewerId
+  const isViewerMeetingSection = userId === viewerId
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -69,7 +69,7 @@ const NewMeetingCheckIn = (props: Props) => {
         <PhaseWrapper>
           <NewMeetingCheckInPrompt meeting={meeting} teamMember={teamMember} />
           <CheckIn>
-            {isMyMeetingSection && (
+            {isViewerMeetingSection && (
               <Hint>
                 <StyledIcon>record_voice_over</StyledIcon>
                 <MeetingFacilitationHint>

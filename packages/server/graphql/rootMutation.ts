@@ -24,9 +24,8 @@ import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
 import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
-import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration'
 import createImposterToken from './mutations/createImposterToken'
-import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
+import createTaskIntegration from './mutations/createTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
@@ -113,6 +112,7 @@ import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
+import setTaskHighlight from './mutations/setTaskHighlight'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
@@ -170,8 +170,7 @@ export default new GraphQLObjectType<any, Context>({
       changeTaskTeam,
       setNotificationStatus,
       createImposterToken,
-      createGitHubTaskIntegration,
-      createJiraTaskIntegration,
+      createTaskIntegration,
       createMassInvitation,
       createOAuth1AuthorizeUrl,
       createReflection,
@@ -246,6 +245,7 @@ export default new GraphQLObjectType<any, Context>({
       startCheckIn,
       startRetrospective,
       startSprintPoker,
+      setTaskHighlight,
       updateAgendaItem,
       updateCommentContent,
       updateCreditCard,

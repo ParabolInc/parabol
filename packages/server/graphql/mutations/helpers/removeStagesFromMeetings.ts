@@ -26,7 +26,7 @@ const removeStagesFromMeetings = async (
         // do this inside the loop since it's mutative
         const {stages} = phase
         for (let i = stages.length - 1; i >= 0; i--) {
-          const stage = stages[i]
+          const stage = stages[i]!
           if (filterFn(stage)) {
             const nextStage = getNextFacilitatorStageAfterStageRemoved(
               meeting.facilitatorStageId,

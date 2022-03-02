@@ -119,8 +119,7 @@ module.exports = ({isDeploy, isStats}) => ({
       __CLIENT__: true,
       __PRODUCTION__: true,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.DEBUG': false,
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.DEBUG': false
       // Environment variables go in createSSR.ts, not here
       // This build may be deployed to many different environments
     }),

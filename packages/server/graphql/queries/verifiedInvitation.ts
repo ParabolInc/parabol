@@ -20,7 +20,7 @@ const getIsGoogleProvider = async (user: IUser | null, email: string) => {
   if (identities) {
     return !!identities.find((identity) => identity.type === AuthIdentityTypeEnum.GOOGLE)
   }
-  const [, domain] = email.split('@')
+  const [, domain] = email.split('@') as [string, string]
   let res
   try {
     res = await resolveMx(domain)

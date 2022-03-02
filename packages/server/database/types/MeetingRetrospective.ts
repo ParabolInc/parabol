@@ -6,7 +6,7 @@ interface Input {
   teamId: string
   meetingCount: number
   name?: string
-  phases: GenericMeetingPhase[]
+  phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
   templateId: string

@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {MeetingTypeEnum as TMeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum as TMeetingTypeEnum} from '../../postgres/types/Meeting'
 
 const MeetingTypeEnum = new GraphQLEnumType({
   name: 'MeetingTypeEnum',

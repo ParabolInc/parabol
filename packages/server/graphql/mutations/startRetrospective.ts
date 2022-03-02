@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
@@ -64,7 +64,7 @@ export default {
       meetingType,
       dataLoader
     )
-    const team = await dataLoader.get('teams').load(teamId)
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
     const organization = await r.table('Organization').get(team.orgId).run()
     const {showConversionModal} = organization
 

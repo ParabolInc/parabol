@@ -22,7 +22,7 @@ const checkEqAndWriteOutput = async (
   fileLocation: string,
   maxErrors = 10
 ): Promise<void> => {
-  const errors = await tableResolvers[tableName](maxErrors)
+  const errors = await tableResolvers[tableName]!(maxErrors)
   await fs.promises.writeFile(fileLocation, JSON.stringify(errors))
 }
 
@@ -58,13 +58,14 @@ const checkRethinkPgEquality = {
     requireSU(authToken)
 
     // VALIDATION
-    if (!tableResolvers.hasOwnProperty(tableName)) {
+    const tableResolver = tableResolvers[tableName]
+    if (!tableResolver) {
       return `That table name either doesn't exist or hasn't yet been implemented.`
     }
 
     // RESOLUTION
     if (!writeToFile) {
-      const errors = await tableResolvers[tableName](maxErrors)
+      const errors = await tableResolver(maxErrors)
       return JSON.stringify(errors)
     }
     const fileName = `${tableName}-${new Date()}`

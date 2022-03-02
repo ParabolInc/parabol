@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {PokerSidebarEstimateSection_meeting} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
@@ -10,6 +10,7 @@ import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
 import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
+import {ESTIMATING_TASK} from '../utils/constants'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
 import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
@@ -58,18 +59,16 @@ const PokerSidebarEstimateSection = (props: Props) => {
   const stageSummaries = useMakeStageSummaries(estimatePhase, localStageId)
   const inSync = localStageId === facilitatorStageId
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
+    if (!destination) return
     const sourceTopic = stageSummaries[source.index]
     const destinationTopic = stageSummaries[destination.index]
-
     if (
-      !destination ||
-      destination.droppableId !== 'TASK' ||
-      source.droppableId !== 'TASK' ||
+      destination.droppableId !== ESTIMATING_TASK ||
+      source.droppableId !== ESTIMATING_TASK ||
       destination.index === source.index ||
-      !sourceTopic ||
-      !destinationTopic
+      !sourceTopic ||!destinationTopic
     ) {
       return
     }
@@ -103,7 +102,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <MeetingSidebarPhaseItemChild>
-        <Droppable droppableId={'TASK'}>
+        <Droppable droppableId={ESTIMATING_TASK}>
           {(provided) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>

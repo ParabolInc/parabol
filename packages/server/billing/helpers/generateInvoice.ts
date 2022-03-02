@@ -89,7 +89,7 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
   }
   for (let j = 0; j < userTypes.length; j++) {
     // for each type
-    const type = userTypes[j]
+    const type = userTypes[j]!
     const reducedItems = reducedItemsByType[type]
     const startTimeDict = typesDict[type]
     const startTimes = Object.keys(startTimeDict)
@@ -97,8 +97,8 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
     const dateField = type === InvoiceItemType.UNPAUSE_USER ? 'endAt' : 'startAt'
     for (let k = 0; k < startTimes.length; k++) {
       // for each time period
-      const startTime = startTimes[k]
-      const lineItems = startTimeDict[startTime]
+      const startTime = startTimes[k]!
+      const lineItems = startTimeDict[startTime]!
       // combine unusedTime with remainingTime to create a single activity
       const {unusedTime, remainingTime} = lineItems
       const unusedTimeAmount = unusedTime ? unusedTime.amount : 0
@@ -123,7 +123,7 @@ const makeDetailedPauseEvents = (
   // really this should be an if clause, but there are some errors cases where multiple unpause events were sent for the same user
   while (
     unpausedItems.length > 0 &&
-    (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)
+    (pausedItems.length === 0 || unpausedItems[0]!.endAt < pausedItems[0]!.startAt)
   ) {
     // mutative
     const firstUnpausedItem = unpausedItems.shift()!
@@ -131,8 +131,8 @@ const makeDetailedPauseEvents = (
   }
   // match up every pause with an unpause so it's clear that Foo was paused for 5 days
   for (let j = 0; j < unpausedItems.length; j++) {
-    const unpausedItem = unpausedItems[j]
-    const pausedItem = pausedItems[j]
+    const unpausedItem = unpausedItems[j]!
+    const pausedItem = pausedItems[j]!
     inactivityDetails.push({
       ...pausedItem,
       amount: unpausedItem.amount + pausedItem.amount,
@@ -142,7 +142,7 @@ const makeDetailedPauseEvents = (
 
   // if there is an extra pause, then it's because they are still on pause while we're invoicing.
   if (pausedItems.length > unpausedItems.length) {
-    const lastPausedItem = pausedItems[pausedItems.length - 1]
+    const lastPausedItem = pausedItems[pausedItems.length - 1]!
     inactivityDetails.push(lastPausedItem)
   }
   return inactivityDetails
@@ -152,7 +152,7 @@ const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) =>
   const quantityChangeLineItems: QuantityChangeLineItem[] = []
   const lineItemTypes = Object.keys(detailedLineItems) as (keyof DetailedLineItemDict)[]
   for (let i = 0; i < lineItemTypes.length; i++) {
-    const lineItemType = lineItemTypes[i]
+    const lineItemType = lineItemTypes[i]!
     const details = detailedLineItems[lineItemType] as ReducedItem[]
     if (details.length > 0) {
       const id = generateUID()
@@ -182,9 +182,9 @@ const makeDetailedLineItems = async (itemDict: ItemDict, dataLoader: DataLoaderW
 
   for (let i = 0; i < userIds.length; i++) {
     // for each userId
-    const userId = userIds[i]
-    const email = emailLookup[userId]
-    const typesDict = itemDict[userId]
+    const userId = userIds[i]!
+    const email = emailLookup[userId]!
+    const typesDict = itemDict[userId]!
     const reducedItemsByType = reduceItemsByType(typesDict, email)
     const pausedItems = reducedItemsByType.pauseUser
     const unpausedItems = reducedItemsByType.unpauseUser
@@ -199,16 +199,17 @@ const makeDetailedLineItems = async (itemDict: ItemDict, dataLoader: DataLoaderW
 
 const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineItem) => {
   const {
-    metadata: {userId, type},
+    metadata,
     period: {start}
   } = lineItem
-  const safeType = (
-    type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
-  ) as keyof TypesDict
-  itemDict[userId] = itemDict[userId] || {}
-  itemDict[userId][safeType] = itemDict[userId][safeType] || {}
-  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}
-  const startTimeItems = itemDict[userId][safeType][start] as InvoicesByStartTime['start']
+  const userId = metadata.userId!
+  const type = metadata.type as InvoiceItemType
+  const safeType = type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
+  itemDict[userId] = itemDict[userId] || ({} as TypesDict)
+  const userItemDict = itemDict[userId]!
+  userItemDict[safeType] = userItemDict[safeType] || {}
+  userItemDict[safeType][start] = userItemDict[safeType][start] || {}
+  const startTimeItems = userItemDict[safeType][start] as InvoicesByStartTime['start']
   const bucket = lineItem.amount < 0 ? 'unusedTime' : 'remainingTime'
   // an identical line item may already exist in the bucket, e.g. a user was removed & prorated to the exact same timestamp (subscription start)
   // since the start time is the same, we know the amount will be the same, so we do this to avoid a duplicate line item on the invoice
@@ -220,7 +221,7 @@ const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
   const unknownLineItems = [] as Stripe.invoices.IInvoiceLineItem[]
   let nextPeriodCharges!: NextPeriodCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
-    const lineItem = stripeLineItems[i]
+    const lineItem = stripeLineItems[i]!
     const {
       amount,
       metadata,
@@ -264,7 +265,7 @@ const maybeReduceUnknowns = async (
   const unknowns = [] as Stripe.invoices.IInvoiceLineItem[]
   const manager = new StripeManager()
   for (let i = 0; i < unknownLineItems.length; i++) {
-    const unknownLineItem = unknownLineItems[i]
+    const unknownLineItem = unknownLineItems[i]!
     // this could be inefficient but if all goes as planned, we'll never use this function
 
     const hook = await r

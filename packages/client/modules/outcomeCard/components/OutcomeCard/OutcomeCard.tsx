@@ -4,6 +4,7 @@ import {EditorState} from 'draft-js'
 import React, {memo, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
+import {PALETTE} from '~/styles/paletteV3'
 import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
@@ -25,15 +26,18 @@ const RootCard = styled('div')<{
   isTaskHovered: boolean
   isTaskFocused: boolean
   isDragging: boolean
-}>(({isTaskHovered, isTaskFocused, isDragging}) => ({
+  isTaskHighlighted: boolean
+}>(({isTaskHovered, isTaskFocused, isDragging, isTaskHighlighted}) => ({
   ...cardRootStyles,
   borderTop: 0,
-  outline: 'none',
+  outline: isTaskHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none',
   padding: `${Card.PADDING} 0 0`,
   transition: `box-shadow 100ms ease-in`,
   // hover before focus, it matters
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
+    : isTaskHighlighted
+    ? cardHoverShadow
     : isTaskFocused
     ? cardFocusShadow
     : isTaskHovered
@@ -83,7 +87,7 @@ const OutcomeCard = memo((props: Props) => {
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
-  const {integration, status, id: taskId, team} = task
+  const {integration, status, id: taskId, team, isHighlighted} = task
   const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const {id: teamId} = team
   const type = integration?.__typename
@@ -98,6 +102,7 @@ const OutcomeCard = memo((props: Props) => {
       isTaskHovered={isTaskHovered}
       isTaskFocused={isTaskFocused}
       isDragging={!!isDraggingOver}
+      isTaskHighlighted={!!isHighlighted}
     >
       <TaskWatermark type={type} />
       <ContentBlock>
@@ -150,7 +155,7 @@ const OutcomeCard = memo((props: Props) => {
 
 export default createFragmentContainer(OutcomeCard, {
   task: graphql`
-    fragment OutcomeCard_task on Task {
+    fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
       ...IntegratedTaskContent_task
       id
       integration {
@@ -164,6 +169,7 @@ export default createFragmentContainer(OutcomeCard, {
       }
       # grab userId to ensure sorting on connections works
       userId
+      isHighlighted(meetingId: $meetingId)
       ...EditingStatus_task
       ...TaskFooter_task
     }

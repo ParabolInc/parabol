@@ -1,15 +1,23 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import JiraProjectId from '../../../client/shared/gqlIds/JiraProjectId'
+import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import {
+  createImageUrlHash,
+  createParabolImageUrl,
+  downloadAndCacheImage
+} from '../../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import defaultJiraProjectAvatar from '../../utils/defaultJiraProjectAvatar'
 import {GQLContext} from '../graphql'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
+import RepoIntegration, {repoIntegrationFields} from './RepoIntegration'
 
 const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteProject',
   description: 'A project fetched from Jira in real time',
+  interfaces: () => [RepoIntegration],
+  isTypeOf: ({cloudId, key}) => !!(cloudId && key),
   fields: () => ({
+    ...repoIntegrationFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       resolve: ({cloudId, key}) => JiraProjectId.join(cloudId, key)
@@ -43,8 +51,9 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
         if (!auth) return null
         const {accessToken} = auth
         const manager = new AtlassianServerManager(accessToken)
-        const avatar = await manager.getProjectAvatar(url)
-        return avatar || defaultJiraProjectAvatar
+        const avatarUrlHash = createImageUrlHash(url)
+        await downloadAndCacheImage(manager, avatarUrlHash, url)
+        return createParabolImageUrl(avatarUrlHash)
       }
     },
     avatarUrls: {

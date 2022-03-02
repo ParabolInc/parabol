@@ -44,7 +44,9 @@ if (dsn) {
   })
 }
 
-if (__PRODUCTION__ && datadogClientToken && datadogApplicationId && datadogService) {
+const datadogEnabled =
+  __PRODUCTION__ && datadogClientToken && datadogApplicationId && datadogService
+if (datadogEnabled) {
   datadogRum.init({
     applicationId: `${datadogApplicationId}`,
     clientToken: `${datadogClientToken}`,
@@ -57,17 +59,21 @@ if (__PRODUCTION__ && datadogClientToken && datadogApplicationId && datadogServi
   })
   datadogRum.startSessionReplayRecording()
 }
+
 // page titles are changed in child components via useDocumentTitle, which fires after this
 // we must guarantee that this runs after useDocumentTitle
 // we can't move this into useDocumentTitle since the pathname may change without chaging the title
 const TIME_TO_RENDER_TREE = 100
 
 const AnalyticsPage = () => {
-  const key = window.__ACTION__.segment
-  if (!key) return null // development use
+  if (!__PRODUCTION__) {
+    return null
+  }
+
   /* eslint-disable */
   const {href, pathname} = location
   const pathnameRef = useRef(pathname)
+  const segmentKey = window.__ACTION__.segment
   useEffect(() => {
     if (!window.analytics) {
       // we dont use the segment snippet because we can guarantee no call will be made to segment before it's loaded
@@ -79,7 +85,7 @@ const AnalyticsPage = () => {
     }
   }, [])
   const [isSegmentLoaded] = useScript(
-    `https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`,
+    `https://cdn.segment.com/analytics.js/v1/${segmentKey}/analytics.min.js`,
     {
       crossOrigin: true
     }
@@ -157,6 +163,22 @@ const AnalyticsPage = () => {
       )
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
+
+  useEffect(() => {
+    if (!datadogEnabled) {
+      return
+    }
+
+    const {viewerId} = atmosphere
+    if (viewerId) {
+      datadogRum.setUser({
+        id: atmosphere.viewerId
+      })
+    } else {
+      datadogRum.removeUser()
+    }
+  }, [atmosphere, atmosphere.viewerId])
+
   return null
 }
 

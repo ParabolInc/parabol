@@ -7,6 +7,7 @@ import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueLi
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import MovePokerTemplateScaleValueMutation from '../../../mutations/MovePokerTemplateScaleValueMutation'
+import {TEMPLATE_SCALE_VALUE} from '../../../utils/constants'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import AddScaleValueButtonInput from './AddScaleValueButtonInput'
 import TemplateScaleValueItem from './TemplateScaleValueItem'
@@ -23,7 +24,6 @@ const ScaleList = styled('div')({
   width: '100%'
 })
 
-const TEMPLATE_SCALE_VALUE = 'TEMPLATE_SCALE_VALUE'
 
 const TemplateScaleValueList = (props: Props) => {
   const {isOwner, scale} = props
@@ -33,10 +33,10 @@ const TemplateScaleValueList = (props: Props) => {
 
   const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
+    if (!destination) return
     const {values: scaleValues} = scale
     const sourceScaleValue = scaleValues[source.index]
     if (
-      !destination ||
       destination.droppableId !== TEMPLATE_SCALE_VALUE ||
       source.droppableId !== TEMPLATE_SCALE_VALUE ||
       destination.index === source.index ||

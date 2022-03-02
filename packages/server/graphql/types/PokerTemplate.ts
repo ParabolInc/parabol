@@ -5,7 +5,7 @@ import TemplateDimension from './TemplateDimension'
 import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {MeetingTypeEnum} from '../../database/types/Meeting'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 
 const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerTemplate',

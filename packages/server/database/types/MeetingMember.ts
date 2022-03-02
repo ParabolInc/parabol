@@ -1,5 +1,5 @@
-import {MeetingTypeEnum} from './Meeting'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 
 interface MeetingMemberInput {
   id?: string

@@ -69,13 +69,13 @@ export default {
     const oldPositionIndex = taskIds.indexOf(taskId) / numberOfDimensions
     let sortOrder
     if (newPositionIndex === 0) {
-      sortOrder = stages[0].sortOrder - ESTIMATE_TASK_SORT_ORDER
+      sortOrder = stages[0]!.sortOrder - ESTIMATE_TASK_SORT_ORDER
     } else if (newPositionIndex === numberOfTasks - 1) {
-      sortOrder = stages[stages.length - 1].sortOrder + ESTIMATE_TASK_SORT_ORDER
+      sortOrder = stages[stages.length - 1]!.sortOrder + ESTIMATE_TASK_SORT_ORDER
     } else {
       const offSet = oldPositionIndex > newPositionIndex ? 0 : 1
-      const prevStage = stages[(newPositionIndex + offSet) * numberOfDimensions - 1]
-      const nextStage = stages[(newPositionIndex + offSet) * numberOfDimensions]
+      const prevStage = stages[(newPositionIndex + offSet) * numberOfDimensions - 1]!
+      const nextStage = stages[(newPositionIndex + offSet) * numberOfDimensions]!
       sortOrder = Math.floor((prevStage.sortOrder + nextStage.sortOrder) / 2)
     }
     draggedStages.forEach((stage, i) => {

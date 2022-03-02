@@ -104,7 +104,8 @@ export default class Atmosphere extends Environment {
   upgradeTransportPromise: Promise<void> | null = null
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
-  userId: string | null = null // DEPRECATED
+  /** @deprecated */
+  userId: string | null = null
   constructor() {
     super({
       store,

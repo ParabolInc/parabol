@@ -11,7 +11,7 @@ import {
 import catchAndLog from '../postgres/utils/catchAndLog'
 import isValid from '../graphql/isValid'
 import AtlassianServerManager from './AtlassianServerManager'
-import {isNotNull} from './predicates'
+import {isNotNull} from 'parabol-client/utils/predicates'
 
 const hashMapper = (mapper: JiraDimensionField) => {
   const {cloudId, projectKey, dimensionName} = mapper

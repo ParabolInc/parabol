@@ -5,6 +5,7 @@ import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
+import {TEMPLATE_DIMENSION} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
 import {TemplateDimensionList_dimensions} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
 import TemplateDimensionItem from './TemplateDimensionItem'
@@ -21,26 +22,23 @@ const DimensionList = styled('div')({
   width: '100%'
 })
 
-const TEMPLATE_DIMENSION = 'TEMPLATE_DIMENSION'
-
 const TemplateDimensionList = (props: Props) => {
   const {isOwner, dimensions, templateId} = props
   const atmosphere = useAtmosphere()
 
   const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
+    if (!destination) return
+    const sourceDimension = dimensions[source.index]
+    const destinationDimension = dimensions[destination.index]
     if (
-      !destination ||
       destination.droppableId !== TEMPLATE_DIMENSION ||
       source.droppableId !== TEMPLATE_DIMENSION ||
-      destination.index === source.index
+      destination.index === source.index ||
+      !sourceDimension || !destinationDimension
     ) {
       return
     }
-
-    const sourceDimension = dimensions[source.index]
-    const destinationDimension = dimensions[destination.index]
-    if (!sourceDimension || !destinationDimension) return
 
     let sortOrder
     if (destination.index === 0) {

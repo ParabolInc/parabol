@@ -4,7 +4,7 @@ const mode = <T>(array: T[], getField = (item: T) => item) => {
   let maxFreqItem
 
   for (let ii = 0; ii < array.length; ii++) {
-    const item = array[ii]
+    const item = array[ii]!
     const itemField = getField(item)
     const prevFreq = map.get(itemField) || 0
     const nextFreq = prevFreq + 1

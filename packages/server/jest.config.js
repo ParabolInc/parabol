@@ -1,4 +1,4 @@
-const {jsWithTs: tsjPreset} = require('ts-jest/presets')
+const tsJestPresets = require('ts-jest/presets')
 
 module.exports = {
   preset: 'ts-jest',
@@ -9,8 +9,14 @@ module.exports = {
     }
   },
   transform: {
-    ...tsjPreset.transform
+    '\\.(gql|graphql)$': 'jest-transform-graphql',
+    ...tsJestPresets.jsWithBabel.transform
   },
   modulePaths: ['<rootDir>/packages/'],
+  moduleNameMapper: {
+    'server/(.*)': ['<rootDir>/$1'],
+    'parabol-client/(.*)': ['<rootDir>/../client/$1'],
+    '~/(.*)': ['<rootDir>/../client/$1']
+  },
   testRegex: '/__tests__/.*.test\\.ts?$'
 }
