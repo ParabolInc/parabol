@@ -119,7 +119,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           projectKeyFilters.forEach((globalProjectKey) => {
             const [cloudId, projectKey] = globalProjectKey.split(':')
             projectKeyFiltersByCloudId[cloudId] = projectKeyFiltersByCloudId[cloudId] || []
-            projectKeyFiltersByCloudId[cloudId].push(projectKey)
+            // guaranteed from line above
+            projectKeyFiltersByCloudId[cloudId]!.push(projectKey)
           })
         } else {
           cloudIds.forEach((cloudId) => {
@@ -154,20 +155,10 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraRemoteProject))),
       description:
         'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async (
-        {accessToken, cloudIds, teamId, userId}: AtlassianAuth,
-        _args: unknown,
-        {authToken}: GQLContext
-      ) => {
+      resolve: ({teamId, userId}: AtlassianAuth, _args: unknown, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return []
-        const manager = new AtlassianServerManager(accessToken)
-        const projects = await manager.getAllProjects(cloudIds)
-        return projects.map((project) => ({
-          ...project,
-          teamId,
-          userId
-        }))
+        return dataLoader.get('allJiraProjects').load({teamId, userId})
       }
     },
     jiraFields: {

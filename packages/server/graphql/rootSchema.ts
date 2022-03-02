@@ -48,7 +48,7 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
     if (!provider) throw new Error('No GitLab provider found')
     const {serverBaseUrl} = provider as IntegrationProviderGitLabOAuth2
     return {
-      accessToken,
+      accessToken: accessToken!,
       baseUri: serverBaseUrl
     }
   },
@@ -63,7 +63,8 @@ const resolveToFieldNameOrAlias = (
   _context: unknown,
   info: GraphQLResolveInfo
 ) => {
-  const key = info.fieldNodes[0].alias?.value ?? info.fieldName
+  // fieldNodes will always have 1+ node
+  const key = info.fieldNodes[0]!.alias?.value ?? info.fieldName
   return source[key]
 }
 
@@ -72,6 +73,7 @@ const withNestedSchema = mergeSchemas({
   typeDefs: `
     type _xGitHubIssue implements TaskIntegration
     type _xGitLabIssue implements TaskIntegration
+    type _xGitHubRepository implements RepoIntegration
   `,
   // TODO apply this resolver to every type in the GitHub/GitLab schema
   // It is necessary any time client code uses an alias inside a wrapper
@@ -81,6 +83,9 @@ const withNestedSchema = mergeSchemas({
     },
     _xGitLabIssue: {
       url: resolveToFieldNameOrAlias
+    },
+    _xGitHubRepository: {
+      __interfaces: () => ['RepoIntegration']
     }
   }
 })

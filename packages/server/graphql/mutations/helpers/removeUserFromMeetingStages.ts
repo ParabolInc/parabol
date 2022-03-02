@@ -28,7 +28,7 @@ const removeUserFromMeetingStages = async (
         // do this inside the loop since it's mutative
         const {stages} = phase
         for (let i = 0; i < stages.length; i++) {
-          const stage = stages[i]
+          const stage = stages[i]!
           const {readyToAdvance} = stage
           const userIdIdx = readyToAdvance.indexOf(userId)
           if (userIdIdx !== -1) {

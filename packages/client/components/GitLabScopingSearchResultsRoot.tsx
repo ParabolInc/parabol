@@ -36,7 +36,6 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
   )
   return (
     <Suspense fallback={''}>
-      {/* {queryRef && <GitLabScopingSearchResults queryRef={queryRef} meetingRef={meeting} />} */}
       {queryRef && <GitLabScopingSearchResults queryRef={queryRef} meetingRef={meeting} />}
     </Suspense>
   )

@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLList,
@@ -185,9 +186,9 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           const gitlabAuth = await dataLoader
             .get('teamMemberIntegrationAuths')
             .load({service: 'gitlab', teamId, userId: viewerId})
-          if (!gitlabAuth) return null
+          const accessToken = gitlabAuth?.accessToken
+          if (!accessToken) return null
           const {guid} = integration
-          const {accessToken} = gitlabAuth
           const query = `
           {
              issue(id: "${guid}"){
@@ -266,6 +267,21 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
       resolve: ({userId}, _args: unknown, {dataLoader}) => {
         if (!userId) return null
         return dataLoader.get('users').load(userId)
+      }
+    },
+    isHighlighted: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'The owner hovers over the task in their solo update of a checkin',
+      args: {
+        meetingId: {
+          type: GraphQLID,
+          description: 'Meeting for which the highlight is checked'
+        }
+      },
+      resolve: async ({id: taskId}, {meetingId}: {meetingId?: string | null}, {dataLoader}) => {
+        if (!meetingId) return false
+        const highlightedTaskId = await dataLoader.get('meetingHighlightedTaskId').load(meetingId)
+        return taskId === highlightedTaskId
       }
     }
   })

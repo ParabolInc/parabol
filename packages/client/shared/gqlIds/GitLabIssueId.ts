@@ -2,7 +2,7 @@
 const GitLabIssueId = {
   join: (webPath: string, guid: string) => `${webPath}::${guid}`,
   split: (id: string) => {
-    const [webPath, guid] = id.split('::')
+    const [webPath, guid] = id.split('::') as [string, string]
     return {
       webPath,
       guid

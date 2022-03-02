@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
+import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {JiraGetIssueRes, JiraProject, RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import JiraIssue from '../graphql/types/JiraIssue'
@@ -8,9 +9,9 @@ import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
+import {isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
-import {isValidEstimationField} from '../utils/atlassian/jiraFields'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
@@ -89,6 +90,46 @@ export const freshAtlassianAuth = (
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+interface JiraGQLProject extends JiraProject {
+  cloudId: string
+  teamId: string
+  userId: string
+  service: 'jira'
+}
+export const allJiraProjects = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, JiraGQLProject[], string> => {
+  return new DataLoader<TeamUserKey, JiraGQLProject[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
+          if (!auth) return []
+          const cloudNameLookup = await parent
+            .get('atlassianCloudNameLookup')
+            .load({teamId, userId})
+          const cloudIds = Object.keys(cloudNameLookup)
+          const {accessToken} = auth
+          const manager = new AtlassianServerManager(accessToken)
+          const projects = await manager.getAllProjects(cloudIds)
+          return projects.map((project) => ({
+            ...project,
+            id: JiraProjectId.join(project.cloudId, project.key),
+            userId,
+            teamId,
+            service: 'jira' as const
+          }))
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
     }
   )
 }

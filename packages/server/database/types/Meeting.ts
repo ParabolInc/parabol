@@ -1,7 +1,6 @@
+import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import generateUID from '../../generateUID'
 import GenericMeetingPhase from './GenericMeetingPhase'
-
-export type MeetingTypeEnum = 'poker' | 'retrospective' | 'action'
 
 interface Input {
   id?: string
@@ -9,7 +8,8 @@ interface Input {
   meetingType: MeetingTypeEnum
   meetingCount: number
   name?: string
-  phases: GenericMeetingPhase[]
+  // Every meeting has at least one phase
+  phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
 }

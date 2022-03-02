@@ -8,7 +8,7 @@ import {GQLContext} from '../graphql'
 import {UserPresence} from '../intranetSchema/mutations/connectSocket'
 import rateLimit from '../rateLimit'
 import SetAppLocationPayload from '../types/SetAppLocationPayload'
-import {isNotNull} from '../../utils/predicates'
+import {isNotNull} from 'parabol-client/utils/predicates'
 
 export default {
   type: new GraphQLNonNull(SetAppLocationPayload),

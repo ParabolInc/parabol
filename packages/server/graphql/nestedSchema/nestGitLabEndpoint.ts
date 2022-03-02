@@ -101,7 +101,9 @@ const nestGitLabEndpoint = (params: NestGitLabParams) => {
     const {definitions} = wrapperAST
     const [firstDefinition] = definitions
     const {operation} = firstDefinition as OperationDefinitionNode
-    const resolve = fields[operation].resolve!
+    const rootOperation = fields[operation]
+    if (!rootOperation) throw new Error(`Unsupported operation: ${operation}`)
+    const resolve = rootOperation.resolve!
     const source = {
       context: endpointContext,
       wrapper: wrapperAST,
