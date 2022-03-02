@@ -31,7 +31,7 @@ const isIntegrated = (integrations: Integrations) => {
   const {atlassian, github, jiraServer} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
-  const hasJiraServer = jiraServer?.isActive ?? false
+  const hasJiraServer = jiraServer.auth?.isActive ?? false
   return hasAtlassian || hasGitHub || hasJiraServer
     ? {
         hasAtlassian,
@@ -137,7 +137,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 
 graphql`
   fragment TaskFooterIntegrateMenuViewerJiraServerIntegration on JiraServerIntegration {
-    isActive
+    auth {
+      isActive
+    }
   }
 `
 graphql`

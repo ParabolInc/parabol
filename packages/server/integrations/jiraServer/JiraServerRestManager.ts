@@ -1,7 +1,7 @@
 import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
 
-interface JiraServerProject {
+export interface JiraServerRestProject {
   /// more available fields
   expand: string
   /// project url
@@ -21,13 +21,13 @@ interface JiraServerProject {
 }
 
 interface JiraServerCreateMeta {
-  projects: Array<{
+  projects: {
     id: string
-    issuetypes: Array<{
+    issuetypes: {
       name: string
       id: string
-    }>
-  }>
+    }[]
+  }[]
 }
 
 interface JiraServerCreateIssueResponse {
@@ -85,6 +85,33 @@ export default class JiraServerRestManager {
     }
   }
 
+  readError(json: any) {
+    if (json.id === 'https://docs.atlassian.com/jira/REST/schema/error-collection#') {
+      return JSON.stringify(json.properties, undefined, '  ')
+    }
+    return ''
+  }
+
+  async parseJsonResponse(response: Response, method: string) {
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return new Error('Received non-JSON Jira Server Response')
+    }
+    const json = await response.json()
+
+    if (
+      (method === 'POST' && response.status !== 201) ||
+      (method === 'GET' && response.status !== 200)
+    ) {
+      console.error(`Jira server error ${response.status}`, json)
+      return new Error(
+        `Jira Server request failed with status ${response.status}, ${this.readError(json)}`
+      )
+    }
+
+    return json
+  }
+
   async request(method: string, path: string, body?: any) {
     const url = new URL(path, this.serverBaseUrl)
     const request = {
@@ -101,17 +128,7 @@ export default class JiraServerRestManager {
       }
     })
 
-    const json = await response.json()
-
-    if (
-      (method === 'POST' && response.status !== 201) ||
-      (method === 'GET' && response.status !== 200)
-    ) {
-      console.error(`Jira server error ${response.status}`, json)
-      throw new Error('Jira Server request failed')
-    }
-
-    return json
+    return this.parseJsonResponse(response, request.method)
   }
 
   async getCreateMeta(): Promise<JiraServerCreateMeta | Error> {
@@ -167,7 +184,7 @@ export default class JiraServerRestManager {
     })
   }
 
-  async getProjects(): Promise<JiraServerProject[] | Error> {
+  async getProjects(): Promise<JiraServerRestProject[] | Error> {
     return this.request('GET', '/rest/api/latest/project')
   }
 
