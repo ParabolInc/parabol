@@ -20,7 +20,8 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     },
     newPositionIndex: {
-      description: 'The index of the tasks will be moved to',
+      description:
+        'The index of the tasks will be moved to, in the list of estimating tasks sidebar section',
       type: new GraphQLNonNull(GraphQLInt)
     }
   },
@@ -68,7 +69,7 @@ export default {
     const oldPositionIndex = taskIds.indexOf(taskId) / numberOfDimensions
     let sortOrder
     if (newPositionIndex === 0) {
-      sortOrder = Math.floor(stages[0].sortOrder / 2)
+      sortOrder = stages[0].sortOrder - ESTIMATE_TASK_SORT_ORDER
     } else if (newPositionIndex === numberOfTasks - 1) {
       sortOrder = stages[stages.length - 1].sortOrder + ESTIMATE_TASK_SORT_ORDER
     } else {
