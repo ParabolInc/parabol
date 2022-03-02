@@ -188,10 +188,10 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             .load({service: 'gitlab', teamId, userId: viewerId})
           const accessToken = gitlabAuth?.accessToken
           if (!accessToken) return null
-          const {guid} = integration
+          const {gid} = integration
           const query = `
           {
-             issue(id: "${guid}"){
+             issue(id: "${gid}"){
                    __typename
                    id
                    iid

@@ -3,17 +3,17 @@ import BaseTaskIntegration from './BaseTaskIntegration'
 interface Input {
   accessUserId: string
   webPath: string
-  guid: string
+  gid: string
 }
 
 export default class TaskIntegrationGitLab extends BaseTaskIntegration {
   webPath: string
-  guid: string
+  gid: string
   service!: 'gitlab'
   constructor(input: Input) {
-    const {accessUserId, webPath, guid} = input
+    const {accessUserId, webPath, gid} = input
     super({accessUserId, service: 'gitlab'})
     this.webPath = webPath
-    this.guid = guid
+    this.gid = gid
   }
 }

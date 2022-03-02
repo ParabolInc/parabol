@@ -81,11 +81,12 @@ const withNestedSchema = mergeSchemas({
     _xGitHubIssue: {
       url: resolveToFieldNameOrAlias
     },
-    _xGitLabIssue: {
-      url: resolveToFieldNameOrAlias
+    _xGitLabQuery: {
+      projects: resolveToFieldNameOrAlias
     },
     _xGitHubRepository: {
-      __interfaces: () => ['RepoIntegration']
+      __interfaces: () => ['RepoIntegration'],
+      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner
     }
   }
 })

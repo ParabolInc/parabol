@@ -11,7 +11,7 @@ const IntegrationHash = {
       case 'jira':
         return JiraIssueId.join(integration.cloudId, integration.issueKey)
       case 'gitlab':
-        return GitLabIssueId.join(integration.webPath, integration.guid)
+        return GitLabIssueId.join(integration.webPath, integration.gid)
       default:
         return ''
     }
@@ -35,11 +35,11 @@ const IntegrationHash = {
       }
     }
     if (service === 'gitlab') {
-      const {webPath, guid} = GitLabIssueId.split(integrationHash)
+      const {webPath, gid} = GitLabIssueId.split(integrationHash)
       return {
         service,
         webPath,
-        guid
+        gid
       }
     }
     return null

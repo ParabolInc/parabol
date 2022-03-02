@@ -64,9 +64,9 @@ const GitLabScopingSearchResultItem = (props: Props) => {
     `,
     issueRef
   )
-  const {id: guid, iid, title, webPath, webUrl: url} = issue
+  const {id: gid, iid, title, webPath, webUrl: url} = issue
   const nameWithOwner = webPathToNameWithOwner(webPath)
-  const serviceTaskId = GitLabIssueId.join(webPath, guid)
+  const serviceTaskId = GitLabIssueId.join(webPath, gid)
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()

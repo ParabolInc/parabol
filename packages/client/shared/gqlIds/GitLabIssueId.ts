@@ -1,11 +1,11 @@
 // This ID is unique to all of GitHub. Used as the Task.integrationHash
 const GitLabIssueId = {
-  join: (webPath: string, guid: string) => `${webPath}::${guid}`,
+  join: (webPath: string, gid: string) => `${webPath}::${gid}`,
   split: (id: string) => {
-    const [webPath, guid] = id.split('::') as [string, string]
+    const [webPath, gid] = id.split('::') as [string, string]
     return {
       webPath,
-      guid
+      gid
     }
   }
 }
