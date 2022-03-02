@@ -14,33 +14,39 @@ interface StageSummary {
   finalScores: (string | null)[]
 }
 
+graphql`
+  fragment useMakeStageSummaries_stages on EstimateStage @relay(plural: true) {
+    id
+    finalScore
+    isComplete
+    isNavigable
+    sortOrder
+    taskId
+    task {
+      title
+      integration {
+        ... on JiraIssue {
+          __typename
+          issueKey
+          summary
+        }
+        ... on _xGitHubIssue {
+          __typename
+          title
+          number
+        }
+      }
+    }
+  }
+`
+
 const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localStageId: string) => {
   const estimatePhase = readInlineData(
     graphql`
       fragment useMakeStageSummaries_phase on EstimatePhase @inline {
         phaseType
         stages {
-          id
-          finalScore
-          isComplete
-          isNavigable
-          sortOrder
-          taskId
-          task {
-            title
-            integration {
-              ... on JiraIssue {
-                __typename
-                issueKey
-                summary
-              }
-              ... on _xGitHubIssue {
-                __typename
-                title
-                number
-              }
-            }
-          }
+          ...useMakeStageSummaries_stages @relay(mask: false)
         }
       }
     `,
