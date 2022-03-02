@@ -14,7 +14,7 @@ import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import CreateReflectionInput /*, {CreateReflectionInputType}*/ from '../types/CreateReflectionInput'
+import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import getReflectionEntities from './helpers/getReflectionEntities'
 
@@ -28,15 +28,14 @@ export default {
   },
   async resolve(
     _source: unknown,
-    //FIXME type mismatch, promptId is nullable in graphql
-    {input}, //: {input: CreateReflectionInputType},
+    args: {input: CreateReflectionInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
-    const {content, sortOrder, meetingId, promptId} = input
+    const {content, sortOrder, meetingId, promptId} = args.input
     // AUTH
     const viewerId = getUserId(authToken)
     const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
