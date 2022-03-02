@@ -5,17 +5,16 @@ import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} f
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import {GitLabScopingSearchResultsRoot_meeting$key} from '~/__generated__/GitLabScopingSearchResultsRoot_meeting.graphql'
+// import {GitLabScopingSearchResultsRoot_meeting$key} from '~/__generated__/GitLabScopingSearchResultsRoot_meeting.graphql'
 // import useAtmosphere from '../hooks/useAtmosphere'
 // import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 // import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 // import PersistGitLabSearchQueryMutation from '../mutations/PersistGitLabSearchQueryMutation'
 // import {SprintPokerDefaults} from '../types/constEnums'
-import {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
-// import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
+import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
 import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 import Ellipsis from './Ellipsis/Ellipsis'
 // import Ellipsis from './Ellipsis/Ellipsis'
@@ -39,7 +38,7 @@ const LoadingNext = styled('div')({
 
 interface Props {
   queryRef: PreloadedQuery<GitLabScopingSearchResultsQuery>
-  meetingRef: GitLabScopingSearchResultsRoot_meeting$key
+  meetingRef: GitLabScopingSearchResults_meeting$key
 }
 
 const GitLabScopingSearchResults = (props: Props) => {
@@ -48,27 +47,6 @@ const GitLabScopingSearchResults = (props: Props) => {
     graphql`
       query GitLabScopingSearchResultsQuery($teamId: ID!) {
         ...GitLabScopingSearchResults_query
-        viewer {
-          id
-          # ...NewGitLabIssueInput_viewer
-          # teamMember(teamId: $teamId) {
-          #   suggestedIntegrations {
-          #     items {
-          #       # ... on SuggestedIntegrationGitLab {
-          #       #   id
-          #       #   nameWithOwner
-          #       # }
-          #     }
-          #   }
-          #   integrations {
-          #     gitlab {
-          #       gitlabSearchQueries {
-          #         queryString
-          #       }
-          #     }
-          #   }
-          # }
-        }
       }
     `,
     queryRef,
@@ -81,7 +59,14 @@ const GitLabScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-        @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 5})
+        @argumentDefinitions(
+          projectsFirst: {type: "Int", defaultValue: 5}
+          issuesFirst: {type: "Int", defaultValue: 25}
+          projectsAfter: {type: "String"}
+          issuesAfter: {type: "String"}
+          search: {type: "String"}
+          isProjectFiltered: {type: "Boolean", defaultValue: false}
+        )
         @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
@@ -97,19 +82,29 @@ const GitLabScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    projects(membership: true, first: $count, after: $cursor)
+                    projects(membership: true, first: $projectsFirst, after: $projectsAfter)
                       @connection(key: "GitLabScopingSearchResults_projects") {
+                      # @skip(if: $isProjectFiltered)
                       edges {
                         node {
+                          __typename
                           ... on _xGitLabProject {
-                            issues {
+                            issues(
+                              includeSubepics: true
+                              state: opened
+                              search: $search
+                              sort: UPDATED_DESC
+                              first: $issuesFirst
+                              after: $issuesAfter
+                            ) {
                               edges {
                                 node {
-                                  __typename
                                   ... on _xGitLabIssue {
+                                    __typename
                                     ...GitLabScopingSearchResultItem_issue
                                     ...GitLabScopingSelectAllIssues_issues
                                     id
+                                    descriptionHtml
                                     title
                                   }
                                 }
@@ -129,6 +124,7 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
+
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext} = paginationRes
   const {viewer} = data
@@ -161,7 +157,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
         .filter((edge) => edge.node.__typename === '_xGitLabIssue')
-        .map(({node}) => node as GQLType<typeof node, '_xGitLabIssue'>)
+        .map(({node}) => node)
     : null
   const [isEditing, setIsEditing] = useState(false)
   // const atmosphere = useAtmosphere()

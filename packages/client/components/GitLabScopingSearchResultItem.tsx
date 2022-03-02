@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
@@ -9,12 +9,12 @@ import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
-import {GitLabScopingSearchResultItem_issue} from '../__generated__/GitLabScopingSearchResultItem_issue.graphql'
-import {GitLabScopingSearchResultItem_project} from '../__generated__/GitLabScopingSearchResultItem_project.graphql'
+import {GitLabScopingSearchResultItem_issue$key} from '../__generated__/GitLabScopingSearchResultItem_issue.graphql'
+// import {GitLabScopingSearchResultItem_project} from '../__generated__/GitLabScopingSearchResultItem_project.graphql'
 import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
 import {webPathToNameWithOwner} from '../utils/webPathToProjectName'
-import Ellipsis from './Ellipsis/Ellipsis'
+// import Ellipsis from './Ellipsis/Ellipsis'
 
 const Item = styled('div')({
   cursor: 'pointer',
@@ -45,14 +45,13 @@ const StyledLink = styled('a')({
 
 interface Props {
   usedServiceTaskIds: Set<string>
-  issueRef: GitLabScopingSearchResultItem_issue
+  issueRef: GitLabScopingSearchResultItem_issue$key
   meetingId: string
   // persistQuery: () => void
 }
 
 const GitLabScopingSearchResultItem = (props: Props) => {
   const {issueRef, meetingId, usedServiceTaskIds} = props
-  // const {number: issueNumber, repository, title} = issue
   const issue = useFragment(
     graphql`
       fragment GitLabScopingSearchResultItem_issue on _xGitLabIssue {
