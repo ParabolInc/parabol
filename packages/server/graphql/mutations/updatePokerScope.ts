@@ -139,6 +139,7 @@ const updatePokerScope = {
       meetingId
     )
 
+    let newStageIds = [] as string[]
     additiveUpdatesWithTaskIds.forEach((update) => {
       const {serviceTaskId, taskId} = update
       const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
@@ -164,6 +165,7 @@ const updatePokerScope = {
       // MUTATIVE
       newDiscussions.push(...discussions)
       stages.push(...newStages)
+      newStageIds = newStages.map(({id}) => id)
     })
 
     if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
@@ -181,7 +183,7 @@ const updatePokerScope = {
     if (newDiscussions.length > 0) {
       await insertDiscussions(newDiscussions)
     }
-    const data = {meetingId}
+    const data = {meetingId, newStageIds}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)
     await redisLock.unlock()
     return data
