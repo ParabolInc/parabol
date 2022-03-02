@@ -59,31 +59,6 @@ graphql`
             # all the stage integrations on every update
             # still fetch IDs so we can handle removes
             id
-            isNavigableByFacilitator
-            isVoting
-            taskId
-            dimensionRef {
-              name
-              scale {
-                values {
-                  color
-                  label
-                }
-              }
-            }
-            serviceField {
-              name
-              type
-            }
-            scores {
-              userId
-              label
-              stageId
-              user {
-                picture
-                preferredName
-              }
-            }
           }
         }
       }
