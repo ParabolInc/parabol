@@ -1,6 +1,6 @@
 import React from 'react'
 
-const MattermostSVG = React.memo(() => {
+const JiraServerSVG = React.memo(() => {
   return (
     <svg width='24' height='24' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
       <g id='g835' transform='matrix(.28924 0 0 .28924 2.9143 -18.423)'>
@@ -39,4 +39,4 @@ const MattermostSVG = React.memo(() => {
   )
 })
 
-export default MattermostSVG
+export default JiraServerSVG

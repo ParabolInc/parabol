@@ -12,6 +12,7 @@ import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
+import JiraServerSVG from './JiraServerSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
@@ -19,6 +20,7 @@ import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
+import ScopePhaseAreaJiraServer from './ScopePhaseAreaJiraServer'
 
 interface Props {
   meeting: ScopePhaseArea_meeting
@@ -66,7 +68,8 @@ const innerStyle = {width: '100%', height: '100%'}
 const baseTabs = [
   {icon: <GitHubSVG />, label: 'GitHub'},
   {icon: <JiraSVG />, label: 'Jira'},
-  {icon: <ParabolLogoSVG />, label: 'Parabol'}
+  {icon: <ParabolLogoSVG />, label: 'Parabol'},
+  {icon: <JiraServerSVG />, label: 'Jira Server'}
 ]
 
 const ScopePhaseArea = (props: Props) => {
@@ -135,10 +138,17 @@ const ScopePhaseArea = (props: Props) => {
         <TabContents>
           <ScopePhaseAreaParabolScoping isActive={activeIdx === 2} meeting={meeting} />
         </TabContents>
+        <TabContents>
+          <ScopePhaseAreaJiraServer
+            isActive={activeIdx === 3}
+            gotoParabol={goToParabol}
+            meetingRef={meeting}
+          />
+        </TabContents>
         {allowGitLab && (
           <TabContents>
             <ScopePhaseAreaGitLab
-              isActive={activeIdx === 3}
+              isActive={activeIdx === 4}
               gotoParabol={goToParabol}
               meetingRef={meeting}
             />
@@ -163,6 +173,7 @@ export default createFragmentContainer(ScopePhaseArea, {
       ...ScopePhaseAreaGitHub_meeting
       ...ScopePhaseAreaGitLab_meeting
       ...ScopePhaseAreaJira_meeting
+      ...ScopePhaseAreaJiraServer_meeting
       ...ScopePhaseAreaParabolScoping_meeting
       endedAt
       localPhase {

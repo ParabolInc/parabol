@@ -16,7 +16,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     this.provider = provider
   }
 
-  private getManager() {
+  public getAPI() {
     const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
     const {accessToken, accessTokenSecret} = this.auth
     if (!serverBaseUrl || !consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) {
@@ -38,13 +38,13 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     rawContentStr: string
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
-    const manager = this.getManager()
+    const api = this.getAPI()
 
     const {title: summary, contentState} = splitDraftContent(rawContentStr)
     // TODO: implement stateToJiraServerFormat
     const description = contentState.getPlainText()
 
-    const res = await manager.createIssue(integrationRepoId, summary, description)
+    const res = await api.createIssue(integrationRepoId, summary, description)
 
     if (res instanceof Error) {
       return res
@@ -62,8 +62,8 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
   }
 
   async getIssue(issueId: string) {
-    const manager = this.getManager()
-    return manager.getIssue(issueId)
+    const api = this.getAPI()
+    return api.getIssue(issueId)
   }
 
   private static makeCreateJiraServerTaskComment(
@@ -95,7 +95,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
       teamName,
       teamDashboardUrl
     )
-    const manager = this.getManager()
-    return manager.addComment(comment, issueId ?? '')
+    const api = this.getAPI()
+    return api.addComment(comment, issueId ?? '')
   }
 }

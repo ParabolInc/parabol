@@ -92,17 +92,14 @@ export default class JiraServerRestManager {
     return ''
   }
 
-  async parseJsonResponse(response: Response, method: string) {
+  async parseJsonResponse(response: Response) {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
       return new Error('Received non-JSON Jira Server Response')
     }
     const json = await response.json()
 
-    if (
-      (method === 'POST' && response.status !== 201) ||
-      (method === 'GET' && response.status !== 200)
-    ) {
+    if (response.status !== 201 && response.status !== 200) {
       console.error(`Jira server error ${response.status}`, json)
       return new Error(
         `Jira Server request failed with status ${response.status}, ${this.readError(json)}`
@@ -128,7 +125,7 @@ export default class JiraServerRestManager {
       }
     })
 
-    return this.parseJsonResponse(response, request.method)
+    return this.parseJsonResponse(response)
   }
 
   async getCreateMeta(): Promise<JiraServerCreateMeta | Error> {
@@ -137,6 +134,18 @@ export default class JiraServerRestManager {
 
   async getIssue(issueId: string): Promise<JiraServerIssue | Error> {
     return this.request('GET', `/rest/api/latest/issue/${issueId}?expand=renderedFields`)
+  }
+
+  async getIssues(): Promise<JiraServerIssue[] | Error> {
+    // TODO: support JQL
+    const jql = 'order by lastViewed DESC'
+    const payload = {
+      jql,
+      maxResults: 100,
+      expand: ['renderedFields']
+    }
+
+    return this.request('POST', '/rest/api/latest/search', payload)
   }
 
   async createIssue(
