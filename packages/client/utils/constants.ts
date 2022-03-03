@@ -51,6 +51,7 @@ export const ACTIVE_TASK = 'ACTIVE_TASK'
 
 /* Sorting */
 export const SORT_STEP = 1
+export const ESTIMATE_TASK_SORT_ORDER = 2 ** 43
 export const DND_THROTTLE = 25
 export const AUTO_GROUPING_THRESHOLD = 0.25
 

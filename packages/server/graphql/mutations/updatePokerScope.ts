@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import {Writeable} from '../../../client/types/generics'
+import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -149,7 +150,7 @@ const updatePokerScope = {
             creatorUserId: viewerId,
             // integrationHash if integrated, else taskId
             serviceTaskId,
-            sortOrder: lastSortOrder + 1,
+            sortOrder: lastSortOrder + ESTIMATE_TASK_SORT_ORDER + idx,
             taskId,
             durations: undefined,
             dimensionRefIdx: idx

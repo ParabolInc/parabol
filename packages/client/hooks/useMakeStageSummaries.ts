@@ -9,9 +9,9 @@ interface StageSummary {
   isComplete: boolean
   isNavigable: boolean
   isActive: boolean
-  sortOrder: number
   stageIds: [string, ...string[]]
   finalScores: (string | null)[]
+  taskId: string
 }
 
 graphql`
@@ -20,7 +20,6 @@ graphql`
     finalScore
     isComplete
     isNavigable
-    sortOrder
     taskId
     task {
       title
@@ -101,9 +100,9 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
-        sortOrder: stage.sortOrder,
         stageIds: batch.map(({id}) => id) as [string, ...string[]],
-        finalScores: batch.map(({finalScore}) => finalScore)
+        finalScores: batch.map(({finalScore}) => finalScore),
+        taskId
       })
       i += batch.length - 1
     }

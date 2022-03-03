@@ -26,7 +26,6 @@ graphql`
       ...EstimatePhaseDiscussionDrawerEstimateStage
       id
       isNavigableByFacilitator
-      sortOrder
       isVoting
       taskId
       dimensionRef {
@@ -156,8 +155,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           )
           const stageExists = stageIntegrationHashes.includes(serviceTaskId)
           if (stageExists) return
-          const lastStage = stages[stages.length - 1]!
-          const lastSortOrder = (lastStage.getValue('sortOrder') as number) ?? -1
 
           // create a task if it doesn't exist
           const plaintextContent = contents[idx] ?? ''
@@ -219,7 +216,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           }
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
             const nextStage = createProxyRecord(store, 'EstimateStage', {
-              sortOrder: lastSortOrder + 1,
               durations: undefined,
               dimensionRefIdx,
               teamId,
