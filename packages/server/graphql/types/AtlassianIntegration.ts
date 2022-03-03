@@ -23,7 +23,16 @@ import {JiraIssueConnection} from './JiraIssue'
 import JiraRemoteProject from './JiraRemoteProject'
 import JiraSearchQuery from './JiraSearchQuery'
 
-const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
+type IssueArgs = {
+  first: number
+  after?: string
+  queryString: string | null
+  isJQL: boolean
+  projectKeyFilters: string[] | null
+  [argName: string]: any
+}
+
+const AtlassianIntegration = new GraphQLObjectType<AtlassianAuth, GQLContext>({
   name: 'AtlassianIntegration',
   description: 'The atlassian auth + integration helpers for a specific team member',
   fields: () => ({
@@ -42,11 +51,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user',
       type: GraphQLID,
-      resolve: async (
-        {accessToken, userId}: AtlassianAuth,
-        _args: unknown,
-        {authToken}: GQLContext
-      ) => {
+      resolve: async ({accessToken, userId}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
@@ -102,21 +107,8 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
             'A list of projects to restrict the search to. format is cloudId:projectKey. If null, will search all'
         }
       },
-      resolve: async (
-        {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
-        {
-          first,
-          queryString,
-          isJQL,
-          projectKeyFilters
-        }: {
-          first: number
-          queryString: string | null
-          isJQL: boolean
-          projectKeyFilters: string[] | null
-        },
-        {authToken}: GQLContext
-      ) => {
+      resolve: async ({teamId, userId, accessToken, cloudIds}, args: any, {authToken}) => {
+        const {first, queryString, isJQL, projectKeyFilters} = args as IssueArgs
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -180,7 +172,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           description: 'Filter the fields to single cloudId'
         }
       },
-      resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
+      resolve: async ({accessToken}, {cloudId}) => {
         const manager = new AtlassianServerManager(accessToken)
         const fields = await manager.getFields(cloudId)
         if (fields instanceof Error || fields instanceof RateLimitError) return []
@@ -208,7 +200,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({teamId, userId, jiraSearchQueries}: AtlassianAuth) => {
+      resolve: async ({teamId, userId, jiraSearchQueries}) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
         const searchQueries = jiraSearchQueries || []

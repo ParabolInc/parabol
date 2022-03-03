@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import {getUserId} from '../../../utils/authorization'
 import AuthToken from '../../../database/types/AuthToken'
+import {RValue} from '../../../database/stricterR'
 
 const safelyWithdrawVote = async (
   authToken: AuthToken,
@@ -17,19 +18,12 @@ const safelyWithdrawVote = async (
   const isVoteRemovedFromGroup = await r
     .table('RetroReflectionGroup')
     .get(reflectionGroupId)
-    .update((group) => {
+    .update((group: RValue) => {
       return r.branch(
-        group('voterIds')
-          .offsetsOf(userId)
-          .count()
-          .ge(1),
+        group('voterIds').offsetsOf(userId).count().ge(1),
         {
           updatedAt: now,
-          voterIds: group('voterIds').deleteAt(
-            group('voterIds')
-              .offsetsOf(userId)
-              .nth(0)
-          )
+          voterIds: group('voterIds').deleteAt(group('voterIds').offsetsOf(userId).nth(0))
         },
         {}
       )
@@ -42,7 +36,7 @@ const safelyWithdrawVote = async (
   await r
     .table('MeetingMember')
     .get(meetingMemberId)
-    .update((member) => ({
+    .update((member: RValue) => ({
       updatedAt: now,
       votesRemaining: member('votesRemaining').add(1)
     }))

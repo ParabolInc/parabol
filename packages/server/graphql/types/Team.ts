@@ -328,11 +328,8 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve(
-        {id: teamId},
-        {sortBy = 'preferredName'}: {sortBy: 'preferredName'},
-        {authToken, dataLoader}
-      ) {
+      async resolve({id: teamId}, args: any, {authToken, dataLoader}) {
+        const {sortBy = 'preferredName'} = args as {sortBy?: 'preferredName'}
         if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) return []
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => {

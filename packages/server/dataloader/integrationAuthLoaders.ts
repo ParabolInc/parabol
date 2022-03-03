@@ -25,8 +25,11 @@ interface SharedIntegrationProviderKey {
   teamIds: string[]
 }
 
-const teamMemberIntegrationAuthCacheKeyFn = ({service, teamId, userId}) =>
-  TeamMemberIntegrationAuthId.join(service, teamId, userId)
+const teamMemberIntegrationAuthCacheKeyFn = ({
+  service,
+  teamId,
+  userId
+}: TeamMemberIntegrationAuthPrimaryKey) => TeamMemberIntegrationAuthId.join(service, teamId, userId)
 
 export const integrationProviders = (parent: RootDataLoader) => {
   return new DataLoader<number, TIntegrationProvider | null, string>(

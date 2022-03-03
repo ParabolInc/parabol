@@ -1,7 +1,7 @@
 import {convertFromRaw, convertToRaw} from 'draft-js'
-import getRethink from '../database/rethinkDriver'
 import addTagToTask from 'parabol-client/utils/draftjs/addTagToTask'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
+import getRethink from '../database/rethinkDriver'
 import Task from '../database/types/Task'
 
 const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
@@ -35,7 +35,7 @@ const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
         )
     })
     .default([])('changes')('new_val')
-    .run()
+    .run() as Promise<Task[]>
 }
 
 export default archiveTasksForDB
