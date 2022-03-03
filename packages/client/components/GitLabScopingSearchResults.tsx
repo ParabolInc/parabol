@@ -53,7 +53,6 @@ const GitLabScopingSearchResults = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  // TODO: move query to its own file & add issue fragment
   const paginationRes = usePaginationFragment<
     GitLabScopingSearchResultsPaginationQuery,
     GitLabScopingSearchResults_query$key
@@ -66,8 +65,7 @@ const GitLabScopingSearchResults = (props: Props) => {
           projectsAfter: {type: "String"}
           issuesAfter: {type: "String"}
           search: {type: "String"}
-          isProjectFiltered: {type: "Boolean", defaultValue: false}
-          projectIds: {type: "[ID!]"}
+          projectIds: {type: "[ID!]", defaultValue: null}
         )
         @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
@@ -84,34 +82,32 @@ const GitLabScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    ... on _xGitLabQuery {
-                      defaultProjects: projects(
-                        membership: true
-                        first: $projectsFirst
-                        after: $projectsAfter
-                      ) @connection(key: "GitLabScopingSearchResults_defaultProjects") {
-                        # @skip(if: $isProjectFiltered)
-                        edges {
-                          node {
-                            ... on _xGitLabProject {
-                              issues(
-                                includeSubepics: true
-                                state: opened
-                                search: $search
-                                sort: UPDATED_DESC
-                                first: $issuesFirst
-                                after: $issuesAfter
-                              ) {
-                                edges {
-                                  node {
-                                    __typename
-                                    ... on _xGitLabIssue {
-                                      ...GitLabScopingSearchResultItem_issue
-                                      ...GitLabScopingSelectAllIssues_issues
-                                      id
-                                      descriptionHtml
-                                      title
-                                    }
+                    projects(
+                      membership: true
+                      first: $projectsFirst
+                      after: $projectsAfter
+                      ids: null # $projectIds
+                    ) @connection(key: "GitLabScopingSearchResults_projects") {
+                      edges {
+                        node {
+                          ... on _xGitLabProject {
+                            issues(
+                              includeSubepics: true
+                              state: opened
+                              search: $search
+                              sort: UPDATED_DESC
+                              first: $issuesFirst
+                              after: $issuesAfter
+                            ) {
+                              edges {
+                                node {
+                                  __typename
+                                  ... on _xGitLabIssue {
+                                    ...GitLabScopingSearchResultItem_issue
+                                    ...GitLabScopingSelectAllIssues_issues
+                                    id
+                                    descriptionHtml
+                                    title
                                   }
                                 }
                               }
@@ -119,37 +115,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                           }
                         }
                       }
-                      # projects(ids: $projectIds, first: $projectsFirst, after: $projectsAfter)
-                      #   @connection(key: "GitLabScopingSearchResults_projects")
-                      #   @include(if: $isProjectFiltered) {
-                      #   edges {
-                      #     node {
-                      #       ... on _xGitLabProject {
-                      #         issues(
-                      #           includeSubepics: true
-                      #           state: opened
-                      #           search: $search
-                      #           sort: UPDATED_DESC
-                      #           first: $issuesFirst
-                      #           after: $issuesAfter
-                      #         ) {
-                      #           edges {
-                      #             node {
-                      #               __typename
-                      #               ... on _xGitLabIssue {
-                      #                 ...GitLabScopingSearchResultItem_issue
-                      #                 ...GitLabScopingSelectAllIssues_issues
-                      #                 id
-                      #                 descriptionHtml
-                      #                 title
-                      #               }
-                      #             }
-                      #           }
-                      #         }
-                      #       }
-                      #     }
-                      #   }
-                      # }
                     }
                   }
                 }
@@ -188,7 +153,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   // const {queryString} = gitlabSearchQuery
   const errors = gitlab?.api?.errors ?? null
-  const nullableEdges = gitlab?.api?.query?.defaultProjects?.edges?.flatMap(
+  const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
     (project) => project?.node?.issues?.edges ?? null
   )
   const issues = nullableEdges
