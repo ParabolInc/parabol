@@ -18,6 +18,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RootDataLoader from './RootDataLoader'
+import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -287,12 +288,7 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
         const {teamId, meetingType} = key
         // until we decide the final shape of the team prompt settings, let's return a temporary hardcoded value
         if (meetingType === 'teamPrompt') {
-          return {
-            id: `${teamId}:${meetingType}:tempId`,
-            phaseTypes: ['responses'],
-            meetingType,
-            teamId
-          }
+          return new MeetingSettingsTeamPrompt({teamId})
         }
         return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
       })
