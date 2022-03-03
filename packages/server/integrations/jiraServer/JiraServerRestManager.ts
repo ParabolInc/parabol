@@ -96,14 +96,14 @@ export default class JiraServerRestManager {
     return json
   }
 
-  async request(method: string, path: string, body?: any) {
+  async requestRaw(method: string, path: string, body?: any) {
     const url = new URL(path, this.serverBaseUrl)
     const request = {
       url: url.toString(),
       method
     }
     const auth = this.oauth.authorize(request, this.token)
-    const response = await fetch(request.url, {
+    return fetch(request.url, {
       method: request.method,
       body: body ? JSON.stringify(body) : undefined,
       headers: {
@@ -111,8 +111,11 @@ export default class JiraServerRestManager {
         ...this.oauth.toHeader(auth)
       }
     })
+  }
 
-    return this.parseJsonResponse(response, request.method)
+  async request(method: string, path: string, body?: any) {
+    const response = await this.requestRaw(method, path, body)
+    return this.parseJsonResponse(response, method)
   }
 
   async getCreateMeta(): Promise<JiraServerCreateMeta | Error> {
@@ -169,7 +172,7 @@ export default class JiraServerRestManager {
   }
 
   async getProjectAvatar(avatarUrl: string) {
-    const imageRes = await this.request('GET', avatarUrl)
+    const imageRes = await this.requestRaw('GET', avatarUrl)
 
     if (!imageRes || imageRes instanceof Error) return ''
     const arrayBuffer = await imageRes.arrayBuffer()
