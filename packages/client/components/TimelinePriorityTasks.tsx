@@ -11,7 +11,7 @@ import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {DroppableType} from '../types/constEnums'
-import {ACTIVE, SORT_STEP} from '../utils/constants'
+import {ACTIVE, ACTIVE_TASK, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
 import Icon from './Icon'
@@ -84,7 +84,7 @@ const TimelinePriorityTasks = (props: Props) => {
   if (activeTasks.length === 0) return <TimelineNoTasks />
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId='active' type={DroppableType.TASK}>
+      <Droppable droppableId={ACTIVE_TASK} type={DroppableType.TASK}>
         {(dropProvided: DroppableProvided) => (
           <TaskList>
             <PriorityTasksHeader>

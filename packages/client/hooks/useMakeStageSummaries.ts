@@ -9,10 +9,40 @@ interface StageSummary {
   isComplete: boolean
   isNavigable: boolean
   isActive: boolean
-  sortOrder: number
   stageIds: [string, ...string[]]
   finalScores: (string | null)[]
+  taskId: string
 }
+
+graphql`
+  fragment useMakeStageSummaries_stages on EstimateStage @relay(plural: true) {
+    id
+    finalScore
+    isComplete
+    isNavigable
+    taskId
+    task {
+      title
+      integration {
+        ... on JiraIssue {
+          __typename
+          issueKey
+          summary
+        }
+        ... on _xGitHubIssue {
+          __typename
+          title
+          number
+        }
+        ... on _xGitLabIssue {
+          __typename
+          title
+          iid
+        }
+      }
+    }
+  }
+`
 
 const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localStageId: string) => {
   const estimatePhase = readInlineData(
@@ -20,32 +50,7 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
       fragment useMakeStageSummaries_phase on EstimatePhase @inline {
         phaseType
         stages {
-          id
-          finalScore
-          isComplete
-          isNavigable
-          sortOrder
-          taskId
-          task {
-            title
-            integration {
-              ... on JiraIssue {
-                __typename
-                issueKey
-                summary
-              }
-              ... on _xGitHubIssue {
-                __typename
-                title
-                number
-              }
-              ... on _xGitLabIssue {
-                __typename
-                title
-                iid
-              }
-            }
-          }
+          ...useMakeStageSummaries_stages @relay(mask: false)
         }
       }
     `,
@@ -105,9 +110,9 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
-        sortOrder: stage.sortOrder,
         stageIds: batch.map(({id}) => id) as [string, ...string[]],
-        finalScores: batch.map(({finalScore}) => finalScore)
+        finalScores: batch.map(({finalScore}) => finalScore),
+        taskId
       })
       i += batch.length - 1
     }

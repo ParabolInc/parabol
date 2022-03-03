@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import JiraIssueId from '../../../client/shared/gqlIds/JiraIssueId'
 import {Writeable} from '../../../client/types/generics'
+import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -139,6 +140,7 @@ const updatePokerScope = {
       meetingId
     )
 
+    let newStageIds = [] as string[]
     additiveUpdatesWithTaskIds.forEach((update) => {
       const {serviceTaskId, taskId} = update
       const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
@@ -148,7 +150,7 @@ const updatePokerScope = {
             creatorUserId: viewerId,
             // integrationHash if integrated, else taskId
             serviceTaskId,
-            sortOrder: lastSortOrder + 1,
+            sortOrder: lastSortOrder + ESTIMATE_TASK_SORT_ORDER + idx,
             taskId,
             durations: undefined,
             dimensionRefIdx: idx
@@ -164,6 +166,7 @@ const updatePokerScope = {
       // MUTATIVE
       newDiscussions.push(...discussions)
       stages.push(...newStages)
+      newStageIds = newStages.map(({id}) => id)
     })
 
     if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
@@ -181,7 +184,7 @@ const updatePokerScope = {
     if (newDiscussions.length > 0) {
       await insertDiscussions(newDiscussions)
     }
-    const data = {meetingId}
+    const data = {meetingId, newStageIds}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)
     await redisLock.unlock()
     return data

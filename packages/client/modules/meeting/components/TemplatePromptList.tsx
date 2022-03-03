@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
+import {TEMPLATE_PROMPT} from '../../../utils/constants'
 import dndNoise from '../../../utils/dndNoise'
 import {TemplatePromptList_prompts} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import TemplatePromptItem from './TemplatePromptItem'
@@ -21,26 +22,24 @@ const PromptList = styled('div')({
   width: '100%'
 })
 
-const TEMPLATE_PROMPT = 'TEMPLATE_PROMPT'
 
 const TemplatePromptList = (props: Props) => {
   const {isOwner, prompts, templateId} = props
   const atmosphere = useAtmosphere()
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
+    if (!destination) return
+    const sourcePrompt = prompts[source.index]
+    const destinationPrompt = prompts[destination.index]
     if (
-      !destination ||
       destination.droppableId !== TEMPLATE_PROMPT ||
       source.droppableId !== TEMPLATE_PROMPT ||
-      destination.index === source.index
+      destination.index === source.index ||
+      !sourcePrompt || !destinationPrompt
     ) {
       return
     }
-
-    const sourcePrompt = prompts[source.index]
-    const destinationPrompt = prompts[destination.index]
-    if (!sourcePrompt || !destinationPrompt) return
 
     let sortOrder
     if (destination.index === 0) {
