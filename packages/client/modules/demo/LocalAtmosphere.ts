@@ -99,9 +99,9 @@ export default class LocalAtmosphere extends Environment {
           channel: SubscriptionChannel.MEETING,
           dataField: 'meetingSubscription'
         }
-      }
-      const fields = channelLookup[operation.name]
-      if (fields) {
+      } as const
+      const fields = channelLookup[operation.name as keyof typeof channelLookup]
+      if (!!fields) {
         this.clientGraphQLServer.on(fields.channel, (data) => {
           if (this.clientGraphQLServer.db._updatedAt < new Date(Date.now() - 1000)) {
             this.clientGraphQLServer.db._updatedAt = new Date()

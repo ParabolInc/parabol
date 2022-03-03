@@ -68,7 +68,7 @@ const eventLookup = {
       }
     }
   }
-}
+} as const
 
 const splitType = (type = '') => {
   const names = type.split('.') as [string, string, string?]
@@ -94,10 +94,10 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   const {object: payload} = data
   const {event, subEvent, action} = splitType(type)
 
-  const parentHandler = eventLookup[event]
+  const parentHandler = eventLookup[event as keyof typeof eventLookup]
   if (!parentHandler) return
 
-  const eventHandler = subEvent ? parentHandler[subEvent] : parentHandler
+  const eventHandler = subEvent ? (parentHandler as any)[subEvent] : parentHandler
   if (!eventHandler) return
 
   const actionHandler = eventHandler[action]

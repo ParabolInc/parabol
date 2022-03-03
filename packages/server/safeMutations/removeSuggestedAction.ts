@@ -1,7 +1,7 @@
 import getRethink from '../database/rethinkDriver'
-import {SuggestedActionTypeEnum} from '../../client/types/constEnums'
+import {TSuggestedActionTypeEnum} from '../graphql/types/SuggestedActionTypeEnum'
 
-const removeSuggestedAction = async (userId: string, type: SuggestedActionTypeEnum) => {
+const removeSuggestedAction = async (userId: string, type: TSuggestedActionTypeEnum) => {
   const r = await getRethink()
   return r
     .table('SuggestedAction')

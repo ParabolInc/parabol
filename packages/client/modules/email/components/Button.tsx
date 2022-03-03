@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {emailPrimaryButtonStyle, emailTableBase} from '../styles'
 
 const cellStyle = {
@@ -14,7 +14,7 @@ const linkStyle = {
   width: '100%'
 } as React.CSSProperties
 
-const Button = (props) => {
+const Button = (props: {url: string; width: number; children: ReactNode}) => {
   const {url, width} = props
   return (
     <table style={{...emailTableBase, width}} width={width}>

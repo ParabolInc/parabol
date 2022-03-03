@@ -1,8 +1,9 @@
+import {RawDraftContentState} from 'draft-js'
 import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 
 const normalizeRawDraftJS = (str: string | undefined | null) => {
   if (!str) return makeEmptyStr()
-  let parsedContent
+  let parsedContent: RawDraftContentState
   try {
     parsedContent = JSON.parse(str)
   } catch (e) {
@@ -12,7 +13,8 @@ const normalizeRawDraftJS = (str: string | undefined | null) => {
   if (
     keys.length !== 2 ||
     typeof parsedContent.entityMap !== 'object' ||
-    !Array.isArray(parsedContent.blocks || parsedContent.blocks.length === 0)
+    !Array.isArray(parsedContent.blocks) ||
+    parsedContent.blocks.length === 0
   ) {
     return makeEmptyStr()
   }

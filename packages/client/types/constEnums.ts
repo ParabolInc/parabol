@@ -307,14 +307,6 @@ export const enum SubscriptionChannel {
   ORGANIZATION = 'organization'
 }
 
-export const enum SuggestedActionTypeEnum {
-  inviteYourTeam = 'inviteYourTeam',
-  tryTheDemo = 'tryTheDemo',
-  tryRetroMeeting = 'tryRetroMeeting',
-  createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
-}
-
 export const enum TaskStatus {
   DONE = 'done',
   ACTIVE = 'active',

@@ -98,7 +98,7 @@ const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
 }
 
 const backupPgOrganization = async (orgIds: string[]) => {
-  const PROJECT_ROOT = getProjectRoot()
+  const PROJECT_ROOT = getProjectRoot() as string
   const PG_BACKUP_ROOT = path.join(PROJECT_ROOT, 'pgBackup')
   if (!fs.existsSync(PG_BACKUP_ROOT)) {
     fs.mkdirSync(PG_BACKUP_ROOT, {recursive: true})

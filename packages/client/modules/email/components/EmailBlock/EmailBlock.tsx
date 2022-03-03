@@ -26,7 +26,7 @@ const innerStyle = {
   width: '100%'
 } as const
 
-const EmailBlock = (props) => {
+const EmailBlock = (props: any) => {
   const {align, hasBackgroundColor, children, innerMaxWidth} = props
   const backgroundColor = hasBackgroundColor ? emailBackgroundColor : emailBodyColor
   const maxWidth = innerMaxWidth || emailInnerMaxWidth

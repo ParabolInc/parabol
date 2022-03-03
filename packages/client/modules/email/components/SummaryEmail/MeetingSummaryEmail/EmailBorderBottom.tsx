@@ -6,7 +6,7 @@ const borderStyles = {
   paddingBottom: 24
 } as React.CSSProperties
 
-const EmailBorderBottom = (props) => {
+const EmailBorderBottom = (props: any) => {
   const {dataCy} = props
   if (!dataCy)
     return (

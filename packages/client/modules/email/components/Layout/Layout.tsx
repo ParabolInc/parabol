@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {emailBackgroundColor, emailMaxWidth, emailTableBase} from '../../styles'
 
 const containerStyle = {
@@ -32,7 +32,12 @@ const maxWidthContainer = {
   width: '100%'
 }
 
-const Layout = (props) => {
+interface Props {
+  children: ReactNode
+  maxWidth?: number
+}
+
+const Layout = (props: Props) => {
   const {children, maxWidth} = props
   return (
     <table align='center' className='body' style={containerStyle} width='100%'>

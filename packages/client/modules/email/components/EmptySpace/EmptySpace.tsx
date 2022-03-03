@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {emailTableBase} from '../../styles'
 
-const EmptySpace = (props) => {
+const EmptySpace = (props: {height: number}) => {
   const cellStyle = {
     lineHeight: `${props.height}px`,
     fontSize: '1px',
