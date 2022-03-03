@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.48.1 2022-Feb-28
+
+### Fixed
+
+- GitHub Poker Integration with 2+ dimensions
+
 ## 6.48.0 2022-Feb-25
 
 ### Fixed
