@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.49.0 2022-Mar-02
+### Added
+- Highlight checkin tasks when hovered in current solo update (#5859)
+- Initial team prompt DB schema (#6068)
+
+### Changed
+- Enforce noUncheckedIndexAccess (#6080)
+- Updating text copy in authentication page
+- Change prompt colors for 3 pigs template
+
+### Fixed
+- Fix a bug where types from a dataloader aren't completely accurate (#6129)
+- Fix a bug where dragging item to original position cause an error (#6122)
+- Fix a bug where all the tasks are fetched when adding a task to estimation (#6152)
+- Fix a bug where dragging issue in sidebar estimate section may cause duplicates (#6028)
+
 ## 6.48.1 2022-Feb-28
 
 ### Fixed
