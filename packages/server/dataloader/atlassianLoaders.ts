@@ -216,7 +216,12 @@ export const jiraIssue = (
               new Set(
                 Object.entries<{type: string}>(issueRes.schema)
                   .filter(([fieldId, fieldSchema]) =>
-                    isValidEstimationField(fieldSchema.type, issueRes.names[fieldId], simplified)
+                    isValidEstimationField(
+                      fieldSchema.type,
+                      issueRes.names[fieldId],
+                      fieldId,
+                      simplified
+                    )
                   )
                   .map(([fieldId]) => {
                     return issueRes.names[fieldId]
