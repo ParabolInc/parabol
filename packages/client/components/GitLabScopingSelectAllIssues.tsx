@@ -46,13 +46,8 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
       fragment GitLabScopingSelectAllIssues_issues on _xGitLabIssue @relay(plural: true) {
         id
         iid
-        # number
         title
         webPath
-        webUrl
-        # repository {
-        #   nameWithOwner
-        # }
       }
     `,
     issuesRef
