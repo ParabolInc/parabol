@@ -10,7 +10,6 @@ const NewMeetingSettingsTeamPrompt = (_props: Props) => {
   return null
 }
 
-//TODO: handle new meeting type enum
 export default createFragmentContainer(NewMeetingSettingsTeamPrompt, {
   team: graphql`
     fragment NewMeetingSettingsTeamPrompt_team on Team {
