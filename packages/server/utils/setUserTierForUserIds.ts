@@ -1,4 +1,7 @@
 import getRethink from '../database/rethinkDriver'
+import {RDatum, RValue} from '../database/stricterR'
+import OrganizationUser from '../database/types/OrganizationUser'
+import User from '../database/types/User'
 import {updateUserTiersQuery} from '../postgres//queries/generated/updateUserTiersQuery'
 import getPg from '../postgres/getPg'
 import {TierEnum} from '../postgres/queries/generated/updateUserQuery'
@@ -12,17 +15,17 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .table('User')
     .getAll(r.args(userIds))
     .update(
-      (user) => ({
+      (user: RDatum<User>) => ({
         tier: r
           .table('OrganizationUser')
           .getAll(user('id'), {index: 'userId'})
           .filter({removedAt: null})('orgId')
           .coerceTo('array')
           .distinct()
-          .do((orgIds) =>
+          .do((orgIds: RValue) =>
             r.table('Organization').getAll(r.args(orgIds))('tier').distinct().coerceTo('array')
           )
-          .do((tiers) => {
+          .do((tiers: RDatum<string[]>) => {
             return r.branch(
               tiers.contains('enterprise'),
               'enterprise',
@@ -40,7 +43,7 @@ const setUserTierForUserIds = async (userIds: string[]) => {
     .table('OrganizationUser')
     .getAll(r.args(userIds), {index: 'userId'})
     .filter({removedAt: null})
-    .merge((orgUser) => ({
+    .merge((orgUser: RDatum<OrganizationUser>) => ({
       tier: r.table('Organization').get(orgUser('orgId'))('tier').default('personal')
     }))
     .group('userId')('tier')

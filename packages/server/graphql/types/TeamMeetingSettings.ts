@@ -40,8 +40,8 @@ const TeamMeetingSettings: GraphQLInterfaceType = new GraphQLInterfaceType({
       action: ActionMeetingSettings,
       retrospective: RetrospectiveMeetingSettings,
       poker: PokerMeetingSettings
-    }
-    return resolveTypeLookup[meetingType]
+    } as const
+    return resolveTypeLookup[meetingType as keyof typeof resolveTypeLookup]
   }
 })
 

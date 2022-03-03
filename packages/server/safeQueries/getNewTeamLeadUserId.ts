@@ -1,5 +1,6 @@
 import getRethink from '../database/rethinkDriver'
 import {SuggestedActionTypeEnum} from '../../client/types/constEnums'
+import {RDatum} from '../database/stricterR'
 
 // returns the userId of the team lead if they have never received the initial starting suggested actions
 const getNewTeamLeadUserId = async (teamId: string) => {
@@ -10,7 +11,7 @@ const getNewTeamLeadUserId = async (teamId: string) => {
     .filter({isLead: true})
     .nth(0)('userId')
     .default('')
-    .do((userId) => {
+    .do((userId: RDatum) => {
       return r.branch(
         r
           .table('SuggestedAction')

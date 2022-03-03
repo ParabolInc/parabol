@@ -8,6 +8,11 @@ import {
   GraphQLString
 } from 'graphql'
 import ms from 'ms'
+import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
+import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -17,11 +22,6 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {JiraIssueConnection} from './JiraIssue'
 import JiraRemoteProject from './JiraRemoteProject'
 import JiraSearchQuery from './JiraSearchQuery'
-import AtlassianIntegrationId from '../../../client/shared/gqlIds/AtlassianIntegrationId'
-import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
-import {downloadAndCacheImages, updateJiraImageUrls} from '../../utils/atlassian/jiraImages'
-import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 
 const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianIntegration',
@@ -104,7 +104,17 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async (
         {teamId, userId, accessToken, cloudIds}: AtlassianAuth,
-        {first, queryString, isJQL, projectKeyFilters},
+        {
+          first,
+          queryString,
+          isJQL,
+          projectKeyFilters
+        }: {
+          first: number
+          queryString: string | null
+          isJQL: boolean
+          projectKeyFilters: string[] | null
+        },
         {authToken}: GQLContext
       ) => {
         const viewerId = getUserId(authToken)
@@ -115,9 +125,9 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         }
         const manager = new AtlassianServerManager(accessToken)
         const projectKeyFiltersByCloudId = {} as {[cloudId: string]: string[]}
-        if (projectKeyFilters?.length > 0) {
+        if (projectKeyFilters && projectKeyFilters.length > 0) {
           projectKeyFilters.forEach((globalProjectKey) => {
-            const [cloudId, projectKey] = globalProjectKey.split(':')
+            const [cloudId, projectKey] = globalProjectKey.split(':') as [string, string]
             projectKeyFiltersByCloudId[cloudId] = projectKeyFiltersByCloudId[cloudId] || []
             // guaranteed from line above
             projectKeyFiltersByCloudId[cloudId]!.push(projectKey)

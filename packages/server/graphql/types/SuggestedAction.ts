@@ -1,13 +1,13 @@
-import {GQLContext} from './../graphql'
 import {GraphQLFloat, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {GQLContext} from './../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import SuggestedActionTypeEnum from './SuggestedActionTypeEnum'
-import User from './User'
 import SuggestedActionCreateNewTeam from './SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './SuggestedActionInviteYourTeam'
 import SuggestedActionTryActionMeeting from './SuggestedActionTryActionMeeting'
 import SuggestedActionTryRetroMeeting from './SuggestedActionTryRetroMeeting'
 import SuggestedActionTryTheDemo from './SuggestedActionTryTheDemo'
+import SuggestedActionTypeEnum from './SuggestedActionTypeEnum'
+import User from './User'
 
 export const suggestedActionInterfaceFields = () => ({
   id: {
@@ -50,7 +50,7 @@ const resolveTypeLookup = {
   tryRetroMeeting: SuggestedActionTryRetroMeeting,
   tryActionMeeting: SuggestedActionTryActionMeeting,
   createNewTeam: SuggestedActionCreateNewTeam
-}
+} as const
 
 const SuggestedAction = new GraphQLInterfaceType({
   name: 'SuggestedAction',

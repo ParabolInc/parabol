@@ -634,7 +634,7 @@ export default abstract class AtlassianManager {
   }
 
   async getIssues(
-    queryString: string,
+    queryString: string | null,
     isJQL: boolean,
     projectFiltersByCloudId: {[cloudId: string]: string[]}
   ) {
