@@ -28,6 +28,7 @@ const mutation = graphql`
           ...GitLabProviderRowTeamMember
           ...ScopePhaseAreaGitLab_teamMember
           ...MattermostProviderRowTeamMember
+          ...JiraServerProviderRowTeamMember
         }
       }
     }

@@ -1,26 +1,28 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
-import {RepoIntegrationJiraMenuItem_repoIntegration$key} from '../__generated__/RepoIntegrationJiraMenuItem_repoIntegration.graphql'
-import JiraSVG from './JiraSVG'
+import {RepoIntegrationJiraServerMenuItem_repoIntegration$key} from '../__generated__/RepoIntegrationJiraServerMenuItem_repoIntegration.graphql'
+import JiraServerSVG from './JiraServerSVG'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import RepoIntegrationMenuItemAvatar from './RepoIntegrationMenuItemAvatar'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
-  repoIntegration: RepoIntegrationJiraMenuItem_repoIntegration$key
+  repoIntegration: RepoIntegrationJiraServerMenuItem_repoIntegration$key
   onClick: () => void
   query: string
 }
 
-const RepoIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
+const RepoIntegrationJiraServerMenuItem = forwardRef((props: Props, ref: any) => {
   const {repoIntegration: repoIntegrationKey, onClick, query} = props
   const repoIntegration = useFragment(graphql`
-    fragment RepoIntegrationJiraMenuItem_repoIntegration on JiraRemoteProject {
+    fragment RepoIntegrationJiraServerMenuItem_repoIntegration on JiraServerRemoteProject {
       name
     }
-  `, repoIntegrationKey)
+  `,
+  repoIntegrationKey)
+
   const {name} = repoIntegration
   return (
     <MenuItem
@@ -28,7 +30,7 @@ const RepoIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
       label={
         <MenuItemLabel>
           <RepoIntegrationMenuItemAvatar>
-            <JiraSVG />
+            <JiraServerSVG />
           </RepoIntegrationMenuItemAvatar>
           <TypeAheadLabel query={query} label={name} />
         </MenuItemLabel>
@@ -38,4 +40,4 @@ const RepoIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
   )
 })
 
-export default RepoIntegrationJiraMenuItem
+export default RepoIntegrationJiraServerMenuItem

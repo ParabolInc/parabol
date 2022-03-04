@@ -12,6 +12,10 @@ const IntegrationProviderServiceEnum = new GraphQLEnumType({
   }
 })
 
-export type IntegrationProviderServiceEnumType = 'jira' | 'github' | 'gitlab' | 'mattermost'
-
 export default IntegrationProviderServiceEnum
+export type IntegrationProviderServiceEnumType =
+  | 'jira'
+  | 'github'
+  | 'gitlab'
+  | 'mattermost'
+  | 'jiraServer'
