@@ -49,7 +49,7 @@ import pingActionTick from './queries/pingActionTick'
 import signups from './queries/signups'
 import user from './queries/user'
 import users from './queries/users'
-import resolverMap from './resolvers'
+import resolverMap from './sdl/resolvers'
 
 const query = new GraphQLObjectType<any, GQLContext>({
   name: 'Query',

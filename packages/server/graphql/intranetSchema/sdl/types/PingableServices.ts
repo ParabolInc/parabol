@@ -1,8 +1,8 @@
-import sleep from '../../../../client/utils/sleep'
-import getRethink from '../../../database/rethinkDriver'
-import getPg from '../../../postgres/getPg'
-import getRedis from '../../../utils/getRedis'
-import {PingSuccessResolvers} from './types'
+import sleep from 'parabol-client/utils/sleep'
+import getRethink from '../../../../database/rethinkDriver'
+import getPg from '../../../../postgres/getPg'
+import getRedis from '../../../../utils/getRedis'
+import {PingableServicesResolvers} from '../resolverTypes'
 
 const pingService = async <TSuccess>(thunk: () => Promise<TSuccess>) => {
     const start = Date.now()
@@ -15,10 +15,11 @@ const pingService = async <TSuccess>(thunk: () => Promise<TSuccess>) => {
     return res ? duration : -1
 }
 
-const resolverMap: PingSuccessResolvers = {
+export interface Source {}
+const PingableServices: PingableServicesResolvers = {
   postgres: async () => {
     const pg = getPg()
-    const thunk = () => pg.query(`SELECT id FROM "User" LIMIT 1`)
+    const thunk = () => pg.query(`SELECT 1`)
     return pingService(thunk)
   },
   redis: async () => {
@@ -27,8 +28,9 @@ const resolverMap: PingSuccessResolvers = {
   },
   rethinkdb: async () => {
     const r = await getRethink()
-    return pingService(r(0).run)
+    const res = await pingService(r(1).run)
+    return res
   }
 }
 
-export default resolverMap
+export default PingableServices
