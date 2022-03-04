@@ -107,8 +107,8 @@ const useInnerWidth = () => {
   return innerWidth
 }
 
-const createMeetingOrder = ({standups}: {standups: boolean}): readonly MeetingTypeEnum[] => {
-  const meetingOrder: MeetingTypeEnum[] = ['poker', 'retrospective', 'action']
+const createMeetingOrder = ({standups}: {standups: boolean}) => {
+  const meetingOrder: [MeetingTypeEnum, ...MeetingTypeEnum[]] = ['poker', 'retrospective', 'action']
 
   if (standups) {
     meetingOrder.push('teamPrompt')

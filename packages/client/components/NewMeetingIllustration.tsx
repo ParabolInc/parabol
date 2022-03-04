@@ -21,7 +21,7 @@ const MeetingImage = styled('img')({
 interface Props {
   idx: number
   setIdx: (idx: number) => void
-  newMeetingOrder: readonly MeetingTypeEnum[]
+  newMeetingOrder: readonly [MeetingTypeEnum, ...MeetingTypeEnum[]]
 }
 
 const ILLUSTRATIONS = {
