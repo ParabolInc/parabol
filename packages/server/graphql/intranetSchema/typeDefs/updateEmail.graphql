@@ -1,0 +1,10 @@
+extend type Mutation {
+  """Updates the user email"""
+  updateEmail(
+    """User current email"""
+    oldEmail: Email!
+
+    """User new email"""
+    newEmail: Email!
+  ): Boolean!
+}

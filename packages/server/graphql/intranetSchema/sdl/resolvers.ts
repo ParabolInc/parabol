@@ -10,6 +10,9 @@ const importAll = (context: __WebpackModuleApi.RequireContext) => {
 }
 
 const resolverMap: Resolvers = {
+  Mutation: {
+    ...importAll(require.context('./mutations', false, /.ts$/))
+  },
   Query: {
     ...importAll(require.context('./queries', false, /.ts$/))
   },

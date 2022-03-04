@@ -84,6 +84,268 @@ type Query {
   ): SignupsPayload!
 }
 
+type Mutation {
+  """Updates the user email"""
+  updateEmail(
+    """User current email"""
+    oldEmail: Email!
+
+    """User new email"""
+    newEmail: Email!
+  ): Boolean!
+
+  """broadcast a new feature to the entire userbase"""
+  addNewFeature(
+    """The text of the action button in the snackbar"""
+    actionButtonCopy: String!
+
+    """The description of the new feature"""
+    snackbarMessage: String!
+
+    """The permalink to the blog post describing the new feature"""
+    url: String!
+  ): AddNewFeaturePayload
+
+  """
+  automatically pause users that have been inactive for 30 days. returns the number of users paused
+  """
+  autopauseUsers: Int
+
+  """copies all the records from RethinkDB for a list of organizations"""
+  backupOrganization(orgIds: [ID!]!): String!
+
+  """check equality of a table between rethinkdb and postgres"""
+  checkRethinkPgEquality(
+    """The table name to be compared"""
+    tableName: String!
+
+    """How many errors should be returned"""
+    maxErrors: Int
+
+    """Whether the output should be written to file"""
+    writeToFile: Boolean
+  ): String!
+
+  """a server-side mutation called when a client connects"""
+  connectSocket: User!
+
+  """profile the CPU"""
+  profileCPU: String
+
+  """a server-side mutation called when a client disconnects"""
+  disconnectSocket: DisconnectSocketPayload
+
+  """
+  Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license
+  """
+  draftEnterpriseInvoice(
+    """the org requesting the upgrade"""
+    orgId: ID!
+
+    """The number of users the license grants the organization"""
+    quantity: Int!
+
+    """
+    Email address of billing leader, if different from the org billing leader
+    """
+    email: ID
+
+    """
+    The email address for Accounts Payable. Use only if the invoice will be sent to a non-user!
+    """
+    apEmail: ID
+
+    """the stripe id of the plan in stripe, if not using the default plan"""
+    plan: ID
+  ): DraftEnterpriseInvoicePayload
+
+  """dump the memory heap to a file"""
+  dumpHeap(
+    """must pass true to make it work"""
+    isDangerous: Boolean!
+  ): String
+
+  """close all meetings that started before the given threshold"""
+  endOldMeetings: Int
+
+  """add/remove a flag on an org asking them to pay"""
+  flagConversionModal(
+    """true to turn the modal on, false to turn it off"""
+    active: Boolean!
+
+    """the orgId to toggle the flag for"""
+    orgId: ID!
+  ): FlagConversionModalPayload
+
+  """add/remove a flag on a user saying they are over the free tier"""
+  flagOverLimit(
+    """
+    The text body of the over limit message, null to remove the previous value
+    """
+    copy: String = ""
+
+    """the user orgId that went over the limit"""
+    orgId: ID!
+  ): FlagOverLimitPayload
+
+  """hard deletes a user and all its associated objects"""
+  hardDeleteUser(
+    """a userId"""
+    userId: ID
+
+    """the user email"""
+    email: ID
+
+    """the reason why the user wants to delete their account"""
+    reasonText: String
+  ): DeleteUserPayload!
+
+  """
+  Lock/Unlock teams, flagging them as unpaid/paid. Return true if successful
+  """
+  lockTeams(
+    """List of teams to target"""
+    teamIds: [ID]!
+
+    """true to unlock the teams, false to lock"""
+    isPaid: Boolean!
+
+    """The HTML to show if isPaid is false"""
+    message: String
+  ): Boolean!
+
+  """Log in using SAML single sign on (SSO)"""
+  loginSAML(
+    """
+    The querystring provided by the IdP including SAMLResponse and RelayState
+    """
+    queryString: String!
+
+    """The name of the SAML identifier. The slug used in the redirect URL"""
+    samlName: ID!
+  ): LoginSAMLPayload!
+
+  """Enable SAML for domain"""
+  enableSAMLForDomain(
+    """
+    A name to use for the redirect URL. Usually the company name without any spaces
+    """
+    name: ID!
+
+    """
+    a list of domains that the account has control over. usually the part after the @ of their email
+    """
+    domains: [ID!]!
+
+    """
+    A big chunk of XML data containing the redirect URL and X.509 certificate
+    """
+    metadata: String!
+  ): EnableSAMLForDomainPayload!
+
+  """Send a message to all authorised Slack users"""
+  messageAllSlackUsers(
+    """The slack message that will be sent to all Slack users"""
+    message: String!
+  ): MessageAllSlackUsersPayload!
+
+  """Remove Slack integrations for all users"""
+  removeAllSlackAuths: RemoveAllSlackAuthsPayload!
+
+  """schedule upcoming jobs to be run"""
+  runScheduledJobs(
+    """Queue up all jobs that are scheduled to run within this many seconds"""
+    seconds: Int!
+  ): Int
+
+  """
+  Send summary emails of unread notifications to all users who have not been seen within the last 24 hours
+  """
+  sendBatchNotificationEmails: [String]
+
+  """
+  send an email to organizations including all the users that were added in the current billing cycle
+  """
+  sendUpcomingInvoiceEmails: [String]
+
+  """manually set the domain that the organization belongs to"""
+  setOrganizationDomain(
+    """The unique identifier for the organization"""
+    orgId: ID!
+
+    """
+    The top level domain of the company. Usually the part after the "@" in their email address
+    """
+    domain: ID!
+  ): Boolean!
+
+  """When stripe tells us an invoice is ready, create a pretty version"""
+  stripeCreateInvoice(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): Boolean
+
+  """When stripe tells us an invoice payment failed, update it in our DB"""
+  stripeFailPayment(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): StripeFailPaymentPayload
+
+  """
+  When stripe tells us an invoice payment was successful, update it in our DB
+  """
+  stripeSucceedPayment(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): Boolean
+
+  """
+  When stripe tells us a credit card was updated, update the details in our own DB
+  """
+  stripeUpdateCreditCard(
+    """The stripe customer ID, or stripeId"""
+    customerId: ID!
+  ): Boolean
+
+  """When a new invoiceitem is sent from stripe, tag it with metadata"""
+  stripeUpdateInvoiceItem(
+    """The stripe invoice ID"""
+    invoiceItemId: ID!
+  ): Boolean
+
+  """An invice has been sent from stripe, meaning it is finalized"""
+  stripeInvoiceFinalized(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): Boolean
+
+  """
+  add/remove user(s) to/from the LogRocket watchlist so that we start/stop recording their sessions
+  """
+  updateWatchlist(
+    """
+    a list of email addresses of users whose sessions we want to start/stop recording in LogRocket
+    """
+    emails: [String!]
+
+    """
+    add/remove the entire domain to/from the LogRocket watchlist. The part of the email after the @
+    """
+    domain: String
+
+    """true if the user should be added to the watchlist, false if not"""
+    includeInWatchlist: Boolean!
+  ): UpdateWatchlistPayload!
+
+  """
+  Updates Atlassian OAuth tokens that haven't been updated since the date specified in input
+  """
+  updateOAuthRefreshTokens(
+    """Threshold date for `updatedAt` from AtlassianAuth"""
+    updatedBefore: DateTime!
+  ): Int
+}
+
 """An integration provider that connects via OAuth1.0"""
 type IntegrationProviderOAuth1 implements IntegrationProvider {
   """The provider's unique identifier"""
@@ -4659,268 +4921,6 @@ type SignupsPayload {
 
   """The total broken down by email domain"""
   byDomain: [DomainCountPayload!]!
-}
-
-type Mutation {
-  """broadcast a new feature to the entire userbase"""
-  addNewFeature(
-    """The text of the action button in the snackbar"""
-    actionButtonCopy: String!
-
-    """The description of the new feature"""
-    snackbarMessage: String!
-
-    """The permalink to the blog post describing the new feature"""
-    url: String!
-  ): AddNewFeaturePayload
-
-  """
-  automatically pause users that have been inactive for 30 days. returns the number of users paused
-  """
-  autopauseUsers: Int
-
-  """copies all the records from RethinkDB for a list of organizations"""
-  backupOrganization(orgIds: [ID!]!): String!
-
-  """check equality of a table between rethinkdb and postgres"""
-  checkRethinkPgEquality(
-    """The table name to be compared"""
-    tableName: String!
-
-    """How many errors should be returned"""
-    maxErrors: Int
-
-    """Whether the output should be written to file"""
-    writeToFile: Boolean
-  ): String!
-
-  """a server-side mutation called when a client connects"""
-  connectSocket: User!
-
-  """profile the CPU"""
-  profileCPU: String
-
-  """a server-side mutation called when a client disconnects"""
-  disconnectSocket: DisconnectSocketPayload
-
-  """
-  Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license
-  """
-  draftEnterpriseInvoice(
-    """the org requesting the upgrade"""
-    orgId: ID!
-
-    """The number of users the license grants the organization"""
-    quantity: Int!
-
-    """
-    Email address of billing leader, if different from the org billing leader
-    """
-    email: ID
-
-    """
-    The email address for Accounts Payable. Use only if the invoice will be sent to a non-user!
-    """
-    apEmail: ID
-
-    """the stripe id of the plan in stripe, if not using the default plan"""
-    plan: ID
-  ): DraftEnterpriseInvoicePayload
-
-  """dump the memory heap to a file"""
-  dumpHeap(
-    """must pass true to make it work"""
-    isDangerous: Boolean!
-  ): String
-
-  """close all meetings that started before the given threshold"""
-  endOldMeetings: Int
-
-  """add/remove a flag on an org asking them to pay"""
-  flagConversionModal(
-    """true to turn the modal on, false to turn it off"""
-    active: Boolean!
-
-    """the orgId to toggle the flag for"""
-    orgId: ID!
-  ): FlagConversionModalPayload
-
-  """add/remove a flag on a user saying they are over the free tier"""
-  flagOverLimit(
-    """
-    The text body of the over limit message, null to remove the previous value
-    """
-    copy: String = ""
-
-    """the user orgId that went over the limit"""
-    orgId: ID!
-  ): FlagOverLimitPayload
-
-  """hard deletes a user and all its associated objects"""
-  hardDeleteUser(
-    """a userId"""
-    userId: ID
-
-    """the user email"""
-    email: ID
-
-    """the reason why the user wants to delete their account"""
-    reasonText: String
-  ): DeleteUserPayload!
-
-  """
-  Lock/Unlock teams, flagging them as unpaid/paid. Return true if successful
-  """
-  lockTeams(
-    """List of teams to target"""
-    teamIds: [ID]!
-
-    """true to unlock the teams, false to lock"""
-    isPaid: Boolean!
-
-    """The HTML to show if isPaid is false"""
-    message: String
-  ): Boolean!
-
-  """Log in using SAML single sign on (SSO)"""
-  loginSAML(
-    """
-    The querystring provided by the IdP including SAMLResponse and RelayState
-    """
-    queryString: String!
-
-    """The name of the SAML identifier. The slug used in the redirect URL"""
-    samlName: ID!
-  ): LoginSAMLPayload!
-
-  """Enable SAML for domain"""
-  enableSAMLForDomain(
-    """
-    A name to use for the redirect URL. Usually the company name without any spaces
-    """
-    name: ID!
-
-    """
-    a list of domains that the account has control over. usually the part after the @ of their email
-    """
-    domains: [ID!]!
-
-    """
-    A big chunk of XML data containing the redirect URL and X.509 certificate
-    """
-    metadata: String!
-  ): EnableSAMLForDomainPayload!
-
-  """Send a message to all authorised Slack users"""
-  messageAllSlackUsers(
-    """The slack message that will be sent to all Slack users"""
-    message: String!
-  ): MessageAllSlackUsersPayload!
-
-  """Remove Slack integrations for all users"""
-  removeAllSlackAuths: RemoveAllSlackAuthsPayload!
-
-  """schedule upcoming jobs to be run"""
-  runScheduledJobs(
-    """Queue up all jobs that are scheduled to run within this many seconds"""
-    seconds: Int!
-  ): Int
-
-  """
-  Send summary emails of unread notifications to all users who have not been seen within the last 24 hours
-  """
-  sendBatchNotificationEmails: [String]
-
-  """
-  send an email to organizations including all the users that were added in the current billing cycle
-  """
-  sendUpcomingInvoiceEmails: [String]
-
-  """manually set the domain that the organization belongs to"""
-  setOrganizationDomain(
-    """The unique identifier for the organization"""
-    orgId: ID!
-
-    """
-    The top level domain of the company. Usually the part after the "@" in their email address
-    """
-    domain: ID!
-  ): Boolean!
-
-  """When stripe tells us an invoice is ready, create a pretty version"""
-  stripeCreateInvoice(
-    """The stripe invoice ID"""
-    invoiceId: ID!
-  ): Boolean
-
-  """When stripe tells us an invoice payment failed, update it in our DB"""
-  stripeFailPayment(
-    """The stripe invoice ID"""
-    invoiceId: ID!
-  ): StripeFailPaymentPayload
-
-  """
-  When stripe tells us an invoice payment was successful, update it in our DB
-  """
-  stripeSucceedPayment(
-    """The stripe invoice ID"""
-    invoiceId: ID!
-  ): Boolean
-
-  """
-  When stripe tells us a credit card was updated, update the details in our own DB
-  """
-  stripeUpdateCreditCard(
-    """The stripe customer ID, or stripeId"""
-    customerId: ID!
-  ): Boolean
-
-  """When a new invoiceitem is sent from stripe, tag it with metadata"""
-  stripeUpdateInvoiceItem(
-    """The stripe invoice ID"""
-    invoiceItemId: ID!
-  ): Boolean
-
-  """An invice has been sent from stripe, meaning it is finalized"""
-  stripeInvoiceFinalized(
-    """The stripe invoice ID"""
-    invoiceId: ID!
-  ): Boolean
-
-  """Updates the user email"""
-  updateEmail(
-    """User current email"""
-    oldEmail: Email!
-
-    """User new email"""
-    newEmail: Email!
-  ): Boolean!
-
-  """
-  add/remove user(s) to/from the LogRocket watchlist so that we start/stop recording their sessions
-  """
-  updateWatchlist(
-    """
-    a list of email addresses of users whose sessions we want to start/stop recording in LogRocket
-    """
-    emails: [String!]
-
-    """
-    add/remove the entire domain to/from the LogRocket watchlist. The part of the email after the @
-    """
-    domain: String
-
-    """true if the user should be added to the watchlist, false if not"""
-    includeInWatchlist: Boolean!
-  ): UpdateWatchlistPayload!
-
-  """
-  Updates Atlassian OAuth tokens that haven't been updated since the date specified in input
-  """
-  updateOAuthRefreshTokens(
-    """Threshold date for `updatedAt` from AtlassianAuth"""
-    updatedBefore: DateTime!
-  ): Int
 }
 
 type AddNewFeaturePayload {

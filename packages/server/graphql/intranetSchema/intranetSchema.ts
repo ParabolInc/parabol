@@ -39,7 +39,6 @@ import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
 import stripeSucceedPayment from './mutations/stripeSucceedPayment'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
-import updateEmail from './mutations/updateEmail'
 import updateOAuthRefreshTokens from './mutations/updateOAuthRefreshTokens'
 import updateWatchlist from './mutations/updateWatchlist'
 import company from './queries/company'
@@ -101,19 +100,18 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       stripeUpdateCreditCard,
       stripeUpdateInvoiceItem,
       stripeInvoiceFinalized,
-      updateEmail,
       updateWatchlist,
       updateOAuthRefreshTokens
     } as any)
 })
 
-const legacySchema = new GraphQLSchema({query, mutation, types: rootTypes})
+const codeFirstSchema = new GraphQLSchema({query, mutation, types: rootTypes})
 
 const typeDefs = loadFilesSync(
   path.join(__PROJECT_ROOT__, 'packages/server/graphql/intranetSchema/typeDefs/*.graphql')
 )
 
-const schema = mergeSchemas({schemas: [legacySchema], typeDefs, resolvers: resolverMap})
+const schema = mergeSchemas({schemas: [codeFirstSchema], typeDefs, resolvers: resolverMap})
 
 const updateSchema = async () => {
   await sleep(100)
