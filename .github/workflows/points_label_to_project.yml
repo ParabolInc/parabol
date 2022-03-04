@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: match-story-points-label
       run: |
-        if [[ "${{ github.event.label.name }}" =~ ^Story\ Points:\ ([0-9]+)$ ]] ; then
+        if [[ "${{ github.event.label.name }}" =~ ^Story[[:space:]]Points:[[:space:]]([0-9]+)$ ]] ; then
           echo ::set-output name=point_label_value::${BASH_REMATCH[1]}
           echo ::set-output name=point_label_match::true
         fi
