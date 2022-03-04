@@ -18,6 +18,7 @@ import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
 import {Elevation} from '../styles/elevation'
+import {NonEmptyArray} from '~/types/generics'
 
 interface Props {
   retry(): void
@@ -108,7 +109,7 @@ const useInnerWidth = () => {
 }
 
 const createMeetingOrder = ({standups}: {standups: boolean}) => {
-  const meetingOrder: [MeetingTypeEnum, ...MeetingTypeEnum[]] = ['poker', 'retrospective', 'action']
+  const meetingOrder: NonEmptyArray<MeetingTypeEnum> = ['poker', 'retrospective', 'action']
 
   if (standups) {
     meetingOrder.push('teamPrompt')

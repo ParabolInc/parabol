@@ -12,6 +12,7 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint, NewMeeting} from '../types/constEnums'
+import {NonEmptyArray} from '~/types/generics'
 
 const MeetingImage = styled('img')({
   width: NewMeeting.ILLUSTRATION_WIDTH,
@@ -21,7 +22,7 @@ const MeetingImage = styled('img')({
 interface Props {
   idx: number
   setIdx: (idx: number) => void
-  newMeetingOrder: readonly [MeetingTypeEnum, ...MeetingTypeEnum[]]
+  newMeetingOrder: Readonly<NonEmptyArray<MeetingTypeEnum>>
 }
 
 const ILLUSTRATIONS = {
