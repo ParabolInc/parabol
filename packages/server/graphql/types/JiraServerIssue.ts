@@ -11,12 +11,12 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraServerIssue',
   description: 'The Jira Issue that comes direct from Jira Server',
   interfaces: () => [TaskIntegration],
-  isTypeOf: ({type}) => type === 'jiraServer',
+  isTypeOf: ({service}) => service === 'jiraServer',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    key: {
+    issueKey: {
       type: new GraphQLNonNull(GraphQLID)
     },
     projectKey: {
@@ -34,9 +34,9 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
     url: {
       type: new GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue',
-      resolve: ({key, self}) => {
+      resolve: ({issueKey, self}) => {
         const {origin} = new URL(self)
-        return `${origin}/browse/${key}`
+        return `${origin}/browse/${issueKey}`
       }
     },
     summary: {

@@ -16,45 +16,49 @@ import {
 
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
+    newStages {
+      ...useMakeStageSummaries_stages
+      ...PokerEstimateHeaderCard_stage
+      ...PokerCardDeckStage
+      ...EstimatePhaseAreaStage
+      ...JiraFieldDimensionDropdown_stage
+      ...EstimateDimensionColumn_stage
+      ...EstimatePhaseDiscussionDrawerEstimateStage
+      id
+      isNavigableByFacilitator
+      isVoting
+      taskId
+      dimensionRef {
+        name
+        scale {
+          values {
+            color
+            label
+          }
+        }
+      }
+      serviceField {
+        name
+        type
+      }
+      scores {
+        userId
+        label
+        stageId
+        user {
+          picture
+          preferredName
+        }
+      }
+    }
     meeting {
-      facilitatorStageId
       phases {
-        ...useMakeStageSummaries_phase
         ... on EstimatePhase {
           stages {
-            ...PokerEstimateHeaderCard_stage
-            ...PokerCardDeckStage
-            ...EstimatePhaseAreaStage
-            ...JiraFieldDimensionDropdown_stage
-            ...EstimateDimensionColumn_stage
-            ...EstimatePhaseDiscussionDrawerEstimateStage
+            # separate out newStages from all stages so we don't have to fetch
+            # all the stage integrations on every update
+            # still fetch IDs so we can handle removes
             id
-            isNavigableByFacilitator
-            sortOrder
-            isVoting
-            taskId
-            dimensionRef {
-              name
-              scale {
-                values {
-                  color
-                  label
-                }
-              }
-            }
-            serviceField {
-              name
-              type
-            }
-            scores {
-              userId
-              label
-              stageId
-              user {
-                picture
-                preferredName
-              }
-            }
           }
         }
       }
@@ -89,6 +93,17 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
   return commitMutation<TUpdatePokerScopeMutation>(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('updatePokerScope')
+      const meeting = payload.getLinkedRecord('meeting')
+      const newStages = payload.getLinkedRecords('newStages')
+      if (!meeting || !newStages) return
+      const phases = meeting.getLinkedRecords('phases')
+      const estimatePhase = phases.find((phase) => phase.getType() === 'EstimatePhase')!
+      const stages = estimatePhase.getLinkedRecords('stages')
+      const nextStages = [...stages, ...newStages]
+      estimatePhase.setLinkedRecords(nextStages, 'stages')
+    },
     optimisticUpdater: (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')
       if (!viewer) return
@@ -140,7 +155,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           )
           const stageExists = stageIntegrationHashes.includes(serviceTaskId)
           if (stageExists) return
-          const lastSortOrder = stages[stages.length - 1]?.getValue('sortOrder') ?? -1
 
           // create a task if it doesn't exist
           const plaintextContent = contents[idx] ?? ''
@@ -182,8 +196,9 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'github') {
             const bodyHTML = stateToHTML(contentState)
-            const {issueNumber, nameWithOwner, repoName, repoOwner} =
-              GitHubIssueId.split(serviceTaskId)
+            const {issueNumber, nameWithOwner, repoName, repoOwner} = GitHubIssueId.split(
+              serviceTaskId
+            )
             const repository = createProxyRecord(store, '_xGitHubRepository', {
               nameWithOwner,
               name: repoName,
@@ -201,7 +216,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
           }
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
             const nextStage = createProxyRecord(store, 'EstimateStage', {
-              sortOrder: lastSortOrder + 1,
               durations: undefined,
               dimensionRefIdx,
               teamId,

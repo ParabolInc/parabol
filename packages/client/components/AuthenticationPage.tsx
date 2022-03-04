@@ -6,6 +6,14 @@ import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
+import styled from '@emotion/styled'
+
+const CopyBlock = styled('div')({
+  marginBottom: 48,
+  width: 'calc(100vw - 16px)',
+  maxWidth: 500,
+  textAlign: 'center'
+})
 
 interface Props {
   page: AuthPageSlug
@@ -30,6 +38,13 @@ const AuthenticationPage = (props: Props) => {
   }
   return (
     <TeamInvitationWrapper>
+      <CopyBlock>
+        <h1>
+          Better Meetings, <br />
+          Less Effort
+        </h1>
+        <p>Help your team connect &amp; improve with an agile meeting co-pilot</p>
+      </CopyBlock>
       <GenericAuthentication page={page} goToPage={goToPage} />
     </TeamInvitationWrapper>
   )

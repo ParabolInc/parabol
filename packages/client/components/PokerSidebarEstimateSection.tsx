@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {PokerSidebarEstimateSection_meeting} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
@@ -10,8 +10,7 @@ import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
 import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import {SORT_STEP} from '../utils/constants'
-import dndNoise from '../utils/dndNoise'
+import {ESTIMATING_TASK} from '../utils/constants'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
 import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
@@ -60,37 +59,22 @@ const PokerSidebarEstimateSection = (props: Props) => {
   const stageSummaries = useMakeStageSummaries(estimatePhase, localStageId)
   const inSync = localStageId === facilitatorStageId
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
+    if (!destination) return
     const sourceTopic = stageSummaries[source.index]
     const destinationTopic = stageSummaries[destination.index]
-
     if (
-      !destination ||
-      destination.droppableId !== 'TASK' ||
-      source.droppableId !== 'TASK' ||
+      destination.droppableId !== ESTIMATING_TASK ||
+      source.droppableId !== ESTIMATING_TASK ||
       destination.index === source.index ||
-      !sourceTopic ||
-      !destinationTopic
+      !sourceTopic ||!destinationTopic
     ) {
       return
     }
 
-    let sortOrder
-    if (destination.index === 0) {
-      sortOrder = destinationTopic.sortOrder - SORT_STEP + dndNoise()
-    } else if (destination.index === stageSummaries!.length - 1) {
-      sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
-    } else {
-      const offset = source.index > destination.index ? -1 : 1
-      sortOrder =
-        (stageSummaries[destination.index + offset]!.sortOrder + destinationTopic.sortOrder) / 2 +
-        dndNoise()
-    }
-
-    const {stageIds} = sourceTopic
-    const [firstStageId] = stageIds
-    const variables = {meetingId, stageId: firstStageId, sortOrder}
+    const {taskId} = sourceTopic
+    const variables = {meetingId, taskId, newPositionIndex: destination.index}
     DragEstimatingTaskMutation(atmosphere, variables)
   }
 
@@ -118,7 +102,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <MeetingSidebarPhaseItemChild>
-        <Droppable droppableId={'TASK'}>
+        <Droppable droppableId={ESTIMATING_TASK}>
           {(provided) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>

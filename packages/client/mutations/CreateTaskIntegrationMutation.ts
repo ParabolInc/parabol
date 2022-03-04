@@ -123,7 +123,7 @@ const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
   const optimisticIntegration = {
     summary,
     descriptionHTML,
-    key: '?',
+    issueKey: '?',
     updatedAt: now.toJSON()
   } as const
   const integration = createProxyRecord(store, 'JiraServerIssue', optimisticIntegration)

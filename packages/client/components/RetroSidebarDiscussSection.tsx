@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {DeepNonNullable} from '~/types/generics'
@@ -71,18 +71,16 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
+    if (!destination) return
     const sourceTopic = stages[source.index]
     const destinationTopic = stages[destination.index]
-
     if (
-      !destination ||
       destination.droppableId !== DISCUSSION_TOPIC ||
       source.droppableId !== DISCUSSION_TOPIC ||
       destination.index === source.index ||
-      !sourceTopic ||
-      !destinationTopic
+      !sourceTopic || !destinationTopic
     ) {
       return
     }

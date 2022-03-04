@@ -4,7 +4,7 @@ import JiraServerRestManager, {
 } from '../integrations/jiraServer/JiraServerRestManager'
 import RootDataLoader from './RootDataLoader'
 import sendToSentry from '../utils/sendToSentry'
-import TaskIntegrationManagerFactory from '../integrations/TaskIntegrationManagerFactory'
+import JiraServerTaskIntegrationManager from '../integrations/JiraServerTaskIntegrationManager'
 
 export interface JiraServerIssueKey {
   teamId: string
@@ -16,14 +16,14 @@ export interface JiraServerIssueKey {
 interface JiraServerIssue {
   id: string
   self: string
-  key: string
+  issueKey: string
   descriptionHTML: string
   summary: string
   description: string | null
   project: {
     key: string
   }
-  type: 'jiraServer'
+  service: 'jiraServer'
 }
 
 type TeamUserKey = {
@@ -43,10 +43,16 @@ export const jiraServerIssue = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, issueId}) => {
-          const manager = await TaskIntegrationManagerFactory.initManager(parent, 'jiraServer', {
-            teamId: teamId,
-            userId
-          })
+          const auth = await parent
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'jiraServer', teamId, userId})
+
+          if (!auth) {
+            return null
+          }
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+
+          const manager = auth && provider && new JiraServerTaskIntegrationManager(auth, provider)
 
           if (!manager?.getIssue) {
             return null
@@ -61,10 +67,10 @@ export const jiraServerIssue = (
           return {
             id: issueRes.id,
             self: issueRes.self,
-            key: issueRes.key,
+            issueKey: issueRes.key,
             descriptionHTML: issueRes.renderedFields.description,
             ...issueRes.fields,
-            type: 'jiraServer'
+            service: 'jiraServer'
           }
         })
       )

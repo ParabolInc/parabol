@@ -45,16 +45,16 @@ const TaskIntegrationLink = (props: Props) => {
       </JiraIssueLink>
     )
   } else if (integration.__typename === 'JiraServerIssue') {
-    const {url, key, projectKey} = integration
+    const {url, issueKey, projectKey} = integration
     return (
       <StyledLink
         href={url}
         rel='noopener noreferrer'
         target='_blank'
-        title={`GitHub Issue #${key} on ${projectKey}`}
+        title={`Jira Server Issue #${issueKey} on ${projectKey}`}
         className={className}
       >
-        {`Issue #${key}`}
+        {`Issue #${issueKey}`}
         {children}
       </StyledLink>
     )
@@ -101,7 +101,7 @@ graphql`
 graphql`
   fragment TaskIntegrationLinkIntegrationJiraServer on JiraServerIssue {
     id
-    key
+    issueKey
     projectKey
     url
   }

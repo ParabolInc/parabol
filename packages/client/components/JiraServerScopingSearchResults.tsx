@@ -51,7 +51,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
                       ... on JiraServerIssue {
                         summary
                         url
-                        key
+                        issueKey
                       }
                     }
                   }
@@ -122,8 +122,8 @@ const JiraServerScopingSearchResults = (props: Props) => {
               }}
               summary={node.summary}
               url={node.url}
-              linkText={node.key}
-              linkTitle={`Jira Server Issue #${node.key}`}
+              linkText={node.issueKey}
+              linkTitle={`Jira Server Issue #${node.issueKey}`}
             />
           )
         })}
