@@ -12,6 +12,16 @@
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql",
       "documents": "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
       "plugins": ["typescript", "typescript-operations", "add"]
+    },
+    "packages/server/graphql/intranetSchema/resolvers/types.ts": {
+      "schema": "packages/server/graphql/intranetSchema/intranetSchema.graphql",
+      "plugins": ["typescript", "typescript-resolvers"],
+      "config": {
+        "mapperTypeSuffix": "Model",
+        "mappers": {
+          "PingPayload": "./ping#PingPayload"
+        }
+      }
     }
   }
 }

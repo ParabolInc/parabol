@@ -1,0 +1,10 @@
+union PingPayload = ErrorPayload | PingSuccess
+type PingSuccess {
+  rethinkdb: Float!
+  postgres: Float!
+  redis: Float!
+}
+
+extend type Query {
+  ping: PingPayload!
+}

@@ -1,4 +1,10 @@
-import {GraphQLObjectType, GraphQLSchema} from 'graphql'
+import {loadFilesSync} from '@graphql-tools/load-files'
+import {mergeSchemas} from '@graphql-tools/schema'
+import fs from 'fs'
+import {GraphQLObjectType, GraphQLSchema, printSchema} from 'graphql'
+import path from 'path'
+import {promisify} from 'util'
+import sleep from '../../../client/utils/sleep'
 import {GQLContext} from '../graphql'
 import suCountTiersForUser from '../queries/suCountTiersForUser'
 import suOrgCount from '../queries/suOrgCount'
@@ -33,6 +39,9 @@ import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
 import stripeSucceedPayment from './mutations/stripeSucceedPayment'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
+import updateEmail from './mutations/updateEmail'
+import updateOAuthRefreshTokens from './mutations/updateOAuthRefreshTokens'
+import updateWatchlist from './mutations/updateWatchlist'
 import company from './queries/company'
 import dailyPulse from './queries/dailyPulse'
 import logins from './queries/logins'
@@ -40,9 +49,7 @@ import pingActionTick from './queries/pingActionTick'
 import signups from './queries/signups'
 import user from './queries/user'
 import users from './queries/users'
-import updateEmail from './mutations/updateEmail'
-import updateWatchlist from './mutations/updateWatchlist'
-import updateOAuthRefreshTokens from './mutations/updateOAuthRefreshTokens'
+import resolverMap from './resolvers'
 
 const query = new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
@@ -100,4 +107,25 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
     } as any)
 })
 
-export default new GraphQLSchema({query, mutation, types: rootTypes})
+const legacySchema = new GraphQLSchema({query, mutation, types: rootTypes})
+
+const typeDefs = loadFilesSync(
+  path.join(__PROJECT_ROOT__, 'packages/server/graphql/intranetSchema/typeDefs/*.graphql')
+)
+
+const schema = mergeSchemas({schemas: [legacySchema], typeDefs, resolvers: resolverMap})
+
+const updateSchema = async () => {
+  await sleep(100)
+  const write = promisify(fs.writeFile)
+  try {
+    await write(
+      path.join(__PROJECT_ROOT__, 'packages/server/graphql/intranetSchema/intranetSchema.graphql'),
+      printSchema(schema)
+    )
+  } catch {
+    // noop
+  }
+}
+updateSchema()
+export default schema
