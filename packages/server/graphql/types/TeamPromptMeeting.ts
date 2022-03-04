@@ -15,8 +15,8 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
     ...newMeetingFields(),
     settings: {
       type: new GraphQLNonNull(ActionMeetingSettings),
-      description: 'The settings that govern the action meeting',
-      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
+      description: 'The settings that govern the team prompt meeting',
+      resolve: ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
       }
     },
@@ -31,7 +31,11 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
     viewerMeetingMember: {
       type: TeamPromptMeetingMember,
       description: 'The team prompt meeting member of the viewer',
-      resolve: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}: GQLContext) => {
+      resolve: async (
+        {id: meetingId}: {id: string},
+        _args: unknown,
+        {authToken, dataLoader}: GQLContext
+      ) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
