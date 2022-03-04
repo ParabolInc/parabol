@@ -72,7 +72,7 @@ export default class JiraServerRestManager {
     return response
   }
 
-  async parseJsonResponse(response: Response) {
+  async parseJsonResponse<T>(response: Response): Promise<T | Error> {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
       return new Error('Received non-JSON Jira Server Response')
@@ -87,9 +87,9 @@ export default class JiraServerRestManager {
     return json
   }
 
-  async getProjects(): Promise<JiraServerRestProject[] | Error> {
+  async getProjects() {
     const response = await this.request('GET', '/rest/api/latest/project')
-    const projects = this.parseJsonResponse(response)
+    const projects = await this.parseJsonResponse<JiraServerRestProject[]>(response)
     return projects
   }
 
