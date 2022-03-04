@@ -3,9 +3,9 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import TeamPromptMeetingMember from './TeamPromptMeetingMember'
-import ActionMeetingSettings from './ActionMeetingSettings'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
+import TeamPromptMeetingSettings from './TeamPromptMeetingSettings'
 
 const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'TeamPromptMeeting',
@@ -14,7 +14,7 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...newMeetingFields(),
     settings: {
-      type: new GraphQLNonNull(ActionMeetingSettings),
+      type: new GraphQLNonNull(TeamPromptMeetingSettings),
       description: 'The settings that govern the team prompt meeting',
       resolve: ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
