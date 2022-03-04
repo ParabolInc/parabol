@@ -23,7 +23,7 @@ const settingsLookup = {
 const NewMeetingSettings = (props: Props) => {
   const {meetingType, selectedTeam} = props
   const Settings = settingsLookup[meetingType]
-  return <Settings team={selectedTeam} />
+  return <Settings teamRef={selectedTeam} />
 }
 
 export default createFragmentContainer(NewMeetingSettings, {

@@ -1,21 +1,24 @@
 import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {NewMeetingSettingsTeamPrompt_team} from '../__generated__/NewMeetingSettingsTeamPrompt_team.graphql'
+import {useFragment} from 'react-relay'
+import {NewMeetingSettingsTeamPrompt_team$key} from '../__generated__/NewMeetingSettingsTeamPrompt_team.graphql'
 
 interface Props {
-  team: NewMeetingSettingsTeamPrompt_team
+  teamRef: NewMeetingSettingsTeamPrompt_team$key
 }
 
-const NewMeetingSettingsTeamPrompt = (_props: Props) => {
+const NewMeetingSettingsTeamPrompt = (props: Props) => {
+  const {teamRef} = props
+  useFragment(
+    graphql`
+      fragment NewMeetingSettingsTeamPrompt_team on Team {
+        teamPromptSettings: meetingSettings(meetingType: teamPrompt) {
+          id
+        }
+      }
+    `,
+    teamRef
+  )
+
   return null
 }
-
-export default createFragmentContainer(NewMeetingSettingsTeamPrompt, {
-  team: graphql`
-    fragment NewMeetingSettingsTeamPrompt_team on Team {
-      teamPromptSettings: meetingSettings(meetingType: teamPrompt) {
-        id
-      }
-    }
-  `
-})
+export default NewMeetingSettingsTeamPrompt
