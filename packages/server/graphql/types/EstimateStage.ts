@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLFloat,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
@@ -112,10 +111,6 @@ const EstimateStage = new GraphQLObjectType<Source, GQLContext>({
         }
         return NULL_FIELD
       }
-    },
-    sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
-      description: 'The sort order for reprioritizing discussion topics'
     },
     dimensionRefIdx: {
       type: new GraphQLNonNull(GraphQLInt),

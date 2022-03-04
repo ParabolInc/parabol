@@ -85,27 +85,22 @@ export default class JiraServerRestManager {
     }
   }
 
-  readError(json: any) {
-    if (json.id === 'https://docs.atlassian.com/jira/REST/schema/error-collection#') {
-      return JSON.stringify(json.properties, undefined, '  ')
-    }
-    return ''
+  formatError(json: any) {
+    // we might want to read `error` property as well in case this message is not enough
+    return json.errorMessages?.join('\n')
   }
 
-  async parseJsonResponse(response: Response, method: string) {
+  async parseJsonResponse<T>(response: Response): Promise<T | Error> {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
       return new Error('Received non-JSON Jira Server Response')
     }
     const json = await response.json()
 
-    if (
-      (method === 'POST' && response.status !== 201) ||
-      (method === 'GET' && response.status !== 200)
-    ) {
+    if (response.status !== 201 && response.status !== 200) {
       console.error(`Jira server error ${response.status}`, json)
       return new Error(
-        `Jira Server request failed with status ${response.status}, ${this.readError(json)}`
+        `Fetching projects failed with status ${response.status}, ${this.formatError(json)}`
       )
     }
 
@@ -129,24 +124,23 @@ export default class JiraServerRestManager {
     })
   }
 
-  async request(method: string, path: string, body?: any) {
+  async request<T>(method: string, path: string, body?: any) {
     const response = await this.requestRaw(method, path, body)
-    return this.parseJsonResponse(response, method)
+    return this.parseJsonResponse<T>(response)
   }
 
-  async getCreateMeta(): Promise<JiraServerCreateMeta | Error> {
-    return this.request('GET', '/rest/api/2/issue/createmeta')
+  async getCreateMeta() {
+    return this.request<JiraServerCreateMeta>('GET', '/rest/api/2/issue/createmeta')
   }
 
-  async getIssue(issueId: string): Promise<JiraServerIssue | Error> {
-    return this.request('GET', `/rest/api/latest/issue/${issueId}?expand=renderedFields`)
+  async getIssue(issueId: string) {
+    return this.request<JiraServerIssue>(
+      'GET',
+      `/rest/api/latest/issue/${issueId}?expand=renderedFields`
+    )
   }
 
-  async createIssue(
-    projectId: string,
-    summary: string,
-    description: string
-  ): Promise<JiraServerCreateIssueResponse | Error> {
+  async createIssue(projectId: string, summary: string, description: string) {
     const meta = await this.getCreateMeta()
     if (meta instanceof Error) {
       throw meta
@@ -164,7 +158,7 @@ export default class JiraServerRestManager {
       throw new Error('No issue types specified')
     }
 
-    return this.request('POST', '/rest/api/2/issue', {
+    return this.request<JiraServerCreateIssueResponse>('POST', '/rest/api/2/issue', {
       fields: {
         project: {
           id: projectId
@@ -178,17 +172,18 @@ export default class JiraServerRestManager {
     })
   }
 
-  async addComment(
-    comment: string,
-    issueId: string
-  ): Promise<JiraServerAddCommentResponse | Error> {
-    return this.request('POST', `/rest/api/2/issue/${issueId}/comment`, {
-      body: comment
-    })
+  async addComment(comment: string, issueId: string) {
+    return this.request<JiraServerAddCommentResponse>(
+      'POST',
+      `/rest/api/2/issue/${issueId}/comment`,
+      {
+        body: comment
+      }
+    )
   }
 
-  async getProjects(): Promise<JiraServerRestProject[] | Error> {
-    return this.request('GET', '/rest/api/latest/project')
+  async getProjects() {
+    return this.request<JiraServerRestProject[]>('GET', '/rest/api/latest/project')
   }
 
   async getProjectAvatar(avatarUrl: string) {

@@ -40,12 +40,18 @@ export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE] as TaskStatusEnu
 /* Scoping Task Search Filter */
 export const taskScopingStatusFilters = [ACTIVE, STUCK, FUTURE] as TaskStatusEnum[]
 
-/* Drag-n-Drop Items */
-export const TASK = 'task'
-export const AGENDA_ITEM = 'agendaItem'
+/* Drag-n-Drop Items DroppableId */
+export const AGENDA_ITEM = 'AGENDA_ITEM'
+export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
+export const ESTIMATING_TASK = 'ESTIMATING_TASK'
+export const TEMPLATE_DIMENSION = 'TEMPLATE_DIMENSION'
+export const TEMPLATE_PROMPT = 'TEMPLATE_PROMPT'
+export const TEMPLATE_SCALE_VALUE = 'TEMPLATE_SCALE_VALUE'
+export const ACTIVE_TASK = 'ACTIVE_TASK'
 
 /* Sorting */
 export const SORT_STEP = 1
+export const ESTIMATE_TASK_SORT_ORDER = 2 ** 43
 export const DND_THROTTLE = 25
 export const AUTO_GROUPING_THRESHOLD = 0.25
 
@@ -116,11 +122,6 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 /* JavaScript specifics */
 export const MAX_INT = 2147483647
 
-/* Relay Subscription Channels */
-export const NOTIFICATION = 'notification'
-export const ORGANIZATION = 'organization'
-export const TEAM = 'team'
-
 /* Relay Subscription Event Types */
 export const UPDATED = 'updated'
 
@@ -140,9 +141,6 @@ export const CREATE_ACCOUNT_SLUG = 'create-account'
 /* Meeting Types */
 export const ACTION = 'action'
 export const RETROSPECTIVE = 'retrospective'
-
-/* Retro DnD types */
-export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 
 /* Spotlight */
 export const MAX_REDUCTION_PERCENTAGE = 1
