@@ -40,6 +40,8 @@ export interface TaskIntegrationManager {
     teamDashboardUrl: string,
     integrationHash: string
   )
+
+  getIssue?(taskId: string)
 }
 
 export default class TaskIntegrationManagerFactory {

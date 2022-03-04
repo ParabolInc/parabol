@@ -40,6 +40,22 @@ interface JiraServerAddCommentResponse {
   id: string
 }
 
+export interface JiraServerIssue {
+  id: string
+  key: string
+  self: string
+  fields: {
+    summary: string
+    description: string | null
+    project: {
+      key: string
+    }
+  }
+  renderedFields: {
+    description: string
+  }
+}
+
 export default class JiraServerRestManager {
   serverBaseUrl: string
   oauth: OAuth
@@ -122,6 +138,10 @@ export default class JiraServerRestManager {
     return this.request('GET', '/rest/api/2/issue/createmeta')
   }
 
+  async getIssue(issueId: string): Promise<JiraServerIssue | Error> {
+    return this.request('GET', `/rest/api/latest/issue/${issueId}?expand=renderedFields`)
+  }
+
   async createIssue(
     projectId: string,
     summary: string,
@@ -141,7 +161,7 @@ export default class JiraServerRestManager {
     const bestIssueType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
 
     if (!bestIssueType) {
-      throw new Error('Issue type not found')
+      throw new Error('No issue types specified')
     }
 
     return this.request('POST', '/rest/api/2/issue', {
