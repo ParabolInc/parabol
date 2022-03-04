@@ -12,7 +12,7 @@ const pingService = async <TSuccess>(thunk: () => Promise<TSuccess>) => {
   return res ? duration : -1
 }
 
-export type Source = Record<string, never>
+export type PingableServicesSource = Record<string, never>
 
 const PingableServices: PingableServicesResolvers = {
   postgres: async () => {
