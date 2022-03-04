@@ -16,7 +16,6 @@ import {
 } from 'relay-runtime'
 import Atmosphere from '../../Atmosphere'
 import {SubscriptionChannel} from '../../types/constEnums'
-import {TASK, TEAM} from '../../utils/constants'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import ClientGraphQLServer from './ClientGraphQLServer'
 // import sleep from 'universal/utils/sleep'
@@ -89,11 +88,11 @@ export default class LocalAtmosphere extends Environment {
     return Observable.create((sink) => {
       const channelLookup = {
         TaskSubscription: {
-          channel: TASK,
+          channel: SubscriptionChannel.TASK,
           dataField: 'taskSubscription'
         },
         TeamSubscription: {
-          channel: TEAM,
+          channel: SubscriptionChannel.TEAM,
           dataField: 'teamSubscription'
         },
         MeetingSubscription: {
