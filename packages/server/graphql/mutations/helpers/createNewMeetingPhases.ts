@@ -7,7 +7,8 @@ import {
   LAST_CALL,
   REFLECT,
   UPDATES,
-  VOTE
+  VOTE,
+  RESPONSES
 } from 'parabol-client/utils/constants'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
@@ -131,6 +132,7 @@ const createNewMeetingPhases = async (
         case FIRST_CALL:
         case LAST_CALL:
         case 'SCOPE':
+        case RESPONSES:
           return new GenericMeetingPhase(phaseType, durations)
         default:
           throw new Error(`Unhandled phaseType: ${phaseType}`)

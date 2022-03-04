@@ -14,6 +14,7 @@ import {
   GROUP,
   LAST_CALL,
   REFLECT,
+  RESPONSES,
   UPDATES,
   VOTE
 } from 'parabol-client/utils/constants'
@@ -60,6 +61,7 @@ const resolveTypeLookup = {
   [FIRST_CALL]: GenericMeetingPhase,
   [AGENDA_ITEMS]: AgendaItemsPhase,
   [LAST_CALL]: GenericMeetingPhase,
+  [RESPONSES]: GenericMeetingPhase,
   SCOPE: GenericMeetingPhase,
   ESTIMATE: EstimatePhase
 } as Record<INewMeetingPhaseTypeEnum, GraphQLObjectType<any, GQLContext>>

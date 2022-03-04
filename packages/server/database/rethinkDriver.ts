@@ -48,6 +48,8 @@ import TemplateDimension from './types/TemplateDimension'
 import TemplateScale from './types/TemplateScale'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
+import MeetingTeamPrompt from './types/MeetingTeamPrompt'
+import TeamPromptMeetingMember from './types/TeamPromptMeetingMember'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -99,11 +101,11 @@ export type RethinkSchema = {
     index: 'teamId'
   }
   MeetingMember: {
-    type: PokerMeetingMember | RetroMeetingMember | ActionMeetingMember
+    type: PokerMeetingMember | RetroMeetingMember | ActionMeetingMember | TeamPromptMeetingMember
     index: 'meetingId' | 'teamId' | 'userId'
   }
   NewMeeting: {
-    type: MeetingRetrospective | MeetingAction | MeetingPoker
+    type: MeetingRetrospective | MeetingAction | MeetingPoker | MeetingTeamPrompt
     index: 'facilitatorUserId' | 'teamId' | 'templateId'
   }
   NewFeature: {

@@ -3,6 +3,7 @@ import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
+import MeetingTeamPrompt from '../../../../database/types/MeetingTeamPrompt'
 import appOrigin from '../../../../appOrigin'
 import MeetingAction from '../../../../database/types/MeetingAction'
 import MeetingPoker from '../../../../database/types/MeetingPoker'
@@ -122,7 +123,9 @@ export const startMattermostMeeting = async (
   return notifyMattermost('meetingStart', webhookUrl, facilitatorUserId, teamId, attachments)
 }
 
-const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
+const makeEndMeetingButtons = (
+  meeting: MeetingRetrospective | MeetingAction | MeetingPoker | MeetingTeamPrompt
+) => {
   const {id: meetingId} = meeting
   const searchParams = {
     utm_source: 'mattermost summary',

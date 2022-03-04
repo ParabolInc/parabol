@@ -5,6 +5,7 @@ import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingAction from '../../../database/types/MeetingAction'
 import MeetingPoker from '../../../database/types/MeetingPoker'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
@@ -85,7 +86,7 @@ const handleCompletedRetrospectiveStage = async (
 
 const handleCompletedStage = async (
   stage: GenericMeetingStage,
-  meeting: MeetingRetrospective | MeetingPoker | MeetingAction,
+  meeting: MeetingRetrospective | MeetingPoker | MeetingAction | MeetingTeamPrompt,
   dataLoader: DataLoaderWorker
 ) => {
   if (meeting.meetingType === 'retrospective') {

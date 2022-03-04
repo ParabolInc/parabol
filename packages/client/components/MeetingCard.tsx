@@ -147,7 +147,8 @@ const ILLUSTRATIONS = {
 const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
   action: 'Check-In',
-  poker: 'Sprint Poker'
+  poker: 'Sprint Poker',
+  teamPrompt: 'Async Standup'
 }
 
 const MeetingCard = (props: Props) => {
@@ -175,9 +176,12 @@ const MeetingCard = (props: Props) => {
       closeTooltip()
     }, 2000)
   }
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.UPPER_RIGHT)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
 
   return (
     <CardWrapper

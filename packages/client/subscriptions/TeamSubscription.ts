@@ -75,6 +75,7 @@ const subscription = graphql`
       ...StartCheckInMutation_team @relay(mask: false)
       ...StartRetrospectiveMutation_team @relay(mask: false)
       ...StartSprintPokerMutation_team @relay(mask: false)
+      ...StartTeamPromptMutation_team @relay(mask: false)
       ...UpdateAgendaItemMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)

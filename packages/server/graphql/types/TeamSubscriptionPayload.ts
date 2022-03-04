@@ -56,6 +56,7 @@ import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
 import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
+import {StartTeamPromptSuccess} from './StartTeamPromptPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import {UpdateGitHubDimensionFieldSuccess} from './UpdateGitHubDimensionFieldPayload'
@@ -94,6 +95,7 @@ const types = [
   StartNewMeetingPayload,
   StartRetrospectiveSuccess,
   StartSprintPokerSuccess,
+  StartTeamPromptSuccess,
   UpdateAgendaItemPayload,
   UpdateCreditCardPayload,
   UpdateTeamNamePayload,
