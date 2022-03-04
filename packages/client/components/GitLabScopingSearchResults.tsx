@@ -86,6 +86,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                       membership: true
                       first: $projectsFirst
                       after: $projectsAfter
+                      sort: "latest_activity_desc"
                       ids: null # $projectIds
                     ) @connection(key: "GitLabScopingSearchResults_projects") {
                       edges {
