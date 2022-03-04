@@ -49,11 +49,9 @@ export default class JiraServerRestManager {
     }
   }
 
-  readError(json: any) {
-    if (json.id === 'https://docs.atlassian.com/jira/REST/schema/error-collection#') {
-      return JSON.stringify(json.properties, undefined, '  ')
-    }
-    return ''
+  formatError(json: any) {
+    // we might want to read `error` property as well in case this message is not enough
+    return json.errorMessages?.join('\n')
   }
 
   async request(method: string, path: string) {
@@ -80,7 +78,7 @@ export default class JiraServerRestManager {
     const json = await response.json()
     if (response.status !== 200) {
       return new Error(
-        `Fetching projects failed with status ${response.status}, ${this.readError(json)}`
+        `Fetching projects failed with status ${response.status}, ${this.formatError(json)}`
       )
     }
 
