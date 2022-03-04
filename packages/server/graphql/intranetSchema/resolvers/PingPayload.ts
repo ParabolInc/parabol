@@ -1,8 +1,8 @@
 import sleep from '../../../../client/utils/sleep'
-import getRedis from '../../../utils/getRedis'
-import getPg from '../../../postgres/getPg'
-import {PingSuccessResolvers} from './types'
 import getRethink from '../../../database/rethinkDriver'
+import getPg from '../../../postgres/getPg'
+import getRedis from '../../../utils/getRedis'
+import {PingSuccessResolvers} from './types'
 
 const pingService = async <TSuccess>(thunk: () => Promise<TSuccess>) => {
     const start = Date.now()
@@ -27,7 +27,7 @@ const resolverMap: PingSuccessResolvers = {
   },
   rethinkdb: async () => {
     const r = await getRethink()
-    return pingService(r(0).run
+    return pingService(r(0).run)
   }
 }
 
