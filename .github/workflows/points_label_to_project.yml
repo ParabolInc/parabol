@@ -13,7 +13,7 @@ jobs:
     - name: match-story-points-label
       run: |
         echo "Stoodis"
-        if [[ "${{ github.event.label.name }}" =~ ^Story[[:space:]]Points:[[:space:]]([0-9]+)$ ]] ; then
+        if [[ "${{ github.event.label.name }}" =~ Story[[:space:]]Points:[[:space:]]([0-9]+) ]] ; then
           echo ::set-output name=point_label_value::${BASH_REMATCH[1]}
           echo ::set-output name=point_label_match::true
         fi
