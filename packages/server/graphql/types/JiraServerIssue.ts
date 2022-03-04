@@ -34,9 +34,9 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
     url: {
       type: new GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue',
-      resolve: ({key, self}) => {
+      resolve: ({issueKey, self}) => {
         const {origin} = new URL(self)
-        return `${origin}/browse/${key}`
+        return `${origin}/browse/${issueKey}`
       }
     },
     summary: {

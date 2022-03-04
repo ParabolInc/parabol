@@ -46,6 +46,7 @@ const TaskIntegrationLink = (props: Props) => {
     )
   } else if (integration.__typename === 'JiraServerIssue') {
     const {url, issueKey, projectKey} = integration
+    console.log('integration', integration)
     return (
       <StyledLink
         href={url}

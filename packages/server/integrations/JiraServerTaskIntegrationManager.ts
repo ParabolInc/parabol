@@ -5,6 +5,7 @@ import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/gene
 import {TIntegrationProvider} from '../postgres/queries/getIntegrationProvidersByIds'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {ExternalLinks} from '~/types/constEnums'
+import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 
 export default class JiraServerTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira Server'
@@ -44,15 +45,21 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     // TODO: implement stateToJiraServerFormat
     const description = contentState.getPlainText()
 
-    const res = await manager.createIssue(integrationRepoId, summary, description)
+    const {repoId, providerId} = IntegrationRepoId.split(integrationRepoId)
+
+    if (parseInt(providerId ?? '', 10) !== this.provider.id || !repoId) {
+      throw new Error('Incorrect IntegrationRepoId')
+    }
+
+    const res = await manager.createIssue(repoId, summary, description)
 
     if (res instanceof Error) {
       return res
     }
     const issueId = res.id
-    const providerId = this.provider.id
+
     return {
-      integrationHash: JiraServerIssueId.join(providerId, integrationRepoId, issueId),
+      integrationHash: JiraServerIssueId.join(this.provider.id, repoId, issueId),
       integration: {
         accessUserId: this.auth.userId,
         service: 'jiraServer',

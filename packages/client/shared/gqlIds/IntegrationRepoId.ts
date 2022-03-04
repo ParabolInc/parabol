@@ -29,6 +29,10 @@ const IntegrationRepoId = {
       default:
         return `${integration.service}:${integration.providerId}:${integration.id}`
     }
+  },
+  split: (id: string) => {
+    const parts = id.split(':')
+    return {service: parts[0], providerId: parts[1], repoId: parts[2]}
   }
 }
 
