@@ -4,7 +4,7 @@ import JiraServerRestManager, {
 } from '../integrations/jiraServer/JiraServerRestManager'
 import RootDataLoader from './RootDataLoader'
 import sendToSentry from '../utils/sendToSentry'
-import TaskIntegrationManagerFactory from '../integrations/TaskIntegrationManagerFactory'
+import JiraServerTaskIntegrationManager from '../integrations/JiraServerTaskIntegrationManager'
 
 export interface JiraServerIssueKey {
   teamId: string
@@ -43,10 +43,16 @@ export const jiraServerIssue = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId, issueId}) => {
-          const manager = await TaskIntegrationManagerFactory.initManager(parent, 'jiraServer', {
-            teamId: teamId,
-            userId
-          })
+          const auth = await parent
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'jiraServer', teamId, userId})
+
+          if (!auth) {
+            return null
+          }
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+
+          const manager = auth && provider && new JiraServerTaskIntegrationManager(auth, provider)
 
           if (!manager?.getIssue) {
             return null
