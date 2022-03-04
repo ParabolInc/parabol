@@ -21,7 +21,7 @@ export default {
   },
   async resolve(
     _source: unknown,
-    args: {updatedTeam: UpdatedTeamInputType},
+    {updatedTeam}: {updatedTeam: UpdatedTeamInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -31,7 +31,6 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const updatedTeam = args.updatedTeam
     const teamId = updatedTeam.id
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('User not on team'), {userId: viewerId})

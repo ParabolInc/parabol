@@ -28,14 +28,14 @@ export default {
   },
   async resolve(
     _source: unknown,
-    args: {input: CreateReflectionInputType},
+    {input}: {input: CreateReflectionInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
-    const {content, sortOrder, meetingId, promptId} = args.input
+    const {content, sortOrder, meetingId, promptId} = input
     // AUTH
     const viewerId = getUserId(authToken)
     const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
