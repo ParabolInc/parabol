@@ -11,12 +11,12 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraServerIssue',
   description: 'The Jira Issue that comes direct from Jira Server',
   interfaces: () => [TaskIntegration],
-  isTypeOf: ({type}) => type === 'jiraServer',
+  isTypeOf: ({service}) => service === 'jiraServer',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    key: {
+    issueKey: {
       type: new GraphQLNonNull(GraphQLID)
     },
     projectKey: {

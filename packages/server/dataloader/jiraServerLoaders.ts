@@ -16,14 +16,14 @@ export interface JiraServerIssueKey {
 interface JiraServerIssue {
   id: string
   self: string
-  key: string
+  issueKey: string
   descriptionHTML: string
   summary: string
   description: string | null
   project: {
     key: string
   }
-  type: 'jiraServer'
+  service: 'jiraServer'
 }
 
 type TeamUserKey = {
@@ -61,10 +61,10 @@ export const jiraServerIssue = (
           return {
             id: issueRes.id,
             self: issueRes.self,
-            key: issueRes.key,
+            issueKey: issueRes.key,
             descriptionHTML: issueRes.renderedFields.description,
             ...issueRes.fields,
-            type: 'jiraServer'
+            service: 'jiraServer'
           }
         })
       )
