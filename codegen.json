@@ -15,8 +15,9 @@
     },
     "packages/server/graphql/intranetSchema/resolvers/types.ts": {
       "schema": "packages/server/graphql/intranetSchema/intranetSchema.graphql",
-      "plugins": ["typescript", "typescript-resolvers"],
+      "plugins": ["typescript", "typescript-resolvers", "add"],
       "config": {
+        "contextType": "../../graphql#InternalContext",
         "mapperTypeSuffix": "Model",
         "mappers": {
           "PingPayload": "./ping#PingPayload"

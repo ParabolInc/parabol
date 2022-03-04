@@ -1,5 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { PingPayload as PingPayloadModel } from './ping';
+import { GQLContext } from '../../graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -4359,7 +4362,7 @@ export type ResolversParentTypes = {
   UserTiersCount: UserTiersCount;
 };
 
-export type ActionMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['ActionMeeting'] = ResolversParentTypes['ActionMeeting']> = {
+export type ActionMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ActionMeeting'] = ResolversParentTypes['ActionMeeting']> = {
   agendaItem?: Resolver<Maybe<ResolversTypes['AgendaItem']>, ParentType, ContextType, RequireFields<ActionMeetingAgendaItemArgs, 'agendaItemId'>>;
   agendaItemCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   agendaItems?: Resolver<Array<ResolversTypes['AgendaItem']>, ParentType, ContextType>;
@@ -4390,7 +4393,7 @@ export type ActionMeetingResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ActionMeetingMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['ActionMeetingMember'] = ResolversParentTypes['ActionMeetingMember']> = {
+export type ActionMeetingMemberResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ActionMeetingMember'] = ResolversParentTypes['ActionMeetingMember']> = {
   doneTasks?: Resolver<Array<ResolversTypes['Task']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isCheckedIn?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -4405,7 +4408,7 @@ export type ActionMeetingMemberResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ActionMeetingSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['ActionMeetingSettings'] = ResolversParentTypes['ActionMeetingSettings']> = {
+export type ActionMeetingSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ActionMeetingSettings'] = ResolversParentTypes['ActionMeetingSettings']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingType?: Resolver<ResolversTypes['MeetingTypeEnum'], ParentType, ContextType>;
   phaseTypes?: Resolver<Array<ResolversTypes['NewMeetingPhaseTypeEnum']>, ParentType, ContextType>;
@@ -4414,12 +4417,12 @@ export type ActionMeetingSettingsResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AddNewFeaturePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddNewFeaturePayload'] = ResolversParentTypes['AddNewFeaturePayload']> = {
+export type AddNewFeaturePayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AddNewFeaturePayload'] = ResolversParentTypes['AddNewFeaturePayload']> = {
   newFeature?: Resolver<Maybe<ResolversTypes['NewFeatureBroadcast']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AgendaItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['AgendaItem'] = ResolversParentTypes['AgendaItem']> = {
+export type AgendaItemResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AgendaItem'] = ResolversParentTypes['AgendaItem']> = {
   commentors?: Resolver<Maybe<Array<ResolversTypes['CommentorDetails']>>, ParentType, ContextType>;
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -4436,7 +4439,7 @@ export type AgendaItemResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AgendaItemsPhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['AgendaItemsPhase'] = ResolversParentTypes['AgendaItemsPhase']> = {
+export type AgendaItemsPhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AgendaItemsPhase'] = ResolversParentTypes['AgendaItemsPhase']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phaseType?: Resolver<ResolversTypes['NewMeetingPhaseTypeEnum'], ParentType, ContextType>;
@@ -4445,7 +4448,7 @@ export type AgendaItemsPhaseResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AgendaItemsStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['AgendaItemsStage'] = ResolversParentTypes['AgendaItemsStage']> = {
+export type AgendaItemsStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AgendaItemsStage'] = ResolversParentTypes['AgendaItemsStage']> = {
   agendaItem?: Resolver<ResolversTypes['AgendaItem'], ParentType, ContextType>;
   agendaItemId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   discussion?: Resolver<ResolversTypes['Discussion'], ParentType, ContextType>;
@@ -4472,7 +4475,7 @@ export type AgendaItemsStageResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AtlassianIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['AtlassianIntegration'] = ResolversParentTypes['AtlassianIntegration']> = {
+export type AtlassianIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AtlassianIntegration'] = ResolversParentTypes['AtlassianIntegration']> = {
   accessToken?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   accountId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   cloudIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -4489,32 +4492,32 @@ export type AtlassianIntegrationResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AtlassianTeamIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['AtlassianTeamIntegration'] = ResolversParentTypes['AtlassianTeamIntegration']> = {
+export type AtlassianTeamIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AtlassianTeamIntegration'] = ResolversParentTypes['AtlassianTeamIntegration']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   jiraDimensionFields?: Resolver<Array<ResolversTypes['JiraDimensionField']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AuthIdentityResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthIdentity'] = ResolversParentTypes['AuthIdentity']> = {
+export type AuthIdentityResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AuthIdentity'] = ResolversParentTypes['AuthIdentity']> = {
   __resolveType: TypeResolveFn<'AuthIdentityGoogle' | 'AuthIdentityLocal', ParentType, ContextType>;
   isEmailVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['AuthIdentityTypeEnum'], ParentType, ContextType>;
 };
 
-export type AuthIdentityGoogleResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthIdentityGoogle'] = ResolversParentTypes['AuthIdentityGoogle']> = {
+export type AuthIdentityGoogleResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AuthIdentityGoogle'] = ResolversParentTypes['AuthIdentityGoogle']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isEmailVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['AuthIdentityTypeEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AuthIdentityLocalResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthIdentityLocal'] = ResolversParentTypes['AuthIdentityLocal']> = {
+export type AuthIdentityLocalResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['AuthIdentityLocal'] = ResolversParentTypes['AuthIdentityLocal']> = {
   isEmailVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['AuthIdentityTypeEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CheckInPhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CheckInPhase'] = ResolversParentTypes['CheckInPhase']> = {
+export type CheckInPhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['CheckInPhase'] = ResolversParentTypes['CheckInPhase']> = {
   checkInGreeting?: Resolver<ResolversTypes['MeetingGreeting'], ParentType, ContextType>;
   checkInQuestion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4525,7 +4528,7 @@ export type CheckInPhaseResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CheckInStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['CheckInStage'] = ResolversParentTypes['CheckInStage']> = {
+export type CheckInStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['CheckInStage'] = ResolversParentTypes['CheckInStage']> = {
   endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isAsync?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -4551,7 +4554,7 @@ export type CheckInStageResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CommentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Comment'] = ResolversParentTypes['Comment']> = {
+export type CommentResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Comment'] = ResolversParentTypes['Comment']> = {
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -4569,13 +4572,13 @@ export type CommentResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CommentorDetailsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CommentorDetails'] = ResolversParentTypes['CommentorDetails']> = {
+export type CommentorDetailsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['CommentorDetails'] = ResolversParentTypes['CommentorDetails']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   preferredName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CompanyResolvers<ContextType = any, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company']> = {
+export type CompanyResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company']> = {
   activeTeamCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   activeUserCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4588,7 +4591,7 @@ export type CompanyResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CouponResolvers<ContextType = any, ParentType extends ResolversParentTypes['Coupon'] = ResolversParentTypes['Coupon']> = {
+export type CouponResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Coupon'] = ResolversParentTypes['Coupon']> = {
   amountOff?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4596,7 +4599,7 @@ export type CouponResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CreditCardResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreditCard'] = ResolversParentTypes['CreditCard']> = {
+export type CreditCardResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['CreditCard'] = ResolversParentTypes['CreditCard']> = {
   brand?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   expiry?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   last4?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4607,17 +4610,17 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type DeleteUserPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteUserPayload'] = ResolversParentTypes['DeleteUserPayload']> = {
+export type DeleteUserPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DeleteUserPayload'] = ResolversParentTypes['DeleteUserPayload']> = {
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DisconnectSocketPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['DisconnectSocketPayload'] = ResolversParentTypes['DisconnectSocketPayload']> = {
+export type DisconnectSocketPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DisconnectSocketPayload'] = ResolversParentTypes['DisconnectSocketPayload']> = {
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DiscussPhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DiscussPhase'] = ResolversParentTypes['DiscussPhase']> = {
+export type DiscussPhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscussPhase'] = ResolversParentTypes['DiscussPhase']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phaseType?: Resolver<ResolversTypes['NewMeetingPhaseTypeEnum'], ParentType, ContextType>;
@@ -4626,7 +4629,7 @@ export type DiscussPhaseResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DiscussionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Discussion'] = ResolversParentTypes['Discussion']> = {
+export type DiscussionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Discussion'] = ResolversParentTypes['Discussion']> = {
   commentCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   commentors?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -4639,19 +4642,19 @@ export type DiscussionResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DiscussionThreadStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['DiscussionThreadStage'] = ResolversParentTypes['DiscussionThreadStage']> = {
+export type DiscussionThreadStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscussionThreadStage'] = ResolversParentTypes['DiscussionThreadStage']> = {
   __resolveType: TypeResolveFn<'AgendaItemsStage' | 'EstimateStage' | 'RetroDiscussStage', ParentType, ContextType>;
   discussion?: Resolver<ResolversTypes['Discussion'], ParentType, ContextType>;
   discussionId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type DomainCountPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['DomainCountPayload'] = ResolversParentTypes['DomainCountPayload']> = {
+export type DomainCountPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DomainCountPayload'] = ResolversParentTypes['DomainCountPayload']> = {
   domain?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DraftEnterpriseInvoicePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['DraftEnterpriseInvoicePayload'] = ResolversParentTypes['DraftEnterpriseInvoicePayload']> = {
+export type DraftEnterpriseInvoicePayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DraftEnterpriseInvoicePayload'] = ResolversParentTypes['DraftEnterpriseInvoicePayload']> = {
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -4661,21 +4664,21 @@ export interface EmailScalarConfig extends GraphQLScalarTypeConfig<ResolversType
   name: 'Email';
 }
 
-export type EnableSamlForDomainPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['EnableSAMLForDomainPayload'] = ResolversParentTypes['EnableSAMLForDomainPayload']> = {
+export type EnableSamlForDomainPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EnableSAMLForDomainPayload'] = ResolversParentTypes['EnableSAMLForDomainPayload']> = {
   __resolveType: TypeResolveFn<'EnableSAMLForDomainSuccess' | 'ErrorPayload', ParentType, ContextType>;
 };
 
-export type EnableSamlForDomainSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['EnableSAMLForDomainSuccess'] = ResolversParentTypes['EnableSAMLForDomainSuccess']> = {
+export type EnableSamlForDomainSuccessResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EnableSAMLForDomainSuccess'] = ResolversParentTypes['EnableSAMLForDomainSuccess']> = {
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ErrorPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ErrorPayload'] = ResolversParentTypes['ErrorPayload']> = {
+export type ErrorPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ErrorPayload'] = ResolversParentTypes['ErrorPayload']> = {
   error?: Resolver<ResolversTypes['StandardMutationError'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type EstimatePhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['EstimatePhase'] = ResolversParentTypes['EstimatePhase']> = {
+export type EstimatePhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EstimatePhase'] = ResolversParentTypes['EstimatePhase']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phaseType?: Resolver<ResolversTypes['NewMeetingPhaseTypeEnum'], ParentType, ContextType>;
@@ -4684,7 +4687,7 @@ export type EstimatePhaseResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type EstimateStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['EstimateStage'] = ResolversParentTypes['EstimateStage']> = {
+export type EstimateStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EstimateStage'] = ResolversParentTypes['EstimateStage']> = {
   creatorUserId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   dimensionRef?: Resolver<ResolversTypes['TemplateDimensionRef'], ParentType, ContextType>;
   dimensionRefIdx?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -4720,7 +4723,7 @@ export type EstimateStageResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type EstimateUserScoreResolvers<ContextType = any, ParentType extends ResolversParentTypes['EstimateUserScore'] = ResolversParentTypes['EstimateUserScore']> = {
+export type EstimateUserScoreResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EstimateUserScore'] = ResolversParentTypes['EstimateUserScore']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   stageId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4729,19 +4732,19 @@ export type EstimateUserScoreResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type FlagConversionModalPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['FlagConversionModalPayload'] = ResolversParentTypes['FlagConversionModalPayload']> = {
+export type FlagConversionModalPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['FlagConversionModalPayload'] = ResolversParentTypes['FlagConversionModalPayload']> = {
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   org?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type FlagOverLimitPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['FlagOverLimitPayload'] = ResolversParentTypes['FlagOverLimitPayload']> = {
+export type FlagOverLimitPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['FlagOverLimitPayload'] = ResolversParentTypes['FlagOverLimitPayload']> = {
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GenericMeetingPhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['GenericMeetingPhase'] = ResolversParentTypes['GenericMeetingPhase']> = {
+export type GenericMeetingPhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['GenericMeetingPhase'] = ResolversParentTypes['GenericMeetingPhase']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phaseType?: Resolver<ResolversTypes['NewMeetingPhaseTypeEnum'], ParentType, ContextType>;
@@ -4750,7 +4753,7 @@ export type GenericMeetingPhaseResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GenericMeetingStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['GenericMeetingStage'] = ResolversParentTypes['GenericMeetingStage']> = {
+export type GenericMeetingStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['GenericMeetingStage'] = ResolversParentTypes['GenericMeetingStage']> = {
   endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isAsync?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -4773,7 +4776,7 @@ export type GenericMeetingStageResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GitHubIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['GitHubIntegration'] = ResolversParentTypes['GitHubIntegration']> = {
+export type GitHubIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['GitHubIntegration'] = ResolversParentTypes['GitHubIntegration']> = {
   accessToken?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   githubSearchQueries?: Resolver<Array<ResolversTypes['GitHubSearchQuery']>, ParentType, ContextType>;
@@ -4787,28 +4790,28 @@ export type GitHubIntegrationResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GitHubSearchQueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['GitHubSearchQuery'] = ResolversParentTypes['GitHubSearchQuery']> = {
+export type GitHubSearchQueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['GitHubSearchQuery'] = ResolversParentTypes['GitHubSearchQuery']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastUsedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   queryString?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GitLabIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['GitLabIntegration'] = ResolversParentTypes['GitLabIntegration']> = {
+export type GitLabIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['GitLabIntegration'] = ResolversParentTypes['GitLabIntegration']> = {
   auth?: Resolver<Maybe<ResolversTypes['TeamMemberIntegrationAuthOAuth2']>, ParentType, ContextType>;
   cloudProvider?: Resolver<Maybe<ResolversTypes['IntegrationProviderOAuth2']>, ParentType, ContextType>;
   sharedProviders?: Resolver<Array<ResolversTypes['IntegrationProviderOAuth2']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type GoogleAnalyzedEntityResolvers<ContextType = any, ParentType extends ResolversParentTypes['GoogleAnalyzedEntity'] = ResolversParentTypes['GoogleAnalyzedEntity']> = {
+export type GoogleAnalyzedEntityResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['GoogleAnalyzedEntity'] = ResolversParentTypes['GoogleAnalyzedEntity']> = {
   lemma?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   salience?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type IntegrationProviderResolvers<ContextType = any, ParentType extends ResolversParentTypes['IntegrationProvider'] = ResolversParentTypes['IntegrationProvider']> = {
+export type IntegrationProviderResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['IntegrationProvider'] = ResolversParentTypes['IntegrationProvider']> = {
   __resolveType: TypeResolveFn<'IntegrationProviderOAuth1' | 'IntegrationProviderOAuth2' | 'IntegrationProviderWebhook', ParentType, ContextType>;
   authStrategy?: Resolver<ResolversTypes['IntegrationProviderAuthStrategyEnum'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -4820,7 +4823,7 @@ export type IntegrationProviderResolvers<ContextType = any, ParentType extends R
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
 };
 
-export type IntegrationProviderOAuth1Resolvers<ContextType = any, ParentType extends ResolversParentTypes['IntegrationProviderOAuth1'] = ResolversParentTypes['IntegrationProviderOAuth1']> = {
+export type IntegrationProviderOAuth1Resolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['IntegrationProviderOAuth1'] = ResolversParentTypes['IntegrationProviderOAuth1']> = {
   authStrategy?: Resolver<ResolversTypes['IntegrationProviderAuthStrategyEnum'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4833,7 +4836,7 @@ export type IntegrationProviderOAuth1Resolvers<ContextType = any, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type IntegrationProviderOAuth2Resolvers<ContextType = any, ParentType extends ResolversParentTypes['IntegrationProviderOAuth2'] = ResolversParentTypes['IntegrationProviderOAuth2']> = {
+export type IntegrationProviderOAuth2Resolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['IntegrationProviderOAuth2'] = ResolversParentTypes['IntegrationProviderOAuth2']> = {
   authStrategy?: Resolver<ResolversTypes['IntegrationProviderAuthStrategyEnum'], ParentType, ContextType>;
   clientId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -4847,7 +4850,7 @@ export type IntegrationProviderOAuth2Resolvers<ContextType = any, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type IntegrationProviderWebhookResolvers<ContextType = any, ParentType extends ResolversParentTypes['IntegrationProviderWebhook'] = ResolversParentTypes['IntegrationProviderWebhook']> = {
+export type IntegrationProviderWebhookResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['IntegrationProviderWebhook'] = ResolversParentTypes['IntegrationProviderWebhook']> = {
   authStrategy?: Resolver<ResolversTypes['IntegrationProviderAuthStrategyEnum'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4860,7 +4863,7 @@ export type IntegrationProviderWebhookResolvers<ContextType = any, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Invoice'] = ResolversParentTypes['Invoice']> = {
+export type InvoiceResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Invoice'] = ResolversParentTypes['Invoice']> = {
   amountDue?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   billingLeaderEmails?: Resolver<Array<ResolversTypes['Email']>, ParentType, ContextType>;
   coupon?: Resolver<Maybe<ResolversTypes['Coupon']>, ParentType, ContextType>;
@@ -4884,19 +4887,19 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InvoiceConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceConnection'] = ResolversParentTypes['InvoiceConnection']> = {
+export type InvoiceConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['InvoiceConnection'] = ResolversParentTypes['InvoiceConnection']> = {
   edges?: Resolver<Array<ResolversTypes['InvoiceEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<Maybe<ResolversTypes['PageInfoDateCursor']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InvoiceEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceEdge'] = ResolversParentTypes['InvoiceEdge']> = {
+export type InvoiceEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['InvoiceEdge'] = ResolversParentTypes['InvoiceEdge']> = {
   cursor?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InvoiceLineItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceLineItem'] = ResolversParentTypes['InvoiceLineItem']> = {
+export type InvoiceLineItemResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['InvoiceLineItem'] = ResolversParentTypes['InvoiceLineItem']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   details?: Resolver<Array<ResolversTypes['InvoiceLineItemDetails']>, ParentType, ContextType>;
@@ -4906,7 +4909,7 @@ export type InvoiceLineItemResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InvoiceLineItemDetailsResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceLineItemDetails'] = ResolversParentTypes['InvoiceLineItemDetails']> = {
+export type InvoiceLineItemDetailsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['InvoiceLineItemDetails'] = ResolversParentTypes['InvoiceLineItemDetails']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['Email'], ParentType, ContextType>;
   endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -4916,7 +4919,7 @@ export type InvoiceLineItemDetailsResolvers<ContextType = any, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraDimensionFieldResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraDimensionField'] = ResolversParentTypes['JiraDimensionField']> = {
+export type JiraDimensionFieldResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraDimensionField'] = ResolversParentTypes['JiraDimensionField']> = {
   cloudId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   dimensionName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fieldId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4927,7 +4930,7 @@ export type JiraDimensionFieldResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraIssueResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraIssue'] = ResolversParentTypes['JiraIssue']> = {
+export type JiraIssueResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraIssue'] = ResolversParentTypes['JiraIssue']> = {
   cloudId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   cloudName?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4944,20 +4947,20 @@ export type JiraIssueResolvers<ContextType = any, ParentType extends ResolversPa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraIssueConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraIssueConnection'] = ResolversParentTypes['JiraIssueConnection']> = {
+export type JiraIssueConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraIssueConnection'] = ResolversParentTypes['JiraIssueConnection']> = {
   edges?: Resolver<Array<ResolversTypes['JiraIssueEdge']>, ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   pageInfo?: Resolver<Maybe<ResolversTypes['PageInfoDateCursor']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraIssueEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraIssueEdge'] = ResolversParentTypes['JiraIssueEdge']> = {
+export type JiraIssueEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraIssueEdge'] = ResolversParentTypes['JiraIssueEdge']> = {
   cursor?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['JiraIssue'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraRemoteAvatarUrlsResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraRemoteAvatarUrls'] = ResolversParentTypes['JiraRemoteAvatarUrls']> = {
+export type JiraRemoteAvatarUrlsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraRemoteAvatarUrls'] = ResolversParentTypes['JiraRemoteAvatarUrls']> = {
   x16?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   x24?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   x32?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4965,7 +4968,7 @@ export type JiraRemoteAvatarUrlsResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraRemoteProjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraRemoteProject'] = ResolversParentTypes['JiraRemoteProject']> = {
+export type JiraRemoteProjectResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraRemoteProject'] = ResolversParentTypes['JiraRemoteProject']> = {
   avatar?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   avatarUrls?: Resolver<ResolversTypes['JiraRemoteAvatarUrls'], ParentType, ContextType>;
   cloudId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4981,7 +4984,7 @@ export type JiraRemoteProjectResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraRemoteProjectCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraRemoteProjectCategory'] = ResolversParentTypes['JiraRemoteProjectCategory']> = {
+export type JiraRemoteProjectCategoryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraRemoteProjectCategory'] = ResolversParentTypes['JiraRemoteProjectCategory']> = {
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4989,7 +4992,7 @@ export type JiraRemoteProjectCategoryResolvers<ContextType = any, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraSearchQueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraSearchQuery'] = ResolversParentTypes['JiraSearchQuery']> = {
+export type JiraSearchQueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraSearchQuery'] = ResolversParentTypes['JiraSearchQuery']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isJQL?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUsedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -4998,44 +5001,44 @@ export type JiraSearchQueryResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type JiraServerIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['JiraServerIntegration'] = ResolversParentTypes['JiraServerIntegration']> = {
+export type JiraServerIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['JiraServerIntegration'] = ResolversParentTypes['JiraServerIntegration']> = {
   auth?: Resolver<Maybe<ResolversTypes['TeamMemberIntegrationAuthOAuth1']>, ParentType, ContextType>;
   sharedProviders?: Resolver<Array<ResolversTypes['IntegrationProviderOAuth1']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type LoginSamlPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginSAMLPayload'] = ResolversParentTypes['LoginSAMLPayload']> = {
+export type LoginSamlPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['LoginSAMLPayload'] = ResolversParentTypes['LoginSAMLPayload']> = {
   authToken?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type LoginsPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginsPayload'] = ResolversParentTypes['LoginsPayload']> = {
+export type LoginsPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['LoginsPayload'] = ResolversParentTypes['LoginsPayload']> = {
   byDomain?: Resolver<Array<ResolversTypes['DomainCountPayload']>, ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MassInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['MassInvitation'] = ResolversParentTypes['MassInvitation']> = {
+export type MassInvitationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MassInvitation'] = ResolversParentTypes['MassInvitation']> = {
   expiration?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MattermostIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['MattermostIntegration'] = ResolversParentTypes['MattermostIntegration']> = {
+export type MattermostIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MattermostIntegration'] = ResolversParentTypes['MattermostIntegration']> = {
   auth?: Resolver<Maybe<ResolversTypes['TeamMemberIntegrationAuthWebhook']>, ParentType, ContextType>;
   sharedProviders?: Resolver<Array<ResolversTypes['IntegrationProviderWebhook']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MeetingGreetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['MeetingGreeting'] = ResolversParentTypes['MeetingGreeting']> = {
+export type MeetingGreetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MeetingGreeting'] = ResolversParentTypes['MeetingGreeting']> = {
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   language?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MeetingMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['MeetingMember'] = ResolversParentTypes['MeetingMember']> = {
+export type MeetingMemberResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MeetingMember'] = ResolversParentTypes['MeetingMember']> = {
   __resolveType: TypeResolveFn<'ActionMeetingMember' | 'PokerMeetingMember' | 'RetrospectiveMeetingMember', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isCheckedIn?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -5048,7 +5051,7 @@ export type MeetingMemberResolvers<ContextType = any, ParentType extends Resolve
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type MeetingTemplateResolvers<ContextType = any, ParentType extends ResolversParentTypes['MeetingTemplate'] = ResolversParentTypes['MeetingTemplate']> = {
+export type MeetingTemplateResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MeetingTemplate'] = ResolversParentTypes['MeetingTemplate']> = {
   __resolveType: TypeResolveFn<'PokerTemplate' | 'ReflectTemplate', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5063,23 +5066,23 @@ export type MeetingTemplateResolvers<ContextType = any, ParentType extends Resol
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
 };
 
-export type MessageAllSlackUsersPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['MessageAllSlackUsersPayload'] = ResolversParentTypes['MessageAllSlackUsersPayload']> = {
+export type MessageAllSlackUsersPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MessageAllSlackUsersPayload'] = ResolversParentTypes['MessageAllSlackUsersPayload']> = {
   __resolveType: TypeResolveFn<'ErrorPayload' | 'MessageAllSlackUsersSuccess', ParentType, ContextType>;
 };
 
-export type MessageAllSlackUsersSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['MessageAllSlackUsersSuccess'] = ResolversParentTypes['MessageAllSlackUsersSuccess']> = {
+export type MessageAllSlackUsersSuccessResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MessageAllSlackUsersSuccess'] = ResolversParentTypes['MessageAllSlackUsersSuccess']> = {
   errors?: Resolver<Maybe<Array<ResolversTypes['MessageSlackUserError']>>, ParentType, ContextType>;
   messagedUserIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MessageSlackUserErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['MessageSlackUserError'] = ResolversParentTypes['MessageSlackUserError']> = {
+export type MessageSlackUserErrorResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['MessageSlackUserError'] = ResolversParentTypes['MessageSlackUserError']> = {
   error?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+export type MutationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addNewFeature?: Resolver<Maybe<ResolversTypes['AddNewFeaturePayload']>, ParentType, ContextType, RequireFields<MutationAddNewFeatureArgs, 'actionButtonCopy' | 'snackbarMessage' | 'url'>>;
   autopauseUsers?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   backupOrganization?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationBackupOrganizationArgs, 'orgIds'>>;
@@ -5113,7 +5116,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateWatchlist?: Resolver<ResolversTypes['UpdateWatchlistPayload'], ParentType, ContextType, RequireFields<MutationUpdateWatchlistArgs, 'includeInWatchlist'>>;
 };
 
-export type NewFeatureBroadcastResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewFeatureBroadcast'] = ResolversParentTypes['NewFeatureBroadcast']> = {
+export type NewFeatureBroadcastResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NewFeatureBroadcast'] = ResolversParentTypes['NewFeatureBroadcast']> = {
   actionButtonCopy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   snackbarMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -5121,7 +5124,7 @@ export type NewFeatureBroadcastResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type NewMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewMeeting'] = ResolversParentTypes['NewMeeting']> = {
+export type NewMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NewMeeting'] = ResolversParentTypes['NewMeeting']> = {
   __resolveType: TypeResolveFn<'ActionMeeting' | 'PokerMeeting' | 'RetrospectiveMeeting', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5145,7 +5148,7 @@ export type NewMeetingResolvers<ContextType = any, ParentType extends ResolversP
   viewerMeetingMember?: Resolver<Maybe<ResolversTypes['MeetingMember']>, ParentType, ContextType>;
 };
 
-export type NewMeetingPhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewMeetingPhase'] = ResolversParentTypes['NewMeetingPhase']> = {
+export type NewMeetingPhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NewMeetingPhase'] = ResolversParentTypes['NewMeetingPhase']> = {
   __resolveType: TypeResolveFn<'AgendaItemsPhase' | 'CheckInPhase' | 'DiscussPhase' | 'EstimatePhase' | 'GenericMeetingPhase' | 'ReflectPhase' | 'UpdatesPhase', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5154,7 +5157,7 @@ export type NewMeetingPhaseResolvers<ContextType = any, ParentType extends Resol
   teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type NewMeetingStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewMeetingStage'] = ResolversParentTypes['NewMeetingStage']> = {
+export type NewMeetingStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NewMeetingStage'] = ResolversParentTypes['NewMeetingStage']> = {
   __resolveType: TypeResolveFn<'AgendaItemsStage' | 'CheckInStage' | 'EstimateStage' | 'GenericMeetingStage' | 'RetroDiscussStage' | 'UpdatesStage', ParentType, ContextType>;
   endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5177,14 +5180,14 @@ export type NewMeetingStageResolvers<ContextType = any, ParentType extends Resol
   viewCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 };
 
-export type NewMeetingTeamMemberStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewMeetingTeamMemberStage'] = ResolversParentTypes['NewMeetingTeamMemberStage']> = {
+export type NewMeetingTeamMemberStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NewMeetingTeamMemberStage'] = ResolversParentTypes['NewMeetingTeamMemberStage']> = {
   __resolveType: TypeResolveFn<'CheckInStage' | 'UpdatesStage', ParentType, ContextType>;
   meetingMember?: Resolver<ResolversTypes['MeetingMember'], ParentType, ContextType>;
   teamMember?: Resolver<ResolversTypes['TeamMember'], ParentType, ContextType>;
   teamMemberId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type NextPeriodChargesResolvers<ContextType = any, ParentType extends ResolversParentTypes['NextPeriodCharges'] = ResolversParentTypes['NextPeriodCharges']> = {
+export type NextPeriodChargesResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NextPeriodCharges'] = ResolversParentTypes['NextPeriodCharges']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   interval?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nextPeriodEnd?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -5193,7 +5196,7 @@ export type NextPeriodChargesResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type NotificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Notification'] = ResolversParentTypes['Notification']> = {
+export type NotificationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Notification'] = ResolversParentTypes['Notification']> = {
   __resolveType: TypeResolveFn<'NotificationTeamInvitation' | 'NotifyPaymentRejected' | 'NotifyPromoteToOrgLeader', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5202,19 +5205,19 @@ export type NotificationResolvers<ContextType = any, ParentType extends Resolver
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type NotificationConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationConnection'] = ResolversParentTypes['NotificationConnection']> = {
+export type NotificationConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NotificationConnection'] = ResolversParentTypes['NotificationConnection']> = {
   edges?: Resolver<Array<ResolversTypes['NotificationEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<Maybe<ResolversTypes['PageInfoDateCursor']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type NotificationEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEdge'] = ResolversParentTypes['NotificationEdge']> = {
+export type NotificationEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NotificationEdge'] = ResolversParentTypes['NotificationEdge']> = {
   cursor?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Notification'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type NotificationTeamInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationTeamInvitation'] = ResolversParentTypes['NotificationTeamInvitation']> = {
+export type NotificationTeamInvitationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NotificationTeamInvitation'] = ResolversParentTypes['NotificationTeamInvitation']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   invitation?: Resolver<ResolversTypes['TeamInvitation'], ParentType, ContextType>;
@@ -5227,7 +5230,7 @@ export type NotificationTeamInvitationResolvers<ContextType = any, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type NotifyPaymentRejectedResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotifyPaymentRejected'] = ResolversParentTypes['NotifyPaymentRejected']> = {
+export type NotifyPaymentRejectedResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NotifyPaymentRejected'] = ResolversParentTypes['NotifyPaymentRejected']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
@@ -5237,7 +5240,7 @@ export type NotifyPaymentRejectedResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type NotifyPromoteToOrgLeaderResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotifyPromoteToOrgLeader'] = ResolversParentTypes['NotifyPromoteToOrgLeader']> = {
+export type NotifyPromoteToOrgLeaderResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['NotifyPromoteToOrgLeader'] = ResolversParentTypes['NotifyPromoteToOrgLeader']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
@@ -5247,13 +5250,13 @@ export type NotifyPromoteToOrgLeaderResolvers<ContextType = any, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrgUserCountResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrgUserCount'] = ResolversParentTypes['OrgUserCount']> = {
+export type OrgUserCountResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['OrgUserCount'] = ResolversParentTypes['OrgUserCount']> = {
   activeUserCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   inactiveUserCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrganizationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
+export type OrganizationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']> = {
   activeDomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   billingLeaders?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   company?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType>;
@@ -5280,7 +5283,7 @@ export type OrganizationResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrganizationUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrganizationUser'] = ResolversParentTypes['OrganizationUser']> = {
+export type OrganizationUserResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['OrganizationUser'] = ResolversParentTypes['OrganizationUser']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   inactive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   joinedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -5295,19 +5298,19 @@ export type OrganizationUserResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrganizationUserConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrganizationUserConnection'] = ResolversParentTypes['OrganizationUserConnection']> = {
+export type OrganizationUserConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['OrganizationUserConnection'] = ResolversParentTypes['OrganizationUserConnection']> = {
   edges?: Resolver<Array<ResolversTypes['OrganizationUserEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrganizationUserEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['OrganizationUserEdge'] = ResolversParentTypes['OrganizationUserEdge']> = {
+export type OrganizationUserEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['OrganizationUserEdge'] = ResolversParentTypes['OrganizationUserEdge']> = {
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['OrganizationUser'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+export type PageInfoResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
   endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasPreviousPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -5315,7 +5318,7 @@ export type PageInfoResolvers<ContextType = any, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PageInfoDateCursorResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfoDateCursor'] = ResolversParentTypes['PageInfoDateCursor']> = {
+export type PageInfoDateCursorResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PageInfoDateCursor'] = ResolversParentTypes['PageInfoDateCursor']> = {
   endCursor?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasPreviousPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -5323,18 +5326,18 @@ export type PageInfoDateCursorResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PingPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['PingPayload'] = ResolversParentTypes['PingPayload']> = {
+export type PingPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PingPayload'] = ResolversParentTypes['PingPayload']> = {
   __resolveType: TypeResolveFn<'ErrorPayload' | 'PingSuccess', ParentType, ContextType>;
 };
 
-export type PingSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['PingSuccess'] = ResolversParentTypes['PingSuccess']> = {
+export type PingSuccessResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PingSuccess'] = ResolversParentTypes['PingSuccess']> = {
   postgres?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   redis?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   rethinkdb?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PokerMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['PokerMeeting'] = ResolversParentTypes['PokerMeeting']> = {
+export type PokerMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PokerMeeting'] = ResolversParentTypes['PokerMeeting']> = {
   commentCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   createdBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5364,7 +5367,7 @@ export type PokerMeetingResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PokerMeetingMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['PokerMeetingMember'] = ResolversParentTypes['PokerMeetingMember']> = {
+export type PokerMeetingMemberResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PokerMeetingMember'] = ResolversParentTypes['PokerMeetingMember']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isCheckedIn?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isSpectating?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -5378,7 +5381,7 @@ export type PokerMeetingMemberResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PokerMeetingSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['PokerMeetingSettings'] = ResolversParentTypes['PokerMeetingSettings']> = {
+export type PokerMeetingSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PokerMeetingSettings'] = ResolversParentTypes['PokerMeetingSettings']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingType?: Resolver<ResolversTypes['MeetingTypeEnum'], ParentType, ContextType>;
   organizationTemplates?: Resolver<ResolversTypes['PokerTemplateConnection'], ParentType, ContextType, RequireFields<PokerMeetingSettingsOrganizationTemplatesArgs, 'first'>>;
@@ -5392,7 +5395,7 @@ export type PokerMeetingSettingsResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PokerTemplateResolvers<ContextType = any, ParentType extends ResolversParentTypes['PokerTemplate'] = ResolversParentTypes['PokerTemplate']> = {
+export type PokerTemplateResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PokerTemplate'] = ResolversParentTypes['PokerTemplate']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   dimension?: Resolver<ResolversTypes['TemplateDimension'], ParentType, ContextType, RequireFields<PokerTemplateDimensionArgs, 'dimensionId'>>;
   dimensions?: Resolver<Array<ResolversTypes['TemplateDimension']>, ParentType, ContextType>;
@@ -5409,19 +5412,19 @@ export type PokerTemplateResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PokerTemplateConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PokerTemplateConnection'] = ResolversParentTypes['PokerTemplateConnection']> = {
+export type PokerTemplateConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PokerTemplateConnection'] = ResolversParentTypes['PokerTemplateConnection']> = {
   edges?: Resolver<Array<ResolversTypes['PokerTemplateEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PokerTemplateEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['PokerTemplateEdge'] = ResolversParentTypes['PokerTemplateEdge']> = {
+export type PokerTemplateEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PokerTemplateEdge'] = ResolversParentTypes['PokerTemplateEdge']> = {
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['PokerTemplate'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   company?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType, Partial<QueryCompanyArgs>>;
   dailyPulse?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<QueryDailyPulseArgs, 'after' | 'channelId' | 'email'>>;
   logins?: Resolver<ResolversTypes['LoginsPayload'], ParentType, ContextType, RequireFields<QueryLoginsArgs, 'isActive'>>;
@@ -5436,20 +5439,20 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   users?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType, RequireFields<QueryUsersArgs, 'userIds'>>;
 };
 
-export type ReactableResolvers<ContextType = any, ParentType extends ResolversParentTypes['Reactable'] = ResolversParentTypes['Reactable']> = {
+export type ReactableResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Reactable'] = ResolversParentTypes['Reactable']> = {
   __resolveType: TypeResolveFn<'Comment' | 'RetroReflection', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   reactjis?: Resolver<Array<ResolversTypes['Reactji']>, ParentType, ContextType>;
 };
 
-export type ReactjiResolvers<ContextType = any, ParentType extends ResolversParentTypes['Reactji'] = ResolversParentTypes['Reactji']> = {
+export type ReactjiResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Reactji'] = ResolversParentTypes['Reactji']> = {
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isViewerReactji?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReflectPhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReflectPhase'] = ResolversParentTypes['ReflectPhase']> = {
+export type ReflectPhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ReflectPhase'] = ResolversParentTypes['ReflectPhase']> = {
   focusedPrompt?: Resolver<Maybe<ResolversTypes['ReflectPrompt']>, ParentType, ContextType>;
   focusedPromptId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5461,7 +5464,7 @@ export type ReflectPhaseResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReflectPromptResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReflectPrompt'] = ResolversParentTypes['ReflectPrompt']> = {
+export type ReflectPromptResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ReflectPrompt'] = ResolversParentTypes['ReflectPrompt']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   groupColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -5477,7 +5480,7 @@ export type ReflectPromptResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReflectTemplateResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReflectTemplate'] = ResolversParentTypes['ReflectTemplate']> = {
+export type ReflectTemplateResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ReflectTemplate'] = ResolversParentTypes['ReflectTemplate']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -5493,41 +5496,41 @@ export type ReflectTemplateResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReflectTemplateConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReflectTemplateConnection'] = ResolversParentTypes['ReflectTemplateConnection']> = {
+export type ReflectTemplateConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ReflectTemplateConnection'] = ResolversParentTypes['ReflectTemplateConnection']> = {
   edges?: Resolver<Array<ResolversTypes['ReflectTemplateEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReflectTemplateEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReflectTemplateEdge'] = ResolversParentTypes['ReflectTemplateEdge']> = {
+export type ReflectTemplateEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ReflectTemplateEdge'] = ResolversParentTypes['ReflectTemplateEdge']> = {
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['ReflectTemplate'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RemoveAllSlackAuthsPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['RemoveAllSlackAuthsPayload'] = ResolversParentTypes['RemoveAllSlackAuthsPayload']> = {
+export type RemoveAllSlackAuthsPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RemoveAllSlackAuthsPayload'] = ResolversParentTypes['RemoveAllSlackAuthsPayload']> = {
   __resolveType: TypeResolveFn<'ErrorPayload' | 'RemoveAllSlackAuthsSuccess', ParentType, ContextType>;
 };
 
-export type RemoveAllSlackAuthsSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['RemoveAllSlackAuthsSuccess'] = ResolversParentTypes['RemoveAllSlackAuthsSuccess']> = {
+export type RemoveAllSlackAuthsSuccessResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RemoveAllSlackAuthsSuccess'] = ResolversParentTypes['RemoveAllSlackAuthsSuccess']> = {
   slackAuthRes?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   slackNotificationRes?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RepoIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['RepoIntegration'] = ResolversParentTypes['RepoIntegration']> = {
+export type RepoIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RepoIntegration'] = ResolversParentTypes['RepoIntegration']> = {
   __resolveType: TypeResolveFn<'JiraRemoteProject', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type RepoIntegrationQueryPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['RepoIntegrationQueryPayload'] = ResolversParentTypes['RepoIntegrationQueryPayload']> = {
+export type RepoIntegrationQueryPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RepoIntegrationQueryPayload'] = ResolversParentTypes['RepoIntegrationQueryPayload']> = {
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   hasMore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   items?: Resolver<Maybe<Array<ResolversTypes['RepoIntegration']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RetroDiscussStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['RetroDiscussStage'] = ResolversParentTypes['RetroDiscussStage']> = {
+export type RetroDiscussStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RetroDiscussStage'] = ResolversParentTypes['RetroDiscussStage']> = {
   discussion?: Resolver<ResolversTypes['Discussion'], ParentType, ContextType>;
   discussionId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -5555,7 +5558,7 @@ export type RetroDiscussStageResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RetroReflectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['RetroReflection'] = ResolversParentTypes['RetroReflection']> = {
+export type RetroReflectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RetroReflection'] = ResolversParentTypes['RetroReflection']> = {
   autoReflectionGroupId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -5579,7 +5582,7 @@ export type RetroReflectionResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RetroReflectionGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['RetroReflectionGroup'] = ResolversParentTypes['RetroReflectionGroup']> = {
+export type RetroReflectionGroupResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RetroReflectionGroup'] = ResolversParentTypes['RetroReflectionGroup']> = {
   commentors?: Resolver<Maybe<Array<ResolversTypes['CommentorDetails']>>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5601,7 +5604,7 @@ export type RetroReflectionGroupResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RetrospectiveMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['RetrospectiveMeeting'] = ResolversParentTypes['RetrospectiveMeeting']> = {
+export type RetrospectiveMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RetrospectiveMeeting'] = ResolversParentTypes['RetrospectiveMeeting']> = {
   autoGroupThreshold?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   commentCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -5639,7 +5642,7 @@ export type RetrospectiveMeetingResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RetrospectiveMeetingMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['RetrospectiveMeetingMember'] = ResolversParentTypes['RetrospectiveMeetingMember']> = {
+export type RetrospectiveMeetingMemberResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RetrospectiveMeetingMember'] = ResolversParentTypes['RetrospectiveMeetingMember']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isCheckedIn?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5654,7 +5657,7 @@ export type RetrospectiveMeetingMemberResolvers<ContextType = any, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RetrospectiveMeetingSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['RetrospectiveMeetingSettings'] = ResolversParentTypes['RetrospectiveMeetingSettings']> = {
+export type RetrospectiveMeetingSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['RetrospectiveMeetingSettings'] = ResolversParentTypes['RetrospectiveMeetingSettings']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   maxVotesPerGroup?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   meetingType?: Resolver<ResolversTypes['MeetingTypeEnum'], ParentType, ContextType>;
@@ -5671,19 +5674,19 @@ export type RetrospectiveMeetingSettingsResolvers<ContextType = any, ParentType 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ServiceFieldResolvers<ContextType = any, ParentType extends ResolversParentTypes['ServiceField'] = ResolversParentTypes['ServiceField']> = {
+export type ServiceFieldResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ServiceField'] = ResolversParentTypes['ServiceField']> = {
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SignupsPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['SignupsPayload'] = ResolversParentTypes['SignupsPayload']> = {
+export type SignupsPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SignupsPayload'] = ResolversParentTypes['SignupsPayload']> = {
   byDomain?: Resolver<Array<ResolversTypes['DomainCountPayload']>, ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SlackIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['SlackIntegration'] = ResolversParentTypes['SlackIntegration']> = {
+export type SlackIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SlackIntegration'] = ResolversParentTypes['SlackIntegration']> = {
   botAccessToken?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   botUserId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -5701,7 +5704,7 @@ export type SlackIntegrationResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SlackNotificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['SlackNotification'] = ResolversParentTypes['SlackNotification']> = {
+export type SlackNotificationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SlackNotification'] = ResolversParentTypes['SlackNotification']> = {
   channelId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   event?: Resolver<ResolversTypes['SlackNotificationEventEnum'], ParentType, ContextType>;
   eventType?: Resolver<ResolversTypes['SlackNotificationEventTypeEnum'], ParentType, ContextType>;
@@ -5711,20 +5714,20 @@ export type SlackNotificationResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type StandardMutationErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['StandardMutationError'] = ResolversParentTypes['StandardMutationError']> = {
+export type StandardMutationErrorResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['StandardMutationError'] = ResolversParentTypes['StandardMutationError']> = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type StripeFailPaymentPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['StripeFailPaymentPayload'] = ResolversParentTypes['StripeFailPaymentPayload']> = {
+export type StripeFailPaymentPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['StripeFailPaymentPayload'] = ResolversParentTypes['StripeFailPaymentPayload']> = {
   error?: Resolver<Maybe<ResolversTypes['StandardMutationError']>, ParentType, ContextType>;
   notification?: Resolver<ResolversTypes['NotifyPaymentRejected'], ParentType, ContextType>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SuggestedActionResolvers<ContextType = any, ParentType extends ResolversParentTypes['SuggestedAction'] = ResolversParentTypes['SuggestedAction']> = {
+export type SuggestedActionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SuggestedAction'] = ResolversParentTypes['SuggestedAction']> = {
   __resolveType: TypeResolveFn<'SuggestedActionCreateNewTeam' | 'SuggestedActionInviteYourTeam' | 'SuggestedActionTryActionMeeting' | 'SuggestedActionTryRetroMeeting' | 'SuggestedActionTryTheDemo', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5735,7 +5738,7 @@ export type SuggestedActionResolvers<ContextType = any, ParentType extends Resol
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type SuggestedActionCreateNewTeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['SuggestedActionCreateNewTeam'] = ResolversParentTypes['SuggestedActionCreateNewTeam']> = {
+export type SuggestedActionCreateNewTeamResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SuggestedActionCreateNewTeam'] = ResolversParentTypes['SuggestedActionCreateNewTeam']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   priority?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -5746,20 +5749,7 @@ export type SuggestedActionCreateNewTeamResolvers<ContextType = any, ParentType 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SuggestedActionInviteYourTeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['SuggestedActionInviteYourTeam'] = ResolversParentTypes['SuggestedActionInviteYourTeam']> = {
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  priority?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  removedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
-  teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['SuggestedActionTypeEnum'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type SuggestedActionTryActionMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['SuggestedActionTryActionMeeting'] = ResolversParentTypes['SuggestedActionTryActionMeeting']> = {
+export type SuggestedActionInviteYourTeamResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SuggestedActionInviteYourTeam'] = ResolversParentTypes['SuggestedActionInviteYourTeam']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   priority?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -5772,7 +5762,7 @@ export type SuggestedActionTryActionMeetingResolvers<ContextType = any, ParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SuggestedActionTryRetroMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['SuggestedActionTryRetroMeeting'] = ResolversParentTypes['SuggestedActionTryRetroMeeting']> = {
+export type SuggestedActionTryActionMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SuggestedActionTryActionMeeting'] = ResolversParentTypes['SuggestedActionTryActionMeeting']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   priority?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -5785,7 +5775,20 @@ export type SuggestedActionTryRetroMeetingResolvers<ContextType = any, ParentTyp
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SuggestedActionTryTheDemoResolvers<ContextType = any, ParentType extends ResolversParentTypes['SuggestedActionTryTheDemo'] = ResolversParentTypes['SuggestedActionTryTheDemo']> = {
+export type SuggestedActionTryRetroMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SuggestedActionTryRetroMeeting'] = ResolversParentTypes['SuggestedActionTryRetroMeeting']> = {
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  priority?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  removedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+  teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['SuggestedActionTypeEnum'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SuggestedActionTryTheDemoResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SuggestedActionTryTheDemo'] = ResolversParentTypes['SuggestedActionTryTheDemo']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   priority?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -5796,7 +5799,7 @@ export type SuggestedActionTryTheDemoResolvers<ContextType = any, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskResolvers<ContextType = any, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = {
+export type TaskResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = {
   agendaItem?: Resolver<Maybe<ResolversTypes['AgendaItem']>, ParentType, ContextType>;
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -5828,25 +5831,25 @@ export type TaskResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['TaskConnection'] = ResolversParentTypes['TaskConnection']> = {
+export type TaskConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TaskConnection'] = ResolversParentTypes['TaskConnection']> = {
   edges?: Resolver<Array<ResolversTypes['TaskEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<Maybe<ResolversTypes['PageInfoDateCursor']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['TaskEdge'] = ResolversParentTypes['TaskEdge']> = {
+export type TaskEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TaskEdge'] = ResolversParentTypes['TaskEdge']> = {
   cursor?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Task'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskEditorDetailsResolvers<ContextType = any, ParentType extends ResolversParentTypes['TaskEditorDetails'] = ResolversParentTypes['TaskEditorDetails']> = {
+export type TaskEditorDetailsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TaskEditorDetails'] = ResolversParentTypes['TaskEditorDetails']> = {
   preferredName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskEstimateResolvers<ContextType = any, ParentType extends ResolversParentTypes['TaskEstimate'] = ResolversParentTypes['TaskEstimate']> = {
+export type TaskEstimateResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TaskEstimate'] = ResolversParentTypes['TaskEstimate']> = {
   changeSource?: Resolver<ResolversTypes['ChangeSourceEnum'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   discussionId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -5861,12 +5864,12 @@ export type TaskEstimateResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskIntegrationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TaskIntegration'] = ResolversParentTypes['TaskIntegration']> = {
+export type TaskIntegrationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TaskIntegration'] = ResolversParentTypes['TaskIntegration']> = {
   __resolveType: TypeResolveFn<'JiraIssue', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
+export type TeamResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
   activeMeetings?: Resolver<Array<ResolversTypes['NewMeeting']>, ParentType, ContextType>;
   agendaItems?: Resolver<Array<ResolversTypes['AgendaItem']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -5897,13 +5900,13 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamIntegrationsResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamIntegrations'] = ResolversParentTypes['TeamIntegrations']> = {
+export type TeamIntegrationsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamIntegrations'] = ResolversParentTypes['TeamIntegrations']> = {
   atlassian?: Resolver<ResolversTypes['AtlassianTeamIntegration'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamInvitation'] = ResolversParentTypes['TeamInvitation']> = {
+export type TeamInvitationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamInvitation'] = ResolversParentTypes['TeamInvitation']> = {
   acceptedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   acceptedBy?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -5918,14 +5921,14 @@ export type TeamInvitationResolvers<ContextType = any, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamInvitationPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamInvitationPayload'] = ResolversParentTypes['TeamInvitationPayload']> = {
+export type TeamInvitationPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamInvitationPayload'] = ResolversParentTypes['TeamInvitationPayload']> = {
   meetingId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   teamId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   teamInvitation?: Resolver<Maybe<ResolversTypes['TeamInvitation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamMeetingSettingsResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMeetingSettings'] = ResolversParentTypes['TeamMeetingSettings']> = {
+export type TeamMeetingSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamMeetingSettings'] = ResolversParentTypes['TeamMeetingSettings']> = {
   __resolveType: TypeResolveFn<'ActionMeetingSettings' | 'PokerMeetingSettings' | 'RetrospectiveMeetingSettings', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingType?: Resolver<ResolversTypes['MeetingTypeEnum'], ParentType, ContextType>;
@@ -5934,7 +5937,7 @@ export type TeamMeetingSettingsResolvers<ContextType = any, ParentType extends R
   teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type TeamMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMember'] = ResolversParentTypes['TeamMember']> = {
+export type TeamMemberResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamMember'] = ResolversParentTypes['TeamMember']> = {
   allAvailableRepoIntegrations?: Resolver<Array<ResolversTypes['RepoIntegration']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['Email'], ParentType, ContextType>;
@@ -5957,7 +5960,7 @@ export type TeamMemberResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamMemberIntegrationAuthResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuth'] = ResolversParentTypes['TeamMemberIntegrationAuth']> = {
+export type TeamMemberIntegrationAuthResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuth'] = ResolversParentTypes['TeamMemberIntegrationAuth']> = {
   __resolveType: TypeResolveFn<'TeamMemberIntegrationAuthOAuth1' | 'TeamMemberIntegrationAuthOAuth2' | 'TeamMemberIntegrationAuthWebhook', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5969,7 +5972,7 @@ export type TeamMemberIntegrationAuthResolvers<ContextType = any, ParentType ext
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
 };
 
-export type TeamMemberIntegrationAuthOAuth1Resolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuthOAuth1'] = ResolversParentTypes['TeamMemberIntegrationAuthOAuth1']> = {
+export type TeamMemberIntegrationAuthOAuth1Resolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuthOAuth1'] = ResolversParentTypes['TeamMemberIntegrationAuthOAuth1']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -5981,7 +5984,7 @@ export type TeamMemberIntegrationAuthOAuth1Resolvers<ContextType = any, ParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamMemberIntegrationAuthOAuth2Resolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuthOAuth2'] = ResolversParentTypes['TeamMemberIntegrationAuthOAuth2']> = {
+export type TeamMemberIntegrationAuthOAuth2Resolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuthOAuth2'] = ResolversParentTypes['TeamMemberIntegrationAuthOAuth2']> = {
   accessToken?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5995,7 +5998,7 @@ export type TeamMemberIntegrationAuthOAuth2Resolvers<ContextType = any, ParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamMemberIntegrationAuthWebhookResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuthWebhook'] = ResolversParentTypes['TeamMemberIntegrationAuthWebhook']> = {
+export type TeamMemberIntegrationAuthWebhookResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamMemberIntegrationAuthWebhook'] = ResolversParentTypes['TeamMemberIntegrationAuthWebhook']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isActive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -6007,7 +6010,7 @@ export type TeamMemberIntegrationAuthWebhookResolvers<ContextType = any, ParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamMemberIntegrationsResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMemberIntegrations'] = ResolversParentTypes['TeamMemberIntegrations']> = {
+export type TeamMemberIntegrationsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamMemberIntegrations'] = ResolversParentTypes['TeamMemberIntegrations']> = {
   atlassian?: Resolver<Maybe<ResolversTypes['AtlassianIntegration']>, ParentType, ContextType>;
   github?: Resolver<Maybe<ResolversTypes['GitHubIntegration']>, ParentType, ContextType>;
   gitlab?: Resolver<ResolversTypes['GitLabIntegration'], ParentType, ContextType>;
@@ -6018,13 +6021,13 @@ export type TeamMemberIntegrationsResolvers<ContextType = any, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamNotificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamNotification'] = ResolversParentTypes['TeamNotification']> = {
+export type TeamNotificationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TeamNotification'] = ResolversParentTypes['TeamNotification']> = {
   __resolveType: TypeResolveFn<'NotificationTeamInvitation', ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['NotificationEnum']>, ParentType, ContextType>;
 };
 
-export type TemplateDimensionResolvers<ContextType = any, ParentType extends ResolversParentTypes['TemplateDimension'] = ResolversParentTypes['TemplateDimension']> = {
+export type TemplateDimensionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TemplateDimension'] = ResolversParentTypes['TemplateDimension']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -6042,7 +6045,7 @@ export type TemplateDimensionResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TemplateDimensionRefResolvers<ContextType = any, ParentType extends ResolversParentTypes['TemplateDimensionRef'] = ResolversParentTypes['TemplateDimensionRef']> = {
+export type TemplateDimensionRefResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TemplateDimensionRef'] = ResolversParentTypes['TemplateDimensionRef']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scale?: Resolver<ResolversTypes['TemplateScaleRef'], ParentType, ContextType>;
@@ -6051,7 +6054,7 @@ export type TemplateDimensionRefResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TemplateScaleResolvers<ContextType = any, ParentType extends ResolversParentTypes['TemplateScale'] = ResolversParentTypes['TemplateScale']> = {
+export type TemplateScaleResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TemplateScale'] = ResolversParentTypes['TemplateScale']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   dimensions?: Resolver<Array<ResolversTypes['TemplateDimension']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -6066,7 +6069,7 @@ export type TemplateScaleResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TemplateScaleRefResolvers<ContextType = any, ParentType extends ResolversParentTypes['TemplateScaleRef'] = ResolversParentTypes['TemplateScaleRef']> = {
+export type TemplateScaleRefResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TemplateScaleRef'] = ResolversParentTypes['TemplateScaleRef']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -6074,7 +6077,7 @@ export type TemplateScaleRefResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TemplateScaleValueResolvers<ContextType = any, ParentType extends ResolversParentTypes['TemplateScaleValue'] = ResolversParentTypes['TemplateScaleValue']> = {
+export type TemplateScaleValueResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TemplateScaleValue'] = ResolversParentTypes['TemplateScaleValue']> = {
   color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -6083,7 +6086,7 @@ export type TemplateScaleValueResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ThreadableResolvers<ContextType = any, ParentType extends ResolversParentTypes['Threadable'] = ResolversParentTypes['Threadable']> = {
+export type ThreadableResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Threadable'] = ResolversParentTypes['Threadable']> = {
   __resolveType: TypeResolveFn<'Comment' | 'Task', ParentType, ContextType>;
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -6097,20 +6100,20 @@ export type ThreadableResolvers<ContextType = any, ParentType extends ResolversP
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
 };
 
-export type ThreadableConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['ThreadableConnection'] = ResolversParentTypes['ThreadableConnection']> = {
+export type ThreadableConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ThreadableConnection'] = ResolversParentTypes['ThreadableConnection']> = {
   edges?: Resolver<Array<ResolversTypes['ThreadableEdge']>, ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ThreadableEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['ThreadableEdge'] = ResolversParentTypes['ThreadableEdge']> = {
+export type ThreadableEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ThreadableEdge'] = ResolversParentTypes['ThreadableEdge']> = {
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Threadable'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TimelineEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEvent'] = ResolversParentTypes['TimelineEvent']> = {
+export type TimelineEventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEvent'] = ResolversParentTypes['TimelineEvent']> = {
   __resolveType: TypeResolveFn<'TimelineEventCompletedActionMeeting' | 'TimelineEventCompletedRetroMeeting' | 'TimelineEventJoinedParabol' | 'TimelineEventPokerComplete' | 'TimelineEventTeamCreated', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -6126,7 +6129,7 @@ export type TimelineEventResolvers<ContextType = any, ParentType extends Resolve
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type TimelineEventCompletedActionMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEventCompletedActionMeeting'] = ResolversParentTypes['TimelineEventCompletedActionMeeting']> = {
+export type TimelineEventCompletedActionMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEventCompletedActionMeeting'] = ResolversParentTypes['TimelineEventCompletedActionMeeting']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   interactionCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -6144,7 +6147,7 @@ export type TimelineEventCompletedActionMeetingResolvers<ContextType = any, Pare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TimelineEventCompletedRetroMeetingResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEventCompletedRetroMeeting'] = ResolversParentTypes['TimelineEventCompletedRetroMeeting']> = {
+export type TimelineEventCompletedRetroMeetingResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEventCompletedRetroMeeting'] = ResolversParentTypes['TimelineEventCompletedRetroMeeting']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   interactionCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -6162,19 +6165,19 @@ export type TimelineEventCompletedRetroMeetingResolvers<ContextType = any, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TimelineEventConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEventConnection'] = ResolversParentTypes['TimelineEventConnection']> = {
+export type TimelineEventConnectionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEventConnection'] = ResolversParentTypes['TimelineEventConnection']> = {
   edges?: Resolver<Array<ResolversTypes['TimelineEventEdge']>, ParentType, ContextType>;
   pageInfo?: Resolver<Maybe<ResolversTypes['PageInfoDateCursor']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TimelineEventEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEventEdge'] = ResolversParentTypes['TimelineEventEdge']> = {
+export type TimelineEventEdgeResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEventEdge'] = ResolversParentTypes['TimelineEventEdge']> = {
   cursor?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['TimelineEvent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TimelineEventJoinedParabolResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEventJoinedParabol'] = ResolversParentTypes['TimelineEventJoinedParabol']> = {
+export type TimelineEventJoinedParabolResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEventJoinedParabol'] = ResolversParentTypes['TimelineEventJoinedParabol']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   interactionCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -6190,7 +6193,7 @@ export type TimelineEventJoinedParabolResolvers<ContextType = any, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TimelineEventPokerCompleteResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEventPokerComplete'] = ResolversParentTypes['TimelineEventPokerComplete']> = {
+export type TimelineEventPokerCompleteResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEventPokerComplete'] = ResolversParentTypes['TimelineEventPokerComplete']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   interactionCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -6208,7 +6211,7 @@ export type TimelineEventPokerCompleteResolvers<ContextType = any, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TimelineEventTeamCreatedResolvers<ContextType = any, ParentType extends ResolversParentTypes['TimelineEventTeamCreated'] = ResolversParentTypes['TimelineEventTeamCreated']> = {
+export type TimelineEventTeamCreatedResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['TimelineEventTeamCreated'] = ResolversParentTypes['TimelineEventTeamCreated']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   interactionCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -6228,16 +6231,16 @@ export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
   name: 'URL';
 }
 
-export type UpdateWatchlistPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateWatchlistPayload'] = ResolversParentTypes['UpdateWatchlistPayload']> = {
+export type UpdateWatchlistPayloadResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UpdateWatchlistPayload'] = ResolversParentTypes['UpdateWatchlistPayload']> = {
   __resolveType: TypeResolveFn<'ErrorPayload' | 'UpdateWatchlistSuccess', ParentType, ContextType>;
 };
 
-export type UpdateWatchlistSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateWatchlistSuccess'] = ResolversParentTypes['UpdateWatchlistSuccess']> = {
+export type UpdateWatchlistSuccessResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UpdateWatchlistSuccess'] = ResolversParentTypes['UpdateWatchlistSuccess']> = {
   success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UpdatesPhaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdatesPhase'] = ResolversParentTypes['UpdatesPhase']> = {
+export type UpdatesPhaseResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UpdatesPhase'] = ResolversParentTypes['UpdatesPhase']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phaseType?: Resolver<ResolversTypes['NewMeetingPhaseTypeEnum'], ParentType, ContextType>;
@@ -6246,7 +6249,7 @@ export type UpdatesPhaseResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UpdatesStageResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdatesStage'] = ResolversParentTypes['UpdatesStage']> = {
+export type UpdatesStageResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UpdatesStage'] = ResolversParentTypes['UpdatesStage']> = {
   endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isAsync?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -6272,7 +6275,7 @@ export type UpdatesStageResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+export type UserResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   archivedTasks?: Resolver<Maybe<ResolversTypes['TaskConnection']>, ParentType, ContextType, RequireFields<UserArchivedTasksArgs, 'first' | 'teamId'>>;
   archivedTasksCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<UserArchivedTasksCountArgs, 'teamId'>>;
   company?: Resolver<Maybe<ResolversTypes['Company']>, ParentType, ContextType>;
@@ -6327,14 +6330,14 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserFeatureFlagsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserFeatureFlags'] = ResolversParentTypes['UserFeatureFlags']> = {
+export type UserFeatureFlagsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UserFeatureFlags'] = ResolversParentTypes['UserFeatureFlags']> = {
   gitlab?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   spotlight?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   standups?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserTiersCountResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserTiersCount'] = ResolversParentTypes['UserTiersCount']> = {
+export type UserTiersCountResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UserTiersCount'] = ResolversParentTypes['UserTiersCount']> = {
   tierPersonalCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   tierProBillingLeaderCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   tierProCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -6342,7 +6345,7 @@ export type UserTiersCountResolvers<ContextType = any, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = GQLContext> = {
   ActionMeeting?: ActionMeetingResolvers<ContextType>;
   ActionMeetingMember?: ActionMeetingMemberResolvers<ContextType>;
   ActionMeetingSettings?: ActionMeetingSettingsResolvers<ContextType>;
