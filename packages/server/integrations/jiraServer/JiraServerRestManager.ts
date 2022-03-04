@@ -98,7 +98,6 @@ export default class JiraServerRestManager {
     const json = await response.json()
 
     if (response.status !== 201 && response.status !== 200) {
-      console.error(`Jira server error ${response.status}`, json)
       return new Error(
         `Fetching projects failed with status ${response.status}, ${this.formatError(json)}`
       )
