@@ -14,11 +14,10 @@ jobs:
       run: |
         echo "Stoodis"
         if [[ "${{ github.event.label.name }}" =~ Story[[:space:]]Points:[[:space:]]([0-9]+) ]] ; then
-          echo ::set-output name=point_label_value::${BASH_REMATCH[1]}
-          echo ::set-output name=point_label_match::true
+          echo ::set-output name=value::${BASH_REMATCH[1]}
+          echo ::set-output name=match::true
         fi
     - name: echo-label
-      if: steps.match-story-points-label.point_label_match == 'true'
+      if: steps.match-story-points-label.match == 'true'
       run: |
-        echo ${{ steps.match-story-points-label.point_label_value }}
-
+        echo ${{ steps.match-story-points-label.value }}
