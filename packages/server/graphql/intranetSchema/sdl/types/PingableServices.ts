@@ -5,17 +5,15 @@ import getRedis from '../../../../utils/getRedis'
 import {PingableServicesResolvers} from '../resolverTypes'
 
 const pingService = async <TSuccess>(thunk: () => Promise<TSuccess>) => {
-    const start = Date.now()
-    const res = await Promise.race([
-      thunk(),
-      sleep(5000)
-    ])
-    const end = Date.now()
-    const duration = end - start
-    return res ? duration : -1
+  const start = Date.now()
+  const res = await Promise.race([thunk(), sleep(5000)])
+  const end = Date.now()
+  const duration = end - start
+  return res ? duration : -1
 }
 
-export interface Source {}
+export type Source = Record<string, never>
+
 const PingableServices: PingableServicesResolvers = {
   postgres: async () => {
     const pg = getPg()

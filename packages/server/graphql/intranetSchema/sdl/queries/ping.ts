@@ -1,7 +1,7 @@
 import {QueryResolvers} from '../resolverTypes'
 
 const ping: QueryResolvers['ping'] = () => {
-  return null
+  return {}
 }
 
 export default ping

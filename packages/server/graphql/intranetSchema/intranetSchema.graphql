@@ -1,10 +1,12 @@
-type PingableServices {
-  rethinkdb: Float!
-  postgres: Float!
-  redis: Float!
-}
-
 type Query {
+  """Get the number of logins, optionally broken down by domain"""
+  logins(
+    """only include users whose accounts were created after this date"""
+    after: DateTime
+
+    """if true, only include active users, else count all users"""
+    isActive: Boolean = false
+  ): LoginsPayload!
   ping: PingableServices!
 
   """All the info about a specific company"""
@@ -65,15 +67,6 @@ type Query {
     userIds: [ID!]!
   ): [User]!
 
-  """Get the number of logins, optionally broken down by domain"""
-  logins(
-    """only include users whose accounts were created after this date"""
-    after: DateTime
-
-    """if true, only include active users, else count all users"""
-    isActive: Boolean = false
-  ): LoginsPayload!
-
   """Get the number of signups, optionally broken down by domain"""
   signups(
     """only include users whose accounts were created after this date"""
@@ -82,6 +75,28 @@ type Query {
     """if true, only include active users, else count all users"""
     isActive: Boolean = false
   ): SignupsPayload!
+}
+
+type LoginsPayload {
+  """the total number of records"""
+  total: Int!
+
+  """The total broken down by email domain"""
+  byDomain: [DomainCountPayload!]!
+}
+
+type DomainCountPayload {
+  """the email domain"""
+  domain: ID!
+
+  """the sum total"""
+  total: Int!
+}
+
+type PingableServices {
+  rethinkdb: Float!
+  postgres: Float!
+  redis: Float!
 }
 
 type Mutation {
@@ -4897,22 +4912,6 @@ type UserTiersCount {
   """The number of pro orgs the user holds the role of Billing Leader"""
   tierProBillingLeaderCount: Int
   user: User
-}
-
-type LoginsPayload {
-  """the total number of records"""
-  total: Int!
-
-  """The total broken down by email domain"""
-  byDomain: [DomainCountPayload!]!
-}
-
-type DomainCountPayload {
-  """the email domain"""
-  domain: ID!
-
-  """the sum total"""
-  total: Int!
 }
 
 type SignupsPayload {

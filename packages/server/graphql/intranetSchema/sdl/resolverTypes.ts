@@ -2,6 +2,7 @@
 // @ts-nocheck
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { Source } from './types/PingableServices';
+import { LoginsPayloadSource } from './types/LoginsPayload';
 import { InternalContext } from '../../graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -4055,7 +4056,7 @@ export type ResolversTypes = {
   JiraSearchQuery: ResolverTypeWrapper<JiraSearchQuery>;
   JiraServerIntegration: ResolverTypeWrapper<JiraServerIntegration>;
   LoginSAMLPayload: ResolverTypeWrapper<LoginSamlPayload>;
-  LoginsPayload: ResolverTypeWrapper<LoginsPayload>;
+  LoginsPayload: ResolverTypeWrapper<LoginsPayloadSource>;
   MassInvitation: ResolverTypeWrapper<MassInvitation>;
   MattermostIntegration: ResolverTypeWrapper<MattermostIntegration>;
   MeetingGreeting: ResolverTypeWrapper<MeetingGreeting>;
@@ -4247,7 +4248,7 @@ export type ResolversParentTypes = {
   JiraSearchQuery: JiraSearchQuery;
   JiraServerIntegration: JiraServerIntegration;
   LoginSAMLPayload: LoginSamlPayload;
-  LoginsPayload: LoginsPayload;
+  LoginsPayload: LoginsPayloadSource;
   MassInvitation: MassInvitation;
   MattermostIntegration: MattermostIntegration;
   MeetingGreeting: MeetingGreeting;

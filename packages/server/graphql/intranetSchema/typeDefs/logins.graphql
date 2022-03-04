@@ -1,0 +1,26 @@
+extend type Query {
+  """Get the number of logins, optionally broken down by domain"""
+  logins(
+    """only include users whose accounts were created after this date"""
+    after: DateTime
+
+    """if true, only include active users, else count all users"""
+    isActive: Boolean = false
+  ): LoginsPayload!
+}
+
+type LoginsPayload {
+  """the total number of records"""
+  total: Int!
+
+  """The total broken down by email domain"""
+  byDomain: [DomainCountPayload!]!
+}
+
+type DomainCountPayload {
+  """the email domain"""
+  domain: ID!
+
+  """the sum total"""
+  total: Int!
+}
