@@ -1,10 +1,7 @@
 import {loadFilesSync} from '@graphql-tools/load-files'
 import {mergeSchemas} from '@graphql-tools/schema'
-import fs from 'fs'
-import {GraphQLObjectType, GraphQLSchema, printSchema} from 'graphql'
+import {GraphQLObjectType, GraphQLSchema} from 'graphql'
 import path from 'path'
-import {promisify} from 'util'
-import sleep from '../../../client/utils/sleep'
 import {GQLContext} from '../graphql'
 import suCountTiersForUser from '../queries/suCountTiersForUser'
 import suOrgCount from '../queries/suOrgCount'
@@ -108,22 +105,8 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
 const codeFirstSchema = new GraphQLSchema({query, mutation, types: rootTypes})
 
 const typeDefs = loadFilesSync(
-  path.join(__PROJECT_ROOT__, 'packages/server/graphql/intranetSchema/typeDefs/*.graphql')
+  path.join(__PROJECT_ROOT__, 'packages/server/graphql/intranetSchema/sdl/typeDefs/*.graphql')
 )
 
 const schema = mergeSchemas({schemas: [codeFirstSchema], typeDefs, resolvers: resolverMap})
-
-const updateSchema = async () => {
-  await sleep(100)
-  const write = promisify(fs.writeFile)
-  try {
-    await write(
-      path.join(__PROJECT_ROOT__, 'packages/server/graphql/intranetSchema/intranetSchema.graphql'),
-      printSchema(schema)
-    )
-  } catch {
-    // noop
-  }
-}
-updateSchema()
 export default schema

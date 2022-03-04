@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Source } from './types/PingableServices';
+import { PingableServicesSource } from './types/PingableServices';
 import { LoginsPayloadSource } from './types/LoginsPayload';
 import { InternalContext } from '../../graphql';
 export type Maybe<T> = T | null;
@@ -4090,7 +4090,7 @@ export type ResolversTypes = {
   OrganizationUserEdge: ResolverTypeWrapper<OrganizationUserEdge>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PageInfoDateCursor: ResolverTypeWrapper<PageInfoDateCursor>;
-  PingableServices: ResolverTypeWrapper<Source>;
+  PingableServices: ResolverTypeWrapper<PingableServicesSource>;
   PokerMeeting: ResolverTypeWrapper<PokerMeeting>;
   PokerMeetingMember: ResolverTypeWrapper<PokerMeetingMember>;
   PokerMeetingSettings: ResolverTypeWrapper<PokerMeetingSettings>;
@@ -4277,7 +4277,7 @@ export type ResolversParentTypes = {
   OrganizationUserEdge: OrganizationUserEdge;
   PageInfo: PageInfo;
   PageInfoDateCursor: PageInfoDateCursor;
-  PingableServices: Source;
+  PingableServices: PingableServicesSource;
   PokerMeeting: PokerMeeting;
   PokerMeetingMember: PokerMeetingMember;
   PokerMeetingSettings: PokerMeetingSettings;
