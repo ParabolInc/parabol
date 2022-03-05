@@ -4,6 +4,12 @@ name: Points Label to Project Field
 on:
   issues:
     types: [labeled]
+    
+# Global configuration
+env:
+  ORGANIZATION: ParabolInc
+  PROJECTS_BETA_NUMBER: 1
+  FIELD_NAME_TO_UPDATE: "Points Estimated"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -44,8 +50,6 @@ jobs:
     - name: Get Project data
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
-        ORGANIZATION: ParabolInc
-        PROJECT_NUMBER: 1
         ISSUE: ${{ github.event.issue.node_id }}
       run: |
         gh api graphql -f query='
@@ -73,9 +77,9 @@ jobs:
                 }
               }
             }
-          }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER -f issue=$ISSUE > project_data.json
+          }' -f org=$ORGANIZATION -F number=$PROJECTS_BETA_NUMBER -f issue=$ISSUE > project_data.json
           echo ::set-output name=project-id::$(jq '.data.organization.projectNext.id' project_data.json)
-          echo ::set-output name=sprint-points-id::$(jq '.data.organization.projectNext.fields.nodes[] | select(.name== "Points Estimated") | .id' project_data.json)
+          echo ::set-output name=sprint-points-id::$(jq '.data.organization.projectNext.fields.nodes[] | select(.name == $FIELD_NAME_TO_UPDATE) | .id' project_data.json)
           echo ::set-output name=project-item-id::$(jq '.data.node.projectNextItems.nodes[0].id' project_data.json)
       id: get-project-data        
         
