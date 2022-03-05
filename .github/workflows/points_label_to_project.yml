@@ -45,10 +45,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
         ORGANIZATION: ParabolInc
-        PROJECT_NUMBER: 3
+        PROJECT_NUMBER: 1
         ISSUE: ${{ github.event.issue.node_id }}
       run: |
-        echo $ISSUE
         gh api graphql -f query='
           query($org: String!, $number: Int!, $issue: ID!) {
             organization(login: $org) {
