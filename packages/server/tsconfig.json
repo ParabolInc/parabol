@@ -13,7 +13,6 @@
     "types": ["node", "jest", "jest-extended"]
   },
   "exclude": ["**/node_modules", "types/githubTypes.ts", "postgres/migrationTemplate.ts"],
-  "include": ["graphql/intranetSchema/sdl"],
   "files": [
     "types/webpackEnv.ts",
     "types/modules.d.ts",
