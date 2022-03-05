@@ -75,7 +75,7 @@ jobs:
             }
           }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER -f issue=$ISSUE > project_data.json
           echo ::set-output name=project-id::$(jq '.data.organization.projectNext.id' project_data.json)
-          echo ::set-output name=sprint-points-id::$(jq '.data.organization.projectNext.fields.nodes[] | select(.name== "Sprint Points") | .id' project_data.json)
+          echo ::set-output name=sprint-points-id::$(jq '.data.organization.projectNext.fields.nodes[] | select(.name== "Points Estimated") | .id' project_data.json)
           echo ::set-output name=project-item-id::$(jq '.data.node.projectNextItems.nodes[0].id' project_data.json)
       id: get-project-data        
         
