@@ -47,7 +47,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
 
     const {repoId, providerId} = IntegrationRepoId.split(integrationRepoId)
 
-    if (parseInt(providerId ?? '', 10) !== this.provider.id || !repoId) {
+    if (providerId !== this.provider.id || !repoId) {
       throw new Error('Incorrect IntegrationRepoId')
     }
 
