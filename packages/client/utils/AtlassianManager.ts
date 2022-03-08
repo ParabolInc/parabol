@@ -277,34 +277,23 @@ export type JiraPermissionScope =
   | 'delete:webhook:jira'
   | 'offline_access'
   | 'read:application-role:jira'
-  | 'read:application-role:jira'
-  | 'read:avatar:jira'
   | 'read:avatar:jira'
   | 'read:field-configuration:jira'
-  | 'read:group:jira'
   | 'read:group:jira'
   | 'read:issue-details:jira'
   | 'read:issue-meta:jira'
   | 'read:issue-security-level:jira'
   | 'read:issue-type-hierarchy:jira'
-  | 'read:issue-type-hierarchy:jira'
-  | 'read:issue-type:jira'
   | 'read:issue-type:jira'
   | 'read:issue:jira'
   | 'read:issue.changelog:jira'
   | 'read:issue.vote:jira'
   | 'read:project-category:jira'
-  | 'read:project-category:jira'
-  | 'read:project-version:jira'
   | 'read:project-version:jira'
   | 'read:project:jira'
-  | 'read:project:jira'
   | 'read:project.component:jira'
-  | 'read:project.component:jira'
-  | 'read:project.property:jira'
   | 'read:project.property:jira'
   | 'read:status:jira'
-  | 'read:user:jira'
   | 'read:user:jira'
   | 'read:webhook:jira'
   | 'write:attachment:jira'
@@ -329,6 +318,7 @@ Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
   static SCOPE: JiraPermissionScope[] = [
+    'delete:project:jira',
     'delete:webhook:jira',
     'offline_access',
     'read:application-role:jira',
@@ -345,6 +335,7 @@ export default abstract class AtlassianManager {
     'read:issue.vote:jira',
     'read:project-category:jira',
     'read:project-version:jira',
+    'read:project:jira',
     'read:project.component:jira',
     'read:project.property:jira',
     'read:status:jira',
@@ -354,10 +345,8 @@ export default abstract class AtlassianManager {
     'write:comment:jira',
     'write:comment.property:jira',
     'write:issue:jira',
-    'write:webhook:jira',
-    'read:project:jira',
     'write:project:jira',
-    'delete:project:jira'
+    'write:webhook:jira'
   ]
   static MANAGE_SCOPE: JiraPermissionScope[] = [
     ...AtlassianManager.SCOPE,
