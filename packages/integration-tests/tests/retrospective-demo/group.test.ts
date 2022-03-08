@@ -1,5 +1,6 @@
 import config from '../config'
 import {test, expect} from '@playwright/test'
+import {dragReflectionCard} from '../helpers'
 
 test.describe('restrospective-demo / group page', () => {
   test('it carries over user-entered input from the reflect phase', async ({page}) => {
@@ -58,18 +59,23 @@ test.describe('restrospective-demo / group page', () => {
 
     const decisionsInOneOnOnesCard = page.locator('text=Making decisions in one-on-one meetings')
     const documentingInNotionCard = page.locator('text=Documenting things in notion')
-    await decisionsInOneOnOnesCard.dragTo(documentingInNotionCard)
+    await dragReflectionCard(decisionsInOneOnOnesCard, documentingInNotionCard)
 
     // Then it auto-generates a header
-    expect(
+    await expect(
       page.locator(
-        '[data-cy=group-column-Start] [data-cy="Start-group-*"] :text("Documenting things in")'
+        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Documenting things in"]`
       )
-    )
-  })
+    ).toBeVisible()
 
-  test('it shows all cards in the group when clicked', async ({page}) => {
-    // todo
+    // Then it shows all cards when clicking the group
+    await decisionsInOneOnOnesCard.click()
+    await expect(
+      page.locator('#expandedReflectionGroup :text("Making decisions in one-on-one meetings")')
+    ).toBeVisible()
+    await expect(
+      page.locator('#expandedReflectionGroup :text("Documenting things in notion")')
+    ).toBeVisible()
   })
 
   test('it demos drag-and-drop grouping', async ({page}) => {
