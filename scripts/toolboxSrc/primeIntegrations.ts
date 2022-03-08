@@ -11,6 +11,15 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       serverBaseUrl: 'https://gitlab.com',
       clientId: process.env.GITLAB_CLIENT_ID,
       clientSecret: process.env.GITLAB_CLIENT_SECRET
+    },
+    {
+      service: 'zoom',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      teamId: 'aGhostTeam',
+      serverBaseUrl: 'https://zoom.us',
+      clientId: process.env.ZOOM_CLIENT_ID,
+      clientSecret: process.env.ZOOM_CLIENT_SECRET
     }
   ] as const
 

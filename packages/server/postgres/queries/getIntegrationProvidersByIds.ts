@@ -52,11 +52,16 @@ export interface IntegrationProviderJiraServer extends IntegrationProviderOAuth1
   service: 'jiraServer'
 }
 
+export interface IntegrationProviderZoom extends IntegrationProviderOAuth2 {
+  service: 'zoom'
+}
+
 export type TIntegrationProvider =
   | IntegrationProviderMattermost
   | IntegrationProviderGitLabOAuth2
   | IntegrationProviderGitLabPAT
   | IntegrationProviderJiraServer
+  | IntegrationProviderZoom
 
 const getIntegrationProvidersByIds = async <T = TIntegrationProvider>(ids: readonly number[]) => {
   const providers = await getIntegrationProvidersByIdsQuery.run({ids}, getPg())

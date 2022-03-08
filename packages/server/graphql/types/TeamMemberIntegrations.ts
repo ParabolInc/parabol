@@ -8,6 +8,7 @@ import GitHubIntegration from './GitHubIntegration'
 import GitLabIntegration from './GitLabIntegration'
 import MattermostIntegration from './MattermostIntegration'
 import SlackIntegration from './SlackIntegration'
+import ZoomIntegration from './ZoomIntegration'
 
 const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'TeamMemberIntegrations',
@@ -57,6 +58,11 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
         const auths = await dataLoader.get('slackAuthByUserId').load(userId)
         return auths.find((auth) => auth.teamId === teamId)
       }
+    },
+    zoom: {
+      type: new GraphQLNonNull(ZoomIntegration),
+      description: 'All things associated with a Zoom integration for a team member',
+      resolve: (source) => source
     }
   })
 })

@@ -31,6 +31,7 @@ import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
+import createVideoMeeting from './mutations/createVideoMeeting'
 import deleteComment from './mutations/deleteComment'
 import deleteTask from './mutations/deleteTask'
 import deleteUser from './mutations/deleteUser'
@@ -175,6 +176,7 @@ export default new GraphQLObjectType<any, Context>({
       createOAuth1AuthorizeUrl,
       createReflection,
       createTask,
+      createVideoMeeting,
       deleteComment,
       deleteTask,
       deleteUser,

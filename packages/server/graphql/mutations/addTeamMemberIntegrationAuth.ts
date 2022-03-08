@@ -4,6 +4,7 @@ import JiraServerOAuth1Manager, {
 } from '../../integrations/jiraServer/JiraServerOAuth1Manager'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GitLabOAuth2Manager from '../../integrations/gitlab/GitLabOAuth2Manager'
+import ZoomOAuth2Manager from '../../integrations/zoom/ZoomOAuth2Manager'
 import upsertTeamMemberIntegrationAuth from '../../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -102,7 +103,12 @@ const addTeamMemberIntegrationAuth = {
         const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
       }
-    }
+      if (service === 'zoom') {
+        const {clientId, clientSecret, serverBaseUrl} = integrationProvider
+        const manager = new ZoomOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
+      }
+     }
     if (authStrategy === 'oauth1') {
       if (!oauthCodeOrPat || !oauthVerifier)
         return {error: {message: 'Missing OAuth1 token or verifier'}}
