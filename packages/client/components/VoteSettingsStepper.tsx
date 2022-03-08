@@ -45,11 +45,11 @@ const VoteStepper = (props: Props) => {
 
   return (
     <Wrapper>
-      <Stepper isDisabled={!canDecrease} onClick={decrease}>
+      <Stepper isDisabled={!canDecrease} aria-label={'Decrease'} onClick={decrease}>
         <StyledIcon>remove</StyledIcon>
       </Stepper>
       <Value>{value}</Value>
-      <Stepper isDisabled={!canIncrease} onClick={increase}>
+      <Stepper isDisabled={!canIncrease} aria-label={'Increase'} onClick={increase}>
         <StyledIcon>add</StyledIcon>
       </Stepper>
     </Wrapper>

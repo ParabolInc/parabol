@@ -164,7 +164,7 @@ test.describe('retrospective-demo / group page', () => {
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/vote`)
 
     if (isMobile) {
-      await page.click('button[aria-label="Toggle the sidebar"]', {force: true})
+      await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
     await page.click('[data-cy=sidebar] :text("Group")')
