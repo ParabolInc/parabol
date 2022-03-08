@@ -38,6 +38,7 @@ export default {
       return standardError(new Error('Auth not found'), {userId: viewerId})
     }
 
+    // TODO deregister associated webhooks, trigger registration of webhook on another auth if one exists for the same team?
     await removeAtlassianAuth(viewerId, teamId)
 
     const data = {teamId, userId: viewerId}

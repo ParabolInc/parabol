@@ -272,10 +272,19 @@ export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
 const MAX_REQUEST_TIME = 5000
 
+// TODO update jira scopes to add ones needed for webhooks
 export type JiraPermissionScope =
   | 'read:jira-user'
   | 'read:jira-work'
   | 'write:jira-work'
+  // | 'read:issue:jira'
+  // | 'write:issue:jira'
+  // | 'write:comment:jira'
+  // | 'read:issue-details:jira'
+  // | 'read:user:jira'
+  | 'read:webhook:jira'
+  | 'write:webhook:jira'
+  | 'delete:webhook:jira'
   | 'offline_access'
   | 'manage:jira-project'
 
@@ -293,10 +302,19 @@ Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
 
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
+  // TODO update jira scopes to add ones needed for webhooks
   static SCOPE: JiraPermissionScope[] = [
     'read:jira-user',
     'read:jira-work',
     'write:jira-work',
+    // 'read:issue:jira',
+    // 'write:issue:jira',
+    // 'write:comment:jira',
+    // 'read:issue-details:jira',
+    // 'read:user:jira',
+    'read:webhook:jira',
+    'write:webhook:jira',
+    'delete:webhook:jira',
     'offline_access'
   ]
   static MANAGE_SCOPE: JiraPermissionScope[] = [...AtlassianManager.SCOPE, 'manage:jira-project']

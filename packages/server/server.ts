@@ -9,6 +9,7 @@ import webhookGraphQLHandler from './graphql/webhookGraphQLHandler'
 import ICSHandler from './ICSHandler'
 import './initSentry'
 import githubWebhookHandler from './integrations/githubWebhookHandler'
+import jiraWebhookHandler from './integrations/jiraWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import PROD from './PROD'
@@ -51,6 +52,7 @@ uws
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
+  .post('/webhooks/jira', jiraWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/webhooks/graphql', webhookGraphQLHandler)
   .post('/graphql', httpGraphQLHandler)

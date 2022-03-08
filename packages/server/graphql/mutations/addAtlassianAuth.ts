@@ -81,6 +81,8 @@ export default {
       ...atlassianAuthsToUpdate
     ])
 
+    // TODO register webhook if one doesn't exist for team
+
     segmentIo.track({
       userId: viewerId,
       event: 'Added Integration',
