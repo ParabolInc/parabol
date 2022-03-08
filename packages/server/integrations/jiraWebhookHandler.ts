@@ -65,9 +65,8 @@ const jiraWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpR
   const event = await parseBody<jiraWebhookPayload>({res})
   res.end()
 
-  // parse issue
-  event?.issue
   // lookup task in parabol
+  event?.issue.key
   // update task/cache
 })
 

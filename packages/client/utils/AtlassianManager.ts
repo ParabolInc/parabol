@@ -272,21 +272,47 @@ export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
 const MAX_REQUEST_TIME = 5000
 
-// TODO update jira scopes to add ones needed for webhooks
 export type JiraPermissionScope =
-  | 'read:jira-user'
-  | 'read:jira-work'
-  | 'write:jira-work'
-  // | 'read:issue:jira'
-  // | 'write:issue:jira'
-  // | 'write:comment:jira'
-  // | 'read:issue-details:jira'
-  // | 'read:user:jira'
-  | 'read:webhook:jira'
-  | 'write:webhook:jira'
+  | 'delete:project:jira'
   | 'delete:webhook:jira'
   | 'offline_access'
-  | 'manage:jira-project'
+  | 'read:application-role:jira'
+  | 'read:application-role:jira'
+  | 'read:avatar:jira'
+  | 'read:avatar:jira'
+  | 'read:field-configuration:jira'
+  | 'read:group:jira'
+  | 'read:group:jira'
+  | 'read:issue-details:jira'
+  | 'read:issue-meta:jira'
+  | 'read:issue-security-level:jira'
+  | 'read:issue-type-hierarchy:jira'
+  | 'read:issue-type-hierarchy:jira'
+  | 'read:issue-type:jira'
+  | 'read:issue-type:jira'
+  | 'read:issue:jira'
+  | 'read:issue.changelog:jira'
+  | 'read:issue.vote:jira'
+  | 'read:project-category:jira'
+  | 'read:project-category:jira'
+  | 'read:project-version:jira'
+  | 'read:project-version:jira'
+  | 'read:project:jira'
+  | 'read:project:jira'
+  | 'read:project.component:jira'
+  | 'read:project.component:jira'
+  | 'read:project.property:jira'
+  | 'read:project.property:jira'
+  | 'read:status:jira'
+  | 'read:user:jira'
+  | 'read:user:jira'
+  | 'read:webhook:jira'
+  | 'write:attachment:jira'
+  | 'write:comment:jira'
+  | 'write:comment.property:jira'
+  | 'write:issue:jira'
+  | 'write:project:jira'
+  | 'write:webhook:jira'
 
 export class RateLimitError {
   retryAt: Date
@@ -302,22 +328,44 @@ Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
 
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
-  // TODO update jira scopes to add ones needed for webhooks
   static SCOPE: JiraPermissionScope[] = [
-    'read:jira-user',
-    'read:jira-work',
-    'write:jira-work',
-    // 'read:issue:jira',
-    // 'write:issue:jira',
-    // 'write:comment:jira',
-    // 'read:issue-details:jira',
-    // 'read:user:jira',
-    'read:webhook:jira',
-    'write:webhook:jira',
     'delete:webhook:jira',
-    'offline_access'
+    'offline_access',
+    'read:application-role:jira',
+    'read:avatar:jira',
+    'read:field-configuration:jira',
+    'read:group:jira',
+    'read:issue-details:jira',
+    'read:issue-meta:jira',
+    'read:issue-security-level:jira',
+    'read:issue-type-hierarchy:jira',
+    'read:issue-type:jira',
+    'read:issue:jira',
+    'read:issue.changelog:jira',
+    'read:issue.vote:jira',
+    'read:project-category:jira',
+    'read:project-version:jira',
+    'read:project.component:jira',
+    'read:project.property:jira',
+    'read:status:jira',
+    'read:user:jira',
+    'read:webhook:jira',
+    'write:attachment:jira',
+    'write:comment:jira',
+    'write:comment.property:jira',
+    'write:issue:jira',
+    'write:webhook:jira',
+    'read:project:jira',
+    'write:project:jira',
+    'delete:project:jira'
   ]
-  static MANAGE_SCOPE: JiraPermissionScope[] = [...AtlassianManager.SCOPE, 'manage:jira-project']
+  static MANAGE_SCOPE: JiraPermissionScope[] = [
+    ...AtlassianManager.SCOPE,
+    // ended up having to add these to the default SCOPE not sure if the distinction between SCOPE and MANAGE_SCOPE is still relevant
+    'read:project:jira',
+    'write:project:jira',
+    'delete:project:jira'
+  ]
   accessToken: string
   private headers = {
     Authorization: '',
