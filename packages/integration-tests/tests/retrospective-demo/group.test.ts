@@ -79,6 +79,70 @@ test.describe('restrospective-demo / group page', () => {
   })
 
   test('it demos drag-and-drop grouping', async ({page}) => {
-    // todo
+    test.slow()
+    const timeout = 20_000
+
+    await config.goto(page, '/retrospective-demo')
+    await page.click('text=Start Demo')
+
+    const nextButton = page.locator('button :text("Next")')
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+    await nextButton.click()
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
+
+    // Validate all dragged cards begin in the "Stop" column
+    const airTimeText = `Some people always take all the air time. It's hard to get my ideas on the floor`
+    await expect(page.locator(`[data-cy=group-column-Stop] :text("${airTimeText}")`)).toBeVisible()
+    const decisionsText = `Making important decisions in chat`
+    await expect(
+      page.locator(`[data-cy=group-column-Stop] :text("${decisionsText}")`)
+    ).toBeVisible()
+    const prioritizingWorkText = `Prioritizing so much work every sprint, we can't get it all done!`
+    await expect(
+      page.locator(`[data-cy=group-column-Stop] :text("${prioritizingWorkText}")`)
+    ).toBeVisible()
+    const debatesText = `Having debates that go nowhere over group chat`
+    await expect(page.locator(`[data-cy=group-column-Stop] :text("${debatesText}")`)).toBeVisible()
+
+    // It first drags the "some people always take all the air time" card from Stop to Start
+    await expect(page.locator(`[data-cy=group-column-Start] :text("${airTimeText}")`)).toBeVisible({
+      timeout
+    })
+
+    // It created the "People Decisions Interns" group
+    await expect(
+      page.locator(
+        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="People Decisions Interns"]`
+      )
+    ).toBeVisible({timeout})
+
+    // It drags the "making important decisions in chat" card from Stop to Start
+    await expect(
+      page.locator(`[data-cy=group-column-Start] :text("${decisionsText}")`)
+    ).toBeVisible({
+      timeout
+    })
+
+    // It drags "prioritizing work" card from Stop to Continue
+    await expect(
+      page.locator(`[data-cy=group-column-Continue] :text("${prioritizingWorkText}")`)
+    ).toBeVisible({
+      timeout
+    })
+
+    // It created the "Team Work" group
+    await expect(
+      page.locator(
+        `[data-cy=group-column-Continue] [data-cy*="Continue-group-"] input[value="Team Work"]`
+      )
+    ).toBeVisible({timeout})
+
+    // It drags "debates" card from Stop to Continue
+    await expect(
+      page.locator(`[data-cy=group-column-Continue] :text("${debatesText}")`)
+    ).toBeVisible({
+      timeout
+    })
   })
 })
