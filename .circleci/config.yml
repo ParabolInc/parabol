@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: cimg/node:16.14.0
       - image: rethinkdb:2.4.0
-      - image: circleci/postgres:12.3
+      - image: postgres:12.3
         environment:
           # These env values need to be synced up with the `test` environment file
           POSTGRES_PASSWORD: "p9_p455w02d_f02_73575"
