@@ -86,7 +86,7 @@ jobs:
           command: sudo yarn workspace integration-tests playwright install-deps
       - run:
           name: Run Playwright tests
-          command: yarn workspace integration-tests test --workers 2 --reporter list,junit
+          command: yarn workspace integration-tests test --reporter list,junit
           environment:
             PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
       - store_test_results:
