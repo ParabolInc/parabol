@@ -1,11 +1,15 @@
 import config from '../config'
 import {test, expect} from '@playwright/test'
-import {dragReflectionCard} from '../helpers'
+import {
+  startDemo,
+  dragReflectionCard,
+  goToNextPhase,
+  skipToGroupPhase
+} from './retrospective-demo-helpers'
 
-test.describe('restrospective-demo / group page', () => {
+test.describe('retrospective-demo / group page', () => {
   test('it carries over user-entered input from the reflect phase', async ({page}) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
@@ -43,8 +47,7 @@ test.describe('restrospective-demo / group page', () => {
       'Scrolling while dragging presents problems. See https://github.com/microsoft/playwright/issues/12599.'
     )
 
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
@@ -56,10 +59,7 @@ test.describe('restrospective-demo / group page', () => {
     await page.type(stopTextbox, 'Making decisions in one-on-one meetings')
     await page.press(stopTextbox, 'Enter')
 
-    const nextButton = page.locator('button :text("Next")')
-    await expect(nextButton).toBeVisible()
-    await nextButton.click()
-    await nextButton.click()
+    await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
 
     const decisionsInOneOnOnesCard = page.locator('text=Making decisions in one-on-one meetings')
@@ -87,14 +87,7 @@ test.describe('restrospective-demo / group page', () => {
     test.slow()
     const timeout = 20_000
 
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
-
-    const nextButton = page.locator('button :text("Next")')
-    await expect(nextButton).toBeVisible()
-    await nextButton.click()
-    await nextButton.click()
-    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
+    await skipToGroupPhase(page)
 
     // Validate all dragged cards begin in the "Stop" column
     const airTimeText = `Some people always take all the air time. It's hard to get my ideas on the floor`
@@ -149,5 +142,33 @@ test.describe('restrospective-demo / group page', () => {
     ).toBeVisible({
       timeout
     })
+  })
+
+  test('transitions to the vote phase after clicking "next" twice', async ({page}) => {
+    await skipToGroupPhase(page)
+    await goToNextPhase(page)
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/vote`)
+  })
+
+  test('marks the group phase as completed after transitioning to vote phase', async ({
+    page,
+    isMobile
+  }) => {
+    test.skip(
+      isMobile,
+      'For some reason, we get an "Element is out of viewport" error on this page when toggling the sidebar on mobile. This does not happen in other phases.'
+    )
+
+    await skipToGroupPhase(page)
+    await goToNextPhase(page)
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/vote`)
+
+    if (isMobile) {
+      await page.click('button[aria-label="Toggle the sidebar"]', {force: true})
+    }
+
+    await page.click('[data-cy=sidebar] :text("Group")')
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
+    await expect(page.locator(':text("Phase Completed")')).toBeVisible()
   })
 })

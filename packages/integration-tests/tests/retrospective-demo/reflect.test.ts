@@ -1,10 +1,10 @@
 import config from '../config'
 import {test, expect} from '@playwright/test'
+import {goToNextPhase, startDemo} from './retrospective-demo-helpers'
 
-test.describe('restrospective-demo / reflect page', () => {
+test.describe('retrospective-demo / reflect page', () => {
   test('it shows an explanation popup', async ({page}) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     await expect(page.locator('[aria-label="Meeting tips"]')).toBeVisible()
     await expect(
@@ -18,8 +18,7 @@ test.describe('restrospective-demo / reflect page', () => {
   })
 
   test('allows the user to enter feedback in start column', async ({page}) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
@@ -32,8 +31,7 @@ test.describe('restrospective-demo / reflect page', () => {
   })
 
   test('allows the user to enter feedback in the stop column', async ({page}) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
     await page.click(stopTextbox)
@@ -46,8 +44,7 @@ test.describe('restrospective-demo / reflect page', () => {
   })
 
   test('allows the user to enter feedback in the continue column', async ({page}) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
     await page.click(continueTextbox)
@@ -60,8 +57,7 @@ test.describe('restrospective-demo / reflect page', () => {
   })
 
   test('allows the user to delete previously entered feedback', async ({page}) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
@@ -83,9 +79,7 @@ test.describe('restrospective-demo / reflect page', () => {
 
   test('displays simulated users writing reflections in the start column', async ({page}) => {
     test.setTimeout(30_000)
-
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     await expect(
       page.locator(
@@ -119,8 +113,7 @@ test.describe('restrospective-demo / reflect page', () => {
   test('displays simulated users writing reflections in the stop column', async ({page}) => {
     test.setTimeout(60_000)
 
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     await expect(
       page.locator('[data-cy=reflection-column-Stop] :text("1 team member writing reflections...")')
@@ -178,8 +171,7 @@ test.describe('restrospective-demo / reflect page', () => {
   test('displays simulated users writing reflections in the continue column', async ({page}) => {
     test.setTimeout(80_000)
 
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
 
     await expect(
       page.locator(
@@ -215,27 +207,18 @@ test.describe('restrospective-demo / reflect page', () => {
   })
 
   test('transitions to the group phase after clicking "next" twice', async ({page}) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
+    await startDemo(page)
+    await goToNextPhase(page)
 
-    const nextButton = page.locator('button :text("Next")')
-    await expect(nextButton).toBeVisible()
-    await nextButton.click()
-    await nextButton.click()
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
   })
 
-  test('marks the group phase as completed after transitioning to group phase', async ({
+  test('marks the reflect phase as completed after transitioning to group phase', async ({
     page,
     isMobile
   }) => {
-    await config.goto(page, '/retrospective-demo')
-    await page.click('text=Start Demo')
-
-    const nextButton = page.locator('button :text("Next")')
-    await expect(nextButton).toBeVisible()
-    await nextButton.click()
-    await nextButton.click()
+    await startDemo(page)
+    await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
 
     if (isMobile) {
