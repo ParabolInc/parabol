@@ -140,6 +140,10 @@ export const newMeetingFields = () => ({
       const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
       return meetingMember || null
     }
+  },
+  videoMeetingUrl: {
+    type: GraphQLString,
+    description: 'Link to video meeting if any'
   }
 })
 

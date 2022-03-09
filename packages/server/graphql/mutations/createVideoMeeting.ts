@@ -55,8 +55,18 @@ export default {
     if (service === 'zoom') {
       const manager = new ZoomServerManager(auth.accessToken!, provider.serverBaseUrl!)
       const res = await manager.createMeeting()
+
+      await r
+        .table('NewMeeting')
+        .get(meetingId)
+        .update({
+          videoMeetingUrl: res.join_url
+        }).run()
+      // update dataloader
+      meeting.videoMeetingUrl = res.join_url
+
       return {
-        url: res.join_url
+        meetingId
       }
     }
 

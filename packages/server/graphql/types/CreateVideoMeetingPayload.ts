@@ -1,17 +1,24 @@
-import {GraphQLObjectType, GraphQLString} from 'graphql'
-import StandardMutationError from './StandardMutationError'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
+import makeMutationPayload from './makeMutationPayload'
+import NewMeeting from './NewMeeting'
+import {resolveNewMeeting} from '../resolvers'
 
-const CreateVideoMeetingPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'CreateVideoMeetingPayload',
+const CreateVideoMeetingSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'CreateVideoMeetingSuccess',
   fields: () => ({
-    error: {
-      type: StandardMutationError
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the meeting where the video meeting was added'
     },
-    url: {
-      type: GraphQLString,
+    meeting: {
+      type: new GraphQLNonNull(NewMeeting),
+      description: 'The meeting where the video meeting was added',
+      resolve: resolveNewMeeting
     }
   })
 })
+
+const CreateVideoMeetingPayload = makeMutationPayload('CreateVideoMeetingPayload', CreateVideoMeetingSuccess)
 
 export default CreateVideoMeetingPayload

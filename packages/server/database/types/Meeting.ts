@@ -35,6 +35,7 @@ export default abstract class Meeting {
   meetingType: MeetingTypeEnum
   phases: GenericMeetingPhase[]
   showConversionModal?: boolean
+  videoMeetingUrl?: string
 
   constructor(input: Input) {
     const {
