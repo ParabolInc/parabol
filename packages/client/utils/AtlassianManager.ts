@@ -1,6 +1,7 @@
 import AbortController from 'abort-controller'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import {SprintPokerDefaults} from '../types/constEnums'
+import sleep from './sleep'
 
 export interface JiraUser {
   self: string
@@ -264,12 +265,12 @@ interface JiraPageBean<T> {
 
 interface WebhookDetails {
   jqlFilter: string
-  fieldIdsFilter: string[]
+  fieldIdsFilter?: string[]
   events: jiraWebhookEventType[]
 }
 
 interface Webhook {
-  id: string
+  id: number
   jqlFilter: string
   fieldIdsFilter: string[]
   issuePropertyKeysFilter: string[]
@@ -919,7 +920,7 @@ export default abstract class AtlassianManager {
     )
   }
 
-  async registerWebhook(cloudId: string, url: string, webhooks: WebhookDetails[]) {
+  async registerWebhooks(cloudId: string, url: string, webhooks: WebhookDetails[]) {
     return this.post(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
       url,
       webhooks
@@ -941,6 +942,58 @@ export default abstract class AtlassianManager {
   async getWebhooks(cloudId: string) {
     return this.get<JiraPageBean<Webhook>>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`
+    )
+  }
+  async getAllWebhooks(cloudIds: string[]) {
+    return Promise.all(cloudIds.map((cloudId) => this.getWebhooks(cloudId)))
+  }
+
+  async updateWebhook(webhookId: number, cloudId: string, url: string) {
+    // register new hook
+    await this.registerAllProjectsWebhooks([cloudId], url)
+    // delete old hook
+    await this.deleteWebhooks(cloudId, [webhookId])
+  }
+
+  async registerOrUpdateWebhooks(cloudIds: string[], url: string) {
+    const webhooksAndErrors = await this.getAllWebhooks(cloudIds)
+    return Promise.all(
+      webhooksAndErrors.map(async (entry, index) => {
+        if (entry instanceof Error) {
+          return Promise.reject(Error)
+        } else if (entry instanceof RateLimitError) {
+          // retry
+          const waitTime = Date.now() - entry.retryAt.getUTCMilliseconds()
+          if (waitTime > 0) await sleep(waitTime)
+          return this.registerOrUpdateWebhooks([cloudIds[index]!], url)
+        } else if (entry.total > 0) {
+          return this.updateWebhook(entry.values[0]!.id, cloudIds[index]!, url)
+        } else {
+          return this.registerAllProjectsWebhooks([cloudIds[index]!], url)
+        }
+      })
+    )
+  }
+
+  async registerAllProjectsWebhooks(cloudIds: string[], url: string) {
+    const allProjects = await this.getAllProjects(cloudIds)
+
+    const projectsByCloudId = allProjects.reduce((cloudIds, project) => {
+      const index = cloudIds.findIndex(({cloudId}) => project.cloudId === cloudId)
+      cloudIds[index]!.projects.push(project)
+      return cloudIds
+    }, [] as Array<{cloudId: string; projects: JiraProject[]}>)
+
+    return Promise.all(
+      projectsByCloudId.map((cloudIdProjects) => {
+        const {cloudId, projects} = cloudIdProjects
+        const jqlFilter = `project in ${projects.map(({key}) => key).join(',')}`
+        const webhook: WebhookDetails = {
+          jqlFilter,
+          events: ['jira:issue_updated']
+        }
+        this.registerWebhooks(cloudId, url, [webhook])
+      })
     )
   }
 }
