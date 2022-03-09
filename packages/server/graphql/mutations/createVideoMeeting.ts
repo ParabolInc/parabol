@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -8,6 +8,8 @@ import IntegrationProviderServiceEnum, {
 } from '../types/IntegrationProviderServiceEnum'
 import CreateVideoMeetingPayload from '../types/CreateVideoMeetingPayload'
 import ZoomServerManager from '../../integrations/zoom/ZoomServerManager'
+import publish from '../../utils/publish'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: CreateVideoMeetingPayload,
@@ -23,14 +25,12 @@ export default {
   },
   resolve: async (
     _source: unknown,
-    {service, meetingId}: { service: IntegrationProviderServiceEnumType, meetingId: string },
-    context: GQLContext,
-    info: GraphQLResolveInfo
+    {service, meetingId}: {service: IntegrationProviderServiceEnumType; meetingId: string},
+    context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
 
     const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -46,34 +46,40 @@ export default {
     }
 
     // VALIDATION
-    const auth = await dataLoader.get('teamMemberIntegrationAuths').load({userId: viewerId, teamId, service})
+    const auth = await dataLoader
+      .get('teamMemberIntegrationAuths')
+      .load({userId: viewerId, teamId, service})
     if (!auth) {
       return standardError(new Error('Not integrated'), {userId: viewerId})
     }
 
     const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-    if (service === 'zoom') {
-      const manager = new ZoomServerManager(auth.accessToken!, provider.serverBaseUrl!)
-      const res = await manager.createMeeting()
-
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          videoMeetingUrl: res.join_url
-        }).run()
-      // update dataloader
-      meeting.videoMeetingUrl = res.join_url
-
+    if (service !== 'zoom') {
       return {
-        meetingId
+        error: {
+          message: 'Service not supported'
+        }
       }
     }
 
-    return {
-      error: {
-        message: 'Service not supported'
-      }
+    const manager = new ZoomServerManager(auth.accessToken!, provider.serverBaseUrl!)
+    const res = await manager.createMeeting()
+
+    await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update({
+        videoMeetingUrl: res.join_url
+      })
+      .run()
+    // update dataloader
+    meeting.videoMeetingUrl = res.join_url
+
+    const data = {
+      meetingId
     }
+    publish(SubscriptionChannel.MEETING, meetingId, 'CreateVideoMeetingSuccess', data, subOptions)
+
+    return data
   }
 }

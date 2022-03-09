@@ -19,6 +19,11 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if gitlab is allowed',
       resolve: ({gitlab}) => !!gitlab
+    },
+    zoom: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if zoom is allowed',
+      resolve: ({zoom}) => !!zoom
     }
   })
 })

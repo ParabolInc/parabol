@@ -35,9 +35,11 @@ import {SetTaskEstimateSuccess} from './SetTaskEstimatePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {CreatePollSuccess} from './CreatePollPayload'
 import {SetTaskHighlightSuccess} from './SetTaskHighlightPayload'
+import {CreateVideoMeetingSuccess} from './CreateVideoMeetingPayload'
 
 const types = [
   AddCommentSuccess,
+  CreateVideoMeetingSuccess,
   CreatePollSuccess,
   AddReactjiToReflectionSuccess,
   AddReactjiToReactableSuccess,

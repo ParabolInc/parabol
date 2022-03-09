@@ -6,16 +6,18 @@ import {Link} from 'react-router-dom'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RenameMeetingMutation from '~/mutations/RenameMeetingMutation'
+import CreateVideoMeetingMutation from '~/mutations/CreateVideoMeetingMutation'
 import Legitity from '~/validation/Legitity'
 import {NewMeetingSidebar_meeting} from '~/__generated__/NewMeetingSidebar_meeting.graphql'
 import {PALETTE} from '../styles/paletteV3'
-import {NavSidebar} from '../types/constEnums'
+import {NavSidebar, Radius} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import EditableText from './EditableText'
 import Facilitator from './Facilitator'
 import LogoBlock from './LogoBlock/LogoBlock'
 import SidebarToggle from './SidebarToggle'
 import InactiveTag from './Tag/InactiveTag'
+import PlainButton from './PlainButton/PlainButton'
 
 const MeetingName = styled('div')({
   fontSize: 20,
@@ -70,6 +72,33 @@ const MeetingCompletedTag = styled(InactiveTag)({
   margin: '4px 0 0 0'
 })
 
+const ZoomLink = styled('a')({
+  width: '100%'
+})
+
+const ZoomSection = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 16
+})
+
+const ZoomButton = styled(PlainButton)({
+  width: '100%',
+  textAlign: 'center',
+  padding: '8px 16px',
+  backgroundColor: '#2e8cff',
+  borderRadius: Radius.BUTTON_PILL,
+  color: PALETTE.WHITE,
+  fontWeight: 600,
+  fontSize: 14,
+  ':hover, :focus, :active': {
+    backgroundColor: '#004396'
+  },
+  transition: 'background-color 0.1s ease',
+  marginRight: 'auto'
+})
+
 interface Props {
   children: ReactNode
   handleMenuClick: () => void
@@ -80,8 +109,17 @@ interface Props {
 const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, toggleSidebar, meeting} = props
   const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
-  const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    team,
+    name: meetingName,
+    facilitatorUserId,
+    viewerMeetingMember,
+    videoMeetingUrl
+  } = meeting
   const {id: teamId, name: teamName} = team
+  const isZoomIntegrationPossible = viewerMeetingMember?.user?.featureFlags?.zoom
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -104,6 +142,31 @@ const NewMeetingSidebar = (props: Props) => {
       onCompleted()
     }
     return res
+  }
+  const handleCreateVideoMeeting = () => {
+    if (submitting) return
+    submitMutation()
+    CreateVideoMeetingMutation(atmosphere, {meetingId, service: 'zoom'}, {onCompleted, onError})
+  }
+
+  const renderZoomSection = () => {
+    if (videoMeetingUrl) {
+      return (
+        <ZoomSection>
+          <ZoomLink href={videoMeetingUrl} target='_blank' rel='noreferrer'>
+            <ZoomButton>Join Zoom meeting</ZoomButton>
+          </ZoomLink>
+        </ZoomSection>
+      )
+    }
+
+    if (!isZoomIntegrationPossible) return null
+
+    return (
+      <ZoomSection>
+        <ZoomButton onClick={handleCreateVideoMeeting}>Create Zoom meeting</ZoomButton>
+      </ZoomSection>
+    )
   }
 
   return (
@@ -133,6 +196,7 @@ const NewMeetingSidebar = (props: Props) => {
       </SidebarHeader>
       <Facilitator meeting={meeting} />
       {children}
+      {renderZoomSection()}
       <LogoBlock onClick={handleMenuClick} />
     </SidebarParent>
   )
@@ -149,6 +213,14 @@ export default createFragmentContainer(NewMeetingSidebar, {
       team {
         id
         name
+      }
+      videoMeetingUrl
+      viewerMeetingMember {
+        user {
+          featureFlags {
+            zoom
+          }
+        }
       }
     }
   `

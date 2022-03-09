@@ -4,7 +4,7 @@ import useTooltip from 'parabol-client/hooks/useTooltip'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import FlatButton from '../../../../components/FlatButton'
-import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
+import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
 import Icon from '../../../../components/Icon'
 import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
@@ -13,11 +13,11 @@ import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import ZoomClientManager from '../../../../utils/ZoomClientManager'
+import {ZoomProviderRow_viewer$key} from '../../../../__generated__/ZoomProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
   color: PALETTE.SLATE_700,
@@ -52,7 +52,7 @@ const ProviderName = styled('div')({
 graphql`
   fragment ZoomProviderRowTeamMember on TeamMember {
     integrations {
-      zoom{
+      zoom {
         auth {
           provider {
             scope
@@ -83,21 +83,12 @@ const ZoomProviderRow = (props: Props) => {
       mutationProps
     )
   }
-  const {originRef: menuRef, menuPortal, menuProps, togglePortal} = useMenu(
-    MenuPosition.UPPER_RIGHT
-  )
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
     // tooltipPortal: cloudTooltipPortal,
     openTooltip: cloudOpenTooltip,
     closeTooltip: cloudCloseTooltip,
     originRef: cloudRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
-  const {
-    tooltipPortal: selfHostedTooltipPortal,
-    openTooltip: selfHostedOpenTooltip,
-    closeTooltip: selfHostedCloseTooltip,
-    originRef: selfHostedRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.LOWER_CENTER)
 
   const viewer = useFragment(
@@ -118,7 +109,7 @@ const ZoomProviderRow = (props: Props) => {
   const {clientId, id: cloudProviderId, serverBaseUrl} = cloudProvider
   return (
     <ProviderCard>
-      <GitLabProviderLogo />
+      <ZoomProviderLogo />
       <RowInfo>
         <ProviderName>Zoom</ProviderName>
         <RowInfoCopy>Start Zoom Meetings from within Parabol</RowInfoCopy>

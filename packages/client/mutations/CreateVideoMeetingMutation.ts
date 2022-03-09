@@ -13,14 +13,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateVideoMeetingMutation(
-    $service: IntegrationProviderServiceEnum!
-    $meetingId: ID!
-  ) {
-    createVideoMeeting(
-      service: $service
-      meetingId: $meetingId
-    ) {
+  mutation CreateVideoMeetingMutation($service: IntegrationProviderServiceEnum!, $meetingId: ID!) {
+    createVideoMeeting(service: $service, meetingId: $meetingId) {
       ... on ErrorPayload {
         error {
           message

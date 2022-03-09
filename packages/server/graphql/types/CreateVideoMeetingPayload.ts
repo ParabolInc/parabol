@@ -1,10 +1,10 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import NewMeeting from './NewMeeting'
 import {resolveNewMeeting} from '../resolvers'
 
-const CreateVideoMeetingSuccess = new GraphQLObjectType<any, GQLContext>({
+export const CreateVideoMeetingSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateVideoMeetingSuccess',
   fields: () => ({
     meetingId: {
@@ -19,6 +19,9 @@ const CreateVideoMeetingSuccess = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-const CreateVideoMeetingPayload = makeMutationPayload('CreateVideoMeetingPayload', CreateVideoMeetingSuccess)
+const CreateVideoMeetingPayload = makeMutationPayload(
+  'CreateVideoMeetingPayload',
+  CreateVideoMeetingSuccess
+)
 
 export default CreateVideoMeetingPayload
