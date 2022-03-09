@@ -262,6 +262,31 @@ interface JiraPageBean<T> {
   values: T[]
 }
 
+interface WebhookDetails {
+  jqlFilter: string
+  fieldIdsFilter: string[]
+  events: jiraWebhookEventType[]
+}
+
+interface Webhook {
+  id: string
+  jqlFilter: string
+  fieldIdsFilter: string[]
+  issuePropertyKeysFilter: string[]
+  events: jiraWebhookEventType[]
+  expirationDate: string
+}
+
+type jiraWebhookEventType =
+  | 'jira:issue_created'
+  | 'jira:issue_updated'
+  | 'jira:issue_deleted'
+  | 'comment:created'
+  | 'comment_updated'
+  | 'comment_deleted'
+  | 'issue_property_set'
+  | 'issue_property_deleted'
+
 export function isJiraNoAccessError<T>(
   response: T | JiraNoAccessError
 ): response is JiraNoAccessError {
@@ -273,6 +298,9 @@ export type JiraScreensResponse = JiraPageBean<JiraScreen>
 const MAX_REQUEST_TIME = 5000
 
 export type JiraPermissionScope =
+  | 'read:field:jira'
+  | 'read:field.option:jira'
+  | 'read:field.default-value:jira'
   | 'delete:project:jira'
   | 'delete:webhook:jira'
   | 'offline_access'
@@ -318,6 +346,9 @@ Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
   static SCOPE: JiraPermissionScope[] = [
+    'read:field:jira',
+    'read:field.option:jira',
+    'read:field.default-value:jira',
     'delete:project:jira',
     'delete:webhook:jira',
     'offline_access',
@@ -453,10 +484,11 @@ export default abstract class AtlassianManager {
     }
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
   }
-  private readonly delete = async (url) => {
+  private readonly delete = async (url, payload?: any) => {
     const res = await this.fetchWithTimeout(url, {
       method: 'DELETE',
-      headers: this.headers
+      headers: this.headers,
+      body: payload && JSON.stringify(payload)
     })
     if (res instanceof Error) {
       return res
@@ -884,6 +916,31 @@ export default abstract class AtlassianManager {
   ) {
     return this.delete(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/${screenId}/tabs/${tabId}/fields/${fieldId}`
+    )
+  }
+
+  async registerWebhook(cloudId: string, url: string, webhooks: WebhookDetails[]) {
+    return this.post(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
+      url,
+      webhooks
+    })
+  }
+
+  async deleteWebhooks(cloudId: string, webhookIds: number[]) {
+    return this.delete(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`, {
+      webhookIds
+    })
+  }
+
+  async extendWebhooks(cloudId: string, webhookIds: number[]) {
+    return this.put(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook/refresh`, {
+      webhookIds
+    })
+  }
+
+  async getWebhooks(cloudId: string) {
+    return this.get<JiraPageBean<Webhook>>(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/webhook`
     )
   }
 }
