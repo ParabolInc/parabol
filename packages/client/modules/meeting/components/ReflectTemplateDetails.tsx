@@ -6,6 +6,10 @@ import customTemplate from '../../../../../static/images/illustrations/customTem
 import sailboatTemplate from '../../../../../static/images/illustrations/sailboatTemplate.png'
 import startStopContinueTemplate from '../../../../../static/images/illustrations/startStopContinueTemplate.png'
 import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.png'
+import whatWentWellTemplate from '../../../../../static/images/illustrations/whatWentWellTemplate.png'
+import dropAddKeepImproveDAKITemplate from '../../../../../static/images/illustrations/dakiTemplate.png'
+import leanCoffeeTemplate from '../../../../../static/images/illustrations/leanCoffeeTemplate.png'
+import starfishTemplate from '../../../../../static/images/illustrations/starfishTemplate.png'
 import fourLsTemplate from '../../../../../static/images/illustrations/fourLsTemplate.png'
 import gladSadMadTemplate from '../../../../../static/images/illustrations/gladSadMadTemplate.png'
 import energyLevelsTemplate from '../../../../../static/images/illustrations/energyLevelsTemplate.png'
@@ -111,6 +115,10 @@ const ReflectTemplateDetails = (props: Props) => {
     sailboatTemplate: sailboatTemplate,
     startStopContinueTemplate: startStopContinueTemplate,
     workingStuckTemplate: workingStuckTemplate,
+    whatWentWellTemplate: whatWentWellTemplate,
+    dropAddKeepImproveDAKITemplate: dropAddKeepImproveDAKITemplate,
+    leanCoffeeTemplate: leanCoffeeTemplate,
+    starfishTemplate: starfishTemplate,
     fourLsTemplate: fourLsTemplate,
     gladSadMadTemplate: gladSadMadTemplate,
     energyLevelsTemplate: energyLevelsTemplate,
