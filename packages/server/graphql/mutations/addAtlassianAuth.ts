@@ -82,8 +82,7 @@ export default {
     ])
 
     // TODO register webhook if one doesn't exist for team
-    // get url of parabol instance from 'somewhere™'
-    manager.registerOrUpdateWebhooks(cloudIds, 'url')
+    await manager.registerOrUpdateWebhooks(cloudIds)
 
     segmentIo.track({
       userId: viewerId,
