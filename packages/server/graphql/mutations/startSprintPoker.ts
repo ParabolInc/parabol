@@ -20,9 +20,8 @@ import isValid from '../isValid'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
-import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
-import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import {NotificationHelper} from './helpers/notifications/NotificationHelper'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -167,8 +166,7 @@ export default {
       r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
-    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    NotificationHelper.startMeeting(dataLoader, meetingId, teamId)
     sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId: meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)

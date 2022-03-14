@@ -14,9 +14,8 @@ import {GQLContext} from '../graphql'
 import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
-import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
-import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import {NotificationHelper} from './helpers/notifications/NotificationHelper'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -118,8 +117,7 @@ export default {
       updateTeamByTeamId(updates, teamId)
     ])
 
-    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    NotificationHelper.startMeeting(dataLoader, meetingId, teamId)
     sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)

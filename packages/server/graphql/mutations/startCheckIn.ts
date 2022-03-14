@@ -13,8 +13,7 @@ import {GQLContext} from '../graphql'
 import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
-import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
-import {startSlackMeeting} from './helpers/notifications/notifySlack'
+import {NotificationHelper} from './helpers/notifications/NotificationHelper'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
@@ -100,8 +99,7 @@ export default {
       r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
     ])
 
-    startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    NotificationHelper.startMeeting(dataLoader, meetingId, teamId)
     sendMeetingStartToSegment(meeting)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)

@@ -10,8 +10,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import SetStageTimerPayload from '../types/SetStageTimerPayload'
-import {notifyMattermostTimeLimitStart} from './helpers/notifications/notifyMattermost'
-import {notifySlackTimeLimitStart} from './helpers/notifications/notifySlack'
+import {NotificationHelper} from './helpers/notifications/NotificationHelper'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
 
 const BAD_CLOCK_THRESH = 2000
@@ -94,12 +93,7 @@ export default {
           .table('ScheduledJob')
           .insert(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
           .run()
-        notifySlackTimeLimitStart(newScheduledEndTime, meetingId, teamId, dataLoader).catch(
-          console.error
-        )
-        notifyMattermostTimeLimitStart(newScheduledEndTime, meetingId, teamId, dataLoader).catch(
-          console.error
-        )
+        NotificationHelper.startTimeLimit(dataLoader, newScheduledEndTime, meetingId, teamId)
       }
     } else {
       // TODO delete slack message when unset

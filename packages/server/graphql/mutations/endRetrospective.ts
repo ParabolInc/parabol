@@ -16,9 +16,8 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
-import {endSlackMeeting} from './helpers/notifications/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
+import {NotificationHelper} from './helpers/notifications/NotificationHelper'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, phases} = meeting
@@ -130,8 +129,7 @@ export default {
     // wait for removeEmptyTasks before finishRetroMeeting & wait for meeting stats
     // to be generated in finishRetroMeeting before sending Slack notifications
     await finishRetroMeeting(completedRetrospective, dataLoader)
-    endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    endMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    NotificationHelper.endMeeting(dataLoader, meetingId, teamId)
     sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = teamMembers.map(
