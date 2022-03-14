@@ -20,7 +20,7 @@ import Legitity from '../validation/Legitity'
 import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
-// import NewGitLabIssueMenu from './NewGitLabIssueMenu'
+import NewGitLabIssueMenu from './NewGitLabIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
@@ -119,7 +119,7 @@ const NewGitLabIssueInput = (props: Props) => {
           id
           ... on TeamMember {
             repoIntegrations {
-              # ...NewGitLabIssueMenu_repoIntegrations
+              ...NewGitLabIssueMenu_repoIntegrations
               items {
                 ... on _xGitLabProject {
                   __typename
@@ -146,6 +146,7 @@ const NewGitLabIssueInput = (props: Props) => {
     meetingRef
   )
   const {id: userId, team, teamMember} = viewer
+  const {id: teamId} = team
   const {repoIntegrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
@@ -153,7 +154,6 @@ const NewGitLabIssueInput = (props: Props) => {
   const repoIntegration = items?.find((item) => item.fullPath)
   const fullPath = repoIntegration?.fullPath
   const [selectedFullPath, setSelectedFullPath] = useState(fullPath)
-  console.log('🚀  ~ selectedFullPath', {selectedFullPath, fullPath, repoIntegration})
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
@@ -243,20 +243,20 @@ const NewGitLabIssueInput = (props: Props) => {
             {dirty && error && <Error>{error}</Error>}
           </Form>
           <StyledButton ref={originRef} onMouseDown={togglePortal}>
-            {/* <StyledLink>{selectedFullPath}</StyledLink> */}
+            <StyledLink>{selectedFullPath}</StyledLink>
             <StyledIcon>expand_more</StyledIcon>
           </StyledButton>
         </Issue>
       </Item>
-      {/* {menuPortal(
+      {menuPortal(
         <NewGitLabIssueMenu
-          handleSelectNameWithOwner={setSelectedFullPath}
+          handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
           repoIntegrations={repoIntegrations}
           teamId={teamId}
           userId={userId}
         />
-      )} */}
+      )}
     </>
   )
 }

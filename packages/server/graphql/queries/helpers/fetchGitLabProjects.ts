@@ -32,16 +32,25 @@ const fetchGitLabRepos = async (
     console.error(error.message)
     return []
   }
-  return data.projects.edges.map((edge) => {
+  const projects = [] as {
+    __typename: '_xGitLabProject'
+    id: string
+    service: 'gitlab'
+    fullPath: string
+  }[]
+  data.projects.edges.forEach((edge) => {
+    if (!edge) return
     const {node} = edge
+    if (!node) return
     const {id, fullPath} = node
-    return {
+    projects.push({
       __typename: '_xGitLabProject',
       id,
-      fullPath,
-      service: 'gitlab'
-    }
+      service: 'gitlab',
+      fullPath
+    })
   })
+  return projects
 }
 
 export default fetchGitLabRepos
