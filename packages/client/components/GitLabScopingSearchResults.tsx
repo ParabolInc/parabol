@@ -21,7 +21,7 @@ import Ellipsis from './Ellipsis/Ellipsis'
 import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
-// import NewGitLabIssueInput from './NewGitLabIssueInput'
+import NewGitLabIssueInput from './NewGitLabIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
@@ -69,6 +69,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         )
         @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
+          ...NewGitLabIssueInput_viewer
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
@@ -133,7 +134,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
-        # ...NewGitLabIssueInput_meeting
+        ...NewGitLabIssueInput_meeting
         id
         teamId
         # gitlabSearchQuery {
@@ -191,14 +192,14 @@ const GitLabScopingSearchResults = (props: Props) => {
         />
       }
       <ResultScroller>
-        {/* {query && (
+        {query && (
           <NewGitLabIssueInput
             isEditing={isEditing}
             meetingRef={meeting}
             setIsEditing={setIsEditing}
-            viewerRef={query.viewer}
+            viewerRef={viewer}
           />
-        )} */}
+        )}
         {issues.map((issue) => (
           <GitLabScopingSearchResultItem
             key={issue.id}

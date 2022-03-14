@@ -74,7 +74,8 @@ const withNestedSchema = mergeSchemas({
     type _xGitHubIssue implements TaskIntegration
     type _xGitLabIssue implements TaskIntegration
     type _xGitHubRepository implements RepoIntegration
-  `,
+    type _xGitLabProject implements RepoIntegration
+    `,
   // TODO apply this resolver to every type in the GitHub/GitLab schema
   // It is necessary any time client code uses an alias inside a wrapper
   resolvers: {
@@ -84,6 +85,11 @@ const withNestedSchema = mergeSchemas({
     _xGitHubRepository: {
       __interfaces: () => ['RepoIntegration'],
       __isTypeOf: ({nameWithOwner}) => !!nameWithOwner
+    },
+    _xGitLabProject: {
+      __interfaces: () => ['RepoIntegration'],
+      // __isTypeOf: ({fullPath}) => !!fullPath
+      __isTypeOf: ({__typename}) => __typename === '_xGitLabProject'
     }
   }
 })
