@@ -21,6 +21,7 @@ import {CreateTaskMutationResponse} from '../__generated__/CreateTaskMutation.gr
 import Checkbox from './Checkbox'
 import Icon from './Icon'
 import NewGitLabIssueMenu from './NewGitLabIssueMenu'
+import NewGitLabIssueMenuRoot from './NewGitLabIssueMenuRoot'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
@@ -119,13 +120,12 @@ const NewGitLabIssueInput = (props: Props) => {
           id
           ... on TeamMember {
             repoIntegrations {
-              ...NewGitLabIssueMenu_repoIntegrations
               items {
                 ... on _xGitLabProject {
                   __typename
                   id
                   fullPath
-                  #           name
+                  # name
                   #           nameWithNamespace
                   #           # nameWithOwner
                 }
@@ -152,6 +152,7 @@ const NewGitLabIssueInput = (props: Props) => {
   const {onCompleted, onError} = useMutationProps()
   const {items} = repoIntegrations
   const repoIntegration = items?.find((item) => item.fullPath)
+  console.log('🚀  ~ repoIntegration', repoIntegration)
   const fullPath = repoIntegration?.fullPath
   const [selectedFullPath, setSelectedFullPath] = useState(fullPath)
   const {fields, onChange, validateField, setDirtyField} = useForm({
@@ -249,12 +250,13 @@ const NewGitLabIssueInput = (props: Props) => {
         </Issue>
       </Item>
       {menuPortal(
-        <NewGitLabIssueMenu
+        <NewGitLabIssueMenuRoot
           handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
           repoIntegrations={repoIntegrations}
           teamId={teamId}
           userId={userId}
+          viewerRef={viewerRef}
         />
       )}
     </>

@@ -9,14 +9,16 @@ import RepoIntegrationMenuItemAvatar from './RepoIntegrationMenuItemAvatar'
 import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
-  repoIntegration: RepoIntegrationGitLabMenuItem_repoIntegration
+  // repoIntegration: RepoIntegrationGitLabMenuItem_repoIntegration
+  fullPath: string
   onClick: () => void
   query: string
 }
 
 const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
-  const {query, repoIntegration, onClick} = props
-  const {fullPath} = repoIntegration
+  // const {query, repoIntegration, onClick} = props
+  const {query, fullPath, onClick} = props
+  // const {fullPath} = repoIntegration
   return (
     <MenuItem
       ref={ref}
@@ -25,7 +27,8 @@ const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
           <RepoIntegrationMenuItemAvatar>
             <GitLabSVG />
           </RepoIntegrationMenuItemAvatar>
-          <TypeAheadLabel query={query} label={fullPath} />
+          {/* <TypeAheadLabel query={query} label={fullPath} /> */}
+          {fullPath}
         </MenuItemLabel>
       }
       onClick={onClick}
@@ -33,10 +36,4 @@ const RepoIntegrationGitLabMenuItem = forwardRef((props: Props, ref: any) => {
   )
 })
 
-export default createFragmentContainer(RepoIntegrationGitLabMenuItem, {
-  repoIntegration: graphql`
-    fragment RepoIntegrationGitLabMenuItem_repoIntegration on _xGitLabProject {
-      fullPath
-    }
-  `
-})
+export default RepoIntegrationGitLabMenuItem
