@@ -87,9 +87,9 @@ const ScopePhaseArea = (props: Props) => {
   const isGitLabProviderAvailable = !!(
     gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
   )
-  const isJiraServerProviderAvailable = !!jiraServerIntegration.sharedProviders.length
+
   const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
-  const allowJiraServer = isJiraServerProviderAvailable && featureFlags.jiraServer
+  const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
 
   const tabs = baseTabs.filter((tab) => {
     return !((!allowJiraServer && tab.id === 'jiraServer') || (!allowGitLab && tab.id === 'gitlab'))
@@ -217,7 +217,6 @@ export default createFragmentContainer(ScopePhaseArea, {
         user {
           featureFlags {
             gitlab
-            jiraServer
           }
         }
       }
