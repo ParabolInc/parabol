@@ -44,7 +44,7 @@ export interface TaskIntegrationManager {
 
   getIssue?(taskId: string)
 
-  getAPI?()
+  getApiManager?()
 }
 
 export default class TaskIntegrationManagerFactory {

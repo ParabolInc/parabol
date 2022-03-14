@@ -17,7 +17,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     this.provider = provider
   }
 
-  public getAPI() {
+  public getApiManager() {
     const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
     const {accessToken, accessTokenSecret} = this.auth
     if (!serverBaseUrl || !consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) {
@@ -39,7 +39,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     rawContentStr: string
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
-    const api = this.getAPI()
+    const api = this.getApiManager()
 
     const {title: summary, contentState} = splitDraftContent(rawContentStr)
     // TODO: implement stateToJiraServerFormat
@@ -69,7 +69,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
   }
 
   async getIssue(issueId: string) {
-    const api = this.getAPI()
+    const api = this.getApiManager()
     return api.getIssue(issueId)
   }
 
@@ -102,7 +102,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
       teamName,
       teamDashboardUrl
     )
-    const api = this.getAPI()
+    const api = this.getApiManager()
     return api.addComment(comment, issueId ?? '')
   }
 }

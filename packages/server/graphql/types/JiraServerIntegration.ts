@@ -108,7 +108,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return null
         }
 
-        const api = integrationManager.getAPI?.()
+        const api = integrationManager.getApiManager?.()
 
         const issueRes = await api.getIssues()
 
