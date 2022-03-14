@@ -107,28 +107,26 @@ const JiraServerScopingSearchResults = (props: Props) => {
   }
 
   return (
-    <>
-      <ResultScroller>
-        {edges.map(({node}) => {
-          return (
-            <ScopingSearchResultItem
-              key={node.id}
-              service={'jiraServer'}
-              usedServiceTaskIds={usedServiceTaskIds}
-              serviceTaskId={node.id}
-              meetingId={meetingId}
-              persistQuery={() => {
-                return null
-              }}
-              summary={node.summary}
-              url={node.url}
-              linkText={node.issueKey}
-              linkTitle={`Jira Server Issue #${node.issueKey}`}
-            />
-          )
-        })}
-      </ResultScroller>
-    </>
+    <ResultScroller>
+      {edges.map(({node}) => {
+        return (
+          <ScopingSearchResultItem
+            key={node.id}
+            service={'jiraServer'}
+            usedServiceTaskIds={usedServiceTaskIds}
+            serviceTaskId={node.id}
+            meetingId={meetingId}
+            persistQuery={() => {
+              return null
+            }}
+            summary={node.summary}
+            url={node.url}
+            linkText={node.issueKey}
+            linkTitle={`Jira Server Issue #${node.issueKey}`}
+          />
+        )
+      })}
+    </ResultScroller>
   )
 }
 

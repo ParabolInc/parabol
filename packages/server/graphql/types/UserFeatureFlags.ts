@@ -19,6 +19,11 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if gitlab is allowed',
       resolve: ({gitlab}) => !!gitlab
+    },
+    jiraServer: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if Jira Server is allowed',
+      resolve: ({jiraServer}) => !!jiraServer
     }
   })
 })

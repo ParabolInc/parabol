@@ -42,7 +42,7 @@ const ScopePhaseAreaJiraServer = (props: Props) => {
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
-  const hasAuth = !!integrations.jiraServer?.auth
+  const hasAuth = !!integrations.jiraServer.auth
   if (!hasAuth)
     return <ScopePhaseAreaAddJiraServer gotoParabol={gotoParabol} meetingRef={meeting} />
   return (

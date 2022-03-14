@@ -66,7 +66,7 @@ const ScopePhaseAreaAddJiraServer = (props: Props) => {
   )
   const {teamId, viewerMeetingMember} = meeting
 
-  const provider = viewerMeetingMember?.teamMember.integrations.jiraServer?.sharedProviders[0]
+  const provider = viewerMeetingMember?.teamMember.integrations.jiraServer.sharedProviders[0]
 
   if (!provider) return null
 

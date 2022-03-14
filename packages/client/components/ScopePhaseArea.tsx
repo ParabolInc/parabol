@@ -67,10 +67,11 @@ const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
 
 const baseTabs = [
-  {icon: <GitHubSVG />, label: 'GitHub'},
-  {icon: <JiraSVG />, label: 'Jira'},
-  {icon: <ParabolLogoSVG />, label: 'Parabol'},
-  {icon: <JiraServerSVG />, label: 'Jira Server'}
+  {icon: <GitHubSVG />, label: 'GitHub', id: 'github'},
+  {icon: <JiraSVG />, label: 'Jira', id: 'jira'},
+  {icon: <ParabolLogoSVG />, label: 'Parabol', id: 'parabol'},
+  {icon: <JiraServerSVG />, label: 'Jira Server', id: 'jiraServer'},
+  {icon: <GitLabSVG />, label: 'GitLab', id: 'gitlab'}
 ]
 
 const ScopePhaseArea = (props: Props) => {
@@ -82,11 +83,21 @@ const ScopePhaseArea = (props: Props) => {
   const {user, teamMember} = viewerMeetingMember
   const {featureFlags} = user
   const gitlabIntegration = teamMember.integrations.gitlab
+  const jiraServerIntegration = teamMember.integrations.jiraServer
   const isGitLabProviderAvailable = !!(
     gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
   )
+  const isJiraServerProviderAvailable = !!jiraServerIntegration.sharedProviders.length
   const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
-  const tabs = allowGitLab ? [...baseTabs, {icon: <GitLabSVG />, label: 'GitLab'}] : baseTabs
+  const allowJiraServer = isJiraServerProviderAvailable && featureFlags.jiraServer
+
+  const tabs = baseTabs.filter((tab) => {
+    return !((!allowJiraServer && tab.id === 'jiraServer') || (!allowGitLab && tab.id === 'gitlab'))
+  })
+
+  const isTabActive = (id) => {
+    return activeIdx === tabs.findIndex((tab) => tab.id === id)
+  }
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
@@ -124,37 +135,35 @@ const ScopePhaseArea = (props: Props) => {
       >
         <TabContents>
           <ScopePhaseAreaGitHub
-            isActive={activeIdx === 0}
+            isActive={isTabActive('github')}
             gotoParabol={goToParabol}
             meetingRef={meeting}
           />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaJira
-            isActive={activeIdx === 1}
+            isActive={isTabActive('jira')}
             gotoParabol={goToParabol}
             meeting={meeting}
           />
         </TabContents>
         <TabContents>
-          <ScopePhaseAreaParabolScoping isActive={activeIdx === 2} meeting={meeting} />
+          <ScopePhaseAreaParabolScoping isActive={isTabActive('parabol')} meeting={meeting} />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaJiraServer
-            isActive={activeIdx === 3}
+            isActive={isTabActive('jiraServer')}
             gotoParabol={goToParabol}
             meetingRef={meeting}
           />
         </TabContents>
-        {allowGitLab && (
-          <TabContents>
-            <ScopePhaseAreaGitLab
-              isActive={activeIdx === 4}
-              gotoParabol={goToParabol}
-              meetingRef={meeting}
-            />
-          </TabContents>
-        )}
+        <TabContents>
+          <ScopePhaseAreaGitLab
+            isActive={isTabActive('gitlab')}
+            gotoParabol={goToParabol}
+            meetingRef={meeting}
+          />
+        </TabContents>
       </SwipeableViews>
     </ScopingArea>
   )
@@ -198,11 +207,17 @@ export default createFragmentContainer(ScopePhaseArea, {
                 clientId
               }
             }
+            jiraServer {
+              sharedProviders {
+                id
+              }
+            }
           }
         }
         user {
           featureFlags {
             gitlab
+            jiraServer
           }
         }
       }
