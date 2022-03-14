@@ -6,7 +6,6 @@ import JiraServerTaskIntegrationManager from './JiraServerTaskIntegrationManager
 import {TaskIntegration} from '../database/types/Task'
 import {Doc} from '../utils/convertContentStateToADF'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
-import RootDataLoader from '../dataloader/RootDataLoader'
 
 export type CreateTaskResponse =
   | {
@@ -49,7 +48,7 @@ export interface TaskIntegrationManager {
 
 export default class TaskIntegrationManagerFactory {
   public static async initManager(
-    dataLoader: DataLoaderWorker | RootDataLoader,
+    dataLoader: DataLoaderWorker,
     service: IntegrationProviderServiceEnumType,
     {teamId, userId}: {teamId: string; userId: string}
   ): Promise<TaskIntegrationManager | null> {
