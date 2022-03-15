@@ -41,10 +41,51 @@ test.describe('retrospective-demo / group page', () => {
     ).toBeVisible()
   })
 
-  test('it allows grouping user-entered input from the reflect phase', async ({page, isMobile}) => {
+  test('it allows grouping user-entered input from the reflect phase - same column', async ({
+    page
+  }) => {
+    await startDemo(page)
+
+    const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
+    await page.click(startTextbox)
+    await page.type(startTextbox, 'Documenting things in Notion')
+    await page.press(startTextbox, 'Enter')
+
+    await page.click(startTextbox)
+    await page.type(startTextbox, 'Writing things down')
+    await page.press(startTextbox, 'Enter')
+
+    await goToNextPhase(page)
+    expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
+
+    const writingThingsDownCard = page.locator('text=Writing things down')
+    const documentingInNotionCard = page.locator('text=Documenting things in Notion')
+    await dragReflectionCard(writingThingsDownCard, documentingInNotionCard)
+
+    // Then it auto-generates a header
+    await expect(
+      page.locator(
+        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Documenting things in"]`
+      )
+    ).toBeVisible()
+
+    // Then it shows all cards when clicking the group
+    await writingThingsDownCard.click()
+    await expect(
+      page.locator('#expandedReflectionGroup :text("Writing things down")')
+    ).toBeVisible()
+    await expect(
+      page.locator('#expandedReflectionGroup :text("Documenting things in notion")')
+    ).toBeVisible()
+  })
+
+  test('it allows grouping user-entered input from the reflect phase - different columns', async ({
+    page,
+    isMobile
+  }) => {
     test.skip(
       isMobile,
-      'Scrolling while dragging presents problems. See https://github.com/microsoft/playwright/issues/12599 and upvote https://github.com/microsoft/playwright/issues/2903.'
+      'Scrolling between columns while dragging presents problems. See https://github.com/microsoft/playwright/issues/12599 and upvote https://github.com/microsoft/playwright/issues/2903.'
     )
 
     await startDemo(page)
