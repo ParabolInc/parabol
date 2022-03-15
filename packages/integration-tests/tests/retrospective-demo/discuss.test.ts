@@ -169,7 +169,7 @@ test.describe('retrospective-demo / discuss page', () => {
       )
     )
 
-    await page.click("button :text('Create a Free Account')")
+    await page.click("[role=button]:text('Create a Free Account')")
     expect(page.url()).toEqual(`${config.rootUrlPath}/create-account?from=demo`)
   })
 })
