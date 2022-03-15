@@ -168,7 +168,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // if there are no issues in initial query, gitlab returns an error, and hasNext is false even if there are more projects
+  // when there are no issues in the initial query, gitlab can return an error with hasMore=false even though there are more projects
   const noProjectsWithIssuesErrMsg = 'The user aborted a request.'
   const errorMessage = errors?.[0]?.message
   if (errorMessage === noProjectsWithIssuesErrMsg && !isLoadingNext) {
