@@ -1,3 +1,4 @@
+
 interface Box {
   width: number
   height: number
@@ -11,6 +12,12 @@ const getOAuthPopupFeatures = ({width, height, top}: Box) => {
   const left = Math.round(startX + (innerWidth - width) / 2)
   // 64 is the Parabol header
   const topOff = Math.round(startY + (innerHeight - height) / 2 + top)
+  const {UI_AUTH_FULLSCREEN} = window.__ACTION__
+  console.log(UI_AUTH_FULLSCREEN)
+  if (UI_AUTH_FULLSCREEN)
+  {
+    return `popup,width=${outerWidth},height=${outerHeight},left=${left},top=${topOff}`
+  }
   return `popup,width=${width},height=${height},left=${left},top=${topOff}`
 }
 

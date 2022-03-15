@@ -22,7 +22,8 @@ const getClientKeys = () => {
     prblIn: process.env.INVITATION_SHORTLINK,
     AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
     AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
-    AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true'
+    AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
+    UI_AUTH_FULLSCREEN: process.env.UI_AUTH_FULLSCREEN !== 'false'
   }
 }
 
