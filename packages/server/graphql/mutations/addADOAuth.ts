@@ -26,7 +26,7 @@ const addADOAuth: GQLMutation = {
   },
   resolve: async (
     _source: unknown,
-    {teamId},
+    {code, verifier, teamId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     // const r = await getRethink()
@@ -34,6 +34,7 @@ const addADOAuth: GQLMutation = {
     // const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    console.log(code, verifier)
 
     //AUTH
     if (!isTeamMember(authToken, teamId)) {
