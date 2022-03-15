@@ -5,13 +5,13 @@ import {AddADOAuthMutation as TAddADOAuthMutation} from '../__generated__/AddADO
 
 graphql`
   fragment AddADOAuthMutation_team on AddADOAuthSuccess {
-
+    teamMember
   }
 `
 
 const mutation = graphql`
-  mutation AddADOAuthMutation() {
-    addADOAuth() {
+  mutation AddADOAuthMutation($code: ID!, $verifier: ID!, $teamId: ID!) {
+    addADOAuth(code: $code, verifier: $verifier, teamId: $teamId) {
       ... on ErrorPayload {
         error {
           message
@@ -30,10 +30,6 @@ const AddADOAuthMutation: StandardMutation<TAddADOAuthMutation> = (
   return commitMutation<TAddADOAuthMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const { } = variables
-
-    },
     onCompleted,
     onError
   })

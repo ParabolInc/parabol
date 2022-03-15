@@ -14,6 +14,12 @@ const addADOAuth: GQLMutation = {
   type: GraphQLNonNull(AddADOAuthPayload),
   description: ``,
   args: {
+    code: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    verifier: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
     }
