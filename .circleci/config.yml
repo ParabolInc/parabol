@@ -29,7 +29,7 @@ jobs:
       SERVER_ID: "0"
       PLAYWRIGHT_BROWSERS_PATH: "0" # install playwright browsers to node_modules for caching
     working_directory: ~/action
-    resource_class: medium+
+    resource_class: large
     steps:
       - add_ssh_keys:
           fingerprints:
