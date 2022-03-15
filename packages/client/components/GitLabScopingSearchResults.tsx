@@ -184,13 +184,11 @@ const GitLabScopingSearchResults = (props: Props) => {
   }
   return (
     <>
-      {
-        <GitLabScopingSelectAllIssues
-          usedServiceTaskIds={usedServiceTaskIds}
-          issuesRef={issues}
-          meetingId={meetingId}
-        />
-      }
+      <GitLabScopingSelectAllIssues
+        usedServiceTaskIds={usedServiceTaskIds}
+        issuesRef={issues}
+        meetingId={meetingId}
+      />
       <ResultScroller>
         {query && (
           <NewGitLabIssueInput

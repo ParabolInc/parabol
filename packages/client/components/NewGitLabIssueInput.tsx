@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent, useEffect, useRef, useState} from 'react'
+import React, {FormEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
@@ -118,16 +118,30 @@ const NewGitLabIssueInput = (props: Props) => {
         }
         teamMember(teamId: $teamId) {
           id
-          ... on TeamMember {
-            repoIntegrations {
-              items {
-                ... on _xGitLabProject {
-                  __typename
-                  id
-                  fullPath
-                  # name
-                  #           nameWithNamespace
-                  #           # nameWithOwner
+          integrations {
+            gitlab {
+              api {
+                errors {
+                  message
+                  locations {
+                    line
+                    column
+                  }
+                  path
+                }
+                query {
+                  # use alias otherwise projects args must be the same as GitLabScopingSearchResults query
+                  defaultProjects: projects(membership: true, first: 10) {
+                    edges {
+                      node {
+                        ... on _xGitLabProject {
+                          __typename
+                          id
+                          fullPath
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -147,14 +161,18 @@ const NewGitLabIssueInput = (props: Props) => {
   )
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team
-  const {repoIntegrations} = teamMember!
+  const gitlabProjects = useMemo(
+    () => teamMember.integrations.gitlab.api.query.defaultProjects.edges.map(({node}) => node),
+    [teamMember]
+  )
+  // const {repoIntegrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const {items} = repoIntegrations
-  const repoIntegration = items?.find((item) => item.fullPath)
-  console.log('🚀  ~ repoIntegration', repoIntegration)
-  const fullPath = repoIntegration?.fullPath
-  const [selectedFullPath, setSelectedFullPath] = useState(fullPath)
+  // const {items} = repoIntegrations
+  // const repoIntegration = items?.find((item) => item.fullPath)
+  // console.log('🚀  ~ repoIntegration', repoIntegration)
+  // const fullPath = repoIntegration?.fullPath
+  const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
       getDefault: () => '',
@@ -250,10 +268,10 @@ const NewGitLabIssueInput = (props: Props) => {
         </Issue>
       </Item>
       {menuPortal(
-        <NewGitLabIssueMenuRoot
+        <NewGitLabIssueMenu
+          gitlabProjects={gitlabProjects}
           handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
-          repoIntegrations={repoIntegrations}
           teamId={teamId}
           userId={userId}
           viewerRef={viewerRef}

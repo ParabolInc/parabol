@@ -3,6 +3,7 @@ import React, {useEffect} from 'react'
 import {
   createFragmentContainer,
   readInlineData,
+  useFragment,
   usePaginationFragment,
   usePreloadedQuery
 } from 'react-relay'
@@ -24,138 +25,40 @@ interface Props {
   userId: string
   viewerRef: any
   queryRef: any
+  gitlabProjects: any
 }
 
 const getValue = (item: {fullPath?: string}) => {
-  console.log('🚀  ~ getVal --', item)
-  // return item.projectName || item.nameWithOwner || 'Unknown Project'
   return item.fullPath || 'Unknown Project'
 }
 
 const NewGitLabIssueMenu = (props: Props) => {
-  const {
-    handleSelectFullPath,
-    menuProps,
-    repoIntegrations,
-    teamId,
-    userId,
-    viewerRef,
-    queryRef
-  } = props
+  const {handleSelectFullPath, menuProps, gitlabProjects} = props
 
-  const atmosphere = useAtmosphere()
-
-  const queryTest = usePreloadedQuery(
-    graphql`
-      query NewGitLabIssueMenuQuery($teamId: ID!) {
-        ...NewGitLabIssueMenu_query
-      }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
+  const {query, filteredItems: filteredProjects, onQueryChange} = useSearchFilter(
+    gitlabProjects,
+    getValue
   )
+  console.log('🚀  ~ filteredProjects', {filteredProjects, gitlabProjects})
 
-  const paginationRes = usePaginationFragment(
-    graphql`
-      fragment NewGitLabIssueMenu_query on Query
-        @argumentDefinitions(
-          first: {type: "Int", defaultValue: 10}
-          after: {type: "String"}
-          search: {type: "String"}
-          projectIds: {type: "[ID!]", defaultValue: null}
-        )
-        @refetchable(queryName: "NewGitLabIssueMenuPaginationQuery") {
-        viewer {
-          ...NewGitLabIssueInput_viewer
-          teamMember(teamId: $teamId) {
-            integrations {
-              gitlab {
-                api {
-                  errors {
-                    message
-                    locations {
-                      line
-                      column
-                    }
-                    path
-                  }
-                  query {
-                    projects(membership: true, first: $first, after: $after, search: $search)
-                      @connection(key: "NewGitLabIssueMenu_projects") {
-                      edges {
-                        node {
-                          ... on _xGitLabProject {
-                            __typename
-                            id
-                            fullPath
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    queryTest
-  )
-  const projectEdges =
-    paginationRes?.data?.viewer.teamMember.integrations.gitlab.api.query.projects.edges
-
-  console.log('🚀  ~ QUERY', {queryTest, paginationRes, projectEdges})
-
-  // const {hasMore, items} = repoIntegrations
-
-  // const {query, filteredItems: filteredIntegrations, onQueryChange} = useSearchFilter(
-  //   items ?? [],
-  //   getValue
-  // )
-
-  // const {allItems, status} = useAllIntegrations(
-  //   atmosphere,
-  //   query,
-  //   filteredIntegrations,
-  //   !!hasMore,
-  //   teamId,
-  //   userId
-  // )
-  // console.log('🚀  ~ allItems', allItems)
+  const onClick = (fullPath: string) => {
+    handleSelectFullPath(fullPath)
+  }
 
   return (
-    <Menu
-      ariaLabel='Select GitLab project'
-      keepParentFocus
-      {...menuProps}
-      // resetActiveOnChanges={[allItems]}
-    >
-      <SearchMenuItem placeholder='Search GitLab' onChange={() => {}} />
-      {/* {(query && allItems.length === 0 && status !== 'loading' && (
-        <EmptyDropdownMenuItemLabel key='no-results'>
-          No integrations found!
-        </EmptyDropdownMenuItemLabel>
-      )) ||
-        null} */}
-
-      {projectEdges.slice(0, 10).map((edge) => {
-        const {node} = edge
-        if (!node) return null
-        const {id, fullPath} = node
-        const onClick = () => {
-          handleSelectFullPath(fullPath)
-        }
-        return (
-          <RepoIntegrationGitLabMenuItem
-            key={id}
-            // query={query}
-            // repoIntegration={repoIntegration}
-            fullPath={fullPath}
-            onClick={onClick}
-          />
-        )
-      })}
+    <Menu ariaLabel='Select GitLab project' keepParentFocus {...menuProps}>
+      <SearchMenuItem placeholder='Search GitLab' onChange={onQueryChange} />
+      {filteredProjects.length === 0 && (
+        <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
+      )}
+      {filteredProjects.map((project) => (
+        <RepoIntegrationGitLabMenuItem
+          key={project.id}
+          fullPath={project.fullPath}
+          onClick={onClick}
+          query={query}
+        />
+      ))}
     </Menu>
   )
 }
