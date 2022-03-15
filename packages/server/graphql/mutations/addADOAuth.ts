@@ -44,6 +44,20 @@ const addADOAuth: GQLMutation = {
     // VALIDATION
 
     // RESOLUTION
+    // Make request to /token endpoint to retrieve auth+refresh tokens for ADO
+
+    // Get tenants/orgs the user has access to
+
+    // Get ADO info about user (such as AccountID)
+
+    // if there are the same ADO integrations existing we need to update them with new credentials as well
+    // if there's an existing integration for a given user and team (user used an option to refresh the token), skip it as
+    // we'll create a new ADO auth object for it for the upsert
+    // Decide which ADO authorizations to update
+
+    // Upsert new auth info into database
+
+    // Monitor the success/failure of the mutation
     segmentIo.track({
       userId: viewerId,
       event: 'Added Integration',
@@ -52,7 +66,7 @@ const addADOAuth: GQLMutation = {
         service: 'AzureDevOps'
       }
     })
-    const data = {teamId}
+    const data = {teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddADOAuthSuccess', data, subOptions)
     return data
   }
