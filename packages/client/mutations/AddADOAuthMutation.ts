@@ -5,7 +5,7 @@ import {AddADOAuthMutation as TAddADOAuthMutation} from '../__generated__/AddADO
 
 graphql`
   fragment AddADOAuthMutation_team on AddADOAuthSuccess {
-    teamMember
+    teamId
   }
 `
 
