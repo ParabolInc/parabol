@@ -138,8 +138,11 @@ test.describe('retrospective-demo / discuss page', () => {
         await page.click('button[aria-label="Toggle the sidebar"]')
       }
 
-      for await (const emoji of emojis) {
-        await expect(page.locator(`text=${emoji}`)).toBeVisible()
+      // Emoji reactions do not appear on mobile devices
+      if (!isMobile) {
+        for await (const emoji of emojis) {
+          await expect(page.locator(`text=${emoji}`)).toBeVisible()
+        }
       }
 
       for await (const task of tasks || []) {
