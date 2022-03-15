@@ -27,6 +27,12 @@ export async function skipToVotePhase(page: Page) {
   expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/vote`)
 }
 
+export async function skipToDiscussPhase(page: Page) {
+  await skipToVotePhase(page)
+  await goToNextPhase(page)
+  expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/discuss/1`)
+}
+
 export async function dragReflectionCard(
   cardToDrag: Locator,
   destination: Locator,
