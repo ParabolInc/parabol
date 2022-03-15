@@ -44,7 +44,7 @@ test.describe('retrospective-demo / group page', () => {
   test('it allows grouping user-entered input from the reflect phase', async ({page, isMobile}) => {
     test.skip(
       isMobile,
-      'Scrolling while dragging presents problems. See https://github.com/microsoft/playwright/issues/12599.'
+      'Scrolling while dragging presents problems. See https://github.com/microsoft/playwright/issues/12599 and upvote https://github.com/microsoft/playwright/issues/2903.'
     )
 
     await startDemo(page)
