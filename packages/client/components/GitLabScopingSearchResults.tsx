@@ -60,7 +60,7 @@ const GitLabScopingSearchResults = (props: Props) => {
     graphql`
       fragment GitLabScopingSearchResults_query on Query
         @argumentDefinitions(
-          projectsFirst: {type: "Int", defaultValue: 5}
+          projectsFirst: {type: "Int", defaultValue: 10}
           issuesFirst: {type: "Int", defaultValue: 25}
           projectsAfter: {type: "String"}
           issuesAfter: {type: "String"}
@@ -129,7 +129,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   )
 
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
-  const {data, hasNext} = paginationRes
+  const {data, hasNext, loadNext, isLoadingNext} = paginationRes
   const {viewer} = data
   const meeting = useFragment(
     graphql`
@@ -168,16 +168,17 @@ const GitLabScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
-  // TODO fix flicker after viewer is present but edges isn't set
+  // if there are no issues in initial query, gitlab returns an error, and hasNext is false even if there are more projects
+  const noProjectsWithIssuesErrMsg = 'The user aborted a request.'
+  const errorMessage = errors?.[0]?.message
+  if (errorMessage === noProjectsWithIssuesErrMsg && !isLoadingNext) {
+    loadNext(20)
+  }
   if (!issues) return <MockScopingList />
   if (issues.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults
-          error={errors?.[0]?.message}
-          msg={'No issues match that query'}
-        />
+        <IntegrationScopingNoResults error={errorMessage} msg={'No issues match that query'} />
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     )
