@@ -6,6 +6,7 @@ import JiraServerTaskIntegrationManager from './JiraServerTaskIntegrationManager
 import {TaskIntegration} from '../database/types/Task'
 import {Doc} from '../utils/convertContentStateToADF'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
+import {TIntegrationProvider} from '../postgres/queries/getIntegrationProvidersByIds'
 
 export type CreateTaskResponse =
   | {
@@ -16,6 +17,7 @@ export type CreateTaskResponse =
 
 export interface TaskIntegrationManager {
   title: string
+  provider?: TIntegrationProvider
 
   createTask(params: {
     rawContentStr: string

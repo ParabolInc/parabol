@@ -10,7 +10,7 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 export default class JiraServerTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira Server'
   private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
-  private readonly provider: TIntegrationProvider
+  public provider: TIntegrationProvider
 
   constructor(auth: IGetTeamMemberIntegrationAuthQueryResult, provider: TIntegrationProvider) {
     this.auth = auth

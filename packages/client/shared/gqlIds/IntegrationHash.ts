@@ -1,6 +1,7 @@
 import {TaskIntegration, TaskServiceEnum} from '../../../server/database/types/Task'
 import GitHubIssueId from './GitHubIssueId'
 import JiraIssueId from './JiraIssueId'
+import JiraServerIssueId from './JiraServerIssueId'
 
 const IntegrationHash = {
   join: (integration: TaskIntegration) => {
@@ -31,6 +32,15 @@ const IntegrationHash = {
         projectKey
       }
     }
+
+    if (service === 'jiraServer') {
+      const {providerId} = JiraServerIssueId.split(integrationHash)
+      return {
+        service,
+        providerId
+      }
+    }
+
     return null
   }
 }
