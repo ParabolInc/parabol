@@ -2,16 +2,17 @@ import {GraphQLNonNull, GraphQLID} from 'graphql'
 // import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import AddADOAuthPayload from '../types/AddADOAuthPayload'
+import AddAzureDevOpsAuthPayload from '../types/AddAzureDevOpsAuthPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext, GQLMutation} from '../graphql'
 import {isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import segmentIo from '../../utils/segmentIo'
+import upsertAzureDevOpsAuths from '../../postgres/queries/upsertAzureDevOpsAuths'
 
-const addADOAuth: GQLMutation = {
-  name: 'AddADOAuth',
-  type: GraphQLNonNull(AddADOAuthPayload),
+const addAzureDevOpsAuth: GQLMutation = {
+  name: 'AddAzureDevOpsAuth',
+  type: GraphQLNonNull(AddAzureDevOpsAuthPayload),
   description: ``,
   args: {
     code: {
@@ -44,18 +45,40 @@ const addADOAuth: GQLMutation = {
     // VALIDATION
 
     // RESOLUTION
-    // Make request to /token endpoint to retrieve auth+refresh tokens for ADO
+    // Make request to /token endpoint to retrieve auth+refresh tokens for AzureDevOps
 
     // Get tenants/orgs the user has access to
 
-    // Get ADO info about user (such as AccountID)
+    // Get AzureDevOps info about user (such as AccountID)
 
-    // if there are the same ADO integrations existing we need to update them with new credentials as well
+    // if there are the same AzureDevOps integrations existing we need to update them with new credentials as well
     // if there's an existing integration for a given user and team (user used an option to refresh the token), skip it as
-    // we'll create a new ADO auth object for it for the upsert
-    // Decide which ADO authorizations to update
-
+    // we'll create a new AzureDevOps auth object for it for the upsert
+    // Decide which AzureDevOps authorizations to update
+    const azureDevOpsAuthsToUpdate = [
+      {
+        userId: '',
+        teamId: '',
+        accountId: '',
+        accessToken: '',
+        refreshToken: '',
+        cloudIds: [],
+        scope: ''
+      }
+    ]
     // Upsert new auth info into database
+    await upsertAzureDevOpsAuths([
+      {
+        accountId: '',
+        userId: viewerId,
+        accessToken: '',
+        refreshToken: '',
+        cloudIds: [],
+        teamId,
+        scope: ''
+      },
+      ...azureDevOpsAuthsToUpdate
+    ])
 
     // Monitor the success/failure of the mutation
     segmentIo.track({
@@ -67,9 +90,9 @@ const addADOAuth: GQLMutation = {
       }
     })
     const data = {teamId, userId: viewerId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddADOAuthSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'AddAzureDevOpsAuthSuccess', data, subOptions)
     return data
   }
 }
 
-export default addADOAuth
+export default addAzureDevOpsAuth
