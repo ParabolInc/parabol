@@ -38,8 +38,7 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
       ) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-        const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-        return meetingMember || null
+        return dataLoader.get('meetingMembers').load(meetingMemberId)
       }
     }
   })
