@@ -7,6 +7,7 @@ import jiraServerScopingSearchResultsQuery, {
 } from '../__generated__/JiraServerScopingSearchResultsQuery.graphql'
 import {JiraServerScopingSearchResultsRoot_meeting$key} from '../__generated__/JiraServerScopingSearchResultsRoot_meeting.graphql'
 import JiraServerScopingSearchResults from './JiraServerScopingSearchResults'
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
 
 interface Props {
   meetingRef: JiraServerScopingSearchResultsRoot_meeting$key
@@ -35,7 +36,7 @@ const JiraServerScopingSearchResultsRoot = (props: Props) => {
   )
 
   return (
-    <Suspense fallback={''}>
+    <Suspense fallback={<MockScopingList />}>
       {queryRef && <JiraServerScopingSearchResults meetingRef={meeting} queryRef={queryRef} />}
     </Suspense>
   )

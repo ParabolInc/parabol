@@ -95,7 +95,7 @@ const ScopePhaseArea = (props: Props) => {
     return !((!allowJiraServer && tab.id === 'jiraServer') || (!allowGitLab && tab.id === 'gitlab'))
   })
 
-  const isTabActive = (id) => {
+  const isTabActive = (id: string): boolean => {
     return activeIdx === tabs.findIndex((tab) => tab.id === id)
   }
 
