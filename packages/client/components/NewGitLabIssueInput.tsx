@@ -131,7 +131,7 @@ const NewGitLabIssueInput = (props: Props) => {
                 }
                 query {
                   # use alias otherwise projects args must be the same as GitLabScopingSearchResults query
-                  defaultProjects: projects(membership: true, first: 10) {
+                  allProjects: projects(membership: true) {
                     edges {
                       node {
                         ... on _xGitLabProject {
@@ -160,9 +160,10 @@ const NewGitLabIssueInput = (props: Props) => {
     meetingRef
   )
   const {id: userId, team, teamMember} = viewer
+  const {id: meetingId} = meeting
   const {id: teamId} = team
   const gitlabProjects = useMemo(
-    () => teamMember.integrations.gitlab.api.query.defaultProjects.edges.map(({node}) => node),
+    () => teamMember.integrations.gitlab.api.query.allProjects.edges.map(({node}) => node),
     [teamMember]
   )
   // const {repoIntegrations} = teamMember!
@@ -272,9 +273,6 @@ const NewGitLabIssueInput = (props: Props) => {
           gitlabProjects={gitlabProjects}
           handleSelectFullPath={setSelectedFullPath}
           menuProps={menuProps}
-          teamId={teamId}
-          userId={userId}
-          viewerRef={viewerRef}
         />
       )}
     </>
