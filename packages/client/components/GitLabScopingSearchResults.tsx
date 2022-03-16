@@ -60,7 +60,7 @@ const GitLabScopingSearchResults = (props: Props) => {
     graphql`
       fragment GitLabScopingSearchResults_query on Query
         @argumentDefinitions(
-          projectsFirst: {type: "Int", defaultValue: 10}
+          projectsFirst: {type: "Int", defaultValue: 20}
           issuesFirst: {type: "Int", defaultValue: 25}
           projectsAfter: {type: "String"}
           issuesAfter: {type: "String"}
