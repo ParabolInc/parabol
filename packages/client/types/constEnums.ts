@@ -1,3 +1,14 @@
+/*
+  This file was created years ago.
+  Since then, const enums have largely been considered a mistake by Typescript because
+  they don't bundle well & changes to const enums require re-transpiling every single file.
+  Today, we get around this by compiling const enums to enums, which doesn't save as much space
+  But makes life easier in development.
+
+  Before adding a new enum, please consider the following:
+  - Are the values easy to read? If so, a string union might be a better choice
+  - Does the value live on the server? Then get it there (usually via a generated GraphQL type) instead of creating a second source of truth
+*/
 export const enum AppBar {
   HEIGHT = 56
 }
