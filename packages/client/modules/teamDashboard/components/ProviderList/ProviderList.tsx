@@ -10,6 +10,7 @@ import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
+import ADOProviderRow from '../ProviderRow/ADOProviderRow'
 
 interface Props {
   viewer: ProviderList_viewer
@@ -34,6 +35,7 @@ const ProviderList = (props: Props) => {
       {allowGitlab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
+      <ADOProviderRow teamId={teamId} viewer={viewer} />
     </StyledWrapper>
   )
 }
