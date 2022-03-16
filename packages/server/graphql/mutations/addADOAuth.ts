@@ -8,6 +8,7 @@ import {GQLContext, GQLMutation} from '../graphql'
 import {isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import segmentIo from '../../utils/segmentIo'
+import upsertAzureDevOpsAuths from '../../postgres/queries/upsertAzureDevOpsAuths'
 
 const addADOAuth: GQLMutation = {
   name: 'AddADOAuth',
@@ -54,8 +55,30 @@ const addADOAuth: GQLMutation = {
     // if there's an existing integration for a given user and team (user used an option to refresh the token), skip it as
     // we'll create a new ADO auth object for it for the upsert
     // Decide which ADO authorizations to update
-
+    const azureDevOpsAuthsToUpdate = [
+      {
+        userId: '',
+        teamId: '',
+        accountId: '',
+        accessToken: '',
+        refreshToken: '',
+        cloudIds: [],
+        scope: ''
+      }
+    ]
     // Upsert new auth info into database
+    await upsertAzureDevOpsAuths([
+      {
+        accountId: '',
+        userId: viewerId,
+        accessToken: '',
+        refreshToken: '',
+        cloudIds: [],
+        teamId,
+        scope: ''
+      },
+      ...azureDevOpsAuthsToUpdate
+    ])
 
     // Monitor the success/failure of the mutation
     segmentIo.track({
