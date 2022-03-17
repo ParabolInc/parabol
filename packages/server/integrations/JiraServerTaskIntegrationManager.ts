@@ -47,7 +47,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
 
     const {repoId, providerId} = IntegrationRepoId.split(integrationRepoId)
 
-    if (providerId !== this.provider.id || !repoId) {
+    if (providerId !== this.provider.id) {
       throw new Error('Incorrect IntegrationRepoId')
     }
 
@@ -103,6 +103,6 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
       teamDashboardUrl
     )
     const manager = this.getManager()
-    return manager.addComment(comment, issueId ?? '')
+    return manager.addComment(comment, issueId)
   }
 }

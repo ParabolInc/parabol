@@ -172,7 +172,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           return dataLoader.get('jiraServerIssue').load({
             teamId,
             userId: accessUserId,
-            issueId: issueId ?? '',
+            issueId,
             providerId: integration.providerId
           })
         } else if (integration.service === 'github') {
