@@ -32,6 +32,18 @@ export interface AzureDevOpsIssueKey {
   taskId?: string
 }
 
+export interface AzureDevOpsUserStoriesKey {
+  userId: string
+  teamId: string
+  instanceId: string
+  projectId: string
+}
+
+export interface AzureDevOpsWorkItem {
+  id: string
+  url: string
+}
+
 export const freshAzureDevOpsAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, AzureDevOpsAuth | null, string> => {
@@ -83,6 +95,39 @@ export const freshAzureDevOpsAuth = (
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const azureDevOpsUserStories = (
+  parent: RootDataLoader
+): DataLoader<AzureDevOpsUserStoriesKey, AzureDevOpsWorkItem[], string> => {
+  return new DataLoader<AzureDevOpsUserStoriesKey, AzureDevOpsWorkItem[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId, instanceId, projectId}) => {
+          const auth = parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return []
+          const {accessToken} = auth
+          const manager = new AzureDevOpsServerManager(accessToken)
+          const result = await manager.getUserStories(instanceId, projectId)
+          if (result instanceof Error) {
+            //sendToSentry(result, {userId, tags: {teamId}})
+            const emptyArray: AzureDevOpsWorkItem[] = []
+            return emptyArray
+          } else {
+            return result.workItems.map<AzureDevOpsWorkItem>((workItemReference) => ({
+              id: workItemReference.id.toString(),
+              url: workItemReference.url
+            }))
+          }
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.projectId}:${key.teamId}:${key.instanceId}`
     }
   )
 }
