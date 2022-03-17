@@ -5,7 +5,7 @@ interface Input {
   id?: string
 }
 
-const phaseTypes = ['responses'] as NewMeetingPhaseTypeEnum[]
+const phaseTypes = ['RESPONSES'] as NewMeetingPhaseTypeEnum[]
 export default class MeetingSettingsTeamPrompt extends MeetingSettings {
   constructor(input: Input) {
     const {teamId, id} = input
