@@ -268,7 +268,7 @@ interface JiraPageBean<T> {
 interface WebhookDetails {
   jqlFilter: string
   fieldIdsFilter?: string[]
-  events: jiraWebhookEventType[]
+  events: JiraWebhookEventType[]
 }
 
 interface Webhook {
@@ -276,11 +276,11 @@ interface Webhook {
   jqlFilter: string
   fieldIdsFilter: string[]
   issuePropertyKeysFilter: string[]
-  events: jiraWebhookEventType[]
+  events: JiraWebhookEventType[]
   expirationDate: string
 }
 
-type jiraWebhookEventType =
+type JiraWebhookEventType =
   | 'jira:issue_created'
   | 'jira:issue_updated'
   | 'jira:issue_deleted'
