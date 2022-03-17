@@ -1,13 +1,15 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
-import SuggestedAction, {suggestedActionInterfaceFields} from './SuggestedAction'
-import Team from './Team'
-import {resolveTeam} from '../resolvers'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import {resolveTeam} from '../resolvers'
+import SuggestedAction, {suggestedActionInterfaceFields} from './SuggestedAction'
+import {TSuggestedActionTypeEnum} from './SuggestedActionTypeEnum'
+import Team from './Team'
 
 const SuggestedActionInviteYourTeam = new GraphQLObjectType<any, GQLContext>({
   name: 'SuggestedActionInviteYourTeam',
   description: 'a suggestion to invite others to your team',
   interfaces: () => [SuggestedAction],
+  isTypeOf: ({type}: {type: TSuggestedActionTypeEnum}) => type === 'inviteYourTeam',
   fields: () => ({
     ...suggestedActionInterfaceFields(),
     teamId: {

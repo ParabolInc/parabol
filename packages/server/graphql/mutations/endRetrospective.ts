@@ -3,22 +3,21 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
-import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifications/notifySlack'
 import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {endSlackMeeting} from './helpers/notifications/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
@@ -156,7 +155,7 @@ export default {
 
       const removedSuggestedActionId = await removeSuggestedAction(
         teamLeadUserId,
-        SuggestedActionTypeEnum.tryRetroMeeting
+        'tryRetroMeeting'
       )
       if (removedSuggestedActionId) {
         publish(

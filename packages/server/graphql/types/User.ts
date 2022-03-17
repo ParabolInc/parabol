@@ -21,7 +21,6 @@ import OrganizationType from '../../database/types/Organization'
 import OrganizationUserType from '../../database/types/OrganizationUser'
 import Reflection from '../../database/types/Reflection'
 import SuggestedActionType from '../../database/types/SuggestedAction'
-import TeamInvitation from '../../database/types/TeamInvitation'
 import getPg from '../../postgres/getPg'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
@@ -498,12 +497,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
         while (currentThresh) {
           const nextResultGroupIds = new Set<string>()
-          const {groupedReflectionsRes, nextThresh} = groupReflections(reflections, {
+          const res = groupReflections(reflections, {
             groupingThreshold: currentThresh,
             maxGroupSize: reflectionsCount,
             maxReductionPercent: MAX_REDUCTION_PERCENTAGE
           })
-          console.log('🚀  ~ user---', {groupedReflectionsRes})
+          const {groupedReflectionsRes} = res
+          const nextThresh = res.nextThresh as number | null
           const spotlightGroupedReflection = groupedReflectionsRes.find(
             (group) => group.oldReflectionGroupId === reflectionGroupId
           )
@@ -566,11 +566,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           if (!meeting) return {meetingId}
           teamId = meeting.teamId
         }
-        const teamInvitations =
-          teamId &&
-          ((await dataLoader.get('teamInvitationsByTeamId').load(teamId)) as TeamInvitation[])
+        const teamInvitations = teamId
+          ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
+          : null
         if (!teamInvitations) return {teamId, meetingId}
-        const teamInvitation = teamInvitations?.find((invitation) => invitation.email === email)
+        const teamInvitation = teamInvitations.find((invitation) => invitation.email === email)
         return {teamInvitation, teamId, meetingId}
       }
     },

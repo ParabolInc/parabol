@@ -3,7 +3,12 @@ import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {JiraGetIssueRes, JiraProject, RateLimitError} from 'parabol-client/utils/AtlassianManager'
+import {
+  JiraGetIssueRes,
+  JiraGQLFields,
+  JiraProject,
+  RateLimitError
+} from 'parabol-client/utils/AtlassianManager'
 import JiraIssue from '../graphql/types/JiraIssue'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
@@ -191,7 +196,7 @@ export const jiraIssue = (
                 if (!jiraFieldId) {
                   return undefined
                 }
-                const freshEstimate = String(fields[jiraFieldId])
+                const freshEstimate = String(fields[jiraFieldId as keyof JiraGQLFields])
                 if (freshEstimate === label) return undefined
                 // mutate current dataloader
                 estimate.label = freshEstimate
@@ -239,7 +244,7 @@ export const jiraIssue = (
             }
           }
 
-          const publishUpdatedIssue = async (issue) => {
+          const publishUpdatedIssue = async (issue: JiraGetIssueRes) => {
             const res = await cacheImagesUpdateEstimates(issue)
             publish(SubscriptionChannel.NOTIFICATION, viewerId, JiraIssue, res)
           }

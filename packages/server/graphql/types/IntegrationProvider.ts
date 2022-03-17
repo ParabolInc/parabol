@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import {TIntegrationProvider} from '../../postgres/queries/getIntegrationProvidersByIds'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProviderAuthStrategyEnum from './IntegrationProviderAuthStrategyEnum'
 import IntegrationProviderScopeEnum from './IntegrationProviderScopeEnum'
@@ -9,7 +10,7 @@ export const integrationProviderFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: "The provider's unique identifier",
-    resolve: ({id}) => IntegrationProviderId.join(id)
+    resolve: ({id}: TIntegrationProvider) => IntegrationProviderId.join(id)
   },
   teamId: {
     type: new GraphQLNonNull(GraphQLID),

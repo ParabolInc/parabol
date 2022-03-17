@@ -2,7 +2,7 @@ import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
 import isValidDate from 'parabol-client/utils/isValidDate'
 
-function parseDate(value) {
+function parseDate(value: string) {
   const result = new Date(value)
   if (!isValidDate(result)) {
     throw new Error(`Invalid date: ${value}`)

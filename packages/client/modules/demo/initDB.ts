@@ -280,7 +280,7 @@ const initDemoOrg = () => {
 
 const initDemoTeam = (
   organization: ReturnType<typeof initDemoOrg>,
-  teamMembers,
+  teamMembers: ReturnType<typeof initDemoTeamMember>[],
   newMeeting: ReturnType<typeof initNewMeeting>
 ) => {
   return {
@@ -390,7 +390,23 @@ export class DemoComment {
   threadSortOrder: number
   discussionId: string
   constructor(
-    {id, threadSortOrder, content, isAnonymous, userId, threadParentId, discussionId},
+    {
+      id,
+      threadSortOrder,
+      content,
+      isAnonymous,
+      userId,
+      threadParentId,
+      discussionId
+    }: {
+      id: string
+      threadSortOrder: number
+      content: string
+      isAnonymous: boolean
+      userId: string
+      threadParentId: string
+      discussionId: string
+    },
     db: RetroDemoDB
   ) {
     this.content = normalizeRawDraftJS(content)
@@ -442,7 +458,11 @@ export class DemoDiscussion {
   }
 }
 
-const initNewMeeting = (organization, teamMembers, meetingMembers) => {
+const initNewMeeting = (
+  organization: ReturnType<typeof initDemoOrg>,
+  teamMembers: ReturnType<typeof initDemoTeamMember>[],
+  meetingMembers: ReturnType<typeof initDemoMeetingMember>[]
+) => {
   const now = new Date().toJSON()
   const [viewerMeetingMember] = meetingMembers
   const [viewerTeamMember] = teamMembers
@@ -524,7 +544,7 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
     meetingMembers,
     newMeeting,
     organization: org,
-    comments: [] as any[],
+    comments: [] as DemoComment[],
     reflections: [] as DemoReflection[],
     reflectionGroups: (newMeeting as any).reflectionGroups as DemoReflectionGroup[],
     tasks: [] as DemoTask[],

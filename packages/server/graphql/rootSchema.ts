@@ -85,7 +85,7 @@ const withNestedSchema = mergeSchemas({
     },
     _xGitHubRepository: {
       __interfaces: () => ['RepoIntegration'],
-      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner,
+      __isTypeOf: ({nameWithOwner}: {nameWithOwner?: string}) => !!nameWithOwner,
       service: () => 'github'
     }
   }

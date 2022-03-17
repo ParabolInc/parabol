@@ -11,7 +11,7 @@ const extraOptionsCreator = {
   HelpMenuOpen: async (
     viewerId: string,
     _dataLoader: DataLoaderWorker,
-    _options: Record<string, unknown>
+    _options?: Record<string, unknown>
   ) => {
     const r = await getRethink()
     const meetingCount = await r
@@ -23,7 +23,7 @@ const extraOptionsCreator = {
       meetingCount
     }
   }
-}
+} as const
 
 type SegmentEventTrackOptions = {
   teamId?: string | null
@@ -73,8 +73,10 @@ export default {
     }
 
     // RESOLUTION
-    const getExtraOptions = extraOptionsCreator[event]
-    const extraOptions = getExtraOptions ? await getExtraOptions(viewerId, dataLoader, options) : {}
+    const getExtraOptions = extraOptionsCreator[event as keyof typeof extraOptionsCreator]
+    const extraOptions = getExtraOptions
+      ? await getExtraOptions(viewerId, dataLoader, options!)
+      : {}
     segmentIo.track({
       userId: viewerId,
       event,

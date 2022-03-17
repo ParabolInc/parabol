@@ -1,7 +1,6 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import AuthToken from '../../database/types/AuthToken'
 import generateUID from '../../generateUID'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
@@ -75,10 +74,7 @@ export default {
         teamMemberId
       }
 
-      const removedSuggestedActionId = await removeSuggestedAction(
-        viewerId,
-        SuggestedActionTypeEnum.createNewTeam
-      )
+      const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
       if (removedSuggestedActionId) {
         publish(
           SubscriptionChannel.NOTIFICATION,

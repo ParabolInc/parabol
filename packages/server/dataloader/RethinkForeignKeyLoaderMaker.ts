@@ -9,6 +9,6 @@ export default class RethinkForeignKeyLodaerMaker<
   constructor(
     public pk: T,
     public field: string,
-    public fetch: (ids: string[]) => Promise<any[]>
+    public fetch: (ids: readonly string[]) => Promise<any[]>
   ) {}
 }

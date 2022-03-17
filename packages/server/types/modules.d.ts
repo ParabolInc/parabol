@@ -10,7 +10,15 @@ declare module '*.graphql' {
 }
 
 declare module 'draft-js-utils'
+declare module 'draft-js-export-markdown'
 declare module 'babel-plugin-relay/macro'
+declare module '@authenio/samlify-node-xmllint'
+declare module 'parabol-server/utils/protocolRelativeUrl'
+declare module 'node-env-flag'
+declare module '*getProjectRoot'
+declare module 'tayden-clusterfck'
+declare module 'unicode-substring'
+declare module 'json2csv/lib/JSON2CSVParser'
 
 declare const __PRODUCTION__: string
 declare const __SOCKET_PORT__: string

@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import createEmailVerification from '../../email/createEmailVerification'
 import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
 import createNewLocalUser from '../../utils/createNewLocalUser'
@@ -78,7 +79,7 @@ const signUpWithPassword = {
         const existingVerification = await r
           .table('EmailVerification')
           .getAll(email, {index: 'email'})
-          .filter((row) => row('expiration').gt(new Date()))
+          .filter((row: RValue) => row('expiration').gt(new Date()))
           .nth(0)
           .default(null)
           .run()

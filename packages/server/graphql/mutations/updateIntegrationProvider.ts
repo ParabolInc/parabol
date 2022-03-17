@@ -22,7 +22,7 @@ const updateIntegrationProvider = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {provider}: {provider: IUpdateIntegrationProviderInput},
     context: GQLContext
   ) => {

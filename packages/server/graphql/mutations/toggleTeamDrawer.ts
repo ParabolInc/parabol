@@ -5,6 +5,7 @@ import ToggleTeamDrawerPayload from '../types/ToggleTeamDrawerPayload'
 import {GQLContext} from '../graphql'
 import standardError from '../../utils/standardError'
 import TeamDrawerEnum, {TeamDrawer} from '../types/TeamDrawerEnum'
+import {RValue} from '../../database/stricterR'
 
 const toggleTeamDrawer = {
   type: new GraphQLNonNull(ToggleTeamDrawerPayload),
@@ -39,11 +40,9 @@ const toggleTeamDrawer = {
     await r
       .table('TeamMember')
       .get(viewerTeamMemberId)
-      .update((teamMember) => ({
+      .update((teamMember: RValue) => ({
         openDrawer: r.branch(
-          teamMember('openDrawer')
-            .default(null)
-            .eq(teamDrawerType),
+          teamMember('openDrawer').default(null).eq(teamDrawerType),
           null,
           teamDrawerType
         )

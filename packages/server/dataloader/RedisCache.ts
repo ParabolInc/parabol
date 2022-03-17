@@ -68,8 +68,8 @@ export default class RedisCache<T extends keyof CacheType> {
       if (cachedDoc === null) {
         const fetch = fetches[i]!
         const {table, id} = fetch
-        const customQuery = customRedisQueries[table as string]
-        if (customQuery) {
+        const customQuery = customRedisQueries[table as keyof typeof customRedisQueries]
+        if (!!customQuery) {
           customQueriesByType[table] = customQueriesByType[table] || []
           customQueriesByType[table]!.push(id)
         } else {

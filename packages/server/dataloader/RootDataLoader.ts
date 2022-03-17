@@ -84,7 +84,7 @@ export default class RootDataLoader {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  get<LoaderName extends Loaders>(loaderName: LoaderName) {
+  get<LoaderName extends Loaders>(loaderName: LoaderName): TypedDataLoader<LoaderName> {
     let loader = this.loaders[loaderName]
     if (loader) return loader as TypedDataLoader<LoaderName>
     const loaderMaker = loaderMakers[loaderName]
