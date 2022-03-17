@@ -6,6 +6,7 @@ import JiraServerTaskIntegrationManager from './JiraServerTaskIntegrationManager
 import {TaskIntegration} from '../database/types/Task'
 import {Doc} from '../utils/convertContentStateToADF'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
+import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 
 export type CreateTaskResponse =
   | {
@@ -70,7 +71,11 @@ export default class TaskIntegrationManagerFactory {
       }
       const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
 
-      return auth && provider && new JiraServerTaskIntegrationManager(auth, provider)
+      if (!provider) {
+        return null
+      }
+
+      return new JiraServerTaskIntegrationManager(auth, provider as IntegrationProviderJiraServer)
     }
 
     return null

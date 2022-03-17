@@ -2,7 +2,7 @@ import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {CreateTaskResponse, TaskIntegrationManager} from './TaskIntegrationManagerFactory'
 import JiraServerRestManager from './jiraServer/JiraServerRestManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {TIntegrationProvider} from '../postgres/queries/getIntegrationProvidersByIds'
+import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {ExternalLinks} from '~/types/constEnums'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
@@ -10,9 +10,12 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 export default class JiraServerTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira Server'
   private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
-  private readonly provider: TIntegrationProvider
+  private readonly provider: IntegrationProviderJiraServer
 
-  constructor(auth: IGetTeamMemberIntegrationAuthQueryResult, provider: TIntegrationProvider) {
+  constructor(
+    auth: IGetTeamMemberIntegrationAuthQueryResult,
+    provider: IntegrationProviderJiraServer
+  ) {
     this.auth = auth
     this.provider = provider
   }
@@ -61,7 +64,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     }
   }
 
-  public async getIssue(issueId: string) {
+  async getIssue(issueId: string) {
     const manager = this.getManager()
     return manager.getIssue(issueId)
   }
