@@ -62,7 +62,7 @@ const addAzureDevOpsAuth: GQLMutation = {
         accountId: '',
         accessToken: '',
         refreshToken: '',
-        cloudIds: [],
+        instanceIds: [],
         scope: ''
       }
     ]
@@ -73,7 +73,7 @@ const addAzureDevOpsAuth: GQLMutation = {
         userId: viewerId,
         accessToken: '',
         refreshToken: '',
-        cloudIds: [],
+        instanceIds: [],
         teamId,
         scope: ''
       },

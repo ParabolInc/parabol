@@ -3,8 +3,10 @@ import {MenuMutationProps} from '../hooks/useMutationProps'
 import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import AddAzureDevOpsAuthMutation from '../mutations/AddAzureDevOpsAuthMutation'
+import AzureDevOpsManager from './AzureDevOpsManager'
 
-class AzureDevOpsClientManager {
+class AzureDevOpsClientManager extends AzureDevOpsManager {
+  fetch = window.fetch.bind(window)
   static generateVerifier(): string {
     const array = new Uint32Array(28)
     window.crypto.getRandomValues(array)
@@ -25,9 +27,9 @@ class AzureDevOpsClientManager {
   }
 
   static async getToken(verifier: string, code: string): Promise<string> {
-    const tenant = '4ac2c945-49d5-4b59-8a70-a08dffe43dba'
+    const tenant = process.env.AZUREDEVOPS_TENANT
     const host = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`
-    const clientId = '811d0d80-7b4c-4ecd-88bb-387a15dc966f'
+    const clientId = process.env.AZUREDEVOPS_CLIENT_ID
     const redirectUri = makeHref('/auth/ado')
     const grantType = 'authorization_code'
 
@@ -47,36 +49,21 @@ class AzureDevOpsClientManager {
         body: params
       })
       const data = await response.json()
-
-      // Token
-      console.log(data)
       return data
     } catch (e) {
-      console.log(e)
       return ''
     }
   }
 
-  fetch = window.fetch.bind(window)
-  static async openOAuth(
-    atmosphere: Atmosphere,
-    teamId: string,
-    mutationProps: MenuMutationProps,
-    scopes: string[] = ['499b84ac-1321-427f-aa17-267ca6975798/.default']
-  ) {
-    console.log('Inside AzureDevOpsClientManager.openOAuth')
-    console.log(`teamId is ${teamId}`)
-    console.log(`atmosphere is ${atmosphere}`)
-    console.log(`scopes are ${scopes}`)
-
+  static async openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
       .substring(5)
     const verifier = AzureDevOpsClientManager.generateVerifier()
     const code = await AzureDevOpsClientManager.generateCodeChallenge(verifier)
-    const tenant = '4ac2c945-49d5-4b59-8a70-a08dffe43dba'
-    const clientId = '811d0d80-7b4c-4ecd-88bb-387a15dc966f'
+    const tenant = process.env.AZUREDEVOPS_TENANT
+    const clientId = process.env.AZUREDEVOPS_CLIENT_ID
     const redirect = makeHref('/auth/ado')
     const uri = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read&state=${providerState}&code_challenge=${code}&code_challenge_method=S256`
     const popup = window.open(
@@ -97,6 +84,19 @@ class AzureDevOpsClientManager {
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
       AddAzureDevOpsAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+        return
+      }
+
+      // Test code below.
+      const params = new URLSearchParams(popup?.location.search)
+      const authCode = params.get('code')
+      if (authCode) {
+        const token = AzureDevOpsClientManager.getToken(verifier, authCode)
+        console.log(token)
+      }
+      // End test code
+
       popup && popup.close()
       window.removeEventListener('message', handler)
     }
