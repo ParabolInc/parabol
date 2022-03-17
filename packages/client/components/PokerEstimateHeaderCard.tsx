@@ -6,6 +6,7 @@ import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardGitHub from './PokerEstimateHeaderCardGitHub'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
+import PokerEstimateHeaderCardJiraServer from './PokerEstimateHeaderCardJiraServer'
 
 interface Props {
   stage: PokerEstimateHeaderCard_stage
@@ -27,7 +28,10 @@ const PokerEstimateHeaderCard = (props: Props) => {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   }
   if (integration.__typename === 'JiraIssue') {
-    return <PokerEstimateHeaderCardJira issue={integration} />
+    return <PokerEstimateHeaderCardJira issueRef={integration} />
+  }
+  if (integration.__typename === 'JiraServerIssue') {
+    return <PokerEstimateHeaderCardJiraServer issueRef={integration} />
   }
   if (integration.__typename === '_xGitHubIssue') {
     return <PokerEstimateHeaderCardGitHub issueRef={integration} />
@@ -45,6 +49,10 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
           ... on JiraIssue {
             __typename
             ...PokerEstimateHeaderCardJira_issue
+          }
+          ... on JiraServerIssue {
+            __typename
+            ...PokerEstimateHeaderCardJiraServer_issue
           }
           ... on _xGitHubIssue {
             __typename

@@ -1,17 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {PokerEstimateHeaderCardJira_issue$key} from '../__generated__/PokerEstimateHeaderCardJira_issue.graphql'
+import {PokerEstimateHeaderCardJiraServer_issue$key} from '../__generated__/PokerEstimateHeaderCardJiraServer_issue.graphql'
 import PokerEstimateHeaderCardHtml from './PokerEstimateHeaderCardHtml'
-
 interface Props {
-  issueRef: PokerEstimateHeaderCardJira_issue$key
+  issueRef: PokerEstimateHeaderCardJiraServer_issue$key
 }
-const PokerEstimateHeaderCardJira = (props: Props) => {
+const PokerEstimateHeaderCardJiraServer = (props: Props) => {
   const {issueRef} = props
   const issue = useFragment(
     graphql`
-      fragment PokerEstimateHeaderCardJira_issue on JiraIssue {
+      fragment PokerEstimateHeaderCardJiraServer_issue on JiraServerIssue {
         issueKey
         summary
         descriptionHTML
@@ -22,15 +21,16 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   )
 
   const {issueKey, summary, descriptionHTML, jiraUrl} = issue
+
   return (
     <PokerEstimateHeaderCardHtml
       summary={summary}
       descriptionHTML={descriptionHTML}
       url={jiraUrl}
-      linkTitle={`Jira Issue #${issueKey}`}
+      linkTitle={`Jira Server Issue #${issueKey}`}
       linkText={issueKey}
     />
   )
 }
 
-export default PokerEstimateHeaderCardJira
+export default PokerEstimateHeaderCardJiraServer
