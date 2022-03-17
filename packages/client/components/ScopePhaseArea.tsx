@@ -66,14 +66,6 @@ const TabContents = styled('div')({
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
 
-const baseTabs = [
-  {icon: <GitHubSVG />, label: 'GitHub', id: 'github'},
-  {icon: <JiraSVG />, label: 'Jira', id: 'jira'},
-  {icon: <ParabolLogoSVG />, label: 'Parabol', id: 'parabol'},
-  {icon: <JiraServerSVG />, label: 'Jira Server', id: 'jiraServer'},
-  {icon: <GitLabSVG />, label: 'GitLab', id: 'gitlab'}
-]
-
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const [activeIdx, setActiveIdx] = useState(1)
@@ -91,12 +83,18 @@ const ScopePhaseArea = (props: Props) => {
   const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
   const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
 
-  const tabs = baseTabs.filter((tab) => {
-    return !((!allowJiraServer && tab.id === 'jiraServer') || (!allowGitLab && tab.id === 'gitlab'))
-  })
+  const baseTabs = [
+    {icon: <GitHubSVG />, label: 'GitHub', allow: true},
+    {icon: <JiraSVG />, label: 'Jira', allow: true},
+    {icon: <ParabolLogoSVG />, label: 'Parabol', allow: true},
+    {icon: <JiraServerSVG />, label: 'Jira Server', allow: allowJiraServer},
+    {icon: <GitLabSVG />, label: 'GitLab', allow: allowGitLab}
+  ] as const
 
-  const isTabActive = (id: string): boolean => {
-    return activeIdx === tabs.findIndex((tab) => tab.id === id)
+  const tabs = baseTabs.filter(({allow}) => allow)
+
+  const isTabActive = (label: typeof baseTabs[number]['label']) => {
+    return activeIdx === tabs.findIndex((tab) => tab.label === label)
   }
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
@@ -135,31 +133,31 @@ const ScopePhaseArea = (props: Props) => {
       >
         <TabContents>
           <ScopePhaseAreaGitHub
-            isActive={isTabActive('github')}
+            isActive={isTabActive('GitHub')}
             gotoParabol={goToParabol}
             meetingRef={meeting}
           />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaJira
-            isActive={isTabActive('jira')}
+            isActive={isTabActive('Jira')}
             gotoParabol={goToParabol}
             meeting={meeting}
           />
         </TabContents>
         <TabContents>
-          <ScopePhaseAreaParabolScoping isActive={isTabActive('parabol')} meeting={meeting} />
+          <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaJiraServer
-            isActive={isTabActive('jiraServer')}
+            isActive={isTabActive('Jira Server')}
             gotoParabol={goToParabol}
             meetingRef={meeting}
           />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaGitLab
-            isActive={isTabActive('gitlab')}
+            isActive={isTabActive('GitLab')}
             gotoParabol={goToParabol}
             meetingRef={meeting}
           />
