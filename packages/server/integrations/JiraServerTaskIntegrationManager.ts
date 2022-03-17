@@ -20,15 +20,12 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
   private getManager() {
     const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
     const {accessToken, accessTokenSecret} = this.auth
-    if (!serverBaseUrl || !consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) {
-      throw new Error('Provider is not configured')
-    }
     return new JiraServerRestManager(
-      serverBaseUrl,
-      consumerKey,
-      consumerSecret,
-      accessToken,
-      accessTokenSecret
+      serverBaseUrl!,
+      consumerKey!,
+      consumerSecret!,
+      accessToken!,
+      accessTokenSecret!
     )
   }
 
@@ -45,11 +42,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     // TODO: implement stateToJiraServerFormat
     const description = contentState.getPlainText()
 
-    const {repoId, providerId} = IntegrationRepoId.split(integrationRepoId)
-
-    if (providerId !== this.provider.id) {
-      throw new Error('Incorrect IntegrationRepoId')
-    }
+    const {repoId} = IntegrationRepoId.split(integrationRepoId)
 
     const res = await manager.createIssue(repoId, summary, description)
 
@@ -68,7 +61,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     }
   }
 
-  async getIssue(issueId: string) {
+  public async getIssue(issueId: string) {
     const manager = this.getManager()
     return manager.getIssue(issueId)
   }
@@ -79,10 +72,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     teamName: string,
     teamDashboardUrl: string
   ) {
-    const sanitizedCreator = creator.replace(/#(\d+)/g, '#​\u200b$1')
-    const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#​\u200b$1')
-
-    return `Created by ${sanitizedCreator} for ${sanitizedAssignee}
+    return `Created by ${creator} for ${assignee}
     See the dashboard of [${teamName}|${teamDashboardUrl}]
   
     *Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]*`

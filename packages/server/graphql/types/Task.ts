@@ -168,7 +168,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             .get('jiraIssue')
             .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
         } else if (integration.service === 'jiraServer') {
-          const {issueId} = JiraServerIssueId.split(integrationHash ?? '')
+          const {issueId} = JiraServerIssueId.split(integrationHash!)
           return dataLoader.get('jiraServerIssue').load({
             teamId,
             userId: accessUserId,

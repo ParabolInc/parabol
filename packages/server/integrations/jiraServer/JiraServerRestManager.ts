@@ -142,19 +142,19 @@ export default class JiraServerRestManager {
   async createIssue(projectId: string, summary: string, description: string) {
     const meta = await this.getCreateMeta()
     if (meta instanceof Error) {
-      throw meta
+      return meta
     }
     const project = meta.projects.find((project) => project.id === projectId)
 
     if (!project) {
-      throw new Error('Project not found')
+      return new Error('Project not found')
     }
 
     const {issuetypes} = project
     const bestIssueType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
 
     if (!bestIssueType) {
-      throw new Error('No issue types specified')
+      return new Error('No issue types specified')
     }
 
     return this.request<JiraServerCreateIssueResponse>('POST', '/rest/api/2/issue', {
