@@ -45,7 +45,7 @@ const TITLES = {
   retrospective: 'How to Run a Retro Meeting',
   action: 'How to Run a Check-in Meeting',
   poker: 'How to Run Sprint Poker',
-  teamPrompt: 'How to Run Async Standup'
+  teamPrompt: 'How to Run an Async Standup'
 }
 
 const LearnMoreLink = styled(LinkButton)({
