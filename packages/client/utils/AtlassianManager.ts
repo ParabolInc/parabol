@@ -489,7 +489,7 @@ export default abstract class AtlassianManager {
     }
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
   }
-  private readonly delete = async (url, payload?: any) => {
+  private readonly delete = async (url: string, payload?: any) => {
     const res = await this.fetchWithTimeout(url, {
       method: 'DELETE',
       headers: this.headers,
