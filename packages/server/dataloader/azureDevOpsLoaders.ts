@@ -1,4 +1,5 @@
-/*import {decode} from 'jsonwebtoken'
+/*import DataLoader from 'dataloader'
+import {decode} from 'jsonwebtoken'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -10,7 +11,7 @@ import RootDataLoader from './RootDataLoader'
 type TeamUserKey = {
   teamId: string
   userId: string
-}
+}*/
 export interface AzureDevOpsRemoteProjectKey {
   userId: string
   teamId: string
@@ -26,4 +27,9 @@ export interface AzureDevOpsIssueKey {
   viewerId: string
   taskId?: string
 }
+
+/*
+export const freshAzureDevOpsAuth = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey
 */
