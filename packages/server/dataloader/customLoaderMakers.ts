@@ -1,8 +1,7 @@
 import DataLoader from 'dataloader'
-import {MeetingTypeEnum} from '../postgres/types/Meeting'
-import getRedis from '../utils/getRedis'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import MeetingTemplate from '../database/types/MeetingTemplate'
+import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
@@ -16,6 +15,8 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
+import {MeetingTypeEnum} from '../postgres/types/Meeting'
+import getRedis from '../utils/getRedis'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RootDataLoader from './RootDataLoader'
 
@@ -291,6 +292,30 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<{orgId: string; userId: string}, OrganizationUser | null, string>(
+    async (keys) => {
+      const r = await getRethink()
+      return Promise.all(
+        keys.map((key) => {
+          const {userId, orgId} = key
+          return r
+            .table('OrganizationUser')
+            .getAll(userId, {index: 'userId'})
+            .filter({orgId, removedAt: null})
+            .nth(0)
+            .default(null)
+            .run()
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.orgId}:${key.userId}`
     }
   )
 }
