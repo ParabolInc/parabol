@@ -4,10 +4,10 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
-  OAuth2AuthorizationParams,
+  //OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams,
-  OAuth2PkceAuthorizationParams,
-  OAuth2PkceRefreshAuthorizationParams
+  OAuth2PkceAuthorizationParams
+  //OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
 
 class AzureDevOpsServerManager extends AzureDevOpsManager {
@@ -42,4 +42,10 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
     const authUrl = `https://login.microsoftonline.com/${process.env.AZUREDEVOPS_TENANT}/oauth2/v2.0/token`
     return authorizeOAuth2({authUrl, body, additonalHeaders})
   }
+
+  constructor(accessToken: string) {
+    super(accessToken)
+  }
 }
+
+export default AzureDevOpsServerManager

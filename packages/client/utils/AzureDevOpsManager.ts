@@ -1,6 +1,6 @@
 import AbortController from 'abort-controller'
-import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
-import {SprintPokerDefaults} from '../types/constEnums'
+//import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
+//import {SprintPokerDefaults} from '../types/constEnums'
 
 export interface WorkItemQueryResult {
   asOf: string
@@ -45,12 +45,12 @@ export interface WorkItemReference {
   url: string
 }
 
-interface AvatarURLs {
+/*interface AvatarURLs {
   '48x48': string
   '24x24': string
   '16x16': string
   '32x32': string
-}
+}*/
 
 export interface AzureDevOpsError {
   code: number
