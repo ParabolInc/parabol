@@ -5,7 +5,7 @@ import AbortController from 'abort-controller'
 export interface WorkItemQueryResult {
   asOf: string
   columns: WorkItemFieldReference[]
-  queryResultType: QueryResultType;
+  queryResultType: QueryResultType
   queryType: QueryType
   sortColumns: WorkItemQuerySortColumn[]
   workItemRelations: WorkItemLink[]

@@ -2,12 +2,11 @@ import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-//import AddADOAuthMutation from '../mutations/AddADOAuthMutation'
+import AddAzureDevOpsAuthMutation from '../mutations/AddAzureDevOpsAuthMutation'
 import AzureDevOpsManager from './AzureDevOpsManager'
 
 class AzureDevOpsClientManager extends AzureDevOpsManager {
   fetch = window.fetch.bind(window)
-
   static generateVerifier(): string {
     const array = new Uint32Array(28)
     window.crypto.getRandomValues(array)
@@ -56,16 +55,13 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
     }
   }
 
-  static async openOAuth(
-    atmosphere: Atmosphere,
-    teamId: string,
-    mutationProps: MenuMutationProps,
-    scopes: string[] = ['499b84ac-1321-427f-aa17-267ca6975798/.default']
-  ) {
-    const {submitting} = mutationProps
-    const providerState = Math.random().toString(36).substring(5)
-    const plainVerifier = AzureDevOpsClientManager.generateVerifier()
-    const code = await AzureDevOpsClientManager.generateCodeChallenge(plainVerifier)
+  static async openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
+    const verifier = AzureDevOpsClientManager.generateVerifier()
+    const code = await AzureDevOpsClientManager.generateCodeChallenge(verifier)
     const tenant = process.env.AZUREDEVOPS_TENANT
     const clientId = process.env.AZUREDEVOPS_CLIENT_ID
     const redirect = makeHref('/auth/ado')
@@ -76,18 +72,35 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
       getOAuthPopupFeatures({width: 500, height: 810, top: 56})
     )
     const handler = (event) => {
+      console.log(event)
+      console.log(event.data)
+      console.log(window.location.origin, ' ?= ', event.origin)
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+        console.log('misdirected!')
+        return
+      }
+
+      const {code, state} = event.data
+      if (state !== providerState || typeof code !== 'string') return
+      submitMutation()
+      AddAzureDevOpsAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
         return
       }
+
+      // Test code below.
       const params = new URLSearchParams(popup?.location.search)
       const authCode = params.get('code')
-      const state = params.get('state')
       if (authCode) {
-        const token = AzureDevOpsClientManager.getToken(plainVerifier, authCode)
+        const token = AzureDevOpsClientManager.getToken(verifier, authCode)
+        console.log(token)
       }
+      // End test code
+
       popup && popup.close()
       window.removeEventListener('message', handler)
     }
     window.addEventListener('message', handler)
   }
 }
+export default AzureDevOpsClientManager

@@ -140,6 +140,7 @@ import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import addAzureDevOpsAuth from './mutations/addAzureDevOpsAuth'
+import removeAzureDevOpsAuth from './mutations/removeAzureDevOpsAuth'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -288,6 +289,7 @@ export default new GraphQLObjectType<any, Context>({
       updateIntegrationProvider,
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
+      removeAzureDevOpsAuth,
       addAzureDevOpsAuth
     } as any)
 })
