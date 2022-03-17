@@ -73,6 +73,9 @@ const withNestedSchema = mergeSchemas({
   typeDefs: `
     type _xGitHubIssue implements TaskIntegration
     type _xGitHubRepository implements RepoIntegration
+    extend type _xGitHubRepository {
+      service: IntegrationProviderServiceEnum!
+    }
   `,
   // TODO apply this resolver to every type in the GitHub schema
   // It is necessary any time client code uses an alias inside a wrapper
@@ -82,7 +85,8 @@ const withNestedSchema = mergeSchemas({
     },
     _xGitHubRepository: {
       __interfaces: () => ['RepoIntegration'],
-      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner
+      __isTypeOf: ({nameWithOwner}: {nameWithOwner?: string}) => !!nameWithOwner,
+      service: () => 'github'
     }
   }
 })

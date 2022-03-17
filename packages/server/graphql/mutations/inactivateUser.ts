@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import Organization from '../../database/types/Organization'
 import {getUserId, isOrgLeaderOfUser} from '../../utils/authorization'
 import {toEpochSeconds} from '../../utils/epochTime'
@@ -34,7 +35,7 @@ export default {
         .getAll(userId, {index: 'userId'})
         .filter({removedAt: null})('orgId')
         .coerceTo('array')
-        .do((orgIds) => {
+        .do((orgIds: RValue) => {
           return r.table('Organization').getAll(r.args(orgIds), {index: 'id'}).coerceTo('array')
         })
         .run() as unknown as Organization[]

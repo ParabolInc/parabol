@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {
   emailBackgroundColor,
   emailBodyColor,
@@ -26,8 +25,16 @@ const innerStyle = {
   width: '100%'
 } as const
 
-const EmailBlock = (props) => {
-  const {align, hasBackgroundColor, children, innerMaxWidth} = props
+interface Props {
+  align?: 'center' | 'left'
+  hasBackgroundColor?: boolean
+  innerMaxWidth: number
+  children: ReactNode
+
+}
+
+const EmailBlock = (props: Props) => {
+  const {align = 'left', hasBackgroundColor, children, innerMaxWidth} = props
   const backgroundColor = hasBackgroundColor ? emailBackgroundColor : emailBodyColor
   const maxWidth = innerMaxWidth || emailInnerMaxWidth
   return (
@@ -41,17 +48,6 @@ const EmailBlock = (props) => {
       </tbody>
     </table>
   )
-}
-
-EmailBlock.propTypes = {
-  align: PropTypes.oneOf(['center', 'left']),
-  children: PropTypes.any,
-  hasBackgroundColor: PropTypes.bool,
-  innerMaxWidth: PropTypes.number
-}
-
-EmailBlock.defaultProps = {
-  align: 'left'
 }
 
 export default EmailBlock

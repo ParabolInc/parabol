@@ -1,21 +1,13 @@
-import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import getWordAt from './getWordAt'
-import getDraftCoords from '../../utils/getDraftCoords'
-import getAnchorLocation from './getAnchorLocation'
 import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
+import getDraftCoords from '../../utils/getDraftCoords'
 import EmojiMenuContainer from './EmojiMenuContainer'
+import getAnchorLocation from './getAnchorLocation'
+import getWordAt from './getWordAt'
 
 const withEmojis = (ComposedComponent) => {
   class WithEmojis extends Component<any> {
     cachedCoords: any
-    static propTypes = {
-      editorState: PropTypes.object.isRequired,
-      handleChange: PropTypes.func,
-      keyBindingFn: PropTypes.func,
-      // could be readOnly, so not strictly required
-      setEditorState: PropTypes.func
-    }
 
     state = {
       isOpen: false,

@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types'
-import React from 'react'
 import styled from '@emotion/styled'
-import {withRouter} from 'react-router-dom'
-import Icon from '../../../../components/Icon'
+import React from 'react'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
+import Icon from '../../../../components/Icon'
+import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 
@@ -32,8 +31,13 @@ const StyledIcon = styled(Icon)({
   marginRight: 8
 })
 
-const TeamArchiveHeader = (props) => {
-  const {history, teamId} = props
+interface Props {
+  teamId: string
+}
+
+const TeamArchiveHeader = (props: Props) => {
+  const {teamId} = props
+  const {history} = useRouter()
   const goToTeamDash = () => history.push(`/team/${teamId}/`)
   return (
     <RootBlock>
@@ -46,10 +50,4 @@ const TeamArchiveHeader = (props) => {
   )
 }
 
-TeamArchiveHeader.propTypes = {
-  children: PropTypes.any,
-  history: PropTypes.object,
-  teamId: PropTypes.string
-}
-
-export default withRouter(TeamArchiveHeader)
+export default TeamArchiveHeader

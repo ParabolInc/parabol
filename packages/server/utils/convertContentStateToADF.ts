@@ -1,5 +1,6 @@
-import {ContentState, ContentBlock} from 'draft-js'
+import {ContentBlock, ContentState} from 'draft-js'
 import {Constants, getEntityRanges} from 'draft-js-utils'
+import {isNotNull} from '../../client/utils/predicates'
 
 const {INLINE_STYLE, BLOCK_TYPE, ENTITY_TYPE} = Constants
 
@@ -25,7 +26,7 @@ type Content = (Node | InlineNode)[]
 interface Node {
   type: string
   attrs?: Record<string, any>
-  content: Content
+  content?: Content
 }
 
 export interface Doc {
@@ -46,7 +47,9 @@ class ContentStateToADFConverter {
   private renderContent = (block: ContentBlock): Node[] => {
     const text = block.getText()
     const charMetaList = block.getCharacterList()
-    const entityPieces = getEntityRanges(text, charMetaList)
+    const entityPieces = getEntityRanges(text, charMetaList) as [
+      [entityKey: string, stylePieces: [text: string, style: Set<string>][]]
+    ]
     const content = entityPieces.flatMap(([entityKey, stylePieces]) => {
       const contentPieces: Text[] = stylePieces
         .map(([text, style]) => {
@@ -56,7 +59,7 @@ class ContentStateToADFConverter {
 
           if (style.has(INLINE_STYLE.CODE)) {
             return {
-              type: 'text',
+              type: 'text' as const,
               text,
               marks: [
                 {
@@ -88,7 +91,7 @@ class ContentStateToADFConverter {
           }
           return this.renderText(text, marks)
         })
-        .filter((content) => content !== null)
+        .filter(isNotNull)
 
       const entity = entityKey ? this.contentState.getEntity(entityKey) : null
       if (entity && entity.getType() === ENTITY_TYPE.LINK) {

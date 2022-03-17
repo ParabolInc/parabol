@@ -97,7 +97,7 @@ const groupReflections = <T extends Reflection>(
     groupedReflectionsRes: updatedReflections,
     reflectionGroupMapping,
     removedReflectionGroupIds,
-    nextThresh
+    nextThresh: nextThresh as number
   }
 }
 

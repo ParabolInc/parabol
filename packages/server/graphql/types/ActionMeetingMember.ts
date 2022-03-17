@@ -8,7 +8,7 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 const ActionMeetingMember = new GraphQLObjectType<any, GQLContext>({
   name: 'ActionMeetingMember',
   interfaces: () => [MeetingMember],
-  description: 'All the meeting specifics for a user in a retro meeting',
+  description: 'All the meeting specifics for a user in a action meeting',
   fields: () => ({
     ...meetingMemberFields(),
     doneTasks: {
@@ -20,11 +20,7 @@ const ActionMeetingMember = new GraphQLObjectType<any, GQLContext>({
           .table('Task')
           .getAll(userId, {index: 'userId'})
           .filter({doneMeetingId: meetingId})
-          .filter((task) =>
-            task('tags')
-              .contains('private')
-              .not()
-          )
+          .filter((task) => task('tags').contains('private').not())
           .run()
       }
     },

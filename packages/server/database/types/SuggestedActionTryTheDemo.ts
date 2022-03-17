@@ -1,4 +1,3 @@
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import SuggestedAction from './SuggestedAction'
 
 interface Input {
@@ -9,6 +8,6 @@ interface Input {
 }
 export default class SuggestedActionTryTheDemo extends SuggestedAction {
   constructor(input: Input) {
-    super({...input, type: SuggestedActionTypeEnum.tryTheDemo, priority: 1})
+    super({...input, type: 'tryTheDemo', priority: 1})
   }
 }

@@ -1,6 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -30,10 +31,7 @@ const setCheckInEnabled = {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const settings = await r
-      .table('MeetingSettings')
-      .get(settingsId)
-      .run()
+    const settings = await r.table('MeetingSettings').get(settingsId).run()
     if (!settings) {
       return standardError(new Error('Settings not found'), {userId: viewerId})
     }
@@ -42,7 +40,7 @@ const setCheckInEnabled = {
     await r
       .table('MeetingSettings')
       .get(settingsId)
-      .update((row) => ({
+      .update((row: RValue) => ({
         phaseTypes: r.branch(
           row('phaseTypes').contains('checkin'),
           isEnabled ? row('phaseTypes') : row('phaseTypes').difference(['checkin']),

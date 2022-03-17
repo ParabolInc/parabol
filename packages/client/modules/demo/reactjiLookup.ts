@@ -7,6 +7,6 @@ const reactjiLookup = {
   botRef6: ['rocket', 'tada'],
   botRef7: ['fire'],
   botRef8: ['heart']
-}
+} as const
 
 export default reactjiLookup

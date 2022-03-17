@@ -180,7 +180,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
       ) => {
         // the implicit business logic says client will never request settings for a foregin team
         if (!isTeamMember(authToken, teamId)) return null
-        return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
       }
     },
     scale: {
@@ -328,7 +328,8 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve({id: teamId}, {sortBy = 'preferredName'}, {authToken, dataLoader}) {
+      async resolve({id: teamId}, args: any, {authToken, dataLoader}) {
+        const {sortBy = 'preferredName'} = args as {sortBy?: 'preferredName'}
         if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) return []
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => {

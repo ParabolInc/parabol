@@ -55,7 +55,7 @@ const withMutationProps = <P extends WithMutationProps>(
       this._mounted = false
     }
 
-    onCompleted = (res, errors) => {
+    onCompleted = (res: any, errors: any) => {
       const error = getGraphQLError(res, errors)
       if (this._mounted) {
         this.setState({

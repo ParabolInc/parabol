@@ -4,6 +4,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import Task, {AreaEnum as TAreaEnum, TaskStatusEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
@@ -58,10 +59,7 @@ export default {
     // VALIDATION
     const {id: taskId, userId: inputUserId, status, sortOrder, content} = updatedTask
     const validContent = normalizeRawDraftJS(content)
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
@@ -109,31 +107,28 @@ export default {
         .orderBy({index: 'taskIdUpdatedAt'})
         .nth(-1)
         .default({updatedAt: r.epochTime(0)})
-        .do((lastDoc) => {
+        .do((lastDoc: RValue) => {
           return r.branch(
             lastDoc('updatedAt').gt(r.epochTime((now.getTime() - DEBOUNCE_TIME) / 1000)),
-            r
-              .table('TaskHistory')
-              .get(lastDoc('id'))
-              .update(mergeDoc),
+            r.table('TaskHistory').get(lastDoc('id')).update(mergeDoc),
             r.table('TaskHistory').insert(lastDoc.merge(mergeDoc, {id: generateUID()}))
           )
         })
     }
     const {newTask, teamMembers} = await r({
-      newTask: (r
+      newTask: r
         .table('Task')
         .get(taskId)
         .update(nextTask, {returnChanges: true})('changes')(0)('new_val')
-        .default(null) as unknown) as Task,
+        .default(null) as unknown as Task,
       history: taskHistory,
-      teamMembers: (r
+      teamMembers: r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isNotRemoved: true
         })
-        .coerceTo('array') as unknown) as TeamMember[]
+        .coerceTo('array') as unknown as TeamMember[]
     }).run()
     // TODO: get users in the same location
     const usersToIgnore = await getUsersToIgnore(viewerId, teamId)
