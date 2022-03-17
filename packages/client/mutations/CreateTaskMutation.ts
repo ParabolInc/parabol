@@ -24,6 +24,7 @@ import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import popInvolvementToast from './toasts/popInvolvementToast'
+import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
 
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
@@ -55,6 +56,11 @@ graphql`
           repository {
             nameWithOwner
           }
+        }
+        ... on _xGitLabIssue {
+          id
+          iid
+          webPath
         }
       }
     }
@@ -186,6 +192,23 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
             bodyHTML: ''
           })
           optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
+          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
+        } else if (service === 'gitlab') {
+          const {integrationHash} = newTask
+          // const {id: gid, iid, webPath} = integration
+
+          const {webPath, iid, gid} = GitLabIssueId.split(integrationHash)
+          // const repository = createProxyRecord(store, '_xGitHubRepository', {
+          //   nameWithOwner,
+          //   name: repoName,
+          //   owner: repoOwner
+          // })
+          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
+            id: gid,
+            iid,
+            webPath
+          })
+          // optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else {
           console.log('FIXME: implement createTask')

@@ -192,55 +192,53 @@ const NewGitLabIssueInput = (props: Props) => {
   }, [portalStatus])
 
   const handleCreateNewIssue = (e: FormEvent) => {
-    // e.preventDefault()
-    // if (portalStatus !== PortalStatus.Exited || !selectedFullPath) return
-    // const {newIssue: newIssueRes} = validateField()
-    // const {value: newIssueTitle, error} = newIssueRes
-    // if (error) {
-    //   setDirtyField()
-    //   return
-    // }
-    // setIsEditing(false)
-    // fields.newIssue.resetValue()
-    // if (!newIssueTitle.length) {
-    //   fields.newIssue.dirty = false
-    //   return
-    // }
-    // const newTask = {
-    //   teamId,
-    //   userId,
-    //   meetingId,
-    //   content: convertToTaskContent(`${newIssueTitle} #archived`),
-    //   plaintextContent: newIssueTitle,
-    //   status: 'active' as const,
-    //   integration: {
-    //     service: 'gitlab' as const,
-    //     serviceProjectHash: selectedFullPath
-    //   }
-    // }
-    // const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
-    //   const integration = res.createTask?.task?.integration ?? null
-    //   if (!integration) return
-    //   if (integration.__typename !== '_xGitLabIssue') return
-    //   const {number: issueNumber, repository} = integration
-    //   const {nameWithOwner} = repository
-    //   const pokerScopeVariables = {
-    //     meetingId,
-    //     updates: [
-    //       {
-    //         service: 'gitlab',
-    //         serviceTaskId: GitLabIssueId.join(nameWithOwner, issueNumber),
-    //         action: 'ADD'
-    //       } as const
-    //     ]
-    //   }
-    //   UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
-    //     onError,
-    //     onCompleted,
-    //     contents: [newIssueTitle]
-    //   })
-    // }
-    // CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
+    e.preventDefault()
+    if (portalStatus !== PortalStatus.Exited || !selectedFullPath) return
+    const {newIssue: newIssueRes} = validateField()
+    const {value: newIssueTitle, error} = newIssueRes
+    if (error) {
+      setDirtyField()
+      return
+    }
+    setIsEditing(false)
+    fields.newIssue.resetValue()
+    if (!newIssueTitle.length) {
+      fields.newIssue.dirty = false
+      return
+    }
+    const newTask = {
+      teamId,
+      userId,
+      meetingId,
+      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      plaintextContent: newIssueTitle,
+      status: 'active' as const,
+      integration: {
+        service: 'gitlab' as const,
+        serviceProjectHash: selectedFullPath
+      }
+    }
+    const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
+      // const integrationHash = res.createTask?.task?.integration ?? null
+      const integrationHash = res.createTask?.task?.integrationHash ?? null
+      if (!integrationHash) return
+      const pokerScopeVariables = {
+        meetingId,
+        updates: [
+          {
+            service: 'gitlab',
+            serviceTaskId: integrationHash,
+            action: 'ADD'
+          } as const
+        ]
+      }
+      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {
+        onError,
+        onCompleted,
+        contents: [newIssueTitle]
+      })
+    }
+    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted: handleCompleted})
   }
 
   if (!isEditing) return null
