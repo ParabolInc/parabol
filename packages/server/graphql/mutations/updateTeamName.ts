@@ -1,6 +1,6 @@
 import {GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import UpdatedTeamInput /*, {UpdatedTeamInputType}*/ from '../types/UpdatedTeamInput'
+import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -21,7 +21,7 @@ export default {
   },
   async resolve(
     _source: unknown,
-    {updatedTeam}, //FIXME type mismatch: {updatedTeam: UpdatedTeamInputType},
+    {updatedTeam}: {updatedTeam: UpdatedTeamInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()

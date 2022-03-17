@@ -15,7 +15,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
-import NewTeamInput /*, {NewTeamInputType}*/ from '../types/NewTeamInput'
+import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 
@@ -31,15 +31,14 @@ export default {
   resolve: rateLimit({perMinute: 4, perHour: 20})(
     async (
       _source: unknown,
-      // FIXME GraphQL type does not match assumed type in the resolver
-      args, //: {newTeam: NewTeamInputType},
+      args: {newTeam: NewTeamInputType},
       {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
       // AUTH
-      const {orgId} = args.newTeam
+      const orgId = args.newTeam.orgId ?? ''
       const viewerId = getUserId(authToken)
       const viewer = await dataLoader.get('users').load(viewerId)
 
