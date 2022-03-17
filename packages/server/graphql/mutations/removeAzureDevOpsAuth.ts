@@ -2,14 +2,14 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import removeGitHubAuthDB from '../../postgres/queries/removeGitHubAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import RemoveADOAuthPayload from '../types/RemoveADOAuthPayload'
+import RemoveAzureDevOpsAuthPayload from '../types/RemoveAzureDevOpsAuthPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
 import standardError from '../../utils/standardError'
 
-const removeADOAuth = {
-  name: 'RemoveADOAuth',
-  type: new GraphQLNonNull(RemoveADOAuthPayload),
+const removeAzureDevOpsAuth = {
+  name: 'removeAzureDevOpsAuth',
+  type: new GraphQLNonNull(RemoveAzureDevOpsAuthPayload),
   description: 'Disconnect a team member from Azure DevOps',
   args: {
     teamId: {
@@ -35,9 +35,9 @@ const removeADOAuth = {
     await removeGitHubAuthDB(viewerId, teamId)
 
     const data = {teamId, userId: viewerId}
-    publish(SubscriptionChannel.TEAM, teamId, 'RemoveADOAuthPayload', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'removeAzureDevOpsAuthPayload', data, subOptions)
     return data
   }
 }
 
-export default removeADOAuth
+export default removeAzureDevOpsAuth

@@ -2,12 +2,12 @@ import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import StandardMutationError from './StandardMutationError'
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import TeamMember from './TeamMember'
 import User from './User'
 
-export const RemoveADOAuthSuccess = new GraphQLObjectType<any, GQLContext>({
-  name: 'RemoveADOAuthSuccess',
+export const RemoveAzureDevOpsAuthSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'RemoveAzureDevOpsAuthSuccess',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -25,7 +25,7 @@ export const RemoveADOAuthSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     user: {
       type: User,
-      description: 'The user with updated adoAuth',
+      description: 'The user with updated azureDevOpsAuth',
       resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
@@ -33,6 +33,9 @@ export const RemoveADOAuthSuccess = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-const RemoveADOAuthPayload = makeMutationPayload('RemoveADOAuthPayload', RemoveADOAuthSuccess)
+const RemoveAzureDevOpsAuthPayload = makeMutationPayload(
+  'RemoveAzureDevOpsAuthPayload',
+  RemoveAzureDevOpsAuthSuccess
+)
 
-export default RemoveADOAuthPayload
+export default RemoveAzureDevOpsAuthPayload

@@ -10,7 +10,7 @@ import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
-import ADOProviderRow from '../ProviderRow/ADOProviderRow'
+import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
 
 interface Props {
   viewer: ProviderList_viewer
@@ -35,7 +35,7 @@ const ProviderList = (props: Props) => {
       {allowGitlab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
-      <ADOProviderRow teamId={teamId} viewer={viewer} />
+      <AzureDevOpsProviderRow teamId={teamId} viewer={viewer} />
     </StyledWrapper>
   )
 }
@@ -49,6 +49,7 @@ export default createFragmentContainer(ProviderList, {
       ...GitLabProviderRow_viewer
       ...MattermostProviderRow_viewer
       ...SlackProviderRow_viewer
+      ...AzureDevOpsProviderRow_viewer
 
       featureFlags {
         gitlab

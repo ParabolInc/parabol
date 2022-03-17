@@ -5,8 +5,8 @@ import {GQLContext} from '../graphql'
 // import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 // import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
 
-const ADOIntegration = new GraphQLObjectType<any, GQLContext>({
-  name: 'ADOIntegration',
+const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
+  name: 'AzureDevOpsIntegration',
   description: 'Azure DevOps integration data for a given team member',
   fields: () => ({
     id: {
@@ -15,7 +15,7 @@ const ADOIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: ({teamId, userId}) => `${teamId}|${userId}`
     },
     accessToken: {
-      description: 'The access token to ADO. good forever',
+      description: 'The access token to AzureDevOps. good forever',
       type: GraphQLID,
       resolve: async ({accessToken, userId}, _args: unknown, {authToken}) => {
         const viewerId = getUserId(authToken)
@@ -29,4 +29,4 @@ const ADOIntegration = new GraphQLObjectType<any, GQLContext>({
     }
   })
 })
-export default ADOIntegration
+export default AzureDevOpsIntegration

@@ -10,6 +10,29 @@ interface AuthorizeOAuth2Params {
   additonalHeaders?: Record<string, string>
 }
 
+const transformBody = (contentType: string, body?: Record<string, string>): string => {
+  if (body === undefined) {
+    return ''
+  }
+
+  if (contentType.toLowerCase().startsWith('application/json')) {
+    return JSON.stringify(body)
+  }
+
+  if (contentType.toLowerCase().startsWith('application/x-www-form-urlencoded')) {
+    let transformedBody = ''
+    Object.entries(body).forEach((entry) => {
+      if (transformedBody.length > 0) {
+        transformedBody += '&'
+      }
+      transformedBody += `${entry[0]}=${entry[1]}`
+    })
+    return transformedBody
+  }
+
+  return ''
+}
+
 export const authorizeOAuth2 = async <
   TSuccess = {accessToken: string; refreshToken: string | undefined; scopes: string | undefined}
 >({
@@ -20,9 +43,12 @@ export const authorizeOAuth2 = async <
 }: AuthorizeOAuth2Params) => {
   const headers = {
     Accept: 'application/json',
-    'Content-Type': 'application/json',
     ...additonalHeaders
   }
+  if (!headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
+  }
+
   const url = new URL(authUrl)
   if (searchParams) {
     Object.entries(searchParams).forEach((entry) => {
@@ -33,7 +59,7 @@ export const authorizeOAuth2 = async <
   const oauth2Response = await fetch(url, {
     method: 'POST',
     headers,
-    body: body ? JSON.stringify(body) : undefined
+    body: body ? transformBody(headers['Content-Type'], body) : undefined
   })
   const contentTypeHeader = oauth2Response.headers.get('content-type') || ''
   if (!contentTypeHeader.toLowerCase().startsWith('application/json')) {

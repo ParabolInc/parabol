@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FlatButton from '../../../../components/FlatButton'
 import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderLogo'
-import ADOConfigMenu from '../../../../components/ADOConfigMenu'
+import AzureDevOpsConfigMenu from '../../../../components/AzureDevOpsConfigMenu'
 import Icon from '../../../../components/Icon'
 import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
@@ -23,7 +23,7 @@ import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Providers} from '../../../../types/constEnums'
 import AzureDevOpsClientManager from '../../../../utils/AzureDevOpsClientManager'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {ADOProviderRow_viewer} from '../../../../__generated__/ADOProviderRow_viewer.graphql'
+import {AzureDevOpsProviderRow_viewer} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -38,7 +38,7 @@ const StyledButton = styled(FlatButton)({
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   teamId: string
-  viewer: ADOProviderRow_viewer
+  viewer: AzureDevOpsProviderRow_viewer
 }
 
 const MenuButton = styled(FlatButton)({
@@ -62,7 +62,7 @@ const ListAndMenu = styled('div')({
   top: 16
 })
 
-const ADOLogin = styled('div')({})
+const AzureDevOpsLogin = styled('div')({})
 
 const ProviderName = styled('div')({
   color: PALETTE.SLATE_700,
@@ -75,13 +75,13 @@ const ProviderName = styled('div')({
   verticalAlign: 'middle'
 })
 
-const ADOProviderRow = (props: Props) => {
+const AzureDevOpsProviderRow = (props: Props) => {
   const {atmosphere, viewer, teamId, submitting, submitMutation, onError, onCompleted} = props
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
-  const {ado} = integrations
-  const accessToken = ado?.accessToken ?? undefined
+  const {azuredevops} = integrations
+  const accessToken = azuredevops?.accessToken ?? undefined
 
   const openOAuth = () => {
     AzureDevOpsClientManager.openOAuth(atmosphere, teamId, mutationProps)
@@ -104,14 +104,18 @@ const ADOProviderRow = (props: Props) => {
       )}
       {accessToken && (
         <ListAndMenu>
-          <ADOLogin title={ado!.id}>
+          <AzureDevOpsLogin title={azuredevops!.id}>
             <AzureDevOpsProviderLogo />
-          </ADOLogin>
+          </AzureDevOpsLogin>
           <MenuButton onClick={togglePortal} ref={originRef}>
             <StyledIcon>more_vert</StyledIcon>
           </MenuButton>
           {menuPortal(
-            <ADOConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
+            <AzureDevOpsConfigMenu
+              menuProps={menuProps}
+              mutationProps={mutationProps}
+              teamId={teamId}
+            />
           )}
         </ListAndMenu>
       )}
@@ -120,21 +124,21 @@ const ADOProviderRow = (props: Props) => {
 }
 
 graphql`
-  fragment ADOProviderRowADOIntegration on ADOIntegration {
+  fragment AzureDevOpsProviderRowAzureDevOpsIntegration on AzureDevOpsIntegration {
     accessToken
     id
   }
 `
 
 export default createFragmentContainer(
-  withAtmosphere(withMutationProps(withRouter(ADOProviderRow))),
+  withAtmosphere(withMutationProps(withRouter(AzureDevOpsProviderRow))),
   {
     viewer: graphql`
-      fragment ADOProviderRow_viewer on User {
+      fragment AzureDevOpsProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
           integrations {
-            ado {
-              ...ADOProviderRowADOIntegration @relay(mask: false)
+            azuredevops {
+              ...AzureDevOpsProviderRowAzureDevOpsIntegration @relay(mask: false)
             }
           }
         }

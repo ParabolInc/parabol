@@ -7,8 +7,8 @@ import TeamMember from './TeamMember'
 import User from './User'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
-export const AddADOAuthSuccess = new GraphQLObjectType<any, GQLContext>({
-  name: 'AddADOAuthSuccess',
+export const AddAzureDevOpsAuthSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'AddAzureDevOpsAuthSuccess',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -25,7 +25,7 @@ export const AddADOAuthSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     teamMember: {
       type: TeamMember,
-      description: 'The team member with the updated ADOAuth',
+      description: 'The team member with the updated AzureDevOpsAuth',
       resolve: ({teamId, userId}, _args: unknown, {dataLoader}) => {
         const teamMemberId = toTeamMemberId(teamId, userId)
         return dataLoader.get('teamMembers').load(teamMemberId)
@@ -33,7 +33,7 @@ export const AddADOAuthSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     user: {
       type: User,
-      description: 'The user with updated ADOAuth',
+      description: 'The user with updated AzureDevOpsAuth',
       resolve: ({userId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
@@ -41,6 +41,9 @@ export const AddADOAuthSuccess = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-const AddADOAuthPayload = makeMutationPayload('AddADOAuthPayload', AddADOAuthSuccess)
+const AddAzureDevOpsAuthPayload = makeMutationPayload(
+  'AddAzureDevOpsAuthPayload',
+  AddAzureDevOpsAuthSuccess
+)
 
-export default AddADOAuthPayload
+export default AddAzureDevOpsAuthPayload

@@ -2,7 +2,7 @@ import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import AddADOAuthMutation from '../mutations/AddADOAuthMutation'
+import AddAzureDevOpsAuthMutation from '../mutations/AddAzureDevOpsAuthMutation'
 
 class AzureDevOpsClientManager {
   static generateVerifier(): string {
@@ -96,7 +96,7 @@ class AzureDevOpsClientManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
-      AddADOAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
+      AddAzureDevOpsAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
       popup && popup.close()
       window.removeEventListener('message', handler)
     }
