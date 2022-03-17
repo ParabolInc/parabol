@@ -13,7 +13,7 @@ export async function up() {
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "isActive" BOOLEAN DEFAULT TRUE NOT NULL,
       "azureDevOpsSearchQueries" JSONB[] NOT NULL DEFAULT '{}',
-      "cloudIds" VARCHAR(120)[] NOT NULL DEFAULT '{}',
+      "instanceIds" VARCHAR(120)[] NOT NULL DEFAULT '{}',
       "scope" VARCHAR(240) NOT NULL,
       "accountId" VARCHAR(120) NOT NULL,
       "teamId" VARCHAR(120) NOT NULL,

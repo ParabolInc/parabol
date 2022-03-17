@@ -1,11 +1,11 @@
 /*
  @name upsertAzureDevOpsAuthsQuery
- @param auths -> ((accessToken, refreshToken, cloudIds, scope, accountId, teamId, userId)...)
+ @param auths -> ((accessToken, refreshToken, instanceIds, scope, accountId, teamId, userId)...)
  */
-INSERT INTO "AtlassianAuth" (
+INSERT INTO "AzureDevOpsAuth" (
     "accessToken",
     "refreshToken",
-    "cloudIds",
+    "instanceIds",
     "scope",
     "accountId",
     "teamId",
@@ -18,7 +18,7 @@ SET (
     "updatedAt",
     "accessToken",
     "refreshToken",
-    "cloudIds",
+    "instanceIds",
     "scope",
     "accountId",
     "teamId",
@@ -28,7 +28,7 @@ SET (
     CURRENT_TIMESTAMP,
     EXCLUDED."accessToken",
     EXCLUDED."refreshToken",
-    EXCLUDED."cloudIds",
+    EXCLUDED."instanceIds",
     EXCLUDED."scope",
     EXCLUDED."accountId",
     EXCLUDED."teamId",
