@@ -50,13 +50,14 @@ export const jiraServerIssue = (
           if (!auth) {
             return null
           }
+
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
 
-          const manager = auth && provider && new JiraServerTaskIntegrationManager(auth, provider)
-
-          if (!manager?.getIssue) {
+          if (!provider) {
             return null
           }
+
+          const manager = new JiraServerTaskIntegrationManager(auth, provider)
 
           const issueRes = await manager.getIssue(issueId)
 
@@ -70,7 +71,7 @@ export const jiraServerIssue = (
             issueKey: issueRes.key,
             descriptionHTML: issueRes.renderedFields.description,
             ...issueRes.fields,
-            service: 'jiraServer'
+            service: 'jiraServer' as const
           }
         })
       )

@@ -2,7 +2,7 @@ import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {CreateTaskResponse, TaskIntegrationManager} from './TaskIntegrationManagerFactory'
 import JiraServerRestManager from './jiraServer/JiraServerRestManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {TIntegrationProvider} from '../postgres/queries/getIntegrationProvidersByIds'
+import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {ExternalLinks} from '~/types/constEnums'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
@@ -10,9 +10,12 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 export default class JiraServerTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira Server'
   private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
-  private readonly provider: TIntegrationProvider
+  private readonly provider: IntegrationProviderJiraServer
 
-  constructor(auth: IGetTeamMemberIntegrationAuthQueryResult, provider: TIntegrationProvider) {
+  constructor(
+    auth: IGetTeamMemberIntegrationAuthQueryResult,
+    provider: IntegrationProviderJiraServer
+  ) {
     this.auth = auth
     this.provider = provider
   }
@@ -20,15 +23,12 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
   public getApiManager() {
     const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
     const {accessToken, accessTokenSecret} = this.auth
-    if (!serverBaseUrl || !consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) {
-      throw new Error('Provider is not configured')
-    }
     return new JiraServerRestManager(
-      serverBaseUrl,
-      consumerKey,
-      consumerSecret,
-      accessToken,
-      accessTokenSecret
+      serverBaseUrl!,
+      consumerKey!,
+      consumerSecret!,
+      accessToken!,
+      accessTokenSecret!
     )
   }
 
@@ -45,11 +45,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     // TODO: implement stateToJiraServerFormat
     const description = contentState.getPlainText()
 
-    const {repoId, providerId} = IntegrationRepoId.split(integrationRepoId)
-
-    if (parseInt(providerId ?? '', 10) !== this.provider.id || !repoId) {
-      throw new Error('Incorrect IntegrationRepoId')
-    }
+    const {repoId} = IntegrationRepoId.split(integrationRepoId)
 
     const res = await api.createIssue(repoId, summary, description)
 
@@ -79,10 +75,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     teamName: string,
     teamDashboardUrl: string
   ) {
-    const sanitizedCreator = creator.replace(/#(\d+)/g, '#​\u200b$1')
-    const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#​\u200b$1')
-
-    return `Created by ${sanitizedCreator} for ${sanitizedAssignee}
+    return `Created by ${creator} for ${assignee}
     See the dashboard of [${teamName}|${teamDashboardUrl}]
   
     *Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]*`
@@ -103,6 +96,6 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
       teamDashboardUrl
     )
     const api = this.getApiManager()
-    return api.addComment(comment, issueId ?? '')
+    return api.addComment(comment, issueId)
   }
 }

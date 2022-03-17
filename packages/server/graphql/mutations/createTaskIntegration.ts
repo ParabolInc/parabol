@@ -42,7 +42,6 @@ export default {
     context: GQLContext,
     info: GraphQLResolveInfo
   ) => {
-    console.log('integrationRepoId', integrationRepoId)
     const {authToken, dataLoader, socketId: mutatorId} = context
 
     const r = await getRethink()
