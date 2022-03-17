@@ -8,7 +8,7 @@ import getAzureDevOpsAuthByUserId from '../postgres/queries/getAzureDevOpsAuthsB
 //import AzureDevOpsIssue from '../graphql/types/AzureDevOpsIssue'
 //import publish from '../utils/publish'
 //import sendToSentry from '../utils/sendToSentry'
-import upsertAzureDevOpsAuths from '../postgres/queries/upsertAzureDevOpsAuths'
+//import upsertAzureDevOpsAuths from '../postgres/queries/upsertAzureDevOpsAuths'
 import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import RootDataLoader from './RootDataLoader'
 
@@ -66,7 +66,8 @@ export const freshAzureDevOpsAuth = (
                 accessToken,
                 refreshToken: updatedRefreshToken
               }))
-            await upsertAzureDevOpsAuths(updatedSameAccountAzureDevOpsAuths)
+            console.log(updatedSameAccountAzureDevOpsAuths)
+            //await upsertAzureDevOpsAuths(updatedSameAccountAzureDevOpsAuths)
             return {
               ...azureDevOpsAuthToRefresh,
               accessToken,
