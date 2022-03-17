@@ -16,18 +16,32 @@ export type PingableServicesSource = Record<string, never>
 
 const PingableServices: PingableServicesResolvers = {
   postgres: async () => {
-    const pg = getPg()
-    const thunk = () => pg.query(`SELECT 1`)
-    return pingService(thunk)
+    try {
+      const pg = getPg()
+      const thunk = () => pg.query(`SELECT 1`)
+      const duration = await pingService(thunk)
+      return duration
+    } catch {
+      return -1
+    }
   },
   redis: async () => {
-    const redis = getRedis()
-    return pingService(redis.ping)
+    try {
+      const redis = getRedis()
+      const duration = await pingService(() => redis.ping('1'))
+      return duration
+    } catch {
+      return -1
+    }
   },
   rethinkdb: async () => {
-    const r = await getRethink()
-    const res = await pingService(r(1).run)
-    return res
+    try {
+      const r = await getRethink()
+      const duration = await pingService(r(1).run)
+      return duration
+    } catch {
+      return -1
+    }
   }
 }
 

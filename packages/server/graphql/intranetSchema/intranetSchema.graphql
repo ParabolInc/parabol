@@ -7,6 +7,8 @@ type Query {
     """if true, only include active users, else count all users"""
     isActive: Boolean = false
   ): LoginsPayload!
+
+  """Ping various services to determine response time & availability"""
   ping: PingableServices!
 
   """All the info about a specific company"""
@@ -94,9 +96,20 @@ type DomainCountPayload {
 }
 
 type PingableServices {
-  rethinkdb: Float!
-  postgres: Float!
-  redis: Float!
+  """
+  Response time for RethinkDB (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  rethinkdb: Int!
+
+  """
+  Response time for Postgres (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  postgres: Int!
+
+  """
+  Response time for Redis (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  redis: Int!
 }
 
 type Mutation {
@@ -593,6 +606,7 @@ enum NewMeetingPhaseTypeEnum {
   SUMMARY
   SCOPE
   ESTIMATE
+  RESPONSES
 }
 
 """
@@ -891,7 +905,7 @@ type User {
   """all the notifications for a single user"""
   notifications(first: Int!, after: DateTime): NotificationConnection!
 
-  """get a single organization and the count of users by status"""
+  """get a single organization"""
   organization(
     """the orgId"""
     orgId: ID!
@@ -1290,6 +1304,7 @@ type TeamMember {
 """The suggested repos and projects a user can integrate with"""
 interface RepoIntegration {
   id: ID!
+  service: IntegrationProviderServiceEnum!
 }
 
 """The right drawer types available on the team dashboard"""
@@ -1309,7 +1324,7 @@ type TeamMemberIntegrations {
   atlassian: AtlassianIntegration
 
   """All things associated with a Jira Server integration for a team member"""
-  jiraServer: JiraServerIntegration
+  jiraServer: JiraServerIntegration!
 
   """All things associated with a GitHub integration for a team member"""
   github: GitHubIntegration
@@ -1459,6 +1474,7 @@ interface TaskIntegration {
 """A project fetched from Jira in real time"""
 type JiraRemoteProject implements RepoIntegration {
   id: ID!
+  service: IntegrationProviderServiceEnum!
 
   """The parabol teamId this issue was fetched for"""
   teamId: ID!
@@ -1533,6 +1549,11 @@ type JiraServerIntegration {
 
   """The non-global providers shared with the team or organization"""
   sharedProviders: [IntegrationProviderOAuth1!]!
+
+  """
+  A list of projects accessible by this team member. empty if viewer is not the user
+  """
+  projects: [JiraServerRemoteProject!]!
 }
 
 """An integration token that connects via OAuth1"""
@@ -1591,6 +1612,22 @@ interface TeamMemberIntegrationAuth {
 
   """The provider to connect to"""
   provider: IntegrationProvider!
+}
+
+"""A project fetched from Jira in real time"""
+type JiraServerRemoteProject implements RepoIntegration {
+  id: ID!
+  service: IntegrationProviderServiceEnum!
+
+  """The parabol teamId this issue was fetched for"""
+  teamId: ID!
+
+  """The parabol userId this issue was fetched for"""
+  userId: ID!
+  name: String!
+  avatar: String!
+  avatarUrls: JiraRemoteAvatarUrls!
+  projectCategory: JiraRemoteProjectCategory!
 }
 
 """OAuth token for a team member"""
@@ -1830,6 +1867,7 @@ enum MeetingTypeEnum {
   action
   retrospective
   poker
+  teamPrompt
 }
 
 """The details associated with the possible repo and project integrations"""
@@ -4050,7 +4088,7 @@ type ActionMeeting implements NewMeeting {
   tasks: [Task!]!
 }
 
-"""All the meeting specifics for a user in a retro meeting"""
+"""All the meeting specifics for a user in a action meeting"""
 type ActionMeetingMember implements MeetingMember {
   """A composite of userId::meetingId"""
   id: ID!
@@ -4839,6 +4877,110 @@ type PokerMeetingMember implements MeetingMember {
 
 """The action-specific meeting settings"""
 type ActionMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """The type of meeting these settings apply to"""
+  meetingType: MeetingTypeEnum!
+
+  """The broad phase types that will be addressed during the meeting"""
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """FK"""
+  teamId: ID!
+
+  """The team these settings belong to"""
+  team: Team!
+}
+
+"""A team prompt meeting"""
+type TeamPromptMeeting implements NewMeeting {
+  """The unique meeting id. shortid."""
+  id: ID!
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime!
+
+  """The id of the user that created the meeting"""
+  createdBy: ID!
+
+  """The user that created the meeting"""
+  createdByUser: User!
+
+  """The timestamp the meeting officially ended"""
+  endedAt: DateTime
+
+  """The location of the facilitator in the meeting"""
+  facilitatorStageId: ID!
+
+  """The userId (or anonymousId) of the most recent facilitator"""
+  facilitatorUserId: ID!
+
+  """The facilitator team member"""
+  facilitator: TeamMember!
+
+  """The team members that were active during the time of the meeting"""
+  meetingMembers: [MeetingMember!]!
+
+  """The auto-incrementing meeting number for the team"""
+  meetingNumber: Int!
+  meetingType: MeetingTypeEnum!
+
+  """The name of the meeting"""
+  name: String!
+
+  """The organization this meeting belongs to"""
+  organization: Organization!
+
+  """
+  The phases the meeting will go through, including all phase-specific state
+  """
+  phases: [NewMeetingPhase!]!
+
+  """true if should show the org the conversion modal, else false"""
+  showConversionModal: Boolean!
+
+  """The time the meeting summary was emailed to the team"""
+  summarySentAt: DateTime
+
+  """foreign key for team"""
+  teamId: ID!
+
+  """The team that ran the meeting"""
+  team: Team!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime
+
+  """The team prompt meeting member of the viewer"""
+  viewerMeetingMember: TeamPromptMeetingMember
+
+  """The settings that govern the team prompt meeting"""
+  settings: TeamPromptMeetingSettings!
+
+  """The tasks created within the meeting"""
+  responses: [Task!]!
+}
+
+"""All the meeting specifics for a user in a team prompt meeting"""
+type TeamPromptMeetingMember implements MeetingMember {
+  """A composite of userId::meetingId"""
+  id: ID!
+
+  """true if present, false if absent, else null"""
+  isCheckedIn: Boolean @deprecated(reason: "Members are checked in when they enter the meeting now & not created beforehand")
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime!
+}
+
+"""The team prompt specific meeting settings"""
+type TeamPromptMeetingSettings implements TeamMeetingSettings {
   id: ID!
 
   """The type of meeting these settings apply to"""
