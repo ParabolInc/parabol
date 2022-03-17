@@ -56,6 +56,10 @@ export interface JiraServerIssue {
   }
 }
 
+interface JiraServerIssuesResponse {
+  issues: JiraServerIssue[]
+}
+
 export default class JiraServerRestManager {
   serverBaseUrl: string
   oauth: OAuth
@@ -148,7 +152,7 @@ export default class JiraServerRestManager {
       expand: ['renderedFields']
     }
 
-    return this.request<JiraServerIssue>('POST', '/rest/api/latest/search', payload)
+    return this.request<JiraServerIssuesResponse>('POST', '/rest/api/latest/search', payload)
   }
 
   async createIssue(projectId: string, summary: string, description: string) {
