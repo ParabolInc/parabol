@@ -54,8 +54,8 @@ const relativeDate = (date: string | Date, opts: Opts = {}) => {
     minute: (abs % HOUR) / MIN
   } as const
 
-  let k: any
-  let val: any
+  let k: number | string
+  let val: number | string
   const keep: string[] = []
   let max: number | string = opts.max === undefined ? 1 : opts.max
 

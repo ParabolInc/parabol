@@ -144,7 +144,7 @@ const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
           </table>
         </td>
       </tr>
-      <EmailBorderBottom dataCy={dataCy} />
+      <EmailBorderBottom />
     </>
   )
 }
