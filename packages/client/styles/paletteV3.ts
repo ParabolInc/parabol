@@ -34,6 +34,7 @@ export const enum PALETTE {
   GRASS_300 = '#C4CF66',
 
   JADE_400 = '#66BC8C',
+  JADE_300 = '#91E8B7',
 
   LILAC_500 = '#7272E5',
 

@@ -19,6 +19,7 @@ import MeetingAction from './types/MeetingAction'
 import MeetingPoker from './types/MeetingPoker'
 import MeetingRetrospective from './types/MeetingRetrospective'
 import MeetingSettingsAction from './types/MeetingSettingsAction'
+import MeetingSettingsTeamPrompt from './types/MeetingSettingsTeamPrompt'
 import MeetingSettingsPoker from './types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from './types/MeetingSettingsRetrospective'
 import MeetingTemplate from './types/MeetingTemplate'
@@ -90,7 +91,11 @@ export type RethinkSchema = {
     index: 'teamMemberId'
   }
   MeetingSettings: {
-    type: MeetingSettingsRetrospective | MeetingSettingsAction | MeetingSettingsPoker
+    type:
+      | MeetingSettingsRetrospective
+      | MeetingSettingsAction
+      | MeetingSettingsPoker
+      | MeetingSettingsTeamPrompt
     index: 'teamId'
   }
   MeetingMember: {
@@ -239,7 +244,7 @@ const getRethink = async () => {
   }
   // this is important because pm2 will restart the process & for whatever reason r isn't always healthy
   await r.waitForHealthy()
-  return r as unknown as ParabolR
+  return (r as unknown) as ParabolR
 }
 
 export default getRethink

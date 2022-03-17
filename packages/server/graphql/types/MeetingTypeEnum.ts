@@ -7,7 +7,8 @@ const MeetingTypeEnum = new GraphQLEnumType({
   values: {
     action: {},
     retrospective: {},
-    poker: {}
+    poker: {},
+    teamPrompt: {}
   } as {[P in TMeetingTypeEnum]: any}
 })
 
