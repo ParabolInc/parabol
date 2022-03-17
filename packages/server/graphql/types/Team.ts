@@ -180,7 +180,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
       ) => {
         // the implicit business logic says client will never request settings for a foregin team
         if (!isTeamMember(authToken, teamId)) return null
-        return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
       }
     },
     scale: {

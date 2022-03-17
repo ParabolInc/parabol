@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, {ReactNode} from 'react'
 import {
   emailBackgroundColor,

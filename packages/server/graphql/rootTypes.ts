@@ -1,6 +1,9 @@
 import ActionMeeting from './types/ActionMeeting'
 import ActionMeetingMember from './types/ActionMeetingMember'
 import ActionMeetingSettings from './types/ActionMeetingSettings'
+import TeamPromptMeeting from './types/TeamPromptMeeting'
+import TeamPromptMeetingMember from './types/TeamPromptMeetingMember'
+import TeamPromptMeetingSettings from './types/TeamPromptMeetingSettings'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
@@ -68,6 +71,9 @@ const rootTypes = [
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
   ActionMeetingSettings,
+  TeamPromptMeeting,
+  TeamPromptMeetingMember,
+  TeamPromptMeetingSettings,
   Comment
 ]
 export default rootTypes

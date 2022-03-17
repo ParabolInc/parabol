@@ -1,18 +1,17 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import Ellipsis from '../Ellipsis/Ellipsis'
 
-const EllipsisDecorator = (props) => {
+interface Props {
+  offsetkey: string
+}
+
+const EllipsisDecorator = (props: Props) => {
   const {offsetkey} = props
   return (
     <span data-offset-key={offsetkey}>
       <Ellipsis />
     </span>
   )
-}
-
-EllipsisDecorator.propTypes = {
-  offsetkey: PropTypes.string
 }
 
 export default EllipsisDecorator

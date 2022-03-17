@@ -1,7 +1,26 @@
 import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
 
-export default class JiraServerOAuth1Manager {
+export interface JiraServerRestProject {
+  /// more available fields
+  expand: string
+  /// project url
+  self: string
+  id: string
+  key: string
+  name: string
+  avatarUrls: {
+    '48x48': string
+    '24x24': string
+    '16x16': string
+    '32x32': string
+  }
+  /// 'software'
+  projectTypeKey: string
+  archived: boolean
+}
+
+export default class JiraServerRestManager {
   serverBaseUrl: string
   oauth: OAuth
   token: OAuth.Token
@@ -30,6 +49,11 @@ export default class JiraServerOAuth1Manager {
     }
   }
 
+  formatError(json: any) {
+    // we might want to read `error` property as well in case this message is not enough
+    return json.errorMessages?.join('\n')
+  }
+
   async request(method: string, path: string) {
     const url = new URL(path, this.serverBaseUrl)
     const request = {
@@ -46,7 +70,34 @@ export default class JiraServerOAuth1Manager {
     return response
   }
 
+  async parseJsonResponse<T>(response: Response): Promise<T | Error> {
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return new Error('Received non-JSON Jira Server Response')
+    }
+    const json = await response.json()
+    if (response.status !== 200) {
+      return new Error(
+        `Fetching projects failed with status ${response.status}, ${this.formatError(json)}`
+      )
+    }
+
+    return json
+  }
+
   async getProjects() {
-    return this.request('GET', '/rest/api/latest/project')
+    const response = await this.request('GET', '/rest/api/latest/project')
+    const projects = await this.parseJsonResponse<JiraServerRestProject[]>(response)
+    return projects
+  }
+
+  async getProjectAvatar(avatarUrl: string) {
+    const imageRes = await this.request('GET', avatarUrl)
+
+    if (!imageRes || imageRes instanceof Error) return ''
+    const arrayBuffer = await imageRes.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer).toString('base64')
+    const contentType = imageRes.headers.get('content-type')
+    return `data:${contentType};base64,${buffer}`
   }
 }

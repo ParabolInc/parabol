@@ -362,22 +362,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
       },
       resolve: async ({id: userId}: {id: string}, {orgId}, {authToken, dataLoader}: GQLContext) => {
-        // AUTH
         const viewerId = getUserId(authToken)
-        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        const organizationUsersForOrgId = organizationUsers.find(
-          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
-        )
-        if (viewerId === userId || isSuperUser(authToken)) {
-          return organizationUsersForOrgId
-        }
-        const viewerOrganizationUsers = await dataLoader
-          .get('organizationUsersByUserId')
-          .load(viewerId)
-        const viewerOrganizationUsersForOrgId = viewerOrganizationUsers.find(
-          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
-        )
-        return viewerOrganizationUsersForOrgId ? organizationUsersForOrgId : null
+        const [viewerOrganizationUser, userOrganizationUser] = await Promise.all([
+          dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId}),
+          dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
+        ])
+        if (viewerOrganizationUser || isSuperUser(authToken)) return userOrganizationUser
+        return null
       }
     },
     organizationUsers: {

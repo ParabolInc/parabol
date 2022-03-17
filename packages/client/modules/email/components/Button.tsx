@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, {ReactNode} from 'react'
 import {emailPrimaryButtonStyle, emailTableBase} from '../styles'
 
@@ -14,8 +13,8 @@ const linkStyle = {
   width: '100%'
 } as React.CSSProperties
 
-const Button = (props: {url: string; width: number; children: ReactNode}) => {
-  const {url, width} = props
+const Button = (props: {url: string; width?: number; children: ReactNode}) => {
+  const {url, width = 240} = props
   return (
     <table style={{...emailTableBase, width}} width={width}>
       <tbody>
@@ -29,16 +28,6 @@ const Button = (props: {url: string; width: number; children: ReactNode}) => {
       </tbody>
     </table>
   )
-}
-
-Button.defaultProps = {
-  width: 240
-}
-
-Button.propTypes = {
-  children: PropTypes.any,
-  url: PropTypes.string,
-  width: PropTypes.number
 }
 
 export default Button

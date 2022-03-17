@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, {ReactNode} from 'react'
 import {emailBackgroundColor, emailMaxWidth, emailTableBase} from '../../styles'
 
@@ -38,7 +37,7 @@ interface Props {
 }
 
 const Layout = (props: Props) => {
-  const {children, maxWidth} = props
+  const {children, maxWidth = emailMaxWidth} = props
   return (
     <table align='center' className='body' style={containerStyle} width='100%'>
       <tbody>
@@ -58,15 +57,6 @@ const Layout = (props: Props) => {
       </tbody>
     </table>
   )
-}
-
-Layout.propTypes = {
-  children: PropTypes.any,
-  maxWidth: PropTypes.number
-}
-
-Layout.defaultProps = {
-  maxWidth: emailMaxWidth
 }
 
 export default Layout

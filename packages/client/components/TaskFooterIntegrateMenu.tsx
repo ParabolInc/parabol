@@ -28,13 +28,15 @@ const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
 type Integrations = NonNullable<TaskFooterIntegrateMenu_viewer['viewerTeamMember']>['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
-  const {atlassian, github} = integrations
+  const {atlassian, github, jiraServer} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
-  return hasAtlassian || hasGitHub
+  const hasJiraServer = jiraServer.auth?.isActive ?? false
+  return hasAtlassian || hasGitHub || hasJiraServer
     ? {
         hasAtlassian,
-        hasGitHub
+        hasGitHub,
+        hasJiraServer
       }
     : null
 }
@@ -134,6 +136,13 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 }
 
 graphql`
+  fragment TaskFooterIntegrateMenuViewerJiraServerIntegration on JiraServerIntegration {
+    auth {
+      isActive
+    }
+  }
+`
+graphql`
   fragment TaskFooterIntegrateMenuViewerAtlassianIntegration on AtlassianIntegration {
     isActive
   }
@@ -156,6 +165,9 @@ graphql`
 graphql`
   fragment TaskFooterIntegrateMenuTeamMemberIntegrations on TeamMember {
     integrations {
+      jiraServer {
+        ...TaskFooterIntegrateMenuViewerJiraServerIntegration @relay(mask: false)
+      }
       atlassian {
         ...TaskFooterIntegrateMenuViewerAtlassianIntegration @relay(mask: false)
       }

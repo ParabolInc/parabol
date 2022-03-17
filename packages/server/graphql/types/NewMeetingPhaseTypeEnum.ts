@@ -32,7 +32,9 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
     [DISCUSS]: {},
     SUMMARY: {},
     SCOPE: {},
-    ESTIMATE: {}
+    ESTIMATE: {},
+    // team prompt
+    RESPONSES: {}
   }
 })
 
