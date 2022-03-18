@@ -137,8 +137,9 @@ ${exportLine}`
     const dir = IS_QUERY ? 'queries' : 'mutations'
     const from = path.dirname(path.join(absPath, `../../../private/${dir}/foo.ts`))
     const importStrs = generateImportHeaders(from, root, j, absPath)
-    const typeImport = `import {QueryResolvers} from '../resolverTypes'`
-    const varDef = `const ${typeName}: QueryResolvers['${typeName}'] = ${j(value).toSource()}`
+    const resType = IS_QUERY ? 'QueryResolvers' : 'MutationResolvers'
+    const typeImport = `import {${resType}} from '../resolverTypes'`
+    const varDef = `const ${typeName}: ${resType}['${typeName}'] = ${j(value).toSource()}`
     const exportLine = `export default ${typeName}`
     const newDoc = `${importStrs}
 ${typeImport}
