@@ -190,11 +190,16 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           if (!accessToken) return null
           const {gid} = integration
           const query = `
-          {
-             issue(id: "${gid}"){
-                   ...info
-                  }
-                }`
+            query {
+              issue(id: "${gid}"){
+                __typename
+                id
+                iid
+                title
+                ...info
+              }
+            }
+          `
           const manager = new GitLabServerManager(accessToken)
           const gitLabRequest = manager.getGitLabRequest(info, context)
           const [data, error] = await gitLabRequest(query, {})

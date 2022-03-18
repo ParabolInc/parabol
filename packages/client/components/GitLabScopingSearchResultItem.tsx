@@ -46,11 +46,12 @@ interface Props {
   usedServiceTaskIds: Set<string>
   issueRef: GitLabScopingSearchResultItem_issue$key
   meetingId: string
+  providerId: string
   // persistQuery: () => void
 }
 
 const GitLabScopingSearchResultItem = (props: Props) => {
-  const {issueRef, meetingId, usedServiceTaskIds} = props
+  const {issueRef, meetingId, usedServiceTaskIds, providerId} = props
   const issue = useFragment(
     graphql`
       fragment GitLabScopingSearchResultItem_issue on _xGitLabIssue {
@@ -65,7 +66,7 @@ const GitLabScopingSearchResultItem = (props: Props) => {
   )
   const {id: gid, iid, title, webPath, webUrl: url} = issue
   const {fullPath} = parseWebPath(webPath)
-  const serviceTaskId = GitLabIssueId.join(webPath, gid)
+  const serviceTaskId = GitLabIssueId.join(providerId, gid)
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()

@@ -1,12 +1,10 @@
 const GitLabIssueId = {
-  join: (webPath: string, gid: string) => `${webPath}::${gid}`,
+  join: (providerId: string, gid: string) => `${providerId}::${gid}`,
   split: (id: string) => {
-    const [webPath, gid] = id.split('::') as [string, string]
-    const iid = webPath.split('/').slice(-1)[0]
+    const [providerId, gid] = id.split('::') as [string, string]
     return {
-      webPath,
-      gid,
-      iid
+      providerId,
+      gid
     }
   }
 }

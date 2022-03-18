@@ -215,12 +215,12 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'gitlab') {
-            const {webPath, iid} = GitLabIssueId.split(serviceTaskId)
-            if (!webPath || !iid) return
+            const {gid} = GitLabIssueId.split(serviceTaskId)
+            const gitlabIssue = store.get(gid)
+            const iid = gitlabIssue?.getValue('iid')
             const optimisticGitLabIssue = createProxyRecord(store, '_xGitLabIssue', {
               title,
-              webPath,
-              iid: parseInt(iid, 10)
+              iid
             })
             optimisticTask.setLinkedRecord(optimisticGitLabIssue, 'integration')
           }

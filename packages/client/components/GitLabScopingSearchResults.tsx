@@ -72,6 +72,11 @@ const GitLabScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
+                auth {
+                  provider {
+                    id
+                  }
+                }
                 api {
                   errors {
                     message
@@ -154,6 +159,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   // const {queryString} = gitlabSearchQuery
   const errors = gitlab?.api?.errors ?? null
+  const providerId = gitlab.auth!.provider.id
   const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
     (project) => project?.node?.issues?.edges ?? null
   )
@@ -186,13 +192,12 @@ const GitLabScopingSearchResults = (props: Props) => {
   }
   return (
     <>
-      {
-        <GitLabScopingSelectAllIssues
-          usedServiceTaskIds={usedServiceTaskIds}
-          issuesRef={issues}
-          meetingId={meetingId}
-        />
-      }
+      <GitLabScopingSelectAllIssues
+        usedServiceTaskIds={usedServiceTaskIds}
+        issuesRef={issues}
+        meetingId={meetingId}
+        providerId={providerId}
+      />
       <ResultScroller>
         {/* {query && (
           <NewGitLabIssueInput
@@ -208,6 +213,7 @@ const GitLabScopingSearchResults = (props: Props) => {
             issueRef={issue}
             meetingId={meetingId}
             usedServiceTaskIds={usedServiceTaskIds}
+            providerId={providerId}
             // persistQuery={persistQuery}
           />
         ))}
