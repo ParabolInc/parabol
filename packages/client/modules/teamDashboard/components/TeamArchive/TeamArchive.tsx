@@ -194,8 +194,10 @@ const TeamArchive = (props: Props) => {
   }
   const isRowLoaded = ({index}) => index < edges.length
   const maybeLoadMore = () => {
-    if (!hasNext || isLoadingNext) return
-    loadNext(columnCount * 10)
+    if (!hasNext || isLoadingNext) return Promise.resolve()
+    return new Promise<void>((resolve, reject) => {
+      loadNext(columnCount * 10, {onComplete: (err) => (err ? reject(err) : resolve())})
+    })
   }
   const [cellCache] = useState(
     () =>
