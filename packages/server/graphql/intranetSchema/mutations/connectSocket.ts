@@ -17,7 +17,7 @@ export interface UserPresence {
   socketId: string
 }
 const {SERVER_ID} = process.env
-export default {
+const connectSocket = {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
   type: new GraphQLNonNull(User),
@@ -90,3 +90,5 @@ export default {
     return user
   }
 }
+
+export default connectSocket

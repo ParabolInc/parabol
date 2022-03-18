@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import {InternalContext} from '../../graphql'
-import {isSuperUser} from '../../../utils/authorization'
 import getRethink from '../../../database/rethinkDriver'
-import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
+import {isSuperUser} from '../../../utils/authorization'
 import StripeManager from '../../../utils/StripeManager'
+import {InternalContext} from '../../graphql'
+import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 
-export default {
+const stripeUpdateCreditCard = {
   name: 'StripeUpdateCreditCard',
   description: 'When stripe tells us a credit card was updated, update the details in our own DB',
   type: GraphQLBoolean,
@@ -35,3 +35,5 @@ export default {
     return true
   }
 }
+
+export default stripeUpdateCreditCard

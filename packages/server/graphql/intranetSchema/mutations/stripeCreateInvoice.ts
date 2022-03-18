@@ -5,7 +5,7 @@ import {isSuperUser} from '../../../utils/authorization'
 import StripeManager from '../../../utils/StripeManager'
 import {InternalContext} from '../../graphql'
 
-export default {
+const stripeCreateInvoice = {
   name: 'StripeCreateInvoice',
   description: 'When stripe tells us an invoice is ready, create a pretty version',
   type: GraphQLBoolean,
@@ -40,3 +40,5 @@ export default {
     return true
   }
 }
+
+export default stripeCreateInvoice

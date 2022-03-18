@@ -4,7 +4,7 @@ import StripeManager from '../../../utils/StripeManager'
 import {isSuperUser} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 
-export default {
+const stripeInvoiceFinalized = {
   name: 'StripeInvoiceFinalized',
   description: 'An invice has been sent from stripe, meaning it is finalized',
   type: GraphQLBoolean,
@@ -59,3 +59,5 @@ export default {
       .run()
   }
 }
+
+export default stripeInvoiceFinalized

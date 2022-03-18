@@ -7,7 +7,8 @@ import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
 import {UserPresence} from './connectSocket'
-export default {
+
+const disconnectSocket = {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
   type: DisconnectSocketPayload,
@@ -67,3 +68,5 @@ export default {
     return {user}
   }
 }
+
+export default disconnectSocket

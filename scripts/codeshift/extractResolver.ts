@@ -59,7 +59,12 @@ const transform: Transform = (fileInfo, api, options) => {
   const IS_OPERATION = IS_QUERY || IS_MUTATION
   const root = j(source)
   // Get the name of the Type
-  const typeName = root.find(j.ExportDefaultDeclaration).get().value.declaration.name
+  const nameFromDeclaration = root.find(j.ExportDefaultDeclaration).get().value.declaration.name
+  const {name: fallbackFromFilename} = path.parse(absPath)
+  if (!nameFromDeclaration) {
+    console.log(`WARNING MISSING NAME: ${absPath}. Using ${fallbackFromFilename}`)
+  }
+  const typeName = nameFromDeclaration || fallbackFromFilename
   if (!IS_OPERATION) {
     const resolversName = `${typeName}Resolvers`
     const sourceTypeName = `${typeName}Source`

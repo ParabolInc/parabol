@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
-import StripeManager from '../../../utils/StripeManager'
-import {isSuperUser} from '../../../utils/authorization'
-import {InternalContext} from '../../graphql'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import {isSuperUser} from '../../../utils/authorization'
+import StripeManager from '../../../utils/StripeManager'
+import {InternalContext} from '../../graphql'
 
-export default {
+const stripeSucceedPayment = {
   name: 'StripeSucceedPayment',
   description: 'When stripe tells us an invoice payment was successful, update it in our DB',
   type: GraphQLBoolean,
@@ -72,3 +72,5 @@ export default {
     ])
   }
 }
+
+export default stripeSucceedPayment

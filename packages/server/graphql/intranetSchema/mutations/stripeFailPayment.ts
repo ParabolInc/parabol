@@ -10,7 +10,7 @@ import StripeManager from '../../../utils/StripeManager'
 import {InternalContext} from '../../graphql'
 import StripeFailPaymentPayload from '../../types/StripeFailPaymentPayload'
 
-export default {
+const stripeFailPayment = {
   name: 'StripeFailPayment',
   description: 'When stripe tells us an invoice payment failed, update it in our DB',
   type: StripeFailPaymentPayload,
@@ -99,3 +99,5 @@ export default {
     return data
   }
 }
+
+export default stripeFailPayment
