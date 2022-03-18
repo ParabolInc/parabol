@@ -102,14 +102,14 @@ export default abstract class AzureDevOpsManager {
     return json
   }
 
-  async getUserStories(instanceId: string, projectId: string) {
+  async getUserStories(instanceId: string) {
     const queryString =
       "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
     const payload = {
       query: queryString
     }
     const queryResult = await this.post<WorkItemQueryResult>(
-      `https://dev.azure.com/${instanceId}/${projectId}/_apis/wit/wiql?api-version=6.0`,
+      `https://dev.azure.com/${instanceId}/_apis/wit/wiql?api-version=6.0`,
       payload
     )
     return queryResult

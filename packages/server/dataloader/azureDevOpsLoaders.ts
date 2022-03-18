@@ -105,12 +105,12 @@ export const azureDevOpsUserStories = (
   return new DataLoader<AzureDevOpsUserStoriesKey, AzureDevOpsWorkItem[], string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId, instanceId, projectId}) => {
+        keys.map(async ({userId, teamId, instanceId}) => {
           const auth = parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) return []
           const {accessToken} = auth
           const manager = new AzureDevOpsServerManager(accessToken)
-          const result = await manager.getUserStories(instanceId, projectId)
+          const result = await manager.getUserStories(instanceId)
           if (result instanceof Error) {
             //sendToSentry(result, {userId, tags: {teamId}})
             const emptyArray: AzureDevOpsWorkItem[] = []

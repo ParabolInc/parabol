@@ -18,7 +18,7 @@ export interface IGetAzureDevOpsAuthsByUserIdQueryResult {
   updatedAt: Date;
   isActive: boolean;
   azureDevOpsSearchQueries: JsonArray;
-  cloudIds: stringArray;
+  instanceIds: stringArray;
   scope: string;
   accountId: string;
   teamId: string;

@@ -35,7 +35,7 @@
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
     "graphql/queries/tasks.ts",
     "graphql/queries/archivedTasks.ts",
-    "graphql/types/AzureDevOpsIssue.ts",
+    "graphql/types/AzureDevOpsWorkItem.ts",
     "graphql/types/AzureDevOpsRemoteProject.ts",
     "graphql/types/AzureDevOpsIntegration.ts",
     "dataloader/azureDevOpsLoaders.ts",
