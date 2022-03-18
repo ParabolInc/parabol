@@ -64,7 +64,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
       description: 'All things associated with a A integration for a team member',
       resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        return dataLoader.get('githubAuth').load({teamId, userId})
+        return dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
       }
     }
   })

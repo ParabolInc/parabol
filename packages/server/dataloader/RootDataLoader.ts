@@ -59,7 +59,8 @@ type CustomLoaderMakers = typeof customLoaderMakers &
   typeof pollLoaders &
   typeof integrationAuthLoaders &
   typeof primaryKeyLoaderMakers &
-  typeof foreignKeyLoaderMakers
+  typeof foreignKeyLoaderMakers &
+  typeof azureDevOpsLoaders
 type CustomLoaders = keyof CustomLoaderMakers
 type Uncustom<T> = T extends (parent: RootDataLoader) => infer U ? U : never
 type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
