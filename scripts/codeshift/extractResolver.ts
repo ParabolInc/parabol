@@ -2,6 +2,27 @@ import fs from 'fs'
 import core, {Collection, Transform} from 'jscodeshift/src/core'
 import path from 'path'
 
+  const createArrowFunctionExpression = (j, fn) => {
+    const arrowFunc = j.arrowFunctionExpression(fn.params, fn.body, false)
+
+    arrowFunc.returnType = fn.returnType
+    arrowFunc.defaults = fn.defaults
+    arrowFunc.rest = fn.rest
+    arrowFunc.async = fn.async
+
+    return arrowFunc
+  }
+
+  const createArrowProperty = (j, prop) => {
+    return j.objectProperty(
+      j.identifier(prop.key.name),
+      createArrowFunctionExpression(j, prop),
+      null,
+      false,
+    )
+  }
+
+
 
 const generateImportHeaders = (from: string, root: Collection<any>, j: core.JSCodeshift, absPath: string) => {
  let importStrs = ''
@@ -76,14 +97,26 @@ ${exportLine}`
     const {ext} = path.parse(absPath)
 
     const newPath = path.join(absPath, `../../../private/types/${typeName}${ext}`)
-    fs.writeFileSync(newPath, prettyNewDoc)
+        try {
+      fs.statSync(newPath)
+    } catch(e) {
+      // doesn't exist, let's make it
+      fs.writeFileSync(newPath, prettyNewDoc)
+    }
   } else {
-    const value = root.find(j.ObjectProperty, {key: {name: 'resolve'}}).get().value.value
-    value.params.forEach((param) => {
-      if ('typeAnnotation' in param) {
-        param.typeAnnotation = null
-      }
+
+    // Convert any methods into arrow functions
+    root.find(j.ObjectMethod, {key: {name: 'resolve'}}).replaceWith((method) => {
+      return createArrowProperty(j, method.node)
     })
+
+    const resolveProp = root.find(j.ObjectProperty, {key: {name: 'resolve'}})
+    const value = resolveProp.get().value.value
+      value.params.forEach((param) => {
+        if ('typeAnnotation' in param) {
+          param.typeAnnotation = null
+        }
+      })
     const dir = IS_QUERY ? 'queries' : 'mutations'
     const from = path.dirname(path.join(absPath, `../../../private/${dir}/foo.ts`))
     const importStrs = generateImportHeaders(from, root, j, absPath)
@@ -96,7 +129,6 @@ ${typeImport}
 ${varDef}
 
 ${exportLine}`
-
     const prettyNewDoc = j(newDoc).toSource({
       objectCurlySpacing: false,
       quote: 'single'
@@ -105,7 +137,12 @@ ${exportLine}`
     const {ext} = path.parse(absPath)
 
     const newPath = path.join(absPath, `../../../private/${dir}/${typeName}${ext}`)
-    fs.writeFileSync(newPath, prettyNewDoc)
+    try {
+      fs.statSync(newPath)
+    } catch(e) {
+      // doesn't exist, let's make it
+      fs.writeFileSync(newPath, prettyNewDoc)
+    }
   }
 }
 
