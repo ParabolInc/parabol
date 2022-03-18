@@ -19,8 +19,9 @@
       "config": {
         "contextType": "../../graphql#InternalContext",
         "mappers": {
-          "PingableServices": "./types/PingableServices#PingableServicesSource",
+          "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
+          "PingableServices": "./types/PingableServices#PingableServicesSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource"
         }
       }
