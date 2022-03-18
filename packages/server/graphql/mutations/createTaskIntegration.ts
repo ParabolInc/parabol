@@ -113,8 +113,8 @@ export default {
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createdBySomeoneElseComment =
-      userId && viewerId !== userId
-        ? taskIntegrationManager.getCreatedBySomeoneElseComment?.(
+      userId && viewerId !== userId && 'getCreatedBySomeoneElseComment' in taskIntegrationManager
+        ? taskIntegrationManager.getCreatedBySomeoneElseComment(
             viewerName,
             assigneeName,
             team.name,
@@ -125,6 +125,7 @@ export default {
     const createTaskResponse = await taskIntegrationManager.createTask({
       rawContentStr,
       integrationRepoId,
+      // @ts-ignore TODO: remove createdBySomeoneElseComment
       createdBySomeoneElseComment,
       context,
       info
@@ -134,8 +135,12 @@ export default {
       return {error: {message: createTaskResponse.message}}
     }
 
-    if (userId && viewerId !== userId) {
-      await taskIntegrationManager.addCreatedBySomeoneElseComment?.(
+    if (
+      userId &&
+      viewerId !== userId &&
+      'addCreatedBySomeoneElseComment' in taskIntegrationManager
+    ) {
+      await taskIntegrationManager.addCreatedBySomeoneElseComment(
         viewerName,
         assigneeName,
         team.name,

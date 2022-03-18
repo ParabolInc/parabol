@@ -2,15 +2,17 @@ import makeCreateJiraTaskComment from '../utils/makeCreateJiraTaskComment'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import createJiraTask from '../graphql/mutations/helpers/createJiraTask'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import {CreateTaskResponse, TaskIntegrationManager} from './TaskIntegrationManagerFactory'
+import {CreateTaskResponse} from './AbstractTaskIntegrationManager'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {Doc} from '../utils/convertContentStateToADF'
+import AbstractTaskIntegrationManager from './AbstractTaskIntegrationManager'
 
-export default class JiraTaskIntegrationManager implements TaskIntegrationManager {
+export default class JiraTaskIntegrationManager extends AbstractTaskIntegrationManager {
   public title = 'Jira'
   private readonly auth: AtlassianAuth
 
   constructor(auth: AtlassianAuth) {
+    super()
     this.auth = auth
   }
 
