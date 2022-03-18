@@ -1,23 +1,19 @@
 import {GraphQLEnumType} from 'graphql'
 
-// const defaultPriorities: {
-//   1: 'demo',
-//   2: 'invite',
-//   3: 'retro',
-//   4: 'createTeam',
-//   5: 'action'
-// }
+const values = {
+  inviteYourTeam: {},
+  tryTheDemo: {},
+  tryRetroMeeting: {},
+  createNewTeam: {},
+  tryActionMeeting: {}
+} as const
+
+export type TSuggestedActionTypeEnum = keyof typeof values
 
 const SuggestedActionTypeEnum = new GraphQLEnumType({
   name: 'SuggestedActionTypeEnum',
   description: 'The specific type of the suggested action',
-  values: {
-    inviteYourTeam: {},
-    tryTheDemo: {},
-    tryRetroMeeting: {},
-    createNewTeam: {},
-    tryActionMeeting: {}
-  }
+  values
 })
 
 export default SuggestedActionTypeEnum

@@ -7,7 +7,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res.onAborted(() => {
     res.aborted = true
     if (res.abortEvents) {
-      res.abortEvents.forEach((f) => f())
+      res.abortEvents.forEach((f: () => void) => f())
     }
   })
 

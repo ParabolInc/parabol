@@ -3,6 +3,7 @@ import {Unpromise} from 'parabol-client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
+import {RValue} from '../../../database/stricterR'
 
 export interface IntegrationByTeamId {
   id: string
@@ -58,7 +59,7 @@ export const getPrevRepoIntegrations = async (
     .max('createdAt')('createdAt')
     .ungroup()
     .orderBy(r.desc('reduction'))
-    .map((row) => ({
+    .map((row: RValue) => ({
       userId: row('group')(0),
       service: row('group')(1),
       issueKey: row('group')(2),

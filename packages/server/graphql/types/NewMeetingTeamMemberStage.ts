@@ -43,8 +43,8 @@ const NewMeetingTeamMemberStage: GraphQLInterfaceType = new GraphQLInterfaceType
     const resolveTypeLookup = {
       [CHECKIN]: CheckInStage,
       [UPDATES]: UpdatesStage
-    }
-    return resolveTypeLookup[phaseType]
+    } as const
+    return resolveTypeLookup[phaseType as keyof typeof resolveTypeLookup]
   }
 })
 

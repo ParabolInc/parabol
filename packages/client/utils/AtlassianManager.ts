@@ -194,7 +194,7 @@ interface JiraAddCommentResponse {
 
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
-interface JiraGQLFields {
+export interface JiraGQLFields {
   project?: {
     simplified: boolean
   }
@@ -398,7 +398,7 @@ export default abstract class AtlassianManager {
     }
     return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
   }
-  private readonly delete = async (url) => {
+  private readonly delete = async (url: string) => {
     const res = await this.fetchWithTimeout(url, {
       method: 'DELETE',
       headers: this.headers
@@ -480,7 +480,7 @@ export default abstract class AtlassianManager {
   async getAllProjects(cloudIds: string[]) {
     const projects = [] as (JiraProject & {cloudId: string})[]
     let error: Error | undefined
-    const getProjectPage = async (cloudId: string, url: string) => {
+    const getProjectPage = async (cloudId: string, url: string): Promise<void> => {
       const res = await this.get<JiraProjectResponse>(url)
       if (res instanceof Error || res instanceof RateLimitError) {
         error = res
@@ -634,7 +634,7 @@ export default abstract class AtlassianManager {
   }
 
   async getIssues(
-    queryString: string,
+    queryString: string | null,
     isJQL: boolean,
     projectFiltersByCloudId: {[cloudId: string]: string[]}
   ) {
@@ -760,9 +760,10 @@ export default abstract class AtlassianManager {
     const timeTrackingFieldLookup = {
       timeoriginalestimate: 'originalEstimate',
       timeestimate: 'remainingEstimate'
-    }
-    const timeTrackingFieldName = timeTrackingFieldLookup[fieldId]
-    if (timeTrackingFieldName) {
+    } as const
+    const timeTrackingFieldName =
+      timeTrackingFieldLookup[fieldId as keyof typeof timeTrackingFieldLookup]
+    if (!!timeTrackingFieldName) {
       payload = {
         update: {
           [timeTrackingFieldId]: [

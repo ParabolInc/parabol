@@ -223,7 +223,6 @@ export const notifyMattermostTimeLimitStart = async (
   if (!mattermostProvider || !team) return
   const {webhookUrl} = mattermostProvider as IntegrationProviderMattermost
 
-
   const {name: teamName} = team
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
@@ -233,7 +232,7 @@ export const notifyMattermostTimeLimitStart = async (
   )
   const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const {phaseType} = stage
-  const phaseLabel = phaseLabelLookup[phaseType]
+  const phaseLabel = phaseLabelLookup[phaseType as keyof typeof phaseLabelLookup]
 
   const fallbackDate = formatWeekday(scheduledEndTime)
   const fallbackTime = formatTime(scheduledEndTime)

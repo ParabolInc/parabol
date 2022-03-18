@@ -1,8 +1,9 @@
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
-const loadersByTable = {}
+const loadersByTable = {} as Record<string, any>
 Object.keys(rethinkPrimaryKeyLoaderMakers).forEach((loaderName) => {
-  const loader = rethinkPrimaryKeyLoaderMakers[loaderName]
+  const loader =
+    rethinkPrimaryKeyLoaderMakers[loaderName as keyof typeof rethinkPrimaryKeyLoaderMakers]
   loadersByTable[loader.table] = loaderName
 })
 

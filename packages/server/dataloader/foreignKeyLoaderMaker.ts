@@ -22,7 +22,7 @@ type LoaderType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends Data
  */
 export function foreignKeyLoaderMaker<
   LoaderName extends LoaderKeys,
-  T extends LoaderType<LoaderName>,
+  T extends LoaderType<LoaderName> & {id: string},
   KeyName extends keyof T
 >(
   primaryLoaderKey: LoaderName,

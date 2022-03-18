@@ -1,19 +1,10 @@
 import {KeyBindingUtil, RichUtils} from 'draft-js'
 import React, {Component} from 'react'
-import PropTypes from 'prop-types'
 
 const {hasCommandModifier} = KeyBindingUtil
 
 const withKeyboardShortcuts = (ComposedComponent) => {
   class WithKeyboardShortcuts extends Component<any> {
-    static propTypes = {
-      editorState: PropTypes.object.isRequired,
-      handleKeyCommand: PropTypes.func,
-      keyBindingFn: PropTypes.func,
-      // could be readOnly, so not strictly required
-      setEditorState: PropTypes.func
-    }
-
     handleKeyCommand = (command) => {
       const {handleKeyCommand, editorState, setEditorState} = this.props
       if (handleKeyCommand) {

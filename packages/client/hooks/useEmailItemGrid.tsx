@@ -11,13 +11,13 @@ const useEmailItemGrid = (items: readonly any[], maxColumns: number, minColumns?
   const {cols, rowCount} = getMinColumns(maxColumns, items.length, minColumns)
   const rows = unflattenIntoRows(items, rowCount, cols)
   const width = Math.floor(100 / maxColumns)
-  return (cb: (item) => ReactElement) => {
+  return (cb: (item: any) => ReactElement) => {
     return rows.map((row, idx) => {
       return (
         <table key={idx} align='center' width='50%'>
           <tbody>
             <tr>
-              {row.map((item, idx) => {
+              {row.map((item: any, idx: number) => {
                 return (
                   <td valign='top' key={idx} align='center' width={`${width}%`}>
                     <table width='100%'>

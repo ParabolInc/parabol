@@ -23,6 +23,6 @@ const taskLookup = {
     `{"blocks":[{"key":"2t997","text":"Research reputable methods for prioritizing work that the team can review together","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
   ],
   botRef8: []
-}
+} as const
 
 export default taskLookup

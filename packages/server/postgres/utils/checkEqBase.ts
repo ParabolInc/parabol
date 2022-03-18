@@ -75,8 +75,8 @@ function addNeFieldsToErrors(
   pgRow: PGDoc,
   rowId: string
 ): void {
-  const rethinkNeFields = {}
-  const pgNeFields = {}
+  const rethinkNeFields = {} as Record<string, any>
+  const pgNeFields = {} as Record<string, any>
   for (const neField of neFields) {
     rethinkNeFields[neField] = rethinkRow[neField]
     pgNeFields[neField] = pgRow[neField]

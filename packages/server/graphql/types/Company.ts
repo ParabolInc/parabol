@@ -8,6 +8,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import TierEnum from './TierEnum'
 import OrganizationType from '../../database/types/Organization'
+import {RValue} from '../../database/stricterR'
 
 const Company = new GraphQLObjectType<any, GQLContext>({
   name: 'Company',
@@ -112,7 +113,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
             .getAll(r.args(teamIds), {index: 'teamId'})
             .filter((row) => row('endedAt').default(null).ne(null))
             // number of months since unix epoch
-            .merge((row) => ({
+            .merge((row: RValue) => ({
               epochMonth: row('endedAt').month().add(row('endedAt').year().mul(12))
             }))
             .group((row) => [row('teamId'), row('epochMonth')])
@@ -132,7 +133,7 @@ const Company = new GraphQLObjectType<any, GQLContext>({
                 .deleteAt(0)
                 .map((z) => z.add(-1))
             }))
-            .merge((row) => ({
+            .merge((row: RValue) => ({
               // 1 if there are 2 consecutive epochMonths next to each other, else 0
               teamStreak: r
                 .map(row('shift'), row('epochMonth'), (shift, epochMonth) =>

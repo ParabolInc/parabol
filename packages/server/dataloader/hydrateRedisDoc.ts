@@ -11,11 +11,11 @@ const hydrators = {
     user.updatedAt = new Date(user.updatedAt)
     return user
   }
-}
+} as const
 
 const hydrateRedisDoc = (docStr: string, type: string) => {
   const doc = JSON.parse(docStr)
-  const hydrator = hydrators[type]
+  const hydrator = hydrators[type as keyof typeof hydrators]
   if (!hydrator) return doc
   return hydrator(doc)
 }

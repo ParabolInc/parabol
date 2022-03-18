@@ -30,6 +30,11 @@ const videoGraphicStyle = {
 }
 
 const videoGraphicSrc = `${ExternalLinks.EMAIL_CDN}retro-video-still.png`
+const meetingCopyLabelLookup = {
+    action: 'a Check-in Meeting',
+    retrospective: 'a Retrospective Meeting',
+    poker: 'a Sprint Poker Meeting'
+  } as const
 
 export interface TeamInviteProps {
   appOrigin: string
@@ -40,7 +45,7 @@ export interface TeamInviteProps {
   inviteLink: string
   teamName: string
   meeting?: {
-    meetingType: string
+    meetingType: keyof typeof meetingCopyLabelLookup
     name: string
   }
 }
@@ -62,11 +67,6 @@ const TeamInvite = (props: TeamInviteProps) => {
     </a>
   )
   const nameOrEmail = inviteeName || inviteeEmailBlock
-  const meetingCopyLabelLookup = {
-    action: 'a Check-in Meeting',
-    retrospective: 'a Retrospective Meeting',
-    poker: 'a Sprint Poker Meeting'
-  }
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>

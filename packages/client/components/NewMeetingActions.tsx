@@ -69,8 +69,10 @@ const NewMeetingActions = (props: Props) => {
       StartSprintPokerMutation(atmosphere, {teamId}, {history, onError, onCompleted})
     } else if (meetingType === 'action') {
       StartCheckInMutation(atmosphere, {teamId}, {history, onError, onCompleted})
-    } else {
+    } else if (meetingType === 'retrospective') {
       StartRetrospectiveMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'teamPrompt') {
+      // TODO: start team prompt mutation
     }
   }
 
