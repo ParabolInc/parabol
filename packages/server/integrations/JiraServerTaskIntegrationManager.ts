@@ -1,13 +1,14 @@
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
-import {CreateTaskResponse, TaskIntegrationManager} from './TaskIntegrationManagerFactory'
+import {CreateTaskResponse} from './AbstractTaskIntegrationManager'
 import JiraServerRestManager from './jiraServer/JiraServerRestManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {ExternalLinks} from '~/types/constEnums'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
+import AbstractTaskIntegrationManager from './AbstractTaskIntegrationManager'
 
-export default class JiraServerTaskIntegrationManager implements TaskIntegrationManager {
+export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegrationManager {
   public title = 'Jira Server'
   private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
   private readonly provider: IntegrationProviderJiraServer
@@ -16,6 +17,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     auth: IGetTeamMemberIntegrationAuthQueryResult,
     provider: IntegrationProviderJiraServer
   ) {
+    super()
     this.auth = auth
     this.provider = provider
   }

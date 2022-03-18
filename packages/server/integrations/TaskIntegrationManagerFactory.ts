@@ -1,56 +1,21 @@
-import {GraphQLResolveInfo} from 'graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from './JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from './GitHubTaskIntegrationManager'
 import JiraServerTaskIntegrationManager from './JiraServerTaskIntegrationManager'
-import {TaskIntegration} from '../database/types/Task'
-import {Doc} from '../utils/convertContentStateToADF'
-import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
+import {DataLoaderWorker} from '../graphql/graphql'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
-
-export type CreateTaskResponse =
-  | {
-      integrationHash: string
-      integration: TaskIntegration
-    }
-  | Error
-
-export interface TaskIntegrationManager {
-  title: string
-
-  createTask(params: {
-    rawContentStr: string
-    integrationRepoId: string
-    createdBySomeoneElseComment?: Doc | string
-    context?: GQLContext
-    info?: GraphQLResolveInfo
-  }): Promise<CreateTaskResponse>
-
-  // TODO: replace with addCreatedBySomeoneElseComment everywhere
-  getCreatedBySomeoneElseComment?(
-    viewerName: string,
-    assigneeName: string,
-    teamName: string,
-    teamDashboardUrl: string
-  ): Doc | string
-
-  addCreatedBySomeoneElseComment?(
-    viewerName: string,
-    assigneeName: string,
-    teamName: string,
-    teamDashboardUrl: string,
-    integrationHash: string
-  )
-
-  getIssue?(taskId: string)
-}
 
 export default class TaskIntegrationManagerFactory {
   public static async initManager(
     dataLoader: DataLoaderWorker,
     service: IntegrationProviderServiceEnumType,
     {teamId, userId}: {teamId: string; userId: string}
-  ): Promise<TaskIntegrationManager | null> {
+  ): Promise<
+    | JiraTaskIntegrationManager
+    | GitHubTaskIntegrationManager
+    | JiraServerTaskIntegrationManager
+    | null
+  > {
     if (service === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       return auth && new JiraTaskIntegrationManager(auth)
