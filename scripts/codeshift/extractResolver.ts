@@ -1,3 +1,15 @@
+/*
+ Usage: jscodeshift --extensions=tsx,ts,js --parser=tsx -t ./scripts/codeshift/extractResolver.ts ./packages/server/graphql/intranetSchema/queries
+ This codemod extracts the resolve function(s) from GraphQLObjectTypes and query/mutations
+ and puts them in a file by themselves, following SDL-driven development
+ Shortcomings:
+   - It extracts all imports, too. You'll need to run VSCode "organize imports" to removed the unused ones (see organize-imports-cli)
+   - It does not pull over other helper functions at the top of the file, you'll need to copy & paste those over
+   - For types, it sets the `type *Source = any`, so you'll want to manually make that more strict
+     - It also doesn't add that *Sorce to the codegen.json, you'll want to do that, too
+   - If you run it on a while directory, it'll recurse through subdirectories (e.g. /queries/helpers). So you'll want to move the helpers over, first
+*/
+
 import fs from 'fs'
 import core, {Collection, Transform} from 'jscodeshift/src/core'
 import path from 'path'

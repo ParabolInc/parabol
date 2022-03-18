@@ -1,5 +1,5 @@
-import authCount from '../../intranetSchema/queries/helpers/authCount'
-import authCountByDomain from '../../intranetSchema/queries/helpers/authCountByDomain'
+import authCount from '../queries/helpers/authCount'
+import authCountByDomain from '../queries/helpers/authCountByDomain'
 import {LoginsPayloadResolvers} from '../resolverTypes'
 
 export interface LoginsPayloadSource {

@@ -1,8 +1,8 @@
 import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../../graphql'
+import authCount from '../../private/queries/helpers/authCount'
+import authCountByDomain from '../../private/queries/helpers/authCountByDomain'
 import DomainCountPayload from './DomainCountPayload'
-import authCount from '../queries/helpers/authCount'
-import authCountByDomain from '../queries/helpers/authCountByDomain'
 
 const LoginsPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'LoginsPayload',
