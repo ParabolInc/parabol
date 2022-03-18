@@ -3,7 +3,7 @@ import authCountByDomain from '../../intranetSchema/queries/helpers/authCountByD
 import {SignupsPayloadResolvers} from '../resolverTypes'
 
 export type SignupsPayloadSource = {
-  after: Date | null
+  after?: Date | null
   isActive: boolean
 }
 
