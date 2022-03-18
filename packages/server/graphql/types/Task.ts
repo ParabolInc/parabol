@@ -192,10 +192,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           const query = `
           {
              issue(id: "${gid}"){
-                   __typename
-                   id
-                   iid
-                   title
+                   ...info
                   }
                 }`
           const manager = new GitLabServerManager(accessToken)
