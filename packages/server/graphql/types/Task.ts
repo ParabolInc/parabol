@@ -14,7 +14,6 @@ import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../types/githubTypes'
 import {getUserId} from '../../utils/authorization'
 import getGitHubRequest from '../../utils/getGitHubRequest'
-import getGitLabRequest from '../../utils/getGitLabRequest'
 import getIssueLabels from '../../utils/githubQueries/getIssueLabels.graphql'
 import sendToSentry from '../../utils/sendToSentry'
 import connectionDefinitions from '../connectionDefinitions'
@@ -30,6 +29,7 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
+import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -198,8 +198,9 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
                    title
                   }
                 }`
-          const gitlabRequest = getGitLabRequest(info, context, {accessToken})
-          const [data, error] = await gitlabRequest(query)
+          const manager = new GitLabServerManager(accessToken)
+          const gitLabRequest = manager.getGitLabRequest(info, context)
+          const [data, error] = await gitLabRequest(query, {})
           if (error) {
             sendToSentry(error, {userId: accessUserId})
           }

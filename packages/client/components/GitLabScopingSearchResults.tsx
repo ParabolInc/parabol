@@ -129,7 +129,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   )
 
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
-  const {data, hasNext, loadNext, isLoadingNext} = paginationRes
+  const {data, hasNext, loadNext} = paginationRes
   const {viewer} = data
   const meeting = useFragment(
     graphql`
@@ -168,17 +168,18 @@ const GitLabScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // when there are no issues in the initial query, gitlab can return an error with hasMore=false even though there are more projects
-  const noProjectsWithIssuesErrMsg = 'The user aborted a request.'
-  const errorMessage = errors?.[0]?.message
-  if (errorMessage === noProjectsWithIssuesErrMsg && !isLoadingNext) {
+  // gitlab bug: a server error is returned and query is null when there are more projects available. For me, if the projectsFirst arg is <16, an error is returned and loadNext is required. See: https://github.com/ParabolInc/parabol/pull/6160#discussion_r826871705
+  if (gitlab?.api?.query === null) {
     loadNext(20)
   }
   if (!issues) return <MockScopingList />
   if (issues.length === 0 && !isEditing) {
     return (
       <>
-        <IntegrationScopingNoResults error={errorMessage} msg={'No issues match that query'} />
+        <IntegrationScopingNoResults
+          error={errors?.[0]?.message}
+          msg={'No issues match that query'}
+        />
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     )
