@@ -9,7 +9,7 @@ const phaseTypes = [
   'firstcall',
   'lastcall',
   'SCOPE',
-  'responses'
+  'RESPONSES'
 ] as const
 
 const GenericMeetingStage = new GraphQLObjectType<any, GQLContext>({

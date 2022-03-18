@@ -7,6 +7,7 @@ import {Link} from 'react-router-dom'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import action from '../../../static/images/illustrations/action.png'
+import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import useAnimatedMeetingCard from '../hooks/useAnimatedMeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
@@ -142,7 +143,8 @@ interface Props {
 const ILLUSTRATIONS = {
   retrospective,
   action,
-  poker
+  poker,
+  teamPrompt
 }
 const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
@@ -176,12 +178,9 @@ const MeetingCard = (props: Props) => {
       closeTooltip()
     }, 2000)
   }
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
+    HTMLDivElement
+  >(MenuPosition.UPPER_RIGHT)
 
   return (
     <CardWrapper
