@@ -246,7 +246,7 @@ const TeamArchive = (props: Props) => {
     oldEdgesRef.current = edges
   }, [edges, oldEdgesRef])
 
-  const rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
+  const cellRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const index = getIndex(columnIndex, rowIndex)
     if (!isRowLoaded({index})) return undefined
@@ -280,7 +280,7 @@ const TeamArchive = (props: Props) => {
     )
   }
 
-  const _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
+  const onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
     if (!_onRowsRenderedRef.current) return
     _onRowsRenderedRef.current({
       startIndex: getIndex(columnStartIndex, rowStartIndex),
@@ -314,7 +314,7 @@ const TeamArchive = (props: Props) => {
                         {({height, width}) => {
                           return (
                             <Grid
-                              cellRenderer={rowRenderer}
+                              cellRenderer={cellRenderer}
                               columnCount={columnCount}
                               columnWidth={CARD_WIDTH}
                               deferredMeasurementCache={cellCache}
@@ -322,7 +322,7 @@ const TeamArchive = (props: Props) => {
                               estimatedRowSize={182}
                               height={height}
                               onRowsRendered={onRowsRendered}
-                              onSectionRendered={_onSectionRendered}
+                              onSectionRendered={onSectionRendered}
                               ref={(c) => {
                                 gridRef.current = c
                                 registerChild(c)
