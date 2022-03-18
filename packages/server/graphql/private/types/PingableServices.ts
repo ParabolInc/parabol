@@ -1,7 +1,7 @@
 import sleep from 'parabol-client/utils/sleep'
-import getRethink from '../../../../database/rethinkDriver'
-import getPg from '../../../../postgres/getPg'
-import getRedis from '../../../../utils/getRedis'
+import getRethink from '../../../database/rethinkDriver'
+import getPg from '../../../postgres/getPg'
+import getRedis from '../../../utils/getRedis'
 import {PingableServicesResolvers} from '../resolverTypes'
 
 const pingService = async <TSuccess>(thunk: () => Promise<TSuccess>) => {

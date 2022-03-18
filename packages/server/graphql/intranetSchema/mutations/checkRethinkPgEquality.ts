@@ -71,7 +71,7 @@ const checkRethinkPgEquality = {
     const fileName = `${tableName}-${new Date()}`
     const fileLocation = path.join(
       process.cwd(),
-      'packages/server/graphql/intranetSchema/mutations',
+      'packages/server/graphql/private/mutations',
       '__output__',
       fileName
     )
