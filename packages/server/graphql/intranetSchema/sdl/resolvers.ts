@@ -2,7 +2,7 @@
  * No need to mess with this unless we add subscriptions to the private schema
  */
 import path from 'path'
-import {Resolvers} from './resolverTypes'
+import {Resolvers} from '../../private/resolverTypes'
 
 const importAll = (context: __WebpackModuleApi.RequireContext) => {
   const collector = {} as Record<string, any>

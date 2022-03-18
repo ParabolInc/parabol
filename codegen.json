@@ -13,7 +13,7 @@
       "documents": "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
       "plugins": ["typescript", "typescript-operations", "add"]
     },
-    "packages/server/graphql/intranetSchema/sdl/resolverTypes.ts": {
+    "packages/server/graphql/private/resolverTypes.ts": {
       "schema": "packages/server/graphql/intranetSchema/intranetSchema.graphql",
       "plugins": ["typescript", "typescript-resolvers", "add"],
       "config": {

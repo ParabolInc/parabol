@@ -27,16 +27,31 @@ const transform: Transform = (fileInfo, api, options) => {
     })
     resolverMapProperties.push(entry)
   })
-
+  if (resolverMapProperties.length === 0) return
   const obj = j.objectExpression.from({
     properties: resolverMapProperties
   })
   const objStr = j(obj).toSource()
+
+  const from = path.dirname(path.join(absPath, '../../../private/types/foo.ts'))
   let importStrs = ''
   const importDecs = root.find(j.ImportDeclaration).forEach((imp, idx) => {
+    if (typeName === 'LoginsPayload') {
+      // debugger
+    }
+    const absPathDir = path.dirname(absPath)
+    const oldRelative = imp.value.source.value as string
+    if (!path.isAbsolute(oldRelative)) {
+      const oldAbsolute = path.resolve(absPathDir, oldRelative)
+      const relative = path.relative(from, oldAbsolute)
+      console.log({oldRelative, oldAbsolute, relative})
+      imp.value.source.value = relative
+    }
     const bof = idx === 0 ? '' : '\n'
+
     importStrs += bof + j(imp.get()).toSource()
   })
+  // return
   const typeImport = `import {${resolversName}} from '../resolverTypes'`
   const sourceExport = `export type ${sourceTypeName} = any`
   const varDef = `const ${typeName}: ${resolversName} = ${objStr}`
@@ -57,7 +72,7 @@ ${exportLine}`
 
   const {ext} = path.parse(absPath)
 
-  const newPath = path.join(absPath, `../../../private/${typeName}${ext}`)
+  const newPath = path.join(absPath, `../../../private/types/${typeName}${ext}`)
   fs.writeFileSync(newPath, prettyNewDoc)
 }
 
