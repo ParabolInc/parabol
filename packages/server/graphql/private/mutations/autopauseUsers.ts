@@ -3,9 +3,9 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const autopauseUsers: QueryResolvers['autopauseUsers'] = async (_source, _args, {authToken}) => {
+const autopauseUsers: MutationResolvers['autopauseUsers'] = async (_source, _args, {authToken}) => {
   const r = await getRethink()
 
   // AUTH

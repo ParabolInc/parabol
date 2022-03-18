@@ -2,9 +2,9 @@ import getRethink from '../../../database/rethinkDriver'
 import {isSuperUser} from '../../../utils/authorization'
 import StripeManager from '../../../utils/StripeManager'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const stripeUpdateCreditCard: QueryResolvers['stripeUpdateCreditCard'] = async (
+const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = async (
   _source,
   {customerId},
   {authToken}

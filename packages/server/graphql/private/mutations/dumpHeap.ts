@@ -2,9 +2,9 @@ import fs from 'fs'
 import inspector from 'inspector'
 import path from 'path'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const dumpHeap: QueryResolvers['dumpHeap'] = async (_source, {isDangerous}, {authToken}) => {
+const dumpHeap: MutationResolvers['dumpHeap'] = async (_source, {isDangerous}, {authToken}) => {
   // AUTH
   requireSU(authToken)
   if (!isDangerous)

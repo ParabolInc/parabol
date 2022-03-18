@@ -1,4 +1,4 @@
-## Intranet/Admin interface
+## Private Schema/Admin interface
 
 This part of Parabol's API is available only for admins. To become an admin user has to have `su` role set.
 
@@ -12,7 +12,7 @@ More info: https://github.com/graphql/graphiql
 
 ### Directory Hierarchy
 
-We're attempting to move to an SDL-based GraphQL structure instead of code-first.
+We've moved to an SDL-based GraphQL structure instead of code-first.
 That means we write the schema in .graphql files and run it through code that creates an executable schema.
 The old way was to create objects in typescript & generate a .graphql from those assembled objects.
 Writing new features should be faster, require less code, and have strong typings.

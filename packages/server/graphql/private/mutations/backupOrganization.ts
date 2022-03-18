@@ -9,7 +9,7 @@ import getPg from '../../../postgres/getPg'
 import getPgConfig from '../../../postgres/getPgConfig'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 const exec = util.promisify(childProcess.exec)
 
@@ -116,7 +116,7 @@ const backupPgOrganization = async (orgIds: string[]) => {
   await pg.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
 }
 
-const backupOrganization: QueryResolvers['backupOrganization'] = async (
+const backupOrganization: MutationResolvers['backupOrganization'] = async (
   _source,
   {orgIds},
   {authToken}

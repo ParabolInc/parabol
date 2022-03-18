@@ -7,9 +7,9 @@ import {requireSU} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const addNewFeature: QueryResolvers['addNewFeature'] = async (
+const addNewFeature: MutationResolvers['addNewFeature'] = async (
   _source,
   {actionButtonCopy, snackbarMessage, url},
   {authToken, dataLoader}
@@ -60,6 +60,7 @@ const addNewFeature: QueryResolvers['addNewFeature'] = async (
       reject(e)
     })
   })
+  return {newFeature}
 }
 
 export default addNewFeature

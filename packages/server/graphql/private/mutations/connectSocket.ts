@@ -7,7 +7,7 @@ import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUser
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -15,7 +15,7 @@ export interface UserPresence {
   socketId: string
 }
 const {SERVER_ID} = process.env
-const connectSocket: QueryResolvers['connectSocket'] = async (
+const connectSocket: MutationResolvers['connectSocket'] = async (
   _source,
   _args,
   {authToken, dataLoader, socketId}

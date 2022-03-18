@@ -2,9 +2,9 @@ import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
 import {isSuperUser} from '../../../utils/authorization'
 import StripeManager from '../../../utils/StripeManager'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const stripeCreateInvoice: QueryResolvers['stripeCreateInvoice'] = async (
+const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
   _source,
   {invoiceId},
   {authToken, dataLoader}

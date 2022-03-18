@@ -2,9 +2,9 @@ import {isNotNull} from 'parabol-client/utils/predicates'
 import getAtlassianAuthsToUpdate from '../../../postgres/queries/getAtlassianAuthsToUpdate'
 import {requireSU} from '../../../utils/authorization'
 import isNotError from '../../errorFilter'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const updateOAuthRefreshTokens: QueryResolvers['updateOAuthRefreshTokens'] = async (
+const updateOAuthRefreshTokens: MutationResolvers['updateOAuthRefreshTokens'] = async (
   _source,
   {updatedBefore},
   {authToken, dataLoader}

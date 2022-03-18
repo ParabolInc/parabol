@@ -4,10 +4,10 @@ import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUser
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
-import {UserPresence} from '../../intranetSchema/mutations/connectSocket'
-import {QueryResolvers} from '../resolverTypes'
+import {UserPresence} from '../../private/mutations/connectSocket'
+import {MutationResolvers} from '../resolverTypes'
 
-const disconnectSocket: QueryResolvers['disconnectSocket'] = async (
+const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   _source,
   _args,
   {authToken, dataLoader, socketId}

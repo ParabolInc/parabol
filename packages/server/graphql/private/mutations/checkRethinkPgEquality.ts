@@ -3,7 +3,7 @@ import path from 'path'
 import checkTeamEq from '../../../postgres/utils/checkTeamEq'
 import checkUserEq from '../../../postgres/utils/checkUserEq'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 const tableResolvers = {
   User: checkUserEq,
@@ -25,7 +25,7 @@ const checkEqAndWriteOutput = async (
   await fs.promises.writeFile(fileLocation, JSON.stringify(errors))
 }
 
-const checkRethinkPgEquality: QueryResolvers['checkRethinkPgEquality'] = async (
+const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = async (
   _source,
   {tableName, maxErrors, writeToFile},
   {authToken}

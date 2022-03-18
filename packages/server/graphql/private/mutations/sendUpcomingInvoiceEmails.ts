@@ -10,7 +10,7 @@ import getMailManager from '../../../email/getMailManager'
 import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTemplate'
 import IUser from '../../../postgres/types/IUser'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]
@@ -59,7 +59,7 @@ const getEmailDetails = (organizations: Organization[], userMap: Map<string, IUs
   return details
 }
 
-const sendUpcomingInvoiceEmails: QueryResolvers['sendUpcomingInvoiceEmails'] = async (
+const sendUpcomingInvoiceEmails: MutationResolvers['sendUpcomingInvoiceEmails'] = async (
   _source,
   _args,
   {authToken, dataLoader}

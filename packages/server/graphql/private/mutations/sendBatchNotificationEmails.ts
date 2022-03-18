@@ -6,9 +6,9 @@ import getMailManager from '../../../email/getMailManager'
 import notificationSummaryCreator from '../../../email/notificationSummaryCreator'
 import getPg from '../../../postgres/getPg'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const sendBatchNotificationEmails: QueryResolvers['sendBatchNotificationEmails'] = async (
+const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmails'] = async (
   _source,
   _args,
   {authToken}

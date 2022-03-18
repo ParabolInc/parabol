@@ -8,9 +8,9 @@ import {requireSU} from '../../../utils/authorization'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const hardDeleteUser: QueryResolvers['hardDeleteUser'] = async (
+const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   _source,
   {userId, email, reasonText},
   {authToken, dataLoader}

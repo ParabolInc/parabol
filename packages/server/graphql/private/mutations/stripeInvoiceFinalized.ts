@@ -1,9 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
 import {isSuperUser} from '../../../utils/authorization'
 import StripeManager from '../../../utils/StripeManager'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const stripeInvoiceFinalized: QueryResolvers['stripeInvoiceFinalized'] = async (
+const stripeInvoiceFinalized: MutationResolvers['stripeInvoiceFinalized'] = async (
   _source,
   {invoiceId},
   {authToken}

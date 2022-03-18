@@ -2,9 +2,9 @@ import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {isSuperUser} from '../../../utils/authorization'
 import StripeManager from '../../../utils/StripeManager'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const stripeSucceedPayment: QueryResolvers['stripeSucceedPayment'] = async (
+const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
   _source,
   {invoiceId},
   {authToken}

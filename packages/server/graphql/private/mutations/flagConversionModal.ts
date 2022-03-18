@@ -1,8 +1,8 @@
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const flagConversionModal: QueryResolvers['flagConversionModal'] = async (
+const flagConversionModal: MutationResolvers['flagConversionModal'] = async (
   _source,
   {active, orgId},
   {authToken}

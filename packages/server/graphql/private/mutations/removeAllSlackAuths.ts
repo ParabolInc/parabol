@@ -1,8 +1,8 @@
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const removeAllSlackAuths: QueryResolvers['removeAllSlackAuths'] = async (
+const removeAllSlackAuths: MutationResolvers['removeAllSlackAuths'] = async (
   _source,
   _args,
   {authToken}

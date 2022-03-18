@@ -12,7 +12,7 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {SSORelayState} from '../../queries/SAMLIdP'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(validator)
@@ -28,7 +28,7 @@ const getRelayState = (body: any) => {
   return relayState
 }
 
-const loginSAML: QueryResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
+const loginSAML: MutationResolvers['loginSAML'] = async (_source, {samlName, queryString}) => {
   const r = await getRethink()
   const body = querystring.parse(queryString)
   const normalizedName = samlName.trim().toLowerCase()

@@ -11,7 +11,7 @@ import StripeManager from '../../../utils/StripeManager'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 const getBillingLeaderUser = async (
   email: string | null | undefined,
@@ -51,7 +51,7 @@ const getBillingLeaderUser = async (
   return billingLeaderUsers[0]
 }
 
-const draftEnterpriseInvoice: QueryResolvers['draftEnterpriseInvoice'] = async (
+const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = async (
   _source,
   {orgId, quantity, email, apEmail, plan},
   {authToken, dataLoader}

@@ -2,8 +2,8 @@ import authCount from '../queries/helpers/authCount'
 import authCountByDomain from '../queries/helpers/authCountByDomain'
 import {LoginsPayloadResolvers} from '../resolverTypes'
 
-export interface LoginsPayloadSource {
-  after?: Date
+export type LoginsPayloadSource = {
+  after?: Date | null
   isActive: boolean
 }
 

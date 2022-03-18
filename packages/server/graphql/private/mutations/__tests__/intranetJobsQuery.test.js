@@ -4,7 +4,7 @@ import MockDB from '../../../../__tests__/setup/MockDB'
 import {__anHourAgo, __now, __overADayAgo} from '../../../../__tests__/setup/mockTimes'
 import getRethink from '../../../../database/rethinkDriver'
 import {sendBatchEmail} from '../../../../email/sendEmail'
-import sendBatchNotificationEmails from '../../../intranetSchema/mutations/sendBatchNotificationEmails'
+import sendBatchNotificationEmails from '../sendBatchNotificationEmails'
 
 // Manage side-effects
 console.error = jest.fn()

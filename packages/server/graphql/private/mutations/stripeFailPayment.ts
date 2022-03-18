@@ -6,9 +6,9 @@ import NotificationPaymentRejected from '../../../database/types/NotificationPay
 import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import StripeManager from '../../../utils/StripeManager'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const stripeFailPayment: QueryResolvers['stripeFailPayment'] = async (
+const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   _source,
   {invoiceId},
   {authToken}

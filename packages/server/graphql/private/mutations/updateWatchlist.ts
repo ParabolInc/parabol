@@ -3,9 +3,9 @@ import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const updateWatchlist: QueryResolvers['updateWatchlist'] = async (
+const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
   _source,
   {includeInWatchlist, emails, domain},
   {authToken}

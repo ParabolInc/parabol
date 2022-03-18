@@ -1,9 +1,9 @@
 import {USER_OVERLIMIT_COPY_LIMIT} from '../../../postgres/constants'
 import updateUser from '../../../postgres/queries/updateUser'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const flagOverLimit: QueryResolvers['flagOverLimit'] = async (
+const flagOverLimit: MutationResolvers['flagOverLimit'] = async (
   _source,
   {copy, orgId},
   {authToken, dataLoader}

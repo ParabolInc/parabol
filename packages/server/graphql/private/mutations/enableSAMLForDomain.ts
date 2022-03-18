@@ -2,7 +2,7 @@ import * as samlify from 'samlify'
 import {v4 as uuid} from 'uuid'
 import zlib from 'zlib'
 import getRethink from '../../../database/rethinkDriver'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   const template = `
@@ -23,7 +23,7 @@ const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   return url.toString()
 }
 
-const enableSAMLForDomain: QueryResolvers['enableSAMLForDomain'] = async (
+const enableSAMLForDomain: MutationResolvers['enableSAMLForDomain'] = async (
   _source,
   {name, domains, metadata}
 ) => {

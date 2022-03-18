@@ -1,9 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const lockTeams: QueryResolvers['lockTeams'] = async (
+const lockTeams: MutationResolvers['lockTeams'] = async (
   _source,
   {message, teamIds, isPaid},
   {authToken}

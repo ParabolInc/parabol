@@ -13,7 +13,7 @@ import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import {notifyMattermostTimeLimitEnd} from '../../mutations/helpers/notifications/notifyMattermost'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 const getSlackNotificationAndAuth = async (teamId: string, facilitatorUserId: string) => {
   const r = await getRethink()
@@ -95,7 +95,7 @@ const processJob = async (job: ScheduledJobUnion, {dataLoader}: {dataLoader: Dat
   processor(job, {dataLoader}).catch(console.log)
 }
 
-const runScheduledJobs: QueryResolvers['runScheduledJobs'] = async (
+const runScheduledJobs: MutationResolvers['runScheduledJobs'] = async (
   _source,
   {seconds},
   {authToken, dataLoader}

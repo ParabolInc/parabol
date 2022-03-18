@@ -5,7 +5,7 @@ import InvoiceItemHook from '../../../database/types/InvoiceItemHook'
 import {isSuperUser} from '../../../utils/authorization'
 import sendToSentry from '../../../utils/sendToSentry'
 import StripeManager from '../../../utils/StripeManager'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 const MAX_STRIPE_DELAY = 3 // seconds
 
@@ -86,7 +86,7 @@ const tagInvoiceItemWithHook = async (
   return true
 }
 
-const stripeUpdateInvoiceItem: QueryResolvers['stripeUpdateInvoiceItem'] = async (
+const stripeUpdateInvoiceItem: MutationResolvers['stripeUpdateInvoiceItem'] = async (
   _source,
   {invoiceItemId},
   {authToken}

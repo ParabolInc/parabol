@@ -2,14 +2,14 @@ import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import standardError from '../../../utils/standardError'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
 interface MessageSlackUserError {
   userId: string
   error: string
 }
 
-const messageAllSlackUsers: QueryResolvers['messageAllSlackUsers'] = async (
+const messageAllSlackUsers: MutationResolvers['messageAllSlackUsers'] = async (
   _source,
   {message},
   {authToken}

@@ -1,8 +1,8 @@
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const setOrganizationDomain: QueryResolvers['setOrganizationDomain'] = async (
+const setOrganizationDomain: MutationResolvers['setOrganizationDomain'] = async (
   _source,
   {orgId, domain},
   {authToken}
