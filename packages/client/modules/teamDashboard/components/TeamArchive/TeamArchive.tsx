@@ -2,7 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
+import {
+  AutoSizer,
+  CellMeasurer,
+  CellMeasurerCache,
+  Grid,
+  InfiniteLoader,
+  ScrollParams
+} from 'react-virtualized'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import getSafeRegex from '~/utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
@@ -92,6 +100,7 @@ interface Props {
 }
 
 const TeamArchive = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {returnToTeamId, queryRef, teamRef} = props
   const viewerRef = usePreloadedQuery<TeamArchiveQuery>(
     graphql`
@@ -288,6 +297,23 @@ const TeamArchive = (props: Props) => {
     })
   }
 
+  const [isScrolledToEnd, setIsScrolledToEnd] = useState(false)
+  const onScroll = ({clientHeight, scrollHeight, scrollTop}: ScrollParams) => {
+    if (!isScrolledToEnd && scrollTop + clientHeight >= scrollHeight) {
+      setIsScrolledToEnd(true)
+    }
+  }
+
+  useEffect(() => {
+    if (!hasNext && isScrolledToEnd) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'teamArchiveLoadedCompletely',
+        message: "🎉 That's all folks! There are no further tasks in the archive.",
+        autoDismiss: 5
+      })
+    }
+  }, [hasNext, isScrolledToEnd])
+
   return (
     <>
       {!returnToTeamId && <UserTasksHeader viewerRef={viewer} />}
@@ -331,6 +357,7 @@ const TeamArchive = (props: Props) => {
                               rowHeight={cellCache.rowHeight}
                               style={{outline: 'none'}}
                               width={width}
+                              onScroll={onScroll}
                             />
                           )
                         }}
