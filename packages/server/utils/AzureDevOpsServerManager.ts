@@ -4,10 +4,8 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
-  //OAuth2AuthorizationParams,
-  OAuth2RefreshAuthorizationParams,
-  OAuth2PkceAuthorizationParams
-  //OAuth2PkceRefreshAuthorizationParams
+  OAuth2PkceAuthorizationParams,
+  OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
 
 class AzureDevOpsServerManager extends AzureDevOpsManager {
@@ -23,21 +21,27 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
   }
 
   static async refresh(refreshToken: string) {
+    console.log(`inside refreshToken`)
     return AzureDevOpsServerManager.fetchToken({
       grant_type: 'refresh_token',
-      refresh_token: refreshToken
+      refresh_token: refreshToken,
+      scope: '499b84ac-1321-427f-aa17-267ca6975798/.default',
+      redirect_uri: 'http://localhost:8081/'
     })
   }
 
   private static async fetchToken(
-    params: OAuth2PkceAuthorizationParams | OAuth2RefreshAuthorizationParams
+    params: OAuth2PkceAuthorizationParams | OAuth2PkceRefreshAuthorizationParams
   ) {
+    console.log(`inside fetchToken with params of ${params}`)
     const body = {
       ...params,
       client_id: process.env.AZUREDEVOPS_CLIENT_ID!
     }
     const additonalHeaders = {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
+      // eslint-disable-next-line prettier/prettier
+      'Origin': 'http://localhost:8081'
     }
     const authUrl = `https://login.microsoftonline.com/${process.env.AZUREDEVOPS_TENANT}/oauth2/v2.0/token`
     return authorizeOAuth2({authUrl, body, additonalHeaders})

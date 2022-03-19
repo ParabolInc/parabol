@@ -49,6 +49,7 @@ export const freshAzureDevOpsAuth = (
 ): DataLoader<TeamUserKey, AzureDevOpsAuth | null, string> => {
   return new DataLoader<TeamUserKey, AzureDevOpsAuth | null, string>(
     async (keys) => {
+      console.log('Inside resolver')
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const userAzureDevOpsAuths = await getAzureDevOpsAuthByUserId(userId)
@@ -56,6 +57,7 @@ export const freshAzureDevOpsAuth = (
             (azureDevOpsAuth) => azureDevOpsAuth.teamId === teamId
           )
           if (!azureDevOpsAuthToRefresh) {
+            console.log('error line 61')
             return null
           }
 
@@ -64,9 +66,13 @@ export const freshAzureDevOpsAuth = (
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
+            console.log(`refresh token - ${refreshToken}`)
             const oauthRes = await AzureDevOpsServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
               //sendToSentry(oautRes)
+              console.log(oauthRes)
+              console.log(oauthRes.message)
+              console.log('after token')
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
@@ -106,7 +112,7 @@ export const azureDevOpsUserStories = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId, instanceId}) => {
-          const auth = parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) return []
           const {accessToken} = auth
           const manager = new AzureDevOpsServerManager(accessToken)
