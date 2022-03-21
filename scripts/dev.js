@@ -13,8 +13,8 @@ const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
-// const {generate} = require('@graphql-codegen/cli')
-// const codegenSchema = require('../codegen.json')
+const {generate} = require('@graphql-codegen/cli')
+const codegenSchema = require('../codegen.json')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -44,8 +44,14 @@ const dev = async (maybeInit) => {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
   }
-  // Enable this if you're creating new github schemas
-  // await generate(codegenSchema)
+  try {
+    await generate(codegenSchema)
+  } catch {
+    // If you remove a file (e.g. GraphQL Schema) the codegen depends on it'll fail on first run
+    // After that schema gets generated, codegen will succeed
+    console.log('codegen failed! It should be successful next time. If it fails again, let someone know')
+  }
+
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
   const migrateRethinkDB = require('./migrate')()

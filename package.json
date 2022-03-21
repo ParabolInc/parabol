@@ -69,6 +69,7 @@
     "@graphql-codegen/cli": "^2.3.1",
     "@graphql-codegen/typescript": "^2.4.0",
     "@graphql-codegen/typescript-operations": "^2.2.0",
+    "@graphql-codegen/typescript-resolvers": "^2.5.2",
     "@sucrase/webpack-loader": "^2.0.0",
     "@types/jscodeshift": "^0.11.3",
     "@typescript-eslint/eslint-plugin": "5.4.0",

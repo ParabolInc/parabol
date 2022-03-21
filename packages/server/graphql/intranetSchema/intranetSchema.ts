@@ -1,4 +1,7 @@
+import {loadFilesSync} from '@graphql-tools/load-files'
+import {mergeSchemas} from '@graphql-tools/schema'
 import {GraphQLObjectType, GraphQLSchema} from 'graphql'
+import path from 'path'
 import {GQLContext} from '../graphql'
 import suCountTiersForUser from '../queries/suCountTiersForUser'
 import suOrgCount from '../queries/suOrgCount'
@@ -33,6 +36,8 @@ import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
 import stripeSucceedPayment from './mutations/stripeSucceedPayment'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
+import updateOAuthRefreshTokens from './mutations/updateOAuthRefreshTokens'
+import updateWatchlist from './mutations/updateWatchlist'
 import company from './queries/company'
 import dailyPulse from './queries/dailyPulse'
 import logins from './queries/logins'
@@ -40,9 +45,7 @@ import pingActionTick from './queries/pingActionTick'
 import signups from './queries/signups'
 import user from './queries/user'
 import users from './queries/users'
-import updateEmail from './mutations/updateEmail'
-import updateWatchlist from './mutations/updateWatchlist'
-import updateOAuthRefreshTokens from './mutations/updateOAuthRefreshTokens'
+import resolverMap from './sdl/resolvers'
 
 const query = new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
@@ -94,10 +97,16 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       stripeUpdateCreditCard,
       stripeUpdateInvoiceItem,
       stripeInvoiceFinalized,
-      updateEmail,
       updateWatchlist,
       updateOAuthRefreshTokens
     } as any)
 })
 
-export default new GraphQLSchema({query, mutation, types: rootTypes})
+const codeFirstSchema = new GraphQLSchema({query, mutation, types: rootTypes})
+
+const typeDefs = loadFilesSync(
+  path.join(__PROJECT_ROOT__, 'packages/server/graphql/intranetSchema/sdl/typeDefs/*.graphql')
+)
+
+const schema = mergeSchemas({schemas: [codeFirstSchema], typeDefs, resolvers: resolverMap})
+export default schema

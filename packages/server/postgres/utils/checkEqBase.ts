@@ -118,10 +118,7 @@ export async function checkTableEq(
     }
 
     const offset = batchSize * i
-    const rethinkRows = (await rethinkQuery
-      .skip(offset)
-      .limit(batchSize)
-      .run()) as RethinkDoc[]
+    const rethinkRows = (await rethinkQuery.skip(offset).limit(batchSize).run()) as RethinkDoc[]
     if (!rethinkRows.length) {
       break
     }

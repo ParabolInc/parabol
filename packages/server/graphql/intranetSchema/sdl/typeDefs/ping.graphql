@@ -1,0 +1,13 @@
+type PingableServices {
+  """Response time for RethinkDB (in milliseconds) -1 if unreachable after 5 seconds"""
+  rethinkdb: Int!
+  """Response time for Postgres (in milliseconds) -1 if unreachable after 5 seconds"""
+  postgres: Int!
+  """Response time for Redis (in milliseconds) -1 if unreachable after 5 seconds"""
+  redis: Int!
+}
+
+extend type Query {
+  """Ping various services to determine response time & availability"""
+  ping: PingableServices!
+}
