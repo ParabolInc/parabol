@@ -21,10 +21,12 @@ import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleEditTask from './handlers/handleEditTask'
 import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
+import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import popInvolvementToast from './toasts/popInvolvementToast'
 import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
+import {upperFirst} from '~/utils/upperFirst'
 
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
@@ -102,6 +104,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   handleUpsertTasks(task, store)
   handleJiraCreateIssue(task, store)
   handleGitHubCreateIssue(task, store)
+  handleGitLabCreateIssue(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -135,7 +138,9 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
     updater: (store) => {
       const context = {atmosphere, store}
       const payload = store.getRootField('createTask')
+      console.log('🚀  ~ updater', payload)
       if (!payload) return
+      return
       createTaskTaskUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
@@ -166,6 +171,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecords([], 'replies')
       if (integration) {
         const {service, serviceProjectHash} = integration
+        console.log('🚀  ~ integration ----', integration)
         if (service === 'jira') {
           const {cloudId, projectKey} = JiraProjectId.split(serviceProjectHash)
           const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
@@ -194,21 +200,24 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else if (service === 'gitlab') {
-          const {integrationHash} = newTask
-          // const {id: gid, iid, webPath} = integration
-
-          const {webPath, iid, gid} = GitLabIssueId.split(integrationHash)
-          // const repository = createProxyRecord(store, '_xGitHubRepository', {
-          //   nameWithOwner,
-          //   name: repoName,
-          //   owner: repoOwner
-          // })
-          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
-            id: gid,
-            iid,
-            webPath
+          const fullPath = upperFirst(serviceProjectHash)
+          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabProject', {
+            __typename: '_xGitLabProject',
+            fullPath,
+            lastActivityAt: now
           })
-          // optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
+          const projectId = optimisticTaskIntegration.getValue('id')
+          const issue = createProxyRecord(store, '_xGitLabIssue', {
+            id: clientTempId(),
+            __typename: '_xGitLabIssue',
+            state: 'opened',
+            title: plaintextContent,
+            description: '',
+            projectPath: fullPath,
+            updatedAt: now,
+            projectId
+          })
+          optimisticTaskIntegration.setLinkedRecords([issue], 'issues')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else {
           console.log('FIXME: implement createTask')
@@ -219,6 +228,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleUpsertTasks(task as any, store)
       handleJiraCreateIssue(task, store)
       handleGitHubCreateIssue(task as any, store)
+      handleGitLabCreateIssue(task as any, store)
     },
     onError,
     onCompleted

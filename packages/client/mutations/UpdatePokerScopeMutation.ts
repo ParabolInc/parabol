@@ -215,14 +215,29 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
             optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           } else if (service === 'gitlab') {
+            console.log('🚀  ~ update poker scope', {serviceTaskId})
             const {gid} = GitLabIssueId.split(serviceTaskId)
+            console.log('🚀  ~ gid', gid)
+            const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabProject', {
+              __typename: '_xGitLabProject',
+              id: gid,
+              fullPath: serviceTaskId
+            })
             const gitlabIssue = store.get(gid)
             const iid = gitlabIssue?.getValue('iid')
-            const optimisticGitLabIssue = createProxyRecord(store, '_xGitLabIssue', {
+            const issue = createProxyRecord(store, '_xGitLabIssue', {
               title,
               iid
             })
-            optimisticTask.setLinkedRecord(optimisticGitLabIssue, 'integration')
+            optimisticTaskIntegration.setLinkedRecords([issue], 'issue')
+            optimisticTaskIntegration.setLinkedRecords([issue], 'issue')
+            console.log('🚀  ~ almost at the end of gitlab opt update poker', {
+              title,
+              iid,
+              optimisticTaskIntegration,
+              issue
+            })
+            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           }
 
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {

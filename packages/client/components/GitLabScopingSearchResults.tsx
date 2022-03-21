@@ -169,6 +169,9 @@ const GitLabScopingSearchResults = (props: Props) => {
         .filter((edge) => edge.node.__typename === '_xGitLabIssue')
         .map(({node}) => node)
     : null
+  console.log('🚀  ~ results', {
+    proj: paginationRes.data.viewer.teamMember?.integrations.gitlab.api.query.projects
+  })
   const [isEditing, setIsEditing] = useState(false)
   // const atmosphere = useAtmosphere()
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!

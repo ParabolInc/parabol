@@ -196,6 +196,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
                 id
                 iid
                 title
+                webPath
                 ...info
               }
             }
