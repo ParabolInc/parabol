@@ -201,8 +201,8 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
             }
           `
           const manager = new GitLabServerManager(accessToken)
-          const gitLabRequest = manager.getGitLabRequest(info, context)
-          const [data, error] = await gitLabRequest(query, {})
+          const gitlabRequest = manager.getGitLabRequest(info, context)
+          const [data, error] = await gitlabRequest(query, {})
           if (error) {
             sendToSentry(error, {userId: accessUserId})
           }
