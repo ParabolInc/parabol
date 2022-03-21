@@ -35,6 +35,7 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
+import TeamPromptResponsesPhase from './types/TeamPromptResponsesPhase'
 
 const rootTypes = [
   IntegrationProviderOAuth1,
@@ -50,6 +51,7 @@ const rootTypes = [
   UpdatesPhase,
   EstimatePhase,
   AgendaItemsPhase,
+  TeamPromptResponsesPhase,
   GenericMeetingPhase,
   EstimatePhase,
   NotificationTeamInvitation,
