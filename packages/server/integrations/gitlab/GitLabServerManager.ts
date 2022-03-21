@@ -1,22 +1,20 @@
 import {GraphQLResolveInfo} from 'graphql'
+import {RootSchema} from '../../graphql/rootSchema'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
-import {GitLabRequest} from '../../graphql/rootSchema'
-import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {GetProfileQuery} from '../../types/gitlabTypes'
 
 class GitLabServerManager {
-  readonly provider: IntegrationProviderGitLabOAuth2
   readonly accessToken: string
   readonly serverBaseUrl: string
 
-  constructor(accessToken: string, serverBaseUrl: string) {
+  constructor(accessToken: string) {
     this.accessToken = accessToken
-    this.serverBaseUrl = serverBaseUrl
+    this.serverBaseUrl = 'https://gitlab.com'
   }
 
   getGitLabRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {
     const {schema} = info
-    const composedRequest = (schema as any).gitlabRequest as GitLabRequest
+    const composedRequest = (schema as RootSchema).gitlabRequest
     return async <TData = any, TVars = any>(query: string, variables: TVars) => {
       const result = await composedRequest<TData, TVars>({
         query,
@@ -29,7 +27,7 @@ class GitLabServerManager {
         batchRef
       })
       const {data, errors} = result
-      const error = errors ? new Error(errors[0].message) : null
+      const error = errors ? new Error(errors[0]?.message) : null
       return [data, error] as [TData, typeof error]
     }
   }
@@ -40,8 +38,8 @@ class GitLabServerManager {
   ): Promise<[boolean, Error | null]> {
     if (!this.accessToken) return [false, new Error('GitLabServerManager has no access token')]
 
-    const gitLabRequest = this.getGitLabRequest(info, context)
-    const [, error] = await gitLabRequest<GetProfileQuery>(getProfile, {})
+    const gitlabRequest = this.getGitLabRequest(info, context)
+    const [, error] = await gitlabRequest<GetProfileQuery>(getProfile, {})
     if (error) return [false, error]
 
     return [true, null]

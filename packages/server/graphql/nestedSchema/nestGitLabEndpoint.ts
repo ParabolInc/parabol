@@ -21,8 +21,7 @@ const defaultExecutor: Executor<{
     controller.abort()
   }, endpointTimeout)
   try {
-    const uri = baseUri || 'https://gitlab.com' // TODO: why is baseUri undefined when adding issues to the Estimate phase?
-    const result = await fetch(`${uri}/api/graphql`, {
+    const result = await fetch(`${baseUri}/api/graphql`, {
       signal: signal as any,
       method: 'POST',
       headers: {

@@ -10,11 +10,10 @@ import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
 import {GitLabScopingSearchResultItem_issue$key} from '../__generated__/GitLabScopingSearchResultItem_issue.graphql'
-// import {GitLabScopingSearchResultItem_project} from '../__generated__/GitLabScopingSearchResultItem_project.graphql'
 import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
-import {webPathToNameWithOwner} from '../utils/webPathToProjectName'
-// import Ellipsis from './Ellipsis/Ellipsis'
+import {parseWebPath} from '../utils/parseWebPath'
+import Ellipsis from './Ellipsis/Ellipsis'
 
 const Item = styled('div')({
   cursor: 'pointer',
@@ -47,11 +46,12 @@ interface Props {
   usedServiceTaskIds: Set<string>
   issueRef: GitLabScopingSearchResultItem_issue$key
   meetingId: string
+  providerId: string
   // persistQuery: () => void
 }
 
 const GitLabScopingSearchResultItem = (props: Props) => {
-  const {issueRef, meetingId, usedServiceTaskIds} = props
+  const {issueRef, meetingId, usedServiceTaskIds, providerId} = props
   const issue = useFragment(
     graphql`
       fragment GitLabScopingSearchResultItem_issue on _xGitLabIssue {
@@ -65,8 +65,8 @@ const GitLabScopingSearchResultItem = (props: Props) => {
     issueRef
   )
   const {id: gid, iid, title, webPath, webUrl: url} = issue
-  const nameWithOwner = webPathToNameWithOwner(webPath)
-  const serviceTaskId = GitLabIssueId.join(webPath, gid)
+  const {fullPath} = parseWebPath(webPath)
+  const serviceTaskId = GitLabIssueId.join(providerId, gid)
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -99,8 +99,8 @@ const GitLabScopingSearchResultItem = (props: Props) => {
       <Issue>
         <Title>{title}</Title>
         <StyledLink href={url} rel='noopener noreferrer' target='_blank'>
-          {`#${iid} ${nameWithOwner}`}
-          {/* {isTemp && <Ellipsis />} */}
+          {`#${iid} ${fullPath}`}
+          {isTemp && <Ellipsis />}
         </StyledLink>
       </Issue>
     </Item>

@@ -73,6 +73,11 @@ const GitLabScopingSearchResults = (props: Props) => {
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
+                auth {
+                  provider {
+                    id
+                  }
+                }
                 api {
                   errors {
                     message
@@ -87,6 +92,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                       membership: true
                       first: $projectsFirst
                       after: $projectsAfter
+                      sort: "latest_activity_desc"
                       ids: null # $projectIds
                     ) @connection(key: "GitLabScopingSearchResults_projects") {
                       edges {
@@ -129,7 +135,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   )
 
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
-  const {data, hasNext} = paginationRes
+  const {data, hasNext, loadNext} = paginationRes
   const {viewer} = data
   const meeting = useFragment(
     graphql`
@@ -154,6 +160,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   // const {queryString} = gitlabSearchQuery
   const errors = gitlab?.api?.errors ?? null
+  const providerId = gitlab.auth!.provider.id
   const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
     (project) => project?.node?.issues?.edges ?? null
   )
@@ -168,8 +175,10 @@ const GitLabScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
-  // TODO fix flicker after viewer is present but edges isn't set
+  // gitlab bug: a server error is returned and query is null when there are more projects available. For me, if the projectsFirst arg is <16, an error is returned and loadNext is required. See: https://github.com/ParabolInc/parabol/pull/6160#discussion_r826871705
+  if (gitlab?.api?.query === null) {
+    loadNext(20)
+  }
   if (!issues) return <MockScopingList />
   if (issues.length === 0 && !isEditing) {
     return (
@@ -188,6 +197,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         usedServiceTaskIds={usedServiceTaskIds}
         issuesRef={issues}
         meetingId={meetingId}
+        providerId={providerId}
       />
       <ResultScroller>
         {query && (
@@ -204,6 +214,7 @@ const GitLabScopingSearchResults = (props: Props) => {
             issueRef={issue}
             meetingId={meetingId}
             usedServiceTaskIds={usedServiceTaskIds}
+            providerId={providerId}
             // persistQuery={persistQuery}
           />
         ))}

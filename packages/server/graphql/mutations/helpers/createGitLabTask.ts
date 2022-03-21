@@ -14,6 +14,7 @@ import createIssueMutation from '../../../utils/gitlabQueries/createIssue.graphq
 // import getRepoInfo from '../../../utils/gitlabQueries/getRepoInfo.graphql'
 import {GQLContext} from '../../graphql'
 import getGitLabRequest from '../../../utils/getGitLabRequest'
+import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 
 const createGitLabTask = async (
   rawContent: string,
@@ -26,13 +27,11 @@ const createGitLabTask = async (
   const {accessToken, login} = gitlabAuth
   const {title, contentState} = splitDraftContent(rawContent)
   const body = stateToMarkdown(contentState)
-  const gitlabRequest = getGitLabRequest(info, context, {
-    accessToken
-  })
-  // const [createIssueData, createIssueError] = await gitlabRequest<
-  //   CreateIssueMutation,
-  //   CreateIssueMutationVariables
-  // >(createIssueMutation, {
+  // const gitlabRequest = getGitLabRequest(info, context, {
+  //   accessToken
+  // })
+  const manager = new GitLabServerManager(accessToken)
+  const gitlabRequest = manager.getGitLabRequest(info, context)
   const [createIssueData, createIssueError] = await gitlabRequest(createIssueMutation, {
     input: {
       title,

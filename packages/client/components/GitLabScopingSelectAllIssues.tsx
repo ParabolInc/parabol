@@ -37,10 +37,11 @@ interface Props {
   meetingId: string
   issuesRef: GitLabScopingSelectAllIssues_issues$key
   usedServiceTaskIds: Set<string>
+  providerId: string
 }
 
 const GitLabScopingSelectAllIssues = (props: Props) => {
-  const {meetingId, usedServiceTaskIds, issuesRef} = props
+  const {meetingId, usedServiceTaskIds, issuesRef, providerId} = props
   const issues = useFragment(
     graphql`
       fragment GitLabScopingSelectAllIssues_issues on _xGitLabIssue @relay(plural: true) {
@@ -54,7 +55,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
-  const serviceTaskIds = issues.map((issue) => GitLabIssueId.join(issue.webPath, issue.id))
+  const serviceTaskIds = issues.map((issue) => GitLabIssueId.join(providerId, issue.id))
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(serviceTaskIds, usedServiceTaskIds)
   const availableCountToAdd = Threshold.MAX_POKER_STORIES - usedServiceTaskIds.size
   const onClick = () => {
@@ -78,7 +79,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
     }
     const contents = updates.map((update) => {
       const issue = issues.find(
-        (issue) => GitLabIssueId.join(issue.webPath, issue.id) === update.serviceTaskId
+        (issue) => GitLabIssueId.join(providerId, issue.id) === update.serviceTaskId
       )
       return issue?.title ?? 'Unknown Story'
     })

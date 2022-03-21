@@ -1,10 +1,11 @@
 import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
 // import {GetRepositoriesQuery} from '../../../types/gitlabTypes'
-import getGitLabRequest from '../../../utils/getGitLabRequest'
+// import getGitLabRequest from '../../../utils/getGitLabRequest'
 // import getRepositories from '../../../utils/gitlabQueries/getRepositories.graphql'
 import {DataLoaderWorker} from '../../graphql'
 import getProjects from '../../../utils/gitlabQueries/getProjects.graphql'
+import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 
 export interface GitLabRepo {
   id: string
@@ -25,8 +26,8 @@ const fetchGitLabRepos = async (
     .load({service: 'gitlab', teamId, userId})
   if (!auth?.accessToken) return []
   const {accessToken} = auth
-  const gitlabRequest = getGitLabRequest(info, context, {accessToken})
-  // const [data, error] = await gitlabRequest<GetRepositoriesQuery>(getProjects)
+  const manager = new GitLabServerManager(accessToken)
+  const gitlabRequest = manager.getGitLabRequest(info, context)
   const [data, error] = await gitlabRequest(getProjects, {teamId})
   if (error) {
     console.error(error.message)
