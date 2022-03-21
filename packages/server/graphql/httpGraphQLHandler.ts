@@ -68,7 +68,7 @@ const httpGraphQLBodyHandler = async (
 const contentTypeBodyParserMap = {
   'application/json': parseBody,
   'multipart/form-data': parseFormBody
-}
+} as const
 
 const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const connectionId = req.getHeader('x-correlation-id')
@@ -82,7 +82,7 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
     res.writeStatus('415').end()
     return
   }
-  const parseFn = contentTypeBodyParserMap[shortCt]
+  const parseFn = contentTypeBodyParserMap[shortCt as keyof typeof contentTypeBodyParserMap]
   const body = await parseFn({res, contentType: contentTypeHeader})
   if (!body) {
     res.writeStatus('422').end()

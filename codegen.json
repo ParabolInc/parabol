@@ -12,6 +12,17 @@
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql",
       "documents": "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
       "plugins": ["typescript", "typescript-operations", "add"]
+    },
+    "packages/server/graphql/intranetSchema/sdl/resolverTypes.ts": {
+      "schema": "packages/server/graphql/intranetSchema/intranetSchema.graphql",
+      "plugins": ["typescript", "typescript-resolvers", "add"],
+      "config": {
+        "contextType": "../../graphql#InternalContext",
+        "mappers": {
+          "PingableServices": "./types/PingableServices#PingableServicesSource",
+          "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource"
+        }
+      }
     }
   }
 }

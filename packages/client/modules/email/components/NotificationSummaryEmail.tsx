@@ -1,7 +1,7 @@
-import plural from 'parabol-client/utils/plural'
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
-import PropTypes from 'prop-types'
+import plural from 'parabol-client/utils/plural'
 import React from 'react'
+import makeAppURL from '../../../utils/makeAppURL'
 import {emailCopyStyle, emailLinkStyle} from '../styles'
 import Button from './Button'
 import EmailBlock from './EmailBlock/EmailBlock'
@@ -9,7 +9,6 @@ import EmailFooter from './EmailFooter/EmailFooter'
 import EmptySpace from './EmptySpace/EmptySpace'
 import Header from './Header/Header'
 import Layout from './Layout/Layout'
-import makeAppURL from '../../../utils/makeAppURL'
 
 const innerMaxWidth = 480
 
@@ -66,8 +65,4 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
       </EmailBlock>
     </Layout>
   )
-}
-
-NotificationSummaryEmail.propTypes = {
-  date: PropTypes.instanceOf(Date)
 }

@@ -7,6 +7,7 @@ import getRethink from '../../../database/rethinkDriver'
 import getMailManager from '../../../email/getMailManager'
 import notificationSummaryCreator from '../../../email/notificationSummaryCreator'
 import {requireSU} from '../../../utils/authorization'
+import {RValue} from '../../../database/stricterR'
 
 const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),
@@ -33,7 +34,7 @@ const sendBatchNotificationEmails = {
     )
       .count()
       .ungroup()
-      .map((group) => ({
+      .map((group: RValue) => ({
         userId: group('group'),
         notificationCount: group('reduction')
       }))

@@ -141,13 +141,13 @@ function wrapCompiledQuery(
   compiledQuery.query = wrappedQuery
 }
 
-function finishResolvers(contextValue) {
+function finishResolvers(contextValue: PatchedContext) {
   const fields = contextValue._datadog_graphql.fields
 
   Object.keys(fields)
     .reverse()
     .forEach((key) => {
-      const field = fields[key]
+      const field = fields[key]!
 
       if (field.error) {
         field.span.setTag('error', field.error)

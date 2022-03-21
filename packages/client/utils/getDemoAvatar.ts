@@ -122,7 +122,7 @@ const avatars = [
   }
 ]
 
-const getDemoAvatar = (seed) => {
+const getDemoAvatar = (seed: number) => {
   const date = Date.now()
   const idx = (seed + date) % avatars.length
   return avatars[idx]

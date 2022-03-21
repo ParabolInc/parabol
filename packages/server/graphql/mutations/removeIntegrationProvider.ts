@@ -17,7 +17,7 @@ const removeIntegrationProvider = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {providerId}: {providerId: string},
     {authToken, dataLoader}: GQLContext
   ) => {

@@ -19,7 +19,10 @@ interface Props {
 const meetingLookup = {
   action: lazyPreload(() => import(/* webpackChunkName: 'ActionMeeting' */ './ActionMeeting')),
   poker: lazyPreload(() => import(/* webpackChunkName: 'PokerMeeting' */ './PokerMeeting')),
-  retrospective: lazyPreload(() => import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting'))
+  retrospective: lazyPreload(() => import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting')),
+  teamPrompt: lazyPreload(
+    () => import(/* webpackChunkName: 'TeamPromptMeeting' */ './TeamPromptMeeting')
+  )
 }
 
 const MeetingSelector = (props: Props) => {

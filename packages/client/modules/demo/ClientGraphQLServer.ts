@@ -83,7 +83,7 @@ export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | '
   updatedAt: string | Date
   viewerVoteCount: number
   voteCount: number
-  voterIds: any
+  voterIds: string[]
 }
 
 export type IDiscussPhase = Omit<DiscussPhase, 'readyToAdvance' | 'endAt' | 'startAt'> & {
@@ -96,7 +96,7 @@ export type IReflectPhase = Omit<ReflectPhase, 'endAt' | 'startAt'> & {
   startAt: string | Date
   endAt: string | Date
   focusedPromptId: string | null
-  reflectPrompts: any
+  reflectPrompts: any[]
 }
 
 export type IDiscussStage = Omit<DiscussStage, 'endAt' | 'startAt'> & {
@@ -113,9 +113,13 @@ export type INewMeetingPhase = Omit<NewMeetingPhase, 'endAt' | 'startAt'> & {
 }
 
 export type DemoTask = Omit<ITask, 'agendaItem' | 'createdAt' | 'updatedAt' | 'doneMeetingId'> & {
+  __typename: 'Task'
+  __isThreadable: 'Comment'
+  isActive: true
   createdAt: string
   updatedAt: string
   doneMeetingId: string | null
+  replies: (DemoComment | DemoTask)[]
 }
 
 interface Payload {
@@ -177,7 +181,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ;(phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any[]).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -187,7 +191,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   }
 
   startBot = () => {
-    const facilitatorStageId = this.db.newMeeting.facilitatorStageId as string
+    const facilitatorStageId = this.db.newMeeting
+      .facilitatorStageId as keyof typeof this.db._botScript
     const mutations = this.db._botScript[facilitatorStageId]
     const nextMutaton = mutations.shift()
     if (!nextMutaton) {
@@ -196,7 +201,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
     const {delay, op, variables, botId} = nextMutaton
     this.pendingBotAction = () => {
-      this.ops[op](variables, botId)
+      const ops = this.ops
+      ops[op as keyof typeof ops](variables, botId)
       return mutations
     }
 
@@ -221,7 +227,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     const mutationsToFlush = this.pendingBotAction()
     if (this.db.newMeeting.facilitatorStageId !== RetroDemo.GROUP_STAGE_ID) {
       mutationsToFlush.forEach((mutation) => {
-        this.ops[mutation.op](mutation.variables, mutation.botId)
+        this.ops[mutation.op as keyof typeof this.ops](mutation.variables, mutation.botId)
       })
       mutationsToFlush.length = 0
       this.pendingBotAction = undefined
@@ -235,9 +241,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           ...this.db.users[0],
           newMeeting: {
             ...this.db.newMeeting,
-            reflectionGroups: (this.db.newMeeting as any).reflectionGroups.filter(
-              (group) => group.voterIds.length > 0
-            )
+            reflectionGroups: (
+              this.db.newMeeting as {reflectionGroups: any[]}
+            ).reflectionGroups.filter((group) => group.voterIds.length > 0)
           }
         }
       }
@@ -263,12 +269,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           ...this.db.users[0],
           newMeeting: {
             ...this.db.newMeeting,
-            reflectionGroups: (this.db.newMeeting as any).reflectionGroups.filter(
-              (group) => group.voterIds.length > 0
-            ),
-            meetingMembers: this.db.newMeeting.meetingMembers!.map((member) => ({
+            reflectionGroups: (
+              this.db.newMeeting as {reflectionGroups: any[]}
+            ).reflectionGroups.filter((group) => group.voterIds.length > 0),
+            meetingMembers: (this.db.newMeeting.meetingMembers as any[]).map((member: any) => ({
               ...member,
-              tasks: member.tasks.filter((task) => !task.tags.includes('private'))
+              tasks: (member.tasks as DemoTask[]).filter((task) => !task.tags.includes('private'))
             }))
           }
         }
@@ -291,7 +297,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    DiscussionThreadQuery: ({discussionId}) => {
+    DiscussionThreadQuery: ({discussionId}: {discussionId: string}) => {
       return {
         viewer: {
           ...this.db.users[0],
@@ -323,7 +329,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    AddCommentMutation: ({comment}, userId) => {
+    AddCommentMutation: ({comment}: {comment: any}, userId: string) => {
       const commentId = comment.id || this.getTempId('comment')
       const newComment = new DemoComment(
         {
@@ -340,8 +346,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (threadParentId) {
         const threadParent =
           this.db.tasks.find(({id}) => id === threadParentId) ||
-          this.db.comments.find(({id}) => id === threadParentId)
-        threadParent?.replies.push(newComment)
+          this.db.comments.find(({id}) => id === threadParentId)!
+        const replies = threadParent.replies as any[]
+        replies.push(newComment)
       } else {
         const {thread} = discussion
         thread.edges.push(new DemoThreadableEdge(newComment))
@@ -357,13 +364,21 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {addComment: data}
     },
-    AddReactjiToReactableMutation: ({reactableId, reactableType, isRemove, reactji}, userId) => {
+    AddReactjiToReactableMutation: (
+      {
+        reactableId,
+        reactableType,
+        isRemove,
+        reactji
+      }: {reactableId: string; reactableType: string; isRemove: boolean; reactji: string},
+      userId: string
+    ) => {
       const table =
         (reactableType as ReactableEnum) === 'REFLECTION' ? this.db.reflections : this.db.comments
-      const reactable = table.find(({id}) => id === reactableId)
+      const reactable = (table as any[]).find(({id}) => id === reactableId)
       if (!reactable) return null
       const reactjiId = `${reactableId}:${reactji}`
-      const {reactjis} = reactable
+      const reactjis = reactable.reactjis as any[]
       const existingReactjiIdx = reactjis.findIndex((agg) => agg.id === reactjiId)
       const existingReactji = reactjis[existingReactjiIdx]
       if (isRemove) {
@@ -392,7 +407,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {addReactjiToReactable: data}
     },
-    CreateTaskIntegrationMutation: ({taskId, integrationRepoId, integrationProviderService}, userId) => {
+    CreateTaskIntegrationMutation: (
+      {
+        taskId,
+        integrationRepoId,
+        integrationProviderService
+      }: {taskId: string; integrationRepoId: string; integrationProviderService: string},
+      userId: string
+    ) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -419,7 +441,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
 
       if (integrationProviderService === 'jira') {
-        const project = JiraProjectKeyLookup[integrationRepoId]
+        const project = JiraProjectKeyLookup[integrationRepoId as keyof typeof JiraProjectKeyLookup]
         const {cloudId, cloudName, name, avatar, key} = project
         const issueKey = this.getTempId(`${key}-`)
 
@@ -458,13 +480,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {createTaskIntegration: data}
     },
     CreateReflectionMutation: async (
-      {input: {content, promptId, sortOrder, id, groupId}},
+      {
+        input: {content, promptId, sortOrder, id, groupId}
+      }: {
+        input: {content: string; promptId: string; sortOrder: number; id: string; groupId: string}
+      },
       userId: string
     ) => {
       const now = new Date().toJSON()
-      const reflectPhase = ((this.db.newMeeting as any).phases.find(
+      const reflectPhase = this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === 'reflect'
-      ) as unknown) as IReflectPhase
+      ) as unknown as IReflectPhase
       const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
@@ -472,7 +498,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const plaintextContent = extractTextFromDraftString(normalizedContent)
       let entities = [] as GoogleAnalyzedEntity[]
       if (userId !== demoViewerId) {
-        entities = entityLookup[reflectionId].entities
+        entities = entityLookup[reflectionId as keyof typeof entityLookup].entities
       } else {
         entities = (await getDemoEntities(plaintextContent)) as any
       }
@@ -558,7 +584,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     EditCommentingMutation: (
       {isCommenting, discussionId}: {isCommenting: boolean; discussionId: string},
-      userId
+      userId: string
     ) => {
       const commentor = this.db.users.find((user) => user.id === userId)
       const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
@@ -586,7 +612,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     EditReflectionMutation: (
       {promptId, isEditing}: {promptId: string; isEditing: boolean},
-      userId
+      userId: string
     ) => {
       const data = {
         promptId,
@@ -650,7 +676,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {removeReflection: data}
     },
-    UpdateReflectionContentMutation: async ({reflectionId, content}, userId) => {
+    UpdateReflectionContentMutation: async (
+      {reflectionId, content}: {reflectionId: string; content: string},
+      userId: string
+    ) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
@@ -688,7 +717,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateReflectionContent: data}
     },
-    UpdateRetroMaxVotesMutation: async ({totalVotes, maxVotesPerGroup}) => {
+    UpdateRetroMaxVotesMutation: async ({
+      totalVotes,
+      maxVotesPerGroup
+    }: {
+      totalVotes: number
+      maxVotesPerGroup: number
+    }) => {
       const {newMeeting: meeting, meetingMembers} = this.db
       if (
         totalVotes < MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT ||
@@ -717,9 +752,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateRetroMaxVotes: data}
     },
-    NavigateMeetingMutation: async ({completedStageId, facilitatorStageId, meetingId}, userId) => {
-      let phaseCompleteData
-      let unlockedStageIds
+    NavigateMeetingMutation: async (
+      {
+        completedStageId,
+        facilitatorStageId,
+        meetingId
+      }: {completedStageId: string; facilitatorStageId: string; meetingId: string},
+      userId: string
+    ) => {
+      let phaseCompleteData: any
+      let unlockedStageIds = [] as any[]
       const meeting = this.db.newMeeting
       const {phases} = meeting
       let runBot = false
@@ -782,7 +824,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {navigateMeeting: data}
     },
-    RenameMeetingMutation: ({name}, userId) => {
+    RenameMeetingMutation: ({name}: {name: string}, userId: string) => {
       const meeting = this.db.newMeeting
       meeting.name = name
       const data = {
@@ -794,11 +836,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {renameMeeting: data}
     },
-    SetPhaseFocusMutation: ({focusedPromptId}, userId) => {
-      const reflectPhase = (this.db.newMeeting.phases!.find(
+    SetPhaseFocusMutation: ({focusedPromptId}: {focusedPromptId: string}, userId: string) => {
+      const reflectPhase = this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === REFLECT
-      ) as unknown) as IReflectPhase
-      reflectPhase.focusedPromptId = focusedPromptId || null
+      ) as unknown as IReflectPhase
+      ;(reflectPhase as any).focusedPromptId = focusedPromptId || null
       const data = {
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
@@ -810,7 +852,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setPhaseFocus: data}
     },
-    SetSlackNotificationMutation: ({slackChannelId, slackNotificationEvents}, userId) => {
+    SetSlackNotificationMutation: (
+      {
+        slackChannelId,
+        slackNotificationEvents
+      }: {slackChannelId: string; slackNotificationEvents: any},
+      userId: string
+    ) => {
       const teamMember = this.db.teamMembers.find((teamMember) => teamMember.userId === userId)!
       const {integrations} = teamMember
       const {slack} = integrations
@@ -834,7 +882,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setSlackNotification: data}
     },
-    SetStageTimerMutation: ({scheduledEndTime: newScheduledEndTime, timeRemaining}, userId) => {
+    SetStageTimerMutation: (
+      {
+        scheduledEndTime: newScheduledEndTime,
+        timeRemaining
+      }: {scheduledEndTime: any; timeRemaining: number},
+      userId: string
+    ) => {
       const {phases, facilitatorStageId} = this.db.newMeeting
       const stageRes = findStageById(phases, facilitatorStageId!)
       const {stage} = stageRes!
@@ -861,7 +915,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setStageTimer: data}
     },
-    StartDraggingReflectionMutation: ({reflectionId, dragId}, userId) => {
+    StartDraggingReflectionMutation: (
+      {reflectionId, dragId}: {reflectionId: string; dragId: string},
+      userId: string
+    ) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       if (!reflection) return
       if (userId !== demoViewerId) {
@@ -889,11 +946,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {startDraggingReflection: data}
     },
     EndDraggingReflectionMutation: (
-      {reflectionId, dropTargetType, dropTargetId, dragId},
-      userId
+      {
+        reflectionId,
+        dropTargetType,
+        dropTargetId,
+        dragId
+      }: {reflectionId: string; dropTargetType: any; dropTargetId: string; dragId: string},
+      userId: string
     ) => {
       const now = new Date().toJSON()
-      let newReflectionGroupId
+      let newReflectionGroupId: string
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       if (userId !== demoViewerId) {
         if (!reflection || reflection.isHumanTouched) return undefined
@@ -1022,7 +1084,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         meeting: this.db.newMeeting,
         reflectionId,
         reflection,
-        reflectionGroupId: newReflectionGroupId,
+        reflectionGroupId: newReflectionGroupId!,
         reflectionGroup: this.db.reflectionGroups.find(
           (group) => group.id === newReflectionGroupId
         ),
@@ -1043,7 +1105,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {endDraggingReflection: data}
     },
-    UpdateDragLocationMutation: ({input}, userId) => {
+    UpdateDragLocationMutation: ({input}: {input: any}, userId: string) => {
       const {teamId, ...inputData} = input
       const data = {
         drag: inputData,
@@ -1059,7 +1121,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateDragLocation: data}
     },
-    UpdateReflectionGroupTitleMutation: ({reflectionGroupId, title}, userId) => {
+    UpdateReflectionGroupTitleMutation: (
+      {reflectionGroupId, title}: {reflectionGroupId: string; title: string},
+      userId: string
+    ) => {
       const reflectionGroup = this.db.reflectionGroups.find(
         (group) => group.id === reflectionGroupId
       )!
@@ -1082,7 +1147,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateReflectionGroupTitle: data}
     },
-    VoteForReflectionGroupMutation: ({isUnvote, reflectionGroupId}, userId) => {
+    VoteForReflectionGroupMutation: (
+      {isUnvote, reflectionGroupId}: {isUnvote: boolean; reflectionGroupId: string},
+      userId: string
+    ) => {
       const reflectionGroup =
         this.db.reflectionGroups.find((group) => group.id === reflectionGroupId) ||
         this.db.reflectionGroups.find((group) => Boolean(group.isActive))!
@@ -1151,7 +1219,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {voteForReflectionGroup: data}
     },
-    CreateTaskMutation: async ({newTask}, userId) => {
+    CreateTaskMutation: async ({newTask}: {newTask: any}, userId: string) => {
       const now = new Date().toJSON()
       const taskId = newTask.id || this.getTempId('task')
       const {discussionId, threadParentId, threadSortOrder, sortOrder, status} = newTask
@@ -1199,8 +1267,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (threadParentId) {
         const threadParent =
           this.db.comments.find(({id}) => id === threadParentId) ||
-          this.db.tasks.find(({id}) => id === threadParentId)
-        threadParent.replies.push(task)
+          this.db.tasks.find(({id}) => id === threadParentId)!
+        const replies = threadParent.replies as any
+        replies.push(task)
       } else {
         edges.push(new DemoThreadableEdge(task as any))
       }
@@ -1226,7 +1295,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       await sleep(100)
       return {createTask: data}
     },
-    DeleteCommentMutation: ({commentId}, userId) => {
+    DeleteCommentMutation: ({commentId}: {commentId: string}, userId: string) => {
       const comment = this.db.comments.find(({id}) => id === commentId)
       if (!comment) return
       comment.updatedAt = new Date().toJSON()
@@ -1244,7 +1313,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           const idx = replies.findIndex((reply) => reply.id === commentId)
           replies.splice(idx, 1)
           if (__typename === 'Comment' && !isActive) {
-            this.ops.DeleteCommentMutation({commentId: threadParentId}, userId)
+            this.ops.DeleteCommentMutation({commentId: threadParent.id}, userId)
           }
         }
       } else if (comment.replies.length === 0) {
@@ -1266,7 +1335,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {deleteComment: data}
     },
-    EditTaskMutation: ({taskId, isEditing}, userId) => {
+    EditTaskMutation: (
+      {taskId, isEditing}: {taskId: string; isEditing: boolean},
+      userId: string
+    ) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       const data = {
         __typename: 'EditTaskMutation',
@@ -1280,7 +1352,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {editTask: data}
     },
-    UpdateTaskMutation: ({updatedTask}, userId) => {
+    UpdateTaskMutation: (
+      {
+        updatedTask
+      }: {
+        updatedTask: {
+          content: string
+          status: string
+          sortOrder: number
+          id: string
+          userId: string
+        }
+      },
+      userId: string
+    ) => {
       const {content, status, sortOrder} = updatedTask
       const task = this.db.tasks.find((task) => task.id === updatedTask.id)
       // if the human deleted the task, exit fast
@@ -1328,7 +1413,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateTask: data}
     },
-    DeleteTaskMutation: ({taskId}, userId) => {
+    DeleteTaskMutation: ({taskId}: {taskId: string}, userId: string) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       const {discussionId} = task
       const discussion = this.db.discussions.find((discussion) => discussion.id === discussionId)
@@ -1350,7 +1435,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {deleteTask: data}
     },
-    UpdateTaskDueDateMutation: ({taskId, dueDate}, userId) => {
+    UpdateTaskDueDateMutation: (
+      {taskId, dueDate}: {taskId: string; dueDate: Date},
+      userId: string
+    ) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       task.dueDate = dueDate
 
@@ -1360,10 +1448,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateTaskDueDate: data}
     },
-    DragDiscussionTopicMutation: ({stageId, sortOrder}, userId) => {
-      const discussPhase = (this.db.newMeeting.phases!.find(
+    DragDiscussionTopicMutation: (
+      {stageId, sortOrder}: {stageId: string; sortOrder: number},
+      userId: string
+    ) => {
+      const discussPhase = this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === DISCUSS
-      ) as unknown) as IDiscussPhase
+      ) as unknown as IDiscussPhase
       const {stages} = discussPhase
       const draggedStage = stages.find((stage) => stage.id === stageId)!
       draggedStage.sortOrder = sortOrder
@@ -1381,7 +1472,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {dragDiscussionTopic: data}
     },
-    EndRetrospectiveMutation: ({meetingId}, userId) => {
+    EndRetrospectiveMutation: ({meetingId}: {meetingId: string}, userId: string) => {
       const phases = this.db.newMeeting.phases as INewMeetingPhase[]
       const lastPhase = phases[phases.length - 1] as IDiscussPhase
       const currentStage = lastPhase.stages.find(
@@ -1413,10 +1504,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {endRetrospective: data}
     },
-    InviteToTeamMutation: ({invitees}) => {
+    InviteToTeamMutation: ({invitees}: any) => {
       return {inviteToTeam: {invitees}}
     },
-    UpdateCommentContentMutation: ({commentId, content}, userId) => {
+    UpdateCommentContentMutation: (
+      {commentId, content}: {commentId: string; content: string},
+      userId: string
+    ) => {
       const comment = this.db.comments.find((comment) => comment.id === commentId)!
       comment.content = content
 
@@ -1426,10 +1520,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateCommentContent: data}
     }
-  }
+  } as const
 
   fetch = async (opName: string, variables: Variables) => {
-    const resolve = this.ops[opName]
+    const resolve = this.ops[opName as keyof typeof this.ops]
     if (!resolve) {
       console.error('op not found', opName)
       return {
@@ -1437,7 +1531,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
     }
     return {
-      data: await resolve(variables, demoViewerId)
+      data: await resolve(variables as any, demoViewerId)
     }
   }
 }

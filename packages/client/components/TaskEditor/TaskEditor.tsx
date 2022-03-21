@@ -165,7 +165,7 @@ const TaskEditor = (props: Props) => {
       })
     }
     const links = linkify.match(text)
-    const url = links && links[0].url.trim()
+    const url = links && links[0]!.url.trim()
     const trimmedText = text.trim()
     if (url === trimmedText) {
       const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {

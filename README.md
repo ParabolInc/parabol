@@ -7,9 +7,9 @@
 
 [Parabol](https://www.parabol.co) is an open-source application for running
 agile meetings such as team retrospectives or Sprint Poker™. You may try
-a single-player demo of Parabol (no logincreation required) at: https://parabol.co/retro-demo
+a single-player demo of Parabol (no login creation required) at: https://parabol.co/retro-demo
 
-We endeaver to be a
+We endeavor to be a
 transparent organization and publish
 our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-ship).
 
@@ -18,18 +18,18 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 
 ## Stack Information
 
-| Concern                | Solution                                                       |
-| ---------------------- | -------------------------------------------------------------- |
-| Server                 | [Node](https://nodejs.org/)                                    |
-| Server Framework       | [uWebSockts.js](https://github.com/uNetworking/uWebSockets.js) |
-| Database (Legacy)      | [RethinkDB](https://www.rethinkdb.com/)                        |
-| Database               | [PostgreSQL](https://www.postgresql.org/)                      |
-| PubSub & Cache         | [Redis](https://redis.io)                                      |
-| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)               |
-| Real-time Connectivity | [trebuchet](https://github.com/mattkrick/trebuchet-client)     |
-| Client Cache           | [Relay](https://facebook.github.io/relay/)                     |
-| UI Framework           | [React](https://facebook.github.io/react/)                     |
-| Styling                | [Emotion](https://emotion.sh/)                                 |
+| Concern                | Solution                                                        |
+| ---------------------- | --------------------------------------------------------------- |
+| Server                 | [Node](https://nodejs.org/)                                     |
+| Server Framework       | [μWebSockets.js](https://github.com/uNetworking/uWebSockets.js) |
+| Database (Legacy)      | [RethinkDB](https://www.rethinkdb.com/)                         |
+| Database               | [PostgreSQL](https://www.postgresql.org/)                       |
+| PubSub & Cache         | [Redis](https://redis.io)                                       |
+| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)                |
+| Real-time Connectivity | [trebuchet](https://github.com/mattkrick/trebuchet-client)      |
+| Client Cache           | [Relay](https://facebook.github.io/relay/)                      |
+| UI Framework           | [React](https://facebook.github.io/react/)                      |
+| Styling                | [Emotion](https://emotion.sh/)                                  |
 
 ## Setup
 

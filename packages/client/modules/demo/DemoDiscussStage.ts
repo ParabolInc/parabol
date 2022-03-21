@@ -26,6 +26,6 @@ export default class DemoDiscussStage extends DemoGenericMeetingStage {
     super(id, 'discuss')
     this.reflectionGroupId = reflectionGroup?.id ?? null
     this.discussion =
-      db?.discussions.find((discussion) => discussion.id === this.discussionId) ?? null
+      db?.discussions.find((discussion: any) => discussion.id === this.discussionId) ?? null
   }
 }

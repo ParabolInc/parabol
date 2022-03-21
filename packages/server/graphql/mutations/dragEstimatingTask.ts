@@ -67,7 +67,7 @@ export default {
     // MUTATIVE
     const numberOfDimensions = Math.floor(stages.length / numberOfTasks)
     const oldPositionIndex = taskIds.indexOf(taskId) / numberOfDimensions
-    let sortOrder
+    let sortOrder: number
     if (newPositionIndex === 0) {
       sortOrder = stages[0]!.sortOrder - ESTIMATE_TASK_SORT_ORDER
     } else if (newPositionIndex === numberOfTasks - 1) {

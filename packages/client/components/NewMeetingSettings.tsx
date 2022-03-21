@@ -6,6 +6,7 @@ import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import NewMeetingSettingsAction from './NewMeetingSettingsAction'
 import NewMeetingSettingsPoker from './NewMeetingSettingsPoker'
 import NewMeetingSettingsRetrospective from './NewMeetingSettingsRetrospective'
+import NewMeetingSettingsTeamPrompt from './NewMeetingSettingsTeamPrompt'
 
 interface Props {
   meetingType: MeetingTypeEnum
@@ -15,13 +16,14 @@ interface Props {
 const settingsLookup = {
   action: NewMeetingSettingsAction,
   retrospective: NewMeetingSettingsRetrospective,
-  poker: NewMeetingSettingsPoker
+  poker: NewMeetingSettingsPoker,
+  teamPrompt: NewMeetingSettingsTeamPrompt
 }
 
 const NewMeetingSettings = (props: Props) => {
   const {meetingType, selectedTeam} = props
   const Settings = settingsLookup[meetingType]
-  return <Settings team={selectedTeam} />
+  return <Settings teamRef={selectedTeam} />
 }
 
 export default createFragmentContainer(NewMeetingSettings, {
@@ -30,6 +32,7 @@ export default createFragmentContainer(NewMeetingSettings, {
       ...NewMeetingSettingsRetrospective_team
       ...NewMeetingSettingsAction_team
       ...NewMeetingSettingsPoker_team
+      ...NewMeetingSettingsTeamPrompt_team
       id
     }
   `

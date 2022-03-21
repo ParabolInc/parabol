@@ -33,7 +33,7 @@ import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
@@ -61,11 +61,11 @@ const noop = (): any => {
 }
 
 const toFormData = (body: FetchHTTPData, formData = new FormData()) => {
-  const uploadables = body.payload.uploadables || []
+  const uploadables = (body.payload.uploadables || []) as any[]
   delete body.payload.uploadables
   formData.append('body', JSON.stringify(body))
   Object.keys(uploadables).forEach((key) => {
-    formData.append(`uploadables.${key}`, uploadables[key])
+    formData.append(`uploadables.${key}`, uploadables[key as keyof typeof uploadables] as any)
   })
   return formData
 }
@@ -180,7 +180,7 @@ export default class Atmosphere extends Environment {
     if (!__PRODUCTION__) {
       try {
         const queryMap = await import('../../queryMap.json')
-        const query = queryMap[documentId!]
+        const query = queryMap[documentId as keyof typeof queryMap] as string
         this.subscriptions[subKey] = transport.subscribe({query, variables}, sink)
       } catch (e) {
         return
@@ -270,7 +270,7 @@ export default class Atmosphere extends Environment {
     if (!__PRODUCTION__) {
       try {
         const queryMap = await import('../../queryMap.json').catch()
-        data = queryMap[request.id!]
+        data = queryMap[request.id as keyof typeof queryMap] as string
       } catch (e) {
         return
       }

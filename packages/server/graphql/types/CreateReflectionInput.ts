@@ -17,7 +17,7 @@ const CreateReflectionInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID)
     },
     promptId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The prompt the reflection belongs to'
     },
     sortOrder: {
@@ -29,7 +29,7 @@ const CreateReflectionInput = new GraphQLInputObjectType({
 export type CreateReflectionInputType = {
   content?: string
   meetingId: string
-  promptId?: string
+  promptId: string
   sortOrder: number
 }
 
