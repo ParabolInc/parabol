@@ -52,7 +52,7 @@ const messageAllSlackUsers: MutationResolvers['messageAllSlackUsers'] = async (
     }
   }
 
-  const data = {messagedUserIds, errors}
+  const data = {messagedUserIds: [...messagedUserIds], errors}
   return data
 }
 

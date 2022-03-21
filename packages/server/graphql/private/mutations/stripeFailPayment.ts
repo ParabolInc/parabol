@@ -8,6 +8,13 @@ import publish from '../../../utils/publish'
 import StripeManager from '../../../utils/StripeManager'
 import {MutationResolvers} from '../resolverTypes'
 
+export type StripeFailPaymentPayloadSource =
+  | {
+      orgId: string
+      notificationId?: string
+    }
+  | {error: {message: string}}
+
 const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   _source,
   {invoiceId},

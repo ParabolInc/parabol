@@ -32,11 +32,11 @@ const stripeInvoiceFinalized: MutationResolvers['stripeInvoiceFinalized'] = asyn
         `Payment sent cannot be handled. Org ${orgId} does not exist for invoice ${invoiceId}`
       )
     }
-    return
+    return false
   }
 
   const {collection_method, hosted_invoice_url} = invoice
-  if (collection_method !== 'send_invoice') return
+  if (collection_method !== 'send_invoice') return false
   // RESOLUTION
   await r
     .table('Invoice')
@@ -46,6 +46,7 @@ const stripeInvoiceFinalized: MutationResolvers['stripeInvoiceFinalized'] = asyn
       updatedAt: now
     })
     .run()
+  return true
 }
 
 export default stripeInvoiceFinalized

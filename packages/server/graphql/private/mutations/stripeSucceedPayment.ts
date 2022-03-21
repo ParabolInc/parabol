@@ -33,7 +33,7 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
         `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`
       )
     }
-    return
+    return false
   }
   const {creditCard} = org
 
@@ -59,6 +59,7 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
     }).run(),
     updateTeamByOrgId(teamUpdates, orgId)
   ])
+  return true
 }
 
 export default stripeSucceedPayment
