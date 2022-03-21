@@ -18,7 +18,7 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
         return dataLoader.get('users').load(createdBy)
       }
     },
-    context: {
+    content: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'the content of the response'
     },

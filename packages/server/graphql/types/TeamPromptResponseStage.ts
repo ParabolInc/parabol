@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {GQLContext} from '../graphql'
 import DiscussionThreadStage, {discussionThreadStageFields} from './DiscussionThreadStage'
@@ -13,10 +13,6 @@ const TeamPromptResponseStage = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...newMeetingStageFields(),
     ...discussionThreadStageFields(),
-    agendaItemId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the agenda item this relates to'
-    },
     response: {
       type: new GraphQLNonNull(TeamPromptResponse),
       description: 'The response to the prompt',

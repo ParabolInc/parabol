@@ -1,12 +1,15 @@
-import GenericMeetingPhase from './GenericMeetingPhase'
+import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
 import Meeting from './Meeting'
+import GenericMeetingPhase from './GenericMeetingPhase'
+
+type TeamPromptPhase = TeamPromptResponsesPhase | GenericMeetingPhase
 
 interface Input {
   id?: string
   teamId: string
   meetingCount: number
   name?: string
-  phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
+  phases: [TeamPromptPhase, ...TeamPromptPhase[]]
   facilitatorUserId: string
 }
 
