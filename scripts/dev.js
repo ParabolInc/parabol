@@ -44,10 +44,13 @@ const dev = async (maybeInit) => {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
   }
-  // Enable this if you're creating new github schemas
   try {
     await generate(codegenSchema)
-  } catch {}
+  } catch {
+    // If you remove a file (e.g. GraphQL Schema) the codegen depends on it'll fail on first run
+    // After that schema gets generated, codegen will succeed
+    console.log('codegen failed! It should be successful next time. If it fails again, let someone know')
+  }
 
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
