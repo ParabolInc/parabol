@@ -31,10 +31,11 @@ const videoGraphicStyle = {
 
 const videoGraphicSrc = `${ExternalLinks.EMAIL_CDN}retro-video-still.png`
 const meetingCopyLabelLookup = {
-    action: 'a Check-in Meeting',
-    retrospective: 'a Retrospective Meeting',
-    poker: 'a Sprint Poker Meeting'
-  } as const
+  action: 'a Check-in Meeting',
+  retrospective: 'a Retrospective Meeting',
+  poker: 'a Sprint Poker Meeting',
+  teamPrompt: 'an Async Standup Meeting'
+} as const
 
 export interface TeamInviteProps {
   appOrigin: string
@@ -91,25 +92,25 @@ const TeamInvite = (props: TeamInviteProps) => {
             <Button url={inviteLink}>Join {meeting.name}</Button>
           </div>
         ) : (
-            <div>
-              <p style={emailCopyStyle}>
-                {'Hi '}
-                <span style={emailCopyStyle}>{nameOrEmail}</span>
-                {','}
-              </p>
-              <p style={emailCopyStyle}>
-                <span style={boldStyle}>{inviterName}</span>
-                {' ('}
-                <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
-                  {inviterEmail}
-                </a>
-                {') has invited you to join a team ('}
-                <b>{teamName}</b>
-                {') on Parabol.'}
-              </p>
-              <Button url={inviteLink}>Join Team</Button>
-            </div>
-          )}
+          <div>
+            <p style={emailCopyStyle}>
+              {'Hi '}
+              <span style={emailCopyStyle}>{nameOrEmail}</span>
+              {','}
+            </p>
+            <p style={emailCopyStyle}>
+              <span style={boldStyle}>{inviterName}</span>
+              {' ('}
+              <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
+                {inviterEmail}
+              </a>
+              {') has invited you to join a team ('}
+              <b>{teamName}</b>
+              {') on Parabol.'}
+            </p>
+            <Button url={inviteLink}>Join Team</Button>
+          </div>
+        )}
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
           <span style={boldStyle}>{'New to Parabol?'}</span>
