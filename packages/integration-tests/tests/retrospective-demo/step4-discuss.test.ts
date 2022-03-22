@@ -45,7 +45,6 @@ test.describe('retrospective-demo / discuss page', () => {
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/discuss/1`)
 
     if (isMobile) {
-      await expect(page.locator('button[aria-label="Toggle the sidebar"]')).toHaveCount(1) // For some reason, there are two elements during the transition sometimes on mobile...
       await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
@@ -60,7 +59,6 @@ test.describe('retrospective-demo / discuss page', () => {
     }
 
     await expect(page.locator('[data-cy=sidebar] div:text("Meetings")')).toBeVisible()
-    await expect(page.locator('[data-cy=sidebar] div:text("Interns Staff")')).toBeVisible()
     await expect(page.locator('[data-cy=sidebar] div:text("Work")')).toBeVisible()
     await expect(page.locator('[data-cy=sidebar] div:text("Processes")')).toBeVisible()
     await expect(page.locator('[data-cy=sidebar] div:text("Team")')).toBeVisible()
@@ -89,11 +87,6 @@ test.describe('retrospective-demo / discuss page', () => {
       ]
     }
     // To optimize for speed, we don't check every discuss group.
-    // {
-    //   name: 'Interns Staff',
-    //   emojis: ['🤔'],
-    //   tasks: ['Create a process for making a collective decision, together']
-    // },
     // {
     //   name: 'Processes',
     //   emojis: ['✍️'],
