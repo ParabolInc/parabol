@@ -1,37 +1,25 @@
-import styled from '@emotion/styled'
 import React, {useEffect, useState} from 'react'
-import {Card} from '../../types/constEnums'
 import Placeholder from '@tiptap/extension-placeholder'
-import {EditorContent, EditorEvents, JSONContent, useEditor} from '@tiptap/react'
+import {EditorContent, EditorEvents, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-
-const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined}>(
-  ({noText, readOnly}) => ({
-    cursor: readOnly ? undefined : 'text',
-    fontSize: Card.FONT_SIZE,
-    lineHeight: Card.LINE_HEIGHT,
-    padding: `0 ${Card.PADDING}`,
-    height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
-  })
-)
 
 interface Props {
   autoFocus?: boolean
-  initialValue: string
+  initialDoc: string
   handleSubmit: (value: string) => void
   readOnly: boolean
   placeholder: string
 }
 
 const PromptResponseEditor = (props: Props) => {
-  const {autoFocus: autoFocusProp, initialValue,  handleSubmit, readOnly, placeholder} = props
+  const {autoFocus: autoFocusProp, initialDoc,  handleSubmit, readOnly, placeholder} = props
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
-  const [value, setValue] = useState(initialValue)
+  const [doc, setDoc] = useState(initialDoc)
   useEffect(() => {
     if (isEditing) return
-    setValue(initialValue)
-  }, [initialValue])
+    setDoc(initialDoc)
+  }, [initialDoc])
 
   const setEditing = (isEditing: boolean) => {
     setIsEditing(isEditing)
@@ -39,9 +27,9 @@ const PromptResponseEditor = (props: Props) => {
   }
 
   const onUpdate = ({editor}: EditorEvents['update']) => {
-    const nextValue = editor.getText()
+    const nextDoc = JSON.stringify(editor.getJSON())
     setEditing(true)
-    setValue(nextValue)
+    setDoc(nextDoc)
   }
 
   const onFocus = ({editor}: EditorEvents['focus']) => {
@@ -51,19 +39,20 @@ const PromptResponseEditor = (props: Props) => {
   }
 
   const onSubmit = async ({editor}: EditorEvents['blur']) => {
-    const nextValue = editor.getText()
+    const nextDoc = JSON.stringify(editor.getJSON())
     setEditing(false)
-    setValue(nextValue)
-    handleSubmit(nextValue)
+    setDoc(nextDoc)
+    console.log(nextDoc)
+    handleSubmit(nextDoc)
   }
 
   const reset = () => {
     setEditing(false)
-    setValue(initialValue)
+    setDoc(initialDoc)
     editor?.commands.blur()
   }
 
-  const onKeyDown = (_view, event: KeyboardEvent) => {
+  const onKeyDown = (_view: any, event: KeyboardEvent) => {
     if (event.key === 'Escape') {
       setTimeout(reset)
       return true
@@ -71,9 +60,9 @@ const PromptResponseEditor = (props: Props) => {
     return false
   }
 
-  const showPlaceholder = !value && placeholder
+  const showPlaceholder = !doc && placeholder
   const editor = useEditor({
-    content: value,
+    content: JSON.parse(doc),
     extensions: [
       StarterKit,
       Placeholder.configure({
@@ -83,13 +72,13 @@ const PromptResponseEditor = (props: Props) => {
     editorProps: {
       handleKeyDown: onKeyDown,
     },
-    autofocus: true,
+    autofocus: autoFocus,
     onUpdate,
     onFocus,
     onBlur: onSubmit,
+    editable: !readOnly,
   })
 
-  //const noText = value.text === ''
   return (
     <EditorContent
       editor={editor}
