@@ -42,17 +42,14 @@ export const authorizeOAuth2 = async <
   body,
   additonalHeaders
 }: AuthorizeOAuth2Params) => {
-  console.log(`Inside authorizeOAuth2`)
   const headers = {
     Accept: 'application/json',
     ...additonalHeaders
   }
-  console.log(`headers['Content-Type'] - ${headers['Content-Type']}`)
   if (!headers['Content-Type']) {
     headers['Content-Type'] = 'application/json'
   }
-  console.log(`headers - ${JSON.stringify(headers)}`)
-  console.log(`authUrl-${authUrl}`)
+
   const url = new URL(authUrl)
   if (searchParams) {
     Object.entries(searchParams).forEach((entry) => {
@@ -65,18 +62,15 @@ export const authorizeOAuth2 = async <
     headers,
     body: body ? transformBody(headers['Content-Type'], body) : undefined
   })
-  console.log(`oauth2Response:::${oauth2Response}`)
   const contentTypeHeader = oauth2Response.headers.get('content-type') || ''
   if (!contentTypeHeader.toLowerCase().startsWith('application/json')) {
     return new Error('Received non-JSON OAuth2 Response')
   }
 
   const tokenJson = (await oauth2Response.json()) as OAuth2Response
-  console.log(`tokenJson is ${JSON.stringify(tokenJson)}`)
   if ('error' in tokenJson) return new Error(tokenJson.error)
   const {access_token: accessToken, refresh_token: oauthRefreshToken, scope} = tokenJson
   console.log(`accessToken - ${accessToken}`)
-  console.log(`oauthRefreshToken - ${oauthRefreshToken}`)
   console.log(`scope - ${scope}`)
   return {
     accessToken,

@@ -22,7 +22,8 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'Composite key'
+      description: 'Composite key in ado:teamId:userId format',
+      resolve: ({teamId, userId}: {teamId: string; userId: string}) => `ado:${teamId}:${userId}`
     },
     isActive: {
       description: 'true if the auth is valid, else false',

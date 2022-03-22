@@ -27,9 +27,9 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
   }
 
   static async getToken(verifier: string, code: string): Promise<string> {
-    const tenant = process.env.AZUREDEVOPS_TENANT
+    const tenant = window.__ACTION__.azureDevOpsTenant
     const host = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`
-    const clientId = process.env.AZUREDEVOPS_CLIENT_ID
+    const clientId = window.__ACTION__.azureDevOpsClientId
     const redirectUri = makeHref('/auth/ado')
     const grantType = 'authorization_code'
 
@@ -62,19 +62,17 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
       .substring(5)
     const verifier = AzureDevOpsClientManager.generateVerifier()
     const code = await AzureDevOpsClientManager.generateCodeChallenge(verifier)
-    const tenant = process.env.AZUREDEVOPS_TENANT
-    const clientId = process.env.AZUREDEVOPS_CLIENT_ID
+    const tenant = window.__ACTION__.azureDevOpsTenant
+    const clientId = window.__ACTION__.azureDevOpsClientId
+    const scope = '499b84ac-1321-427f-aa17-267ca6975798/.default'
     const redirect = makeHref('/auth/ado')
-    const uri = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fmail.read&state=${providerState}&code_challenge=${code}&code_challenge_method=S256`
+    const uri = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=${scope}&state=${providerState}&code_challenge=${code}&code_challenge_method=S256`
     const popup = window.open(
       uri,
       'OAuth',
       getOAuthPopupFeatures({width: 500, height: 810, top: 56})
     )
     const handler = (event) => {
-      console.log(event)
-      console.log(event.data)
-      console.log(window.location.origin, ' ?= ', event.origin)
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
         console.log('misdirected!')
         return
@@ -84,19 +82,6 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
       AddAzureDevOpsAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
-      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
-        return
-      }
-
-      // Test code below.
-      const params = new URLSearchParams(popup?.location.search)
-      const authCode = params.get('code')
-      if (authCode) {
-        const token = AzureDevOpsClientManager.getToken(verifier, authCode)
-        console.log(token)
-      }
-      // End test code
-
       popup && popup.close()
       window.removeEventListener('message', handler)
     }

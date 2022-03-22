@@ -5,7 +5,7 @@ export interface OAuth2AuthorizationParams {
 }
 
 export interface OAuth2PkceAuthorizationParams extends OAuth2AuthorizationParams {
-  codeVerifier: string
+  code_verifier: string
 }
 
 export interface OAuth2PkceRefreshAuthorizationParams extends OAuth2RefreshAuthorizationParams {}

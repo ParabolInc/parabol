@@ -83,9 +83,10 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {azuredevops} = integrations
   const accessToken = azuredevops?.accessToken ?? undefined
 
-  const openOAuth = () => {
-    AzureDevOpsClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  const openOAuth = async () => {
+    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
+
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (

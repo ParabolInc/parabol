@@ -2,6 +2,29 @@ import AbortController from 'abort-controller'
 //import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 //import {SprintPokerDefaults} from '../types/constEnums'
 
+export interface AzureDevOpsUser {
+  // self: string
+  displayName: string
+  publicAlias: string
+  emailAddress: string
+  id: string
+  coreRevision: number
+  revision: number
+  timeStamp: string
+}
+
+export interface Resource {
+  accountId: string
+  accountUri: string
+  accountName: string
+  properties: any
+}
+
+export interface AccessibleResources {
+  count: number
+  value: Resource[]
+}
+
 export interface WorkItemQueryResult {
   asOf: string
   columns: WorkItemFieldReference[]
@@ -86,6 +109,36 @@ export default abstract class AzureDevOpsManager {
       return new Error('Azure DevOps is down')
     }
   }
+  private readonly get = async <T>(url: string) => {
+    const res = await this.fetchWithTimeout(url, {headers: this.headers})
+    if (res instanceof Error) {
+      return res
+    }
+    const {headers} = res
+    // if (res.status === 429) {
+    //   const retryAfterSeconds = headers.get('Retry-After') ?? '3'
+    //   // return new RateLimitError(
+    //   //   'got Azure DevOps rate limit error',
+    //   //   new Date(Date.now() + Number(retryAfterSeconds) * 1000)
+    //   // )
+    //   return Error()
+    // }
+    const contentType = headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      return new Error('Received non-JSON Azure DevOps Response')
+    }
+    const json = (await res.json()) as AzureDevOpsError | T // as AtlassianError | JiraNoAccessError | JiraGetError | T
+    // if ('message' in json) {
+    //   if (json.message === 'No message available' && 'error' in json) {
+    //     return new Error(json.error)
+    //   }
+    //   return new Error(json.message)
+    // }
+    // if (isJiraNoAccessError(json)) {
+    //   return new Error(json.errorMessages[0])
+    // }
+    return json
+  }
   private readonly post = async <T>(url: string, payload: any) => {
     const res = await this.fetchWithTimeout(url, {
       method: 'POST',
@@ -113,5 +166,22 @@ export default abstract class AzureDevOpsManager {
       payload
     )
     return queryResult
+  }
+
+  async getMe() {
+    return this.get<AzureDevOpsUser>(
+      `https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=7.1-preview.3`
+    )
+  }
+
+  async getAccessibleOrgs(userAccountId: string) {
+    const res = await this.get<AccessibleResources>(
+      `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${userAccountId}&api-version=7.1-preview.1`
+    )
+
+    if (!('value' in res)) {
+      return Error()
+    }
+    return res.value
   }
 }

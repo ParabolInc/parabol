@@ -15,13 +15,12 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
     return AzureDevOpsServerManager.fetchToken({
       grant_type: 'authorization_code',
       code: code,
-      codeVerifier: codeVerifier,
+      code_verifier: codeVerifier,
       redirect_uri: makeAppURL(appOrigin, 'auth/ado')
     })
   }
 
   static async refresh(refreshToken: string) {
-    console.log(`inside refreshToken`)
     return AzureDevOpsServerManager.fetchToken({
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
@@ -33,7 +32,6 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
   private static async fetchToken(
     params: OAuth2PkceAuthorizationParams | OAuth2PkceRefreshAuthorizationParams
   ) {
-    console.log(`inside fetchToken with params of ${params}`)
     const body = {
       ...params,
       client_id: process.env.AZUREDEVOPS_CLIENT_ID!
