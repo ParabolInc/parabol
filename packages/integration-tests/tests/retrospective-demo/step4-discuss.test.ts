@@ -40,6 +40,7 @@ test.describe('retrospective-demo / discuss page', () => {
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/discuss/1`)
 
     if (isMobile) {
+      await expect(page.locator('button[aria-label="Toggle the sidebar"]')).toHaveCount(1) // For some reason, there are two elements during the transition sometimes on mobile...
       await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
