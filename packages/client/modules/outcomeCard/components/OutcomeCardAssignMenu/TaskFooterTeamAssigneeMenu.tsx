@@ -1,23 +1,23 @@
-import {TaskFooterTeamAssigneeMenu_task} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
-import {TaskFooterTeamAssigneeMenu_viewer} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_viewer.graphql'
-import React, {useMemo, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useMemo, useState} from 'react'
+import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
+import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
+import {SearchMenuItem} from '~/components/SearchMenuItem'
+import useEventCallback from '~/hooks/useEventCallback'
+import useModal from '~/hooks/useModal'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import {TaskFooterTeamAssigneeMenu_task} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
+import {TaskFooterTeamAssigneeMenuRootQuery} from '../../../../__generated__/TaskFooterTeamAssigneeMenuRootQuery.graphql'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../../hooks/useMenu'
-import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
-import useModal from '~/hooks/useModal'
+import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
 import TaskFooterTeamAssigneeAddIntegrationDialog from './TaskFooterTeamAssigneeAddIntegrationDialog'
-import useEventCallback from '~/hooks/useEventCallback'
-import {SearchMenuItem} from '~/components/SearchMenuItem'
-import useSearchFilter from '~/hooks/useSearchFilter'
-import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery($teamId: ID!) {
@@ -41,12 +41,33 @@ const query = graphql`
 
 interface Props {
   menuProps: MenuProps
-  viewer: TaskFooterTeamAssigneeMenu_viewer
+  queryRef: PreloadedQuery<TaskFooterTeamAssigneeMenuRootQuery>
   task: TaskFooterTeamAssigneeMenu_task
 }
 
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
-  const {menuProps, task, viewer} = props
+  const {menuProps, task, queryRef} = props
+  const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuRootQuery>(
+    graphql`
+      query TaskFooterTeamAssigneeMenuRootQuery {
+        viewer {
+          id
+          teams {
+            id
+            name
+            teamMembers(sortBy: "preferredName") {
+              userId
+              preferredName
+            }
+          }
+        }
+      }
+    `,
+    queryRef,
+    {UNSTABLE_renderPolicy: 'full'}
+  )
+  const {viewer} = data
+
   const {closePortal: closeTeamAssigneeMenu} = menuProps
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)
   const {team, id: taskId, integration} = task
@@ -56,12 +77,15 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {id: teamId} = team
   const {teams} = viewer
   const assignableTeams = useMemo(() => {
-    const filteredTeams = userIds
-      ? teams.filter(({teamMembers}) => !!teamMembers.find(({userId}) => userIds.includes(userId)))
-      : teamIds
-      ? teams.filter(({id}) => teamIds.includes(id))
-      : teams
-    return filteredTeams
+    if (userIds) {
+      return teams.filter(
+        ({teamMembers}) => !!teamMembers.find(({userId}) => userIds.includes(userId))
+      )
+    }
+    if (teamIds) {
+      return teams.filter(({id}) => teamIds.includes(id))
+    }
+    return teams
   }, [teamIds, userIds])
   const taskTeamIdx = useMemo(
     () => assignableTeams.findIndex(({id}) => id === teamId) + 1,
@@ -170,19 +194,6 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(TaskFooterTeamAssigneeMenu, {
-  viewer: graphql`
-    fragment TaskFooterTeamAssigneeMenu_viewer on User {
-      id
-      teams {
-        id
-        name
-        teamMembers(sortBy: "preferredName") {
-          userId
-          preferredName
-        }
-      }
-    }
-  `,
   task: graphql`
     fragment TaskFooterTeamAssigneeMenu_task on Task {
       id
