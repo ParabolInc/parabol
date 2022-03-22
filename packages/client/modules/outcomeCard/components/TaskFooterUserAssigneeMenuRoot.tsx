@@ -1,20 +1,15 @@
-import React from 'react'
-import {createFragmentContainer, QueryRenderer} from 'react-relay'
+import React, {Suspense} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from '../../../hooks/useAtmosphere'
+import taskFooterUserAssigneeMenuQuery, {
+  TaskFooterUserAssigneeMenuRootQuery
+} from '../../../__generated__/TaskFooterUserAssigneeMenuRootQuery.graphql'
 import {MenuProps} from '../../../hooks/useMenu'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
-import renderQuery from '../../../utils/relay/renderQuery'
 import {TaskFooterUserAssigneeMenuRoot_task} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
-
-const query = graphql`
-  query TaskFooterUserAssigneeMenuRootQuery($teamId: ID!) {
-    viewer {
-      ...TaskFooterUserAssigneeMenu_viewer
-    }
-  }
-`
+import {AreaEnum} from '../../../__generated__/UpdateTaskMutation.graphql'
 
 interface Props {
   area: string
@@ -28,15 +23,21 @@ const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
   const {team} = task
   const {id: teamId} = team
   useTaskChild('userAssignee')
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<TaskFooterUserAssigneeMenuRootQuery>(
+    taskFooterUserAssigneeMenuQuery,
+    {teamId}
+  )
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      variables={{teamId}}
-      query={query}
-      render={renderQuery(TaskFooterUserAssigneeMenu, {props: {area, menuProps, task}})}
-      fetchPolicy={'store-or-network' as any}
-    />
+    <Suspense fallback={''}>
+      {queryRef && (
+        <TaskFooterUserAssigneeMenu
+          queryRef={queryRef}
+          area={area as AreaEnum}
+          menuProps={menuProps}
+          task={task}
+        />
+      )}
+    </Suspense>
   )
 }
 
