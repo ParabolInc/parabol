@@ -25,7 +25,7 @@ const StyledWrapper = styled(SettingsWrapper)({
 const ProviderList = (props: Props) => {
   const {viewer, retry, teamId} = props
   const {
-    featureFlags: {gitlab: allowGitlab}
+    featureFlags: {gitlab: allowGitlab, azuredevops: allowAzureDevOps}
   } = viewer
   return (
     <StyledWrapper>
@@ -35,7 +35,7 @@ const ProviderList = (props: Props) => {
       {allowGitlab && <GitLabProviderRow teamId={teamId} viewerRef={viewer} />}
       <MattermostProviderRow teamId={teamId} viewerRef={viewer} />
       <SlackProviderRow teamId={teamId} viewer={viewer} />
-      <AzureDevOpsProviderRow teamId={teamId} viewer={viewer} />
+      {allowAzureDevOps && <AzureDevOpsProviderRow teamId={teamId} viewer={viewer} />}
     </StyledWrapper>
   )
 }
@@ -53,6 +53,7 @@ export default createFragmentContainer(ProviderList, {
 
       featureFlags {
         gitlab
+        azuredevops
       }
     }
   `
