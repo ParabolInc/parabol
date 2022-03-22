@@ -1,9 +1,7 @@
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import {requireSU} from '../../../utils/authorization'
 import {QueryResolvers} from '../resolverTypes'
 
-const user: QueryResolvers['user'] = async (_source, {email, userId}, {authToken, dataLoader}) => {
-  requireSU(authToken)
+const user: QueryResolvers['user'] = async (_source, {email, userId}, {dataLoader}) => {
   if (email) {
     return getUserByEmail(email)
   }

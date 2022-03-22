@@ -2,14 +2,10 @@ import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
-import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
-const autopauseUsers: MutationResolvers['autopauseUsers'] = async (_source, _args, {authToken}) => {
+const autopauseUsers: MutationResolvers['autopauseUsers'] = async () => {
   const r = await getRethink()
-
-  // AUTH
-  requireSU(authToken)
 
   // RESOLUTION
   const activeThresh = new Date(Date.now() - Threshold.AUTO_PAUSE)

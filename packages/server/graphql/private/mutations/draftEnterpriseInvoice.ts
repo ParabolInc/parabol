@@ -2,7 +2,6 @@ import getRethink from '../../../database/rethinkDriver'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import IUser from '../../../postgres/types/IUser'
-import {requireSU} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import segmentIo from '../../../utils/segmentIo'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
@@ -54,14 +53,10 @@ const getBillingLeaderUser = async (
 const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = async (
   _source,
   {orgId, quantity, email, apEmail, plan},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
   const r = await getRethink()
   const now = new Date()
-  // const operationId = dataLoader.share()
-
-  // AUTH
-  requireSU(authToken)
 
   // VALIDATION
   if (quantity < 1) {

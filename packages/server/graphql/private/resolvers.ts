@@ -2,6 +2,8 @@
  * No need to mess with this unless we add subscriptions to the private schema
  */
 import path from 'path'
+import composeResolvers from './composeResolvers'
+import permissionMap from './permissions'
 import {Resolvers} from './resolverTypes'
 
 const importAll = (context: __WebpackModuleApi.RequireContext) => {
@@ -23,4 +25,6 @@ const resolverMap: Resolvers = {
   ...importAll(require.context('./types', false, /.ts$/))
 }
 
-export default resolverMap
+const shieldedResolvers = composeResolvers(resolverMap, permissionMap)
+
+export default shieldedResolvers
