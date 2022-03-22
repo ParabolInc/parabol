@@ -192,10 +192,6 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           const query = `
             query {
               issue(id: "${gid}"){
-                __typename
-                id
-                iid
-                title
                 ...info
               }
             }
@@ -206,7 +202,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           if (error) {
             sendToSentry(error, {userId: accessUserId})
           }
-          return data.issue
+          return data
         }
         return null
       }
