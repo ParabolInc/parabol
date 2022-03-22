@@ -178,9 +178,12 @@ const MeetingCard = (props: Props) => {
       closeTooltip()
     }, 2000)
   }
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
-    HTMLDivElement
-  >(MenuPosition.UPPER_RIGHT)
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef: tooltipRef
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
 
   return (
     <CardWrapper
