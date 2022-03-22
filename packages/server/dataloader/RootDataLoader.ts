@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import {DBType} from '../database/rethinkDriver'
 import * as atlassianLoaders from './atlassianLoaders'
+import * as jiraServerLoaders from './jiraServerLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as githubLoaders from './githubLoaders'
@@ -26,6 +27,7 @@ const loaderMakers = {
   ...foreignKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
+  ...jiraServerLoaders,
   ...customLoaderMakers,
   ...githubLoaders,
   ...integrationAuthLoaders,
@@ -51,6 +53,7 @@ type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<Forei
  */
 type CustomLoaderMakers = typeof customLoaderMakers &
   typeof atlassianLoaders &
+  typeof jiraServerLoaders &
   typeof pollLoaders &
   typeof integrationAuthLoaders &
   typeof primaryKeyLoaderMakers &
@@ -81,7 +84,7 @@ export default class RootDataLoader {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  get<LoaderName extends Loaders>(loaderName: LoaderName) {
+  get<LoaderName extends Loaders>(loaderName: LoaderName): TypedDataLoader<LoaderName> {
     let loader = this.loaders[loaderName]
     if (loader) return loader as TypedDataLoader<LoaderName>
     const loaderMaker = loaderMakers[loaderName]

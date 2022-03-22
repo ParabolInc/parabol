@@ -11,13 +11,15 @@ const fetchAllRepoIntegrations = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
+
   const permLookup = await getPermsByTaskService(dataLoader, teamId, userId)
-  const [prevRepoIntegrations, jiraProjects, githubRepos] = await Promise.all([
+  const [prevRepoIntegrations, jiraProjects, githubRepos, jiraServerProjects] = await Promise.all([
     getPrevRepoIntegrations(userId, teamId, permLookup),
     dataLoader.get('allJiraProjects').load({teamId, userId}),
-    fetchGitHubRepos(teamId, userId, dataLoader, context, info)
+    fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+    dataLoader.get('allJiraServerProjects').load({teamId, userId})
   ])
-  const fetchedRepoIntegrations = [...jiraProjects, ...githubRepos]
+  const fetchedRepoIntegrations = [...jiraProjects, ...githubRepos, ...jiraServerProjects]
   const repoIntegrationsLastUsedAt = {} as {[repoIntegrationId: string]: Date}
   prevRepoIntegrations.forEach((integration) => {
     const integrationId = IntegrationRepoId.join(integration)

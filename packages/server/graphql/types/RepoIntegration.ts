@@ -1,8 +1,12 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 
 export const repoIntegrationFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID)
+  },
+  service: {
+    type: new GraphQLNonNull(IntegrationProviderServiceEnum)
   }
 })
 

@@ -242,7 +242,7 @@ const useMarkdown = (
       anchorOffset: matchedLink.index,
       focusOffset: matchedLink.index + phrase.length
     }) as SelectionState
-    const href = linkify.match(link)[0].url
+    const href = linkify.match(link)![0]!.url
     const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', {href})
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
     const linkifiedContent = Modifier.replaceText(

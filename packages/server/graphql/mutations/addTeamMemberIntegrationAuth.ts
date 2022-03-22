@@ -42,7 +42,7 @@ const addTeamMemberIntegrationAuth = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {
       providerId,
       oauthCodeOrPat,

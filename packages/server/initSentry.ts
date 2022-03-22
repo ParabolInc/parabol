@@ -21,7 +21,7 @@ Sentry.init({
   ],
   integrations: [
     new Integrations.RewriteFrames({
-      root: global.__rootdir__
+      root: (global as any).__rootdir__
     })
   ]
 })

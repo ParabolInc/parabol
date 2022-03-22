@@ -5,6 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.50.0 2022-Mar-16
+### Added
+- Add task menu to push to Jira Server (#6026)
+### Changed
+- Increase the size of the Poker Scope card (#6032)
+### Fixed
+- Always require SAMLRequest (#5985)
+- Remove calculated fields from Jira issue in Sprint Poker (#5864)
+
+## 6.49.0 2022-Mar-02
+### Added
+- Highlight checkin tasks when hovered in current solo update (#5859)
+- Initial team prompt DB schema (#6068)
+
+### Changed
+- Enforce noUncheckedIndexAccess (#6080)
+- Updating text copy in authentication page
+- Change prompt colors for 3 pigs template
+
+### Fixed
+- Fix a bug where types from a dataloader aren't completely accurate (#6129)
+- Fix a bug where dragging item to original position cause an error (#6122)
+- Fix a bug where all the tasks are fetched when adding a task to estimation (#6152)
+- Fix a bug where dragging issue in sidebar estimate section may cause duplicates (#6028)
+
+## 6.48.1 2022-Feb-28
+
+### Fixed
+
+- GitHub Poker Integration with 2+ dimensions
+
 ## 6.48.0 2022-Feb-25
 
 ### Fixed

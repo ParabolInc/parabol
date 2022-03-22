@@ -16,20 +16,20 @@ const gqlQuery = graphql`
     viewer {
       teamMember(userId: $userId, teamId: $teamId) {
         allAvailableRepoIntegrations {
+          __typename
+          id
+          ... on JiraServerRemoteProject {
+            name
+          }
           ... on JiraRemoteProject {
-            id
-            __typename
             name
             key
             cloudId
-            ...TaskFooterIntegrateMenuListItem @relay(mask: false)
           }
           ... on _xGitHubRepository {
-            __typename
-            id
             nameWithOwner
-            ...TaskFooterIntegrateMenuListItem @relay(mask: false)
           }
+          ...TaskFooterIntegrateMenuListItem @relay(mask: false)
         }
       }
     }
@@ -37,10 +37,12 @@ const gqlQuery = graphql`
 `
 
 const getValue = (item: FetchedItems[0]) => {
-  if (item.__typename == 'JiraRemoteProject') {
-    return item.key.toLowerCase()
+  if (item.__typename == 'JiraServerRemoteProject') {
+    return item.key?.toLowerCase() ?? ''
+  } else if (item.__typename == 'JiraRemoteProject') {
+    return item.key?.toLowerCase() ?? ''
   } else if (item.__typename === '_xGitHubRepository') {
-    return item.nameWithOwner.toLowerCase()
+    return item.nameWithOwner?.toLowerCase() ?? ''
   }
   return ''
 }

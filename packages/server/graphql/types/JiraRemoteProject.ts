@@ -7,6 +7,7 @@ import {
 } from '../../utils/atlassian/jiraImages'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {GQLContext} from '../graphql'
+import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
 import RepoIntegration, {repoIntegrationFields} from './RepoIntegration'
@@ -15,12 +16,16 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteProject',
   description: 'A project fetched from Jira in real time',
   interfaces: () => [RepoIntegration],
-  isTypeOf: ({cloudId, key}) => !!(cloudId && key),
+  isTypeOf: ({service}) => service === 'jira',
   fields: () => ({
     ...repoIntegrationFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       resolve: ({cloudId, key}) => JiraProjectId.join(cloudId, key)
+    },
+    service: {
+      type: new GraphQLNonNull(IntegrationProviderServiceEnum),
+      resolve: () => 'jira'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

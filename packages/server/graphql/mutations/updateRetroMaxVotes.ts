@@ -9,6 +9,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateRetroMaxVotesPayload from '../types/UpdateRetroMaxVotesPayload'
+import {RValue} from '../../database/stricterR'
 
 const updateRetroMaxVotes = {
   type: new GraphQLNonNull(UpdateRetroMaxVotesPayload),
@@ -42,10 +43,7 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()) as MeetingRetrospective
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
@@ -97,7 +95,7 @@ const updateRetroMaxVotes = {
       .table('MeetingMember')
       .getAll(meetingId, {index: 'meetingId'})
       .update(
-        (member) => ({
+        (member: RValue) => ({
           votesRemaining: member('votesRemaining').add(delta)
         }),
         {returnChanges: true}
@@ -105,13 +103,13 @@ const updateRetroMaxVotes = {
       .min()
       .lt(0)
       .default(false)
-      .do((undo) => {
+      .do((undo: RValue) => {
         return r.branch(
           undo,
           r
             .table('MeetingMember')
             .getAll(meetingId, {index: 'meetingId'})
-            .update((member) => ({
+            .update((member: RValue) => ({
               votesRemaining: member('votesRemaining').add(-delta)
             })),
           null

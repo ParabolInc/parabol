@@ -5,11 +5,6 @@ import zlib from 'zlib'
 import getRethink from '../../../database/rethinkDriver'
 import EnableSAMLForDomainPayload from '../types/EnableSAMLForDomainPayload'
 
-const AZURE_AD_LOGIN_URL_HOSTNAME = `microsoftonline`
-
-const isMicrosoft = (url: string): boolean =>
-  new URL(url).hostname.includes(AZURE_AD_LOGIN_URL_HOSTNAME)
-
 const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   const template = `
   <samlp:AuthnRequest
@@ -89,9 +84,7 @@ const enableSAMLForDomain = {
     }
 
     // RESOLUTION
-    const url = isMicrosoft(signOnURL)
-      ? getURLWithSAMLRequestParam(signOnURL, normalizedName)
-      : signOnURL
+    const url = getURLWithSAMLRequestParam(signOnURL, normalizedName)
     await r
       .table('SAML')
       .insert(

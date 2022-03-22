@@ -3,6 +3,7 @@ import TeamMember from '../../database/types/TeamMember'
 import {GQLContext} from '../graphql'
 import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
 import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
+import JiraServerRemoteProject from './JiraServerRemoteProject'
 
 const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'JiraServerIntegration',
@@ -12,9 +13,10 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
       description: 'The OAuth1 Authorization for this team member',
       type: TeamMemberIntegrationAuthOAuth1,
       resolve: async ({teamId, userId}, _args, {dataLoader}) => {
-        return dataLoader
+        const auth = await dataLoader
           .get('teamMemberIntegrationAuths')
           .load({service: 'jiraServer', teamId, userId})
+        return auth
       }
     },
     sharedProviders: {
@@ -36,6 +38,14 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           .get('sharedIntegrationProviders')
           .load({service: 'jiraServer', orgTeamIds, teamIds: [teamId]})
         return providers
+      }
+    },
+    projects: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(JiraServerRemoteProject))),
+      description:
+        'A list of projects accessible by this team member. empty if viewer is not the user',
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
+        return dataLoader.get('allJiraServerProjects').load({teamId, userId})
       }
     }
   })

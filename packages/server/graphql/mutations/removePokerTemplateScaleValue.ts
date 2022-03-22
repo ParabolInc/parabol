@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -30,10 +31,7 @@ const removePokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await r.table('TemplateScale').get(scaleId).run()
     if (!scale || scale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -54,12 +52,8 @@ const removePokerTemplateScaleValue = {
     await r
       .table('TemplateScale')
       .get(scaleId)
-      .update((row) => ({
-        values: row('values').deleteAt(
-          row('values')
-            .offsetsOf(oldScaleValue)
-            .nth(0)
-        ),
+      .update((row: RValue) => ({
+        values: row('values').deleteAt(row('values').offsetsOf(oldScaleValue).nth(0)),
         updatedAt: now
       }))
       .run()

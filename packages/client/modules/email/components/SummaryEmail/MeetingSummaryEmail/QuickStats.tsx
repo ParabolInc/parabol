@@ -9,7 +9,7 @@ import makeActionStats from './makeActionStats'
 import makePokerStats from './makePokerStats'
 import makeRetroStats from './makeRetroStats'
 
-const statLabel = (idx, len) =>
+const statLabel = (idx: number, len: number) =>
 ({
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
@@ -20,7 +20,7 @@ const statLabel = (idx, len) =>
   paddingTop: 12
 } as React.CSSProperties)
 
-const descriptionLabel = (idx, len) =>
+const descriptionLabel = (idx: number, len: number) =>
 ({
   fontFamily: FONT_FAMILY.SANS_SERIF,
   borderBottomLeftRadius: idx === 0 ? 4 : 0,

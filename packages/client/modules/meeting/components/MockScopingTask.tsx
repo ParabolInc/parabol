@@ -8,10 +8,9 @@ export const skeletonShine = keyframes`
     background-position: -80px;
   }
   40%, 100% {
-    background-position: 400px;
+    background-position: 800px;
   }
 `
-
 
 // const Checkbox = styled(Icon)({
 //   cursor: 'default'
@@ -19,7 +18,7 @@ export const skeletonShine = keyframes`
 const MockTemplateItemBody = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  padding: '8px 16px',
+  padding: '16px',
   height: 56
 })
 
@@ -28,10 +27,10 @@ const MockTemplateItemTitle = styled('div')<{delay: number}>(({delay}) => ({
   height: 16,
   borderRadius: '20px',
   backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
-  backgroundSize: 600,
+  backgroundSize: 1200,
   marginLeft: 8,
-  marginTop: 2,
-  width: 320
+  marginTop: 4,
+  width: '80%'
 }))
 
 interface Props {
@@ -41,7 +40,7 @@ const MockScopingTask = (props: Props) => {
   const {idx} = props
   return (
     <MockTemplateItemBody>
-      <Checkbox active={false} onClick={() => { }} />
+      <Checkbox active={false} onClick={() => {}} />
       <MockTemplateItemTitle delay={idx * 20} />
     </MockTemplateItemBody>
   )

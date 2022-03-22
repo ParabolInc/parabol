@@ -40,7 +40,7 @@ const getIssueFromJira = async (
   redisKey: string,
   requests: StoreAndNetworkRequests, // resolve originally created promise in outer fn
   tryUntil: Date
-) => {
+): Promise<void> => {
   // get issue from external network (jira api)
   const res = await manager.getIssue(cloudId, issueKey, extraFieldIds, extraExpand)
 

@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import Meeting from '../../database/types/Meeting'
 import getPg from '../../postgres/getPg'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
@@ -49,7 +50,7 @@ export default {
     await r
       .table('Organization')
       .get(orgId)
-      .update((row) => ({
+      .update((row: RValue) => ({
         payLaterClickCount: row('payLaterClickCount').default(0).add(1)
       }))
       .run()

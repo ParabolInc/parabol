@@ -27,7 +27,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
       }
     },
     jiraServer: {
-      type: JiraServerIntegration,
+      type: new GraphQLNonNull(JiraServerIntegration),
       description: 'All things associated with a Jira Server integration for a team member',
       resolve: (source) => source
     },

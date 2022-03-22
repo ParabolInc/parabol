@@ -1,8 +1,7 @@
 import DataLoader from 'dataloader'
-import {MeetingTypeEnum} from '../postgres/types/Meeting'
-import getRedis from '../utils/getRedis'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import MeetingTemplate from '../database/types/MeetingTemplate'
+import OrganizationUser from '../database/types/OrganizationUser'
 import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
@@ -16,8 +15,11 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
+import {MeetingTypeEnum} from '../postgres/types/Meeting'
+import getRedis from '../utils/getRedis'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RootDataLoader from './RootDataLoader'
+import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -285,12 +287,40 @@ export const meetingSettingsByType = (parent: RootDataLoader) => {
       const docs = resultsByType.flat()
       return keys.map((key) => {
         const {teamId, meetingType} = key
+        // until we decide the final shape of the team prompt settings, let's return a temporary hardcoded value
+        if (meetingType === 'teamPrompt') {
+          return new MeetingSettingsTeamPrompt({teamId})
+        }
         return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
       })
     },
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const organizationUsersByUserIdOrgId = (parent: RootDataLoader) => {
+  return new DataLoader<{orgId: string; userId: string}, OrganizationUser | null, string>(
+    async (keys) => {
+      const r = await getRethink()
+      return Promise.all(
+        keys.map((key) => {
+          const {userId, orgId} = key
+          return r
+            .table('OrganizationUser')
+            .getAll(userId, {index: 'userId'})
+            .filter({orgId, removedAt: null})
+            .nth(0)
+            .default(null)
+            .run()
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.orgId}:${key.userId}`
     }
   )
 }

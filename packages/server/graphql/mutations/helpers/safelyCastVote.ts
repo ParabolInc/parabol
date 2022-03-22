@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import {getUserId} from '../../../utils/authorization'
 import AuthToken from '../../../database/types/AuthToken'
+import {RValue} from '../../../database/stricterR'
 
 const safelyCastVote = async (
   authToken: AuthToken,
@@ -18,7 +19,7 @@ const safelyCastVote = async (
   const isVoteRemovedFromUser = await r
     .table('MeetingMember')
     .get(meetingMemberId)
-    .update((member) => {
+    .update((member: RValue) => {
       // go atomic. no cheating allowed
       return r.branch(
         member('votesRemaining').ge(1),
@@ -37,7 +38,7 @@ const safelyCastVote = async (
   const isVoteAddedToGroup = await r
     .table('RetroReflectionGroup')
     .get(reflectionGroupId)
-    .update((group) => {
+    .update((group: RValue) => {
       return r.branch(
         group('voterIds').count(userId).lt(maxVotesPerGroup),
         {
@@ -53,7 +54,7 @@ const safelyCastVote = async (
     await r
       .table('MeetingMember')
       .get(meetingMemberId)
-      .update((member) => ({
+      .update((member: RValue) => ({
         votesRemaining: member('votesRemaining').add(1)
       }))
       .run()

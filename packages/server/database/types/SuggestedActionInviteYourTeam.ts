@@ -1,4 +1,3 @@
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import SuggestedAction from './SuggestedAction'
 
 interface Input {
@@ -11,7 +10,7 @@ interface Input {
 export default class SuggestedActionInviteYourTeam extends SuggestedAction {
   teamId: string
   constructor(input: Input) {
-    super({...input, type: SuggestedActionTypeEnum.inviteYourTeam, priority: 2})
+    super({...input, type: 'inviteYourTeam', priority: 2})
     const {teamId} = input
     this.teamId = teamId
   }
