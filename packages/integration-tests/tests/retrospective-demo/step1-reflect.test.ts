@@ -110,7 +110,7 @@ test.describe('retrospective-demo / reflect page', () => {
     ).toBeVisible()
   })
 
-  test('displays simulated users writing reflections in the stop column', async ({page}) => {
+  test.skip('displays simulated users writing reflections in the stop column', async ({page}) => {
     test.setTimeout(60_000)
 
     await startDemo(page)
@@ -168,7 +168,9 @@ test.describe('retrospective-demo / reflect page', () => {
     ).toBeVisible()
   })
 
-  test('displays simulated users writing reflections in the continue column', async ({page}) => {
+  test.skip('displays simulated users writing reflections in the continue column', async ({
+    page
+  }) => {
     test.setTimeout(80_000)
 
     await startDemo(page)

@@ -81,46 +81,47 @@ test.describe('retrospective-demo / discuss page', () => {
       comments: [
         'While our meetings could be more efficient, we agree that some of them are necessary'
       ]
-    },
-    {
-      name: 'Interns Staff',
-      emojis: ['🤔'],
-      tasks: ['Create a process for making a collective decision, together']
-    },
-    {
-      name: 'Processes',
-      emojis: ['✍️'],
-      tasks: [
-        'Document our testing process',
-        'When onboarding new employees, have them document our processes as they learn them'
-      ]
-    },
-    {
-      name: 'Work',
-      emojis: ['🔥'],
-      tasks: ['Research reputable methods for prioritizing work that the team can review together']
-    },
-    {
-      name: 'People',
-      emojis: ['⏲'],
-      tasks: ['Set a timer for speakers during meetings']
-    },
-    {
-      name: 'Decisions',
-      emojis: ['🔥'],
-      tasks: ['Propose which kind of decisions need to be made by the whole group']
-    },
-    {
-      name: 'Debates',
-      emojis: ['❤️'],
-      tasks: [
-        'Create a policy for when to decide in-person vs. when to decide over Slack, and who needs to be involved for each type'
-      ]
-    },
-    {
-      name: 'Team',
-      emojis: ['❤️']
     }
+    // To optimize for speed, we don't check every discuss group.
+    // {
+    //   name: 'Interns Staff',
+    //   emojis: ['🤔'],
+    //   tasks: ['Create a process for making a collective decision, together']
+    // },
+    // {
+    //   name: 'Processes',
+    //   emojis: ['✍️'],
+    //   tasks: [
+    //     'Document our testing process',
+    //     'When onboarding new employees, have them document our processes as they learn them'
+    //   ]
+    // },
+    // {
+    //   name: 'Work',
+    //   emojis: ['🔥'],
+    //   tasks: ['Research reputable methods for prioritizing work that the team can review together']
+    // },
+    // {
+    //   name: 'People',
+    //   emojis: ['⏲'],
+    //   tasks: ['Set a timer for speakers during meetings']
+    // },
+    // {
+    //   name: 'Decisions',
+    //   emojis: ['🔥'],
+    //   tasks: ['Propose which kind of decisions need to be made by the whole group']
+    // },
+    // {
+    //   name: 'Debates',
+    //   emojis: ['❤️'],
+    //   tasks: [
+    //     'Create a policy for when to decide in-person vs. when to decide over Slack, and who needs to be involved for each type'
+    //   ]
+    // },
+    // {
+    //   name: 'Team',
+    //   emojis: ['❤️']
+    // }
   ]
   discussTestCases.forEach((testCase) => createTest(testCase))
 
