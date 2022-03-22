@@ -74,7 +74,6 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
     )
     const handler = (event) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
-        console.log('misdirected!')
         return
       }
 
