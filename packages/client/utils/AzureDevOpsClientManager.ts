@@ -72,11 +72,7 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
       getOAuthPopupFeatures({width: 500, height: 810, top: 56})
     )
     const handler = (event) => {
-      console.log(event)
-      console.log(event.data)
-      console.log(window.location.origin, ' ?= ', event.origin)
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
-        console.log('misdirected!')
         return
       }
 

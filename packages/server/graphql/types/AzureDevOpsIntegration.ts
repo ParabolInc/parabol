@@ -1,11 +1,4 @@
-import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean,
-  GraphQLList,
-  GraphQLString
-} from 'graphql'
+import {GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLBoolean, GraphQLList} from 'graphql'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {AzureDevOpsAuth} from '../../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
 import {GQLContext} from '../graphql'
@@ -14,7 +7,6 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {getUserId} from 'parabol-server/utils/authorization'
 import standardError from 'parabol-server/utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import {WorkItemQueryResult} from 'parabol-client/utils/AzureDevOpsManager'
 
 const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsIntegration',
@@ -60,26 +52,14 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       description: 'The user that the access token is attached to'
     },
     workItems: {
-      type: new GraphQLNonNull(AzureDevOpsWorkItem),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsWorkItem))),
       description:
-        'A list of issues coming straight from the jira integration for a specific team member',
-      args: {
-        id: {
-          type: GraphQLID,
-          defaultValue: 100
-        },
-        url: {
-          type: GraphQLString,
-          description: 'the datetime cursor'
-        }
-      },
+        'A list of work items coming straight from the azure dev ops integration for a specific team member',
       resolve: async (
         {teamId, userId, accessToken, instanceIds}: AzureDevOpsAuth,
-        {id, url},
+        {},
         {authToken}: GQLContext
       ) => {
-        console.log(id)
-        console.log(url)
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
@@ -88,15 +68,17 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         }
         const manager = new AzureDevOpsServerManager(accessToken)
         const instanceId = instanceIds[0] as string
-        const userStoriesRes = await manager.getUserStories(instanceId)
-        const mappedUserStories = (userStoriesRes as WorkItemQueryResult).workItems.map(
-          (workItem) => {
+        const result = await manager.getUserStories(instanceId)
+        const {workItems} = result
+        const userStories = Array.from(
+          workItems.map((workItem) => {
             return {
-              ...workItem
+              id: workItem.id.toString(),
+              url: workItem.url
             }
-          }
+          })
         )
-        return mappedUserStories
+        return userStories
       }
     }
 

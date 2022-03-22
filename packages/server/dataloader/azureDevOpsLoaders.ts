@@ -49,7 +49,6 @@ export const freshAzureDevOpsAuth = (
 ): DataLoader<TeamUserKey, AzureDevOpsAuth | null, string> => {
   return new DataLoader<TeamUserKey, AzureDevOpsAuth | null, string>(
     async (keys) => {
-      console.log('Inside resolver')
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const userAzureDevOpsAuths = await getAzureDevOpsAuthByUserId(userId)
@@ -66,13 +65,9 @@ export const freshAzureDevOpsAuth = (
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
-            console.log(`refresh token - ${refreshToken}`)
             const oauthRes = await AzureDevOpsServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
               //sendToSentry(oautRes)
-              console.log(oauthRes)
-              console.log(oauthRes.message)
-              console.log('after token')
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
@@ -117,16 +112,12 @@ export const azureDevOpsUserStories = (
           const {accessToken} = auth
           const manager = new AzureDevOpsServerManager(accessToken)
           const result = await manager.getUserStories(instanceId)
-          if (result instanceof Error) {
-            //sendToSentry(result, {userId, tags: {teamId}})
-            const emptyArray: AzureDevOpsWorkItem[] = []
-            return emptyArray
-          } else {
-            return result.workItems.map<AzureDevOpsWorkItem>((workItemReference) => ({
-              id: workItemReference.id.toString(),
-              url: workItemReference.url
-            }))
-          }
+          const {error, workItems} = result
+          console.log(error)
+          return workItems.map((workItem) => ({
+            id: workItem.id.toString(),
+            url: workItem.url
+          }))
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : []))

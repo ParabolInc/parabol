@@ -1,4 +1,5 @@
 import AbortController from 'abort-controller'
+//import {id} from 'parabol-client/validation/templates'
 //import AzureDevOpsIssueId from '../shared/gqlIds/AzureDevOpsIssueId'
 //import {SprintPokerDefaults} from '../types/constEnums'
 
@@ -103,15 +104,31 @@ export default abstract class AzureDevOpsManager {
   }
 
   async getUserStories(instanceId: string) {
+    const allUserStories = [] as WorkItemReference[]
+    let firstError: Error | undefined
     const queryString =
       "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
     const payload = {
       query: queryString
     }
-    const queryResult = await this.post<WorkItemQueryResult>(
-      `https://dev.azure.com/${instanceId}/_apis/wit/wiql?api-version=6.0`,
+    const res = await this.post<WorkItemQueryResult>(
+      `https://${instanceId}/_apis/wit/wiql?api-version=6.0`,
       payload
     )
-    return queryResult
+    if (res instanceof Error) {
+      if (!firstError) {
+        firstError = res
+      }
+    } else {
+      const workItems = res.workItems.map((workItem) => {
+        const {id, url} = workItem
+        return {
+          id,
+          url
+        }
+      })
+      allUserStories.push(...workItems)
+    }
+    return {error: firstError, workItems: allUserStories}
   }
 }
