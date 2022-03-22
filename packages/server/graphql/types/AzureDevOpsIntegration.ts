@@ -4,8 +4,8 @@ import {AzureDevOpsAuth} from '../../postgres/queries/getAzureDevOpsAuthsByUserI
 import {GQLContext} from '../graphql'
 import AzureDevOpsWorkItem from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {getUserId} from 'parabol-server/utils/authorization'
-import standardError from 'parabol-server/utils/standardError'
+import {getUserId} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 
 const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
