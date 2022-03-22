@@ -1,40 +1,21 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
+import React, {Suspense} from 'react'
 import {RouteComponentProps} from 'react-router'
-import {InvitationLinkRootQuery} from '~/__generated__/InvitationLinkRootQuery.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
+import invitationLinkQuery, {
+  InvitationLinkRootQuery
+} from '~/__generated__/InvitationLinkRootQuery.graphql'
 import useNoIndex from '../hooks/useNoIndex'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import InvitationLink from './InvitationLink'
 
 interface Props extends RouteComponentProps<{token: string}> {}
 
-const query = graphql`
-  query InvitationLinkRootQuery($token: ID!) {
-    massInvitation(token: $token) {
-      ...InvitationLink_massInvitation
-    }
-  }
-`
-
 const InvitationLinkRoot = (props: Props) => {
   useNoIndex()
-  const atmosphere = useAtmosphere()
   const {match} = props
   const {params} = match
   const {token} = params
-  return (
-    <QueryRenderer<InvitationLinkRootQuery>
-      environment={atmosphere}
-      query={query}
-      variables={{token}}
-      fetchPolicy={'store-or-network' as any}
-      render={({props: renderProps}) => {
-        if (!renderProps) return null
-        return <InvitationLink massInvitation={renderProps.massInvitation} />
-      }}
-    />
-  )
+  const queryRef = useQueryLoaderNow<InvitationLinkRootQuery>(invitationLinkQuery, {token})
+  return <Suspense fallback={''}>{queryRef && <InvitationLink queryRef={queryRef} />}</Suspense>
 }
 
 export default InvitationLinkRoot
