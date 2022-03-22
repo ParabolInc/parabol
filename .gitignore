@@ -17,6 +17,7 @@ node_modules/
 package-lock.json
 packages/server/segmentFns/debug.js
 packages/server/graphql/intranetSchema/mutations/__output__/
+packages/server/graphql/intranetSchema/sdl/resolverTypes.ts
 queryMap.json
 rethinkdb_data/
 rethinkdb_dump_*
