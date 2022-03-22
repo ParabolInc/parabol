@@ -7,9 +7,9 @@ class GitLabServerManager {
   readonly accessToken: string
   readonly serverBaseUrl: string
 
-  constructor(accessToken: string) {
+  constructor(accessToken: string, serverBaseUrl: string) {
     this.accessToken = accessToken
-    this.serverBaseUrl = 'https://gitlab.com'
+    this.serverBaseUrl = serverBaseUrl
   }
 
   getGitLabRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {

@@ -186,8 +186,10 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
           const gitlabAuth = await dataLoader
             .get('teamMemberIntegrationAuths')
             .load({service: 'gitlab', teamId, userId: viewerId})
-          const accessToken = gitlabAuth?.accessToken
-          if (!accessToken) return null
+          if (!gitlabAuth?.accessToken) return null
+          const {providerId, accessToken} = gitlabAuth
+          const provider = await dataLoader.get('integrationProviders').load(providerId)
+          if (!provider?.serverBaseUrl) return null
           const {gid} = integration
           const query = `
             query {
@@ -196,7 +198,7 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
               }
             }
           `
-          const manager = new GitLabServerManager(accessToken)
+          const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
           const gitlabRequest = manager.getGitLabRequest(info, context)
           const [data, error] = await gitlabRequest(query, {})
           if (error) {
