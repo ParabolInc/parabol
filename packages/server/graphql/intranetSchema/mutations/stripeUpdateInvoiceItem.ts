@@ -1,6 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import Stripe from 'stripe'
 import getRethink from '../../../database/rethinkDriver'
+import {RValue} from '../../../database/stricterR'
 import InvoiceItemHook from '../../../database/types/InvoiceItemHook'
 import {isSuperUser} from '../../../utils/authorization'
 import sendToSentry from '../../../utils/sendToSentry'
@@ -49,7 +50,9 @@ const getBestHook = (possibleHooks: InvoiceItemHook[]) => {
   return firstHook
 }
 
-const tagInvoiceItemWithHook = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) => {
+const tagInvoiceItemWithHook = async (
+  invoiceItem: Stripe.invoiceItems.InvoiceItem
+): Promise<boolean> => {
   const r = await getRethink()
   const {id: invoiceItemId, amount} = invoiceItem
   const isRefund = amount < 0
@@ -66,7 +69,7 @@ const tagInvoiceItemWithHook = async (invoiceItem: Stripe.invoiceItems.InvoiceIt
     .table('InvoiceItemHook')
     .get(hookId)
     .update(
-      (row) => ({
+      (row: RValue) => ({
         [invoiceItemName]: row(invoiceItemName).default(invoiceItemId)
       }),
       {returnChanges: true}

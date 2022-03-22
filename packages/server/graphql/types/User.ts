@@ -1,4 +1,3 @@
-import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -8,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {
   AUTO_GROUPING_THRESHOLD,
@@ -15,8 +15,13 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../client/utils/constants'
 import groupReflections from '../../../client/utils/smartGroup/groupReflections'
-import getPg from '../../postgres/getPg'
 import getRethink from '../../database/rethinkDriver'
+import MeetingMemberType from '../../database/types/MeetingMember'
+import OrganizationType from '../../database/types/Organization'
+import OrganizationUserType from '../../database/types/OrganizationUser'
+import Reflection from '../../database/types/Reflection'
+import SuggestedActionType from '../../database/types/SuggestedAction'
+import getPg from '../../postgres/getPg'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
@@ -25,6 +30,7 @@ import isCompanyDomain from '../../utils/isCompanyDomain'
 import standardError from '../../utils/standardError'
 import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
+import isValid from '../isValid'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
@@ -46,14 +52,7 @@ import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
-import OrganizationUserType from '../../database/types/OrganizationUser'
-import TeamInvitation from '../../database/types/TeamInvitation'
-import OrganizationType from '../../database/types/Organization'
-import SuggestedActionType from '../../database/types/SuggestedAction'
-import MeetingMemberType from '../../database/types/MeetingMember'
 import {UserFeatureFlagEnum} from './UserFlagEnum'
-import Reflection from '../../database/types/Reflection'
-import isValid from '../isValid'
 
 const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -363,22 +362,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         }
       },
       resolve: async ({id: userId}: {id: string}, {orgId}, {authToken, dataLoader}: GQLContext) => {
-        // AUTH
         const viewerId = getUserId(authToken)
-        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-        const organizationUsersForOrgId = organizationUsers.find(
-          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
-        )
-        if (viewerId === userId || isSuperUser(authToken)) {
-          return organizationUsersForOrgId
-        }
-        const viewerOrganizationUsers = await dataLoader
-          .get('organizationUsersByUserId')
-          .load(viewerId)
-        const viewerOrganizationUsersForOrgId = viewerOrganizationUsers.find(
-          (organizationUser: OrganizationUserType) => organizationUser.orgId === orgId
-        )
-        return viewerOrganizationUsersForOrgId ? organizationUsersForOrgId : null
+        const [viewerOrganizationUser, userOrganizationUser] = await Promise.all([
+          dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId}),
+          dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
+        ])
+        if (viewerOrganizationUser || isSuperUser(authToken)) return userOrganizationUser
+        return null
       }
     },
     organizationUsers: {
@@ -491,7 +481,7 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
             plaintextContent.toLowerCase().includes(searchQuery)
           )
           const relatedReflections = matchedReflections.filter(
-            ({reflectionGroupId: groupId}: Reflection) => groupId != reflectionGroupId
+            ({reflectionGroupId: groupId}: Reflection) => groupId !== reflectionGroupId
           )
           const relatedGroupIds = [
             ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
@@ -507,12 +497,13 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
         let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
         while (currentThresh) {
           const nextResultGroupIds = new Set<string>()
-          const {groupedReflectionsRes, nextThresh} = groupReflections(reflections, {
+          const res = groupReflections(reflections, {
             groupingThreshold: currentThresh,
             maxGroupSize: reflectionsCount,
             maxReductionPercent: MAX_REDUCTION_PERCENTAGE
           })
-          console.log('🚀  ~ user---', {groupedReflectionsRes})
+          const {groupedReflectionsRes} = res
+          const nextThresh = res.nextThresh as number | null
           const spotlightGroupedReflection = groupedReflectionsRes.find(
             (group) => group.oldReflectionGroupId === reflectionGroupId
           )
@@ -575,11 +566,11 @@ const User: GraphQLObjectType<any, GQLContext> = new GraphQLObjectType<any, GQLC
           if (!meeting) return {meetingId}
           teamId = meeting.teamId
         }
-        const teamInvitations =
-          teamId &&
-          ((await dataLoader.get('teamInvitationsByTeamId').load(teamId)) as TeamInvitation[])
+        const teamInvitations = teamId
+          ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
+          : null
         if (!teamInvitations) return {teamId, meetingId}
-        const teamInvitation = teamInvitations?.find((invitation) => invitation.email === email)
+        const teamInvitation = teamInvitations.find((invitation) => invitation.email === email)
         return {teamInvitation, teamId, meetingId}
       }
     },

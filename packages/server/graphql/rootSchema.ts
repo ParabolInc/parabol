@@ -1,4 +1,4 @@
-import {mergeSchemas} from '@graphql-tools/merge'
+import {mergeSchemas} from '@graphql-tools/schema'
 import {GraphQLResolveInfo, GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import {IntegrationProviderGitLabOAuth2} from '../postgres/queries/getIntegrationProvidersByIds'
@@ -87,7 +87,7 @@ const withNestedSchema = mergeSchemas({
     },
     _xGitHubRepository: {
       __interfaces: () => ['RepoIntegration'],
-      __isTypeOf: ({nameWithOwner}) => !!nameWithOwner,
+      __isTypeOf: ({nameWithOwner}: {nameWithOwner?: string}) => !!nameWithOwner,
       service: () => 'github'
     },
     _xGitLabProject: {

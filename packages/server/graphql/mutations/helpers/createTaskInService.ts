@@ -25,7 +25,7 @@ const createTaskInService = async (
   if (!integrationInput) return {integrationHash: undefined, integration: undefined}
   const {dataLoader} = context
   const {service, serviceProjectHash} = integrationInput
-  const eqFn = (data) => ['archived', 'private'].includes(data.value)
+  const eqFn = (data: {value: string}) => ['archived', 'private'].includes(data.value)
   const taglessContentJSON = removeRangesForEntity(rawContent, 'TAG', eqFn) || rawContent
   if (service === 'jira') {
     const atlassianAuth = await dataLoader

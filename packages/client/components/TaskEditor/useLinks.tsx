@@ -144,8 +144,8 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     } else {
       const links = linkify.match(word)
       // make sure the link starts at the beginning of the word otherwise we get conflicts with markdown and junk
-      if (links && links[0].index === 0) {
-        const {url} = links[0]
+      if (links && links[0]!.index === 0) {
+        const {url} = links[0]!
         const linkifier = makeAddLink(block.getKey(), begin, end, url)
         undoLinkRef.current = true
         // getNextState is a thunk because 99% of the time, we won't ever use it,

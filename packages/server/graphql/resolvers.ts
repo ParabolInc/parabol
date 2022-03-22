@@ -1,24 +1,24 @@
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import MeetingAction from '../database/types/MeetingAction'
-import MeetingPoker from '../database/types/MeetingPoker'
-import MeetingRetrospective from '../database/types/MeetingRetrospective'
 import AgendaItem from '../database/types/AgendaItem'
 import {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Meeting from '../database/types/Meeting'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
-import {GQLContext} from './graphql'
+import MeetingAction from '../database/types/MeetingAction'
+import MeetingPoker from '../database/types/MeetingPoker'
+import MeetingRetrospective from '../database/types/MeetingRetrospective'
 import Notification from '../database/types/Notification'
 import Organization from '../database/types/Organization'
 import Task from '../database/types/Task'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
-import User from '../database/types/User'
 import TeamMember from '../database/types/TeamMember'
+import User from '../database/types/User'
 import {Loaders} from '../dataloader/RootDataLoader'
-import isValid from './isValid'
+import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
 import {Team} from '../postgres/queries/getTeamsByIds'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
+import {GQLContext} from './graphql'
+import isValid from './isValid'
 
 export const resolveAgendaItem = (
   {agendaItemId, agendaItem}: {agendaItemId: string; agendaItem: AgendaItem},
@@ -97,7 +97,7 @@ export const resolveTasks = async (
 }
 
 export const resolveTeam = (
-  {team, teamId}: {teamId: string; team: IGetTeamsByIdsQueryResult},
+  {team, teamId}: {teamId?: string; team?: IGetTeamsByIdsQueryResult},
   _args: unknown,
   {dataLoader}: GQLContext
 ) => {

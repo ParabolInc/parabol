@@ -27,7 +27,7 @@ const createGitHubTask = async (
 ) => {
   const {accessToken, login} = githubAuth
   const {title, contentState} = splitDraftContent(rawContent)
-  const body = stateToMarkdown(contentState)
+  const body = stateToMarkdown(contentState) as string
   const githubRequest = getGitHubRequest(info, context, {
     accessToken
   })

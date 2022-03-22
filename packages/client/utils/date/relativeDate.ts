@@ -28,11 +28,11 @@ export const countdown = (date: string | Date) => {
     h: (abs % DAY) / HOUR,
     m: (abs % HOUR) / MIN,
     s: (abs % MIN) / SECOND
-  }
+  } as const
   const keep: string[] = []
 
   for (const k in periods) {
-    const val = String(Math.floor(periods[k]))
+    const val = String(Math.floor(periods[k as keyof typeof periods]))
     if (val === '0' && keep.length === 0 && k !== 'm') continue
     keep.push(keep.length === 0 ? val : val.padStart(2, '0'))
   }
@@ -52,16 +52,16 @@ const relativeDate = (date: string | Date, opts: Opts = {}) => {
     day: (abs % MONTH) / DAY,
     hour: (abs % DAY) / HOUR,
     minute: (abs % HOUR) / MIN
-  }
+  } as const
 
-  let k
-  let val
+  let k: number | string
+  let val: number | string
   const keep: string[] = []
   let max: number | string = opts.max === undefined ? 1 : opts.max
 
   for (k in periods) {
     if (keep.length < max) {
-      val = Math.floor(periods[k])
+      val = Math.floor(periods[k as keyof typeof periods] as number)
       if (!val && !opts.zero) continue
       keep.push(val + ' ' + (val === 1 ? k : k + 's'))
     }

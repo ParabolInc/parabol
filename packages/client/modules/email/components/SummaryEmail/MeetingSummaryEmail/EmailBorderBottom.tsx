@@ -6,20 +6,12 @@ const borderStyles = {
   paddingBottom: 24
 } as React.CSSProperties
 
-const EmailBorderBottom = (props) => {
-  const {dataCy} = props
-  if (!dataCy)
-    return (
-      <tr>
-        <td style={borderStyles} />
-      </tr>
-    )
-  else
-    return (
-      <tr>
-        <td data-cy={dataCy} style={borderStyles} />
-      </tr>
-    )
+const EmailBorderBottom = () => {
+  return (
+    <tr>
+      <td style={borderStyles} />
+    </tr>
+  )
 }
 
 export default EmailBorderBottom

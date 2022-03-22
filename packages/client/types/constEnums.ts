@@ -124,6 +124,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
+  GETTING_STARTED_ASYNC_STANDUP = 'https://www.parabol.co/resources/async-standup-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
@@ -316,14 +317,6 @@ export const enum SubscriptionChannel {
   MEETING = 'meeting',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization'
-}
-
-export const enum SuggestedActionTypeEnum {
-  inviteYourTeam = 'inviteYourTeam',
-  tryTheDemo = 'tryTheDemo',
-  tryRetroMeeting = 'tryRetroMeeting',
-  createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
 }
 
 export const enum TaskStatus {
