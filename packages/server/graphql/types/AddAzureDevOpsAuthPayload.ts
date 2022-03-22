@@ -6,6 +6,7 @@ import StandardMutationError from './StandardMutationError'
 import TeamMember from './TeamMember'
 import User from './User'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import AzureDevOpsIntegration from './AzureDevOpsIntegration'
 
 export const AddAzureDevOpsAuthSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'AddAzureDevOpsAuthSuccess',
@@ -13,13 +14,13 @@ export const AddAzureDevOpsAuthSuccess = new GraphQLObjectType<any, GQLContext>(
     error: {
       type: StandardMutationError
     },
-    // atlassianIntegration: {
-    //   type: AtlassianIntegration,
-    //   description: 'The newly created auth',
-    //   resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
-    //     return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
-    //   }
-    // },
+    azureDevOpsIntegration: {
+      type: AzureDevOpsIntegration,
+      description: 'The newly created auth',
+      resolve: async ({teamId, userId}, _args: unknown, {dataLoader}) => {
+        return dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
+      }
+    },
     teamId: {
       type: GraphQLID
     },
