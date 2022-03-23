@@ -9,11 +9,12 @@
 
   This file accepts resolvers and permissions and applies permissions as higher order functions to those resolvers
 */
+import {GraphQLScalarType} from 'graphql'
 import {allow} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import hash from 'object-hash'
-import permissions from './permissions'
-import {ResolverFn, Resolvers} from './resolverTypes'
+import {Resolver as R, ResolverFn} from './private/resolverTypes'
+import {SubscriptionResolvers} from './public/resolverTypes'
 
 type Resolver = ResolverFn<any, any, any, any>
 
@@ -47,7 +48,23 @@ const wrapResolve =
     }
   }
 
-const composeResolvers = (resolverMap: Resolvers, permissionMap: typeof permissions) => {
+type ResolverMap = {
+  // Subscription: SubscriptionResolvers
+  [TypeName: string]:
+    | {
+        [FieldName: string]: R<any, any, any, any>
+      }
+    | GraphQLScalarType
+    | SubscriptionResolvers
+}
+
+interface PermissionMap {
+  [TypeName: string]: {
+    [FieldName: string]: ShieldRule
+  }
+}
+
+const composeResolvers = (resolverMap: ResolverMap, permissionMap: PermissionMap) => {
   Object.entries(permissionMap).forEach(([typeName, ruleFieldMap]) => {
     const resolverSubMap = resolverMap[typeName as keyof typeof resolverMap]
     if (!resolverSubMap) throw new Error(`No resolver exists for type: ${typeName}`)

@@ -11,6 +11,9 @@ const resolvers: Resolvers = {
   Query: {
     ...importAll(require.context('./queries', false, /.ts$/))
   },
+  Subscription: {
+    ...importAll(require.context('./subscriptions', false, /.ts$/))
+  },
   ...importAll(require.context('./types', false, /.ts$/))
 }
 

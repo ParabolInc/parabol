@@ -1,0 +1,7 @@
+type _xGitHubIssue implements TaskIntegration
+
+type _xGitHubRepository implements RepoIntegration
+
+extend type _xGitHubRepository {
+  service: IntegrationProviderServiceEnum!
+}

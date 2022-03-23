@@ -29,6 +29,17 @@
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource"
         }
       }
+    },
+    "packages/server/graphql/public/resolverTypes.ts": {
+      "schema": "packages/server/graphql/public/schema.graphql",
+      "plugins": ["typescript", "typescript-resolvers", "add"],
+      "config": {
+        "contextType": "../graphql#GQLContext",
+        "mappers": {
+          "Organization": "../../database/types/Organization#default as Organization",
+          "User": "../../postgres/types/IUser#default as IUser"
+        }
+      }
     }
   }
 }

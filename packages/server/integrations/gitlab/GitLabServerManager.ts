@@ -1,6 +1,6 @@
 import {GraphQLResolveInfo} from 'graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
-import {GitLabRequest} from '../../graphql/rootSchema'
+import {GitLabRequest} from '../../graphql/public/rootSchema'
 import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {GetProfileQuery} from '../../types/gitlabTypes'
 

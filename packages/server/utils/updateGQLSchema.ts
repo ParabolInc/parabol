@@ -3,20 +3,19 @@ import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
 import privateSchema from '../graphql/private/rootSchema'
-import publicSchema from '../graphql/rootSchema'
+import publicSchema from '../graphql/public/rootSchema'
 
 declare const __PROJECT_ROOT__: string
 
-const write = promisify(fs.writeFile)
-const schemaPath = path.join(__PROJECT_ROOT__, 'schema.graphql')
-const privateSchemaPath = path.join(
-  __PROJECT_ROOT__,
-  'packages/server/graphql/private/schema.graphql'
-)
 const updateGQLSchema = async () => {
-  const nextSchema = printSchema(publicSchema)
-  const nextPrivateSchema = printSchema(privateSchema)
-  await Promise.all([write(schemaPath, nextSchema), write(privateSchemaPath, nextPrivateSchema)])
+  const write = promisify(fs.writeFile)
+  const GQL_ROOT = path.join(__PROJECT_ROOT__, 'packages/server/graphql')
+  const publicSchemaPath = path.join(GQL_ROOT, 'public/schema.graphql')
+  const privateSchemaPath = path.join(GQL_ROOT, 'private/schema.graphql')
+  await Promise.all([
+    write(publicSchemaPath, printSchema(publicSchema)),
+    write(privateSchemaPath, printSchema(privateSchema))
+  ])
 }
 
 export default updateGQLSchema

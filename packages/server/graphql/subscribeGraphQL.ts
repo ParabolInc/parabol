@@ -20,7 +20,7 @@ import sendToSentry from '../utils/sendToSentry'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
 import DocumentCache from './DocumentCache'
 import ResponseStream from './ResponseStream'
-import publicSchema from './rootSchema'
+import publicSchema from './public/rootSchema'
 
 export interface SubscribeRequest {
   connectionContext: ConnectionContext
