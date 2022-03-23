@@ -1,19 +1,8 @@
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLResolveInfo} from 'graphql'
 import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
-// import {
-//   AddCommentMutation,
-//   AddCommentMutationVariables,
-//   CreateIssueMutation,
-//   CreateIssueMutationVariables,
-//   GetRepoInfoQuery,
-//   GetRepoInfoQueryVariables
-// } from '../../../types/gitlabTypes'
 import createIssueMutation from '../../../utils/gitlabQueries/createIssue.graphql'
-// import addComment from '../../../utils/gitlabQueries/addComment.graphql'
-// import getRepoInfo from '../../../utils/gitlabQueries/getRepoInfo.graphql'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
-import getGitLabRequest from '../../../utils/getGitLabRequest'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 
 const createGitLabTask = async (
@@ -22,14 +11,15 @@ const createGitLabTask = async (
   gitlabAuth: any, // TODO: GitLabAuth
   context: GQLContext,
   info: GraphQLResolveInfo,
-  dataLoader: DataLoaderWorker,
-  comment?: string
+  dataLoader: DataLoaderWorker
+  // comment?: string
 ) => {
-  const {accessToken, login, providerId} = gitlabAuth
+  const {accessToken, providerId} = gitlabAuth
   const {title, contentState} = splitDraftContent(rawContent)
   const body = stateToMarkdown(contentState)
   const provider = await dataLoader.get('integrationProviders').load(providerId)
-  const manager = new GitLabServerManager(accessToken, provider?.serverBaseUrl)
+  if (!provider?.serverBaseUrl) return {error: 'serverBaseUrl not found'}
+  const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
   const gitlabRequest = manager.getGitLabRequest(info, context)
   const [createIssueData, createIssueError] = await gitlabRequest(createIssueMutation, {
     input: {

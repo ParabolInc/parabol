@@ -23,7 +23,7 @@ const handleGitLabCreateIssue = (
     ?.getLinkedRecord('query')
   const typename = integration.getType()
   if (typename !== '_xGitLabIssue' && typename !== '_xGitLabProject') return
-  const gitlabProjectsConn = getGitLabProjectsConn(gitlab, '') // TODO: add query string
+  const gitlabProjectsConn = getGitLabProjectsConn(gitlab) // TODO: add query string
   if (!gitlabProjectsConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(

@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent, useEffect, useMemo, useRef, useState} from 'react'
+import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
+import getNonNullEdges from '~/utils/getNonNullEdges'
 import {NewGitLabIssueInput_meeting$key} from '~/__generated__/NewGitLabIssueInput_meeting.graphql'
 import {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
@@ -159,11 +160,9 @@ const NewGitLabIssueInput = (props: Props) => {
   )
   const {id: userId, team, teamMember} = viewer
   const {id: meetingId} = meeting
-  const {id: teamId} = team
-  const gitlabProjects = useMemo(
-    () => teamMember.integrations.gitlab.api.query.allProjects.edges.map(({node}) => node),
-    [teamMember]
-  )
+  const {id: teamId} = team!
+  const nullableEdges = teamMember?.integrations?.gitlab?.api?.query?.allProjects?.edges ?? null
+  const gitlabProjects = getNonNullEdges(nullableEdges || []).map(({node}) => node)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')

@@ -167,7 +167,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   )
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
-        .filter((edge) => edge.node.__typename === '_xGitLabIssue')
+        // .filter((edge) => edge.node.__typename === '_xGitLabIssue')
         .map(({node}) => node)
     : null
   const [isEditing, setIsEditing] = useState(false)
