@@ -9,7 +9,7 @@ export const EndTeamPromptSuccess = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     meeting: {
       type: new GraphQLNonNull(TeamPromptMeeting),
-      resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
+      resolve: ({meetingId}: {meetingId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },

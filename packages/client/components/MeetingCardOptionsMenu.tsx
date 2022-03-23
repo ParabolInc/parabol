@@ -32,12 +32,17 @@ const OptionMenuItem = styled('div')({
   width: '200px'
 })
 
+const EndMeetingMutationLookup = {
+  teamPrompt: EndTeamPromptMutation
+}
+
 const MeetingCardOptionsMenu = (props: Props) => {
   const {menuProps, popTooltip, viewer} = props
   const {team, meeting} = viewer
   const {massInvitation} = team!
   const {id: token} = massInvitation
-  const isTeamPrompt = meeting?.meetingType === 'teamPrompt'
+  const {id: meetingId, meetingType} = meeting!
+  const canEndMeeting = meetingType === 'teamPrompt'
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
 
@@ -59,7 +64,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
           await navigator.clipboard.writeText(copyUrl)
         }}
       />
-      {isTeamPrompt && (
+      {canEndMeeting && (
         <MenuItem
           key='close'
           label={
@@ -71,7 +76,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
           onClick={() => {
             popTooltip()
             closePortal()
-            EndTeamPromptMutation(atmosphere, {meetingId: meeting.id}, {onError, onCompleted})
+            EndMeetingMutationLookup[meetingType]?.(atmosphere, {meetingId}, {onError, onCompleted})
           }}
         />
       )}
