@@ -21,7 +21,7 @@ const startTeamPrompt = {
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The team starting the meeting'
+      description: 'Id of the team starting the meeting'
     }
   },
   resolve: async (
