@@ -20,14 +20,11 @@ const transformBody = (contentType: string, body?: Record<string, string>): stri
   }
 
   if (contentType.toLowerCase().startsWith('application/x-www-form-urlencoded')) {
-    let transformedBody = ''
+    const params = new URLSearchParams()
     Object.entries(body).forEach((entry) => {
-      if (transformedBody.length > 0) {
-        transformedBody += '&'
-      }
-      transformedBody += `${entry[0]}=${entry[1]}`
+      params.append(entry[0], entry[1])
     })
-    return transformedBody
+    return params.toString()
   }
 
   return ''
