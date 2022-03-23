@@ -1,21 +1,23 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
+import Reactable, {reactableFields} from './Reactable'
 import Team from './Team'
 
 const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'TeamPromptResponse',
   description: 'A response of a single team member in a team prompt',
-  isTypeOf: ({status}) => !!status,
+  interfaces: () => [Reactable],
   fields: () => ({
-    createdBy: {
+    ...reactableFields(),
+    userId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The userId that created the item'
+      description: 'Id of the user who created the team prompt response'
     },
-    createdByUser: {
-      type: new GraphQLNonNull(require('./User').default),
-      description: 'The user that created the item',
-      resolve: ({createdBy}, _args: unknown, {dataLoader}: GQLContext) => {
-        return dataLoader.get('users').load(createdBy)
+    user: {
+      type: require('./User').default,
+      description: 'The user who created the response',
+      resolve: ({userId}: {userId: string}, _args: unknown, {dataLoader}) => {
+        return dataLoader.get('users').load(userId)
       }
     },
     content: {
@@ -33,20 +35,8 @@ const TeamPromptResponse: GraphQLObjectType = new GraphQLObjectType<any, GQLCont
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team this response belongs to',
-      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
+      resolve: ({teamId}: {teamId: string}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
-      }
-    },
-    userId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description:
-        '* The userId, index useful for server-side methods getting all responses under a user.'
-    },
-    user: {
-      type: require('./User').default,
-      description: 'The user who created the response',
-      resolve: ({userId}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('users').load(userId)
       }
     }
   })
