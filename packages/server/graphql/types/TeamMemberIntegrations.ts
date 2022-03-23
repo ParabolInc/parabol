@@ -59,7 +59,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
         return auths.find((auth) => auth.teamId === teamId)
       }
     },
-    azuredevops: {
+    azureDevOps: {
       type: AzureDevOpsIntegration,
       description: 'All things associated with a A integration for a team member',
       resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
