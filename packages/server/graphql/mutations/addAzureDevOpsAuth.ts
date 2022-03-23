@@ -62,7 +62,9 @@ const addAzureDevOpsAuth: GQLMutation = {
     if (!Array.isArray(instances)) {
       return standardError(new Error(instances.message), {userId: viewerId})
     }
-    const instanceIds = instances.map((inst) => inst.accountId)
+    const instanceIds = instances
+      .filter((i) => i.accountUri.includes('dev.azure'))
+      .map((i) => `dev.azure.com/${i.accountName}`)
 
     // if there are the same AzureDevOps integrations existing we need to update them with new credentials as well
     // if there's an existing integration for a given user and team (user used an option to refresh the token), skip it as
