@@ -38,10 +38,10 @@ const wrapResolve =
       const res = await rule.resolve(source, args, context, info, options)
       if (res === true) {
         return await resolve(source, args, context, info)
-      } else if (res === false) {
-        return new Error('Not authorized')
       } else {
-        throw new Error('Error in shield rule')
+        if (res === false) return new Error('Not authorized')
+        if (typeof res === 'string') return new Error(res)
+        return res
       }
     } catch (err) {
       throw err
