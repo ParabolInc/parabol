@@ -164,13 +164,8 @@ const NewGitLabIssueInput = (props: Props) => {
     () => teamMember.integrations.gitlab.api.query.allProjects.edges.map(({node}) => node),
     [teamMember]
   )
-  // const {repoIntegrations} = teamMember!
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  // const {items} = repoIntegrations
-  // const repoIntegration = items?.find((item) => item.fullPath)
-  // console.log('🚀  ~ repoIntegration', repoIntegration)
-  // const fullPath = repoIntegration?.fullPath
   const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {
@@ -217,7 +212,6 @@ const NewGitLabIssueInput = (props: Props) => {
       }
     }
     const handleCompleted: CompletedHandler<CreateTaskMutationResponse> = (res) => {
-      // const integrationHash = res.createTask?.task?.integration ?? null
       const integrationHash = res.createTask?.task?.integrationHash ?? null
       if (!integrationHash) return
       const pokerScopeVariables = {

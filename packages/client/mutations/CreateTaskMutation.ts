@@ -25,8 +25,6 @@ import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import popInvolvementToast from './toasts/popInvolvementToast'
-import GitLabIssueId from '~/shared/gqlIds/GitLabIssueId'
-import {upperFirst} from '~/utils/upperFirst'
 
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
@@ -138,9 +136,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
     updater: (store) => {
       const context = {atmosphere, store}
       const payload = store.getRootField('createTask')
-      console.log('🚀  ~ updater', payload)
       if (!payload) return
-      return
       createTaskTaskUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
@@ -171,7 +167,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecords([], 'replies')
       if (integration) {
         const {service, serviceProjectHash} = integration
-        console.log('🚀  ~ integration ----', integration)
         if (service === 'jira') {
           const {cloudId, projectKey} = JiraProjectId.split(serviceProjectHash)
           const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
@@ -200,21 +195,15 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else if (service === 'gitlab') {
-          const fullPath = upperFirst(serviceProjectHash)
           const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabProject', {
-            __typename: '_xGitLabProject',
-            fullPath,
-            lastActivityAt: now
+            fullPath: serviceProjectHash
           })
           const projectId = optimisticTaskIntegration.getValue('id')
           const issue = createProxyRecord(store, '_xGitLabIssue', {
-            id: clientTempId(),
-            __typename: '_xGitLabIssue',
             state: 'opened',
             title: plaintextContent,
             description: '',
-            projectPath: fullPath,
-            updatedAt: now,
+            projectPath: serviceProjectHash,
             projectId
           })
           optimisticTaskIntegration.setLinkedRecords([issue], 'issues')
