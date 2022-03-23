@@ -9,9 +9,9 @@ import {
   UPDATES,
   VOTE
 } from 'parabol-client/utils/constants'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
+import {RValue} from '../../../database/stricterR'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import CheckInPhase from '../../../database/types/CheckInPhase'
 import CheckInStage from '../../../database/types/CheckInStage'
@@ -22,6 +22,7 @@ import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
+import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
@@ -46,15 +47,15 @@ const getPastStageDurations = async (teamId: string) => {
       .getAll(teamId, {index: 'teamId'})
       .filter({isLegacy: false}, {default: true})
       // .orderBy(r.desc('endedAt'))
-      .concatMap((row) => row('phases'))
-      .concatMap((row) => row('stages'))
-      .filter((row) => row.hasFields('startAt', 'endAt'))
+      .concatMap((row: RValue) => row('phases'))
+      .concatMap((row: RValue) => row('stages'))
+      .filter((row: RValue) => row.hasFields('startAt', 'endAt'))
       // convert seconds to ms
-      .merge((row) => ({
+      .merge((row: RValue) => ({
         duration: r.sub(row('endAt'), row('startAt')).mul(1000).floor()
       }))
       // remove stages that took under 1 minute
-      .filter((row) => row('duration').ge(60000))
+      .filter((row: RValue) => row('duration').ge(60000))
       .orderBy(r.desc('startAt'))
       .group('phaseType')
       .ungroup()

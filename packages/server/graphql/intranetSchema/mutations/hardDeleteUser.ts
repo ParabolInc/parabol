@@ -1,15 +1,16 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {GQLContext} from '../../graphql'
-import {requireSU} from '../../../utils/authorization'
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
+import {RValue} from '../../../database/stricterR'
 import getPg from '../../../postgres/getPg'
-import softDeleteUser from '../../mutations/helpers/softDeleteUser'
-import DeleteUserPayload from '../../types/DeleteUserPayload'
-import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import {getUserById} from '../../../postgres/queries/getUsersByIds'
+import {requireSU} from '../../../utils/authorization'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
-import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
+import {GQLContext} from '../../graphql'
+import softDeleteUser from '../../mutations/helpers/softDeleteUser'
+import DeleteUserPayload from '../../types/DeleteUserPayload'
 
 const hardDeleteUser = {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -78,23 +79,27 @@ const hardDeleteUser = {
       swapCreatedByUserUpdates,
       discussions
     ] = await Promise.all([
-      (r
-        .table('MeetingMember')
-        .getAll(r.args(meetingIds), {index: 'meetingId'})
-        .group('meetingId') as any)
+      (
+        r
+          .table('MeetingMember')
+          .getAll(r.args(meetingIds), {index: 'meetingId'})
+          .group('meetingId') as any
+      )
         .count()
         .ungroup()
-        .filter((row) => row('reduction').le(1))
-        .map((row) => row('group'))
+        .filter((row: RValue) => row('reduction').le(1))
+        .map((row: RValue) => row('group'))
         .coerceTo('array')
         .run(),
-      (r
-        .table('NewMeeting')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row) => row('meetingType').eq('retro'))
-        .eqJoin('id', r.table('RetroReflection'), {index: 'meetingId'})
-        .zip() as any)
-        .filter((row) => row('creatorId').eq(userIdToDelete))
+      (
+        r
+          .table('NewMeeting')
+          .getAll(r.args(teamIds), {index: 'teamId'})
+          .filter((row) => row('meetingType').eq('retro'))
+          .eqJoin('id', r.table('RetroReflection'), {index: 'meetingId'})
+          .zip() as any
+      )
+        .filter((row: RValue) => row('creatorId').eq(userIdToDelete))
         .getField('id')
         .coerceTo('array')
         .distinct()
@@ -103,7 +108,7 @@ const hardDeleteUser = {
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter((row) => row('facilitatorUserId').eq(userIdToDelete))
-        .merge((meeting) => ({
+        .merge((meeting: RValue) => ({
           otherTeamMember: r
             .table('TeamMember')
             .getAll(meeting('teamId'), {index: 'teamId'})
@@ -119,7 +124,7 @@ const hardDeleteUser = {
         .table('NewMeeting')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter((row) => row('createdBy').eq(userIdToDelete))
-        .merge((meeting) => ({
+        .merge((meeting: RValue) => ({
           otherTeamMember: r
             .table('TeamMember')
             .getAll(meeting('teamId'), {index: 'teamId'})
@@ -140,18 +145,9 @@ const hardDeleteUser = {
 
     // all other writes
     await r({
-      teamMember: r
-        .table('TeamMember')
-        .getAll(userIdToDelete, {index: 'userId'})
-        .delete(),
-      meetingMember: r
-        .table('MeetingMember')
-        .getAll(userIdToDelete, {index: 'userId'})
-        .delete(),
-      notification: r
-        .table('Notification')
-        .getAll(userIdToDelete, {index: 'userId'})
-        .delete(),
+      teamMember: r.table('TeamMember').getAll(userIdToDelete, {index: 'userId'}).delete(),
+      meetingMember: r.table('MeetingMember').getAll(userIdToDelete, {index: 'userId'}).delete(),
+      notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete(),
       organizationUser: r
         .table('OrganizationUser')
         .getAll(userIdToDelete, {index: 'userId'})
@@ -176,10 +172,7 @@ const hardDeleteUser = {
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter((row) => r(teamMemberIds).contains(row('teamMemberId')))
         .delete(),
-      pushInvitation: r
-        .table('PushInvitation')
-        .getAll(userIdToDelete, {index: 'userId'})
-        .delete(),
+      pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
       retroReflection: r
         .table('RetroReflection')
         .getAll(r.args(retroReflectionIds), {index: 'id'})
@@ -215,7 +208,7 @@ const hardDeleteUser = {
           .table('NewMeeting')
           .get(update('id'))
           .update({
-            facilitatorUserId: (update('otherTeamMember') as unknown) as string
+            facilitatorUserId: update('otherTeamMember') as unknown as string
           })
       ),
       swapCreatedByUser: r(swapCreatedByUserUpdates).forEach((update) =>
@@ -223,7 +216,7 @@ const hardDeleteUser = {
           .table('NewMeeting')
           .get(update('id'))
           .update({
-            createdBy: (update('otherTeamMember') as unknown) as string
+            createdBy: update('otherTeamMember') as unknown as string
           })
       )
     }).run()

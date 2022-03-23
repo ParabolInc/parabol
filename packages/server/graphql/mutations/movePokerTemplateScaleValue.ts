@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import MovePokerTemplateScaleValuePayload from '../types/MovePokerTemplateScaleValuePayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import MovePokerTemplateScaleValuePayload from '../types/MovePokerTemplateScaleValuePayload'
 
 const movePokerTemplateScaleValue = {
   type: new GraphQLNonNull(MovePokerTemplateScaleValuePayload),
@@ -33,10 +34,7 @@ const movePokerTemplateScaleValue = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await r.table('TemplateScale').get(scaleId).run()
 
     //AUTH
     if (!scale || scale.removedAt) {
@@ -51,7 +49,7 @@ const movePokerTemplateScaleValue = {
       return standardError(new Error('Invalid index to move to'), {userId: viewerId})
     }
     const scaleValueIndex = scale.values.findIndex((scaleValue) => scaleValue.label === label)
-    if (scaleValueIndex == -1) {
+    if (scaleValueIndex === -1) {
       return standardError(new Error('Did not find an existing scale value to move'), {
         userId: viewerId
       })
@@ -61,7 +59,7 @@ const movePokerTemplateScaleValue = {
     await r
       .table('TemplateScale')
       .get(scaleId)
-      .update((row) => ({
+      .update((row: RValue) => ({
         values: row('values')
           .deleteAt(scaleValueIndex)
           .insertAt(index, scale.values[scaleValueIndex]),

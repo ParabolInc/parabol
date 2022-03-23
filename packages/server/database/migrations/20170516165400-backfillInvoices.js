@@ -1,3 +1,4 @@
+/*
 import stripe from '../../billing/stripe'
 
 const fetchAllInvoices = async () => {
@@ -36,6 +37,10 @@ exports.up = async (r) => {
   } catch (e) {
     // noop
   }
+}
+*/
+exports.up = async (r) => {
+  // invoices where migrated years ago and the legacy stripe logic was removed in #6161
 }
 
 exports.down = async () => {

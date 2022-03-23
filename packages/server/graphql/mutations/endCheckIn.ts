@@ -3,8 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
-import getPhase from '../../utils/getPhase'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
@@ -15,14 +13,15 @@ import generateUID from '../../generateUID'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
 import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifications/notifySlack'
 import {endMattermostMeeting} from './helpers/notifications/notifyMattermost'
+import {endSlackMeeting} from './helpers/notifications/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
@@ -249,7 +248,7 @@ export default {
 
       const removedSuggestedActionId = await removeSuggestedAction(
         teamLeadUserId,
-        SuggestedActionTypeEnum.tryActionMeeting
+        'tryActionMeeting'
       )
       if (removedSuggestedActionId) {
         publish(

@@ -1,7 +1,6 @@
-import {TRIAL_EXPIRES_SOON} from 'parabol-client/utils/constants'
-import stripe from '../../billing/stripe'
-import {fromEpochSeconds} from '../../utils/epochTime'
 import ms from 'ms'
+import {TRIAL_EXPIRES_SOON} from 'parabol-client/utils/constants'
+import {fromEpochSeconds} from '../../utils/epochTime'
 
 const TRIAL_PERIOD_DAYS = 30
 const TRIAL_EXPIRES_SOON_DELAY = ms('14d')
@@ -119,21 +118,23 @@ exports.up = async (r) => {
       users[userId].trialOrg = orgId
     }
   }
-  const orgIds = Object.keys(orgs)
-  const stripeCustomers = await Promise.all(
-    orgIds.map((orgId) => stripe.customers.create({metadata: {orgId}}))
-  )
-  const subscriptions = await Promise.all(
-    stripeCustomers.map((customer) => {
-      return stripe.subscriptions.create({
-        customer: customer.id,
-        metadata: customer.metadata,
-        plan: 'parabol-pro-monthly',
-        quantity: Object.keys(orgs[customer.metadata.orgId].orgUserMap).length,
-        trial_period_days: TRIAL_PERIOD_DAYS
-      })
-    })
-  )
+  // turned into a noop to remove dependency on stripe
+  const subscriptions = []
+  // const orgIds = Object.keys(orgs)
+  // const stripeCustomers = await Promise.all(
+  //   orgIds.map((orgId) => stripe.customers.create({metadata: {orgId}}))
+  // )
+  // const subscriptions = await Promise.all(
+  //   stripeCustomers.map((customer) => {
+  //     return stripe.subscriptions.create({
+  //       customer: customer.id,
+  //       metadata: customer.metadata,
+  //       plan: 'parabol-pro-monthly',
+  //       quantity: Object.keys(orgs[customer.metadata.orgId].orgUserMap).length,
+  //       trial_period_days: TRIAL_PERIOD_DAYS
+  //     })
+  //   })
+  // )
   const orgsForDB = []
   const notificationsForDB = []
   for (let i = 0; i < subscriptions.length; i++) {
@@ -275,7 +276,7 @@ exports.down = async (r) => {
     const stripeIds = await r
       .table('Organization')('stripeId')
       .run()
-    await Promise.all(stripeIds.map((id) => stripe.customers.del(id)))
+    // await Promise.all(stripeIds.map((id) => stripe.customers.del(id)))
   } catch (e) {
     console.log(`not all customers existed: ${e}`)
   }

@@ -10,6 +10,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerRevealVotesPayload from '../types/PokerRevealVotesPayload'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
+import {RValue} from '../../database/stricterR'
 
 const pokerRevealVotes = {
   type: new GraphQLNonNull(PokerRevealVotesPayload),
@@ -88,7 +89,7 @@ const pokerRevealVotes = {
     })
 
     stage.isVoting = false
-    const updater = (estimateStage) =>
+    const updater = (estimateStage: RValue) =>
       estimateStage.merge({
         isVoting: false,
         // note that a race condition exists here. it's possible that i cast my vote after the meeting is fetched but before this update & that'll be overwritten

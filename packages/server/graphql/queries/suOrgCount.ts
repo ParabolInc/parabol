@@ -1,9 +1,10 @@
-import {GQLContext} from './../graphql'
 import {GraphQLInt} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
 import {TierEnum as ETierEnum} from '../../database/types/Invoice'
 import {requireSU} from '../../utils/authorization'
 import TierEnum from '../types/TierEnum'
+import {GQLContext} from './../graphql'
 
 export default {
   type: GraphQLInt,
@@ -31,17 +32,19 @@ export default {
     requireSU(authToken)
 
     // RESOLUTION
-    return (r
-      .table('OrganizationUser')
-      .getAll(
-        ([tier, false] as unknown) as string, // super hacky type fix bc no fn overload is defined in the type file for this valid invocation
-        ({index: 'tierInactive'} as unknown) as undefined
-      )
-      .filter({removedAt: null})
-      .group('orgId') as any)
+    return (
+      r
+        .table('OrganizationUser')
+        .getAll(
+          [tier, false] as unknown as string, // super hacky type fix bc no fn overload is defined in the type file for this valid invocation
+          {index: 'tierInactive'} as unknown as undefined
+        )
+        .filter({removedAt: null})
+        .group('orgId') as any
+    )
       .count()
       .ungroup()
-      .filter((group) => group('reduction').ge(minOrgSize))
+      .filter((group: RValue) => group('reduction').ge(minOrgSize))
       .count()
       .run()
   }

@@ -21,7 +21,7 @@ const removeTeamMemberIntegrationAuth = {
     }
   },
   resolve: async (
-    _source,
+    _source: unknown,
     {service, teamId}: {service: TIntegrationProviderServiceEnum; teamId: string},
     context: GQLContext
   ) => {

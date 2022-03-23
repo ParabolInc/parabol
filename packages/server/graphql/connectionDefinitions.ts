@@ -3,11 +3,11 @@ import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'gra
 import PageInfo from './types/PageInfo'
 import {GQLContext} from './graphql'
 
-function resolveMaybeThunk(thingOrThunk) {
+function resolveMaybeThunk(thingOrThunk: any) {
   return typeof thingOrThunk === 'function' ? thingOrThunk() : thingOrThunk
 }
 
-export default function connectionDefinitions(config) {
+export default function connectionDefinitions(config: any) {
   const {nodeType} = config
   const name = config.name || nodeType.name
   const edgeFields = config.edgeFields || {}

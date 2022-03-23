@@ -25,19 +25,27 @@ const STEPS = {
     'Invite your team to vote on effort/value',
     'Discuss differences in scores',
     'Export final score to your tracker'
+  ],
+  teamPrompt: [
+    'Open the board and share it with your team',
+    'Share what you’re working on',
+    'Give feedback or get unstuck using threads',
+    'Create tasks that can be synced to your backlog'
   ]
 }
 
 const LINKS = {
   retrospective: ExternalLinks.GETTING_STARTED_RETROS,
   action: ExternalLinks.GETTING_STARTED_CHECK_INS,
-  poker: ExternalLinks.GETTING_STARTED_SPRINT_POKER
+  poker: ExternalLinks.GETTING_STARTED_SPRINT_POKER,
+  teamPrompt: ExternalLinks.GETTING_STARTED_ASYNC_STANDUP
 }
 
 const TITLES = {
   retrospective: 'How to Run a Retro Meeting',
   action: 'How to Run a Check-in Meeting',
-  poker: 'How to Run Sprint Poker'
+  poker: 'How to Run Sprint Poker',
+  teamPrompt: 'How to Run an Async Standup'
 }
 
 const LearnMoreLink = styled(LinkButton)({

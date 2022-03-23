@@ -1,11 +1,10 @@
 // EmptySpace:
 // Table-based way to add vertical space. Uses line-height.
 
-import PropTypes from 'prop-types'
 import React from 'react'
 import {emailTableBase} from '../../styles'
 
-const EmptySpace = (props) => {
+const EmptySpace = (props: {height: number}) => {
   const cellStyle = {
     lineHeight: `${props.height}px`,
     fontSize: '1px',
@@ -27,14 +26,6 @@ const EmptySpace = (props) => {
       </tbody>
     </table>
   )
-}
-
-EmptySpace.propTypes = {
-  height: PropTypes.number
-}
-
-EmptySpace.defaultProps = {
-  height: '16'
 }
 
 export default EmptySpace
