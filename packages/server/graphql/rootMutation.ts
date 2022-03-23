@@ -53,7 +53,6 @@ import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
-import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
@@ -194,7 +193,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
-      loginWithGoogle,
       loginWithPassword,
       movePokerTemplateDimension,
       moveReflectTemplatePrompt,

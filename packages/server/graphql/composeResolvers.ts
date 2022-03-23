@@ -29,8 +29,8 @@ const options = {
 const wrapResolve =
   (resolve: Resolver, rule: ShieldRule): Resolver =>
   async (source, args, context, info) => {
-    if (!context.shield) {
-      context.shield = {
+    if (!context._shield) {
+      context._shield = {
         cache: {}
       }
     }

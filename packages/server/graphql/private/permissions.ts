@@ -2,7 +2,8 @@
  * No need to mess with this unless we add subscriptions to the private schema
  */
 import {allow} from 'graphql-shield'
-import {isSuperUser, PermissionMap} from '../public/permissions'
+import {PermissionMap} from '../public/permissions'
+import isSuperUser from '../public/rules/isSuperUser'
 import {Resolvers} from './resolverTypes'
 
 const permissionMap: PermissionMap<Resolvers> = {

@@ -6,12 +6,18 @@
     "packages/server/types/githubTypes.ts": {
       "schema": "packages/server/utils/githubSchema.graphql",
       "documents": "packages/server/utils/githubQueries/*.graphql",
-      "plugins": ["typescript", "typescript-operations", "add"]
+      "plugins": ["typescript", "typescript-operations", "add"],
+      "config": {
+        "assumeValidSDL": true
+      }
     },
     "packages/server/types/gitlabTypes.ts": {
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql",
       "documents": "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
-      "plugins": ["typescript", "typescript-operations", "add"]
+      "plugins": ["typescript", "typescript-operations", "add"],
+      "config": {
+        "assumeValidSDL": true
+      }
     },
     "packages/server/graphql/private/resolverTypes.ts": {
       "schema": "packages/server/graphql/private/schema.graphql",

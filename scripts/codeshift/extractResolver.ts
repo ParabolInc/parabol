@@ -1,5 +1,5 @@
 /*
- Usage: jscodeshift --extensions=tsx,ts,js --parser=tsx -t ./scripts/codeshift/extractResolver.ts ./packages/server/graphql/intranetSchema/queries
+ Usage: jscodeshift --extensions=tsx,ts,js --parser=tsx -t ./scripts/codeshift/extractResolver.ts ./packages/server/graphql/mutations/loginWithGoogle.ts
  This codemod extracts the resolve function(s) from GraphQLObjectTypes and query/mutations
  and puts them in a file by themselves, following SDL-driven development
  Shortcomings:
@@ -53,7 +53,8 @@ const generateImportHeaders = (from: string, root: Collection<any>, j: core.JSCo
 }
 const transform: Transform = (fileInfo, api, options) => {
   const j = api.jscodeshift
-  const {source, path: absPath} = fileInfo
+  const {source, path: maybeAbsPath} = fileInfo
+  const absPath = maybeAbsPath.startsWith('./') ? path.join(process.cwd(), maybeAbsPath) : maybeAbsPath
   const IS_QUERY = absPath.includes('queries')
   const IS_MUTATION = absPath.includes('mutations')
   const IS_OPERATION = IS_QUERY || IS_MUTATION
@@ -90,7 +91,7 @@ const transform: Transform = (fileInfo, api, options) => {
     })
     const objStr = j(obj).toSource()
 
-    const from = path.dirname(path.join(absPath, '../../../public/types/foo.ts'))
+    const from = path.dirname(path.join(absPath, '../../public/types/foo.ts'))
     const importStrs = generateImportHeaders(from, root, j, absPath)
     // return
     const typeImport = `import {${resolversName}} from '../resolverTypes'`
@@ -113,7 +114,7 @@ ${exportLine}`
 
     const {ext} = path.parse(absPath)
 
-    const newPath = path.join(absPath, `../../../public/types/${typeName}${ext}`)
+    const newPath = path.join(absPath, `../../public/types/${typeName}${ext}`)
         try {
       fs.statSync(newPath)
     } catch(e) {
@@ -135,7 +136,7 @@ ${exportLine}`
         }
       })
     const dir = IS_QUERY ? 'queries' : 'mutations'
-    const from = path.dirname(path.join(absPath, `../../../public/${dir}/foo.ts`))
+    const from = path.dirname(path.join(absPath, `../../public/${dir}/foo.ts`))
     const importStrs = generateImportHeaders(from, root, j, absPath)
     const resType = IS_QUERY ? 'QueryResolvers' : 'MutationResolvers'
     const typeImport = `import {${resType}} from '../resolverTypes'`
@@ -154,7 +155,7 @@ ${exportLine}`
 
     const {ext} = path.parse(absPath)
 
-    const newPath = path.join(absPath, `../../../public/${dir}/${typeName}${ext}`)
+    const newPath = path.join(absPath, `../../public/${dir}/${typeName}${ext}`)
     try {
       fs.statSync(newPath)
     } catch(e) {
