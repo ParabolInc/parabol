@@ -27,7 +27,6 @@ const transformBody = (contentType: string, body?: Record<string, string>): stri
       }
       transformedBody += `${entry[0]}=${entry[1]}`
     })
-    console.log(`transformedBody - ${transformedBody}`)
     return transformedBody
   }
 

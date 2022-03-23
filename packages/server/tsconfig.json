@@ -5,15 +5,9 @@
     // "noImplicitAny": true,
     "baseUrl": "../",
     "paths": {
-      "server/*": [
-        ""
-      ],
-      "parabol-client/*": [
-        "client/*"
-      ],
-      "~/*": [
-        "client/*"
-      ]
+      "server/*": [""],
+      "parabol-client/*": ["client/*"],
+      "~/*": ["client/*"],
     },
     "lib": [
       "esnext",
@@ -31,6 +25,7 @@
     "postgres/migrationTemplate.ts"
   ],
   "files": [
+    "types/webpackEnv.ts",
     "types/modules.d.ts",
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
     "graphql/queries/tasks.ts",

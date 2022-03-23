@@ -20,6 +20,7 @@ declare module 'tayden-clusterfck'
 declare module 'unicode-substring'
 declare module 'json2csv/lib/JSON2CSVParser'
 
+declare const __PROJECT_ROOT__: string
 declare const __PRODUCTION__: string
 declare const __SOCKET_PORT__: string
 declare const __webpack_public_path__: string
