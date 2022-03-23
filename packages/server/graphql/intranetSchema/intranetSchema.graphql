@@ -2616,7 +2616,7 @@ type UserFeatureFlags {
   gitlab: Boolean!
 
   """true if azuredevops is allowed"""
-  azuredevops: Boolean!
+  azureDevOps: Boolean!
 }
 
 """A monthly billing invoice for an organization"""

@@ -37,12 +37,12 @@ class AzureDevOpsServerManager extends AzureDevOpsManager {
       client_id: process.env.AZUREDEVOPS_CLIENT_ID!
     }
     const additonalHeaders = {
-      'Content-Type': 'application/x-www-form-urlencoded',
       // eslint-disable-next-line prettier/prettier
       'Origin': 'http://localhost:8081'
     }
     const authUrl = `https://login.microsoftonline.com/${process.env.AZUREDEVOPS_TENANT}/oauth2/v2.0/token`
-    return authorizeOAuth2({authUrl, body, additonalHeaders})
+    const contentType = 'application/x-www-form-urlencoded'
+    return authorizeOAuth2({authUrl, body, additonalHeaders, contentType})
   }
 
   constructor(accessToken: string) {

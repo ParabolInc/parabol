@@ -8,6 +8,7 @@ interface AuthorizeOAuth2Params {
   searchParams?: Record<string, string>
   body?: Record<string, string>
   additonalHeaders?: Record<string, string>
+  contentType?: string
 }
 
 const transformBody = (contentType: string, body?: Record<string, string>): string => {
@@ -36,13 +37,17 @@ export const authorizeOAuth2 = async <
   authUrl,
   searchParams,
   body,
-  additonalHeaders
+  additonalHeaders,
+  contentType
 }: AuthorizeOAuth2Params) => {
   const headers = {
     Accept: 'application/json',
     ...additonalHeaders
   }
-  if (!headers['Content-Type']) {
+
+  if (typeof contentType !== 'undefined') {
+    headers['Content-Type'] = contentType
+  } else {
     headers['Content-Type'] = 'application/json'
   }
 
