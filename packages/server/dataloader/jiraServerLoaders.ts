@@ -5,6 +5,7 @@ import JiraServerRestManager, {
 import RootDataLoader from './RootDataLoader'
 import sendToSentry from '../utils/sendToSentry'
 import JiraServerTaskIntegrationManager from '../integrations/JiraServerTaskIntegrationManager'
+import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 
 export interface JiraServerIssueKey {
   teamId: string
@@ -57,7 +58,10 @@ export const jiraServerIssue = (
             return null
           }
 
-          const manager = new JiraServerTaskIntegrationManager(auth, provider)
+          const manager = new JiraServerTaskIntegrationManager(
+            auth,
+            provider as IntegrationProviderJiraServer
+          )
 
           const issueRes = await manager.getIssue(issueId)
 

@@ -6,6 +6,9 @@ import {TaskIntegration} from '../database/types/Task'
 export type CreateTaskResponse =
   | {
       integrationHash: string
+      // TODO: include issueId for GitHub in hash or store integration.issueId for all integrations
+      // See https://github.com/ParabolInc/parabol/issues/6252
+      issueId: string
       integration: TaskIntegration
     }
   | Error

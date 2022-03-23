@@ -47,9 +47,9 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
     // TODO: implement stateToJiraServerFormat
     const description = contentState.getPlainText()
 
-    const {repoId} = IntegrationRepoId.split(integrationRepoId)
+    const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
 
-    const res = await manager.createIssue(repoId, summary, description)
+    const res = await manager.createIssue(repositoryId, summary, description)
 
     if (res instanceof Error) {
       return res
@@ -57,7 +57,8 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
     const issueId = res.id
 
     return {
-      integrationHash: JiraServerIssueId.join(this.provider.id, repoId, issueId),
+      integrationHash: JiraServerIssueId.join(this.provider.id, repositoryId, issueId),
+      issueId,
       integration: {
         accessUserId: this.auth.userId,
         service: 'jiraServer',
@@ -88,9 +89,8 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string,
-    integrationHash: string
+    issueId: string
   ) {
-    const {issueId} = JiraServerIssueId.split(integrationHash)
     const comment = JiraServerTaskIntegrationManager.makeCreateJiraServerTaskComment(
       viewerName,
       assigneeName,

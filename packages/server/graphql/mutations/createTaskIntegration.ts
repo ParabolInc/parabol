@@ -13,6 +13,7 @@ import IntegrationProviderServiceEnum, {
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
+import sendToSentry from '../../utils/sendToSentry'
 
 type CreateTaskIntegrationMutationVariables = {
   integrationProviderService: IntegrationProviderServiceEnumType
@@ -112,21 +113,9 @@ export default {
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
-    const createdBySomeoneElseComment =
-      userId && viewerId !== userId && 'getCreatedBySomeoneElseComment' in taskIntegrationManager
-        ? taskIntegrationManager.getCreatedBySomeoneElseComment(
-            viewerName,
-            assigneeName,
-            team.name,
-            teamDashboardUrl
-          )
-        : undefined
-
     const createTaskResponse = await taskIntegrationManager.createTask({
       rawContentStr,
       integrationRepoId,
-      // @ts-ignore TODO: remove createdBySomeoneElseComment
-      createdBySomeoneElseComment,
       context,
       info
     })
@@ -135,25 +124,33 @@ export default {
       return {error: {message: createTaskResponse.message}}
     }
 
+    const {issueId, ...updateTaskInput} = createTaskResponse
+
     if (
       userId &&
       viewerId !== userId &&
       'addCreatedBySomeoneElseComment' in taskIntegrationManager
     ) {
-      await taskIntegrationManager.addCreatedBySomeoneElseComment(
+      const addCommentResponse = await taskIntegrationManager.addCreatedBySomeoneElseComment(
         viewerName,
         assigneeName,
         team.name,
         teamDashboardUrl,
-        createTaskResponse.integrationHash
+        issueId,
+        context,
+        info
       )
+
+      if (addCommentResponse instanceof Error) {
+        sendToSentry(addCommentResponse)
+      }
     }
 
     await r
       .table('Task')
       .get(taskId)
       .update({
-        ...createTaskResponse,
+        ...updateTaskInput,
         updatedAt: now
       })
       .run()

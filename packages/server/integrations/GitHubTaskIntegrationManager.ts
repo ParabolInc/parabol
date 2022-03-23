@@ -7,6 +7,9 @@ import {CreateTaskResponse} from './AbstractTaskIntegrationManager'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {GQLContext} from '../graphql/graphql'
 import AbstractTaskIntegrationManager from './AbstractTaskIntegrationManager'
+import getGitHubRequest from '../utils/getGitHubRequest'
+import addComment from '../utils/githubQueries/addComment.graphql'
+import {AddCommentMutation, AddCommentMutationVariables} from '../types/githubTypes'
 
 export default class GitHubTaskIntegrationManager extends AbstractTaskIntegrationManager {
   public title = 'GitHub'
@@ -26,37 +29,67 @@ export default class GitHubTaskIntegrationManager extends AbstractTaskIntegratio
     return makeCreateGitHubTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
   }
 
+  async addCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    issueId: string,
+    context: GQLContext,
+    info: GraphQLResolveInfo
+  ) {
+    const comment = makeCreateGitHubTaskComment(
+      viewerName,
+      assigneeName,
+      teamName,
+      teamDashboardUrl
+    )
+
+    const {accessToken} = this.auth
+
+    const githubRequest = getGitHubRequest(info, context, {
+      accessToken
+    })
+
+    const [repoInfo, repoError] = await githubRequest<
+      AddCommentMutation,
+      AddCommentMutationVariables
+    >(addComment, {
+      input: {
+        body: comment,
+        subjectId: issueId
+      }
+    })
+
+    if (repoError) {
+      return repoError
+    }
+
+    return repoInfo
+  }
+
   async createTask({
     rawContentStr,
     integrationRepoId,
-    createdBySomeoneElseComment,
     context,
     info
   }: {
     rawContentStr: string
     integrationRepoId: string
-    createdBySomeoneElseComment?: string
     context: GQLContext
     info: GraphQLResolveInfo
   }): Promise<CreateTaskResponse> {
     const {repoOwner, repoName} = GitHubRepoId.split(integrationRepoId)
 
-    const res = await createGitHubTask(
-      rawContentStr,
-      repoOwner,
-      repoName,
-      this.auth,
-      context,
-      info,
-      createdBySomeoneElseComment
-    )
+    const res = await createGitHubTask(rawContentStr, repoOwner, repoName, this.auth, context, info)
 
     if (res.error) return res.error
 
-    const {issueNumber} = res
+    const {issueNumber, issueId} = res
 
     return {
       integrationHash: GitHubIssueId.join(integrationRepoId, issueNumber),
+      issueId,
       integration: {
         accessUserId: this.auth.userId,
         service: 'github',
