@@ -1340,7 +1340,7 @@ type TeamMemberIntegrations {
   slack: SlackIntegration
 
   """All things associated with a A integration for a team member"""
-  azuredevops: AzureDevOpsIntegration
+  azureDevOps: AzureDevOpsIntegration
 }
 
 """The atlassian auth + integration helpers for a specific team member"""
