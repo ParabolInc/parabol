@@ -17,7 +17,7 @@ import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 const startTeamPrompt = {
   type: GraphQLNonNull(StartTeamPromptPayload),
-  description: ``,
+  description: `Starts a new team prompt meeting`,
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
