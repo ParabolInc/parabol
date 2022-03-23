@@ -28,7 +28,6 @@ const endTeamPrompt = {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
-    //AUTH
     // AUTH
     const meeting = (await r
       .table('NewMeeting')
@@ -45,7 +44,7 @@ const endTeamPrompt = {
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
     // RESOLUTION
-    const completedRetrospective = (await r
+    const completedTeamPrompt = (await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
@@ -57,7 +56,7 @@ const endTeamPrompt = {
       .default(null)
       .run()) as unknown as MeetingTeamPrompt
 
-    if (!completedRetrospective) {
+    if (!completedTeamPrompt) {
       return standardError(new Error('Completed team prompt meeting does not exist'), {
         userId: viewerId
       })
