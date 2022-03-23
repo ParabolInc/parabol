@@ -85,22 +85,21 @@ const createTaskInService = async (
       serviceProjectHash,
       gitlabAuth,
       context,
-      info
+      info,
+      dataLoader
     )
     if (gitlabTaskRes.error) {
       return {error: gitlabTaskRes.error}
     }
-    const {gid, webPath} = gitlabTaskRes
+    const {gid, providerId} = gitlabTaskRes
     return {
       integration: new TaskIntegrationGitLab({
         accessUserId,
-        webPath,
+        providerId,
         gid
       }),
-      integrationHash: GitLabIssueId.join(webPath, gid)
+      integrationHash: GitLabIssueId.join(providerId, gid)
     }
-    // integrationHash: GitLabIssueId.join(webPath, gitlabTaskRes.gid)
-    // integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber)
   }
   return {error: new Error('Unknown integration')}
 }

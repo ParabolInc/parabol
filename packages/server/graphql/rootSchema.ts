@@ -78,6 +78,9 @@ const withNestedSchema = mergeSchemas({
     extend type _xGitHubRepository {
       service: IntegrationProviderServiceEnum!
     }
+    extend type _xGitLabProject {
+      service: IntegrationProviderServiceEnum!
+    }
     `,
   // TODO apply this resolver to every type in the GitHub/GitLab schema
   // It is necessary any time client code uses an alias inside a wrapper
@@ -92,8 +95,7 @@ const withNestedSchema = mergeSchemas({
     },
     _xGitLabProject: {
       __interfaces: () => ['RepoIntegration'],
-      // __isTypeOf: ({fullPath}) => !!fullPath
-      __isTypeOf: ({__typename}) => __typename === '_xGitLabProject',
+      __isTypeOf: ({fullPath}) => !!fullPath,
       service: () => 'gitlab'
     },
     _xGitLabQuery: {
