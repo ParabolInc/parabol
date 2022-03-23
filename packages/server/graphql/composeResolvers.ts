@@ -37,7 +37,7 @@ const wrapResolve =
     try {
       const res = await rule.resolve(source, args, context, info, options)
       if (res === true) {
-        return await resolve(parent, args, context, info)
+        return await resolve(source, args, context, info)
       } else if (res === false) {
         return new Error('Not authorized')
       } else {
