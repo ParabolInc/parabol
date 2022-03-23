@@ -1,18 +1,9 @@
 import {GQLContext} from '../../graphql'
 import {GraphQLResolveInfo} from 'graphql'
-// import {GetRepositoriesQuery} from '../../../types/gitlabTypes'
-// import getGitLabRequest from '../../../utils/getGitLabRequest'
-// import getRepositories from '../../../utils/gitlabQueries/getRepositories.graphql'
+import {GetProjectsQuery} from '../../../types/gitlabTypes'
 import {DataLoaderWorker} from '../../graphql'
-import getProjects from '../../../utils/gitlabQueries/getProjects.graphql'
+import getProjects from '../../nestedSchema/GitLab/queries/getProjects.graphql'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
-
-export interface GitLabRepo {
-  id: string
-  nameWithOwner: string
-  hasIssuesEnabled?: boolean
-  service: 'gitlab'
-}
 
 const fetchGitLabRepos = async (
   teamId: string,
@@ -30,7 +21,7 @@ const fetchGitLabRepos = async (
   if (!provider?.serverBaseUrl) return []
   const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
   const gitlabRequest = manager.getGitLabRequest(info, context)
-  const [data, error] = await gitlabRequest(getProjects, {teamId})
+  const [data, error] = await gitlabRequest<GetProjectsQuery>(getProjects, {teamId})
   if (error) {
     console.error(error.message)
     return []
@@ -41,7 +32,7 @@ const fetchGitLabRepos = async (
     service: 'gitlab'
     fullPath: string
   }[]
-  data.projects.edges.forEach((edge) => {
+  data.projects?.edges?.forEach((edge) => {
     if (!edge) return
     const {node} = edge
     if (!node) return

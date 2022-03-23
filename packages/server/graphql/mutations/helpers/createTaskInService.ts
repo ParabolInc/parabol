@@ -13,6 +13,7 @@ import {CreateTaskIntegrationInput} from '../createTask'
 import createGitHubTask from './createGitHubTask'
 import createJiraTask from './createJiraTask'
 import createGitLabTask from './createGitLabTask'
+import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 
 const createTaskInService = async (
   integrationInput: CreateTaskIntegrationInput | null | undefined,
@@ -73,7 +74,6 @@ const createTaskInService = async (
       integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber)
     }
   } else if (service === 'gitlab') {
-    // const {webPath, gid, iid} = GitLabIssueId.split(serviceProjectHash)
     const gitlabAuth = await dataLoader
       .get('teamMemberIntegrationAuths')
       .load({service: 'gitlab', teamId, userId: accessUserId})
@@ -92,13 +92,14 @@ const createTaskInService = async (
       return {error: gitlabTaskRes.error}
     }
     const {gid, providerId} = gitlabTaskRes
+    const integrationProviderId = IntegrationProviderId.join(providerId)
     return {
       integration: new TaskIntegrationGitLab({
         accessUserId,
-        providerId,
+        providerId: integrationProviderId,
         gid
       }),
-      integrationHash: GitLabIssueId.join(providerId, gid)
+      integrationHash: GitLabIssueId.join(integrationProviderId, gid)
     }
   }
   return {error: new Error('Unknown integration')}

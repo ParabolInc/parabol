@@ -4,9 +4,6 @@ mutation createIssue($input: CreateIssueInput!) {
     errors
     issue {
       id
-      iid
-      title
-      webPath
     }
   }
 }

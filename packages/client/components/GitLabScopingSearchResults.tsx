@@ -165,11 +165,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
     (project) => project?.node?.issues?.edges ?? null
   )
-  const issues = nullableEdges
-    ? getNonNullEdges(nullableEdges)
-        // .filter((edge) => edge.node.__typename === '_xGitLabIssue')
-        .map(({node}) => node)
-    : null
+  const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
   const [isEditing, setIsEditing] = useState(false)
   // const atmosphere = useAtmosphere()
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
