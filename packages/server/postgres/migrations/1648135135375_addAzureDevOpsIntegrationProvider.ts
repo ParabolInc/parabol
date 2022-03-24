@@ -9,9 +9,9 @@ export async function up() {
   BEGIN
     ALTER TYPE "IntegrationProviderServiceEnum" ADD VALUE 'azureDevOps';
 
-    AlTER TABLE "IntegrationProvider"
-    ALTER COLUMN accessToken TYPE VARCHAR(2056)
-    ALTER COLUMN refreshToken TYPE VARCHAR(2056);
+    AlTER TABLE "TeamMemberIntegrationAuth"
+      ALTER COLUMN "accessToken" TYPE VARCHAR(2056),
+      ALTER COLUMN "refreshToken" TYPE VARCHAR(2056);
 
   END $$;
   `)
