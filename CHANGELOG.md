@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.50.0 2022-Mar-16
+### Added
+- Add task menu to push to Jira Server (#6026)
+### Changed
+- Increase the size of the Poker Scope card (#6032)
+### Fixed
+- Always require SAMLRequest (#5985)
+- Remove calculated fields from Jira issue in Sprint Poker (#5864)
+
 ## 6.49.0 2022-Mar-02
 ### Added
 - Highlight checkin tasks when hovered in current solo update (#5859)

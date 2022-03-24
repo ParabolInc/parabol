@@ -1,0 +1,118 @@
+# When a label like `^Story Points: ([0-9]+)$` is applied, transfer value to the Project Beta `Story Points` column
+name: Points Label to Project Field
+
+on:
+  issues:
+    types: [labeled]
+    
+# Global configuration
+env:
+  ORGANIZATION: ParabolInc
+  PROJECTS_BETA_NUMBER: 1
+  FIELD_NAME_TO_UPDATE: "Points Estimated"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  filter-issues:
+    outputs:
+      points-value: ${{ steps.match-story-points-label.outputs.value }}
+      points-match: ${{ steps.match-story-points-label.outputs.match }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Match Story Points Label
+      run: |
+        if [[ "${{ github.event.label.name }}" =~ ^Story\ Points:\ ([0-9]+)$ ]] ; then
+          echo ::set-output name=value::${BASH_REMATCH[1]}
+          echo ::set-output name=match::true
+        fi
+      id: match-story-points-label
+      
+    - name: Echo Label
+      if: steps.match-story-points-label.outputs.match == 'true'
+      run: |
+        echo Points Value: ${{ steps.match-story-points-label.outputs.value }}
+#  debugging:
+#    needs: filter-issues
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: output
+#        run: echo '${{ toJson(github.event) }}'
+
+  get-project-data:
+    needs: filter-issues
+    if: needs.filter-issues.outputs.points-match == 'true'
+    outputs:
+      project-id: ${{ steps.get-project-data.outputs.project-id }}
+      sprint-points-id: ${{ steps.get-project-data.outputs.sprint-points-id }}
+      project-item-id: ${{ steps.get-project-data.outputs.project-item-id }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Project data
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
+        ISSUE: ${{ github.event.issue.node_id }}
+      run: |
+        gh api graphql -f query='
+          query($org: String!, $number: Int!, $issue: ID!) {
+            organization(login: $org) {
+              projectNext(number: $number) {
+                id
+                fields(first:20) {
+                  nodes {
+                    id
+                    name
+                    settings
+                  }
+                }
+              }              
+            }
+            node(id: $issue) {
+              ... on Issue {
+                projectNextItems(first: 1) {
+                  nodes {
+                    ... on ProjectNextItem {
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          }' -f org=$ORGANIZATION -F number=$PROJECTS_BETA_NUMBER -f issue=$ISSUE > project_data.json
+          echo ::set-output name=project-id::$(jq '.data.organization.projectNext.id' project_data.json)
+          echo ::set-output name=sprint-points-id::$(jq --arg FIELD "$FIELD_NAME_TO_UPDATE" '.data.organization.projectNext.fields.nodes[] | select(.name == $FIELD) | .id' project_data.json)
+          echo ::set-output name=project-item-id::$(jq '.data.node.projectNextItems.nodes[0].id' project_data.json)
+      id: get-project-data        
+        
+  set-project-sprint-points-field:
+    needs: [filter-issues, get-project-data]
+    runs-on: ubuntu-latest
+    steps:        
+    - name: Set Project Sprint Points Field
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
+        PROJECT_ID: ${{ needs.get-project-data.outputs.project-id }}
+        PROJECT_ITEM_ID: ${{ needs.get-project-data.outputs.project-item-id }}
+        SPRINT_POINTS_ID: ${{ needs.get-project-data.outputs.sprint-points-id }}
+        POINTS: ${{ needs.filter-issues.outputs.points-value }}
+      run: |
+        gh api graphql -f query='
+        mutation (
+            $project: ID!
+            $item: ID!
+            $field: ID!
+            $points: String!
+        ) {
+          set_points: updateProjectNextItemField(input: {
+                projectId: $project
+                itemId: $item
+                fieldId: $field
+                value: $points
+          }) {
+            projectNextItem {
+              id
+            }
+          }
+        }' -f project=$PROJECT_ID \
+           -f item=$PROJECT_ITEM_ID \
+           -f field=$SPRINT_POINTS_ID \
+           -f points=${{ needs.filter-issues.outputs.points-value }}

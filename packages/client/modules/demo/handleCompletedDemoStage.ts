@@ -9,7 +9,7 @@ import {RetroDemoDB} from './initDB'
 import reactjiLookup from './reactjiLookup'
 import taskLookup from './taskLookup'
 
-const removeEmptyReflections = (db) => {
+const removeEmptyReflections = (db: RetroDemoDB) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
   const emptyReflectionGroupIds: string[] = []
   const emptyReflectionIds: string[] = []
@@ -40,19 +40,19 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
   const {reflections} = reflectionGroup
   const stageTasks = [] as string[]
   const reactions = [] as {
-    reactableType: 'REFLECTION'
+    reactableType: ReactableEnum
     reactableId: string
     reactji: string
   }[]
   const comments = [] as string[]
   const discussionId = `discussion:${reflectionGroupId}`
   reflections.forEach((reflection) => {
-    const tasks = taskLookup[reflection.id]
+    const tasks = taskLookup[reflection.id as keyof typeof taskLookup]
     if (tasks) {
       stageTasks.push(...tasks)
     }
-    const reactjis = reactjiLookup[reflection.id]
-    if (reactjis) {
+    const reactjis = reactjiLookup[reflection.id as keyof typeof reactjiLookup]
+    if (!!reactjis) {
       reactions.push(
         ...reactjis.map((reactji) => ({
           reactableType: 'REFLECTION' as ReactableEnum,
@@ -61,9 +61,10 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
         }))
       )
     }
-    const comment = commentLookup[reflection.id]
-    if (comment) {
-      comments.push(comment)
+    const comment = commentLookup[reflection.id as keyof typeof commentLookup]
+    if (Array.isArray(comment)) {
+      // I think this was a bug before...
+      comments.push(...comment)
     }
   })
   const ops = [] as any[]
@@ -165,7 +166,7 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
       isReady: true
     }
   })
-  db._botScript[stageId] = ops
+  db._botScript[stageId as keyof typeof db['_botScript']] = ops
 }
 
 const addDiscussionTopics = (db: RetroDemoDB) => {
@@ -191,7 +192,7 @@ const addDiscussionTopics = (db: RetroDemoDB) => {
   return {meetingId, discussPhaseStages: nextDiscussStages}
 }
 
-const handleCompletedDemoStage = async (db: RetroDemoDB, stage) => {
+const handleCompletedDemoStage = async (db: RetroDemoDB, stage: {phaseType: string}) => {
   if (stage.phaseType === REFLECT) {
     const data = removeEmptyReflections(db)
     return {[REFLECT]: data, [GROUP]: null, [VOTE]: null}

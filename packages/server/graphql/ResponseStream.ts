@@ -17,7 +17,7 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
   [Symbol.asyncIterator]() {
     return this
   }
-  async next() {
+  async next(): Promise<IteratorResult<ExecutionResult>> {
     const sourceIter = await this.sourceStream.next()
     if (sourceIter.done) return sourceIter
     const {mutatorId, operationId: dataLoaderId, rootValue, serverChannel} = sourceIter.value
@@ -52,8 +52,9 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
     this.sourceStream.return()
     return Promise.resolve({done: true as const, value: undefined})
   }
-  throw(error) {
+  throw(error: unknown) {
+    const value = error instanceof Error ? error : new Error('ResponseStream Error')
     this.sourceStream.throw(error)
-    return Promise.resolve({done: true, value: error})
+    return Promise.resolve({done: true as const, value})
   }
 }

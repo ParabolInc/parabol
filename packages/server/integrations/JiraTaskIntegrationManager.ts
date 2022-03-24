@@ -2,54 +2,55 @@ import makeCreateJiraTaskComment from '../utils/makeCreateJiraTaskComment'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import createJiraTask from '../graphql/mutations/helpers/createJiraTask'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import {CreateTaskResponse} from './AbstractTaskIntegrationManager'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import {Doc} from '../utils/convertContentStateToADF'
-import AbstractTaskIntegrationManager from './AbstractTaskIntegrationManager'
+import AtlassianServerManager from '../utils/AtlassianServerManager'
+import {TaskIntegrationManager, CreateTaskResponse} from './TaskIntegrationManagerFactory'
 
-export default class JiraTaskIntegrationManager extends AbstractTaskIntegrationManager {
+export default class JiraTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira'
   private readonly auth: AtlassianAuth
 
   constructor(auth: AtlassianAuth) {
-    super()
     this.auth = auth
   }
 
-  getCreatedBySomeoneElseComment(
+  async addCreatedBySomeoneElseComment(
     viewerName: string,
     assigneeName: string,
     teamName: string,
-    teamDashboardUrl: string
-  ): Doc {
-    return makeCreateJiraTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+    teamDashboardUrl: string,
+    issueId: string
+  ): Promise<string | Error> {
+    const {cloudId, issueKey} = JiraIssueId.split(issueId)
+    const {accessToken} = this.auth
+    const comment = makeCreateJiraTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+    const manager = new AtlassianServerManager(accessToken)
+    const res = await manager.addComment(cloudId, issueKey, comment)
+    if (res instanceof Error) {
+      return res
+    }
+    return res.id
   }
 
   async createTask({
     rawContentStr,
-    integrationRepoId,
-    createdBySomeoneElseComment
+    integrationRepoId
   }: {
     rawContentStr: string
     integrationRepoId: string
-    createdBySomeoneElseComment?: Doc
   }): Promise<CreateTaskResponse> {
     const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
 
-    const res = await createJiraTask(
-      rawContentStr,
-      cloudId,
-      projectKey,
-      this.auth,
-      createdBySomeoneElseComment
-    )
+    const res = await createJiraTask(rawContentStr, cloudId, projectKey, this.auth)
 
     if (res.error) return res.error
 
     const {issueKey} = res
+    const integrationHash = JiraIssueId.join(cloudId, issueKey)
 
     return {
-      integrationHash: JiraIssueId.join(cloudId, issueKey),
+      integrationHash,
+      issueId: integrationHash,
       integration: {
         accessUserId: this.auth.userId,
         service: 'jira',

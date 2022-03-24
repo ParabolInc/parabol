@@ -40,7 +40,8 @@ const MeetingTitle = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 const TITLES = {
   retrospective: 'Retro Meeting',
   action: 'Check-in Meeting',
-  poker: 'Sprint Poker'
+  poker: 'Sprint Poker',
+  teamPrompt: 'Async Standup'
 }
 
 const NewMeetingMeetingSelector = (props: Props) => {

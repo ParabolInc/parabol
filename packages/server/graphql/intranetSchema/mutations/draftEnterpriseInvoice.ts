@@ -26,10 +26,9 @@ const getBillingLeaderUser = async (
       throw new Error('User for email not found')
     }
     const {id: userId} = user
-    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const organizationUser = organizationUsers.find(
-      (organizationUser) => organizationUser.orgId === orgId
-    )
+    const organizationUser = await dataLoader
+      .get('organizationUsersByUserIdOrgId')
+      .load({userId, orgId})
     if (!organizationUser) {
       throw new Error('Email not associated with a user on that org')
     }

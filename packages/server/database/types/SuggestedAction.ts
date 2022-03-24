@@ -1,12 +1,12 @@
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import generateUID from '../../generateUID'
+import {TSuggestedActionTypeEnum} from '../../graphql/types/SuggestedActionTypeEnum'
 
 interface Input {
   id?: string
   createdAt?: Date
   priority: number
   removedAt?: Date | null
-  type: SuggestedActionTypeEnum
+  type: TSuggestedActionTypeEnum
   userId: string
 }
 
@@ -15,7 +15,7 @@ export default abstract class SuggestedAction {
   createdAt: Date
   priority: number
   removedAt: Date | null
-  type: SuggestedActionTypeEnum
+  type: TSuggestedActionTypeEnum
   userId: string
 
   protected constructor(input: Input) {

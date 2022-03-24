@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import TeamMemberIntegrationAuthId from 'parabol-client/shared/gqlIds/TeamMemberIntegrationAuthId'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import IntegrationProvider from './IntegrationProvider'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
@@ -9,7 +11,7 @@ export const teamMemberIntegrationAuthFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: "The token's unique identifier",
-    resolve: ({service, teamId, userId}) =>
+    resolve: ({service, teamId, userId}: IGetTeamMemberIntegrationAuthQueryResult) =>
       TeamMemberIntegrationAuthId.join(service, teamId, userId)
   },
   teamId: {
@@ -27,7 +29,8 @@ export const teamMemberIntegrationAuthFields = () => ({
   providerId: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'The GQL GUID of the DB providerId foreign key',
-    resolve: ({providerId}) => IntegrationProviderId.join(providerId)
+    resolve: ({providerId}: IGetTeamMemberIntegrationAuthQueryResult) =>
+      IntegrationProviderId.join(providerId)
   },
   service: {
     type: new GraphQLNonNull(IntegrationProviderServiceEnum),
@@ -40,7 +43,11 @@ export const teamMemberIntegrationAuthFields = () => ({
   provider: {
     description: 'The provider to connect to',
     type: new GraphQLNonNull(IntegrationProvider),
-    resolve: async ({providerId}, _args, {dataLoader}) => {
+    resolve: async (
+      {providerId}: IGetTeamMemberIntegrationAuthQueryResult,
+      _args: unknown,
+      {dataLoader}: GQLContext
+    ) => {
       return dataLoader.get('integrationProviders').load(providerId)
     }
   }

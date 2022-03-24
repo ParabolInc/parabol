@@ -1,5 +1,9 @@
-export default function getCCFromCustomer (customer) {
-  const card = customer.sources.data.find((source) => source.id === customer.default_source)
+import Stripe from 'stripe'
+
+export default function getCCFromCustomer(customer: Stripe.customers.ICustomer) {
+  const card = customer.sources!.data.find(
+    (source) => source.id === customer.default_source
+  ) as Stripe.ICard
   if (!card) {
     throw new Error(`Could not find a card for ${customer.id}`)
   }

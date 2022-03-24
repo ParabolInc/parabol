@@ -11,6 +11,7 @@ import IUser from '../../../postgres/types/IUser'
 import {requireSU} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import {RValue} from '../../../database/stricterR'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]
@@ -80,7 +81,7 @@ const sendUpcomingInvoiceEmails = {
         )
       )
       .coerceTo('array')
-      .merge((organization) => ({
+      .merge((organization: RValue) => ({
         newUserIds: r
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
@@ -89,7 +90,7 @@ const sendUpcomingInvoiceEmails = {
           .coerceTo('array')
       }))
       .filter((organization) => organization('newUserIds').count().ge(1))
-      .merge((organization) => ({
+      .merge((organization: RValue) => ({
         billingLeaderIds: r
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})

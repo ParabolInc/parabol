@@ -54,7 +54,8 @@ module.exports = {
   ],
   plugins: [
     new webpack.DefinePlugin({
-      __PRODUCTION__: true
+      __PRODUCTION__: true,
+      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
     })
   ],
   module: {

@@ -7,13 +7,14 @@
     "paths": {
       "server/*": [""],
       "parabol-client/*": ["client/*"],
-      "~/*": ["client/*"]
+      "~/*": ["client/*"],
     },
     "lib": ["esnext", "dom"],
     "types": ["node", "jest", "jest-extended"]
   },
   "exclude": ["**/node_modules", "types/githubTypes.ts", "postgres/migrationTemplate.ts"],
   "files": [
+    "types/webpackEnv.ts",
     "types/modules.d.ts",
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
     "graphql/queries/tasks.ts",

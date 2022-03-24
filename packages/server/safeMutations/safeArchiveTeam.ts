@@ -1,4 +1,5 @@
 import getRethink from '../database/rethinkDriver'
+import {RDatum} from '../database/stricterR'
 import Team from '../database/types/Team'
 import {DataLoaderWorker} from '../graphql/graphql'
 import archiveTeamsByTeamIds from '../postgres/queries/archiveTeamsByTeamIds'
@@ -29,7 +30,7 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
         .table('TeamInvitation')
         .getAll(teamId, {index: 'teamId'})
         .filter({acceptedAt: null})
-        .update((invitation) => ({
+        .update((invitation: RDatum) => ({
           expiresAt: r.min([invitation('expiresAt'), now])
         })) as unknown as null,
       removedSuggestedActionIds: r

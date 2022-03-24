@@ -60,8 +60,9 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
     return Promise.resolve({done: true as const, value: undefined})
   }
 
-  throw(error) {
+  throw(error: unknown) {
+    const value = error instanceof Error ? error : new Error('SubscriptionIterator Error')
     this.close()
-    return Promise.resolve({done: true, value: error})
+    return Promise.resolve({done: true as const, value})
   }
 }

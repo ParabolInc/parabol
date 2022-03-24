@@ -1156,7 +1156,7 @@ export interface R<Schema extends UserSchema> {
   ): RDatum
   geojson(geoJSON: any): RDatum
   // special
-  args(arg: Array<RValue<Primitives | object | any[]>>): any
+  args(arg: Array<RValue<Primitives | object | any[]>> | readonly RValue<Primitives | object | any[]>[]): any
   error(message?: RValue<string>): any
   js(js: RValue<string>, options?: {timeout: number}): RDatum
   literal(): RDatum

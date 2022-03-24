@@ -2,8 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {RETROSPECTIVE} from 'parabol-client/utils/constants'
-import {MeetingMembersWithoutTasks_meeting} from 'parabol-client/__generated__/MeetingMembersWithoutTasks_meeting.graphql'
+import {
+  MeetingMembersWithoutTasks_meeting,
+  MeetingTypeEnum
+} from 'parabol-client/__generated__/MeetingMembersWithoutTasks_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EmailBorderBottom from './EmailBorderBottom'
@@ -18,9 +20,9 @@ const headerStyle = {
   paddingTop: 24
 }
 
-const getHeaderText = (meetingType) => {
+const getHeaderText = (meetingType: MeetingTypeEnum) => {
   switch (meetingType) {
-    case RETROSPECTIVE:
+    case 'retrospective':
       return 'No New Tasks…'
     default:
       return 'No Done or New Tasks…'
@@ -38,7 +40,7 @@ const MeetingMembersWithoutTasks = (props: Props) => {
   const membersWithoutTasks = meetingMembers.filter(
     (member) =>
       ((member.tasks && member.tasks.length) || 0) +
-      ((member.doneTasks && member.doneTasks.length) || 0) ===
+        ((member.doneTasks && member.doneTasks.length) || 0) ===
       0
   )
   membersWithoutTasks.sort((a, b) =>

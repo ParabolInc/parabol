@@ -1,14 +1,13 @@
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
-import {CreateTaskResponse} from './AbstractTaskIntegrationManager'
 import JiraServerRestManager from './jiraServer/JiraServerRestManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {ExternalLinks} from '~/types/constEnums'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
-import AbstractTaskIntegrationManager from './AbstractTaskIntegrationManager'
+import {TaskIntegrationManager, CreateTaskResponse} from './TaskIntegrationManagerFactory'
 
-export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegrationManager {
+export default class JiraServerTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira Server'
   private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
   private readonly provider: IntegrationProviderJiraServer
@@ -17,7 +16,6 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
     auth: IGetTeamMemberIntegrationAuthQueryResult,
     provider: IntegrationProviderJiraServer
   ) {
-    super()
     this.auth = auth
     this.provider = provider
   }
@@ -41,15 +39,15 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
     rawContentStr: string
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
-    const api = this.getApiManager()
+    const manager = this.getApiManager()
 
     const {title: summary, contentState} = splitDraftContent(rawContentStr)
     // TODO: implement stateToJiraServerFormat
     const description = contentState.getPlainText()
 
-    const {repoId} = IntegrationRepoId.split(integrationRepoId)
+    const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
 
-    const res = await api.createIssue(repoId, summary, description)
+    const res = await manager.createIssue(repositoryId, summary, description)
 
     if (res instanceof Error) {
       return res
@@ -57,18 +55,21 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
     const issueId = res.id
 
     return {
-      integrationHash: JiraServerIssueId.join(this.provider.id, repoId, issueId),
+      integrationHash: JiraServerIssueId.join(this.provider.id, repositoryId, issueId),
+      issueId,
       integration: {
         accessUserId: this.auth.userId,
         service: 'jiraServer',
-        providerId: this.provider.id
+        providerId: this.provider.id,
+        issueId,
+        repositoryId
       }
     }
   }
 
   async getIssue(issueId: string) {
-    const api = this.getApiManager()
-    return api.getIssue(issueId)
+    const manager = this.getApiManager()
+    return manager.getIssue(issueId)
   }
 
   private static makeCreateJiraServerTaskComment(
@@ -88,16 +89,19 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string,
-    integrationHash: string
-  ) {
-    const {issueId} = JiraServerIssueId.split(integrationHash)
+    issueId: string
+  ): Promise<string | Error> {
     const comment = JiraServerTaskIntegrationManager.makeCreateJiraServerTaskComment(
       viewerName,
       assigneeName,
       teamName,
       teamDashboardUrl
     )
-    const api = this.getApiManager()
-    return api.addComment(comment, issueId)
+    const manager = this.getApiManager()
+    const res = await manager.addComment(comment, issueId)
+    if (res instanceof Error) {
+      return res
+    }
+    return res.id
   }
 }

@@ -11,12 +11,12 @@ const managers = {
   google: MailManagerGoogle,
   smtp: MailManagerSMTP,
   debug: MailManagerDebug
-}
+} as const
 
 const getMailManager = () => {
   if (!mailManager) {
     const mailProvider = process.env.MAIL_PROVIDER!
-    const Manager = managers[mailProvider] ?? MailManagerDebug
+    const Manager = managers[mailProvider as keyof typeof managers] ?? MailManagerDebug
     mailManager = new Manager()
   }
   return mailManager

@@ -1,10 +1,15 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import {withRouter} from 'react-router-dom'
 import ToggleNav from '../../../../components/ToggleNav/ToggleNav'
+import useRouter from '../../../../hooks/useRouter'
 
-const TeamSettingsToggleNav = (props) => {
-  const {activeKey, history, teamId} = props
+interface Props {
+  activeKey: string
+  teamId: string
+}
+
+const TeamSettingsToggleNav = (props: Props) => {
+  const {activeKey, teamId} = props
+  const {history} = useRouter()
   const makeOnClick = (area = '') => {
     return area === activeKey
       ? undefined
@@ -41,10 +46,4 @@ const TeamSettingsToggleNav = (props) => {
   )
 }
 
-TeamSettingsToggleNav.propTypes = {
-  activeKey: PropTypes.string,
-  history: PropTypes.object,
-  teamId: PropTypes.string
-}
-
-export default withRouter(TeamSettingsToggleNav)
+export default TeamSettingsToggleNav

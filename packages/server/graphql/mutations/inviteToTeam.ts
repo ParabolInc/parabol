@@ -3,7 +3,6 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import util from 'util'
-import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
@@ -101,10 +100,7 @@ export default {
       // remove suggested action, if any
       let removedSuggestedActionId
       if (isOnboardTeam) {
-        removedSuggestedActionId = await removeSuggestedAction(
-          viewerId,
-          SuggestedActionTypeEnum.inviteYourTeam
-        )
+        removedSuggestedActionId = await removeSuggestedAction(viewerId, 'inviteYourTeam')
       }
       // insert notification records
       const notificationsToInsert = [] as NotificationTeamInvitation[]
