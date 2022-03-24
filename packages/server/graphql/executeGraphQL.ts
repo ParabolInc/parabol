@@ -11,7 +11,7 @@ import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
-import privateSchema from './private/rootSchema'
+import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 
 export interface GQLRequest {

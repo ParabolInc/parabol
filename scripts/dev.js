@@ -1,4 +1,3 @@
-
 // Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
 // Penalty goes away when debugging.
 require('./webpack/utils/dotenv')
@@ -25,12 +24,14 @@ const compileToolbox = () => {
   })
 }
 
+const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
+
 const removeArtifacts = async () => {
   const generated = path.join(PROJECT_ROOT, 'packages/client/__generated__')
   const queryMap = path.join(PROJECT_ROOT, 'queryMap.json')
   try {
-    await Promise.all([rm(generated, {recursive: true}), unlink(queryMap)])
-  } catch {
+    await Promise.all([rm(generated, {recursive: true}), unlink(schemaPath), unlink(queryMap)])
+  } catch (_) {
     // probably didn't exist, noop
   }
 }
@@ -42,6 +43,13 @@ const dev = async (maybeInit) => {
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
+  }
+  try {
+    await generate(codegenSchema)
+  } catch {
+    // If you remove a file (e.g. GraphQL Schema) the codegen depends on it'll fail on first run
+    // After that schema gets generated, codegen will succeed
+    console.log('codegen failed! It should be successful next time. If it fails again, let someone know')
   }
 
   const buildDLL = require('./buildDll')()
@@ -62,7 +70,8 @@ const dev = async (maybeInit) => {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
     await require('./compileRelay')()
   }
-  await Promise.all([clearRedis, migratePG, buildDLL, generate(codegenSchema)])
+  // await compileServers()
+  await Promise.all([clearRedis, migratePG, buildDLL])
   redis.disconnect()
 }
 

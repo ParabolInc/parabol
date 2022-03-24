@@ -8,7 +8,7 @@
     "postgres/migrations/postDeploy/*",
     "postgres/types/*",
     "graphql/queries",
-    "graphql/private/**/*.ts",
+    "graphql/intranetSchema/sdl/**/*.ts",
     "integrations",
     "email/**/*",
     "segmentFns/*",

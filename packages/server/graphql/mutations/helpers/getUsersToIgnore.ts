@@ -1,5 +1,5 @@
 import getRedis, {RedisPipelineResponse} from '../../../utils/getRedis'
-import {UserPresence} from '../../private/mutations/connectSocket'
+import {UserPresence} from '../../intranetSchema/mutations/connectSocket'
 
 // finds all the users who are at the same url
 const getUsersToIgnore = async (viewerId: string, teamId: string) => {
