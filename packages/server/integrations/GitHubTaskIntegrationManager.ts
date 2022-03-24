@@ -3,30 +3,23 @@ import makeCreateGitHubTaskComment from '../utils/makeCreateGitHubTaskComment'
 import createGitHubTask from '../graphql/mutations/helpers/createGitHubTask'
 import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
 import GitHubIssueId from '../../client/shared/gqlIds/GitHubIssueId'
-import {CreateTaskResponse} from './AbstractTaskIntegrationManager'
 import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {GQLContext} from '../graphql/graphql'
-import AbstractTaskIntegrationManager from './AbstractTaskIntegrationManager'
 import getGitHubRequest from '../utils/getGitHubRequest'
 import addComment from '../utils/githubQueries/addComment.graphql'
 import {AddCommentMutation, AddCommentMutationVariables} from '../types/githubTypes'
+import {TaskIntegrationManager, CreateTaskResponse} from './TaskIntegrationManagerFactory'
 
-export default class GitHubTaskIntegrationManager extends AbstractTaskIntegrationManager {
+export default class GitHubTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'GitHub'
   private readonly auth: GitHubAuth
+  private readonly context: GQLContext
+  private readonly info: GraphQLResolveInfo
 
-  constructor(auth: GitHubAuth) {
-    super()
+  constructor(auth: GitHubAuth, context: GQLContext, info: GraphQLResolveInfo) {
     this.auth = auth
-  }
-
-  getCreatedBySomeoneElseComment(
-    viewerName: string,
-    assigneeName: string,
-    teamName: string,
-    teamDashboardUrl: string
-  ): string {
-    return makeCreateGitHubTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
+    this.context = context
+    this.info = info
   }
 
   async addCreatedBySomeoneElseComment(
@@ -34,10 +27,8 @@ export default class GitHubTaskIntegrationManager extends AbstractTaskIntegratio
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string,
-    issueId: string,
-    context: GQLContext,
-    info: GraphQLResolveInfo
-  ) {
+    issueId: string
+  ): Promise<string | Error> {
     const comment = makeCreateGitHubTaskComment(
       viewerName,
       assigneeName,
@@ -47,7 +38,7 @@ export default class GitHubTaskIntegrationManager extends AbstractTaskIntegratio
 
     const {accessToken} = this.auth
 
-    const githubRequest = getGitHubRequest(info, context, {
+    const githubRequest = getGitHubRequest(this.info, this.context, {
       accessToken
     })
 
@@ -65,23 +56,26 @@ export default class GitHubTaskIntegrationManager extends AbstractTaskIntegratio
       return repoError
     }
 
-    return repoInfo
+    return repoInfo.addComment!.subject!.id
   }
 
   async createTask({
     rawContentStr,
-    integrationRepoId,
-    context,
-    info
+    integrationRepoId
   }: {
     rawContentStr: string
     integrationRepoId: string
-    context: GQLContext
-    info: GraphQLResolveInfo
   }): Promise<CreateTaskResponse> {
     const {repoOwner, repoName} = GitHubRepoId.split(integrationRepoId)
 
-    const res = await createGitHubTask(rawContentStr, repoOwner, repoName, this.auth, context, info)
+    const res = await createGitHubTask(
+      rawContentStr,
+      repoOwner,
+      repoName,
+      this.auth,
+      this.context,
+      this.info
+    )
 
     if (res.error) return res.error
 

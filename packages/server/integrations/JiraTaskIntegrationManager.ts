@@ -2,17 +2,15 @@ import makeCreateJiraTaskComment from '../utils/makeCreateJiraTaskComment'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import createJiraTask from '../graphql/mutations/helpers/createJiraTask'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import {CreateTaskResponse} from './AbstractTaskIntegrationManager'
 import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import AbstractTaskIntegrationManager from './AbstractTaskIntegrationManager'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
+import {TaskIntegrationManager, CreateTaskResponse} from './TaskIntegrationManagerFactory'
 
-export default class JiraTaskIntegrationManager extends AbstractTaskIntegrationManager {
+export default class JiraTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira'
   private readonly auth: AtlassianAuth
 
   constructor(auth: AtlassianAuth) {
-    super()
     this.auth = auth
   }
 
@@ -22,12 +20,16 @@ export default class JiraTaskIntegrationManager extends AbstractTaskIntegrationM
     teamName: string,
     teamDashboardUrl: string,
     issueId: string
-  ) {
+  ): Promise<string | Error> {
     const {cloudId, issueKey} = JiraIssueId.split(issueId)
     const {accessToken} = this.auth
     const comment = makeCreateJiraTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
     const manager = new AtlassianServerManager(accessToken)
-    return manager.addComment(cloudId, issueKey, comment)
+    const res = await manager.addComment(cloudId, issueKey, comment)
+    if (res instanceof Error) {
+      return res
+    }
+    return res.id
   }
 
   async createTask({

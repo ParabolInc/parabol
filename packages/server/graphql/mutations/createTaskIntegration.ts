@@ -70,15 +70,27 @@ export default {
     }
 
     const [viewerTaskManager, assigneeTaskManager, team, teamMembers] = await Promise.all([
-      TaskIntegrationManagerFactory.initManager(dataLoader, integrationProviderService, {
-        teamId: teamId,
-        userId: viewerId
-      }),
+      TaskIntegrationManagerFactory.initManager(
+        dataLoader,
+        integrationProviderService,
+        {
+          teamId: teamId,
+          userId: viewerId
+        },
+        context,
+        info
+      ),
       userId
-        ? TaskIntegrationManagerFactory.initManager(dataLoader, integrationProviderService, {
-            teamId: teamId,
-            userId
-          })
+        ? TaskIntegrationManagerFactory.initManager(
+            dataLoader,
+            integrationProviderService,
+            {
+              teamId: teamId,
+              userId
+            },
+            context,
+            info
+          )
         : null,
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -115,9 +127,7 @@ export default {
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createTaskResponse = await taskIntegrationManager.createTask({
       rawContentStr,
-      integrationRepoId,
-      context,
-      info
+      integrationRepoId
     })
 
     if (createTaskResponse instanceof Error) {
@@ -136,9 +146,7 @@ export default {
         assigneeName,
         team.name,
         teamDashboardUrl,
-        issueId,
-        context,
-        info
+        issueId
       )
 
       if (addCommentResponse instanceof Error) {

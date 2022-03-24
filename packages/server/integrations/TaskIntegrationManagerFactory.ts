@@ -1,15 +1,49 @@
+import {GraphQLResolveInfo} from 'graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from './JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from './GitHubTaskIntegrationManager'
 import JiraServerTaskIntegrationManager from './JiraServerTaskIntegrationManager'
-import {DataLoaderWorker} from '../graphql/graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
+
+import {TaskIntegration} from '../database/types/Task'
+
+export type CreateTaskResponse =
+  | {
+      integrationHash: string
+      // TODO: include issueId for GitHub in hash or store integration.issueId for all integrations
+      // See https://github.com/ParabolInc/parabol/issues/6252
+      issueId: string
+      integration: TaskIntegration
+    }
+  | Error
+
+export interface TaskIntegrationManager {
+  title: string
+
+  createTask(params: {
+    rawContentStr: string
+    integrationRepoId: string
+    context?: GQLContext
+    info?: GraphQLResolveInfo
+  }): Promise<CreateTaskResponse>
+
+  addCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    issueId: string
+  ): Promise<string | Error>
+}
 
 export default class TaskIntegrationManagerFactory {
   public static async initManager(
     dataLoader: DataLoaderWorker,
     service: IntegrationProviderServiceEnumType,
-    {teamId, userId}: {teamId: string; userId: string}
+    {teamId, userId}: {teamId: string; userId: string},
+    context: GQLContext,
+    info: GraphQLResolveInfo
   ): Promise<
     | JiraTaskIntegrationManager
     | GitHubTaskIntegrationManager
@@ -23,7 +57,7 @@ export default class TaskIntegrationManagerFactory {
 
     if (service === 'github') {
       const auth = await dataLoader.get('githubAuth').load({teamId, userId})
-      return auth && new GitHubTaskIntegrationManager(auth)
+      return auth && new GitHubTaskIntegrationManager(auth, context, info)
     }
 
     if (service === 'jiraServer') {
