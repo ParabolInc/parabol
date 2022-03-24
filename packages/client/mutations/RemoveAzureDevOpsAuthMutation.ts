@@ -7,7 +7,7 @@ graphql`
   fragment RemoveAzureDevOpsAuthMutation_part on RemoveAzureDevOpsAuthSuccess {
     teamMember {
       integrations {
-        azuredevops {
+        azureDevOps {
           ...AzureDevOpsProviderRowAzureDevOpsIntegration @relay(mask: false)
         }
       }

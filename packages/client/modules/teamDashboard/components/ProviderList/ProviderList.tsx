@@ -53,7 +53,7 @@ export default createFragmentContainer(ProviderList, {
 
       featureFlags {
         gitlab
-        azuredevops
+        azureDevOps
       }
     }
   `

@@ -9,7 +9,7 @@ const IntegrationProviderServiceEnum = new GraphQLEnumType({
     gitlab: {},
     mattermost: {},
     jiraServer: {},
-    azuredevops: {}
+    azureDevOps: {}
   }
 })
 
@@ -20,4 +20,4 @@ export type IntegrationProviderServiceEnumType =
   | 'gitlab'
   | 'mattermost'
   | 'jiraServer'
-  | 'azuredevops'
+  | 'azureDevOps'

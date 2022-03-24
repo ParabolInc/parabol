@@ -9,7 +9,7 @@ const UserFlagEnum = new GraphQLEnumType({
     spotlight: {},
     standups: {},
     gitlab: {},
-    azuredevops: {}
+    azureDevOps: {}
   }
 })
 
