@@ -138,7 +138,7 @@ export default createFragmentContainer(
       fragment AzureDevOpsProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
           integrations {
-            azuredevops {
+            azureDevOps {
               ...AzureDevOpsProviderRowAzureDevOpsIntegration @relay(mask: false)
             }
           }
