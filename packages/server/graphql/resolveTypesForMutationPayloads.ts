@@ -13,13 +13,13 @@ import {isUnionType} from 'graphql/type'
 
 const resolveTypesForMutationPayloads = (schema: GraphQLSchema) => {
   Object.values(schema.getTypeMap()).forEach((type) => {
-    if (!isUnionType(type) || !type.name.endsWith('Payload')) return
+    if (!isUnionType(type) || !type.name.endsWith('Payload') || type.resolveType) return
     const concreteTypes = type.getTypes()
     const errorType = concreteTypes.find((type) => type.name === 'ErrorPayload')
     const successName = `${type.name.slice(0, -'Payload'.length)}Success`
     const successType = concreteTypes.find((type) => type.name === successName)
     // Abort if the MutationPayload is not a default 2-part union of an ErrorPayload | Success
-    if (!errorType || !successType || concreteTypes.length !== 2 || type.resolveType) return
+    if (!errorType || !successType || concreteTypes.length !== 2) return
     type.resolveType = ({error}) => (error?.message ? errorType : successType)
   })
   return schema

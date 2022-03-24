@@ -1,14 +1,14 @@
-import removeSlackAuths from './removeSlackAuths'
-import removeFromOrg from './removeFromOrg'
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
+import getRethink from '../../../database/rethinkDriver'
+// import executeGraphQL from '../../executeGraphQL'
+import AuthToken from '../../../database/types/AuthToken'
+import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
+import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
+import getDeletedEmail from '../../../utils/getDeletedEmail'
 import segmentIo from '../../../utils/segmentIo'
 import {DataLoaderWorker} from '../../graphql'
-import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
-import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
-import getRethink from '../../../database/rethinkDriver'
-import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
-import getDeletedEmail from '../../../utils/getDeletedEmail'
-import executeGraphQL from '../../executeGraphQL'
-import AuthToken from '../../../database/types/AuthToken'
+import removeFromOrg from './removeFromOrg'
+import removeSlackAuths from './removeSlackAuths'
 
 const removeGitHubAuths = async (userId: string, teamIds: string[]) =>
   Promise.all(teamIds.map((teamId) => removeGitHubAuth(userId, teamId)))
@@ -36,6 +36,7 @@ const softDeleteUser = async (
     .coerceTo('array')
     .run()
   const teamIds = teamMemberIds.map((id) => TeamMemberId.split(id).teamId)
+  const executeGraphQL = require('../../executeGraphQL').default
 
   const [parabolPayload] = await Promise.all([
     executeGraphQL({
