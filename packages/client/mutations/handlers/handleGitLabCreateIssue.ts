@@ -1,9 +1,9 @@
-import {parseWebPath} from './../../utils/parseWebPath'
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
 import getGitLabProjectsConn from '../connections/getGitLabProjectsConn'
+import {parseWebPath} from './../../utils/parseWebPath'
 
 const handleGitLabCreateIssue = (
   task: RecordProxy<NonNullable<CreateTaskMutationResponse['createTask']['task']>>,
@@ -16,8 +16,15 @@ const handleGitLabCreateIssue = (
   const project = createProxyRecord(store, '_xGitLabProject', {
     fullPath
   })
-  if (!project) return
-  project.setLinkedRecords([integration], 'issues')
+  const issueEdge = createProxyRecord(store, '_xGitLabIssueEdge', {})
+  issueEdge.setLinkedRecord(integration, 'node')
+
+  const issueConn = createProxyRecord(store, '_xGitLabIssueConnection', {})
+  issueConn.setLinkedRecords([issueEdge], 'edges')
+
+  const issueArgs = {first: 25, includeSubepics: true, sort: 'UPDATED_DESC', state: 'opened'}
+  project.setLinkedRecord(issueConn, 'issues', issueArgs)
+
   const teamId = task.getValue('teamId')
   const meetingId = task.getValue('meetingId')
   const viewer = store.getRoot().getLinkedRecord('viewer')
@@ -39,13 +46,8 @@ const handleGitLabCreateIssue = (
     store,
     gitlabProjectsConn,
     project,
-    'GitLabProjectEdge'
+    '_xGitLabProjectEdge'
   )
-  const mysteryIssueInEdge = newEdge!
-    .getLinkedRecord('node')
-    ?.getLinkedRecords('issues')![0]
-    ?.getValue('id')
-  console.log('🚀 ', {mysteryIssueInEdge})
   newEdge.setValue(now, 'cursor')
   ConnectionHandler.insertEdgeBefore(gitlabProjectsConn, newEdge)
 }
