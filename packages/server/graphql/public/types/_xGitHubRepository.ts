@@ -1,7 +1,7 @@
 import {_XGitHubRepositoryResolvers} from '../resolverTypes'
 
 const _xGitHubRepository: _XGitHubRepositoryResolvers = {
-  __isTypeOf: ({nameWithOwner}: {nameWithOwner?: string}) => !!nameWithOwner,
+  __isTypeOf: ({nameWithOwner}) => !!nameWithOwner,
   service: () => 'github'
 }
 
