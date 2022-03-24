@@ -9,12 +9,10 @@
 
   This file accepts resolvers and permissions and applies permissions as higher order functions to those resolvers
 */
-import {GraphQLScalarType} from 'graphql'
 import {allow} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import hash from 'object-hash'
-import {Resolver as R, ResolverFn} from './private/resolverTypes'
-import {SubscriptionResolvers} from './public/resolverTypes'
+import {ResolverFn} from './private/resolverTypes'
 
 type Resolver = ResolverFn<any, any, any, any>
 
@@ -49,13 +47,9 @@ const wrapResolve =
   }
 
 type ResolverMap = {
-  // Subscription: SubscriptionResolvers
-  [TypeName: string]:
-    | {
-        [FieldName: string]: R<any, any, any, any>
-      }
-    | GraphQLScalarType
-    | SubscriptionResolvers
+  // This type causes too much recursion, so I set it to any
+  // {[FieldName: string]: R<any, any, any, any>} | GraphQLScalarType | SubscriptionResolvers
+  [TypeName: string]: any
 }
 
 interface PermissionMap {
@@ -64,7 +58,7 @@ interface PermissionMap {
   }
 }
 
-const composeResolvers = (resolverMap: ResolverMap, permissionMap: PermissionMap) => {
+const composeResolvers = <T extends ResolverMap>(resolverMap: T, permissionMap: PermissionMap) => {
   Object.entries(permissionMap).forEach(([typeName, ruleFieldMap]) => {
     const resolverSubMap = resolverMap[typeName as keyof typeof resolverMap]
     if (!resolverSubMap) throw new Error(`No resolver exists for type: ${typeName}`)
@@ -76,7 +70,7 @@ const composeResolvers = (resolverMap: ResolverMap, permissionMap: PermissionMap
         Object.entries(resolverSubMap).forEach(([resolverFieldName, resolve]) => {
           // the wildcard is just a default value. if the field has a specific rule, use that
           if (ruleFieldMap[resolverFieldName]) return
-          resolverSubMap[resolverFieldName] = wrapResolve(resolve, rule)
+          resolverSubMap[resolverFieldName] = wrapResolve(resolve as Resolver, rule)
         })
       } else {
         const unwrappedResolver = resolverSubMap[fieldName]

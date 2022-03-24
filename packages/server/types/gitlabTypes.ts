@@ -17,212 +17,212 @@ export type Scalars = {
    *
    * An example `AlertManagementHttpIntegrationID` is: `"gid://gitlab/AlertManagement::HttpIntegration/1"`.
    */
-  AlertManagementHttpIntegrationID: any
+  AlertManagementHttpIntegrationID: string
   /**
    * A `AnalyticsDevopsAdoptionEnabledNamespaceID` is a global ID. It is encoded as a string.
    *
    * An example `AnalyticsDevopsAdoptionEnabledNamespaceID` is: `"gid://gitlab/Analytics::DevopsAdoption::EnabledNamespace/1"`.
    */
-  AnalyticsDevopsAdoptionEnabledNamespaceID: any
+  AnalyticsDevopsAdoptionEnabledNamespaceID: string
   /**
    * A `AuditEventsExternalAuditEventDestinationID` is a global ID. It is encoded as a string.
    *
    * An example `AuditEventsExternalAuditEventDestinationID` is: `"gid://gitlab/AuditEvents::ExternalAuditEventDestination/1"`.
    */
-  AuditEventsExternalAuditEventDestinationID: any
+  AuditEventsExternalAuditEventDestinationID: string
   /**
    * A `AwardableID` is a global ID. It is encoded as a string.
    *
    * An example `AwardableID` is: `"gid://gitlab/Awardable/1"`.
    */
-  AwardableID: any
+  AwardableID: string
   /**
    * Represents non-fractional signed whole numeric values. Since the value may
    * exceed the size of a 32-bit integer, it's encoded as a string.
    */
-  BigInt: any
+  BigInt: string
   /**
    * A `BoardID` is a global ID. It is encoded as a string.
    *
    * An example `BoardID` is: `"gid://gitlab/Board/1"`.
    */
-  BoardID: any
+  BoardID: string
   /**
    * A `BoardsEpicBoardID` is a global ID. It is encoded as a string.
    *
    * An example `BoardsEpicBoardID` is: `"gid://gitlab/Boards::EpicBoard/1"`.
    */
-  BoardsEpicBoardID: any
+  BoardsEpicBoardID: string
   /**
    * A `BoardsEpicListID` is a global ID. It is encoded as a string.
    *
    * An example `BoardsEpicListID` is: `"gid://gitlab/Boards::EpicList/1"`.
    */
-  BoardsEpicListID: any
+  BoardsEpicListID: string
   /**
    * A `CiBuildID` is a global ID. It is encoded as a string.
    *
    * An example `CiBuildID` is: `"gid://gitlab/Ci::Build/1"`.
    */
-  CiBuildID: any
+  CiBuildID: string
   /**
    * A `CiPipelineID` is a global ID. It is encoded as a string.
    *
    * An example `CiPipelineID` is: `"gid://gitlab/Ci::Pipeline/1"`.
    */
-  CiPipelineID: any
+  CiPipelineID: string
   /**
    * A `CiRunnerID` is a global ID. It is encoded as a string.
    *
    * An example `CiRunnerID` is: `"gid://gitlab/Ci::Runner/1"`.
    */
-  CiRunnerID: any
+  CiRunnerID: string
   /**
    * A `ClustersAgentID` is a global ID. It is encoded as a string.
    *
    * An example `ClustersAgentID` is: `"gid://gitlab/Clusters::Agent/1"`.
    */
-  ClustersAgentID: any
+  ClustersAgentID: string
   /**
    * A `ClustersAgentTokenID` is a global ID. It is encoded as a string.
    *
    * An example `ClustersAgentTokenID` is: `"gid://gitlab/Clusters::AgentToken/1"`.
    */
-  ClustersAgentTokenID: any
+  ClustersAgentTokenID: string
   /**
    * A `ClustersClusterID` is a global ID. It is encoded as a string.
    *
    * An example `ClustersClusterID` is: `"gid://gitlab/Clusters::Cluster/1"`.
    */
-  ClustersClusterID: any
+  ClustersClusterID: string
   /**
    * A `ComplianceManagementFrameworkID` is a global ID. It is encoded as a string.
    *
    * An example `ComplianceManagementFrameworkID` is: `"gid://gitlab/ComplianceManagement::Framework/1"`.
    */
-  ComplianceManagementFrameworkID: any
+  ComplianceManagementFrameworkID: string
   /**
    * A `ContainerRepositoryID` is a global ID. It is encoded as a string.
    *
    * An example `ContainerRepositoryID` is: `"gid://gitlab/ContainerRepository/1"`.
    */
-  ContainerRepositoryID: any
+  ContainerRepositoryID: string
   /**
    * A `CustomEmojiID` is a global ID. It is encoded as a string.
    *
    * An example `CustomEmojiID` is: `"gid://gitlab/CustomEmoji/1"`.
    */
-  CustomEmojiID: any
+  CustomEmojiID: string
   /**
    * A `CustomerRelationsContactID` is a global ID. It is encoded as a string.
    *
    * An example `CustomerRelationsContactID` is: `"gid://gitlab/CustomerRelations::Contact/1"`.
    */
-  CustomerRelationsContactID: any
+  CustomerRelationsContactID: string
   /**
    * A `CustomerRelationsOrganizationID` is a global ID. It is encoded as a string.
    *
    * An example `CustomerRelationsOrganizationID` is: `"gid://gitlab/CustomerRelations::Organization/1"`.
    */
-  CustomerRelationsOrganizationID: any
+  CustomerRelationsOrganizationID: string
   /**
    * A `DastProfileID` is a global ID. It is encoded as a string.
    *
    * An example `DastProfileID` is: `"gid://gitlab/Dast::Profile/1"`.
    */
-  DastProfileID: any
+  DastProfileID: string
   /**
    * A `DastProfileScheduleID` is a global ID. It is encoded as a string.
    *
    * An example `DastProfileScheduleID` is: `"gid://gitlab/Dast::ProfileSchedule/1"`.
    */
-  DastProfileScheduleID: any
+  DastProfileScheduleID: string
   /**
    * A `DastScannerProfileID` is a global ID. It is encoded as a string.
    *
    * An example `DastScannerProfileID` is: `"gid://gitlab/DastScannerProfile/1"`.
    */
-  DastScannerProfileID: any
+  DastScannerProfileID: string
   /**
    * A `DastSiteProfileID` is a global ID. It is encoded as a string.
    *
    * An example `DastSiteProfileID` is: `"gid://gitlab/DastSiteProfile/1"`.
    */
-  DastSiteProfileID: any
+  DastSiteProfileID: string
   /**
    * A `DastSiteTokenID` is a global ID. It is encoded as a string.
    *
    * An example `DastSiteTokenID` is: `"gid://gitlab/DastSiteToken/1"`.
    */
-  DastSiteTokenID: any
+  DastSiteTokenID: string
   /**
    * A `DastSiteValidationID` is a global ID. It is encoded as a string.
    *
    * An example `DastSiteValidationID` is: `"gid://gitlab/DastSiteValidation/1"`.
    */
-  DastSiteValidationID: any
+  DastSiteValidationID: string
   /** Date represented in ISO 8601 */
-  Date: any
+  Date: string
   /**
    * A `DesignManagementDesignAtVersionID` is a global ID. It is encoded as a string.
    *
    * An example `DesignManagementDesignAtVersionID` is: `"gid://gitlab/DesignManagement::DesignAtVersion/1"`.
    */
-  DesignManagementDesignAtVersionID: any
+  DesignManagementDesignAtVersionID: string
   /**
    * A `DesignManagementDesignID` is a global ID. It is encoded as a string.
    *
    * An example `DesignManagementDesignID` is: `"gid://gitlab/DesignManagement::Design/1"`.
    */
-  DesignManagementDesignID: any
+  DesignManagementDesignID: string
   /**
    * A `DesignManagementVersionID` is a global ID. It is encoded as a string.
    *
    * An example `DesignManagementVersionID` is: `"gid://gitlab/DesignManagement::Version/1"`.
    */
-  DesignManagementVersionID: any
+  DesignManagementVersionID: string
   /**
    * A `DiffNoteID` is a global ID. It is encoded as a string.
    *
    * An example `DiffNoteID` is: `"gid://gitlab/DiffNote/1"`.
    */
-  DiffNoteID: any
+  DiffNoteID: string
   /**
    * A `DiscussionID` is a global ID. It is encoded as a string.
    *
    * An example `DiscussionID` is: `"gid://gitlab/Discussion/1"`.
    */
-  DiscussionID: any
+  DiscussionID: string
   /**
    * Duration between two instants, represented as a fractional number of seconds.
    *
    * For example: 12.3334
    */
-  Duration: any
+  Duration: string
   /**
    * A `EnvironmentID` is a global ID. It is encoded as a string.
    *
    * An example `EnvironmentID` is: `"gid://gitlab/Environment/1"`.
    */
-  EnvironmentID: any
+  EnvironmentID: string
   /**
    * A `EpicID` is a global ID. It is encoded as a string.
    *
    * An example `EpicID` is: `"gid://gitlab/Epic/1"`.
    */
-  EpicID: any
+  EpicID: string
   /**
    * A `EpicTreeSortingID` is a global ID. It is encoded as a string.
    *
    * An example `EpicTreeSortingID` is: `"gid://gitlab/EpicTreeSorting/1"`.
    */
-  EpicTreeSortingID: any
+  EpicTreeSortingID: string
   /**
    * A `GitlabErrorTrackingDetailedErrorID` is a global ID. It is encoded as a string.
    *
    * An example `GitlabErrorTrackingDetailedErrorID` is: `"gid://gitlab/Gitlab::ErrorTracking::DetailedError/1"`.
    */
-  GitlabErrorTrackingDetailedErrorID: any
+  GitlabErrorTrackingDetailedErrorID: string
   /**
    * A global identifier.
    *
@@ -231,221 +231,221 @@ export type Scalars = {
    *
    * Global identifiers are encoded as strings.
    */
-  GlobalID: any
+  GlobalID: string
   /**
    * A `GroupID` is a global ID. It is encoded as a string.
    *
    * An example `GroupID` is: `"gid://gitlab/Group/1"`.
    */
-  GroupID: any
+  GroupID: string
   /** An ISO 8601-encoded date */
-  ISO8601Date: any
+  ISO8601Date: string
   /**
    * A `IncidentManagementEscalationPolicyID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementEscalationPolicyID` is: `"gid://gitlab/IncidentManagement::EscalationPolicy/1"`.
    */
-  IncidentManagementEscalationPolicyID: any
+  IncidentManagementEscalationPolicyID: string
   /**
    * A `IncidentManagementEscalationRuleID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementEscalationRuleID` is: `"gid://gitlab/IncidentManagement::EscalationRule/1"`.
    */
-  IncidentManagementEscalationRuleID: any
+  IncidentManagementEscalationRuleID: string
   /**
    * A `IncidentManagementOncallParticipantID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementOncallParticipantID` is: `"gid://gitlab/IncidentManagement::OncallParticipant/1"`.
    */
-  IncidentManagementOncallParticipantID: any
+  IncidentManagementOncallParticipantID: string
   /**
    * A `IncidentManagementOncallRotationID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementOncallRotationID` is: `"gid://gitlab/IncidentManagement::OncallRotation/1"`.
    */
-  IncidentManagementOncallRotationID: any
+  IncidentManagementOncallRotationID: string
   /**
    * A `IntegrationsPrometheusID` is a global ID. It is encoded as a string.
    *
    * An example `IntegrationsPrometheusID` is: `"gid://gitlab/Integrations::Prometheus/1"`.
    * The older format `"gid://gitlab/PrometheusService/1"` was deprecated in 14.1.
    */
-  IntegrationsPrometheusID: any
+  IntegrationsPrometheusID: string
   /**
    * A `IssuableID` is a global ID. It is encoded as a string.
    *
    * An example `IssuableID` is: `"gid://gitlab/Issuable/1"`.
    */
-  IssuableID: any
+  IssuableID: string
   /**
    * A `IssueID` is a global ID. It is encoded as a string.
    *
    * An example `IssueID` is: `"gid://gitlab/Issue/1"`.
    */
-  IssueID: any
+  IssueID: string
   /**
    * A `IterationID` is a global ID. It is encoded as a string.
    *
    * An example `IterationID` is: `"gid://gitlab/Iteration/1"`.
    * The older format `"gid://gitlab/EEIteration/1"` was deprecated in 13.3.
    */
-  IterationID: any
+  IterationID: string
   /**
    * A `IterationsCadenceID` is a global ID. It is encoded as a string.
    *
    * An example `IterationsCadenceID` is: `"gid://gitlab/Iterations::Cadence/1"`.
    */
-  IterationsCadenceID: any
+  IterationsCadenceID: string
   /** Represents untyped JSON */
-  JSON: any
+  JSON: string
   /**
    * A `CommitStatusID` is a global ID. It is encoded as a string.
    *
    * An example `CommitStatusID` is: `"gid://gitlab/CommitStatus/1"`.
    */
-  JobID: any
+  JobID: string
   /** JSON object as raw string */
-  JsonString: any
+  JsonString: string
   /**
    * A `LabelID` is a global ID. It is encoded as a string.
    *
    * An example `LabelID` is: `"gid://gitlab/Label/1"`.
    */
-  LabelID: any
+  LabelID: string
   /**
    * A `ListID` is a global ID. It is encoded as a string.
    *
    * An example `ListID` is: `"gid://gitlab/List/1"`.
    */
-  ListID: any
+  ListID: string
   /**
    * A `MergeRequestID` is a global ID. It is encoded as a string.
    *
    * An example `MergeRequestID` is: `"gid://gitlab/MergeRequest/1"`.
    */
-  MergeRequestID: any
+  MergeRequestID: string
   /**
    * A `MetricsDashboardAnnotationID` is a global ID. It is encoded as a string.
    *
    * An example `MetricsDashboardAnnotationID` is: `"gid://gitlab/Metrics::Dashboard::Annotation/1"`.
    */
-  MetricsDashboardAnnotationID: any
+  MetricsDashboardAnnotationID: string
   /**
    * A `MilestoneID` is a global ID. It is encoded as a string.
    *
    * An example `MilestoneID` is: `"gid://gitlab/Milestone/1"`.
    */
-  MilestoneID: any
+  MilestoneID: string
   /**
    * A `NamespaceID` is a global ID. It is encoded as a string.
    *
    * An example `NamespaceID` is: `"gid://gitlab/Namespace/1"`.
    */
-  NamespaceID: any
+  NamespaceID: string
   /**
    * A `NoteID` is a global ID. It is encoded as a string.
    *
    * An example `NoteID` is: `"gid://gitlab/Note/1"`.
    */
-  NoteID: any
+  NoteID: string
   /**
    * A `NoteableID` is a global ID. It is encoded as a string.
    *
    * An example `NoteableID` is: `"gid://gitlab/Noteable/1"`.
    */
-  NoteableID: any
+  NoteableID: string
   /**
    * A `PackagesConanFileMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesConanFileMetadatumID` is: `"gid://gitlab/Packages::Conan::FileMetadatum/1"`.
    */
-  PackagesConanFileMetadatumID: any
+  PackagesConanFileMetadatumID: string
   /**
    * A `PackagesConanMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesConanMetadatumID` is: `"gid://gitlab/Packages::Conan::Metadatum/1"`.
    */
-  PackagesConanMetadatumID: any
+  PackagesConanMetadatumID: string
   /**
    * A `PackagesDependencyID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesDependencyID` is: `"gid://gitlab/Packages::Dependency/1"`.
    */
-  PackagesDependencyID: any
+  PackagesDependencyID: string
   /**
    * A `PackagesDependencyLinkID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesDependencyLinkID` is: `"gid://gitlab/Packages::DependencyLink/1"`.
    */
-  PackagesDependencyLinkID: any
+  PackagesDependencyLinkID: string
   /**
    * A `PackagesMavenMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesMavenMetadatumID` is: `"gid://gitlab/Packages::Maven::Metadatum/1"`.
    */
-  PackagesMavenMetadatumID: any
+  PackagesMavenMetadatumID: string
   /**
    * A `PackagesNugetDependencyLinkMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesNugetDependencyLinkMetadatumID` is: `"gid://gitlab/Packages::Nuget::DependencyLinkMetadatum/1"`.
    */
-  PackagesNugetDependencyLinkMetadatumID: any
+  PackagesNugetDependencyLinkMetadatumID: string
   /**
    * A `PackagesNugetMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesNugetMetadatumID` is: `"gid://gitlab/Packages::Nuget::Metadatum/1"`.
    */
-  PackagesNugetMetadatumID: any
+  PackagesNugetMetadatumID: string
   /**
    * A `PackagesPackageFileID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesPackageFileID` is: `"gid://gitlab/Packages::PackageFile/1"`.
    */
-  PackagesPackageFileID: any
+  PackagesPackageFileID: string
   /**
    * A `PackagesPackageID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesPackageID` is: `"gid://gitlab/Packages::Package/1"`.
    */
-  PackagesPackageID: any
+  PackagesPackageID: string
   /**
    * A `PackagesPypiMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesPypiMetadatumID` is: `"gid://gitlab/Packages::Pypi::Metadatum/1"`.
    */
-  PackagesPypiMetadatumID: any
+  PackagesPypiMetadatumID: string
   /**
    * A `PathLockID` is a global ID. It is encoded as a string.
    *
    * An example `PathLockID` is: `"gid://gitlab/PathLock/1"`.
    */
-  PathLockID: any
+  PathLockID: string
   /** String or integer. */
-  PayloadAlertFieldPathSegment: any
+  PayloadAlertFieldPathSegment: string
   /**
    * A `ProjectID` is a global ID. It is encoded as a string.
    *
    * An example `ProjectID` is: `"gid://gitlab/Project/1"`.
    */
-  ProjectID: any
+  ProjectID: string
   /**
    * A `ReleasesLinkID` is a global ID. It is encoded as a string.
    *
    * An example `ReleasesLinkID` is: `"gid://gitlab/Releases::Link/1"`.
    */
-  ReleasesLinkID: any
+  ReleasesLinkID: string
   /**
    * A `SnippetID` is a global ID. It is encoded as a string.
    *
    * An example `SnippetID` is: `"gid://gitlab/Snippet/1"`.
    */
-  SnippetID: any
+  SnippetID: string
   /**
    * A `TerraformStateID` is a global ID. It is encoded as a string.
    *
    * An example `TerraformStateID` is: `"gid://gitlab/Terraform::State/1"`.
    */
-  TerraformStateID: any
+  TerraformStateID: string
   /**
    * Time represented in ISO 8601.
    *
@@ -453,46 +453,46 @@ export type Scalars = {
    *
    * See `https://www.iso.org/iso-8601-date-and-time-format.html`.
    */
-  Time: any
+  Time: string
   /**
    * A `TodoID` is a global ID. It is encoded as a string.
    *
    * An example `TodoID` is: `"gid://gitlab/Todo/1"`.
    */
-  TodoID: any
+  TodoID: string
   /**
    * A `TodoableID` is a global ID. It is encoded as a string.
    *
    * An example `TodoableID` is: `"gid://gitlab/Todoable/1"`.
    */
-  TodoableID: any
+  TodoableID: string
   /** A regexp containing patterns sourced from user input */
-  UntrustedRegexp: any
-  Upload: any
+  UntrustedRegexp: string
+  Upload: string
   /**
    * A `UserID` is a global ID. It is encoded as a string.
    *
    * An example `UserID` is: `"gid://gitlab/User/1"`.
    */
-  UserID: any
+  UserID: string
   /**
    * A `VulnerabilitiesExternalIssueLinkID` is a global ID. It is encoded as a string.
    *
    * An example `VulnerabilitiesExternalIssueLinkID` is: `"gid://gitlab/Vulnerabilities::ExternalIssueLink/1"`.
    */
-  VulnerabilitiesExternalIssueLinkID: any
+  VulnerabilitiesExternalIssueLinkID: string
   /**
    * A `VulnerabilitiesScannerID` is a global ID. It is encoded as a string.
    *
    * An example `VulnerabilitiesScannerID` is: `"gid://gitlab/Vulnerabilities::Scanner/1"`.
    */
-  VulnerabilitiesScannerID: any
+  VulnerabilitiesScannerID: string
   /**
    * A `VulnerabilityID` is a global ID. It is encoded as a string.
    *
    * An example `VulnerabilityID` is: `"gid://gitlab/Vulnerability/1"`.
    */
-  VulnerabilityID: any
+  VulnerabilityID: string
 }
 
 /** Represents the access level of a relationship between a User and object that it is related to */
