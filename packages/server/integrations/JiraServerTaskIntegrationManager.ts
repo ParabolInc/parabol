@@ -62,7 +62,9 @@ export default class JiraServerTaskIntegrationManager extends AbstractTaskIntegr
       integration: {
         accessUserId: this.auth.userId,
         service: 'jiraServer',
-        providerId: this.provider.id
+        providerId: this.provider.id,
+        issueId,
+        repositoryId
       }
     }
   }
