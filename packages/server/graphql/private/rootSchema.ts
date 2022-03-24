@@ -1,6 +1,7 @@
 import {loadFilesSync} from '@graphql-tools/load-files'
 import {makeExecutableSchema} from '@graphql-tools/schema'
 import path from 'path'
+import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import resolvers from './resolvers'
 
 const typeDefs = loadFilesSync(
@@ -8,4 +9,4 @@ const typeDefs = loadFilesSync(
 )
 
 const schema = makeExecutableSchema({typeDefs, resolvers})
-export default schema
+export default resolveTypesForMutationPayloads(schema)
