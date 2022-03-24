@@ -29,10 +29,10 @@ const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean, hasAzureDevO
 type Integrations = NonNullable<TaskFooterIntegrateMenu_viewer['viewerTeamMember']>['integrations']
 
 const isIntegrated = (integrations: Integrations) => {
-  const {atlassian, github, jiraServer, azuredevops} = integrations
+  const {atlassian, github, jiraServer, azureDevOps} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
-  const hasAzureDevOps = azuredevops?.isActive ?? false
+  const hasAzureDevOps = azureDevOps?.isActive ?? false
   const hasJiraServer = jiraServer.auth?.isActive ?? false
   return hasAtlassian || hasGitHub || hasJiraServer || hasAzureDevOps
     ? {

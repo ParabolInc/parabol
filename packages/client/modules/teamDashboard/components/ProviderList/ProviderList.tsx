@@ -25,7 +25,7 @@ const StyledWrapper = styled(SettingsWrapper)({
 const ProviderList = (props: Props) => {
   const {viewer, retry, teamId} = props
   const {
-    featureFlags: {gitlab: allowGitlab, azuredevops: allowAzureDevOps}
+    featureFlags: {gitlab: allowGitlab, azureDevOps: allowAzureDevOps}
   } = viewer
   return (
     <StyledWrapper>

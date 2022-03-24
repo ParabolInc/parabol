@@ -10,6 +10,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddTeamMemberIntegrationAuthPayload from '../types/AddTeamMemberIntegrationAuthPayload'
 import GraphQLURLType from '../types/GraphQLURLType'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 
 interface OAuth2Auth {
   accessToken: string
@@ -101,6 +102,16 @@ const addTeamMemberIntegrationAuth = {
         const {clientId, clientSecret, serverBaseUrl} = integrationProvider
         const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         tokenMetadata = await manager.authorize(oauthCodeOrPat, redirectUri)
+      }
+      if (service === 'azureDevOps') {
+        if (!oauthVerifier) {
+          return {
+            error: {message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'}
+          }
+        }
+        tokenMetadata = (await AzureDevOpsServerManager.init(oauthCodeOrPat, oauthVerifier)) as
+          | OAuth2Auth
+          | Error
       }
     }
     if (authStrategy === 'oauth1') {

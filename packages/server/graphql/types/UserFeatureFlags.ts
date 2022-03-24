@@ -23,7 +23,7 @@ const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
     azureDevOps: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if azuredevops is allowed',
-      resolve: ({azuredevops}) => !!azuredevops
+      resolve: ({azureDevOps}) => !!azureDevOps
     }
   })
 })
