@@ -1,7 +1,6 @@
-import {DraftEnterpriseInvoicePayloadResolvers} from '../resolverTypes'
+import {_XGitHubRepositoryResolvers} from '../resolverTypes'
 
-const _xGitHubRepository: DraftEnterpriseInvoicePayloadResolvers = {
-  __interfaces: () => ['RepoIntegration'],
+const _xGitHubRepository: _XGitHubRepositoryResolvers = {
   __isTypeOf: ({nameWithOwner}: {nameWithOwner?: string}) => !!nameWithOwner,
   service: () => 'github'
 }

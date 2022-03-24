@@ -1,6 +1,7 @@
 {
   "config": {
-    "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck"
+    "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
+    "enumsAsTypes": true
   },
   "generates": {
     "packages/server/types/githubTypes.ts": {

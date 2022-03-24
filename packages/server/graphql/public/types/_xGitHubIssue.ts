@@ -1,4 +1,5 @@
 import {GraphQLResolveInfo} from 'graphql'
+import {_XGitHubIssueResolvers} from '../resolverTypes'
 
 const resolveToFieldNameOrAlias = (
   source: any,
@@ -11,7 +12,7 @@ const resolveToFieldNameOrAlias = (
   return source[key]
 }
 
-const _xGitHubIssue: DraftEnterpriseInvoicePayloadResolvers = {
+const _xGitHubIssue: _XGitHubIssueResolvers = {
   url: resolveToFieldNameOrAlias
 }
 
