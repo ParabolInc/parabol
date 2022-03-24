@@ -20760,10 +20760,7 @@ export type CreateIssueMutation = {
         __typename?: 'CreateIssuePayload'
         clientMutationId?: string | null | undefined
         errors: Array<string>
-        issue?:
-          | {__typename?: 'Issue'; id: string; iid: string; title: string; webPath: string}
-          | null
-          | undefined
+        issue?: {__typename?: 'Issue'; id: string} | null | undefined
       }
     | null
     | undefined

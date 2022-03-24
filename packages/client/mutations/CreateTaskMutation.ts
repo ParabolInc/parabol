@@ -195,18 +195,11 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else if (service === 'gitlab') {
-          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabProject', {
-            fullPath: serviceProjectHash
-          })
-          const projectId = optimisticTaskIntegration.getValue('id')
-          const issue = createProxyRecord(store, '_xGitLabIssue', {
+          const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
             state: 'opened',
             title: plaintextContent,
-            description: '',
-            projectPath: serviceProjectHash,
-            projectId
+            description: ''
           })
-          optimisticTaskIntegration.setLinkedRecords([issue], 'issues')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else {
           console.log('FIXME: implement createTask')
