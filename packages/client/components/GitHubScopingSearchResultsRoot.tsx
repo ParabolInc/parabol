@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import githubScopingSearchResultsQuery, {
   GitHubScopingSearchResultsQuery
@@ -33,7 +34,7 @@ const GitHubScopingSearchResultsRoot = (props: Props) => {
     {teamId, queryString: normalizedQueryString}
   )
   return (
-    <Suspense fallback={''}>
+    <Suspense fallback={<MockScopingList />}>
       {queryRef && <GitHubScopingSearchResults queryRef={queryRef} meetingRef={meeting} />}
     </Suspense>
   )
