@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import {resolveNewMeeting, resolveTeam} from '../resolvers'
 import makeMutationPayload from './makeMutationPayload'
 import Team from './Team'
 import TeamPromptMeeting from './TeamPromptMeeting'
@@ -9,18 +10,14 @@ export const EndTeamPromptSuccess = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     meeting: {
       type: new GraphQLNonNull(TeamPromptMeeting),
-      resolve: ({meetingId}: {meetingId: string}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('newMeetings').load(meetingId)
-      }
+      resolve: resolveNewMeeting
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
     },
     team: {
       type: new GraphQLNonNull(Team),
-      resolve: ({teamId}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('teams').load(teamId)
-      }
+      resolve: resolveTeam
     }
   })
 })

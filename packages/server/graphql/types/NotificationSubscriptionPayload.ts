@@ -12,7 +12,6 @@ import DisconnectSocketPayload from './DisconnectSocketPayload'
 import {EndCheckInSuccess} from './EndCheckInPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
-import {EndTeamPromptSuccess} from './EndTeamPromptPayload'
 import InvalidateSessionsPayload from './InvalidateSessionsPayload'
 import InviteToTeamPayload from './InviteToTeamPayload'
 import JiraIssue from './JiraIssue'
@@ -38,7 +37,6 @@ const types = [
   EndNewMeetingPayload,
   EndCheckInSuccess,
   EndRetrospectiveSuccess,
-  EndTeamPromptSuccess,
   InvalidateSessionsPayload,
   InviteToTeamPayload,
   MeetingStageTimeLimitPayload,
