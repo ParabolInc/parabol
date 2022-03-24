@@ -1,6 +1,5 @@
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
-// import executeGraphQL from '../../executeGraphQL'
 import AuthToken from '../../../database/types/AuthToken'
 import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
 import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
