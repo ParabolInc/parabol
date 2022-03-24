@@ -80,11 +80,15 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
-  const {azuredevops} = integrations
-  const accessToken = azuredevops?.accessToken ?? undefined
+  const {azureDevOps} = integrations
+  console.log(azureDevOps)
+  const cloudProvider = azureDevOps?.cloudProvider
+  if (!cloudProvider) return null
+  console.log(cloudProvider)
+  const accessToken = azureDevOps?.accessToken ?? undefined
 
   const openOAuth = async () => {
-    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    await AzureDevOpsClientManager.openOAuth(atmosphere, teamId, cloudProvider.id, mutationProps)
   }
 
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
@@ -105,7 +109,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
       )}
       {accessToken && (
         <ListAndMenu>
-          <AzureDevOpsLogin title={azuredevops!.id}>
+          <AzureDevOpsLogin title={azureDevOps!.id}>
             <AzureDevOpsProviderLogo />
           </AzureDevOpsLogin>
           <MenuButton onClick={togglePortal} ref={originRef}>
@@ -116,6 +120,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
               menuProps={menuProps}
               mutationProps={mutationProps}
               teamId={teamId}
+              providerId={cloudProvider.id}
             />
           )}
         </ListAndMenu>
@@ -128,6 +133,9 @@ graphql`
   fragment AzureDevOpsProviderRowAzureDevOpsIntegration on AzureDevOpsIntegration {
     accessToken
     id
+    cloudProvider {
+      id
+    }
   }
 `
 
