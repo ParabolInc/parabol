@@ -1,0 +1,5313 @@
+"""
+This file was generated from before we moved to SDL-driven development
+It's HUGE, and editing it directly could result in a headache.
+Please don't add anything to this file.
+Instead, add your new types to their own typeDef file
+"""
+
+type Query {
+  """Get the number of logins, optionally broken down by domain"""
+  logins(
+    """only include users whose accounts were created after this date"""
+    after: DateTime
+
+    """if true, only include active users, else count all users"""
+    isActive: Boolean = false
+  ): LoginsPayload!
+
+  """Ping various services to determine response time & availability"""
+  ping: PingableServices!
+
+  """All the info about a specific company"""
+  company(
+    """the top level doamin for a company (e.g. parabol.co)"""
+    domain: ID
+
+    """if domain is not provided, the userId that belongs to the company"""
+    userId: ID
+  ): Company
+
+  """Post signup and login metrics to slack"""
+  dailyPulse(
+    """the earliest time to run the query"""
+    after: DateTime!
+
+    """the email that holds the credentials to the channelId"""
+    email: String!
+
+    """the ID of channel to post to"""
+    channelId: ID!
+  ): Boolean
+
+  """Check if this server is alive (an example query)."""
+  pingActionTick: String
+  suCountTiersForUser(
+    """the user for which you want the count of tier membership"""
+    userId: ID!
+  ): UserTiersCount
+  suUserCount(
+    """which tier of org shall we count?"""
+    tier: TierEnum = pro
+  ): Int
+  suProOrgInfo(
+    """should organizations without active users be included?"""
+    includeInactive: Boolean! = false
+  ): [Organization!]
+  suOrgCount(
+    """the minimum number of users within the org to count it"""
+    minOrgSize: Int = 2
+
+    """which tier of org shall we count?"""
+    tier: TierEnum = pro
+  ): Int
+
+  """Dig into a user by providing the email or userId"""
+  user(
+    """the email of the user"""
+    email: String
+
+    """the ID of the user"""
+    userId: ID
+  ): User
+
+  """Dig into many users by providing the userId"""
+  users(
+    """a list of userIds"""
+    userIds: [ID!]!
+  ): [User]!
+
+  """Get the number of signups, optionally broken down by domain"""
+  signups(
+    """only include users whose accounts were created after this date"""
+    after: DateTime
+
+    """if true, only include active users, else count all users"""
+    isActive: Boolean = false
+  ): SignupsPayload!
+}
+
+type LoginsPayload {
+  """the total number of records"""
+  total: Int!
+
+  """The total broken down by email domain"""
+  byDomain: [DomainCountPayload!]!
+}
+
+type DomainCountPayload {
+  """the email domain"""
+  domain: ID!
+
+  """the sum total"""
+  total: Int!
+}
+
+type PingableServices {
+  """
+  Response time for RethinkDB (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  rethinkdb: Int!
+
+  """
+  Response time for Postgres (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  postgres: Int!
+
+  """
+  Response time for Redis (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  redis: Int!
+}
+
+type Mutation {
+  """Updates the user email"""
+  updateEmail(
+    """User current email"""
+    oldEmail: Email!
+
+    """User new email"""
+    newEmail: Email!
+  ): Boolean!
+
+  """broadcast a new feature to the entire userbase"""
+  addNewFeature(
+    """The text of the action button in the snackbar"""
+    actionButtonCopy: String!
+
+    """The description of the new feature"""
+    snackbarMessage: String!
+
+    """The permalink to the blog post describing the new feature"""
+    url: String!
+  ): AddNewFeaturePayload
+
+  """
+  automatically pause users that have been inactive for 30 days. returns the number of users paused
+  """
+  autopauseUsers: Int
+
+  """copies all the records from RethinkDB for a list of organizations"""
+  backupOrganization(orgIds: [ID!]!): String!
+
+  """check equality of a table between rethinkdb and postgres"""
+  checkRethinkPgEquality(
+    """The table name to be compared"""
+    tableName: String!
+
+    """How many errors should be returned"""
+    maxErrors: Int
+
+    """Whether the output should be written to file"""
+    writeToFile: Boolean
+  ): String!
+
+  """a server-side mutation called when a client connects"""
+  connectSocket: User!
+
+  """profile the CPU"""
+  profileCPU: String
+
+  """a server-side mutation called when a client disconnects"""
+  disconnectSocket: DisconnectSocketPayload
+
+  """
+  Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license
+  """
+  draftEnterpriseInvoice(
+    """the org requesting the upgrade"""
+    orgId: ID!
+
+    """The number of users the license grants the organization"""
+    quantity: Int!
+
+    """
+    Email address of billing leader, if different from the org billing leader
+    """
+    email: ID
+
+    """
+    The email address for Accounts Payable. Use only if the invoice will be sent to a non-user!
+    """
+    apEmail: ID
+
+    """the stripe id of the plan in stripe, if not using the default plan"""
+    plan: ID
+  ): DraftEnterpriseInvoicePayload
+
+  """dump the memory heap to a file"""
+  dumpHeap(
+    """must pass true to make it work"""
+    isDangerous: Boolean!
+  ): String
+
+  """add/remove a flag on an org asking them to pay"""
+  flagConversionModal(
+    """true to turn the modal on, false to turn it off"""
+    active: Boolean!
+
+    """the orgId to toggle the flag for"""
+    orgId: ID!
+  ): FlagConversionModalPayload
+
+  """add/remove a flag on a user saying they are over the free tier"""
+  flagOverLimit(
+    """
+    The text body of the over limit message, null to remove the previous value
+    """
+    copy: String = ""
+
+    """the user orgId that went over the limit"""
+    orgId: ID!
+  ): FlagOverLimitPayload
+
+  """hard deletes a user and all its associated objects"""
+  hardDeleteUser(
+    """a userId"""
+    userId: ID
+
+    """the user email"""
+    email: ID
+
+    """the reason why the user wants to delete their account"""
+    reasonText: String
+  ): DeleteUserPayload!
+
+  """
+  Lock/Unlock teams, flagging them as unpaid/paid. Return true if successful
+  """
+  lockTeams(
+    """List of teams to target"""
+    teamIds: [ID]!
+
+    """true to unlock the teams, false to lock"""
+    isPaid: Boolean!
+
+    """The HTML to show if isPaid is false"""
+    message: String
+  ): Boolean!
+
+  """Log in using SAML single sign on (SSO)"""
+  loginSAML(
+    """
+    The querystring provided by the IdP including SAMLResponse and RelayState
+    """
+    queryString: String!
+
+    """The name of the SAML identifier. The slug used in the redirect URL"""
+    samlName: ID!
+  ): LoginSAMLPayload!
+
+  """Enable SAML for domain"""
+  enableSAMLForDomain(
+    """
+    A name to use for the redirect URL. Usually the company name without any spaces
+    """
+    name: ID!
+
+    """
+    a list of domains that the account has control over. usually the part after the @ of their email
+    """
+    domains: [ID!]!
+
+    """
+    A big chunk of XML data containing the redirect URL and X.509 certificate
+    """
+    metadata: String!
+  ): EnableSAMLForDomainPayload!
+
+  """Send a message to all authorised Slack users"""
+  messageAllSlackUsers(
+    """The slack message that will be sent to all Slack users"""
+    message: String!
+  ): MessageAllSlackUsersPayload!
+
+  """Remove Slack integrations for all users"""
+  removeAllSlackAuths: RemoveAllSlackAuthsPayload!
+
+  """schedule upcoming jobs to be run"""
+  runScheduledJobs(
+    """Queue up all jobs that are scheduled to run within this many seconds"""
+    seconds: Int!
+  ): Int
+
+  """
+  Send summary emails of unread notifications to all users who have not been seen within the last 24 hours
+  """
+  sendBatchNotificationEmails: [String]
+
+  """
+  send an email to organizations including all the users that were added in the current billing cycle
+  """
+  sendUpcomingInvoiceEmails: [String]
+
+  """manually set the domain that the organization belongs to"""
+  setOrganizationDomain(
+    """The unique identifier for the organization"""
+    orgId: ID!
+
+    """
+    The top level domain of the company. Usually the part after the "@" in their email address
+    """
+    domain: ID!
+  ): Boolean!
+
+  """When stripe tells us an invoice is ready, create a pretty version"""
+  stripeCreateInvoice(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): Boolean
+
+  """When stripe tells us an invoice payment failed, update it in our DB"""
+  stripeFailPayment(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): StripeFailPaymentPayload
+
+  """
+  When stripe tells us an invoice payment was successful, update it in our DB
+  """
+  stripeSucceedPayment(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): Boolean
+
+  """
+  When stripe tells us a credit card was updated, update the details in our own DB
+  """
+  stripeUpdateCreditCard(
+    """The stripe customer ID, or stripeId"""
+    customerId: ID!
+  ): Boolean
+
+  """When a new invoiceitem is sent from stripe, tag it with metadata"""
+  stripeUpdateInvoiceItem(
+    """The stripe invoice ID"""
+    invoiceItemId: ID!
+  ): Boolean
+
+  """An invice has been sent from stripe, meaning it is finalized"""
+  stripeInvoiceFinalized(
+    """The stripe invoice ID"""
+    invoiceId: ID!
+  ): Boolean
+
+  """
+  add/remove user(s) to/from the LogRocket watchlist so that we start/stop recording their sessions
+  """
+  updateWatchlist(
+    """
+    a list of email addresses of users whose sessions we want to start/stop recording in LogRocket
+    """
+    emails: [String!]
+
+    """
+    add/remove the entire domain to/from the LogRocket watchlist. The part of the email after the @
+    """
+    domain: String
+
+    """true if the user should be added to the watchlist, false if not"""
+    includeInWatchlist: Boolean!
+  ): UpdateWatchlistPayload!
+
+  """
+  Updates Atlassian OAuth tokens that haven't been updated since the date specified in input
+  """
+  updateOAuthRefreshTokens(
+    """Threshold date for `updatedAt` from AtlassianAuth"""
+    updatedBefore: DateTime!
+  ): Int
+}
+
+"""An integration provider that connects via OAuth1.0"""
+type IntegrationProviderOAuth1 implements IntegrationProvider {
+  """The provider's unique identifier"""
+  id: ID!
+
+  """The team that created the provider. "aGhostTeam" if global"""
+  teamId: ID!
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The name of the integration service (GitLab, Mattermost, etc)"""
+  service: IntegrationProviderServiceEnum!
+
+  """The kind of token used by this provider (OAuth2, PAT, Webhook)"""
+  authStrategy: IntegrationProviderAuthStrategyEnum!
+
+  """
+  The scope this provider configuration was created at (globally, org-wide, or by the team)
+  """
+  scope: IntegrationProviderScopeEnum!
+
+  """true if the provider configuration should be used"""
+  isActive: Boolean!
+
+  """The base URL of the OAuth1 server"""
+  serverBaseUrl: URL!
+}
+
+"""An authentication provider configuration"""
+interface IntegrationProvider {
+  """The provider's unique identifier"""
+  id: ID!
+
+  """The team that created the provider. "aGhostTeam" if global"""
+  teamId: ID!
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The name of the integration service (GitLab, Mattermost, etc)"""
+  service: IntegrationProviderServiceEnum!
+
+  """The kind of token used by this provider (OAuth2, PAT, Webhook)"""
+  authStrategy: IntegrationProviderAuthStrategyEnum!
+
+  """
+  The scope this provider configuration was created at (globally, org-wide, or by the team)
+  """
+  scope: IntegrationProviderScopeEnum!
+
+  """true if the provider configuration should be used"""
+  isActive: Boolean!
+}
+
+scalar DateTime
+
+"""The name of the service of the Integration Provider"""
+enum IntegrationProviderServiceEnum {
+  jira
+  github
+  gitlab
+  mattermost
+  jiraServer
+}
+
+"""The kind of token provided by the service"""
+enum IntegrationProviderAuthStrategyEnum {
+  oauth1
+  oauth2
+  pat
+  webhook
+}
+
+"""
+The scope this provider was created on (globally, org-wide, or on the team)
+"""
+enum IntegrationProviderScopeEnum {
+  global
+  org
+  team
+}
+
+scalar URL
+
+"""An integration provider that connects via OAuth2"""
+type IntegrationProviderOAuth2 implements IntegrationProvider {
+  """The provider's unique identifier"""
+  id: ID!
+
+  """The team that created the provider. "aGhostTeam" if global"""
+  teamId: ID!
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The name of the integration service (GitLab, Mattermost, etc)"""
+  service: IntegrationProviderServiceEnum!
+
+  """The kind of token used by this provider (OAuth2, PAT, Webhook)"""
+  authStrategy: IntegrationProviderAuthStrategyEnum!
+
+  """
+  The scope this provider configuration was created at (globally, org-wide, or by the team)
+  """
+  scope: IntegrationProviderScopeEnum!
+
+  """true if the provider configuration should be used"""
+  isActive: Boolean!
+
+  """The base URL of the OAuth2 server"""
+  serverBaseUrl: URL!
+
+  """The OAuth2 client id"""
+  clientId: ID!
+}
+
+"""An integration provider that connects via webhook"""
+type IntegrationProviderWebhook implements IntegrationProvider {
+  """The provider's unique identifier"""
+  id: ID!
+
+  """The team that created the provider. "aGhostTeam" if global"""
+  teamId: ID!
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The name of the integration service (GitLab, Mattermost, etc)"""
+  service: IntegrationProviderServiceEnum!
+
+  """The kind of token used by this provider (OAuth2, PAT, Webhook)"""
+  authStrategy: IntegrationProviderAuthStrategyEnum!
+
+  """
+  The scope this provider configuration was created at (globally, org-wide, or by the team)
+  """
+  scope: IntegrationProviderScopeEnum!
+
+  """true if the provider configuration should be used"""
+  isActive: Boolean!
+
+  """The webhook URL"""
+  webhookUrl: URL!
+}
+
+"""An authentication strategy using Google"""
+type AuthIdentityGoogle implements AuthIdentity {
+  """true if the email address using this strategy is verified, else false"""
+  isEmailVerified: Boolean!
+  type: AuthIdentityTypeEnum!
+
+  """The googleID for this strategy"""
+  id: ID!
+}
+
+"""An authentication strategy to log in to Parabol"""
+interface AuthIdentity {
+  """true if the email address using this strategy is verified, else false"""
+  isEmailVerified: Boolean!
+  type: AuthIdentityTypeEnum!
+}
+
+"""The types of authentication strategies"""
+enum AuthIdentityTypeEnum {
+  LOCAL
+  GOOGLE
+}
+
+"""An authentication strategy using an email & password"""
+type AuthIdentityLocal implements AuthIdentity {
+  """true if the email address using this strategy is verified, else false"""
+  isEmailVerified: Boolean!
+  type: AuthIdentityTypeEnum!
+}
+
+"""The meeting phase where all team members check in one-by-one"""
+type CheckInPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [CheckInStage!]!
+
+  """The checkIn greeting (fun language)"""
+  checkInGreeting: MeetingGreeting!
+
+  """The checkIn question of the week (draft-js format)"""
+  checkInQuestion: String!
+}
+
+interface NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [NewMeetingStage!]!
+}
+
+"""The phase of the meeting"""
+enum NewMeetingPhaseTypeEnum {
+  lobby
+  checkin
+  updates
+  firstcall
+  agendaitems
+  lastcall
+  reflect
+  group
+  vote
+  discuss
+  SUMMARY
+  SCOPE
+  ESTIMATE
+  RESPONSES
+}
+
+"""
+An instance of a meeting phase item. On the client, this usually represents a single view
+"""
+interface NewMeetingStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+}
+
+"""A team meeting history for all previous meetings"""
+interface NewMeeting {
+  """The unique meeting id. shortid."""
+  id: ID!
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime!
+
+  """The id of the user that created the meeting"""
+  createdBy: ID!
+
+  """The user that created the meeting"""
+  createdByUser: User!
+
+  """The timestamp the meeting officially ended"""
+  endedAt: DateTime
+
+  """The location of the facilitator in the meeting"""
+  facilitatorStageId: ID!
+
+  """The userId (or anonymousId) of the most recent facilitator"""
+  facilitatorUserId: ID!
+
+  """The facilitator team member"""
+  facilitator: TeamMember!
+
+  """The team members that were active during the time of the meeting"""
+  meetingMembers: [MeetingMember!]!
+
+  """The auto-incrementing meeting number for the team"""
+  meetingNumber: Int!
+  meetingType: MeetingTypeEnum!
+
+  """The name of the meeting"""
+  name: String!
+
+  """The organization this meeting belongs to"""
+  organization: Organization!
+
+  """
+  The phases the meeting will go through, including all phase-specific state
+  """
+  phases: [NewMeetingPhase!]!
+
+  """true if should show the org the conversion modal, else false"""
+  showConversionModal: Boolean!
+
+  """The time the meeting summary was emailed to the team"""
+  summarySentAt: DateTime
+
+  """foreign key for team"""
+  teamId: ID!
+
+  """The team that ran the meeting"""
+  team: Team!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime
+
+  """The meeting member of the viewer"""
+  viewerMeetingMember: MeetingMember
+}
+
+"""The user account profile"""
+type User {
+  """The userId provided by us"""
+  id: ID!
+  archivedTasks(
+    first: Int!
+
+    """the datetime cursor"""
+    after: DateTime
+
+    """The unique team ID"""
+    teamId: ID!
+  ): TaskConnection
+  archivedTasksCount(
+    """The unique team ID"""
+    teamId: ID!
+  ): Int
+
+  """The assumed company this organizaiton belongs to"""
+  company: Company
+
+  """The timestamp the user was created"""
+  createdAt: DateTime
+
+  """The user email"""
+  email: Email!
+
+  """Any super power given to the user via a super user"""
+  featureFlags: UserFeatureFlags!
+
+  """
+  An array of objects with information about the user's identities.
+        More than one will exists in case accounts are linked
+  """
+  identities: [AuthIdentity]
+
+  """
+  true if the user is not currently being billed for service. removed on every websocket handshake
+  """
+  inactive: Boolean
+  invoiceDetails(
+    """The id of the invoice"""
+    invoiceId: ID!
+  ): Invoice
+  invoices(
+    first: Int!
+
+    """the datetime cursor"""
+    after: DateTime
+
+    """The id of the organization"""
+    orgId: ID!
+  ): InvoiceConnection
+
+  """true if the user is a billing leader on any organization, else false"""
+  isAnyBillingLeader: Boolean!
+
+  """true if the user is currently online"""
+  isConnected: Boolean
+
+  """true if the user is the first to sign up from their domain, else false"""
+  isPatientZero: Boolean!
+
+  """the reason the user account was removed"""
+  reasonRemoved: String
+
+  """true if the user was removed from parabol, else false"""
+  isRemoved: Boolean!
+
+  """true if all user sessions are being recorded in LogRocket, else false"""
+  isWatched: Boolean!
+
+  """the endedAt timestamp of the most recent meeting they were a member of"""
+  lastMetAt: DateTime
+
+  """The number of meetings the user has attended"""
+  meetingCount: Int!
+
+  """
+  The largest number of consecutive months the user has checked into a meeting
+  """
+  monthlyStreakMax: Int!
+
+  """
+  The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment
+  """
+  monthlyStreakCurrent: Int!
+
+  """the most important actions for the user to perform"""
+  suggestedActions: [SuggestedAction!]!
+
+  """the number of times the user clicked pay later"""
+  payLaterClickCount: Int!
+
+  """The timeline of important events for the viewer"""
+  timeline(
+    """the datetime cursor"""
+    after: DateTime
+
+    """the number of timeline events to return"""
+    first: Int!
+  ): TimelineEventConnection!
+
+  """the comments and tasks created from the discussion"""
+  discussion(
+    """The ID of the discussion"""
+    id: ID!
+  ): Discussion
+
+  """the ID of the newest feature, null if the user has dismissed it"""
+  newFeatureId: ID
+
+  """The new feature released by Parabol. null if the user already hid it"""
+  newFeature: NewFeatureBroadcast
+
+  """url of user’s profile picture"""
+  picture: URL!
+
+  """The application-specific name, defaults to email before the tld"""
+  preferredName: String!
+
+  """
+  url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
+  """
+  rasterPicture: URL!
+
+  """
+  The last day the user connected via websocket or navigated to a common area
+  """
+  lastSeenAt: DateTime!
+
+  """
+  The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.
+  """
+  lastSeenAtURLs: [String]
+
+  """
+  The meeting member associated with this user, if a meeting is currently in progress
+  """
+  meetingMember(
+    """The specific meeting ID"""
+    meetingId: ID!
+  ): MeetingMember
+
+  """A previous meeting that the user was in (present or absent)"""
+  meeting(
+    """The meeting ID"""
+    meetingId: ID!
+  ): NewMeeting
+
+  """A previous meeting that the user was in (present or absent)"""
+  newMeeting(
+    """The meeting ID"""
+    meetingId: ID!
+  ): NewMeeting
+
+  """all the notifications for a single user"""
+  notifications(first: Int!, after: DateTime): NotificationConnection!
+
+  """get a single organization"""
+  organization(
+    """the orgId"""
+    orgId: ID!
+  ): Organization
+
+  """The connection between a user and an organization"""
+  organizationUser(
+    """the orgId"""
+    orgId: ID!
+  ): OrganizationUser
+
+  """A single user that is connected to a single organization"""
+  organizationUsers: [OrganizationUser!]!
+
+  """Get the list of all organizations a user belongs to"""
+  organizations: [Organization!]!
+
+  """
+  a string with message stating that the user is over the free tier limit, else null
+  """
+  overLimitCopy: String
+
+  """
+  The reflection groups that are similar to the selected reflection in the Spotlight
+  """
+  similarReflectionGroups(
+    """The id of the selected reflection group in the Spotlight"""
+    reflectionGroupId: ID!
+
+    """Only return reflection groups that match the search query"""
+    searchQuery: String!
+  ): [RetroReflectionGroup!]!
+  tasks(
+    """the number of tasks to return"""
+    first: Int!
+
+    """the datetime cursor"""
+    after: DateTime
+
+    """
+    a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.
+    """
+    userIds: [ID]
+
+    """
+    a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
+    """
+    teamIds: [ID!]
+
+    """true to only return archived tasks; false to return active tasks"""
+    archived: Boolean = false
+
+    """filter tasks by the chosen statuses"""
+    statusFilters: [TaskStatusEnum!]
+
+    """only return tasks which match the given filter query"""
+    filterQuery: String
+
+    """
+    if true, include unassigned tasks. If false, only return assigned tasks
+    """
+    includeUnassigned: Boolean = false
+  ): TaskConnection!
+
+  """A query for a team"""
+  team(
+    """The team ID for the desired team"""
+    teamId: ID!
+  ): Team
+
+  """
+  The invitation sent to the user, even if it was sent before they were a user
+  """
+  teamInvitation(
+    """
+    The meetingId to check for the invitation, if teamId not available (e.g. on a meeting route)
+    """
+    meetingId: ID
+
+    """The teamId to check for the invitation"""
+    teamId: ID
+  ): TeamInvitationPayload!
+
+  """all the teams the user is on that the viewer can see."""
+  teams: [Team!]!
+
+  """The team member associated with this user"""
+  teamMember(
+    """The team the user is on"""
+    teamId: ID!
+
+    """
+    If null, defaults to the team member for this user. Else, will grab the team member. Returns null if not on team.
+    """
+    userId: ID
+  ): TeamMember
+
+  """The highest tier of any org the user belongs to"""
+  tier: TierEnum!
+
+  """all the teams the user is a part of that the viewer can see"""
+  tms: [ID!]!
+
+  """The timestamp the user was last updated"""
+  updatedAt: DateTime
+  userOnTeam(
+    """The other user"""
+    userId: ID!
+  ): User
+}
+
+"""A connection to a list of items."""
+type TaskConnection {
+  """Page info with cursors coerced to ISO8601 dates"""
+  pageInfo: PageInfoDateCursor
+
+  """A list of edges."""
+  edges: [TaskEdge!]!
+}
+
+"""Information about pagination in a connection."""
+type PageInfoDateCursor {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: DateTime
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: DateTime
+}
+
+"""An edge in a connection."""
+type TaskEdge {
+  """The item at the end of the edge"""
+  node: Task!
+  cursor: DateTime
+}
+
+"""A long-term task shared across the team, assigned to a single user """
+type Task implements Threadable {
+  """shortid"""
+  id: ID!
+
+  """The rich text body of the item"""
+  content: String!
+
+  """The timestamp the item was created"""
+  createdAt: DateTime!
+
+  """The userId that created the item"""
+  createdBy: ID!
+
+  """The user that created the item"""
+  createdByUser: User!
+
+  """the replies to this threadable item"""
+  replies: [Threadable!]!
+
+  """
+  The FK of the discussion this task was created in. Null if task was not created in a discussion
+  """
+  discussionId: ID
+
+  """the parent, if this threadable is a reply, else null"""
+  threadParentId: ID
+
+  """the order of this threadable, relative to threadParentId"""
+  threadSortOrder: Float
+
+  """The timestamp the item was updated"""
+  updatedAt: DateTime!
+
+  """The agenda item that the task was created in, if any"""
+  agendaItem: AgendaItem
+
+  """a user-defined due date"""
+  dueDate: DateTime
+
+  """A list of the most recent estimates for the task"""
+  estimates: [TaskEstimate!]!
+
+  """
+  a list of users currently editing the task (fed by a subscription, so queries return null)
+  """
+  editors: [TaskEditorDetails!]!
+
+  """The reference to the single source of truth for this task"""
+  integration: TaskIntegration
+
+  """A hash of the integrated task"""
+  integrationHash: ID
+
+  """the foreign key for the meeting the task was created in"""
+  meetingId: ID
+
+  """the foreign key for the meeting the task was marked as complete"""
+  doneMeetingId: ID
+
+  """the plain text content of the task"""
+  plaintextContent: String!
+
+  """the shared sort order for tasks on the team dash & user dash"""
+  sortOrder: Float!
+
+  """The status of the task"""
+  status: TaskStatusEnum!
+
+  """The tags associated with the task"""
+  tags: [String!]!
+
+  """The id of the team (indexed). Needed for subscribing to archived tasks"""
+  teamId: ID!
+
+  """The team this task belongs to"""
+  team: Team!
+
+  """The first block of the content"""
+  title: String!
+
+  """
+  * The userId, index useful for server-side methods getting all tasks under a user. This can be null if the task is not assigned to anyone.
+  """
+  userId: ID
+
+  """
+  The user the task is assigned to. Null if it is not assigned to anyone.
+  """
+  user: User
+
+  """The owner hovers over the task in their solo update of a checkin"""
+  isHighlighted(
+    """Meeting for which the highlight is checked"""
+    meetingId: ID
+  ): Boolean!
+}
+
+"""An item that can be put in a thread"""
+interface Threadable {
+  """shortid"""
+  id: ID!
+
+  """The rich text body of the item"""
+  content: String!
+
+  """The timestamp the item was created"""
+  createdAt: DateTime!
+
+  """The userId that created the item"""
+  createdBy: ID
+
+  """The user that created the item"""
+  createdByUser: User
+
+  """the replies to this threadable item"""
+  replies: [Threadable!]!
+
+  """
+  The FK of the discussion this task was created in. Null if task was not created in a discussion
+  """
+  discussionId: ID
+
+  """the parent, if this threadable is a reply, else null"""
+  threadParentId: ID
+
+  """the order of this threadable, relative to threadParentId"""
+  threadSortOrder: Float
+
+  """The timestamp the item was updated"""
+  updatedAt: DateTime!
+}
+
+"""A request placeholder that will likely turn into 1 or more tasks"""
+type AgendaItem {
+  """The unique agenda item id teamId::shortid"""
+  id: ID!
+
+  """A list of users currently commenting"""
+  commentors: [CommentorDetails!] @deprecated(reason: "Moved to ThreadConnection. Can remove Jun-01-2021")
+
+  """The body of the agenda item"""
+  content: String!
+
+  """The timestamp the agenda item was created"""
+  createdAt: DateTime
+
+  """true if the agenda item has not been processed or deleted"""
+  isActive: Boolean!
+
+  """True if the agenda item has been pinned"""
+  pinned: Boolean
+
+  """If pinned, this is the unique id of the original agenda item"""
+  pinnedParentId: ID
+
+  """The sort order of the agenda item in the list"""
+  sortOrder: Float!
+
+  """*The team for this agenda item"""
+  teamId: ID!
+
+  """The teamMemberId that created this agenda item"""
+  teamMemberId: ID!
+
+  """The meetingId of the agenda item"""
+  meetingId: ID
+
+  """The timestamp the agenda item was updated"""
+  updatedAt: DateTime
+
+  """The team member that created the agenda item"""
+  teamMember: TeamMember!
+}
+
+"""The user that is commenting"""
+type CommentorDetails {
+  """The userId of the person commenting"""
+  id: ID!
+
+  """The preferred name of the user commenting"""
+  preferredName: String!
+}
+
+"""A member of a team"""
+type TeamMember {
+  """An ID for the teamMember. userId::teamId"""
+  id: ID!
+
+  """All the integrations that the user could possibly use"""
+  allAvailableRepoIntegrations: [RepoIntegration!]!
+
+  """The datetime the team member was created"""
+  createdAt: DateTime!
+
+  """true if the user is a part of the team, false if they no longer are"""
+  isNotRemoved: Boolean
+
+  """Is user a team lead?"""
+  isLead: Boolean!
+
+  """true if the user prefers to not vote during a poker meeting"""
+  isSpectatingPoker: Boolean!
+
+  """
+  the type of drawer that is open in the team dash. Null if the drawer is closed
+  """
+  openDrawer: TeamDrawer
+
+  """The user email"""
+  email: Email!
+
+  """url of user’s profile picture"""
+  picture: URL!
+
+  """true if this team member belongs to the user that queried it"""
+  isSelf: Boolean!
+
+  """
+  The integrations that the team member has authorized. accessible by all
+  """
+  integrations: TeamMemberIntegrations!
+
+  """The meeting specifics for the meeting the team member is currently in"""
+  meetingMember(meetingId: ID!): MeetingMember
+
+  """The name of the assignee"""
+  preferredName: String!
+
+  """The integrations that the user would probably like to use"""
+  repoIntegrations: RepoIntegrationQueryPayload!
+
+  """Tasks owned by the team member"""
+  tasks(
+    first: Int
+
+    """the datetime cursor"""
+    after: DateTime
+  ): TaskConnection
+
+  """The team this team member belongs to"""
+  team: Team
+
+  """foreign key to Team table"""
+  teamId: ID!
+
+  """The user for the team member"""
+  user: User!
+
+  """foreign key to User table"""
+  userId: ID!
+}
+
+"""The suggested repos and projects a user can integrate with"""
+interface RepoIntegration {
+  id: ID!
+  service: IntegrationProviderServiceEnum!
+}
+
+"""The right drawer types available on the team dashboard"""
+enum TeamDrawer {
+  agenda
+  manageTeam
+}
+
+scalar Email
+
+"""All the available integrations available for this team member"""
+type TeamMemberIntegrations {
+  """composite"""
+  id: ID!
+
+  """All things associated with an Atlassian integration for a team member"""
+  atlassian: AtlassianIntegration
+
+  """All things associated with a Jira Server integration for a team member"""
+  jiraServer: JiraServerIntegration!
+
+  """All things associated with a GitHub integration for a team member"""
+  github: GitHubIntegration
+
+  """All things associated with a GitLab integration for a team member"""
+  gitlab: GitLabIntegration!
+
+  """All things associated with a Mattermost integration for a team member"""
+  mattermost: MattermostIntegration!
+
+  """All things associated with a slack integration for a team member"""
+  slack: SlackIntegration
+}
+
+"""The atlassian auth + integration helpers for a specific team member"""
+type AtlassianIntegration {
+  """Composite key in atlassiani:teamId:userId format"""
+  id: ID!
+
+  """true if the auth is valid, else false"""
+  isActive: Boolean!
+
+  """
+  The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user
+  """
+  accessToken: ID
+
+  """*The atlassian account ID"""
+  accountId: ID!
+
+  """The atlassian cloud IDs that the user has granted"""
+  cloudIds: [ID!]!
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """*The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The user that the access token is attached to"""
+  userId: ID!
+
+  """
+  A list of issues coming straight from the jira integration for a specific team member
+  """
+  issues(
+    first: Int = 100
+
+    """the datetime cursor"""
+    after: DateTime
+
+    """A string of text to search for, or JQL if isJQL is true"""
+    queryString: String
+
+    """true if the queryString is JQL, else false"""
+    isJQL: Boolean!
+    projectKeyFilters: [ID!]
+  ): JiraIssueConnection!
+
+  """
+  A list of projects accessible by this team member. empty if viewer is not the user
+  """
+  projects: [JiraRemoteProject!]!
+
+  """The list of field names that can be used as a """
+  jiraFields(
+    """Filter the fields to single cloudId"""
+    cloudId: ID!
+  ): [String!]!
+
+  """
+  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+  """
+  jiraSearchQueries: [JiraSearchQuery!]!
+}
+
+"""A connection to a list of items."""
+type JiraIssueConnection {
+  """Page info with cursors coerced to ISO8601 dates"""
+  pageInfo: PageInfoDateCursor
+
+  """A list of edges."""
+  edges: [JiraIssueEdge!]!
+
+  """An error with the connection, if any"""
+  error: StandardMutationError
+}
+
+"""An edge in a connection."""
+type JiraIssueEdge {
+  """The item at the end of the edge"""
+  node: JiraIssue!
+  cursor: DateTime
+}
+
+"""The Jira Issue that comes direct from Jira"""
+type JiraIssue implements TaskIntegration {
+  """GUID cloudId:issueKey"""
+  id: ID!
+
+  """The parabol teamId this issue was fetched for"""
+  teamId: ID!
+
+  """The parabol userId this issue was fetched for"""
+  userId: ID!
+
+  """The ID of the jira cloud where the issue lives"""
+  cloudId: ID!
+
+  """The name of the jira cloud where the issue lives"""
+  cloudName: ID!
+
+  """The url to access the issue"""
+  url: URL!
+
+  """The key of the issue as found in Jira"""
+  issueKey: ID!
+
+  """The key of the project, which is the prefix to the issueKey"""
+  projectKey: ID!
+
+  """The project fetched from jira"""
+  project: JiraRemoteProject
+
+  """The plaintext summary of the jira issue"""
+  summary: String!
+
+  """
+  Field names that exists on the issue and can be used as estimation fields
+  """
+  possibleEstimationFieldNames: [String!]!
+
+  """The stringified ADF of the jira issue description"""
+  description: String!
+
+  """The description converted into raw HTML"""
+  descriptionHTML: String!
+}
+
+interface TaskIntegration {
+  id: ID!
+}
+
+"""A project fetched from Jira in real time"""
+type JiraRemoteProject implements RepoIntegration {
+  id: ID!
+  service: IntegrationProviderServiceEnum!
+
+  """The parabol teamId this issue was fetched for"""
+  teamId: ID!
+
+  """The parabol userId this issue was fetched for"""
+  userId: ID!
+  self: ID!
+
+  """
+  The cloud ID that the project lives on. Does not exist on the Jira object!
+  """
+  cloudId: ID!
+  key: String!
+  name: String!
+  avatar: String!
+  avatarUrls: JiraRemoteAvatarUrls!
+  projectCategory: JiraRemoteProjectCategory!
+  simplified: Boolean!
+  style: String!
+}
+
+"""
+The URLs for avatars. NOTE: If they are custom, an Authorization header is required!
+"""
+type JiraRemoteAvatarUrls {
+  x48: ID!
+  x24: ID!
+  x16: ID!
+  x32: ID!
+}
+
+"""A project category fetched from a JiraRemoteProject"""
+type JiraRemoteProjectCategory {
+  self: String!
+  id: String!
+  name: String!
+  description: String!
+}
+
+type StandardMutationError {
+  """The title of the error"""
+  title: String
+
+  """The full error"""
+  message: String!
+}
+
+"""
+A jira search query including all filters selected when the query was executed
+"""
+type JiraSearchQuery {
+  """shortid"""
+  id: ID!
+
+  """The query string, either simple or JQL depending on the isJQL flag"""
+  queryString: String!
+
+  """true if the queryString is JQL, else false"""
+  isJQL: Boolean!
+
+  """The list of project keys selected as a filter. null if not set"""
+  projectKeyFilters: [ID!]!
+
+  """the time the search query was last used. Used for sorting"""
+  lastUsedAt: DateTime!
+}
+
+"""Jira Server integration data for a given team member"""
+type JiraServerIntegration {
+  """The OAuth1 Authorization for this team member"""
+  auth: TeamMemberIntegrationAuthOAuth1
+
+  """The non-global providers shared with the team or organization"""
+  sharedProviders: [IntegrationProviderOAuth1!]!
+
+  """
+  A list of projects accessible by this team member. empty if viewer is not the user
+  """
+  projects: [JiraServerRemoteProject!]!
+}
+
+"""An integration token that connects via OAuth1"""
+type TeamMemberIntegrationAuthOAuth1 implements TeamMemberIntegrationAuth {
+  """The token's unique identifier"""
+  id: ID!
+
+  """The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The GQL GUID of the DB providerId foreign key"""
+  providerId: ID!
+
+  """
+  The service this token is associated with, denormalized from the provider
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """true if the token configuration should be used"""
+  isActive: Boolean!
+
+  """The provider strategy this token connects to"""
+  provider: IntegrationProviderOAuth1!
+}
+
+"""The auth credentials for a token, specific to a team member"""
+interface TeamMemberIntegrationAuth {
+  """The token's unique identifier"""
+  id: ID!
+
+  """The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The GQL GUID of the DB providerId foreign key"""
+  providerId: ID!
+
+  """
+  The service this token is associated with, denormalized from the provider
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """true if the token configuration should be used"""
+  isActive: Boolean!
+
+  """The provider to connect to"""
+  provider: IntegrationProvider!
+}
+
+"""A project fetched from Jira in real time"""
+type JiraServerRemoteProject implements RepoIntegration {
+  id: ID!
+  service: IntegrationProviderServiceEnum!
+
+  """The parabol teamId this issue was fetched for"""
+  teamId: ID!
+
+  """The parabol userId this issue was fetched for"""
+  userId: ID!
+  name: String!
+  avatar: String!
+  avatarUrls: JiraRemoteAvatarUrls!
+  projectCategory: JiraRemoteProjectCategory!
+}
+
+"""OAuth token for a team member"""
+type GitHubIntegration {
+  """composite key"""
+  id: ID!
+
+  """The access token to github. good forever"""
+  accessToken: ID
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """true if an access token exists, else false"""
+  isActive: Boolean!
+
+  """
+  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+  """
+  githubSearchQueries: [GitHubSearchQuery!]!
+
+  """*The GitHub login used for queries"""
+  login: ID!
+
+  """The comma-separated list of scopes requested from GitHub"""
+  scope: String!
+
+  """*The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The user that the access token is attached to"""
+  userId: ID!
+}
+
+"""
+A GitHub search query including all filters selected when the query was executed
+"""
+type GitHubSearchQuery {
+  """shortid"""
+  id: ID!
+
+  """
+  The query string in GitHub format, including repository filters. e.g. is:issue is:open
+  """
+  queryString: String!
+
+  """the time the search query was last used. Used for sorting"""
+  lastUsedAt: DateTime!
+}
+
+"""Gitlab integration data for a given team member"""
+type GitLabIntegration {
+  """The OAuth2 Authorization for this team member"""
+  auth: TeamMemberIntegrationAuthOAuth2
+
+  """
+  The cloud provider the team member may choose to integrate with. Nullable based on env vars
+  """
+  cloudProvider: IntegrationProviderOAuth2
+
+  """The non-global providers shared with the team or organization"""
+  sharedProviders: [IntegrationProviderOAuth2!]!
+}
+
+"""An integration token that connects via OAuth2"""
+type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
+  """The token's unique identifier"""
+  id: ID!
+
+  """The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The GQL GUID of the DB providerId foreign key"""
+  providerId: ID!
+
+  """
+  The service this token is associated with, denormalized from the provider
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """true if the token configuration should be used"""
+  isActive: Boolean!
+
+  """The provider strategy this token connects to"""
+  provider: IntegrationProviderOAuth2!
+
+  """The token used to connect to the provider"""
+  accessToken: ID!
+
+  """The scopes allowed on the provider"""
+  scopes: String!
+}
+
+"""Integration Auth and shared providers available to the team member"""
+type MattermostIntegration {
+  """The OAuth2 Authorization for this team member"""
+  auth: TeamMemberIntegrationAuthWebhook
+
+  """The non-global providers shared with the team or organization"""
+  sharedProviders: [IntegrationProviderWebhook!]!
+}
+
+"""An integration authorization that connects via Webhook auth strategy"""
+type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
+  """The token's unique identifier"""
+  id: ID!
+
+  """The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was created"""
+  createdAt: DateTime!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The GQL GUID of the DB providerId foreign key"""
+  providerId: ID!
+
+  """
+  The service this token is associated with, denormalized from the provider
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """true if the token configuration should be used"""
+  isActive: Boolean!
+
+  """The provider strategy this token connects to"""
+  provider: IntegrationProviderWebhook!
+}
+
+"""OAuth token for a team member"""
+type SlackIntegration {
+  """shortid"""
+  id: ID!
+
+  """
+  true if the auth is updated & ready to use for all features, else false
+  """
+  isActive: Boolean!
+
+  """the parabol bot user id"""
+  botUserId: ID
+
+  """the parabol bot access token, used as primary communication"""
+  botAccessToken: ID
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """The default channel to assign to new team notifications"""
+  defaultTeamChannelId: String!
+
+  """The id of the team in slack"""
+  slackTeamId: ID
+
+  """The name of the team in slack"""
+  slackTeamName: String
+
+  """The userId in slack"""
+  slackUserId: ID!
+
+  """The name of the user in slack"""
+  slackUserName: String!
+
+  """*The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The id of the user that integrated Slack"""
+  userId: ID!
+
+  """A list of events and the slack channels they get posted to"""
+  notifications: [SlackNotification!]!
+}
+
+"""an event trigger and slack channel to receive it"""
+type SlackNotification {
+  id: ID!
+  event: SlackNotificationEventEnum!
+  eventType: SlackNotificationEventTypeEnum!
+
+  """null if no notification is to be sent"""
+  channelId: ID
+  teamId: ID!
+  userId: ID!
+}
+
+"""The event that triggers a slack notification"""
+enum SlackNotificationEventEnum {
+  meetingStart
+  meetingEnd
+  MEETING_STAGE_TIME_LIMIT_END
+  MEETING_STAGE_TIME_LIMIT_START
+}
+
+"""The type of event for a slack notification"""
+enum SlackNotificationEventTypeEnum {
+  """notification that concerns the whole team"""
+  team
+
+  """notification that concerns a single member on the team"""
+  member
+}
+
+"""All the user details for a specific meeting"""
+interface MeetingMember {
+  """A composite of userId::meetingId"""
+  id: ID!
+
+  """true if present, false if absent, else null"""
+  isCheckedIn: Boolean @deprecated(reason: "Members are checked in when they enter the meeting now & not created beforehand")
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime!
+}
+
+"""The type of meeting"""
+enum MeetingTypeEnum {
+  action
+  retrospective
+  poker
+  teamPrompt
+}
+
+"""The details associated with the possible repo and project integrations"""
+type RepoIntegrationQueryPayload {
+  error: StandardMutationError
+
+  """
+  true if the items returned are a subset of all the possible integration, else false (all possible integrations)
+  """
+  hasMore: Boolean!
+
+  """All the integrations that are likely to be integrated"""
+  items: [RepoIntegration!]
+}
+
+"""A team"""
+type Team {
+  """A shortid for the team"""
+  id: ID!
+
+  """The datetime the team was created"""
+  createdAt: DateTime!
+
+  """The userId that created the team. Non-null at v2.22.0+"""
+  createdBy: ID
+
+  """true if the team was created when the account was created, else false"""
+  isOnboardTeam: Boolean!
+
+  """The type of the last meeting run"""
+  lastMeetingType: MeetingTypeEnum!
+
+  """The HTML message to show if isPaid is false"""
+  lockMessageHTML: String
+
+  """
+  The hash and expiration for a token that allows anyone with it to join the team
+  """
+  massInvitation(
+    """the meetingId to optionally direct them to"""
+    meetingId: ID
+  ): MassInvitation!
+
+  """
+  Integration details that are shared by all team members. Nothing user specific
+  """
+  integrations: TeamIntegrations!
+
+  """
+  true if the underlying org has a validUntil date greater than now. if false, subs do not work
+  """
+  isPaid: Boolean
+
+  """The name of the team"""
+  name: String!
+
+  """The organization to which the team belongs"""
+  orgId: ID!
+
+  """Arbitrary tags that the team uses"""
+  tags: [String]
+
+  """The datetime the team was last updated"""
+  updatedAt: DateTime
+  customPhaseItems: [ReflectPrompt] @deprecated(reason: "Field no longer needs to exist for now")
+
+  """The outstanding invitations to join the team"""
+  teamInvitations: [TeamInvitation!]!
+
+  """true if the viewer is the team lead, else false"""
+  isLead: Boolean!
+
+  """The team-specific settings for running all available types of meetings"""
+  meetingSettings(
+    """the type of meeting for the settings"""
+    meetingType: MeetingTypeEnum!
+  ): TeamMeetingSettings!
+
+  """A query for the scale"""
+  scale(
+    """The scale ID for the desired scale"""
+    scaleId: ID!
+  ): TemplateScale
+
+  """The list of scales this team can use"""
+  scales: [TemplateScale!]!
+
+  """a list of meetings that are currently in progress"""
+  activeMeetings: [NewMeeting!]!
+
+  """The new meeting in progress, if any"""
+  meeting(
+    """The unique meetingId"""
+    meetingId: ID!
+  ): NewMeeting
+
+  """The level of access to features on the parabol site"""
+  tier: TierEnum!
+  organization: Organization!
+
+  """The agenda items for the upcoming or current meeting"""
+  agendaItems: [AgendaItem!]!
+
+  """All of the tasks for this team"""
+  tasks(
+    first: Int
+
+    """the datetime cursor"""
+    after: DateTime
+  ): TaskConnection!
+
+  """All the team members actively associated with the team"""
+  teamMembers(
+    """the field to sort the teamMembers by"""
+    sortBy: String
+  ): [TeamMember!]!
+
+  """true if the team has been archived"""
+  isArchived: Boolean
+}
+
+"""An invitation and expiration"""
+type MassInvitation {
+  """the invitation token"""
+  id: ID!
+
+  """the expiration for the token"""
+  expiration: DateTime!
+  meetingId: ID
+}
+
+"""All the available integrations available for this team member"""
+type TeamIntegrations {
+  """composite"""
+  id: ID!
+
+  """All things associated with an atlassian integration for a team member"""
+  atlassian: AtlassianTeamIntegration!
+}
+
+"""The atlassian integration details shared across an entire team"""
+type AtlassianTeamIntegration {
+  """shortid"""
+  id: ID!
+
+  """The dimensions and their corresponding Jira fields"""
+  jiraDimensionFields: [JiraDimensionField!]!
+}
+
+"""Poker dimensions mapped to their corresponding fields in jira"""
+type JiraDimensionField {
+  id: ID!
+
+  """The atlassian cloud that the field lives in"""
+  cloudId: ID!
+
+  """The name of the associated dimension"""
+  dimensionName: String!
+
+  """The project under the atlassian cloud the field lives in"""
+  projectKey: ID!
+
+  """The ID referring to the field name"""
+  fieldId: ID!
+
+  """The field name in jira that the estimate is pushed to"""
+  fieldName: String!
+
+  """the type of field, e.g. number, string, any"""
+  fieldType: String!
+}
+
+"""
+A team-specific reflection prompt. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
+"""
+type ReflectPrompt {
+  """shortid"""
+  id: ID!
+  createdAt: DateTime!
+
+  """foreign key. use the team field"""
+  teamId: ID!
+
+  """The team that owns this reflectPrompt"""
+  team: Team
+  updatedAt: DateTime!
+
+  """the order of the items in the template"""
+  sortOrder: Float!
+
+  """FK for template"""
+  templateId: ID!
+
+  """The template that this prompt belongs to"""
+  template: ReflectTemplate!
+
+  """
+  The question to answer during the phase of the retrospective (eg What went well?)
+  """
+  question: String!
+
+  """
+  The description to the question for further context. A long version of the question.
+  """
+  description: String!
+
+  """The color used to visually group a phase item."""
+  groupColor: String!
+
+  """
+  The datetime that the prompt was removed. Null if it has not been removed.
+  """
+  removedAt: DateTime
+}
+
+"""The team-specific templates for the reflection prompts"""
+type ReflectTemplate implements MeetingTemplate {
+  """shortid"""
+  id: ID!
+  createdAt: DateTime!
+
+  """True if template can be used, else false"""
+  isActive: Boolean!
+
+  """The time of the meeting the template was last used"""
+  lastUsedAt: DateTime
+
+  """The name of the template"""
+  name: String!
+
+  """
+  *Foreign key. The organization that owns the team that created the template
+  """
+  orgId: ID!
+
+  """Who can see this template"""
+  scope: SharingScopeEnum!
+
+  """*Foreign key. The team this template belongs to"""
+  teamId: ID!
+
+  """The team this template belongs to"""
+  team: Team!
+
+  """The type of the template"""
+  type: String!
+  updatedAt: DateTime!
+
+  """The prompts that are part of this template"""
+  prompts: [ReflectPrompt!]!
+}
+
+"""The scope of a shareable item"""
+enum SharingScopeEnum {
+  TEAM
+  ORGANIZATION
+  PUBLIC
+}
+
+"""An invitation to become a team member"""
+type TeamInvitation {
+  """The unique invitation Id"""
+  id: ID!
+
+  """null if not accepted, else the datetime the invitation was accepted"""
+  acceptedAt: DateTime
+
+  """null if not accepted, else the userId that accepted the invitation"""
+  acceptedBy: ID
+
+  """The datetime the invitation was created"""
+  createdAt: DateTime!
+
+  """The email of the invitee"""
+  email: Email!
+
+  """The datetime the invitation expires. Changes when team is archived."""
+  expiresAt: DateTime!
+
+  """The userId of the person that sent the invitation"""
+  invitedBy: ID!
+
+  """The userId of the person that sent the invitation"""
+  inviter: User!
+
+  """the meetingId that the invite was generated for"""
+  meetingId: ID
+
+  """The team invited to"""
+  teamId: ID!
+
+  """48-byte hex encoded random string"""
+  token: ID!
+}
+
+"""The team settings for a specific type of meeting"""
+interface TeamMeetingSettings {
+  id: ID!
+
+  """The type of meeting these settings apply to"""
+  meetingType: MeetingTypeEnum!
+
+  """The broad phase types that will be addressed during the meeting"""
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """FK"""
+  teamId: ID!
+
+  """The team these settings belong to"""
+  team: Team!
+}
+
+"""A team-specific template scale."""
+type TemplateScale {
+  """shortid"""
+  id: ID!
+  createdAt: DateTime!
+
+  """true if the scale is currently used by the team, else false"""
+  isActive: Boolean!
+
+  """True if this is a starter/default scale; false otherwise"""
+  isStarter: Boolean!
+
+  """
+  The datetime that the scale was removed. Null if it has not been removed.
+  """
+  removedAt: DateTime
+
+  """foreign key. use the team field"""
+  teamId: ID!
+
+  """The team that owns this template scale"""
+  team: Team!
+  updatedAt: DateTime!
+
+  """The title of the scale used in the template"""
+  name: String!
+
+  """The dimensions currently using this scale"""
+  dimensions: [TemplateDimension!]!
+
+  """The values used in this scale"""
+  values: [TemplateScaleValue!]!
+}
+
+"""A team-specific template dimension: e.g., effort, importance etc."""
+type TemplateDimension {
+  """shortid"""
+  id: ID!
+  createdAt: DateTime!
+
+  """true if the dimension is currently used by the team, else false"""
+  isActive: Boolean!
+
+  """
+  The datetime that the dimension was removed. Null if it has not been removed.
+  """
+  removedAt: DateTime
+
+  """foreign key. use the team field"""
+  teamId: ID!
+
+  """The team that owns this dimension"""
+  team: Team!
+  updatedAt: DateTime!
+
+  """the order of the dimensions in the template"""
+  sortOrder: Float!
+
+  """FK for template"""
+  templateId: ID!
+
+  """The template that this dimension belongs to"""
+  template: PokerTemplate!
+
+  """The name of the dimension"""
+  name: String!
+
+  """
+  The description to the dimension name for further context. A long version of the dimension name.
+  """
+  description: String!
+
+  """The scaleId to resolve the selected scale"""
+  scaleId: ID!
+
+  """scale used in this dimension"""
+  selectedScale: TemplateScale!
+}
+
+"""A value for a scale."""
+type TemplateScaleValue {
+  id: ID!
+
+  """The id of the scale this value belongs to"""
+  scaleId: ID!
+
+  """The color used to visually group a scale value"""
+  color: String!
+
+  """The label for this value, e.g., XS, M, L"""
+  label: String!
+
+  """the order of the scale value in this scale"""
+  sortOrder: Int!
+}
+
+"""The pay tier of the team"""
+enum TierEnum {
+  personal
+  pro
+  enterprise
+}
+
+"""An organization"""
+type Organization {
+  """The unique organization ID"""
+  id: ID!
+
+  """
+  The top level domain this organization is linked to, null if only generic emails used
+  """
+  activeDomain: String
+
+  """
+  false if the activeDomain is null or was set automatically via a heuristic, true if set manually
+  """
+  isActiveDomainTouched: Boolean!
+
+  """The datetime the organization was created"""
+  createdAt: DateTime!
+
+  """The safe credit card details"""
+  creditCard: CreditCard
+
+  """The assumed company this organizaiton belongs to"""
+  company: Company
+
+  """true if the viewer is the billing leader for the org"""
+  isBillingLeader: Boolean!
+
+  """The name of the organization"""
+  name: String!
+
+  """The org avatar"""
+  picture: URL
+
+  """all the teams the viewer is on in the organization"""
+  teams: [Team!]!
+
+  """The level of access to features on the parabol site"""
+  tier: TierEnum!
+
+  """THe datetime the current billing cycle ends"""
+  periodEnd: DateTime
+
+  """The datetime the current billing cycle starts"""
+  periodStart: DateTime
+
+  """The total number of retroMeetings given to the team"""
+  retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
+
+  """Number of retro meetings that can be run (if not pro)"""
+  retroMeetingsRemaining: Int! @deprecated(reason: "Unlimited retros for all!")
+
+  """true if should show the org the conversion modal, else false"""
+  showConversionModal: Boolean!
+
+  """The customerId from stripe"""
+  stripeId: ID
+
+  """The subscriptionId from stripe"""
+  stripeSubscriptionId: ID
+
+  """The last upcoming invoice email that was sent, null if never sent"""
+  upcomingInvoiceEmailSentAt: DateTime
+
+  """The datetime the organization was last updated"""
+  updatedAt: DateTime
+  organizationUsers(after: String, first: Int): OrganizationUserConnection!
+
+  """The count of active & inactive users"""
+  orgUserCount: OrgUserCount!
+
+  """The leaders of the org"""
+  billingLeaders: [User!]!
+}
+
+"""A credit card"""
+type CreditCard {
+  """The brand of the credit card, as provided by stripe"""
+  brand: String!
+
+  """The MM/YY string of the expiration date"""
+  expiry: String!
+
+  """The last 4 digits of a credit card"""
+  last4: String!
+}
+
+"""
+A grouping of organizations. Automatically grouped by top level domain of each
+"""
+type Company {
+  """the top level domain"""
+  id: ID!
+
+  """the number of active teams across all organizations"""
+  activeTeamCount: Int!
+
+  """the number of active users across all organizations"""
+  activeUserCount: Int!
+
+  """
+  the last time any team in the organization started a meeting, null if no meetings were ever run
+  """
+  lastMetAt: DateTime
+
+  """
+  the total number of meetings started across all teams on all organizations
+  """
+  meetingCount: Int!
+
+  """
+  the longest monthly streak for meeting at least once per month for any team in the company
+  """
+  monthlyTeamStreakMax: Int!
+
+  """Get the list of all organizations that belong to the company"""
+  organizations: [Organization!]!
+
+  """The highest tier for any organization within the company"""
+  tier: TierEnum!
+
+  """the total number of users across all organizations"""
+  userCount: Int!
+}
+
+"""A connection to a list of items."""
+type OrganizationUserConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [OrganizationUserEdge!]!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""An edge in a connection."""
+type OrganizationUserEdge {
+  """The item at the end of the edge"""
+  node: OrganizationUser!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""organization-specific details about a user"""
+type OrganizationUser {
+  """orgId::userId"""
+  id: ID!
+
+  """
+  true if the user is paused and the orgs are not being billed, else false
+  """
+  inactive: Boolean!
+
+  """the datetime the user first joined the org"""
+  joinedAt: DateTime!
+
+  """
+  The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
+  """
+  newUserUntil: DateTime!
+
+  """FK"""
+  orgId: ID!
+
+  """The user attached to the organization"""
+  organization: Organization!
+
+  """if not a member, the datetime the user was removed from the org"""
+  removedAt: DateTime
+
+  """role of the user in the org"""
+  role: OrgUserRole
+
+  """FK"""
+  userId: ID!
+
+  """The user attached to the organization"""
+  user: User!
+
+  """Their level of access to features on the parabol site"""
+  tier: TierEnum
+}
+
+"""The role of the org user"""
+enum OrgUserRole {
+  BILLING_LEADER
+}
+
+type OrgUserCount {
+  """The number of orgUsers who have an inactive flag"""
+  inactiveUserCount: Int!
+
+  """The number of orgUsers who do not have an inactive flag"""
+  activeUserCount: Int!
+}
+
+"""An estimate for a Task that was voted on and scored in a poker meeting"""
+type TaskEstimate {
+  """The ID of the estimate"""
+  id: ID!
+
+  """The timestamp the estimate was created"""
+  createdAt: DateTime!
+
+  """The source that a change came in through"""
+  changeSource: ChangeSourceEnum!
+
+  """The name of the estimate dimension"""
+  name: String!
+
+  """The human-readable label for the estimate"""
+  label: String!
+
+  """*The taskId that the estimate refers to"""
+  taskId: ID!
+
+  """The userId that added the estimate"""
+  userId: ID!
+
+  """*The meetingId that the estimate occured in, if any"""
+  meetingId: ID
+
+  """The meeting stageId the estimate occurred in, if any"""
+  stageId: ID
+
+  """The discussionId where the estimated was discussed"""
+  discussionId: ID
+
+  """
+  If the task comes from jira, this is the jira field that the estimate refers to
+  """
+  jiraFieldId: ID
+}
+
+"""The source that a change to a record came in through"""
+enum ChangeSourceEnum {
+  meeting
+  task
+  external
+}
+
+type TaskEditorDetails {
+  """The userId of the person editing the task"""
+  userId: ID!
+
+  """The name of the userId editing the task"""
+  preferredName: String!
+}
+
+"""The status of the task"""
+enum TaskStatusEnum {
+  active
+  stuck
+  done
+  future
+}
+
+"""The types of flags that give an individual user super powers"""
+type UserFeatureFlags {
+  """true if spotlight is allowed"""
+  spotlight: Boolean!
+
+  """true if standups is allowed"""
+  standups: Boolean!
+
+  """true if gitlab is allowed"""
+  gitlab: Boolean!
+}
+
+"""A monthly billing invoice for an organization"""
+type Invoice {
+  """A shortid for the invoice"""
+  id: ID!
+
+  """The tier this invoice pays for"""
+  tier: TierEnum!
+
+  """
+  The amount the card will be charged (total + startingBalance with a min value of 0)
+  """
+  amountDue: Float!
+
+  """The datetime the invoice was first generated"""
+  createdAt: DateTime!
+
+  """The discount coupon information from Stripe, if any discount applied"""
+  coupon: Coupon
+
+  """The total amount for the invoice (in USD)"""
+  total: Float!
+
+  """The emails the invoice was sent to"""
+  billingLeaderEmails: [Email!]!
+
+  """the card used to pay the invoice"""
+  creditCard: CreditCard
+
+  """The timestamp for the end of the billing cycle"""
+  endAt: DateTime!
+
+  """The date the invoice was created"""
+  invoiceDate: DateTime!
+
+  """An invoice line item for previous month adjustments"""
+  lines: [InvoiceLineItem!]!
+
+  """The details that comprise the charges for next month"""
+  nextPeriodCharges: NextPeriodCharges!
+
+  """*The organization id to charge"""
+  orgId: ID!
+
+  """The persisted name of the org as it was when invoiced"""
+  orgName: String!
+
+  """the datetime the invoice was successfully paid"""
+  paidAt: DateTime
+
+  """The URL to pay via stripe if payment was not collected in app"""
+  payUrl: String
+
+  """The picture of the organization"""
+  picture: URL
+
+  """The timestamp for the beginning of the billing cycle"""
+  startAt: DateTime!
+
+  """The balance on the customer account (in cents)"""
+  startingBalance: Float!
+
+  """
+  the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded
+  """
+  status: InvoiceStatusEnum!
+}
+
+"""The discount coupon from Stripe, if any"""
+type Coupon {
+  """The ID of the discount coupon from Stripe"""
+  id: String!
+
+  """The amount off the invoice, if any"""
+  amountOff: Int
+
+  """The name of the discount coupon from Stripe"""
+  name: String!
+
+  """The percent off the invoice, if any"""
+  percentOff: Int
+}
+
+"""A single line item charge on the invoice"""
+type InvoiceLineItem {
+  """The unique line item id"""
+  id: ID!
+
+  """The amount for the line item (in USD)"""
+  amount: Float!
+
+  """
+  A description of the charge. Only present if we have no idea what the charge is
+  """
+  description: String
+
+  """
+  Array of user activity line items that roll up to total activity (add/leave/pause/unpause)
+  """
+  details: [InvoiceLineItemDetails!]!
+
+  """
+  The total number of days that all org users have been inactive during the billing cycle
+  """
+  quantity: Int
+
+  """The line item type for a monthly billing invoice"""
+  type: InvoiceLineItemEnum!
+}
+
+"""The per-user-action line item details,"""
+type InvoiceLineItemDetails {
+  """The unique detailed line item id"""
+  id: ID!
+
+  """The amount for the line item (in USD)"""
+  amount: Float!
+
+  """The email affected by this line item change"""
+  email: Email!
+
+  """
+  End of the event. Only present if a pause action gets matched up with an unpause action
+  """
+  endAt: DateTime
+
+  """The parent line item id"""
+  parentId: ID!
+
+  """The timestamp for the beginning of the period of no charge"""
+  startAt: DateTime
+}
+
+"""A big picture line item"""
+enum InvoiceLineItemEnum {
+  ADDED_USERS
+  INACTIVITY_ADJUSTMENTS
+  OTHER_ADJUSTMENTS
+  REMOVED_USERS
+}
+
+"""A single line item for the charges for next month"""
+type NextPeriodCharges {
+  """The amount for the line item (in USD)"""
+  amount: Float!
+
+  """The datetime the next period will end"""
+  nextPeriodEnd: DateTime!
+
+  """
+  The total number of days that all org users have been inactive during the billing cycle
+  """
+  quantity: Int!
+
+  """
+  The per-seat monthly price of the subscription (in dollars), null if invoice is not per-seat
+  """
+  unitPrice: Float
+
+  """"year" if enterprise, else "month" for pro"""
+  interval: String
+}
+
+"""The payment status of the invoice"""
+enum InvoiceStatusEnum {
+  PENDING
+  PAID
+  FAILED
+  UPCOMING
+}
+
+"""A connection to a list of items."""
+type InvoiceConnection {
+  """Page info with cursors coerced to ISO8601 dates"""
+  pageInfo: PageInfoDateCursor
+
+  """A list of edges."""
+  edges: [InvoiceEdge!]!
+}
+
+"""An edge in a connection."""
+type InvoiceEdge {
+  """The item at the end of the edge"""
+  node: Invoice!
+  cursor: DateTime
+}
+
+"""A past event that is important to the viewer"""
+interface SuggestedAction {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the action was created at"""
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """* The timestamp the action was removed at"""
+  removedAt: DateTime!
+
+  """The specific type of suggested action"""
+  type: SuggestedActionTypeEnum!
+
+  """* The userId this action is for"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+}
+
+"""The specific type of the suggested action"""
+enum SuggestedActionTypeEnum {
+  inviteYourTeam
+  tryTheDemo
+  tryRetroMeeting
+  createNewTeam
+  tryActionMeeting
+}
+
+"""A connection to a list of items."""
+type TimelineEventConnection {
+  """Page info with cursors coerced to ISO8601 dates"""
+  pageInfo: PageInfoDateCursor
+
+  """A list of edges."""
+  edges: [TimelineEventEdge!]!
+}
+
+"""An edge in a connection."""
+type TimelineEventEdge {
+  """The item at the end of the edge"""
+  node: TimelineEvent!
+  cursor: DateTime
+}
+
+"""A past event that is important to the viewer"""
+interface TimelineEvent {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the event was created at"""
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """true if the timeline event is active, false if archived"""
+  isActive: Boolean!
+
+  """
+  The orgId this event is associated with. Null if not traceable to one org
+  """
+  orgId: ID
+
+  """The organization this event is associated with"""
+  organization: Organization
+
+  """the number of times the user has seen this event"""
+  seenCount: Int!
+
+  """
+  The teamId this event is associated with. Null if not traceable to one team
+  """
+  teamId: ID
+
+  """The team that can see this event"""
+  team: Team
+
+  """The specific type of event"""
+  type: TimelineEventEnum!
+
+  """* The userId that can see this event"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+}
+
+"""The specific type of event"""
+enum TimelineEventEnum {
+  retroComplete
+  actionComplete
+  joinedParabol
+  createdTeam
+  POKER_COMPLETE
+}
+
+"""A discussion thread"""
+type Discussion {
+  id: ID!
+  teamId: ID!
+  meetingId: ID!
+
+  """time the thread was created"""
+  createdAt: DateTime!
+
+  """
+  The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId
+  """
+  discussionTopicId: ID!
+
+  """
+  The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue
+  """
+  discussionTopicType: DiscussionTopicTypeEnum!
+
+  """The number of comments contained in the thread"""
+  commentCount: Int!
+
+  """The users writing a comment right now"""
+  commentors: [User!]!
+
+  """The comments & tasks thread in the discussion"""
+  thread(
+    """How many items to show. optional if only comments are desired"""
+    first: Int
+
+    """the incrementing sort order in string format"""
+    after: String
+  ): ThreadableConnection!
+}
+
+"""The topic being discussed"""
+enum DiscussionTopicTypeEnum {
+  agendaItem
+  reflectionGroup
+  task
+  teamPromptResponse
+  githubIssue
+  jiraIssue
+}
+
+"""A connection to a list of items."""
+type ThreadableConnection {
+  """Page info with strings (sortOrder) as cursors"""
+  pageInfo: PageInfo
+
+  """A list of edges."""
+  edges: [ThreadableEdge!]!
+
+  """Any errors that prevented the query from returning the full results"""
+  error: String
+}
+
+"""An edge in a connection."""
+type ThreadableEdge {
+  """The item at the end of the edge"""
+  node: Threadable!
+  cursor: String
+}
+
+"""The latest feature released by Parabol"""
+type NewFeatureBroadcast {
+  id: ID!
+
+  """The text of the action button in the snackbar"""
+  actionButtonCopy: String!
+
+  """The description of the new feature"""
+  snackbarMessage: String!
+
+  """The permalink to the blog post describing the new feature"""
+  url: String!
+}
+
+"""A connection to a list of items."""
+type NotificationConnection {
+  """Page info with cursors coerced to ISO8601 dates"""
+  pageInfo: PageInfoDateCursor
+
+  """A list of edges."""
+  edges: [NotificationEdge!]!
+}
+
+"""An edge in a connection."""
+type NotificationEdge {
+  """The item at the end of the edge"""
+  node: Notification!
+  cursor: DateTime
+}
+
+interface Notification {
+  """A shortid for the notification"""
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """The datetime to activate the notification & send it to the client"""
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """*The userId that should see this notification"""
+  userId: ID!
+}
+
+"""The status of the notification interaction"""
+enum NotificationStatusEnum {
+  UNREAD
+  READ
+  CLICKED
+}
+
+"""The kind of notification"""
+enum NotificationEnum {
+  KICKED_OUT
+  PAYMENT_REJECTED
+  PROMOTE_TO_BILLING_LEADER
+  TEAM_INVITATION
+  TEAM_ARCHIVED
+  TASK_INVOLVES
+  MEETING_STAGE_TIME_LIMIT_END
+}
+
+"""A reflection group created during the group phase of a retrospective"""
+type RetroReflectionGroup {
+  """shortid"""
+  id: ID!
+
+  """A list of users currently commenting"""
+  commentors: [CommentorDetails!] @deprecated(reason: "Moved to ThreadConnection. Can remove Jun-01-2021")
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime!
+
+  """True if the group has not been removed, else false"""
+  isActive: Boolean!
+
+  """The foreign key to link a reflection group to its meeting"""
+  meetingId: ID!
+
+  """The retrospective meeting this reflection was created in"""
+  meeting: RetrospectiveMeeting!
+  prompt: ReflectPrompt!
+
+  """The foreign key to link a reflection group to its prompt. Immutable."""
+  promptId: ID!
+  reflections: [RetroReflection!]!
+
+  """
+  Our auto-suggested title, to be compared to the actual title for analytics
+  """
+  smartTitle: String
+
+  """The sort order of the reflection group"""
+  sortOrder: Float!
+
+  """The team that is running the retro"""
+  team: Team
+
+  """The title of the grouping of the retrospective reflections"""
+  title: String
+
+  """true if a user wrote the title, else false"""
+  titleIsUserDefined: Boolean!
+
+  """The timestamp the meeting was updated at"""
+  updatedAt: DateTime
+
+  """
+  A list of voterIds (userIds). Not available to team to preserve anonymity
+  """
+  voterIds: [ID!]!
+
+  """The number of votes this group has received"""
+  voteCount: Int!
+
+  """The number of votes the viewer has given this group"""
+  viewerVoteCount: Int
+}
+
+"""A reflection created during the reflect phase of a retrospective"""
+type RetroReflection implements Reactable {
+  """shortid"""
+  id: ID!
+
+  """All the reactjis for the given reflection"""
+  reactjis: [Reactji!]!
+
+  """
+  The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
+  """
+  autoReflectionGroupId: ID
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime
+
+  """
+  The userId that created the reflection (or unique Id if not a team member)
+  """
+  creatorId: ID
+
+  """
+  an array of all the socketIds that are currently editing the reflection
+  """
+  editorIds: [ID!]!
+
+  """True if the reflection was not removed, else false"""
+  isActive: Boolean!
+
+  """
+  true if the viewer (userId) is the creator of the retro reflection, else false
+  """
+  isViewerCreator: Boolean!
+
+  """The stringified draft-js content"""
+  content: String!
+
+  """
+  The entities (i.e. nouns) parsed from the content and their respective salience
+  """
+  entities: [GoogleAnalyzedEntity!]!
+
+  """The foreign key to link a reflection to its meeting"""
+  meetingId: ID!
+
+  """The retrospective meeting this reflection was created in"""
+  meeting: RetrospectiveMeeting!
+
+  """The plaintext version of content"""
+  plaintextContent: String!
+
+  """
+  The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.
+  """
+  promptId: ID!
+  prompt: ReflectPrompt!
+
+  """The foreign key to link a reflection to its group"""
+  reflectionGroupId: ID!
+
+  """The group the reflection belongs to, if any"""
+  retroReflectionGroup: RetroReflectionGroup
+
+  """
+  The sort order of the reflection in the group (increments starting from 0)
+  """
+  sortOrder: Float!
+
+  """The team that is running the meeting that contains this reflection"""
+  team: Team!
+
+  """
+  The timestamp the meeting was updated. Used to determine how long it took to write a reflection
+  """
+  updatedAt: DateTime
+}
+
+"""An item that can have reactjis"""
+interface Reactable {
+  """shortid"""
+  id: ID!
+
+  """All the reactjis for the given reflection"""
+  reactjis: [Reactji!]!
+}
+
+"""An aggregate of reactji metadata"""
+type Reactji {
+  """composite of entity:reactjiId"""
+  id: ID!
+
+  """The number of users who have added this reactji"""
+  count: Int!
+
+  """true if the viewer is included in the count, else false"""
+  isViewerReactji: Boolean!
+}
+
+type GoogleAnalyzedEntity {
+  """
+  The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.
+  """
+  lemma: String!
+
+  """
+  The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun.
+  """
+  name: String!
+
+  """
+  The salience of the entity in the provided text. The salience of all entities always sums to 1
+  """
+  salience: Float!
+}
+
+"""The response to a teamInvitation query"""
+type TeamInvitationPayload {
+  """The team invitation, if any"""
+  teamInvitation: TeamInvitation
+
+  """the teamId of the team trying to join"""
+  teamId: ID
+
+  """one of the active meetings trying to join"""
+  meetingId: ID
+}
+
+"""A stage that focuses on a single team member"""
+type CheckInStage implements NewMeetingStage & NewMeetingTeamMemberStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """The meeting member that is the focus for this phase item"""
+  meetingMember: MeetingMember!
+
+  """foreign key. use teamMember"""
+  teamMemberId: ID!
+
+  """The team member that is the focus for this phase item"""
+  teamMember: TeamMember!
+}
+
+"""
+An instance of a meeting phase item. On the client, this usually represents a single view
+"""
+interface NewMeetingTeamMemberStage {
+  """The meeting member that is the focus for this phase item"""
+  meetingMember: MeetingMember!
+
+  """foreign key. use teamMember"""
+  teamMemberId: ID!
+
+  """The team member that is the focus for this phase item"""
+  teamMember: TeamMember!
+}
+
+type MeetingGreeting {
+  """The foreign-language greeting"""
+  content: String!
+
+  """The source language for the greeting"""
+  language: String!
+}
+
+"""The meeting phase where all team members check in one-by-one"""
+type ReflectPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [GenericMeetingStage!]!
+
+  """foreign key. use focusedPrompt"""
+  focusedPromptId: ID
+
+  """the Prompt that the facilitator wants the group to focus on"""
+  focusedPrompt: ReflectPrompt
+
+  """The prompts used during the reflect phase"""
+  reflectPrompts: [ReflectPrompt!]!
+}
+
+"""
+A stage of a meeting that has no extra state. Only used for single-stage phases
+"""
+type GenericMeetingStage implements NewMeetingStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+}
+
+"""The team-specific templates for sprint poker meeting"""
+type PokerTemplate implements MeetingTemplate {
+  """shortid"""
+  id: ID!
+  createdAt: DateTime!
+
+  """True if template can be used, else false"""
+  isActive: Boolean!
+
+  """The time of the meeting the template was last used"""
+  lastUsedAt: DateTime
+
+  """The name of the template"""
+  name: String!
+
+  """
+  *Foreign key. The organization that owns the team that created the template
+  """
+  orgId: ID!
+
+  """Who can see this template"""
+  scope: SharingScopeEnum!
+
+  """*Foreign key. The team this template belongs to"""
+  teamId: ID!
+
+  """The team this template belongs to"""
+  team: Team!
+
+  """The type of the template"""
+  type: String!
+  updatedAt: DateTime!
+
+  """The dimensions that are part of this template"""
+  dimensions: [TemplateDimension!]!
+
+  """A query for the dimension"""
+  dimension(
+    """The dimension ID for the desired dimension"""
+    dimensionId: ID!
+  ): TemplateDimension!
+}
+
+"""
+A meeting template that can be shared across team, orgnization and public
+"""
+interface MeetingTemplate {
+  """shortid"""
+  id: ID!
+  createdAt: DateTime!
+
+  """True if template can be used, else false"""
+  isActive: Boolean!
+
+  """The time of the meeting the template was last used"""
+  lastUsedAt: DateTime
+
+  """The name of the template"""
+  name: String!
+
+  """
+  *Foreign key. The organization that owns the team that created the template
+  """
+  orgId: ID!
+
+  """Who can see this template"""
+  scope: SharingScopeEnum!
+
+  """*Foreign key. The team this template belongs to"""
+  teamId: ID!
+
+  """The team this template belongs to"""
+  team: Team!
+
+  """The type of the template"""
+  type: String!
+  updatedAt: DateTime!
+}
+
+"""
+The meeting phase where all team members discuss the topics with the most votes
+"""
+type DiscussPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [RetroDiscussStage!]!
+}
+
+"""The stage where the team discusses a single theme"""
+type RetroDiscussStage implements NewMeetingStage & DiscussionThreadStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """The ID to find the discussion that goes in the stage"""
+  discussionId: ID!
+
+  """
+  The discussion about the stage or a dummy data when there is no disscussion
+  """
+  discussion: Discussion!
+
+  """foreign key. use reflectionGroup"""
+  reflectionGroupId: ID!
+
+  """the group that is the focal point of the discussion"""
+  reflectionGroup: RetroReflectionGroup!
+
+  """The sort order for reprioritizing discussion topics"""
+  sortOrder: Float!
+}
+
+"""A meeting stage that includes a discussion thread"""
+interface DiscussionThreadStage {
+  """The ID to find the discussion that goes in the stage"""
+  discussionId: ID!
+
+  """The discussion about the stage"""
+  discussion: Discussion!
+}
+
+"""The meeting phase where all team members give updates one-by-one"""
+type UpdatesPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [UpdatesStage!]!
+}
+
+"""A stage that focuses on a single team member"""
+type UpdatesStage implements NewMeetingStage & NewMeetingTeamMemberStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """The meeting member that is the focus for this phase item"""
+  meetingMember: MeetingMember!
+
+  """foreign key. use teamMember"""
+  teamMemberId: ID!
+
+  """The team member that is the focus for this phase item"""
+  teamMember: TeamMember!
+}
+
+"""The stage where the team estimates & discusses a single task"""
+type EstimateStage implements NewMeetingStage & DiscussionThreadStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """The ID to find the discussion that goes in the stage"""
+  discussionId: ID!
+
+  """The discussion about the stage"""
+  discussion: Discussion!
+
+  """The id of the user that added this stage."""
+  creatorUserId: ID!
+
+  """The ID that points to the issue that exists in parabol"""
+  taskId: ID!
+
+  """The field name used by the service for this dimension"""
+  serviceField: ServiceField!
+
+  """The immutable index of the dimensionRef tied to this stage"""
+  dimensionRefIdx: Int!
+
+  """The immutable dimension linked to this stage"""
+  dimensionRef: TemplateDimensionRef!
+
+  """the final score, as defined by the facilitator"""
+  finalScore: String
+
+  """the userIds of the team members hovering the deck"""
+  hoveringUserIds: [ID!]!
+
+  """the users of the team members hovering the deck"""
+  hoveringUsers: [User!]!
+
+  """all the estimates, 1 per user"""
+  scores: [EstimateUserScore!]!
+
+  """
+  The task referenced in the stage, as it exists in Parabol. null if the task was deleted
+  """
+  task: Task
+
+  """
+  true when the participants are still voting and results are hidden. false when votes are revealed
+  """
+  isVoting: Boolean!
+}
+
+"""A field that exists on a 3rd party service"""
+type ServiceField {
+  """The name of the field as provided by the service"""
+  name: String!
+
+  """The field type, to be used for validation and analytics"""
+  type: String!
+}
+
+"""An immutable TemplateDimension"""
+type TemplateDimensionRef {
+  id: ID!
+
+  """the order of the dimensions in the template"""
+  sortOrder: Float!
+
+  """The name of the dimension"""
+  name: String!
+
+  """The md5 hash to resolve the immutable selected scale ref"""
+  scaleRefId: ID!
+
+  """scale used in this dimension"""
+  scale: TemplateScaleRef!
+}
+
+"""An immutable version of TemplateScale to be shared across all users"""
+type TemplateScaleRef {
+  """md5 hash"""
+  id: ID!
+  createdAt: DateTime!
+
+  """The title of the scale used in the template"""
+  name: String!
+
+  """The values used in this scale"""
+  values: [TemplateScaleValue!]!
+}
+
+"""
+The user and number of points they estimated for dimension (where 1 stage has 1 dimension)
+"""
+type EstimateUserScore {
+  """shortid"""
+  id: ID!
+
+  """The stageId"""
+  stageId: ID!
+
+  """The userId that for this score"""
+  userId: ID!
+
+  """The user that for this score"""
+  user: User!
+
+  """
+  The label that was associated with the score at the time of the vote. Note: It may no longer exist on the dimension
+  """
+  label: String!
+}
+
+"""
+The meeting phase where all team members discuss the topics with the most votes
+"""
+type AgendaItemsPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [AgendaItemsStage!]!
+}
+
+"""The stage where the team discusses a single agenda item"""
+type AgendaItemsStage implements NewMeetingStage & DiscussionThreadStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """The ID to find the discussion that goes in the stage"""
+  discussionId: ID!
+
+  """The discussion about the stage"""
+  discussion: Discussion!
+
+  """The id of the agenda item this relates to"""
+  agendaItemId: ID!
+  agendaItem: AgendaItem!
+}
+
+"""
+The meeting phase where each of the team members can respond to prompts
+"""
+type TeamPromptResponsesPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [TeamPromptResponseStage!]!
+}
+
+"""The stage where the single team member responds to a prompt"""
+type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """The ID to find the discussion that goes in the stage"""
+  discussionId: ID!
+
+  """The discussion about the stage"""
+  discussion: Discussion!
+
+  """The response to the prompt"""
+  response: TeamPromptResponse!
+}
+
+"""A response of a single team member in a team prompt"""
+type TeamPromptResponse implements Reactable {
+  """shortid"""
+  id: ID!
+
+  """All the reactjis for the given reflection"""
+  reactjis: [Reactji!]!
+
+  """Id of the user who created the team prompt response"""
+  userId: ID!
+
+  """The user who created the response"""
+  user: User
+
+  """the content of the response"""
+  content: String!
+
+  """the plain text content of the response"""
+  plaintextContent: String!
+
+  """the shared sort order for reponses"""
+  sortOrder: Float!
+
+  """The team this response belongs to"""
+  team: Team!
+}
+
+"""An all-purpose meeting phase with no extra state"""
+type GenericMeetingPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [GenericMeetingStage!]!
+}
+
+"""
+The meeting phase where all team members estimate a the point value of a task
+"""
+type EstimatePhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [EstimateStage!]!
+}
+
+"""A notification sent to a user that was invited to a new team"""
+type NotificationTeamInvitation implements Notification & TeamNotification {
+  """FK"""
+  teamId: ID!
+
+  """FK"""
+  invitationId: ID!
+
+  """The invitation that triggered this notification"""
+  invitation: TeamInvitation!
+  team: Team!
+
+  """A shortid for the notification"""
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """The datetime to activate the notification & send it to the client"""
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """*The userId that should see this notification"""
+  userId: ID!
+}
+
+interface TeamNotification {
+  id: ID
+  type: NotificationEnum
+}
+
+"""
+A notification alerting the user that they have been promoted (to team or org leader)
+"""
+type NotifyPromoteToOrgLeader implements Notification {
+  organization: Organization!
+
+  """A shortid for the notification"""
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """The datetime to activate the notification & send it to the client"""
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """*The userId that should see this notification"""
+  userId: ID!
+}
+
+"""An action meeting"""
+type ActionMeeting implements NewMeeting {
+  """The unique meeting id. shortid."""
+  id: ID!
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime!
+
+  """The id of the user that created the meeting"""
+  createdBy: ID!
+
+  """The user that created the meeting"""
+  createdByUser: User!
+
+  """The timestamp the meeting officially ended"""
+  endedAt: DateTime
+
+  """The location of the facilitator in the meeting"""
+  facilitatorStageId: ID!
+
+  """The userId (or anonymousId) of the most recent facilitator"""
+  facilitatorUserId: ID!
+
+  """The facilitator team member"""
+  facilitator: TeamMember!
+
+  """The team members that were active during the time of the meeting"""
+  meetingMembers: [ActionMeetingMember!]!
+
+  """The auto-incrementing meeting number for the team"""
+  meetingNumber: Int!
+  meetingType: MeetingTypeEnum!
+
+  """The name of the meeting"""
+  name: String!
+
+  """The organization this meeting belongs to"""
+  organization: Organization!
+
+  """
+  The phases the meeting will go through, including all phase-specific state
+  """
+  phases: [NewMeetingPhase!]!
+
+  """true if should show the org the conversion modal, else false"""
+  showConversionModal: Boolean!
+
+  """The time the meeting summary was emailed to the team"""
+  summarySentAt: DateTime
+
+  """foreign key for team"""
+  teamId: ID!
+
+  """The team that ran the meeting"""
+  team: Team!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime
+
+  """The action meeting member of the viewer"""
+  viewerMeetingMember: ActionMeetingMember
+
+  """A single agenda item"""
+  agendaItem(agendaItemId: ID!): AgendaItem
+
+  """The number of agenda items generated in the meeting"""
+  agendaItemCount: Int!
+
+  """All of the agenda items for the meeting"""
+  agendaItems: [AgendaItem!]!
+
+  """The number of comments generated in the meeting"""
+  commentCount: Int!
+
+  """The settings that govern the action meeting"""
+  settings: ActionMeetingSettings!
+
+  """The number of tasks generated in the meeting"""
+  taskCount: Int!
+
+  """The tasks created within the meeting"""
+  tasks: [Task!]!
+}
+
+"""All the meeting specifics for a user in a action meeting"""
+type ActionMeetingMember implements MeetingMember {
+  """A composite of userId::meetingId"""
+  id: ID!
+
+  """true if present, false if absent, else null"""
+  isCheckedIn: Boolean @deprecated(reason: "Members are checked in when they enter the meeting now & not created beforehand")
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime!
+
+  """The tasks marked as done in the meeting"""
+  doneTasks: [Task!]!
+
+  """The tasks assigned to members during the meeting"""
+  tasks: [Task!]!
+}
+
+"""The retro-specific meeting settings"""
+type PokerMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """The type of meeting these settings apply to"""
+  meetingType: MeetingTypeEnum!
+
+  """The broad phase types that will be addressed during the meeting"""
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """FK"""
+  teamId: ID!
+
+  """The team these settings belong to"""
+  team: Team!
+
+  """FK. The template that will be used to start the poker meeting"""
+  selectedTemplateId: ID!
+
+  """The template that will be used to start the Poker meeting"""
+  selectedTemplate: PokerTemplate!
+
+  """The list of templates used to start a Poker meeting"""
+  teamTemplates: [PokerTemplate!]!
+
+  """
+  The list of templates shared across the organization to start a Poker meeting
+  """
+  organizationTemplates(
+    first: Int!
+
+    """The cursor, which is the templateId"""
+    after: ID
+  ): PokerTemplateConnection!
+
+  """
+  The list of templates shared across the organization to start a Poker meeting
+  """
+  publicTemplates(
+    first: Int!
+
+    """The cursor, which is the templateId"""
+    after: ID
+  ): PokerTemplateConnection!
+}
+
+"""A connection to a list of items."""
+type PokerTemplateConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [PokerTemplateEdge!]!
+}
+
+"""An edge in a connection."""
+type PokerTemplateEdge {
+  """The item at the end of the edge"""
+  node: PokerTemplate!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""A retrospective meeting"""
+type RetrospectiveMeeting implements NewMeeting {
+  """The unique meeting id. shortid."""
+  id: ID!
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime!
+
+  """The id of the user that created the meeting"""
+  createdBy: ID!
+
+  """The user that created the meeting"""
+  createdByUser: User!
+
+  """The timestamp the meeting officially ended"""
+  endedAt: DateTime
+
+  """The location of the facilitator in the meeting"""
+  facilitatorStageId: ID!
+
+  """The userId (or anonymousId) of the most recent facilitator"""
+  facilitatorUserId: ID!
+
+  """The facilitator team member"""
+  facilitator: TeamMember!
+
+  """The team members that were active during the time of the meeting"""
+  meetingMembers: [RetrospectiveMeetingMember!]!
+
+  """The auto-incrementing meeting number for the team"""
+  meetingNumber: Int!
+  meetingType: MeetingTypeEnum!
+
+  """The name of the meeting"""
+  name: String!
+
+  """The organization this meeting belongs to"""
+  organization: Organization!
+
+  """
+  The phases the meeting will go through, including all phase-specific state
+  """
+  phases: [NewMeetingPhase!]!
+
+  """true if should show the org the conversion modal, else false"""
+  showConversionModal: Boolean!
+
+  """The time the meeting summary was emailed to the team"""
+  summarySentAt: DateTime
+  teamId: ID!
+
+  """The team that ran the meeting"""
+  team: Team!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime
+
+  """The retrospective meeting member of the viewer"""
+  viewerMeetingMember: RetrospectiveMeetingMember
+
+  """
+  the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
+  """
+  autoGroupThreshold: Float
+
+  """The number of comments generated in the meeting"""
+  commentCount: Int!
+
+  """
+  the number of votes allowed for each participant to cast on a single group
+  """
+  maxVotesPerGroup: Int!
+
+  """
+  the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
+  """
+  nextAutoGroupThreshold: Float
+
+  """The number of reflections generated in the meeting"""
+  reflectionCount: Int!
+
+  """a single reflection group"""
+  reflectionGroup(reflectionGroupId: ID!): RetroReflectionGroup
+
+  """The grouped reflections"""
+  reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
+
+  """The settings that govern the retrospective meeting"""
+  settings: RetrospectiveMeetingSettings!
+
+  """The number of tasks generated in the meeting"""
+  taskCount: Int!
+
+  """The tasks created within the meeting"""
+  tasks: [Task!]!
+
+  """The ID of the template used for the meeting"""
+  templateId: ID!
+
+  """The number of topics generated in the meeting"""
+  topicCount: Int!
+
+  """the total number of votes allowed for each participant"""
+  totalVotes: Int!
+
+  """
+  The sum total of the votes remaining for the meeting members that are present in the meeting
+  """
+  votesRemaining: Int!
+}
+
+"""
+sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
+"""
+enum ReflectionGroupSortEnum {
+  voteCount
+  stageOrder
+}
+
+"""All the meeting specifics for a user in a retro meeting"""
+type RetrospectiveMeetingMember implements MeetingMember {
+  """A composite of userId::meetingId"""
+  id: ID!
+
+  """true if present, false if absent, else null"""
+  isCheckedIn: Boolean @deprecated(reason: "Members are checked in when they enter the meeting now & not created beforehand")
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime!
+
+  """The tasks assigned to members during the meeting"""
+  tasks: [Task!]!
+  votesRemaining: Int!
+}
+
+"""The retro-specific meeting settings"""
+type RetrospectiveMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """The type of meeting these settings apply to"""
+  meetingType: MeetingTypeEnum!
+
+  """The broad phase types that will be addressed during the meeting"""
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """FK"""
+  teamId: ID!
+
+  """The team these settings belong to"""
+  team: Team!
+
+  """
+  The total number of votes each team member receives for the voting phase
+  """
+  totalVotes: Int!
+
+  """
+  The maximum number of votes a team member can vote for a single reflection group
+  """
+  maxVotesPerGroup: Int!
+
+  """FK. The template that will be used to start the retrospective"""
+  selectedTemplateId: ID!
+
+  """The template that will be used to start the retrospective"""
+  selectedTemplate: ReflectTemplate!
+
+  """The list of templates used to start a retrospective"""
+  reflectTemplates: [ReflectTemplate!]!
+
+  """The list of templates used to start a retrospective"""
+  teamTemplates: [ReflectTemplate!]!
+
+  """
+  The list of templates shared across the organization to start a retrospective
+  """
+  organizationTemplates(
+    first: Int!
+
+    """The cursor, which is the templateId"""
+    after: ID
+  ): ReflectTemplateConnection!
+
+  """
+  The list of templates shared across the organization to start a retrospective
+  """
+  publicTemplates(
+    first: Int!
+
+    """The cursor, which is the templateId"""
+    after: ID
+  ): ReflectTemplateConnection!
+}
+
+"""A connection to a list of items."""
+type ReflectTemplateConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ReflectTemplateEdge!]!
+}
+
+"""An edge in a connection."""
+type ReflectTemplateEdge {
+  """The item at the end of the edge"""
+  node: ReflectTemplate!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""a suggestion to invite others to your team"""
+type SuggestedActionInviteYourTeam implements SuggestedAction {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the action was created at"""
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """* The timestamp the action was removed at"""
+  removedAt: DateTime!
+
+  """The specific type of suggested action"""
+  type: SuggestedActionTypeEnum!
+
+  """* The userId this action is for"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+
+  """The teamId that we suggest you should invite people to"""
+  teamId: ID!
+
+  """The team you should invite people to"""
+  team: Team!
+}
+
+"""a suggestion to try a retro with your team"""
+type SuggestedActionTryRetroMeeting implements SuggestedAction {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the action was created at"""
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """* The timestamp the action was removed at"""
+  removedAt: DateTime!
+
+  """The specific type of suggested action"""
+  type: SuggestedActionTypeEnum!
+
+  """* The userId this action is for"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+
+  """fk"""
+  teamId: ID!
+
+  """The team you should run a retro with"""
+  team: Team!
+}
+
+"""a suggestion to try a retro with your team"""
+type SuggestedActionTryActionMeeting implements SuggestedAction {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the action was created at"""
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """* The timestamp the action was removed at"""
+  removedAt: DateTime!
+
+  """The specific type of suggested action"""
+  type: SuggestedActionTypeEnum!
+
+  """* The userId this action is for"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+
+  """fk"""
+  teamId: ID!
+
+  """The team you should run an action meeting with"""
+  team: Team!
+}
+
+"""a suggestion to try a retro with your team"""
+type SuggestedActionCreateNewTeam implements SuggestedAction {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the action was created at"""
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """* The timestamp the action was removed at"""
+  removedAt: DateTime!
+
+  """The specific type of suggested action"""
+  type: SuggestedActionTypeEnum!
+
+  """* The userId this action is for"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+}
+
+"""a suggestion to invite others to your team"""
+type SuggestedActionTryTheDemo implements SuggestedAction {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the action was created at"""
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """* The timestamp the action was removed at"""
+  removedAt: DateTime!
+
+  """The specific type of suggested action"""
+  type: SuggestedActionTypeEnum!
+
+  """* The userId this action is for"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+}
+
+"""An event triggered whenever a team is created"""
+type TimelineEventTeamCreated implements TimelineEvent {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the event was created at"""
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """true if the timeline event is active, false if archived"""
+  isActive: Boolean!
+
+  """The orgId this event is associated with"""
+  orgId: ID!
+
+  """The organization this event is associated with"""
+  organization: Organization
+
+  """the number of times the user has seen this event"""
+  seenCount: Int!
+
+  """
+  The teamId this event is associated with. Null if not traceable to one team
+  """
+  teamId: ID!
+
+  """The team that can see this event"""
+  team: Team!
+
+  """The specific type of event"""
+  type: TimelineEventEnum!
+
+  """* The userId that can see this event"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+}
+
+"""An event for joining the app"""
+type TimelineEventJoinedParabol implements TimelineEvent {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the event was created at"""
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """true if the timeline event is active, false if archived"""
+  isActive: Boolean!
+
+  """
+  The orgId this event is associated with. Null if not traceable to one org
+  """
+  orgId: ID
+
+  """The organization this event is associated with"""
+  organization: Organization
+
+  """the number of times the user has seen this event"""
+  seenCount: Int!
+
+  """
+  The teamId this event is associated with. Null if not traceable to one team
+  """
+  teamId: ID
+
+  """The team that can see this event"""
+  team: Team
+
+  """The specific type of event"""
+  type: TimelineEventEnum!
+
+  """* The userId that can see this event"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+}
+
+"""An event for a completed retro meeting"""
+type TimelineEventCompletedRetroMeeting implements TimelineEvent {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the event was created at"""
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """true if the timeline event is active, false if archived"""
+  isActive: Boolean!
+
+  """The orgId this event is associated with"""
+  orgId: ID!
+
+  """The organization this event is associated with"""
+  organization: Organization
+
+  """the number of times the user has seen this event"""
+  seenCount: Int!
+
+  """The teamId this event is associated with"""
+  teamId: ID!
+
+  """The team that can see this event"""
+  team: Team!
+
+  """The specific type of event"""
+  type: TimelineEventEnum!
+
+  """* The userId that can see this event"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+
+  """The meeting that was completed"""
+  meeting: RetrospectiveMeeting!
+
+  """The meetingId that was completed"""
+  meetingId: ID!
+}
+
+"""An event for a completed action meeting"""
+type TimelineEventCompletedActionMeeting implements TimelineEvent {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the event was created at"""
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """true if the timeline event is active, false if archived"""
+  isActive: Boolean!
+
+  """The orgId this event is associated with"""
+  orgId: ID!
+
+  """The organization this event is associated with"""
+  organization: Organization
+
+  """the number of times the user has seen this event"""
+  seenCount: Int!
+
+  """The teamId this event is associated with"""
+  teamId: ID!
+
+  """The team that can see this event"""
+  team: Team!
+
+  """The specific type of event"""
+  type: TimelineEventEnum!
+
+  """* The userId that can see this event"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+
+  """The meeting that was completed"""
+  meeting: ActionMeeting!
+
+  """The meetingId that was completed, null if legacyMeetingId is present"""
+  meetingId: ID!
+}
+
+"""An event for a completed poker meeting"""
+type TimelineEventPokerComplete implements TimelineEvent {
+  """shortid"""
+  id: ID!
+
+  """* The timestamp the event was created at"""
+  createdAt: DateTime!
+
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
+
+  """true if the timeline event is active, false if archived"""
+  isActive: Boolean!
+
+  """The orgId this event is associated with"""
+  orgId: ID!
+
+  """The organization this event is associated with"""
+  organization: Organization
+
+  """the number of times the user has seen this event"""
+  seenCount: Int!
+
+  """The teamId this event is associated with"""
+  teamId: ID!
+
+  """The team that can see this event"""
+  team: Team!
+
+  """The specific type of event"""
+  type: TimelineEventEnum!
+
+  """* The userId that can see this event"""
+  userId: ID!
+
+  """The user than can see this event"""
+  user: User!
+
+  """The meeting that was completed"""
+  meeting: PokerMeeting!
+
+  """The meetingId that was completed"""
+  meetingId: ID!
+}
+
+"""A Poker meeting"""
+type PokerMeeting implements NewMeeting {
+  """The unique meeting id. shortid."""
+  id: ID!
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime!
+
+  """The id of the user that created the meeting"""
+  createdBy: ID!
+
+  """The user that created the meeting"""
+  createdByUser: User!
+
+  """The timestamp the meeting officially ended"""
+  endedAt: DateTime
+
+  """The location of the facilitator in the meeting"""
+  facilitatorStageId: ID!
+
+  """The userId (or anonymousId) of the most recent facilitator"""
+  facilitatorUserId: ID!
+
+  """The facilitator team member"""
+  facilitator: TeamMember!
+
+  """The team members that were active during the time of the meeting"""
+  meetingMembers: [PokerMeetingMember!]!
+
+  """The auto-incrementing meeting number for the team"""
+  meetingNumber: Int!
+  meetingType: MeetingTypeEnum!
+
+  """The name of the meeting"""
+  name: String!
+
+  """The organization this meeting belongs to"""
+  organization: Organization!
+
+  """
+  The phases the meeting will go through, including all phase-specific state
+  """
+  phases: [NewMeetingPhase!]!
+
+  """true if should show the org the conversion modal, else false"""
+  showConversionModal: Boolean!
+
+  """The time the meeting summary was emailed to the team"""
+  summarySentAt: DateTime
+  teamId: ID!
+
+  """The team that ran the meeting"""
+  team: Team!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime
+
+  """The Poker meeting member of the viewer"""
+  viewerMeetingMember: PokerMeetingMember
+
+  """The number of comments generated in the meeting"""
+  commentCount: Int!
+
+  """The number of stories scored during a meeting"""
+  storyCount: Int!
+
+  """The settings that govern the Poker meeting"""
+  settings: PokerMeetingSettings!
+
+  """A single story created in a Sprint Poker meeting"""
+  story(storyId: ID!): Task
+
+  """
+  The ID of the template used for the meeting. Note the underlying template could have changed!
+  """
+  templateId: ID! @deprecated(reason: "The underlying template could be mutated. Use templateRefId")
+
+  """The ID of the immutable templateRef used for the meeting"""
+  templateRefId: ID!
+}
+
+"""All the meeting specifics for a user in a poker meeting"""
+type PokerMeetingMember implements MeetingMember {
+  """A composite of userId::meetingId"""
+  id: ID!
+
+  """true if present, false if absent, else null"""
+  isCheckedIn: Boolean @deprecated(reason: "Members are checked in when they enter the meeting now & not created beforehand")
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime!
+
+  """
+  true if the user is not voting and does not want their vote to count towards aggregates
+  """
+  isSpectating: Boolean!
+}
+
+"""The action-specific meeting settings"""
+type ActionMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """The type of meeting these settings apply to"""
+  meetingType: MeetingTypeEnum!
+
+  """The broad phase types that will be addressed during the meeting"""
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """FK"""
+  teamId: ID!
+
+  """The team these settings belong to"""
+  team: Team!
+}
+
+"""A team prompt meeting"""
+type TeamPromptMeeting implements NewMeeting {
+  """The unique meeting id. shortid."""
+  id: ID!
+
+  """The timestamp the meeting was created"""
+  createdAt: DateTime!
+
+  """The id of the user that created the meeting"""
+  createdBy: ID!
+
+  """The user that created the meeting"""
+  createdByUser: User!
+
+  """The timestamp the meeting officially ended"""
+  endedAt: DateTime
+
+  """The location of the facilitator in the meeting"""
+  facilitatorStageId: ID!
+
+  """The userId (or anonymousId) of the most recent facilitator"""
+  facilitatorUserId: ID!
+
+  """The facilitator team member"""
+  facilitator: TeamMember!
+
+  """The team members that were active during the time of the meeting"""
+  meetingMembers: [MeetingMember!]!
+
+  """The auto-incrementing meeting number for the team"""
+  meetingNumber: Int!
+  meetingType: MeetingTypeEnum!
+
+  """The name of the meeting"""
+  name: String!
+
+  """The organization this meeting belongs to"""
+  organization: Organization!
+
+  """
+  The phases the meeting will go through, including all phase-specific state
+  """
+  phases: [NewMeetingPhase!]!
+
+  """true if should show the org the conversion modal, else false"""
+  showConversionModal: Boolean!
+
+  """The time the meeting summary was emailed to the team"""
+  summarySentAt: DateTime
+
+  """foreign key for team"""
+  teamId: ID!
+
+  """The team that ran the meeting"""
+  team: Team!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime
+
+  """The team prompt meeting member of the viewer"""
+  viewerMeetingMember: TeamPromptMeetingMember
+
+  """The settings that govern the team prompt meeting"""
+  settings: TeamPromptMeetingSettings!
+
+  """The tasks created within the meeting"""
+  responses: [TeamPromptResponse!]!
+}
+
+"""All the meeting specifics for a user in a team prompt meeting"""
+type TeamPromptMeetingMember implements MeetingMember {
+  """A composite of userId::meetingId"""
+  id: ID!
+
+  """true if present, false if absent, else null"""
+  isCheckedIn: Boolean @deprecated(reason: "Members are checked in when they enter the meeting now & not created beforehand")
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """The last time a meeting was updated (stage completed, finished, etc)"""
+  updatedAt: DateTime!
+}
+
+"""The team prompt specific meeting settings"""
+type TeamPromptMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """The type of meeting these settings apply to"""
+  meetingType: MeetingTypeEnum!
+
+  """The broad phase types that will be addressed during the meeting"""
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """FK"""
+  teamId: ID!
+
+  """The team these settings belong to"""
+  team: Team!
+}
+
+"""A comment on a thread"""
+type Comment implements Reactable & Threadable {
+  """shortid"""
+  id: ID!
+
+  """The rich text body of the item, if inactive, a tombstone text"""
+  content: String!
+
+  """The timestamp the item was created"""
+  createdAt: DateTime!
+
+  """The userId that created the item, null if anonymous"""
+  createdBy: ID
+
+  """The user that created the item, null if anonymous"""
+  createdByUser: User
+
+  """the replies to this threadable item"""
+  replies: [Threadable!]!
+
+  """
+  The FK of the discussion this task was created in. Null if task was not created in a discussion
+  """
+  discussionId: ID
+
+  """the parent, if this threadable is a reply, else null"""
+  threadParentId: ID
+
+  """the order of this threadable, relative to threadParentId"""
+  threadSortOrder: Float
+
+  """The timestamp the item was updated"""
+  updatedAt: DateTime!
+
+  """All the reactjis for the given reflection"""
+  reactjis: [Reactji!]!
+
+  """true if the agenda item has not been processed or deleted"""
+  isActive: Boolean!
+
+  """true if the comment is anonymous, else false"""
+  isAnonymous: Boolean!
+
+  """true if the viewer wrote this comment, else false"""
+  isViewerComment: Boolean!
+}
+
+"""A count of the number of account tiers a user belongs to."""
+type UserTiersCount {
+  """The number of personal orgs the user is active upon"""
+  tierPersonalCount: Int
+
+  """The number of pro orgs the user is active upon"""
+  tierProCount: Int
+
+  """The number of pro orgs the user holds the role of Billing Leader"""
+  tierProBillingLeaderCount: Int
+  user: User
+}
+
+type SignupsPayload {
+  """the total number of signups for the given time range"""
+  total: Int!
+
+  """The total broken down by email domain"""
+  byDomain: [DomainCountPayload!]!
+}
+
+type AddNewFeaturePayload {
+  """the new feature broadcast"""
+  newFeature: NewFeatureBroadcast
+}
+
+type DisconnectSocketPayload {
+  """The user that disconnected"""
+  user: User
+}
+
+type DraftEnterpriseInvoicePayload {
+  error: StandardMutationError
+
+  """The updated organization"""
+  organization: Organization
+}
+
+type FlagConversionModalPayload {
+  error: StandardMutationError
+
+  """the org with the limit added or removed"""
+  org: Organization
+}
+
+type FlagOverLimitPayload {
+  error: StandardMutationError
+
+  """the users with the limit added or removed"""
+  users: [User]
+}
+
+type DeleteUserPayload {
+  error: StandardMutationError
+}
+
+type LoginSAMLPayload {
+  error: StandardMutationError
+
+  """The new JWT"""
+  authToken: ID
+}
+
+"""Return object for EnableSAMLForDomainPayload"""
+union EnableSAMLForDomainPayload = ErrorPayload | EnableSAMLForDomainSuccess
+
+type ErrorPayload {
+  error: StandardMutationError!
+}
+
+type EnableSAMLForDomainSuccess {
+  success: Boolean!
+}
+
+"""Return object for MessageAllSlackUsersPayload"""
+union MessageAllSlackUsersPayload = ErrorPayload | MessageAllSlackUsersSuccess
+
+type MessageAllSlackUsersSuccess {
+  """
+  A list of the Parabol user ids that have been sent a direct message in Slack
+  """
+  messagedUserIds: [ID!]!
+
+  """Slack messages that failed to send"""
+  errors: [MessageSlackUserError!]
+}
+
+"""An error from sending a message to a Slack user"""
+type MessageSlackUserError {
+  userId: ID!
+
+  """The error message received from Slack"""
+  error: String!
+}
+
+"""Return object for RemoveAllSlackAuthsPayload"""
+union RemoveAllSlackAuthsPayload = ErrorPayload | RemoveAllSlackAuthsSuccess
+
+type RemoveAllSlackAuthsSuccess {
+  """Response from removing all Slack auths"""
+  slackAuthRes: String!
+
+  """Response from removing all Slack notifications"""
+  slackNotificationRes: String!
+}
+
+type StripeFailPaymentPayload {
+  error: StandardMutationError
+  organization: Organization
+
+  """The notification to a billing leader stating the payment was rejected"""
+  notification: NotifyPaymentRejected!
+}
+
+"""A notification sent to a user when their payment has been rejected"""
+type NotifyPaymentRejected implements Notification {
+  organization: Organization!
+
+  """A shortid for the notification"""
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """The datetime to activate the notification & send it to the client"""
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """*The userId that should see this notification"""
+  userId: ID!
+}
+
+"""Return object for UpdateWatchlistPayload"""
+union UpdateWatchlistPayload = ErrorPayload | UpdateWatchlistSuccess
+
+type UpdateWatchlistSuccess {
+  """true if the mutation was successfully executed"""
+  success: Boolean
+}

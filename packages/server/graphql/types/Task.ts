@@ -29,6 +29,7 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
+import GitLabServerManager from '../../integrations/gitlab/GitLabServerManager'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
@@ -177,6 +178,29 @@ const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
                 }`
           const githubRequest = getGitHubRequest(info, context, {accessToken})
           const [data, error] = await githubRequest(query)
+          if (error) {
+            sendToSentry(error, {userId: accessUserId})
+          }
+          return data
+        } else if (integration.service === 'gitlab') {
+          const gitlabAuth = await dataLoader
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'gitlab', teamId, userId: viewerId})
+          if (!gitlabAuth?.accessToken) return null
+          const {providerId, accessToken} = gitlabAuth
+          const provider = await dataLoader.get('integrationProviders').load(providerId)
+          if (!provider?.serverBaseUrl) return null
+          const {gid} = integration
+          const query = `
+            query {
+              issue(id: "${gid}"){
+                ...info
+              }
+            }
+          `
+          const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
+          const gitlabRequest = manager.getGitLabRequest(info, context)
+          const [data, error] = await gitlabRequest(query, {})
           if (error) {
             sendToSentry(error, {userId: accessUserId})
           }
