@@ -185,7 +185,7 @@ graphql`
       github {
         ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
       }
-      azuredevops {
+      azureDevOps {
         ...TaskFooterIntegrateMenuViewerAzureDevOpsIntegration @relay(mask: false)
       }
     }
