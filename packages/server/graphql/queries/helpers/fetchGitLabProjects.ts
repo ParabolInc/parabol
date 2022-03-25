@@ -27,7 +27,6 @@ const fetchGitLabRepos = async (
     return []
   }
   const projects = [] as {
-    __typename: '_xGitLabProject'
     id: string
     service: 'gitlab'
     fullPath: string
@@ -38,7 +37,6 @@ const fetchGitLabRepos = async (
     if (!node) return
     const {id, fullPath} = node
     projects.push({
-      __typename: '_xGitLabProject',
       id,
       service: 'gitlab',
       fullPath

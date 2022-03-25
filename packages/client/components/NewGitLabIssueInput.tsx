@@ -130,7 +130,11 @@ const NewGitLabIssueInput = (props: Props) => {
                 }
                 query {
                   # use alias otherwise projects args must be the same as GitLabScopingSearchResults query
-                  allProjects: projects(membership: true) {
+                  allProjects: projects(
+                    membership: true
+                    first: 100
+                    sort: "latest_activity_desc"
+                  ) {
                     edges {
                       node {
                         ... on _xGitLabProject {
