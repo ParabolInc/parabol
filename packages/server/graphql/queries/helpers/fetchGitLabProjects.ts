@@ -5,7 +5,7 @@ import {DataLoaderWorker} from '../../graphql'
 import getProjects from '../../nestedSchema/GitLab/queries/getProjects.graphql'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 
-const fetchGitLabRepos = async (
+const fetchGitLabProjects = async (
   teamId: string,
   userId: string,
   dataLoader: DataLoaderWorker,
@@ -45,4 +45,4 @@ const fetchGitLabRepos = async (
   return projects
 }
 
-export default fetchGitLabRepos
+export default fetchGitLabProjects

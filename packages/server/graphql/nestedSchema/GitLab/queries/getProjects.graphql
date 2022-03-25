@@ -1,5 +1,5 @@
 query getProjects($teamId: String!, $first: Int, $after: String) {
-  projects(membership: true, first: 100, after: $after) {
+  projects(membership: true, first: 100, after: $after, sort: "latest_activity_desc") {
     edges {
       node {
         id
