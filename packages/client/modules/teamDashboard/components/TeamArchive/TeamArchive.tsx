@@ -315,7 +315,7 @@ const TeamArchive = (props: Props) => {
             display: 'inline-block',
             padding: 16,
             position: 'absolute',
-            left: (columnCount * CARD_WIDTH) / 2 + 'px',
+            left: Math.floor((columnCount * CARD_WIDTH) / 2) + 'px',
             transform: 'translateX(-50%)'
           }
         })
