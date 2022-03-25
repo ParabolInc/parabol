@@ -2,11 +2,10 @@ import {GraphQLResolveInfo} from 'graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from './JiraTaskIntegrationManager'
 import GitHubTaskIntegrationManager from './GitHubTaskIntegrationManager'
-import JiraServerTaskIntegrationManager from './JiraServerTaskIntegrationManager'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
-
 import {TaskIntegration} from '../database/types/Task'
+import JiraServerRestManager from './jiraServer/JiraServerRestManager'
 
 export type CreateTaskResponse =
   | {
@@ -45,10 +44,7 @@ export default class TaskIntegrationManagerFactory {
     context: GQLContext,
     info: GraphQLResolveInfo
   ): Promise<
-    | JiraTaskIntegrationManager
-    | GitHubTaskIntegrationManager
-    | JiraServerTaskIntegrationManager
-    | null
+    JiraTaskIntegrationManager | GitHubTaskIntegrationManager | JiraServerRestManager | null
   > {
     if (service === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
@@ -74,7 +70,7 @@ export default class TaskIntegrationManagerFactory {
         return null
       }
 
-      return new JiraServerTaskIntegrationManager(auth, provider as IntegrationProviderJiraServer)
+      return new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
     }
 
     return null

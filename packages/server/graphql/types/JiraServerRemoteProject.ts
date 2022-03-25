@@ -7,6 +7,7 @@ import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
 import RepoIntegration, {repoIntegrationFields} from './RepoIntegration'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 
 const JiraServerRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraServerRemoteProject',
@@ -43,13 +44,7 @@ const JiraServerRemoteProject = new GraphQLObjectType<any, GQLContext>({
           .load({service: 'jiraServer', teamId, userId})
         if (!auth) return defaultJiraProjectAvatar
         const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-        const manager = new JiraServerRestManager(
-          provider.serverBaseUrl!,
-          provider.consumerKey!,
-          provider.consumerSecret!,
-          auth.accessToken!,
-          auth.accessTokenSecret!
-        )
+        const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
         const avatar = await manager.getProjectAvatar(url)
         return avatar || defaultJiraProjectAvatar
       }

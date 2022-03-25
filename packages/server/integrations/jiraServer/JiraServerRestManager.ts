@@ -1,5 +1,12 @@
 import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import splitDraftContent from '~/utils/draftjs/splitDraftContent'
+import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
+import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
+import {ExternalLinks} from '~/types/constEnums'
 
 export interface JiraServerRestProject {
   /// more available fields
@@ -56,19 +63,26 @@ export interface JiraServerIssue {
   }
 }
 
-export default class JiraServerRestManager {
-  serverBaseUrl: string
-  oauth: OAuth
-  token: OAuth.Token
+export default class JiraServerRestManager implements TaskIntegrationManager {
+  public title = 'Jira Server'
+  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
+  private readonly provider: IntegrationProviderJiraServer
+  private readonly serverBaseUrl: string
+  private readonly oauth: OAuth
+  private readonly token: OAuth.Token
 
   constructor(
-    serverBaseUrl: string,
-    consumerKey: string,
-    consumerSecret: string,
-    oauthToken: string,
-    oauthTokenSecret: string
+    auth: IGetTeamMemberIntegrationAuthQueryResult,
+    provider: IntegrationProviderJiraServer
   ) {
+    this.auth = auth
+    this.provider = provider
+
+    const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
+    const {accessToken, accessTokenSecret} = this.auth
+
     this.serverBaseUrl = serverBaseUrl
+
     this.oauth = new OAuth({
       consumer: {
         key: consumerKey,
@@ -80,8 +94,8 @@ export default class JiraServerRestManager {
         crypto.createSign('RSA-SHA1').update(baseString).sign(consumerSecret).toString('base64')
     })
     this.token = {
-      key: oauthToken,
-      secret: oauthTokenSecret
+      key: accessToken!,
+      secret: accessTokenSecret!
     }
   }
 
@@ -193,5 +207,70 @@ export default class JiraServerRestManager {
     const buffer = Buffer.from(arrayBuffer).toString('base64')
     const contentType = imageRes.headers.get('content-type')
     return `data:${contentType};base64,${buffer}`
+  }
+
+  async createTask({
+    rawContentStr,
+    integrationRepoId
+  }: {
+    rawContentStr: string
+    integrationRepoId: string
+  }): Promise<CreateTaskResponse> {
+    const {title: summary, contentState} = splitDraftContent(rawContentStr)
+    // TODO: implement stateToJiraServerFormat
+    const description = contentState.getPlainText()
+
+    const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
+
+    const res = await this.createIssue(repositoryId, summary, description)
+
+    if (res instanceof Error) {
+      return res
+    }
+    const issueId = res.id
+
+    return {
+      integrationHash: JiraServerIssueId.join(this.provider.id, repositoryId, issueId),
+      issueId,
+      integration: {
+        accessUserId: this.auth.userId,
+        service: 'jiraServer',
+        providerId: this.provider.id,
+        issueId,
+        repositoryId
+      }
+    }
+  }
+
+  private makeCreateJiraServerTaskComment(
+    creator: string,
+    assignee: string,
+    teamName: string,
+    teamDashboardUrl: string
+  ) {
+    return `Created by ${creator} for ${assignee}
+    See the dashboard of [${teamName}|${teamDashboardUrl}]
+  
+    *Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]*`
+  }
+
+  async addCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    issueId: string
+  ): Promise<string | Error> {
+    const comment = this.makeCreateJiraServerTaskComment(
+      viewerName,
+      assigneeName,
+      teamName,
+      teamDashboardUrl
+    )
+    const res = await this.addComment(comment, issueId)
+    if (res instanceof Error) {
+      return res
+    }
+    return res.id
   }
 }
