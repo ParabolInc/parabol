@@ -18,8 +18,8 @@ import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import sendToSentry from '../../utils/sendToSentry'
-import JiraServerTaskIntegrationManager from '../../integrations/JiraServerTaskIntegrationManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 
 const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'JiraServerIntegration',
@@ -110,7 +110,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return null
         }
 
-        const integrationManager = new JiraServerTaskIntegrationManager(
+        const integrationManager = new JiraServerRestManager(
           auth,
           provider as IntegrationProviderJiraServer
         )
@@ -119,9 +119,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return null
         }
 
-        const api = integrationManager.getApiManager()
-
-        const issueRes = await api.getIssues()
+        const issueRes = await integrationManager.getIssues()
 
         if (issueRes instanceof Error) {
           sendToSentry(issueRes, {userId, tags: {teamId}})

@@ -1,16 +1,20 @@
-import makeCreateJiraTaskComment from '../utils/makeCreateJiraTaskComment'
+import makeCreateJiraTaskComment from '../../utils/makeCreateJiraTaskComment'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import createJiraTask from '../graphql/mutations/helpers/createJiraTask'
+import createJiraTask from '../../graphql/mutations/helpers/createJiraTask'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
-import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import AtlassianServerManager from '../utils/AtlassianServerManager'
-import {TaskIntegrationManager, CreateTaskResponse} from './TaskIntegrationManagerFactory'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import {TaskIntegrationManager, CreateTaskResponse} from '../TaskIntegrationManagerFactory'
 
-export default class JiraTaskIntegrationManager implements TaskIntegrationManager {
+export default class JiraIntegrationManager
+  extends AtlassianServerManager
+  implements TaskIntegrationManager
+{
   public title = 'Jira'
   private readonly auth: AtlassianAuth
 
   constructor(auth: AtlassianAuth) {
+    super(auth.accessToken)
     this.auth = auth
   }
 
@@ -22,10 +26,8 @@ export default class JiraTaskIntegrationManager implements TaskIntegrationManage
     issueId: string
   ): Promise<string | Error> {
     const {cloudId, issueKey} = JiraIssueId.split(issueId)
-    const {accessToken} = this.auth
     const comment = makeCreateJiraTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
-    const manager = new AtlassianServerManager(accessToken)
-    const res = await manager.addComment(cloudId, issueKey, comment)
+    const res = await this.addComment(cloudId, issueKey, comment)
     if (res instanceof Error) {
       return res
     }

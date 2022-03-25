@@ -28,7 +28,6 @@ declare const __webpack_public_path__: string
 interface Window {
   __ACTION__: {
     atlassian: string
-    logRocket: string | undefined
     github: string
     google: string
     segment: string
