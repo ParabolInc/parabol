@@ -9,6 +9,7 @@ const typeDefs = loadFilesSync(
   path.join(__PROJECT_ROOT__, 'packages/server/graphql/private/typeDefs/*.graphql')
 )
 
+console.log(typeDefs)
 const privateSchema = resolveTypesForMutationPayloads(makeExecutableSchema({typeDefs, resolvers}))
 const fullSchema = mergeSchemas({schemas: [privateSchema, publicSchema]})
 export default fullSchema
