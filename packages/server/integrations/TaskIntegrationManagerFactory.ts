@@ -1,7 +1,7 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
 import JiraTaskIntegrationManager from './JiraTaskIntegrationManager'
-import GitHubTaskIntegrationManager from './GitHubTaskIntegrationManager'
+import GitHubServerManager from './github/GitHubServerManager'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import {TaskIntegration} from '../database/types/Task'
@@ -43,9 +43,7 @@ export default class TaskIntegrationManagerFactory {
     {teamId, userId}: {teamId: string; userId: string},
     context: GQLContext,
     info: GraphQLResolveInfo
-  ): Promise<
-    JiraTaskIntegrationManager | GitHubTaskIntegrationManager | JiraServerRestManager | null
-  > {
+  ): Promise<JiraTaskIntegrationManager | GitHubServerManager | JiraServerRestManager | null> {
     if (service === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
       return auth && new JiraTaskIntegrationManager(auth)
@@ -53,7 +51,7 @@ export default class TaskIntegrationManagerFactory {
 
     if (service === 'github') {
       const auth = await dataLoader.get('githubAuth').load({teamId, userId})
-      return auth && new GitHubTaskIntegrationManager(auth, context, info)
+      return auth && new GitHubServerManager(auth, context, info)
     }
 
     if (service === 'jiraServer') {

@@ -1,16 +1,16 @@
 import {GraphQLResolveInfo} from 'graphql'
-import makeCreateGitHubTaskComment from '../utils/makeCreateGitHubTaskComment'
-import createGitHubTask from '../graphql/mutations/helpers/createGitHubTask'
-import GitHubRepoId from '../../client/shared/gqlIds/GitHubRepoId'
-import GitHubIssueId from '../../client/shared/gqlIds/GitHubIssueId'
-import {GitHubAuth} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
-import {GQLContext} from '../graphql/graphql'
-import getGitHubRequest from '../utils/getGitHubRequest'
-import addComment from '../utils/githubQueries/addComment.graphql'
-import {AddCommentMutation, AddCommentMutationVariables} from '../types/githubTypes'
-import {TaskIntegrationManager, CreateTaskResponse} from './TaskIntegrationManagerFactory'
+import makeCreateGitHubTaskComment from '../../utils/makeCreateGitHubTaskComment'
+import createGitHubTask from '../../graphql/mutations/helpers/createGitHubTask'
+import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
+import GitHubIssueId from '../../../client/shared/gqlIds/GitHubIssueId'
+import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {GQLContext} from '../../graphql/graphql'
+import getGitHubRequest from '../../utils/getGitHubRequest'
+import addComment from '../../utils/githubQueries/addComment.graphql'
+import {AddCommentMutation, AddCommentMutationVariables} from '../../types/githubTypes'
+import {TaskIntegrationManager, CreateTaskResponse} from '../TaskIntegrationManagerFactory'
 
-export default class GitHubTaskIntegrationManager implements TaskIntegrationManager {
+export default class GitHubServerManager implements TaskIntegrationManager {
   public title = 'GitHub'
   private readonly auth: GitHubAuth
   private readonly context: GQLContext
