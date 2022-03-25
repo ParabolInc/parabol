@@ -1,8 +1,16 @@
 import styled from '@emotion/styled'
+import {ClassNames} from '@emotion/core'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
+import {
+  AutoSizer,
+  CellMeasurer,
+  CellMeasurerCache,
+  Grid,
+  InfiniteLoader,
+  ScrollParams
+} from 'react-virtualized'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import getSafeRegex from '~/utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
@@ -184,9 +192,8 @@ const TeamArchive = (props: Props) => {
 
   const {edges} = filteredTasks
   const [columnCount] = useState(getColumnCount)
-  const _onRowsRenderedRef = useRef<
-    ({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void
-  >()
+  const _onRowsRenderedRef =
+    useRef<({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void>()
   const gridRef = useRef<any>(null)
   const oldEdgesRef = useRef<typeof edges>()
   const getIndex = (columnIndex: number, rowIndex: number) => {
@@ -288,71 +295,100 @@ const TeamArchive = (props: Props) => {
     })
   }
 
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false)
+  const onScroll = ({clientHeight, scrollHeight, scrollTop}: ScrollParams) => {
+    if (!isScrolledToBottom && scrollTop + clientHeight >= scrollHeight) {
+      setIsScrolledToBottom(true)
+    }
+  }
+
   return (
-    <>
-      {!returnToTeamId && <UserTasksHeader viewerRef={viewer} />}
-      <Root>
-        {returnToTeamId && (
-          <Header>
-            <TeamArchiveHeader teamId={returnToTeamId} />
-            <Border />
-          </Header>
-        )}
-        <Body>
-          {edges.length ? (
-            <CardGrid>
-              <InfiniteLoader
-                isRowLoaded={isRowLoaded}
-                loadMoreRows={maybeLoadMore}
-                rowCount={MathEnum.MAX_INT}
-              >
-                {({onRowsRendered, registerChild}) => {
-                  _onRowsRenderedRef.current = onRowsRendered
-                  return (
-                    <div style={{flex: '1 1 auto'}}>
-                      <AutoSizer>
-                        {({height, width}) => {
-                          return (
-                            <Grid
-                              cellRenderer={cellRenderer}
-                              columnCount={columnCount}
-                              columnWidth={CARD_WIDTH}
-                              deferredMeasurementCache={cellCache}
-                              estimatedColumnSize={CARD_WIDTH}
-                              estimatedRowSize={182}
-                              height={height}
-                              onRowsRendered={onRowsRendered}
-                              onSectionRendered={onSectionRendered}
-                              ref={(c) => {
-                                gridRef.current = c
-                                registerChild(c)
+    <ClassNames>
+      {({css}) => {
+        const noMoreMessage = css({
+          '::after': {
+            content: `"🎉 That's all folks! There are no further tasks in the archive."`,
+            backgroundColor: '#FFFFFF',
+            border: `1px solid ${PALETTE.SLATE_400}`,
+            borderRadius: 4,
+            fontSize: 14,
+            display: 'inline-block',
+            padding: 16,
+            position: 'absolute',
+            left: (columnCount * CARD_WIDTH) / 2 + 'px',
+            transform: 'translateX(-50%)'
+          }
+        })
+        return (
+          <>
+            {!returnToTeamId && <UserTasksHeader viewerRef={viewer} />}
+            <Root>
+              {returnToTeamId && (
+                <Header>
+                  <TeamArchiveHeader teamId={returnToTeamId} />
+                  <Border />
+                </Header>
+              )}
+              <Body>
+                {edges.length ? (
+                  <CardGrid>
+                    <InfiniteLoader
+                      isRowLoaded={isRowLoaded}
+                      loadMoreRows={maybeLoadMore}
+                      rowCount={MathEnum.MAX_INT}
+                    >
+                      {({onRowsRendered, registerChild}) => {
+                        _onRowsRenderedRef.current = onRowsRendered
+                        return (
+                          <div style={{flex: '1 1 auto'}}>
+                            <AutoSizer>
+                              {({height, width}) => {
+                                return (
+                                  <Grid
+                                    className={!hasNext && isScrolledToBottom ? noMoreMessage : ''}
+                                    cellRenderer={cellRenderer}
+                                    columnCount={columnCount}
+                                    columnWidth={CARD_WIDTH}
+                                    deferredMeasurementCache={cellCache}
+                                    estimatedColumnSize={CARD_WIDTH}
+                                    estimatedRowSize={182}
+                                    height={height}
+                                    onRowsRendered={onRowsRendered}
+                                    onSectionRendered={onSectionRendered}
+                                    ref={(c) => {
+                                      gridRef.current = c
+                                      registerChild(c)
+                                    }}
+                                    rowCount={Math.ceil(edges.length / columnCount)}
+                                    rowHeight={cellCache.rowHeight}
+                                    style={{outline: 'none'}}
+                                    width={width}
+                                    onScroll={onScroll}
+                                  />
+                                )
                               }}
-                              rowCount={Math.ceil(edges.length / columnCount)}
-                              rowHeight={cellCache.rowHeight}
-                              style={{outline: 'none'}}
-                              width={width}
-                            />
-                          )
-                        }}
-                      </AutoSizer>
-                    </div>
-                  )
-                }}
-              </InfiniteLoader>
-            </CardGrid>
-          ) : (
-            <EmptyMsg>
-              <span>
-                {'🤓'}
-                {' Hi there! There are zero archived tasks. '}
-                {'Nothing to see here. How about a fun rally video? '}
-                <LinkSpan>{getRallyLink()}!</LinkSpan>
-              </span>
-            </EmptyMsg>
-          )}
-        </Body>
-      </Root>
-    </>
+                            </AutoSizer>
+                          </div>
+                        )
+                      }}
+                    </InfiniteLoader>
+                  </CardGrid>
+                ) : (
+                  <EmptyMsg>
+                    <span>
+                      {'🤓'}
+                      {' Hi there! There are zero archived tasks. '}
+                      {'Nothing to see here. How about a fun rally video? '}
+                      <LinkSpan>{getRallyLink()}!</LinkSpan>
+                    </span>
+                  </EmptyMsg>
+                )}
+              </Body>
+            </Root>
+          </>
+        )
+      }}
+    </ClassNames>
   )
 }
 
