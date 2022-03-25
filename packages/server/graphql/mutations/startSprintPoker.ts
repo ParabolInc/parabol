@@ -164,7 +164,6 @@ export default {
           })
         )
         .run(),
-      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId)
     ])
     startMattermostMeeting(meetingId, teamId, dataLoader).catch(console.log)

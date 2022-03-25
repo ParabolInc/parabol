@@ -95,7 +95,6 @@ export default {
         .table('MeetingMember')
         .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
         .run(),
-      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId),
       r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
     ])

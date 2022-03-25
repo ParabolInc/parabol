@@ -8,9 +8,6 @@ const terminateSubscription = async (orgId: string) => {
   // flag teams as unpaid
   const [rethinkResult] = await Promise.all([
     r({
-      updateTeam: r.table('Team').getAll(orgId, {index: 'orgId'}).update({
-        isPaid: false
-      }),
       stripeSubscriptionId: r
         .table('Organization')
         .get(orgId)

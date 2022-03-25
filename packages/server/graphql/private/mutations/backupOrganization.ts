@@ -232,7 +232,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
     task: (r.table('Task').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('Task').insert(items)),
-    team: r.db(DESTINATION).table('Team').insert(teams),
     teamInvitation: (r.table('TeamInvitation').getAll(r.args(teamIds), {index: 'teamId'}) as any)
       .coerceTo('array')
       .do((items: RValue) => r.db(DESTINATION).table('TeamInvitation').insert(items)),

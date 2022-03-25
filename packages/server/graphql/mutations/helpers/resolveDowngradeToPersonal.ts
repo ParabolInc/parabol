@@ -21,27 +21,12 @@ const resolveDowngradeToPersonal = async (
 
   await Promise.all([
     r({
-      org: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          tier: 'personal',
-          periodEnd: now,
-          stripeSubscriptionId: null,
-          updatedAt: now
-        }),
-      teamIds: (r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .update(
-          {
-            tier: 'personal',
-            isPaid: true,
-            updatedAt: now
-          },
-          {returnChanges: true}
-        )('changes')('new_val')('id')
-        .default([]) as unknown) as string[]
+      org: r.table('Organization').get(orgId).update({
+        tier: 'personal',
+        periodEnd: now,
+        stripeSubscriptionId: null,
+        updatedAt: now
+      })
     }).run(),
     updateTeamByOrgId(
       {
