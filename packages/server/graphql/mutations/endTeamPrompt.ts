@@ -29,11 +29,9 @@ const endTeamPrompt = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()) as MeetingTeamPrompt | null
+    const meeting = (await dataLoader
+      .get('newMeetings')
+      .load(meetingId)) as MeetingTeamPrompt | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, teamId} = meeting
 
@@ -55,6 +53,7 @@ const endTeamPrompt = {
       )('changes')(0)('new_val')
       .default(null)
       .run()) as unknown as MeetingTeamPrompt
+    meeting.endedAt = now
 
     if (!completedTeamPrompt) {
       return standardError(new Error('Completed team prompt meeting does not exist'), {
