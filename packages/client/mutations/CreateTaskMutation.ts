@@ -60,6 +60,7 @@ graphql`
         ... on _xGitLabIssue {
           id
           iid
+          title
           webPath
         }
       }

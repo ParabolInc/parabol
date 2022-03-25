@@ -14,7 +14,6 @@ const createGitLabTask = async (
   context: GQLContext,
   info: GraphQLResolveInfo,
   dataLoader: DataLoaderWorker
-  // comment?: string
 ) => {
   const {accessToken, providerId} = gitlabAuth
   if (!accessToken) return {error: new Error('Invalid GitLab auth')}
@@ -45,18 +44,7 @@ const createGitLabTask = async (
   if (!issue) {
     return {error: new Error('GitLab create issue failed')}
   }
-
-  const {id: gid} = issue
-  // if (comment) {
-  //   // await gitlabRequest<AddCommentMutation, AddCommentMutationVariables>(addComment, {
-  //   await gitlabRequest(addComment, {
-  //     input: {
-  //       body: comment,
-  //       subjectId: id
-  //     }
-  //   })
-  // }
-  return {gid, providerId}
+  return {gid: issue.id, providerId}
 }
 
 export default createGitLabTask
