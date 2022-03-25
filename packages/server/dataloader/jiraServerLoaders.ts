@@ -5,6 +5,7 @@ import JiraServerRestManager, {
 import RootDataLoader from './RootDataLoader'
 import sendToSentry from '../utils/sendToSentry'
 import JiraServerTaskIntegrationManager from '../integrations/JiraServerTaskIntegrationManager'
+import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 
 export interface JiraServerIssueKey {
   teamId: string
@@ -17,7 +18,7 @@ interface JiraServerIssue {
   id: string
   self: string
   issueKey: string
-  providerId: string
+  providerId: number
   descriptionHTML: string
   summary: string
   description: string | null
@@ -51,13 +52,17 @@ export const jiraServerIssue = (
           if (!auth) {
             return null
           }
+
           const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
 
-          const manager = auth && provider && new JiraServerTaskIntegrationManager(auth, provider)
-
-          if (!manager?.getIssue) {
+          if (!provider) {
             return null
           }
+
+          const manager = new JiraServerTaskIntegrationManager(
+            auth,
+            provider as IntegrationProviderJiraServer
+          )
 
           const issueRes = await manager.getIssue(issueId)
 
@@ -69,10 +74,10 @@ export const jiraServerIssue = (
             id: issueRes.id,
             self: issueRes.self,
             issueKey: issueRes.key,
-            providerId: auth.providerId,
+            providerId: provider.id,
             descriptionHTML: issueRes.renderedFields.description,
             ...issueRes.fields,
-            service: 'jiraServer'
+            service: 'jiraServer' as const
           }
         })
       )

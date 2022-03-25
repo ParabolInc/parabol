@@ -4,7 +4,7 @@ import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
-import {ScheduledJobUnion} from '../graphql/intranetSchema/mutations/runScheduledJobs'
+import {ScheduledJobUnion} from '../graphql/private/mutations/runScheduledJobs'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import ActionMeetingMember from './types/ActionMeetingMember'
@@ -21,6 +21,7 @@ import MeetingRetrospective from './types/MeetingRetrospective'
 import MeetingSettingsAction from './types/MeetingSettingsAction'
 import MeetingSettingsPoker from './types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from './types/MeetingSettingsRetrospective'
+import MeetingSettingsTeamPrompt from './types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
@@ -90,7 +91,11 @@ export type RethinkSchema = {
     index: 'teamMemberId'
   }
   MeetingSettings: {
-    type: MeetingSettingsRetrospective | MeetingSettingsAction | MeetingSettingsPoker
+    type:
+      | MeetingSettingsRetrospective
+      | MeetingSettingsAction
+      | MeetingSettingsPoker
+      | MeetingSettingsTeamPrompt
     index: 'teamId'
   }
   MeetingMember: {
@@ -239,7 +244,7 @@ const getRethink = async () => {
   }
   // this is important because pm2 will restart the process & for whatever reason r isn't always healthy
   await r.waitForHealthy()
-  return r as unknown as ParabolR
+  return (r as unknown) as ParabolR
 }
 
 export default getRethink

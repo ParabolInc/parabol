@@ -1,8 +1,8 @@
-import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
-import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../email/styles'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {ExternalLinks, LocalStorageKey} from '~/types/constEnums'
+import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../email/styles'
 
 const tableStyle = {
   ...emailTableBase,
@@ -71,7 +71,7 @@ const features = [
   {icon: 'feature-owners@3x.png', copy: 'Takeaway tasks with owners'}
 ]
 
-const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
+const makeFeatureRow = (featureIconFile: string, featureCopy: string, idx: number) => {
   const src = `${ExternalLinks.EMAIL_CDN}${featureIconFile}`
   return (
     <tr key={`feature${idx}`}>
@@ -85,7 +85,7 @@ const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
   )
 }
 
-const CreateAccountSection = (props) => {
+const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
   const {isDemo, dataCy} = props
   if (!isDemo) return null
   const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
@@ -144,7 +144,7 @@ const CreateAccountSection = (props) => {
           </table>
         </td>
       </tr>
-      <EmailBorderBottom dataCy={dataCy} />
+      <EmailBorderBottom />
     </>
   )
 }

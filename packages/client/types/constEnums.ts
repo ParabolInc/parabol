@@ -1,3 +1,14 @@
+/*
+  This file was created years ago.
+  Since then, const enums have largely been considered a mistake by Typescript because
+  they don't bundle well & changes to const enums require re-transpiling every single file.
+  Today, we get around this by compiling const enums to enums, which doesn't save as much space
+  But makes life easier in development.
+
+  Before adding a new enum, please consider the following:
+  - Are the values easy to read? If so, a string union might be a better choice
+  - Does the value live on the server? Then get it there (usually via a generated GraphQL type) instead of creating a second source of truth
+*/
 export const enum AppBar {
   HEIGHT = 56
 }
@@ -113,6 +124,7 @@ export const enum ExternalLinks {
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   GETTING_STARTED_SPRINT_POKER = 'https://www.parabol.co/resources/sprint-poker-meetings',
+  GETTING_STARTED_ASYNC_STANDUP = 'https://www.parabol.co/resources/async-standup-meetings',
   INTEGRATIONS_JIRA = 'https://www.parabol.co/integrations/jira',
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
@@ -306,14 +318,6 @@ export const enum SubscriptionChannel {
   MEETING = 'meeting',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization'
-}
-
-export const enum SuggestedActionTypeEnum {
-  inviteYourTeam = 'inviteYourTeam',
-  tryTheDemo = 'tryTheDemo',
-  tryRetroMeeting = 'tryRetroMeeting',
-  createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
 }
 
 export const enum TaskStatus {

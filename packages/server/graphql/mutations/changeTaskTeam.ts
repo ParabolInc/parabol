@@ -1,19 +1,20 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
-import Task from '../../database/types/Task'
 import getRethink from '../../database/rethinkDriver'
+import {RValue} from '../../database/stricterR'
+import Task from '../../database/types/Task'
 import generateUID from '../../generateUID'
+import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
+import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
+import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
-import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
-import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
-import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import isValid from '../isValid'
+import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -130,7 +131,7 @@ export default {
       return !newTeamUserIds.find((newTeamUserId) => newTeamUserId === oldTeamUserId)
     })
     const rawContent = JSON.parse(content)
-    const eqFn = (entity) =>
+    const eqFn = (entity: {type: string; data: {userId?: string}}) =>
       entity.type === 'MENTION' &&
       Boolean(userIdsOnlyOnOldTeam.find((userId) => userId === entity.data.userId))
     const {rawContent: nextRawContent} = removeEntityKeepText(rawContent, eqFn)
@@ -163,7 +164,7 @@ export default {
         .orderBy({index: 'taskIdUpdatedAt'})
         .nth(-1)
         .default(null)
-        .do((taskHistoryRecord) => {
+        .do((taskHistoryRecord: RValue) => {
           // prepopulated cards will not have a history
           return r.branch(
             taskHistoryRecord.ne(null),

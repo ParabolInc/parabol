@@ -7,6 +7,7 @@ import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import {EmailTaskCard_task} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 
 interface Props {
   task: EmailTaskCard_task
@@ -32,7 +33,7 @@ const contentStyle = {
   maxWidth: 188
 } as React.CSSProperties
 
-const statusStyle = (status: string) => ({
+const statusStyle = (status: TaskStatusEnum) => ({
   backgroundColor: taskStatusColors[status],
   borderRadius: '4px',
   width: 30

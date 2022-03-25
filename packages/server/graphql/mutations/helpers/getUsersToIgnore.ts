@@ -1,18 +1,18 @@
-import getRedis from '../../../utils/getRedis'
-import {UserPresence} from '../../intranetSchema/mutations/connectSocket'
+import getRedis, {RedisPipelineResponse} from '../../../utils/getRedis'
+import {UserPresence} from '../../private/mutations/connectSocket'
 
 // finds all the users who are at the same url
 const getUsersToIgnore = async (viewerId: string, teamId: string) => {
   const redis = getRedis()
-  const [lrangeRes, sMembersRes] = await redis
+  const [lrangeRes, sMembersRes] = (await redis
     .multi()
     .lrange(`presence:${viewerId}`, 0, -1)
     .smembers(`team:${teamId}`)
     .exec((execErr) => {
       if (execErr) throw new Error(`Failed to execute redis command: ${execErr}`)
-    })
-  const userPresence = lrangeRes![1]
-  const activeTeamMemberIds = sMembersRes![1]
+    })) as [RedisPipelineResponse<string[]>, RedisPipelineResponse<string[]>]
+  const userPresence = lrangeRes[1]!
+  const activeTeamMemberIds = sMembersRes[1]!
   const parsedUserPresence = userPresence.map((socket) => JSON.parse(socket)) as UserPresence[]
   const userLastSeenAtURLs = parsedUserPresence.map(({lastSeenAtURL}) => lastSeenAtURL)
 
@@ -27,7 +27,7 @@ const getUsersToIgnore = async (viewerId: string, teamId: string) => {
       )
       const isAtSameURL = teamMemberLastSeenAtURLs.find((url) => userLastSeenAtURLs.includes(url))
       if (isAtSameURL && activeTeamMemberIds) {
-        const userId = activeTeamMemberIds[index]
+        const userId = activeTeamMemberIds[index]!
         usersAtSameURL.push(userId)
       }
     })

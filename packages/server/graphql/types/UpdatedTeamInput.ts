@@ -1,11 +1,11 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
 import GraphQLURLType from './GraphQLURLType'
 
 const UpdatedTeamInput = new GraphQLInputObjectType({
   name: 'UpdatedTeamInput',
   fields: () => ({
-    id: {type: GraphQLID},
-    name: {type: GraphQLString, description: 'The name of the team'},
+    id: {type: new GraphQLNonNull(GraphQLID)},
+    name: {type: new GraphQLNonNull(GraphQLString), description: 'The name of the team'},
     picture: {
       type: GraphQLURLType,
       description: 'A link to the team’s profile image.'
@@ -14,8 +14,8 @@ const UpdatedTeamInput = new GraphQLInputObjectType({
 })
 
 export type UpdatedTeamInputType = {
-  id?: string | null
-  name?: string | null
+  id: string
+  name: string
   picture?: string | null
 }
 

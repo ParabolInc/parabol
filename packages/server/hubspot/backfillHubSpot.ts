@@ -1,7 +1,7 @@
 // call with yarn sucrase-node hubspot/backfillHubSpot.ts
 import fetch from 'node-fetch'
-import {getUsersByEmails} from '../postgres/queries/getUsersByEmails'
 import '../../../scripts/webpack/utils/dotenv'
+import {getUsersByEmails} from '../postgres/queries/getUsersByEmails'
 
 const contactKeys = {
   lastMetAt: 'last_met_at',
@@ -16,7 +16,7 @@ const contactKeys = {
   payLaterClickCount: 'pay_later_click_count',
   preferredName: 'parabol_preferred_name',
   tier: 'highest_tier'
-}
+} as const
 
 const normalize = (value?: string | number) => {
   if (typeof value === 'string' && new Date(value).toJSON() === value) {
@@ -34,7 +34,7 @@ const upsertHubspotContact = async (
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
   const body = JSON.stringify({
     properties: Object.keys(propertiesObj).map((key) => ({
-      property: contactKeys[key],
+      property: contactKeys[key as keyof typeof contactKeys],
       value: normalize(propertiesObj[key])
     }))
   })

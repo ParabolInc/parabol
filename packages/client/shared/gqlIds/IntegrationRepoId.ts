@@ -32,7 +32,8 @@ const IntegrationRepoId = {
   },
   split: (id: string) => {
     const parts = id.split(':')
-    return {service: parts[0], providerId: parts[1], repoId: parts[2]}
+    // Assume the input is valid
+    return {service: parts[0]!, providerId: parseInt(parts[1]!, 10), repositoryId: parts[2]!}
   }
 }
 

@@ -54,10 +54,9 @@ export const isUserBillingLeader = async (
   dataLoader: DataLoaderWorker,
   options?: Options
 ) => {
-  const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-  const organizationUser = organizationUsers.find(
-    (organizationUser: OrganizationUser) => organizationUser.orgId === orgId
-  )
+  const organizationUser = await dataLoader
+    .get('organizationUsersByUserIdOrgId')
+    .load({userId, orgId})
   if (options && options.clearCache) {
     dataLoader.get('organizationUsersByUserId').clear(userId)
   }

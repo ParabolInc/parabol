@@ -3,6 +3,7 @@ import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
 import Organization from '../types/Organization'
+import {RValue} from '../../database/stricterR'
 
 export default {
   type: new GraphQLList(new GraphQLNonNull(Organization)),
@@ -27,7 +28,7 @@ export default {
     return r
       .table('Organization')
       .getAll('pro', {index: 'tier'})
-      .merge((organization) => ({
+      .merge((organization: RValue) => ({
         users: r
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
@@ -35,7 +36,7 @@ export default {
           .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
           .count()
       }))
-      .filter((org) => r.branch(includeInactive, true, org('users').ge(1)))
+      .filter((org: RValue) => r.branch(includeInactive, true, org('users').ge(1)))
       .run()
   }
 }

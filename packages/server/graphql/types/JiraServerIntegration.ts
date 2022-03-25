@@ -18,7 +18,8 @@ import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import sendToSentry from '../../utils/sendToSentry'
-import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
+import JiraServerTaskIntegrationManager from '../../integrations/JiraServerTaskIntegrationManager'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 
 const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'JiraServerIntegration',
@@ -95,20 +96,30 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
           return connectionFromTasks([], 0, err)
         }
 
-        const integrationManager = await TaskIntegrationManagerFactory.initManager(
-          dataLoader,
-          'jiraServer',
-          {
-            teamId,
-            userId
-          }
+        const auth = await dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId})
+
+        if (!auth) {
+          return null
+        }
+
+        const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+
+        if (!provider) {
+          return null
+        }
+
+        const integrationManager = new JiraServerTaskIntegrationManager(
+          auth,
+          provider as IntegrationProviderJiraServer
         )
 
         if (!integrationManager) {
           return null
         }
 
-        const api = integrationManager.getApiManager?.()
+        const api = integrationManager.getApiManager()
 
         const issueRes = await api.getIssues()
 
@@ -124,10 +135,11 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
             id: issue.id,
             self: issue.self,
             issueKey: issue.key,
-            providerId: integrationManager.provider?.id,
+            providerId: provider.id,
             descriptionHTML: issue.renderedFields.description,
             ...issue.fields,
-            service: 'jiraServer'
+            service: 'jiraServer',
+            updatedAt: new Date()
           }
         })
 

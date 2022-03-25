@@ -1,18 +1,21 @@
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
-import {CreateTaskResponse, TaskIntegrationManager} from './TaskIntegrationManagerFactory'
 import JiraServerRestManager from './jiraServer/JiraServerRestManager'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {TIntegrationProvider} from '../postgres/queries/getIntegrationProvidersByIds'
+import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
 import {ExternalLinks} from '~/types/constEnums'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
+import {TaskIntegrationManager, CreateTaskResponse} from './TaskIntegrationManagerFactory'
 
 export default class JiraServerTaskIntegrationManager implements TaskIntegrationManager {
   public title = 'Jira Server'
   private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
-  public provider: TIntegrationProvider
+  private readonly provider: IntegrationProviderJiraServer
 
-  constructor(auth: IGetTeamMemberIntegrationAuthQueryResult, provider: TIntegrationProvider) {
+  constructor(
+    auth: IGetTeamMemberIntegrationAuthQueryResult,
+    provider: IntegrationProviderJiraServer
+  ) {
     this.auth = auth
     this.provider = provider
   }
@@ -20,15 +23,12 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
   public getApiManager() {
     const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
     const {accessToken, accessTokenSecret} = this.auth
-    if (!serverBaseUrl || !consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) {
-      throw new Error('Provider is not configured')
-    }
     return new JiraServerRestManager(
-      serverBaseUrl,
-      consumerKey,
-      consumerSecret,
-      accessToken,
-      accessTokenSecret
+      serverBaseUrl!,
+      consumerKey!,
+      consumerSecret!,
+      accessToken!,
+      accessTokenSecret!
     )
   }
 
@@ -39,19 +39,15 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     rawContentStr: string
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
-    const api = this.getApiManager()
+    const manager = this.getApiManager()
 
     const {title: summary, contentState} = splitDraftContent(rawContentStr)
     // TODO: implement stateToJiraServerFormat
     const description = contentState.getPlainText()
 
-    const {repoId, providerId} = IntegrationRepoId.split(integrationRepoId)
+    const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
 
-    if (parseInt(providerId ?? '', 10) !== this.provider.id || !repoId) {
-      throw new Error('Incorrect IntegrationRepoId')
-    }
-
-    const res = await api.createIssue(repoId, summary, description)
+    const res = await manager.createIssue(repositoryId, summary, description)
 
     if (res instanceof Error) {
       return res
@@ -59,18 +55,21 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     const issueId = res.id
 
     return {
-      integrationHash: JiraServerIssueId.join(this.provider.id, repoId, issueId),
+      integrationHash: JiraServerIssueId.join(this.provider.id, repositoryId, issueId),
+      issueId,
       integration: {
         accessUserId: this.auth.userId,
         service: 'jiraServer',
-        providerId: this.provider.id
+        providerId: this.provider.id,
+        issueId,
+        repositoryId
       }
     }
   }
 
   async getIssue(issueId: string) {
-    const api = this.getApiManager()
-    return api.getIssue(issueId)
+    const manager = this.getApiManager()
+    return manager.getIssue(issueId)
   }
 
   private static makeCreateJiraServerTaskComment(
@@ -79,10 +78,7 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     teamName: string,
     teamDashboardUrl: string
   ) {
-    const sanitizedCreator = creator.replace(/#(\d+)/g, '#​\u200b$1')
-    const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#​\u200b$1')
-
-    return `Created by ${sanitizedCreator} for ${sanitizedAssignee}
+    return `Created by ${creator} for ${assignee}
     See the dashboard of [${teamName}|${teamDashboardUrl}]
   
     *Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]*`
@@ -93,16 +89,19 @@ export default class JiraServerTaskIntegrationManager implements TaskIntegration
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string,
-    integrationHash: string
-  ) {
-    const {issueId} = JiraServerIssueId.split(integrationHash)
+    issueId: string
+  ): Promise<string | Error> {
     const comment = JiraServerTaskIntegrationManager.makeCreateJiraServerTaskComment(
       viewerName,
       assigneeName,
       teamName,
       teamDashboardUrl
     )
-    const api = this.getApiManager()
-    return api.addComment(comment, issueId ?? '')
+    const manager = this.getApiManager()
+    const res = await manager.addComment(comment, issueId)
+    if (res instanceof Error) {
+      return res
+    }
+    return res.id
   }
 }

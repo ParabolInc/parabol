@@ -1,3 +1,4 @@
+
 // Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
 // Penalty goes away when debugging.
 require('./webpack/utils/dotenv')
@@ -13,8 +14,8 @@ const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
-// const {generate} = require('@graphql-codegen/cli')
-// const codegenSchema = require('../codegen.json')
+const {generate} = require('@graphql-codegen/cli')
+const codegenSchema = require('../codegen.json')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -24,14 +25,12 @@ const compileToolbox = () => {
   })
 }
 
-const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
-
 const removeArtifacts = async () => {
   const generated = path.join(PROJECT_ROOT, 'packages/client/__generated__')
   const queryMap = path.join(PROJECT_ROOT, 'queryMap.json')
   try {
-    await Promise.all([rm(generated, {recursive: true}), unlink(schemaPath), unlink(queryMap)])
-  } catch (_) {
+    await Promise.all([rm(generated, {recursive: true}), unlink(queryMap)])
+  } catch {
     // probably didn't exist, noop
   }
 }
@@ -44,8 +43,7 @@ const dev = async (maybeInit) => {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
   }
-  // Enable this if you're creating new github schemas
-  // await generate(codegenSchema)
+
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
   const migrateRethinkDB = require('./migrate')()
@@ -64,8 +62,7 @@ const dev = async (maybeInit) => {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
     await require('./compileRelay')()
   }
-  // await compileServers()
-  await Promise.all([clearRedis, migratePG, buildDLL])
+  await Promise.all([clearRedis, migratePG, buildDLL, generate(codegenSchema)])
   redis.disconnect()
 }
 
