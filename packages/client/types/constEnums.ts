@@ -129,6 +129,7 @@ export const enum ExternalLinks {
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
+  INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jiraserver',
   RESOURCES = 'https://www.parabol.co/resources',
   SUPPORT = 'https://www.parabol.co/support',
   TEAM = 'https://www.parabol.co/team/',
