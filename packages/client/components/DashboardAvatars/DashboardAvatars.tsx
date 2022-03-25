@@ -83,7 +83,7 @@ const DashboardAvatars = (props: Props) => {
             </ItemBlock>
           )
         })}
-        {overflowCount > 0 && (
+        {overflowCount > 2 && (
           <ItemBlock>
             <OverflowCount>{`+${overflowCount}`}</OverflowCount>
           </ItemBlock>
