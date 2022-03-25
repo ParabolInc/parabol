@@ -444,7 +444,7 @@ enum IntegrationProviderServiceEnum {
   gitlab
   mattermost
   jiraServer
-  azuredevops
+  azureDevOps
 }
 
 """The kind of token provided by the service"""
