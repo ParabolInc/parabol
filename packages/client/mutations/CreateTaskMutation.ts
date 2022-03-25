@@ -62,6 +62,7 @@ graphql`
           iid
           title
           webPath
+          webUrl
         }
       }
     }

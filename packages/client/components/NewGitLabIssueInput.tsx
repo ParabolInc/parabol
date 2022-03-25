@@ -161,8 +161,8 @@ const NewGitLabIssueInput = (props: Props) => {
   const {id: userId, team, teamMember} = viewer
   const {id: meetingId} = meeting
   const {id: teamId} = team!
-  const nullableEdges = teamMember?.integrations?.gitlab?.api?.query?.allProjects?.edges ?? null
-  const gitlabProjects = getNonNullEdges(nullableEdges || []).map(({node}) => node)
+  const nullableEdges = teamMember?.integrations?.gitlab?.api?.query?.allProjects?.edges ?? []
+  const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const [selectedFullPath, setSelectedFullPath] = useState(gitlabProjects[0]?.fullPath || '')
