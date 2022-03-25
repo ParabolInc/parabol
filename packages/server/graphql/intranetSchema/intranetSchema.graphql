@@ -1340,7 +1340,7 @@ type TeamMemberIntegrations {
   slack: SlackIntegration
 
   """All things associated with a A integration for a team member"""
-  azureDevOps: AzureDevOpsIntegration
+  azureDevOps: AzureDevOpsIntegration!
 }
 
 """The atlassian auth + integration helpers for a specific team member"""
@@ -1883,6 +1883,14 @@ type AzureDevOpsIntegration {
   A list of work items coming straight from the azure dev ops integration for a specific team member
   """
   workItems: [AzureDevOpsWorkItem!]!
+
+  """
+  The cloud provider the team member may choose to integrate with. Nullable based on env vars
+  """
+  cloudProvider: IntegrationProviderOAuth2
+
+  """The non-global providers shared with the team or organization"""
+  sharedProviders: [IntegrationProviderOAuth2!]!
 }
 
 """The Azure DevOps Issue that comes direct from Azure DevOps"""

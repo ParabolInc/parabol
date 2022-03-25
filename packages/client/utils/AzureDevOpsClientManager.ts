@@ -2,8 +2,9 @@ import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import AddAzureDevOpsAuthMutation from '../mutations/AddAzureDevOpsAuthMutation'
+// import AddAzureDevOpsAuthMutation from '../mutations/AddAzureDevOpsAuthMutation'
 import AzureDevOpsManager from './AzureDevOpsManager'
+import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation';
 
 class AzureDevOpsClientManager extends AzureDevOpsManager {
   fetch = window.fetch.bind(window)
@@ -55,7 +56,7 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
     }
   }
 
-  static async openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+  static async openOAuth(atmosphere: Atmosphere, teamId: string, cloudId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
@@ -80,7 +81,8 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
-      AddAzureDevOpsAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
+      // AddAzureDevOpsAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
+      AddTeamMemberIntegrationAuthMutation(atmosphere, {providerId: cloudId, oauthCodeOrPat: code, oauthVerifier: verifier, redirectUri: redirect, teamId}, {onError, onCompleted})
       popup && popup.close()
       window.removeEventListener('message', handler)
     }

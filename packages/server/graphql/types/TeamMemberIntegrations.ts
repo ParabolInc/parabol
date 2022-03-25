@@ -60,14 +60,15 @@ const TeamMemberIntegrations = new GraphQLObjectType<{teamId: string; userId: st
       }
     },
     azureDevOps: {
-      type: AzureDevOpsIntegration,
+      type: new GraphQLNonNull(AzureDevOpsIntegration),
       description: 'All things associated with a A integration for a team member',
-      resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
-        //if (!isTeamMember(authToken, teamId)) return null
-        console.log(`authToken: ${authToken}`)
-        console.log(`teamId: ${teamId}`)
-        return dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
-      }
+      resolve: (source) => source
+      // resolve: async ({teamId, userId}, _args: unknown, {authToken, dataLoader}) => {
+      //   //if (!isTeamMember(authToken, teamId)) return null
+      //   console.log(`authToken: ${authToken}`)
+      //   console.log(`teamId: ${teamId}`)
+      //   return dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId})
+      // }
     }
   })
 })

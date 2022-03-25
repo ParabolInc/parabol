@@ -12,14 +12,15 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
+  providerId: string
 }
 
 const AzureDevOpsConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {menuProps, mutationProps, teamId, providerId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
-    AzureDevOpsClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    AzureDevOpsClientManager.openOAuth(atmosphere, teamId, providerId, mutationProps)
   }
 
   const removeAzureDevOps = () => {
