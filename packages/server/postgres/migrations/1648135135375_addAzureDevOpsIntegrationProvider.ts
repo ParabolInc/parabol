@@ -27,21 +27,14 @@ export async function down() {
     DELETE FROM "IntegrationProvider" WHERE "service" = 'azureDevOps';
 
     ALTER TYPE "IntegrationProviderServiceEnum" RENAME TO "IntegrationProviderServiceEnum_delete";
-    ALTER TYPE "IntegrationProviderAuthStrategyEnum" RENAME TO "IntegrationProviderAuthStrategyEnumA_delete";
 
     CREATE TYPE "IntegrationProviderServiceEnum" AS ENUM (
       'gitlab',
       'mattermost'
     );
-    CREATE TYPE "IntegrationProviderAuthStrategyEnum" AS ENUM (
-      'pat',
-      'oauth2',
-      'webhook'
-    );
 
     ALTER TABLE "IntegrationProvider"
       ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum",
-      ALTER COLUMN "authStrategy" TYPE "IntegrationProviderAuthStrategyEnum" USING "authStrategy"::text::"IntegrationProviderAuthStrategyEnum",
       ADD CONSTRAINT global_provider_must_be_oauth2 CHECK (
         "scopeGlobal" IS FALSE OR ("scopeGlobal" = TRUE AND "authStrategy" = 'oauth2')
       );
@@ -50,7 +43,6 @@ export async function down() {
       ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum";
 
     DROP TYPE "IntegrationProviderServiceEnum_delete";
-    DROP TYPE "IntegrationProviderAuthStrategyEnumA_delete";
   END $$;
   `)
   await client.end()
