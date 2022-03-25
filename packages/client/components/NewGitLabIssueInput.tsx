@@ -8,7 +8,6 @@ import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import getNonNullEdges from '~/utils/getNonNullEdges'
-import {NewGitLabIssueInput_meeting$key} from '~/__generated__/NewGitLabIssueInput_meeting.graphql'
 import {NewGitLabIssueInput_viewer$key} from '~/__generated__/NewGitLabIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
@@ -97,7 +96,7 @@ const Error = styled(StyledError)({
 
 interface Props {
   isEditing: boolean
-  meetingRef: NewGitLabIssueInput_meeting$key
+  meetingId: string
   setIsEditing: (isEditing: boolean) => void
   viewerRef: NewGitLabIssueInput_viewer$key
 }
@@ -107,7 +106,7 @@ const validateIssue = (issue: string) => {
 }
 
 const NewGitLabIssueInput = (props: Props) => {
-  const {isEditing, meetingRef, setIsEditing, viewerRef} = props
+  const {isEditing, meetingId, setIsEditing, viewerRef} = props
   const viewer = useFragment(
     graphql`
       fragment NewGitLabIssueInput_viewer on User {
@@ -154,16 +153,7 @@ const NewGitLabIssueInput = (props: Props) => {
     `,
     viewerRef
   )
-  const meeting = useFragment(
-    graphql`
-      fragment NewGitLabIssueInput_meeting on PokerMeeting {
-        id
-      }
-    `,
-    meetingRef
-  )
   const {id: userId, team, teamMember} = viewer
-  const {id: meetingId} = meeting
   const {id: teamId} = team!
   const nullableEdges = teamMember?.integrations?.gitlab?.api?.query?.allProjects?.edges ?? []
   const gitlabProjects = getNonNullEdges(nullableEdges).map(({node}) => node)

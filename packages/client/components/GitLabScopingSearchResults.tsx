@@ -141,7 +141,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
-        ...NewGitLabIssueInput_meeting
         id
         teamId
         # gitlabSearchQuery {
@@ -200,7 +199,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         {query && (
           <NewGitLabIssueInput
             isEditing={isEditing}
-            meetingRef={meeting}
+            meetingId={meetingId}
             setIsEditing={setIsEditing}
             viewerRef={viewer}
           />
