@@ -352,16 +352,16 @@ type Mutation {
   ): Boolean
 
   """
-  add/remove user(s) to/from the LogRocket watchlist so that we start/stop recording their sessions
+  add/remove user(s) to/from the watchlist so that we start/stop recording their sessions
   """
   updateWatchlist(
     """
-    a list of email addresses of users whose sessions we want to start/stop recording in LogRocket
+    a list of email addresses of users whose sessions we want to start/stop recording
     """
     emails: [String!]
 
     """
-    add/remove the entire domain to/from the LogRocket watchlist. The part of the email after the @
+    add/remove the entire domain to/from the watchlist. The part of the email after the @
     """
     domain: String
 
@@ -819,7 +819,7 @@ type User {
   """true if the user was removed from parabol, else false"""
   isRemoved: Boolean!
 
-  """true if all user sessions are being recorded in LogRocket, else false"""
+  """true if all user sessions are being recorded, else false"""
   isWatched: Boolean!
 
   """the endedAt timestamp of the most recent meeting they were a member of"""

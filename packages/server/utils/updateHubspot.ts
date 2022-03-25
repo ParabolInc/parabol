@@ -1,9 +1,8 @@
 import fetch from 'node-fetch'
 import sleep from 'parabol-client/utils/sleep'
+import ServerAuthToken from '../database/types/ServerAuthToken'
 import IUser from '../postgres/types/IUser'
 import sendToSentry from './sendToSentry'
-import executeGraphQL from '../graphql/executeGraphQL'
-import ServerAuthToken from '../database/types/ServerAuthToken'
 
 interface Company {
   userCount: number
@@ -229,6 +228,7 @@ const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade 
 const hapiKey = process.env.HUBSPOT_API_KEY
 
 const parabolFetch = async (query: string, variables: Record<string, unknown>) => {
+  const executeGraphQL = require('../graphql/executeGraphQL').default
   const result = await executeGraphQL({
     authToken: new ServerAuthToken(),
     query,
