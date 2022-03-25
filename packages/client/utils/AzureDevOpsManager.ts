@@ -69,6 +69,35 @@ export interface WorkItemReference {
   url: string
 }
 
+export interface WorkItem {
+  _links: ReferenceLinks
+  commentVersionRef: WorkItemCommentVersionRef
+  fields: object
+  id: number
+  relations: WorkItemRelations[]
+  rev: number
+  url: string
+}
+
+export interface ReferenceLinks {
+  links: object
+}
+
+export interface WorkItemCommentVersionRef {
+  commentId: number
+  createdInRevision: number
+  isDeleted: boolean
+  text: string
+  url: string
+  version: number
+}
+
+export interface WorkItemRelations {
+  attributes: object
+  rel: string
+  url: string
+}
+
 /*interface AvatarURLs {
   '48x48': string
   '24x24': string
@@ -154,6 +183,37 @@ export default abstract class AzureDevOpsManager {
       return new Error(json.message)
     }
     return json
+  }
+
+  async getWorkItemData(
+    instanceId: string,
+    projectId: string,
+    workItemIds: string[],
+    fields?: string[]
+  ) {
+    const workItems = [] as WorkItem[]
+    let firstError: Error | undefined
+    const params = new URLSearchParams()
+    params.append('ids', workItemIds.toString())
+    if (typeof fields !== 'undefined') {
+      params.append('fields', fields.toString())
+    }
+    params.append('api-version', '7.1-preview.3')
+    const uri = `https://${instanceId}/${projectId}/_apis/wit/workitems?${params.toString()}`
+    const res = await this.get<WorkItem[]>(uri)
+    if (res instanceof Error) {
+      if (!firstError) {
+        firstError = res
+      }
+    } else {
+      const mappedWorkItems = (res as WorkItem[]).map((workItem) => {
+        return {
+          ...workItem
+        }
+      })
+      workItems.push(...mappedWorkItems)
+    }
+    return {error: firstError, workItems: workItems}
   }
 
   async getUserStories(instanceId: string) {
