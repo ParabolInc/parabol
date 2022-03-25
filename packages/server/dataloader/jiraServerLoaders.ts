@@ -4,7 +4,6 @@ import JiraServerRestManager, {
 } from '../integrations/jiraServer/JiraServerRestManager'
 import RootDataLoader from './RootDataLoader'
 import sendToSentry from '../utils/sendToSentry'
-import JiraServerTaskIntegrationManager from '../integrations/JiraServerTaskIntegrationManager'
 import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 
 export interface JiraServerIssueKey {
@@ -59,10 +58,7 @@ export const jiraServerIssue = (
             return null
           }
 
-          const manager = new JiraServerTaskIntegrationManager(
-            auth,
-            provider as IntegrationProviderJiraServer
-          )
+          const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
 
           const issueRes = await manager.getIssue(issueId)
 
@@ -96,19 +92,13 @@ export const allJiraServerProjects = (
   return new DataLoader<TeamUserKey, JiraServerProject[], string>(async (keys) => {
     return Promise.all(
       keys.map(async ({userId, teamId}) => {
-        const token = await parent
+        const auth = await parent
           .get('teamMemberIntegrationAuths')
           .load({service: 'jiraServer', teamId, userId})
-        if (!token) return []
-        const provider = await parent.get('integrationProviders').loadNonNull(token.providerId)
+        if (!auth) return []
+        const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
 
-        const manager = new JiraServerRestManager(
-          provider.serverBaseUrl!,
-          provider.consumerKey!,
-          provider.consumerSecret!,
-          token.accessToken!,
-          token.accessTokenSecret!
-        )
+        const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
         const projects = await manager.getProjects()
         if (projects instanceof Error) {
           return []
