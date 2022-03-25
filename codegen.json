@@ -16,14 +16,20 @@
       ],
       "plugins": ["typescript", "typescript-operations", "add"]
     },
-    "packages/server/graphql/intranetSchema/sdl/resolverTypes.ts": {
-      "schema": "packages/server/graphql/intranetSchema/intranetSchema.graphql",
+    "packages/server/graphql/private/resolverTypes.ts": {
+      "schema": "packages/server/graphql/private/schema.graphql",
       "plugins": ["typescript", "typescript-resolvers", "add"],
       "config": {
-        "contextType": "../../graphql#InternalContext",
+        "contextType": "../graphql#InternalContext",
         "mappers": {
+          "Organization": "../../database/types/Organization#default as Organization",
+          "User": "../../postgres/types/IUser#default as IUser",
+          "Company": "./queries/company#CompanySource",
+          "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
+          "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
-          "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource"
+          "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
+          "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource"
         }
       }
     }

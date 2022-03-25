@@ -134,10 +134,6 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
-  console.log(
-    '🚀  ~ project edges',
-    paginationRes?.data?.viewer?.teamMember?.integrations?.gitlab?.api?.query?.projects?.edges
-  )
 
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext, loadNext} = paginationRes

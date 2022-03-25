@@ -196,7 +196,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           optimisticTaskIntegration.setLinkedRecord(repository, 'repository')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else if (service === 'gitlab') {
-          console.log({serviceProjectHash})
           const webPath = `/${serviceProjectHash}/-/issues/?`
           const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
             state: 'opened',
