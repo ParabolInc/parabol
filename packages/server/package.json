@@ -93,7 +93,6 @@
   },
   "dependencies": {
     "@authenio/samlify-node-xmllint": "^1.0.1",
-    "@graphql-tools/load-files": "^6.5.3",
     "@graphql-tools/merge": "^8.2.3",
     "@graphql-tools/schema": "^8.3.2",
     "@graphql-tools/wrap": "^7.0.6",
