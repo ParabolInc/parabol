@@ -1,7 +1,5 @@
-import stringify from 'fast-json-stable-stringify'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import {JiraDimensionField} from '../postgres/queries/getTeamsByIds'
-import getRethink from '../database/rethinkDriver'
 import {DataLoaderWorker} from '../graphql/graphql'
 import getPg from '../postgres/getPg'
 import {
@@ -84,28 +82,15 @@ const ensureJiraDimensionField = async (
   )
   const fieldsToAdd = newJiraDimensionFields.filter(Boolean).filter(isNotNull)
   if (fieldsToAdd.length === 0) return
-  const sortedJiraDimensionFields = [...currentMappers, ...fieldsToAdd].sort((a, b) =>
-    stringify(a) < stringify(b) ? -1 : 1
-  )
-  const r = await getRethink()
-  await Promise.all([
-    r
-      .table('Team')
-      .get(teamId)
-      .update({
-        jiraDimensionFields: sortedJiraDimensionFields
-      })
-      .run(),
-    catchAndLog(() =>
-      mergeTeamJiraDimensionFieldsQuery.run(
-        {
-          jiraDimensionFields: fieldsToAdd,
-          id: teamId
-        } as unknown as IMergeTeamJiraDimensionFieldsQueryParams,
-        getPg()
-      )
+  await catchAndLog(() =>
+    mergeTeamJiraDimensionFieldsQuery.run(
+      {
+        jiraDimensionFields: fieldsToAdd,
+        id: teamId
+      } as unknown as IMergeTeamJiraDimensionFieldsQueryParams,
+      getPg()
     )
-  ])
+  )
 }
 
 export default ensureJiraDimensionField

@@ -44,7 +44,6 @@ const removeTeamMember = async (
     }
     await Promise.all([
       // archive single-person teams
-      r.table('Team').get(teamId).update(updates).run(),
       updateTeamByTeamId(updates, teamId),
       // delete all tasks belonging to a 1-person team
       r.table('Task').getAll(teamId, {index: 'teamId'}).delete()
