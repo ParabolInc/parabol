@@ -130,7 +130,7 @@ const DashboardAvatars = (props: Props) => {
             </ErrorBoundary>
           )
         })}
-        {overflowCount > 0 && (
+        {overflowCount > 2 && (
           <OverflowWrapper onClick={() => handleClick(true)}>
             <OverflowCount>{`+${overflowCount}`}</OverflowCount>
           </OverflowWrapper>
