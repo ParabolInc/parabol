@@ -5,19 +5,12 @@ import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} f
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-// import {GitLabScopingSearchResultsRoot_meeting$key} from '~/__generated__/GitLabScopingSearchResultsRoot_meeting.graphql'
-// import useAtmosphere from '../hooks/useAtmosphere'
-// import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
-// import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
-// import PersistGitLabSearchQueryMutation from '../mutations/PersistGitLabSearchQueryMutation'
-// import {SprintPokerDefaults} from '../types/constEnums'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
 import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
 import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
 import Ellipsis from './Ellipsis/Ellipsis'
-// import Ellipsis from './Ellipsis/Ellipsis'
 import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
 import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -45,7 +38,7 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
     graphql`
-      query GitLabScopingSearchResultsQuery($teamId: ID!) {
+      query GitLabScopingSearchResultsQuery($teamId: ID!, $queryString: String!) {
         ...GitLabScopingSearchResults_query
       }
     `,
@@ -64,7 +57,6 @@ const GitLabScopingSearchResults = (props: Props) => {
           issuesFirst: {type: "Int", defaultValue: 25}
           projectsAfter: {type: "String"}
           issuesAfter: {type: "String"}
-          search: {type: "String"}
           projectIds: {type: "[ID!]", defaultValue: null}
         )
         @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
@@ -102,7 +94,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                             issues(
                               includeSubepics: true
                               state: opened
-                              search: $search
+                              search: $queryString
                               sort: UPDATED_DESC
                               first: $issuesFirst
                               after: $issuesAfter
@@ -143,9 +135,7 @@ const GitLabScopingSearchResults = (props: Props) => {
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
         id
         teamId
-        # gitlabSearchQuery {
-        #   queryString
-        # }
+        gitlabSearchQuery
         phases {
           ...useGetUsedServiceTaskIds_phase
           phaseType
@@ -158,7 +148,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {integrations} = teamMember
   const {gitlab} = integrations
   const {id: meetingId, phases} = meeting
-  // const {queryString} = gitlabSearchQuery
   const errors = gitlab?.api?.errors ?? null
   const providerId = gitlab.auth!.provider.id
   const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
@@ -166,7 +155,6 @@ const GitLabScopingSearchResults = (props: Props) => {
   )
   const issues = nullableEdges ? getNonNullEdges(nullableEdges).map(({node}) => node) : null
   const [isEditing, setIsEditing] = useState(false)
-  // const atmosphere = useAtmosphere()
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
@@ -211,7 +199,6 @@ const GitLabScopingSearchResults = (props: Props) => {
             meetingId={meetingId}
             usedServiceTaskIds={usedServiceTaskIds}
             providerId={providerId}
-            // persistQuery={persistQuery}
           />
         ))}
         {lastItem}
