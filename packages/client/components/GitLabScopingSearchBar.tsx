@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {GitLabScopingSearchBar_meeting} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
 // import GitLabScopingSearchHistoryToggle from './GitLabScopingSearchHistoryToggle'
 import GitLabScopingSearchInput from './GitLabScopingSearchInput'
+import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
 
 const SearchBar = styled('div')({
   alignItems: 'center',
@@ -21,7 +22,7 @@ const GitLabScopingSearchBar = (props: Props) => {
     <SearchBar>
       {/* <GitLabScopingSearchHistoryToggle meetingRef={meeting} /> */}
       <GitLabScopingSearchInput meetingRef={meeting} />
-      {/* <GitLabScopingSearchFilterToggle meetingRef={meeting} /> */}
+      <GitLabScopingSearchFilterToggle meetingRef={meeting} />
     </SearchBar>
   )
 }
@@ -31,7 +32,7 @@ export default createFragmentContainer(GitLabScopingSearchBar, {
     fragment GitLabScopingSearchBar_meeting on PokerMeeting {
       # ...GitLabScopingSearchHistoryToggle_meeting
       ...GitLabScopingSearchInput_meeting
-      # ...GitLabScopingSearchFilterToggle_meeting
+      ...GitLabScopingSearchFilterToggle_meeting
     }
   `
 })
