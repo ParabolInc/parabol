@@ -216,13 +216,11 @@ export default abstract class AzureDevOpsManager {
     return {error: firstError, workItems: workItems}
   }
 
-  async getUserStories(instanceId: string) {
-    const allUserStories = [] as WorkItemReference[]
+  async executeWiqlQuery(instanceId: string, query: string) {
+    const workItemReferences = [] as WorkItemReference[]
     let firstError: Error | undefined
-    const queryString =
-      "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
     const payload = {
-      query: queryString
+      query: query
     }
     const res = await this.post<WorkItemQueryResult>(
       `https://${instanceId}/_apis/wit/wiql?api-version=6.0`,
@@ -240,9 +238,15 @@ export default abstract class AzureDevOpsManager {
           url
         }
       })
-      allUserStories.push(...workItems)
+      workItemReferences.push(...workItems)
     }
-    return {error: firstError, workItems: allUserStories}
+    return {error: firstError, workItems: workItemReferences}
+  }
+
+  async getUserStories(instanceId: string) {
+    const queryString =
+      "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
+    return await this.executeWiqlQuery(instanceId, queryString)
   }
 
   async getMe() {
