@@ -72,12 +72,13 @@ const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],
   typeDefs: `
     type _xGitHubIssue implements TaskIntegration
+    type _xGitLabIssue implements TaskIntegration
     type _xGitHubRepository implements RepoIntegration
     extend type _xGitHubRepository {
       service: IntegrationProviderServiceEnum!
     }
   `,
-  // TODO apply this resolver to every type in the GitHub schema
+  // TODO apply this resolver to every type in the GitHub/GitLab schema
   // It is necessary any time client code uses an alias inside a wrapper
   resolvers: {
     _xGitHubIssue: {

@@ -6,11 +6,13 @@ import getRethink from '../../database/rethinkDriver'
 import rMapIf from '../../database/rMapIf'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
+import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
+import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import TeamMember from '../../database/types/TeamMember'
 import UpdatesStage from '../../database/types/UpdatesStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -39,6 +41,8 @@ const createMeetingMember = (meeting: Meeting, teamMember: TeamMember) => {
         meetingId: meeting.id,
         isSpectating: isSpectatingPoker
       })
+    case 'teamPrompt':
+      return new TeamPromptMeetingMember({teamId, userId, meetingId: meeting.id})
     default:
       throw new Error('Invalid meeting type')
   }
@@ -85,7 +89,7 @@ const joinMeeting = {
     const mapIf = rMapIf(r)
 
     const addStageToPhase = (
-      stage: CheckInStage | UpdatesStage,
+      stage: CheckInStage | UpdatesStage | TeamPromptResponseStage,
       phaseType: NewMeetingPhaseTypeEnum
     ) => {
       return r
@@ -128,9 +132,16 @@ const joinMeeting = {
       return addStageToPhase(updatesStage, 'updates')
     }
 
+    const appendToTeamPromptResponses = async () => {
+      const responsesPhase = getPhase(phases, 'RESPONSES')
+      if (!responsesPhase) return
+      const responsesStage = new TeamPromptResponseStage({teamMemberId})
+      return addStageToPhase(responsesStage, 'RESPONSES')
+    }
+
     // effort is taken here to run both at the same time
     // so e.g.the 5th person in check-in is the 5th person in updates
-    await Promise.all([appendToCheckin(), appendToUpdate()])
+    await Promise.all([appendToCheckin(), appendToUpdate(), appendToTeamPromptResponses()])
     dataLoader.get('newMeetings').clear(meetingId)
 
     const data = {meetingId}

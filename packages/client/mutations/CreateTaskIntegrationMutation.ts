@@ -32,8 +32,13 @@ graphql`
             nameWithOwner
           }
         }
+        ... on JiraServerIssue {
+          descriptionHTML
+          summary
+        }
         ...TaskIntegrationLinkIntegrationGitHub
         ...TaskIntegrationLinkIntegrationJira
+        ...TaskIntegrationLinkIntegrationJiraServer
       }
       updatedAt
       teamId
@@ -106,6 +111,25 @@ const githubTaskIntegrationOptimisitcUpdater = (store, variables) => {
   task.setLinkedRecord(integration, 'integration')
 }
 
+const jiraServerTaskIntegrationOptimisticUpdater = (store, variables) => {
+  const {taskId} = variables
+  const now = new Date()
+  const task = store.get(taskId)
+  if (!task) return
+  const contentStr = task.getValue('content') as string
+  if (!contentStr) return
+  const {title: summary, contentState} = splitDraftContent(contentStr)
+  const descriptionHTML = stateToHTML(contentState)
+  const optimisticIntegration = {
+    summary,
+    descriptionHTML,
+    issueKey: '?',
+    updatedAt: now.toJSON()
+  } as const
+  const integration = createProxyRecord(store, 'JiraServerIssue', optimisticIntegration)
+  task.setLinkedRecord(integration, 'integration')
+}
+
 const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMutation> = (
   atmosphere,
   variables,
@@ -121,6 +145,8 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         jiraTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'github') {
         githubTaskIntegrationOptimisitcUpdater(store, variables)
+      } else if (integrationProviderService === 'jiraServer') {
+        jiraServerTaskIntegrationOptimisticUpdater(store, variables)
       }
     },
     onCompleted,

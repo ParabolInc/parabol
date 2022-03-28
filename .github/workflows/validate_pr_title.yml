@@ -1,0 +1,22 @@
+# See https://www.notion.so/parabol/conventional-commit-style-Pull-Request-titles-b70e585fcf084e0f8f9f22e74594f70c (🔒)
+# for governance on this.
+name: Validate PR Title
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # See https://github.com/marketplace/actions/semantic-pull-request for details on other available options
+          validateSingleCommit: true

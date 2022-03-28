@@ -7,17 +7,9 @@ graphql`
   fragment StartCheckInMutation_team on StartCheckInSuccess {
     meeting {
       id
-      name
-      meetingMembers {
-        user {
-          id
-          preferredName
-        }
-      }
     }
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)
-      lastMeetingType
     }
   }
 `

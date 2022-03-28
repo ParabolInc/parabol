@@ -7,6 +7,7 @@ import {Link} from 'react-router-dom'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import action from '../../../static/images/illustrations/action.png'
+import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import useAnimatedMeetingCard from '../hooks/useAnimatedMeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
@@ -142,12 +143,14 @@ interface Props {
 const ILLUSTRATIONS = {
   retrospective,
   action,
-  poker
+  poker,
+  teamPrompt
 }
 const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
   action: 'Check-In',
-  poker: 'Sprint Poker'
+  poker: 'Sprint Poker',
+  teamPrompt: 'Async Standup'
 }
 
 const MeetingCard = (props: Props) => {

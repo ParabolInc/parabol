@@ -1,71 +1,52 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import React, {useState} from 'react'
+import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
+import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+// import {GitLabScopingSearchResultsRoot_meeting$key} from '~/__generated__/GitLabScopingSearchResultsRoot_meeting.graphql'
 // import useAtmosphere from '../hooks/useAtmosphere'
 // import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 // import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 // import PersistGitLabSearchQueryMutation from '../mutations/PersistGitLabSearchQueryMutation'
 // import {SprintPokerDefaults} from '../types/constEnums'
-import {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
-// import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
 import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
 import {GitLabScopingSearchResultsQuery} from '../__generated__/GitLabScopingSearchResultsQuery.graphql'
-// import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
+import {GitLabScopingSearchResults_meeting$key} from '../__generated__/GitLabScopingSearchResults_meeting.graphql'
 import {GitLabScopingSearchResults_query$key} from '../__generated__/GitLabScopingSearchResults_query.graphql'
+import Ellipsis from './Ellipsis/Ellipsis'
 // import Ellipsis from './Ellipsis/Ellipsis'
-// import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
-// import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
-// import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import GitLabScopingSearchResultItem from './GitLabScopingSearchResultItem'
+import GitLabScopingSelectAllIssues from './GitLabScopingSelectAllIssues'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 // import NewGitLabIssueInput from './NewGitLabIssueInput'
-// import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 
-// const LoadingNext = styled('div')({
-//   display: 'flex',
-//   height: 32,
-//   fontSize: 24,
-//   justifyContent: 'center',
-//   width: '100%'
-// })
+const LoadingNext = styled('div')({
+  display: 'flex',
+  height: 32,
+  fontSize: 24,
+  justifyContent: 'center',
+  width: '100%'
+})
 
 interface Props {
   queryRef: PreloadedQuery<GitLabScopingSearchResultsQuery>
-  // meetingRef: GitLabScopingSearchResults_meeting$key
+  meetingRef: GitLabScopingSearchResults_meeting$key
 }
 
 const GitLabScopingSearchResults = (props: Props) => {
-  const {queryRef} = props
+  const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
     graphql`
       query GitLabScopingSearchResultsQuery($teamId: ID!) {
         ...GitLabScopingSearchResults_query
-        viewer {
-          id
-          # ...NewGitLabIssueInput_viewer
-          # teamMember(teamId: $teamId) {
-          #   suggestedIntegrations {
-          #     items {
-          #       # ... on SuggestedIntegrationGitLab {
-          #       #   id
-          #       #   nameWithOwner
-          #       # }
-          #     }
-          #   }
-          #   integrations {
-          #     gitlab {
-          #       gitlabSearchQueries {
-          #         queryString
-          #       }
-          #     }
-          #   }
-          # }
-        }
       }
     `,
     queryRef,
@@ -78,12 +59,24 @@ const GitLabScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment GitLabScopingSearchResults_query on Query
-        @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 50})
+        @argumentDefinitions(
+          projectsFirst: {type: "Int", defaultValue: 20}
+          issuesFirst: {type: "Int", defaultValue: 25}
+          projectsAfter: {type: "String"}
+          issuesAfter: {type: "String"}
+          search: {type: "String"}
+          projectIds: {type: "[ID!]", defaultValue: null}
+        )
         @refetchable(queryName: "GitLabScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
             integrations {
               gitlab {
+                auth {
+                  provider {
+                    id
+                  }
+                }
                 api {
                   errors {
                     message
@@ -94,16 +87,35 @@ const GitLabScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    projects(membership: true, first: $count, after: $cursor)
-                      @connection(key: "GitLabScopingSearchResults_projects") {
+                    projects(
+                      membership: true
+                      first: $projectsFirst
+                      after: $projectsAfter
+                      sort: "latest_activity_desc"
+                      ids: null # $projectIds
+                    ) @connection(key: "GitLabScopingSearchResults_projects") {
                       edges {
                         node {
-                          issues {
-                            edges {
-                              node {
-                                __typename
-                                id
-                                title
+                          ... on _xGitLabProject {
+                            issues(
+                              includeSubepics: true
+                              state: opened
+                              search: $search
+                              sort: UPDATED_DESC
+                              first: $issuesFirst
+                              after: $issuesAfter
+                            ) {
+                              edges {
+                                node {
+                                  __typename
+                                  ... on _xGitLabIssue {
+                                    ...GitLabScopingSearchResultItem_issue
+                                    ...GitLabScopingSelectAllIssues_issues
+                                    id
+                                    descriptionHtml
+                                    title
+                                  }
+                                }
                               }
                             }
                           }
@@ -120,89 +132,72 @@ const GitLabScopingSearchResults = (props: Props) => {
     `,
     query
   )
-  // const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
-  const {data} = paginationRes
-  // const {viewer} = paginationRes
+
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
+  const {data, hasNext, loadNext} = paginationRes
   const {viewer} = data
-  // const meeting = useFragment(
-  //   graphql`
-  //     fragment GitLabScopingSearchResults_meeting on PokerMeeting {
-  //       # ...NewGitLabIssueInput_meeting
-  //       id
-  //       teamId
-  //       # gitlabSearchQuery {
-  //       #   queryString
-  //       # }
-  //       phases {
-  //         # ...useGetUsedServiceTaskIds_phase
-  //         phaseType
-  //       }
-  //     }
-  //   `,
-  //   meetingRef
-  // )
+  const meeting = useFragment(
+    graphql`
+      fragment GitLabScopingSearchResults_meeting on PokerMeeting {
+        # ...NewGitLabIssueInput_meeting
+        id
+        teamId
+        # gitlabSearchQuery {
+        #   queryString
+        # }
+        phases {
+          ...useGetUsedServiceTaskIds_phase
+          phaseType
+        }
+      }
+    `,
+    meetingRef
+  )
   const teamMember = viewer.teamMember!
   const {integrations} = teamMember
   const {gitlab} = integrations
-  // const {id: meetingId, gitlabSearchQuery, teamId, phases} = meeting
-  // const {phases} = meeting
+  const {id: meetingId, phases} = meeting
   // const {queryString} = gitlabSearchQuery
-  // const errors = gitlab?.api?.errors ?? null
+  const errors = gitlab?.api?.errors ?? null
+  const providerId = gitlab.auth!.provider.id
   const nullableEdges = gitlab?.api?.query?.projects?.edges?.flatMap(
     (project) => project?.node?.issues?.edges ?? null
   )
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
         .filter((edge) => edge.node.__typename === '_xGitLabIssue')
-        .map(({node}) => node as GQLType<typeof node, '_xGitLabIssue'>)
+        .map(({node}) => node)
     : null
-  // const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   // const atmosphere = useAtmosphere()
-  // const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  // const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
-  // const handleAddIssueClick = () => setIsEditing(true)
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const handleAddIssueClick = () => setIsEditing(true)
 
-  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
-  // TODO fix flicker after viewer is present but edges isn't set
+  // gitlab bug: a server error is returned and query is null when there are more projects available. For me, if the projectsFirst arg is <16, an error is returned and loadNext is required. See: https://github.com/ParabolInc/parabol/pull/6160#discussion_r826871705
+  if (gitlab?.api?.query === null) {
+    loadNext(20)
+  }
   if (!issues) return <MockScopingList />
-  // if (issues.length === 0 && !isEditing) {
-  //   const invalidQuery = gitHubQueryValidation(queryString)
-  //   return (
-  //     <>
-  //       <IntegrationScopingNoResults
-  //         error={invalidQuery || errors?.[0]?.message}
-  //         msg={'No issues match that query'}
-  //       />
-  //       <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
-  //     </>
-  //   )
-  // }
-  // const persistQuery = () => {
-  //   // don't persist empty
-  //   if (!queryString) return
-  //   const normalizedQueryString = queryString.toLowerCase().trim()
-  //   // don't persist default
-  //   if (normalizedQueryString === SprintPokerDefaults.GITHUB_DEFAULT_QUERY) return
-  //   const gitlabSearchQueries =
-  //     query.viewer.teamMember?.integrations.gitlab?.gitlabSearchQueries ?? []
-  //   const searchHashes = gitlabSearchQueries.map(({queryString}) => queryString)
-  //   const isQueryNew = !searchHashes.includes(normalizedQueryString)
-  //   if (isQueryNew) {
-  //     PersistGitLabSearchQueryMutation(atmosphere, {
-  //       teamId,
-  //       queryString: normalizedQueryString
-  //     })
-  //   }
-  // }
+  if (issues.length === 0 && !isEditing) {
+    return (
+      <>
+        <IntegrationScopingNoResults
+          error={errors?.[0]?.message}
+          msg={'No issues match that query'}
+        />
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+      </>
+    )
+  }
   return (
     <>
-      {/* {
-        <GitLabScopingSelectAllIssues
-          usedServiceTaskIds={usedServiceTaskIds}
-          issuesRef={issues}
-          meetingId={meetingId}
-        />
-      } */}
+      <GitLabScopingSelectAllIssues
+        usedServiceTaskIds={usedServiceTaskIds}
+        issuesRef={issues}
+        meetingId={meetingId}
+        providerId={providerId}
+      />
       <ResultScroller>
         {/* {query && (
           <NewGitLabIssueInput
@@ -212,29 +207,26 @@ const GitLabScopingSearchResults = (props: Props) => {
             viewerRef={query.viewer}
           />
         )} */}
-        {issues.map((node) => {
-          const {id, title} = node
-          return <div key={id}>{title}</div>
-          // return (
-          //   <GitLabScopingSearchResultItem
-          //     key={node.id}
-          //     issue={node}
-          //     usedServiceTaskIds={usedServiceTaskIds}
-          //     meetingId={meetingId}
-          //     // persistQuery={persistQuery}
-          //   />
-          // )
-        })}
-        {/* {lastItem} */}
-        {/* {hasNext && (
+        {issues.map((issue) => (
+          <GitLabScopingSearchResultItem
+            key={issue.id}
+            issueRef={issue}
+            meetingId={meetingId}
+            usedServiceTaskIds={usedServiceTaskIds}
+            providerId={providerId}
+            // persistQuery={persistQuery}
+          />
+        ))}
+        {lastItem}
+        {hasNext && (
           <LoadingNext key={'loadingNext'}>
             <Ellipsis />
           </LoadingNext>
-        )} */}
+        )}
       </ResultScroller>
-      {/* {!isEditing && (
+      {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
-      )} */}
+      )}
     </>
   )
 }

@@ -1,7 +1,6 @@
 import {FormattedExecutionResult} from 'graphql'
 import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
 import AuthToken from '../database/types/AuthToken'
-import executeGraphQL from '../graphql/executeGraphQL'
 
 const noop = (): any => {
   /**/
@@ -32,6 +31,7 @@ export default class ServerEnvironment extends Environment {
   }
 
   fetch: FetchFunction = (request, variables) => {
+    const executeGraphQL = require('../graphql/executeGraphQL').default
     if (!this.isFetched) {
       this.requestCache.push(
         executeGraphQL({
