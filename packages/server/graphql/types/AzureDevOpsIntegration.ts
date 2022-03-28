@@ -8,11 +8,26 @@ import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
+import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
+//import AzureDevOpsManager from 'parabol-client/utils/AzureDevOpsManager'
 
 const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsIntegration',
   description: 'The Azure DevOps auth + integration helpers for a specific team member',
   fields: () => ({
+    auth: {
+      description: 'The OAuth2 Authorization for this team member',
+      type: TeamMemberIntegrationAuthOAuth2,
+      resolve: async (
+        {teamId, userId}: {teamId: string; userId: string},
+        _args: unknown,
+        {dataLoader}
+      ) => {
+        return dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'azureDevOps', teamId, userId})
+      }
+    },
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'Composite key in ado:teamId:userId format',
@@ -93,6 +108,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           .get('sharedIntegrationProviders')
           .load({service: 'azureDevOps', orgTeamIds: ['aGhostTeam'], teamIds: []})
         console.log(globalProvider)
+
         return globalProvider
       }
     },

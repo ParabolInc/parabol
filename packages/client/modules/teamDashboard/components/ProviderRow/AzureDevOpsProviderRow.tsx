@@ -83,6 +83,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
   const {azureDevOps} = integrations
   console.log(azureDevOps)
   const cloudProvider = azureDevOps?.cloudProvider
+  console.log(`Inside AzureDevOpsProviderRow with a cloudProvider of ${cloudProvider}`)
   if (!cloudProvider) return null
   console.log(cloudProvider)
   const accessToken = azureDevOps?.accessToken ?? undefined

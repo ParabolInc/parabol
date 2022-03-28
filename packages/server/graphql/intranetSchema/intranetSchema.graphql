@@ -1850,6 +1850,9 @@ enum SlackNotificationEventTypeEnum {
 
 """The Azure DevOps auth + integration helpers for a specific team member"""
 type AzureDevOpsIntegration {
+  """The OAuth2 Authorization for this team member"""
+  auth: TeamMemberIntegrationAuthOAuth2
+
   """Composite key in ado:teamId:userId format"""
   id: ID!
 

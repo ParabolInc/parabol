@@ -4,7 +4,7 @@ import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 // import AddAzureDevOpsAuthMutation from '../mutations/AddAzureDevOpsAuthMutation'
 import AzureDevOpsManager from './AzureDevOpsManager'
-import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation';
+import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 
 class AzureDevOpsClientManager extends AzureDevOpsManager {
   fetch = window.fetch.bind(window)
@@ -56,11 +56,14 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
     }
   }
 
-  static async openOAuth(atmosphere: Atmosphere, teamId: string, cloudId: string, mutationProps: MenuMutationProps) {
+  static async openOAuth(
+    atmosphere: Atmosphere,
+    teamId: string,
+    cloudId: string,
+    mutationProps: MenuMutationProps
+  ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
+    const providerState = Math.random().toString(36).substring(5)
     const verifier = AzureDevOpsClientManager.generateVerifier()
     const code = await AzureDevOpsClientManager.generateCodeChallenge(verifier)
     const tenant = window.__ACTION__.azureDevOpsTenant
@@ -82,7 +85,17 @@ class AzureDevOpsClientManager extends AzureDevOpsManager {
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
       // AddAzureDevOpsAuthMutation(atmosphere, {code, verifier, teamId}, {onError, onCompleted})
-      AddTeamMemberIntegrationAuthMutation(atmosphere, {providerId: cloudId, oauthCodeOrPat: code, oauthVerifier: verifier, redirectUri: redirect, teamId}, {onError, onCompleted})
+      AddTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {
+          providerId: cloudId,
+          oauthCodeOrPat: code,
+          oauthVerifier: verifier,
+          redirectUri: redirect,
+          teamId
+        },
+        {onError, onCompleted}
+      )
       popup && popup.close()
       window.removeEventListener('message', handler)
     }
