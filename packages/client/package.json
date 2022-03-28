@@ -81,7 +81,6 @@
     "json2csv": "5.0.5",
     "jwt-decode": "^2.1.0",
     "linkify-it": "^2.0.3",
-    "logrocket": "^1.0.15",
     "mousetrap": "^1.6.3",
     "ms": "^2.0.0",
     "oy-vey": "^0.11.0",

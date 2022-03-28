@@ -1,11 +1,9 @@
 import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/utils/constants'
+import {AnyMeeting} from '../../../postgres/types/Meeting'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../../database/rethinkDriver'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
-import MeetingAction from '../../../database/types/MeetingAction'
-import MeetingPoker from '../../../database/types/MeetingPoker'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {DataLoaderWorker} from '../../graphql'
 import addDiscussionTopics from './addDiscussionTopics'
@@ -86,7 +84,7 @@ const handleCompletedRetrospectiveStage = async (
 
 const handleCompletedStage = async (
   stage: GenericMeetingStage,
-  meeting: MeetingRetrospective | MeetingPoker | MeetingAction | MeetingTeamPrompt,
+  meeting: AnyMeeting,
   dataLoader: DataLoaderWorker
 ) => {
   if (meeting.meetingType === 'retrospective') {

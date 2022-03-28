@@ -9,6 +9,8 @@ interface Input {
 }
 
 export default class TeamPromptMeetingMember extends MeetingMember {
+  meetingType!: 'teamPrompt'
+
   constructor(input: Input) {
     super({...input, meetingType: 'teamPrompt'})
   }

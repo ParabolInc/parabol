@@ -14,6 +14,9 @@ import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
 import {startMattermostMeeting} from './helpers/notifications/notifyMattermost'
 import {startSlackMeeting} from './helpers/notifications/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import RedisLockQueue from '../../utils/RedisLockQueue'
+
+const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt = {
   type: GraphQLNonNull(StartTeamPromptPayload),
@@ -40,6 +43,15 @@ const startTeamPrompt = {
     }
     const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
     if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+
+    const redisLock = new RedisLockQueue(`newTeamPromptMeeting:${teamId}`, MEETING_START_DELAY_MS)
+    try {
+      await redisLock.lock(0)
+    } catch (e) {
+      return standardError(new Error('Meeting already started'), {
+        userId: viewerId
+      })
+    }
 
     const meetingType: MeetingTypeEnum = 'teamPrompt'
     const meetingCount = await r
