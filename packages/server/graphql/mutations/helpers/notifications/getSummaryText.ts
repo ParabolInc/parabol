@@ -1,13 +1,8 @@
 import plural from 'parabol-client/utils/plural'
 import relativeDate from 'parabol-client/utils/date/relativeDate'
-import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
-import MeetingAction from '../../../../database/types/MeetingAction'
-import MeetingPoker from '../../../../database/types/MeetingPoker'
-import MeetingTeamPrompt from '../../../../database/types/MeetingTeamPrompt'
+import {AnyMeeting} from '../../../../postgres/types/Meeting'
 
-const getSummaryText = (
-  meeting: MeetingRetrospective | MeetingAction | MeetingPoker | MeetingTeamPrompt
-) => {
+const getSummaryText = (meeting: AnyMeeting) => {
   if (meeting.meetingType === 'retrospective') {
     const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
     return `Your team shared ${reflectionCount} ${plural(

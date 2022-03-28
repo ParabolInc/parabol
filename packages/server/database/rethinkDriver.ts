@@ -4,10 +4,9 @@ import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
-import {ScheduledJobUnion} from '../graphql/intranetSchema/mutations/runScheduledJobs'
+import {ScheduledJobUnion} from '../graphql/private/mutations/runScheduledJobs'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
-import ActionMeetingMember from './types/ActionMeetingMember'
 import AgendaItem from './types/AgendaItem'
 import AtlassianAuth from './types/AtlassianAuth'
 import Comment from './types/Comment'
@@ -15,13 +14,6 @@ import FailedAuthRequest from './types/FailedAuthRequest'
 import Invoice from './types/Invoice'
 import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
-import MeetingAction from './types/MeetingAction'
-import MeetingPoker from './types/MeetingPoker'
-import MeetingRetrospective from './types/MeetingRetrospective'
-import MeetingSettingsAction from './types/MeetingSettingsAction'
-import MeetingSettingsTeamPrompt from './types/MeetingSettingsTeamPrompt'
-import MeetingSettingsPoker from './types/MeetingSettingsPoker'
-import MeetingSettingsRetrospective from './types/MeetingSettingsRetrospective'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
@@ -32,11 +24,9 @@ import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
-import PokerMeetingMember from './types/PokerMeetingMember'
 import PushInvitation from './types/PushInvitation'
 import Reflection from './types/Reflection'
 import ReflectionGroup from './types/ReflectionGroup'
-import RetroMeetingMember from './types/RetroMeetingMember'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
 import SAML from './types/SAML'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
@@ -48,8 +38,7 @@ import TemplateDimension from './types/TemplateDimension'
 import TemplateScale from './types/TemplateScale'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
-import MeetingTeamPrompt from './types/MeetingTeamPrompt'
-import TeamPromptMeetingMember from './types/TeamPromptMeetingMember'
+import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -93,19 +82,15 @@ export type RethinkSchema = {
     index: 'teamMemberId'
   }
   MeetingSettings: {
-    type:
-      | MeetingSettingsRetrospective
-      | MeetingSettingsAction
-      | MeetingSettingsPoker
-      | MeetingSettingsTeamPrompt
+    type: AnyMeetingSettings
     index: 'teamId'
   }
   MeetingMember: {
-    type: PokerMeetingMember | RetroMeetingMember | ActionMeetingMember | TeamPromptMeetingMember
+    type: AnyMeetingTeamMember
     index: 'meetingId' | 'teamId' | 'userId'
   }
   NewMeeting: {
-    type: MeetingRetrospective | MeetingAction | MeetingPoker | MeetingTeamPrompt
+    type: AnyMeeting
     index: 'facilitatorUserId' | 'teamId' | 'templateId'
   }
   NewFeature: {

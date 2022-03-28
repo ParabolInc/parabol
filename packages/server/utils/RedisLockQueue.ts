@@ -7,7 +7,7 @@ export default class RedisLockQueue {
   uidWithTimestamp: string | undefined
   queueKey: string
   waitTimeMs: number
-  ttl: number
+  ttlMs: number
   queued = false
   timeoutId: NodeJS.Timeout | undefined
   uidToFlush = ''
@@ -17,9 +17,9 @@ export default class RedisLockQueue {
   private static readonly checkAfterMs = 100
   private static readonly timestampDelimiter = '::'
 
-  constructor(key: string, ttl: number) {
+  constructor(key: string, ttlMs: number) {
     this.queueKey = `lock:queue:${key}`
-    this.ttl = ttl
+    this.ttlMs = ttlMs
     this.waitTimeMs = 0
   }
 
@@ -70,7 +70,7 @@ export default class RedisLockQueue {
         if (!headTimestamp) {
           // the head hasn't started working yet, give it 100ms to start
           this.uidToFlush = head
-        } else if (parseInt(headTimestamp, 10) < Date.now() - this.ttl) {
+        } else if (parseInt(headTimestamp, 10) < Date.now() - this.ttlMs) {
           // the other process has been working for > ttl, it's stale
           await this.removeItem(head)
         }
@@ -84,7 +84,7 @@ export default class RedisLockQueue {
     for (let i = 0; i < 1000; i++) {
       const hasLock = await this.setLockAndValidateQueue()
       if (!hasLock) {
-        this.timeoutId = setTimeout(() => this.unlock(), this.ttl)
+        this.timeoutId = setTimeout(() => this.unlock(), this.ttlMs)
         await this.markTaskAsRunning()
         return
       } else {

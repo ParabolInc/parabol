@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext, InternalContext} from './graphql'
+import {GQLContext} from './graphql'
 import acceptTeamInvitation from './mutations/acceptTeamInvitation'
 import addAgendaItem from './mutations/addAgendaItem'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
@@ -25,12 +25,12 @@ import archiveTimelineEvent from './mutations/archiveTimelineEvent'
 import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
 import createImposterToken from './mutations/createImposterToken'
-import createTaskIntegration from './mutations/createTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
+import createTaskIntegration from './mutations/createTaskIntegration'
 import deleteComment from './mutations/deleteComment'
 import deleteTask from './mutations/deleteTask'
 import deleteUser from './mutations/deleteUser'
@@ -107,12 +107,12 @@ import setPokerSpectate from './mutations/setPokerSpectate'
 import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
+import setTaskHighlight from './mutations/setTaskHighlight'
 import signUpWithPassword from './mutations/signUpWithPassword'
 import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
-import setTaskHighlight from './mutations/setTaskHighlight'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
@@ -143,9 +143,7 @@ import startTeamPrompt from './mutations/startTeamPrompt'
 import endTeamPrompt from './mutations/endTeamPrompt'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
-interface Context extends InternalContext, GQLContext {}
-
-export default new GraphQLObjectType<any, Context>({
+export default new GraphQLObjectType<any, GQLContext>({
   name: 'Mutation',
   fields: () =>
     ({

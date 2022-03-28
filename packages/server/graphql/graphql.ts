@@ -18,6 +18,8 @@ export interface GQLContext {
 export interface InternalContext {
   dataLoader: DataLoaderWorker
   authToken: AuthToken
+  // not present if called ad-hoc
+  socketId?: string
 }
 
 export type GQLMutation = GraphQLFieldConfig<undefined, GQLContext> & {name: string}
