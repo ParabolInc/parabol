@@ -22,7 +22,7 @@ const ScopePhaseAreaGitLabScoping = (props: Props) => {
   )
   return (
     <>
-      <GitLabScopingSearchBar meeting={meeting} />
+      <GitLabScopingSearchBar meetingRef={meeting} />
       <GitLabScopingSearchResultsRoot meetingRef={meeting} />
     </>
   )
