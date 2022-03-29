@@ -297,6 +297,31 @@ export default abstract class AzureDevOpsManager {
     return {error: firstError, azureDevOpsUser: azureDevOpsUser}
   }
 
+  async getAllUserProjects() {
+    const teamProjectReferences = [] as TeamProjectReference[]
+    let firstError: Error | undefined
+    const meResult = await this.getMe()
+    const {error: meError, azureDevOpsUser} = meResult
+    if (!meError || !azureDevOpsUser) return {error: meError, projects: null}
+
+    const {id} = azureDevOpsUser
+    const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
+    if (!accessibleError) return {error: accessibleError, projects: null}
+
+    for (const resource of accessibleOrgs) {
+      const {error: accountProjectsError, accountProjects} = await this.getAccountProjects(
+        resource.accountName
+      )
+      if (!accountProjectsError && !firstError) {
+        firstError = accountProjectsError
+        break
+      } else {
+        teamProjectReferences.push(...accountProjects)
+      }
+    }
+    return {error: undefined, projects: teamProjectReferences}
+  }
+
   async getAccountProjects(accountName: string) {
     const teamProjectReferences = [] as TeamProjectReference[]
     let firstError: Error | undefined
