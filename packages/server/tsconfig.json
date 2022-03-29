@@ -22,7 +22,8 @@
   "exclude": [
     "**/node_modules",
     "types/githubTypes.ts",
-    "postgres/migrationTemplate.ts"
+    "postgres/migrationTemplate.ts",
+    "graphql/intranetSchema/sdl/resolverTypes.ts"
   ],
   "files": [
     "types/webpackEnv.ts",

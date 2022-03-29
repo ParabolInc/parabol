@@ -11,11 +11,29 @@ import getAzureDevOpsAuthByUserId from '../postgres/queries/getAzureDevOpsAuthsB
 //import upsertAzureDevOpsAuths from '../postgres/queries/upsertAzureDevOpsAuths'
 import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import RootDataLoader from './RootDataLoader'
+import {
+  AzureDevOpsUser,
+  Resource,
+  TeamProjectReference
+} from 'parabol-client/utils/AzureDevOpsManager'
 
 type TeamUserKey = {
   teamId: string
   userId: string
 }
+
+export interface AzureDevOpsAccessibleOrgsKey {
+  userId: string
+  teamId: string
+  accountId: string
+}
+
+export interface AzureDevOpsProjectsKey {
+  userId: string
+  teamId: string
+  accountName: string
+}
+
 export interface AzureDevOpsRemoteProjectKey {
   userId: string
   teamId: string
@@ -42,6 +60,16 @@ export interface AzureDevOpsUserStoriesKey {
 export interface AzureDevOpsWorkItem {
   id: string
   url: string
+}
+
+export interface AzureUserInfo {
+  displayName: string
+  publicAlias: string
+  emailAddress: string
+  id: string
+  coreRevision: number
+  revision: number
+  timeStamp: string
 }
 
 export const freshAzureDevOpsAuth = (
@@ -92,6 +120,105 @@ export const freshAzureDevOpsAuth = (
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const azureDevUserInfo = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, AzureUserInfo | undefined, string> => {
+  return new DataLoader<TeamUserKey, AzureUserInfo | undefined, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return undefined
+          const {accessToken} = auth
+          const manager = new AzureDevOpsServerManager(accessToken)
+          const restResult = await manager.getMe()
+          const {error, azureDevOpsUser} = restResult
+          if (error !== undefined || azureDevOpsUser !== undefined) {
+            console.log(error)
+            return undefined
+          }
+          const user = azureDevOpsUser as unknown as AzureDevOpsUser
+          return {
+            ...user
+          }
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : undefined))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
+    }
+  )
+}
+
+export const allAzureDevOpsAccessibleOrgs = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, Resource[], string> => {
+  return new DataLoader<TeamUserKey, Resource[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return []
+          const {accessToken} = auth
+
+          const userInfo = await parent.get('azureDevUserInfo').load({teamId, userId})
+          if (!userInfo) return []
+          const {id} = userInfo
+
+          const manager = new AzureDevOpsServerManager(accessToken)
+          const results = await manager.getAccessibleOrgs(id)
+          const {error, accessibleOrgs} = results
+          console.log(error)
+          return accessibleOrgs.map((resource) => ({
+            ...resource
+          }))
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const allAzureDevOpsProjects = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, TeamProjectReference[], string> => {
+  return new DataLoader<TeamUserKey, TeamProjectReference[], string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const resultReferences = [] as TeamProjectReference[]
+          const orgs = await parent.get('allAzureDevOpsAccessibleOrgs').load({teamId, userId})
+          if (!orgs) return []
+
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return []
+          const {accessToken} = auth
+          const manager = new AzureDevOpsServerManager(accessToken)
+
+          for (const current of orgs) {
+            const innerProjects = await manager.getAccountProjects(current.accountName)
+            const {error, accountProjects} = innerProjects
+            console.log(error)
+            resultReferences.push(...accountProjects)
+          }
+          return resultReferences
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : []))
     },
     {
       ...parent.dataLoaderOptions,

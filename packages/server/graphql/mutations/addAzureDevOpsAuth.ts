@@ -54,13 +54,13 @@ const addAzureDevOpsAuth: GQLMutation = {
     // Get AzureDevOps info about user (such as AccountID)
     const self = await manager.getMe()
     if (!('id' in self)) {
-      return standardError(new Error(self.message), {userId: viewerId})
+      return standardError(new Error(''), {userId: viewerId})
     }
 
     // Get tenants/orgs the user has access to
-    const instances = await manager.getAccessibleOrgs(self.id)
+    const instances = await manager.getAccessibleOrgs('self.id')
     if (!Array.isArray(instances)) {
-      return standardError(new Error(instances.message), {userId: viewerId})
+      return standardError(new Error('instances.message'), {userId: viewerId})
     }
     const instanceIds = instances
       .filter((i) => i.accountUri.includes('dev.azure'))
@@ -72,7 +72,7 @@ const addAzureDevOpsAuth: GQLMutation = {
     // Decide which AzureDevOps authorizations to update
     const userAzureDevOpsAuths = await getAzureDevOpsAuthsByUserId(viewerId)
     const azureDevOpsAuthsToUpdate = userAzureDevOpsAuths
-      .filter((auth) => auth.accountId === self.id && auth.teamId !== teamId)
+      .filter((auth) => auth.accountId === 'self.id' && auth.teamId !== teamId)
       .map((auth) => ({
         ...auth,
         accessToken,
@@ -82,7 +82,7 @@ const addAzureDevOpsAuth: GQLMutation = {
     // Upsert new auth info into database
     await upsertAzureDevOpsAuths([
       {
-        accountId: self.id,
+        accountId: 'self.id',
         userId: viewerId,
         accessToken,
         refreshToken,

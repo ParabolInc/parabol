@@ -98,6 +98,34 @@ export interface WorkItemRelations {
   url: string
 }
 
+export interface TeamProjectReference {
+  abbreviation: string
+  defaultTeamImageUrl: string
+  description: string
+  id: string
+  lastUpdateTime: string
+  name: string
+  revision: number
+  state: string
+  url: string
+  visibility: string
+}
+
+export interface ProjectState {
+  all: string
+  createPending: string
+  deleted: string
+  deleting: string
+  new: string
+  unchanged: string
+  wellFormed: string
+}
+
+export interface ProjectVisibility {
+  private: string
+  public: string
+}
+
 /*interface AvatarURLs {
   '48x48': string
   '24x24': string
@@ -158,6 +186,9 @@ export default abstract class AzureDevOpsManager {
       return new Error('Received non-JSON Azure DevOps Response')
     }
     const json = (await res.json()) as AzureDevOpsError | T // as AtlassianError | JiraNoAccessError | JiraGetError | T
+    if ('message' in json) {
+      return new Error(json.message)
+    }
     // if ('message' in json) {
     //   if (json.message === 'No message available' && 'error' in json) {
     //     return new Error(json.error)
@@ -250,19 +281,58 @@ export default abstract class AzureDevOpsManager {
   }
 
   async getMe() {
-    return this.get<AzureDevOpsUser>(
+    let azureDevOpsUser: AzureDevOpsUser | undefined
+    let firstError: Error | undefined
+    const result = await this.get<AzureDevOpsUser>(
       `https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=7.1-preview.3`
     )
+
+    if (result instanceof Error) {
+      if (!firstError) {
+        firstError = result
+      }
+    } else {
+      azureDevOpsUser = result
+    }
+    return {error: firstError, azureDevOpsUser: azureDevOpsUser}
+  }
+
+  async getAccountProjects(accountName: string) {
+    const teamProjectReferences = [] as TeamProjectReference[]
+    let firstError: Error | undefined
+    const result = await this.get<TeamProjectReference[]>(
+      `https://dev.azure.com/${accountName}/_apis/projects?api-version=7.1-preview.4`
+    )
+    if (result instanceof Error) {
+      if (!firstError) {
+        firstError = result
+      }
+    } else {
+      const resultReferences = result as TeamProjectReference[]
+      teamProjectReferences.push(...resultReferences)
+    }
+    return {error: firstError, accountProjects: teamProjectReferences}
   }
 
   async getAccessibleOrgs(userAccountId: string) {
-    const res = await this.get<AccessibleResources>(
+    const accessibleOrgs = [] as Resource[]
+    let firstError: Error | undefined
+    const result = await this.get<AccessibleResources>(
       `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${userAccountId}&api-version=7.1-preview.1`
     )
 
-    if (!('value' in res)) {
-      return Error()
+    if (result instanceof Error) {
+      if (!firstError) {
+        firstError = result
+      }
+    } else {
+      const orgs = result.value.map((resource) => {
+        return {
+          ...resource
+        }
+      })
+      accessibleOrgs.push(...orgs)
     }
-    return res.value
+    return {error: firstError, accessibleOrgs: accessibleOrgs}
   }
 }

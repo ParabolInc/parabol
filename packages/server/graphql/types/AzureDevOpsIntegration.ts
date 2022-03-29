@@ -9,6 +9,7 @@ import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
+//import AzureDevOpsRemoteProject from './AzureDevOpsRemoteProject'
 //import AzureDevOpsManager from 'parabol-client/utils/AzureDevOpsManager'
 
 const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -124,11 +125,15 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           .get('sharedIntegrationProviders')
           .load({service: 'azureDevOps', orgTeamIds, teamIds: [teamId]})
       }
-    }
-
-    // Add projects
-    // Add fields
-    // Add search queries
+    } /*,
+    projects: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsRemoteProject))),
+      description:
+        'A list of projects accessible by this team member. empty if viewer is not the user',
+      resolve: async ({teamId, userId, auth}, _args: unknown, {dataLoader}) => {
+        return dataLoader.get('allAzureDevOpsProjects').load({teamId, userId, auth.})
+      }
+    }*/
   })
 })
 
