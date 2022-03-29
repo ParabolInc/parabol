@@ -1,18 +1,10 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
+import React, {Suspense} from 'react'
 import {RouteComponentProps} from 'react-router'
-import {QueryRenderer} from 'react-relay'
 import Organization from '../../components/Organization/Organization'
-import renderQuery from '../../../../utils/relay/renderQuery'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-
-const query = graphql`
-  query OrganizationRootQuery($orgId: ID!) {
-    viewer {
-      ...Organization_viewer
-    }
-  }
-`
+import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import organizationQuery, {
+  OrganizationQuery
+} from '../../../../__generated__/OrganizationQuery.graphql'
 
 interface Props extends RouteComponentProps<{orgId: string}> {}
 
@@ -21,16 +13,8 @@ const OrganizationRoot = (props: Props) => {
   const {
     params: {orgId}
   } = match
-  const atmosphere = useAtmosphere()
-  return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{orgId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(Organization, {props: {match}, Loader: <div />})}
-    />
-  )
+  const queryRef = useQueryLoaderNow<OrganizationQuery>(organizationQuery, {orgId})
+  return <Suspense fallback={''}>{queryRef && <Organization queryRef={queryRef} />}</Suspense>
 }
 
 export default OrganizationRoot
