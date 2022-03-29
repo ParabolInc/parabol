@@ -1,4 +1,4 @@
-import styled from '@emotion/styled'
+import styled, {Interpolation} from '@emotion/styled'
 import {ClassNames} from '@emotion/core'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo, useRef, useState} from 'react'
@@ -17,7 +17,7 @@ import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchive_team$key} from '~/__generated__/TeamArchive_team.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout, MathEnum} from '../../../../types/constEnums'
+import {Layout, MathEnum, Card} from '../../../../types/constEnums'
 import {TeamArchiveArchivedTasksQuery} from '../../../../__generated__/TeamArchiveArchivedTasksQuery.graphql'
 import {TeamArchiveQuery} from '../../../../__generated__/TeamArchiveQuery.graphql'
 import {TeamArchive_query$key} from '../../../../__generated__/TeamArchive_query.graphql'
@@ -80,18 +80,34 @@ const CardGrid = styled('div')({
 })
 
 const EmptyMsg = styled('div')({
-  backgroundColor: '#FFFFFF',
+  backgroundColor: Card.BACKGROUND_COLOR as string,
   border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: 4,
-  fontSize: 14,
+  borderRadius: Card.BORDER_RADIUS,
+  fontSize: Card.FONT_SIZE,
   display: 'inline-block',
   margin: 20,
-  padding: 16
+  padding: Card.PADDING
 })
 
 const LinkSpan = styled('div')({
   color: PALETTE.AQUA_400
 })
+
+const NoMoreMsg = (css: (...args: Array<Interpolation>) => string) =>
+  css({
+    '::after': {
+      content: `"🎉 That's all folks! There are no further tasks in the archive."`,
+      backgroundColor: Card.BACKGROUND_COLOR as string,
+      border: `1px solid ${PALETTE.SLATE_400}`,
+      borderRadius: Card.BORDER_RADIUS,
+      fontSize: Card.FONT_SIZE,
+      display: 'block',
+      width: 'fit-content',
+      padding: Card.PADDING,
+      margin: `0 auto ${GRID_PADDING}px auto`,
+      textAlign: 'center' // for browsers that don't support fit-content
+    }
+  })
 
 interface Props {
   queryRef: PreloadedQuery<TeamArchiveQuery>
@@ -305,20 +321,8 @@ const TeamArchive = (props: Props) => {
   return (
     <ClassNames>
       {({css}) => {
-        const noMoreMessage = css({
-          '::after': {
-            content: `"🎉 That's all folks! There are no further tasks in the archive."`,
-            backgroundColor: '#FFFFFF',
-            border: `1px solid ${PALETTE.SLATE_400}`,
-            borderRadius: 4,
-            fontSize: 14,
-            display: 'inline-block',
-            padding: 16,
-            position: 'absolute',
-            left: Math.floor((columnCount * CARD_WIDTH) / 2) + 'px',
-            transform: 'translateX(-50%)'
-          }
-        })
+        const noMoreMsgClassName = NoMoreMsg(css)
+
         return (
           <>
             {!returnToTeamId && <UserTasksHeader viewerRef={viewer} />}
@@ -345,7 +349,9 @@ const TeamArchive = (props: Props) => {
                               {({height, width}) => {
                                 return (
                                   <Grid
-                                    className={!hasNext && isScrolledToBottom ? noMoreMessage : ''}
+                                    className={
+                                      !hasNext && isScrolledToBottom ? noMoreMsgClassName : ''
+                                    }
                                     cellRenderer={cellRenderer}
                                     columnCount={columnCount}
                                     columnWidth={CARD_WIDTH}
