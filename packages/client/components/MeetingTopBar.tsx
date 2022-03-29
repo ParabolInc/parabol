@@ -143,7 +143,7 @@ interface Props {
   isCommentUnread?: boolean
   isMeetingSidebarCollapsed: boolean
   isRightDrawerOpen?: boolean
-  toggleSidebar: () => void
+  toggleSidebar?: () => void
   toggleDrawer?: () => void
 }
 
@@ -162,7 +162,7 @@ const MeetingTopBar = (props: Props) => {
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
-        {isMeetingSidebarCollapsed && (
+        {isMeetingSidebarCollapsed && toggleSidebar && (
           <StyledSidebarToggle dataCy='topbar' onClick={toggleSidebar} />
         )}
         <ChildrenBlock>{children}</ChildrenBlock>
