@@ -1,33 +1,25 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {QueryRenderer} from 'react-relay'
+import React, {Suspense} from 'react'
 import ProviderList from '../../components/ProviderList/ProviderList'
-import renderQuery from '../../../../utils/relay/renderQuery'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {LoaderSize} from '../../../../types/constEnums'
-
-const teamIntegrationsQuery = graphql`
-  query TeamIntegrationsRootQuery($teamId: ID!) {
-    viewer {
-      ...ProviderList_viewer
-    }
-  }
-`
+import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
+import providerListQuery, {
+  ProviderListQuery
+} from '../../../../__generated__/ProviderListQuery.graphql'
+import {useQueryLoader} from 'react-relay'
 
 interface Props {
   teamId: string
 }
 
 const TeamIntegrationsRoot = ({teamId}: Props) => {
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<ProviderListQuery>(providerListQuery, {teamId})
+  const [, loadQuery] = useQueryLoader<ProviderListQuery>(providerListQuery)
+  const retry = () => {
+    loadQuery({teamId}, {fetchPolicy: 'network-only'})
+  }
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={teamIntegrationsQuery}
-      variables={{teamId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(ProviderList, {props: {teamId}, size: LoaderSize.PANEL})}
-    />
+    <Suspense fallback={''}>
+      {queryRef && <ProviderList queryRef={queryRef} teamId={teamId} retry={retry} />}
+    </Suspense>
   )
 }
 
