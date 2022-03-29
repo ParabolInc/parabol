@@ -15,37 +15,37 @@ import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from '~/components/SearchMenuItem'
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
-import {TaskFooterUserAssigneeMenuRootQuery} from '../../../../__generated__/TaskFooterUserAssigneeMenuRootQuery.graphql'
+import {TaskFooterUserAssigneeMenuQuery} from '../../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
 
 interface Props {
   area: AreaEnum
   menuProps: MenuProps
-  queryRef: PreloadedQuery<TaskFooterUserAssigneeMenuRootQuery>
+  queryRef: PreloadedQuery<TaskFooterUserAssigneeMenuQuery>
   task: TaskFooterUserAssigneeMenu_task
 }
 
-const TaskFooterUserAssigneeMenu = (props: Props) => {
-  const {area, menuProps, task, queryRef} = props
-  const data = usePreloadedQuery<TaskFooterUserAssigneeMenuRootQuery>(
-    graphql`
-      query TaskFooterUserAssigneeMenuRootQuery($teamId: ID!) {
-        viewer {
+const gqlQuery = graphql`
+  query TaskFooterUserAssigneeMenuQuery($teamId: ID!) {
+    viewer {
+      id
+      team(teamId: $teamId) {
+        teamId: id
+        teamMembers(sortBy: "preferredName") {
           id
-          team(teamId: $teamId) {
-            teamId: id
-            teamMembers(sortBy: "preferredName") {
-              id
-              picture
-              preferredName
-              userId
-            }
-          }
+          picture
+          preferredName
+          userId
         }
       }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
-  )
+    }
+  }
+`
+
+const TaskFooterUserAssigneeMenu = (props: Props) => {
+  const {area, menuProps, task, queryRef} = props
+  const data = usePreloadedQuery<TaskFooterUserAssigneeMenuQuery>(gqlQuery, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
   const {viewer} = data
 
   const {userId, id: taskId} = task

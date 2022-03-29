@@ -9,7 +9,7 @@ import useModal from '~/hooks/useModal'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import {TaskFooterTeamAssigneeMenu_task} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
-import {TaskFooterTeamAssigneeMenuRootQuery} from '../../../../__generated__/TaskFooterTeamAssigneeMenuRootQuery.graphql'
+import {TaskFooterTeamAssigneeMenuQuery} from '../../../../__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
@@ -41,31 +41,31 @@ const query = graphql`
 
 interface Props {
   menuProps: MenuProps
-  queryRef: PreloadedQuery<TaskFooterTeamAssigneeMenuRootQuery>
+  queryRef: PreloadedQuery<TaskFooterTeamAssigneeMenuQuery>
   task: TaskFooterTeamAssigneeMenu_task
 }
 
-const TaskFooterTeamAssigneeMenu = (props: Props) => {
-  const {menuProps, task, queryRef} = props
-  const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuRootQuery>(
-    graphql`
-      query TaskFooterTeamAssigneeMenuRootQuery {
-        viewer {
-          id
-          teams {
-            id
-            name
-            teamMembers(sortBy: "preferredName") {
-              userId
-              preferredName
-            }
-          }
+const gqlQuery = graphql`
+  query TaskFooterTeamAssigneeMenuQuery {
+    viewer {
+      id
+      teams {
+        id
+        name
+        teamMembers(sortBy: "preferredName") {
+          userId
+          preferredName
         }
       }
-    `,
-    queryRef,
-    {UNSTABLE_renderPolicy: 'full'}
-  )
+    }
+  }
+`
+
+const TaskFooterTeamAssigneeMenu = (props: Props) => {
+  const {menuProps, task, queryRef} = props
+  const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
   const {viewer} = data
 
   const {closePortal: closeTeamAssigneeMenu} = menuProps

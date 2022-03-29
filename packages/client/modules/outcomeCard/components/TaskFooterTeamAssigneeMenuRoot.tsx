@@ -1,7 +1,7 @@
 import React, {Suspense} from 'react'
 import taskFooterTeamAssigneeMenuQuery, {
-  TaskFooterTeamAssigneeMenuRootQuery
-} from '~/__generated__/TaskFooterTeamAssigneeMenuRootQuery.graphql'
+  TaskFooterTeamAssigneeMenuQuery
+} from '~/__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
 import {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
@@ -16,7 +16,7 @@ interface Props {
 const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
   const {menuProps, task, useTaskChild} = props
   useTaskChild('teamAssignee')
-  const queryRef = useQueryLoaderNow<TaskFooterTeamAssigneeMenuRootQuery>(
+  const queryRef = useQueryLoaderNow<TaskFooterTeamAssigneeMenuQuery>(
     taskFooterTeamAssigneeMenuQuery,
     {}
   )

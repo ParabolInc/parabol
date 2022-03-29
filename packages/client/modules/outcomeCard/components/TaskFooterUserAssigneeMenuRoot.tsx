@@ -2,8 +2,8 @@ import React, {Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import taskFooterUserAssigneeMenuQuery, {
-  TaskFooterUserAssigneeMenuRootQuery
-} from '../../../__generated__/TaskFooterUserAssigneeMenuRootQuery.graphql'
+  TaskFooterUserAssigneeMenuQuery
+} from '../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
 import {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
@@ -23,7 +23,7 @@ const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
   const {team} = task
   const {id: teamId} = team
   useTaskChild('userAssignee')
-  const queryRef = useQueryLoaderNow<TaskFooterUserAssigneeMenuRootQuery>(
+  const queryRef = useQueryLoaderNow<TaskFooterUserAssigneeMenuQuery>(
     taskFooterUserAssigneeMenuQuery,
     {teamId}
   )
