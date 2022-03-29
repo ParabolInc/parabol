@@ -91,6 +91,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                         node {
                           ... on _xGitLabProject {
                             fullPath
+                            name
                             issues(
                               includeSubepics: true
                               state: opened

@@ -19,6 +19,8 @@ import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
+import getNonNullEdges from '~/utils/getNonNullEdges'
+import useSearchFilter from '~/hooks/useSearchFilter'
 
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
@@ -37,8 +39,8 @@ type GitLabSearchQuery = NonNullable<
 
 const MAX_REPOS = 10
 
-const getValue = (item: {nameWithOwner?: string}) => {
-  return item.nameWithOwner || 'Unknown Repo'
+const getValue = (item: {name?: string}) => {
+  return item.name || 'Unknown Project'
 }
 
 const GitLabScopingSearchFilterMenu = (props: Props) => {
@@ -71,6 +73,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
                             __typename
                             id
                             fullPath
+                            name
                           }
                         }
                       }
@@ -87,7 +90,9 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  console.log('🚀  ~ query', query)
+  const nullableEdges =
+    query.viewer.teamMember?.integrations.gitlab.api?.query?.allProjectsTest?.edges ?? []
+  const projects = useMemo(() => getNonNullEdges(nullableEdges).map(({node}) => node), [query])
   // const meeting = query?.viewer?.meeting
   // const meetingId = meeting?.id ?? ''
   // const gitlabSearchQuery = meeting?.gitlabSearchQuery
@@ -109,11 +114,10 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   //     .map((sortedContributions) => sortedContributions?.repository)
   // }, [contributionsByRepo])
 
-  // const {
-  //   query: searchQuery,
-  //   filteredItems: filteredRepoContributions,
-  //   onQueryChange
-  // } = useSearchFilter(repoContributions, getValue)
+  const {query: searchQuery, filteredItems: filteredProjects, onQueryChange} = useSearchFilter(
+    projects,
+    getValue
+  )
 
   // // TODO parse the query string & extract out the repositories
   // const selectedRepos = getReposFromQueryStr(queryString)
@@ -135,15 +139,14 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
     >
       <SearchMenuItem
         placeholder='Search your GitLab repos'
-        // onChange={onQueryChange}
-        onChange={() => {}}
-        value={''}
-        // value={searchQuery}
+        onChange={onQueryChange}
+        value={searchQuery}
       />
-      {/* {repoContributions.length === 0 && (
+      {filteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No repos found!</EmptyDropdownMenuItemLabel>
-      )} */}
-      {[].map((repo) => {
+      )}
+      {filteredProjects.map((project) => {
+        const {id: projectId, name} = project
         // const isSelected = selectedRepos.includes(repo)
         const handleClick = () => {
           // commitLocalUpdate(atmosphere, (store) => {
@@ -164,11 +167,11 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
         }
         return (
           <MenuItem
-            key={repo}
+            key={projectId}
             label={
               <StyledMenuItemLabel>
-                {/* <StyledCheckBox active={isSelected} /> */}
-                {/* <TypeAheadLabel query={searchQuery} label={repo} /> */}
+                <StyledCheckBox active={false} />
+                <TypeAheadLabel query={searchQuery} label={name} />
               </StyledMenuItemLabel>
             }
             onClick={handleClick}
