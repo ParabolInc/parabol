@@ -44,6 +44,20 @@ const TaskIntegrationLink = (props: Props) => {
         {children}
       </JiraIssueLink>
     )
+  } else if (integration.__typename === 'JiraServerIssue') {
+    const {url, issueKey, projectKey} = integration
+    return (
+      <StyledLink
+        href={url}
+        rel='noopener noreferrer'
+        target='_blank'
+        title={`Jira Server Issue #${issueKey} on ${projectKey}`}
+        className={className}
+      >
+        {`Issue #${issueKey}`}
+        {children}
+      </StyledLink>
+    )
   } else if (integration.__typename === '_xGitHubIssue') {
     const {repository, number} = integration
     const {nameWithOwner} = repository
@@ -84,12 +98,22 @@ graphql`
   }
 `
 
+graphql`
+  fragment TaskIntegrationLinkIntegrationJiraServer on JiraServerIssue {
+    id
+    issueKey
+    projectKey
+    url
+  }
+`
+
 export default createFragmentContainer(TaskIntegrationLink, {
   integration: graphql`
     fragment TaskIntegrationLink_integration on TaskIntegration {
       __typename
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
+      ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
     }
   `
 })
