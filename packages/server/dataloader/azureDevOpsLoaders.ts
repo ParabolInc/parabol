@@ -201,20 +201,13 @@ export const allAzureDevOpsProjects = (
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const resultReferences = [] as TeamProjectReference[]
-          const orgs = await parent.get('allAzureDevOpsAccessibleOrgs').load({teamId, userId})
-          if (!orgs) return []
-
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) return []
           const {accessToken} = auth
           const manager = new AzureDevOpsServerManager(accessToken)
-
-          for (const current of orgs) {
-            const innerProjects = await manager.getAccountProjects(current.accountName)
-            const {error, accountProjects} = innerProjects
-            console.log(error)
-            resultReferences.push(...accountProjects)
-          }
+          const {error, projects} = await manager.getAllUserProjects()
+          if (!error) console.log(error)
+          if (projects !== null) resultReferences.push(...projects)
           return resultReferences
         })
       )
