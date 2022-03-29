@@ -9,6 +9,7 @@ import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import jiraScopingSearchResultsQuery, {
   JiraScopingSearchResultsQuery
 } from '../__generated__/JiraScopingSearchResultsQuery.graphql'
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
 
 interface Props {
   meeting: JiraScopingSearchResultsRoot_meeting
@@ -28,7 +29,7 @@ const JiraScopingSearchResultsRoot = (props: Props) => {
   })
   return (
     <ErrorBoundary fallback={(error) => <ErrorComponent error={error} eventId={''} />}>
-      <Suspense fallback={''}>
+      <Suspense fallback={<MockScopingList />}>
         {queryRef && <JiraScopingSearchResults queryRef={queryRef} meeting={meeting} />}
       </Suspense>
     </ErrorBoundary>
