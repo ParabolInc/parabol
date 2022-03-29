@@ -1,11 +1,12 @@
-import React from 'react'
-import {createFragmentContainer, QueryRenderer} from 'react-relay'
+import React, {Suspense} from 'react'
+import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import OrgBilling from '../../components/OrgBilling/OrgBilling'
-import {LoaderSize} from '../../../../types/constEnums'
-import renderQuery from '../../../../utils/relay/renderQuery'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {OrgBillingRoot_organization} from '../../../../__generated__/OrgBillingRoot_organization.graphql'
+import orgBillingRootQuery, {
+  OrgBillingRootQuery
+} from '../../../../__generated__/OrgBillingRootQuery.graphql'
+import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 
 const query = graphql`
   query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {
@@ -20,16 +21,29 @@ interface Props {
 }
 
 const OrgBillingRoot = ({organization}: Props) => {
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<OrgBillingRootQuery>(orgBillingRootQuery, {
+    orgId: organization.id,
+    first: 3
+  })
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{orgId: organization.id, first: 3}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(OrgBilling, {props: {organization}, size: LoaderSize.PANEL})}
-    />
+    <Suspense fallback={''}>
+      {queryRef && <OrgBillingWrapper queryRef={queryRef} organization={organization} />}
+    </Suspense>
   )
+}
+
+interface OrgBillingWrapperProps {
+  queryRef: PreloadedQuery<OrgBillingRootQuery>
+  organization: OrgBillingRoot_organization
+}
+
+function OrgBillingWrapper(props: OrgBillingWrapperProps) {
+  const {queryRef, organization} = props
+  const data = usePreloadedQuery<OrgBillingRootQuery>(query, queryRef, {
+    UNSTABLE_renderPolicy: 'full'
+  })
+  const {viewer} = data
+  return <OrgBilling viewer={viewer} organization={organization} />
 }
 
 export default createFragmentContainer(OrgBillingRoot, {
