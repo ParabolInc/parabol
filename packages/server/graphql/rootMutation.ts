@@ -140,8 +140,6 @@ import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import addAzureDevOpsAuth from './mutations/addAzureDevOpsAuth'
-import removeAzureDevOpsAuth from './mutations/removeAzureDevOpsAuth'
-import startTeamPrompt from './mutations/startTeamPrompt'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 export default new GraphQLObjectType<any, GQLContext>({
@@ -288,8 +286,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateIntegrationProvider,
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
-      removeAzureDevOpsAuth,
-      addAzureDevOpsAuth,
-      startTeamPrompt
+      addAzureDevOpsAuth
     } as any)
 })

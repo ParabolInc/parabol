@@ -2,7 +2,7 @@ import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import RemoveAzureDevOpsAuthMutation from '../mutations/RemoveAzureDevOpsAuthMutation'
+import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../types/constEnums'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import Menu from './Menu'
@@ -28,7 +28,7 @@ const AzureDevOpsConfigMenu = (props: Props) => {
     submitMutation()
     // wait for the portal to animate closed before removing, otherwise it'll stick around forever
     setTimeout(() => {
-      RemoveAzureDevOpsAuthMutation(atmosphere, {teamId}, {onCompleted, onError})
+      RemoveTeamMemberIntegrationAuthMutation(atmosphere, {teamId, service: 'azureDevOps'}, {onCompleted, onError})
     }, Duration.PORTAL_CLOSE)
   }
   return (

@@ -30,7 +30,8 @@ export async function down() {
 
     CREATE TYPE "IntegrationProviderServiceEnum" AS ENUM (
       'gitlab',
-      'mattermost'
+      'mattermost',
+      'jiraServer'
     );
 
     ALTER TABLE "IntegrationProvider"
@@ -40,7 +41,9 @@ export async function down() {
       );
 
     ALTER TABLE "TeamMemberIntegrationAuth"
-      ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum";
+      ALTER COLUMN "service" TYPE "IntegrationProviderServiceEnum" USING "service"::text::"IntegrationProviderServiceEnum",
+      ALTER COLUMN "accessToken" TYPE VARCHAR(1028),
+      ALTER COLUMN "refreshToken" TYPE VARCHAR(1028);
 
     DROP TYPE "IntegrationProviderServiceEnum_delete";
   END $$;
