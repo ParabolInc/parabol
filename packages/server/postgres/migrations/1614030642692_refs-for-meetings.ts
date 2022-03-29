@@ -36,10 +36,10 @@ export async function up(): Promise<void> {
   const client = new Client(getPgConfig())
   await client.connect()
 
-  const meetings = ((await r
+  const meetings = (await r
     .table('NewMeeting')
     .filter({meetingType: 'poker' as any})
-    .run()) as unknown) as MeetingPoker[]
+    .run()) as unknown as MeetingPoker[]
   const templateIds = meetings.map(({templateId}) => templateId)
   const uniqueTemplateIds = Array.from(new Set(templateIds))
   const dimensionsByTemplateId = (await r
@@ -116,15 +116,13 @@ export async function up(): Promise<void> {
 
   // Handle RethinkDB Updates
   // wipe the jira dimension fields since we can no longer use dimensionId
-  await r
-    .table('Team')
-    .filter((row) =>
-      row('jiraDimensionFields')
-        .default(null)
-        .ne(null)
-    )
-    .update({jiraDimensionFields: []})
-    .run()
+  if (await r.tableList().contains('Team').run()) {
+    await r
+      .table('Team')
+      .filter((row) => row('jiraDimensionFields').default(null).ne(null))
+      .update({jiraDimensionFields: []})
+      .run()
+  }
 
   // add a templateRefId to each meeting
   await r(templateIdToTemplateRefId)

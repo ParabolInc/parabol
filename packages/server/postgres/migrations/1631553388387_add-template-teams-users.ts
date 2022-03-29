@@ -18,11 +18,8 @@ export async function up() {
   await client.connect()
   await connectRethinkDB()
   const pgGhostTeam = await client.query(`SELECT 1 FROM "Team" WHERE id = 'aGhostTeam';`)
-  if (pgGhostTeam.rowCount === 0) {
-    const ghostTeam = await r
-      .table('Team')
-      .get('aGhostTeam')
-      .run()
+  if (pgGhostTeam.rowCount === 0 && (await r.tableList().contains('Team').run())) {
+    const ghostTeam = await r.table('Team').get('aGhostTeam').run()
     const fixedGhostTeam = {
       ...ghostTeam,
       lastMeetingType: 'retrospective',
