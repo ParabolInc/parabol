@@ -23,6 +23,7 @@ import CheckInPhase from './CheckInPhase'
 import DiscussPhase from './DiscussPhase'
 import EstimatePhase from './EstimatePhase'
 import GenericMeetingPhase from './GenericMeetingPhase'
+import TeamPromptResponsesPhase from './TeamPromptResponsesPhase'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import {NewMeetingPhaseTypeEnum as INewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import NewMeetingStage from './NewMeetingStage'
@@ -60,6 +61,7 @@ const resolveTypeLookup = {
   [FIRST_CALL]: GenericMeetingPhase,
   [AGENDA_ITEMS]: AgendaItemsPhase,
   [LAST_CALL]: GenericMeetingPhase,
+  RESPONSES: TeamPromptResponsesPhase,
   SCOPE: GenericMeetingPhase,
   ESTIMATE: EstimatePhase
 } as Record<INewMeetingPhaseTypeEnum, GraphQLObjectType<any, GQLContext>>

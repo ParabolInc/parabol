@@ -7,6 +7,7 @@ const DiscussionTopicTypeEnum = new GraphQLEnumType({
     agendaItem: {},
     reflectionGroup: {},
     task: {},
+    teamPromptResponse: {},
     // deprecated
     githubIssue: {},
     // deprecated

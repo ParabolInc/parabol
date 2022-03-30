@@ -16,7 +16,7 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'GUID providerId:integrationRepoId:issueId',
+      description: 'GUID providerId:repositoryId:issueId',
       resolve: ({id, project, providerId}) => {
         return JiraServerIssueId.join(providerId, project.id, id)
       }

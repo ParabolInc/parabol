@@ -4,7 +4,7 @@ import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import TeamPromptMeetingMember from './TeamPromptMeetingMember'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
-import Task from './Task'
+import TeamPromptResponse from './TeamPromptResponse'
 import TeamPromptMeetingSettings from './TeamPromptMeetingSettings'
 
 const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
@@ -21,7 +21,7 @@ const TeamPromptMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     responses: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamPromptResponse))),
       description: 'The tasks created within the meeting',
       resolve: () => {
         // TODO: implement fetching responses
