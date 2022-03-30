@@ -61,11 +61,11 @@ const UserAvatarInput = lazy(
   () => import(/* webpackChunkName: 'UserAvatarInput' */ '../../../../components/UserAvatarInput')
 )
 
-interface UserSettingsFormProps extends WithFormProps<'preferredName'> {
+interface UserSettingsProps extends WithFormProps<'preferredName'> {
   viewer: UserProfileQueryResponse['viewer']
 }
 
-function UserSettings(props: UserSettingsFormProps) {
+function UserSettings(props: UserSettingsProps) {
   const {fields, onChange, validateField, viewer} = props
   const atmosphere = useAtmosphere()
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
