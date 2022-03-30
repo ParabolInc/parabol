@@ -80,7 +80,7 @@ const pokerResetDimension = {
     const updater = (estimateStage: RValue) => estimateStage.merge(updates)
     await Promise.all([
       updateStage(meetingId, stageId, 'ESTIMATE', updater),
-      removeMeetingTaskEstimates(meetingId)
+      removeMeetingTaskEstimates(meetingId, stageId)
     ])
     const data = {meetingId, stageId}
 

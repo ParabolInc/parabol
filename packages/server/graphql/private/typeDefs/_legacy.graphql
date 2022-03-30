@@ -2960,6 +2960,7 @@ enum DiscussionTopicTypeEnum {
   agendaItem
   reflectionGroup
   task
+  teamPromptResponse
   githubIssue
   jiraIssue
 }
@@ -3984,6 +3985,128 @@ type AgendaItemsStage implements NewMeetingStage & DiscussionThreadStage {
   """The id of the agenda item this relates to"""
   agendaItemId: ID!
   agendaItem: AgendaItem!
+}
+
+"""
+The meeting phase where each of the team members can respond to prompts
+"""
+type TeamPromptResponsesPhase implements NewMeetingPhase {
+  """shortid"""
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
+
+  """The type of phase"""
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [TeamPromptResponseStage!]!
+}
+
+"""The stage where the single team member responds to a prompt"""
+type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage {
+  """stageId, shortid"""
+  id: ID!
+
+  """The datetime the stage was completed"""
+  endAt: DateTime
+
+  """foreign key. try using meeting"""
+  meetingId: ID!
+
+  """The meeting this stage belongs to"""
+  meeting: NewMeeting
+
+  """
+  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  """
+  isComplete: Boolean!
+
+  """true if any meeting participant can navigate to this stage"""
+  isNavigable: Boolean!
+
+  """true if the facilitator can navigate to this stage"""
+  isNavigableByFacilitator: Boolean!
+
+  """The phase this stage belongs to"""
+  phase: NewMeetingPhase
+
+  """The type of the phase"""
+  phaseType: NewMeetingPhaseTypeEnum
+
+  """The datetime the stage was started"""
+  startAt: DateTime
+
+  """Number of times the facilitator has visited this stage"""
+  viewCount: Int
+
+  """
+  true if a time limit is set, false if end time is set, null if neither is set
+  """
+  isAsync: Boolean
+
+  """true if the viewer is ready to advance, else false"""
+  isViewerReady: Boolean!
+
+  """
+  the number of meeting members ready to advance, excluding the facilitator
+  """
+  readyCount: Int!
+
+  """
+  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  """
+  scheduledEndTime: DateTime
+
+  """
+  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  """
+  suggestedEndTime: DateTime
+
+  """
+  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  """
+  suggestedTimeLimit: Float
+  teamId: ID!
+
+  """
+  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  """
+  timeRemaining: Float
+
+  """The ID to find the discussion that goes in the stage"""
+  discussionId: ID!
+
+  """The discussion about the stage"""
+  discussion: Discussion!
+
+  """The response to the prompt"""
+  response: TeamPromptResponse!
+}
+
+"""A response of a single team member in a team prompt"""
+type TeamPromptResponse implements Reactable {
+  """shortid"""
+  id: ID!
+
+  """All the reactjis for the given reflection"""
+  reactjis: [Reactji!]!
+
+  """Id of the user who created the team prompt response"""
+  userId: ID!
+
+  """The user who created the response"""
+  user: User
+
+  """the content of the response"""
+  content: String!
+
+  """the plain text content of the response"""
+  plaintextContent: String!
+
+  """the shared sort order for reponses"""
+  sortOrder: Float!
+
+  """The team this response belongs to"""
+  team: Team!
 }
 
 """An all-purpose meeting phase with no extra state"""
@@ -5021,7 +5144,7 @@ type TeamPromptMeeting implements NewMeeting {
   settings: TeamPromptMeetingSettings!
 
   """The tasks created within the meeting"""
-  responses: [Task!]!
+  responses: [TeamPromptResponse!]!
 }
 
 """All the meeting specifics for a user in a team prompt meeting"""
