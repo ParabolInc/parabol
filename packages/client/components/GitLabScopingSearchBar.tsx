@@ -2,9 +2,17 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {PALETTE} from '~/styles/paletteV3'
+import {ICON_SIZE} from '~/styles/typographyV2'
 import {GitLabScopingSearchBar_meeting$key} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
-// import GitLabScopingSearchHistoryToggle from './GitLabScopingSearchHistoryToggle'
 import GitLabScopingSearchInput from './GitLabScopingSearchInput'
+import Icon from './Icon'
+
+const SearchIcon = styled(Icon)({
+  color: PALETTE.SLATE_600,
+  fontSize: ICON_SIZE.MD24,
+  marginRight: 12
+})
 
 const SearchBar = styled('div')({
   alignItems: 'center',
@@ -21,7 +29,6 @@ const GitLabScopingSearchBar = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchBar_meeting on PokerMeeting {
-        # ...GitLabScopingSearchHistoryToggle_meeting
         ...GitLabScopingSearchInput_meeting
         # ...GitLabScopingSearchFilterToggle_meeting
       }
@@ -31,7 +38,7 @@ const GitLabScopingSearchBar = (props: Props) => {
 
   return (
     <SearchBar>
-      {/* <GitLabScopingSearchHistoryToggle meetingRef={meeting} /> */}
+      <SearchIcon>search</SearchIcon>
       <GitLabScopingSearchInput meetingRef={meeting} />
       {/* <GitLabScopingSearchFilterToggle meetingRef={meeting} /> */}
     </SearchBar>
