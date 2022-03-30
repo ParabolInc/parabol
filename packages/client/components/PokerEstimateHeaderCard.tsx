@@ -4,9 +4,8 @@ import {createFragmentContainer} from 'react-relay'
 import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardGitHub from './PokerEstimateHeaderCardGitHub'
-import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
-import PokerEstimateHeaderCardJiraServer from './PokerEstimateHeaderCardJiraServer'
+import PokerEstimateHeaderCardHtml from './PokerEstimateHeaderCardHtml'
 
 interface Props {
   stage: PokerEstimateHeaderCard_stage
@@ -27,11 +26,18 @@ const PokerEstimateHeaderCard = (props: Props) => {
   if (!integration) {
     return <PokerEstimateHeaderCardError service={'Integration'} />
   }
-  if (integration.__typename === 'JiraIssue') {
-    return <PokerEstimateHeaderCardJira issueRef={integration} />
-  }
-  if (integration.__typename === 'JiraServerIssue') {
-    return <PokerEstimateHeaderCardJiraServer issueRef={integration} />
+
+  if (integration.__typename === 'JiraIssue' || integration.__typename === 'JiraServerIssue') {
+    const name = integration.__typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
+    return (
+      <PokerEstimateHeaderCardHtml
+        summary={integration.summary}
+        descriptionHTML={integration.descriptionHTML}
+        url={integration.jiraUrl}
+        linkTitle={`${name} Issue #${integration.issueKey}`}
+        linkText={integration.issueKey}
+      />
+    )
   }
   if (integration.__typename === '_xGitHubIssue') {
     return <PokerEstimateHeaderCardGitHub issueRef={integration} />
@@ -48,11 +54,17 @@ export default createFragmentContainer(PokerEstimateHeaderCard, {
         integration {
           ... on JiraIssue {
             __typename
-            ...PokerEstimateHeaderCardJira_issue
+            issueKey
+            summary
+            descriptionHTML
+            jiraUrl: url
           }
           ... on JiraServerIssue {
             __typename
-            ...PokerEstimateHeaderCardJiraServer_issue
+            issueKey
+            summary
+            descriptionHTML
+            jiraUrl: url
           }
           ... on _xGitHubIssue {
             __typename
