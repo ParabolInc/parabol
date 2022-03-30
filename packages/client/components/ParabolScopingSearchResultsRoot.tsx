@@ -11,6 +11,7 @@ import {ParabolSearchQuery} from '~/types/clientSchema'
 import {taskScopingStatusFilters} from '~/utils/constants'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import ErrorBoundary from './ErrorBoundary'
+import MockScopingList from '../modules/meeting/components/MockScopingList'
 
 const query = graphql`
   query ParabolScopingSearchResultsRootQuery(
@@ -47,7 +48,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
   )
   return (
     <ErrorBoundary fallback={(error) => <ErrorComponent error={error} eventId={''} />}>
-      <Suspense fallback={''}>
+      <Suspense fallback={<MockScopingList />}>
         {queryRef && <ParabolScopingSearchResultsContainer meeting={meeting} queryRef={queryRef} />}
       </Suspense>
     </ErrorBoundary>
