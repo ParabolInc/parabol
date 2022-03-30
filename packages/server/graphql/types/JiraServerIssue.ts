@@ -7,6 +7,7 @@ import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
 import TaskIntegration from './TaskIntegration'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
+import {JiraServerRestProject} from '../../integrations/jiraServer/JiraServerRestManager'
 
 const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraServerIssue',
@@ -17,7 +18,15 @@ const JiraServerIssue = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'GUID providerId:repositoryId:issueId',
-      resolve: ({id, project, providerId}) => {
+      resolve: ({
+        id,
+        project,
+        providerId
+      }: {
+        id: string
+        project: JiraServerRestProject
+        providerId: number
+      }) => {
         return JiraServerIssueId.join(providerId, project.id, id)
       }
     },
