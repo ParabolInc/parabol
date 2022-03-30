@@ -1,2 +1,8 @@
 **/__generated__/
 **/generated/
+githubTypes.ts
+gitlabTypes.ts
+resolverTypes.ts
+githubSchema.graphql
+gitlabSchema.graphql
+_legacy.graphql
