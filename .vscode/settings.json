@@ -26,6 +26,10 @@
     }
   ],
   "npm.packageManager": "yarn",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": false,
+    "source.fixAll": true
+  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -43,5 +47,8 @@
   "editor.gotoLocation.multipleTypeDefinitions": "goto",
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "search.exclude": {
+    "**/__generated__": true
+  }
 }
