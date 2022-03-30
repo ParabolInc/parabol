@@ -134,7 +134,6 @@ const GitLabScopingSearchResults = (props: Props) => {
       fragment GitLabScopingSearchResults_meeting on PokerMeeting {
         id
         teamId
-        gitlabSearchQuery
         phases {
           ...useGetUsedServiceTaskIds_phase
           phaseType
