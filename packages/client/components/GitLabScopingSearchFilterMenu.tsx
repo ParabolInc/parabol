@@ -7,7 +7,7 @@ import {isNotNull} from '../utils/predicates'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import getProjectsFromQueryStr from '../utils/getProjectsFromQueryStr'
+// import getProjectsFromQueryStr from '../utils/getProjectsFromQueryStr'
 import {
   GitLabScopingSearchFilterMenuQuery,
   GitLabScopingSearchFilterMenuQueryResponse
@@ -56,9 +56,9 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
           meeting(meetingId: $meetingId) {
             id
             ... on PokerMeeting {
-              gitlabSearchQuery
-              # queryString
-              # }
+              gitlabSearchQuery {
+                queryString
+              }
             }
           }
           teamMember(teamId: $teamId) {
@@ -125,7 +125,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   const visibleProjects = filteredProjects.slice(0, MAX_PROJECTS)
 
   // // TODO parse the query string & extract out the projectsitories
-  const selectedProjects = getProjectsFromQueryStr(queryString)
+  // const selectedProjects = getProjectsFromQueryStr(queryString)
   // const selectedAndFilteredProjects = useMemo(() => {
   //   const adjustedMax =
   //     selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS

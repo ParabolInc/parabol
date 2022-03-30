@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
-const GitHubSearchQuery = new GraphQLObjectType<any, GQLContext>({
-  name: 'GitHubSearchQuery',
-  description: 'A GitHub search query including all filters selected when the query was executed',
+const GitLabSearchQuery = new GraphQLObjectType<any, GQLContext>({
+  name: 'GitLabSearchQuery',
+  description: 'A GitLab search query including all filters selected when the query was executed',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -13,7 +13,7 @@ const GitHubSearchQuery = new GraphQLObjectType<any, GQLContext>({
     queryString: {
       type: new GraphQLNonNull(GraphQLString),
       description:
-        'The query string in GitHub format, including repository filters. e.g. is:issue is:open'
+        'The query string in GitLab format, including repository filters. e.g. is:issue is:open'
     },
     projectFilters: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
@@ -22,8 +22,12 @@ const GitHubSearchQuery = new GraphQLObjectType<any, GQLContext>({
         console.log('🚀  ~ projectFilters', {testa})
         return testa.projectFilters || []
       }
+    },
+    lastUsedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'the time the search query was last used. Used for sorting'
     }
   })
 })
 
-export default GitHubSearchQuery
+export default GitLabSearchQuery
