@@ -1,5 +1,6 @@
 import Redis from 'ioredis'
 import ms from 'ms'
+import GQLExecutorId from '../../client/shared/gqlIds/GQLExecutorId'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
@@ -14,7 +15,7 @@ interface Job {
 const {SERVER_ID, REDIS_URL} = process.env
 
 interface BaseRequest {
-  serverChannel?: string
+  executorServerId?: string
   isAdHoc?: boolean
 }
 
@@ -60,10 +61,11 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
         sendToSentry(new Error('REDIS JOB ALREADY EXISTS'), {tags: {jobId}})
       }
       this.jobs[jobId] = {resolve, timeoutId}
-      const {serverChannel, ...rest} = request
-      const message = JSON.stringify({jobId, request: rest})
-      if (serverChannel) {
-        this.publisher.publish(serverChannel, message)
+      const {executorServerId, ...rest} = request
+      const message = JSON.stringify({jobId, socketServerId: SERVER_ID, request: rest})
+      if (executorServerId) {
+        const executorChannel = GQLExecutorId.join(executorServerId)
+        this.publisher.publish(executorChannel, message)
       } else {
         // cap the stream to slightly more than 1000 entries.
         this.publisher.xadd(this.stream, 'MAXLEN', '~', 1000, '*', 'msg', message)
