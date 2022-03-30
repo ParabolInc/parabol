@@ -12,7 +12,6 @@ interface LoaderOptions {
 }
 
 export const renderLoader = (options: LoaderOptions = {}) => {
-  console.log('========options========', options)
   if (options.Loader) {
     return options.Loader
   }
