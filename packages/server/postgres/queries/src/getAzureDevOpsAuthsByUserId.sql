@@ -1,5 +1,5 @@
 /*
   @name getAzureDevOpsAuthsByUserIdQuery
 */
-SELECT * from "AzureDevOpsAuth"
+SELECT * from "TeamMemberIntegrationAuth"
 WHERE "userId" = :userId AND "isActive" = TRUE;

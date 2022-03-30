@@ -66,7 +66,6 @@ import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimen
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
-import {AddAzureDevOpsAuthSuccess} from './AddAzureDevOpsAuthPayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
 
 const types = [
@@ -138,7 +137,6 @@ const types = [
   SetAppLocationSuccess,
   UpdateGitHubDimensionFieldSuccess,
   UpdateIntegrationProviderSuccess,
-  AddAzureDevOpsAuthSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

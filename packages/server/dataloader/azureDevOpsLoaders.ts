@@ -1,14 +1,23 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {AzureDevOpsAuth} from '../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
-import getAzureDevOpsAuthByUserId from '../postgres/queries/getAzureDevOpsAuthsByUserId'
-import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
-import RootDataLoader from './RootDataLoader'
 import {
   AzureDevOpsUser,
   Resource,
   TeamProjectReference
 } from 'parabol-client/utils/AzureDevOpsManager'
+// import {AzureDevOpsAuth} from '../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
+// import getAzureDevOpsAuthByUserId from '../postgres/queries/getAzureDevOpsAuthsByUserId'
+//import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
+//import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
+//import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+//import AzureDevOpsIssue from '../graphql/types/AzureDevOpsIssue'
+//import publish from '../utils/publish'
+//import sendToSentry from '../utils/sendToSentry'
+//import upsertAzureDevOpsAuths from '../postgres/queries/upsertAzureDevOpsAuths'
+import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
+import RootDataLoader from './RootDataLoader'
+import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth';
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 
 type TeamUserKey = {
   teamId: string
@@ -67,15 +76,16 @@ export interface AzureUserInfo {
 
 export const freshAzureDevOpsAuth = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, AzureDevOpsAuth | null, string> => {
-  return new DataLoader<TeamUserKey, AzureDevOpsAuth | null, string>(
+): DataLoader<TeamUserKey, IGetTeamMemberIntegrationAuthQueryResult | null, string> => {
+  return new DataLoader<TeamUserKey, IGetTeamMemberIntegrationAuthQueryResult | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const userAzureDevOpsAuths = await getAzureDevOpsAuthByUserId(userId)
-          const azureDevOpsAuthToRefresh = userAzureDevOpsAuths.find(
-            (azureDevOpsAuth) => azureDevOpsAuth.teamId === teamId
-          )
+          // const userAzureDevOpsAuths = await getAzureDevOpsAuthByUserId(userId)
+          const azureDevOpsAuthToRefresh = await parent.get('teamMemberIntegrationAuths').load({service:'azureDevOps', teamId, userId})
+          // const azureDevOpsAuthToRefresh = userAzureDevOpsAuths?.find(
+          //   (azureDevOpsAuth) => azureDevOpsAuth.teamId === teamId
+          // )
           if (!azureDevOpsAuthToRefresh) {
             console.log('error line 61')
             return null
@@ -86,27 +96,33 @@ export const freshAzureDevOpsAuth = (
           const now = new Date()
           const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
           if (!decodedToken || decodedToken.exp < inAMinute) {
+            if (!refreshToken) {
+              return null
+            }
             const oauthRes = await AzureDevOpsServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
               //sendToSentry(oautRes)
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
-            const updatedRefreshToken = newRefreshToken ?? azureDevOpsAuthToRefresh.refreshToken
-            const updatedSameAccountAzureDevOpsAuths = userAzureDevOpsAuths
-              .filter((auth) => auth.accountId === azureDevOpsAuthToRefresh.accountId)
-              .map((auth) => ({
-                ...auth,
-                accessToken,
-                refreshToken: updatedRefreshToken
-              }))
-            console.log(updatedSameAccountAzureDevOpsAuths)
-            //await upsertAzureDevOpsAuths(updatedSameAccountAzureDevOpsAuths)
-            return {
+            const updatedRefreshToken = !!newRefreshToken ? newRefreshToken : refreshToken
+            // const updatedSameAccountAzureDevOpsAuths = userAzureDevOpsAuths
+            //   .filter((auth) => auth.accountId === azureDevOpsAuthToRefresh.accountId)
+            //   .map((auth) => ({
+            //     ...auth,
+            //     accessToken,
+            //     refreshToken: updatedRefreshToken
+            //   }))
+            // console.log(updatedSameAccountAzureDevOpsAuths)
+            // await upsertAzureDevOpsAuths(updatedSameAccountAzureDevOpsAuths)
+            const newAzureDevOpsAuth = {
               ...azureDevOpsAuthToRefresh,
               accessToken,
               refreshToken: updatedRefreshToken
             }
+            await upsertTeamMemberIntegrationAuth(newAzureDevOpsAuth)
+
+            return newAzureDevOpsAuth
           }
 
           return azureDevOpsAuthToRefresh
@@ -131,6 +147,7 @@ export const azureDevUserInfo = (
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) return undefined
           const {accessToken} = auth
+          if (!accessToken) return undefined
           const manager = new AzureDevOpsServerManager(accessToken)
           const restResult = await manager.getMe()
           const {error, azureDevOpsUser} = restResult
@@ -168,6 +185,7 @@ export const allAzureDevOpsAccessibleOrgs = (
           if (!userInfo) return []
           const {id} = userInfo
 
+          if (!accessToken) return []
           const manager = new AzureDevOpsServerManager(accessToken)
           const results = await manager.getAccessibleOrgs(id)
           const {error, accessibleOrgs} = results
@@ -197,6 +215,7 @@ export const allAzureDevOpsProjects = (
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) return []
           const {accessToken} = auth
+          if (!accessToken) return []
           const manager = new AzureDevOpsServerManager(accessToken)
           const {error, projects} = await manager.getAllUserProjects()
           if (!error) console.log(error)
@@ -223,6 +242,7 @@ export const azureDevOpsUserStories = (
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) return []
           const {accessToken} = auth
+          if (!accessToken) return []
           const manager = new AzureDevOpsServerManager(accessToken)
           const result = await manager.getUserStories(instanceId)
           const {error, workItems} = result

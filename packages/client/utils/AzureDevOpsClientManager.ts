@@ -2,7 +2,6 @@ import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-// import AddAzureDevOpsAuthMutation from '../mutations/AddAzureDevOpsAuthMutation'
 import AzureDevOpsManager from './AzureDevOpsManager'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 
