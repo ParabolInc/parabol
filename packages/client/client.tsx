@@ -1,10 +1,13 @@
 import React from 'react'
-import {render} from 'react-dom'
+import {createRoot} from 'react-dom/client'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
 import './types/modules.d'
 
-render(<Root />, document.getElementById('root'))
+const rootContainer = document.getElementById('root')
+const root = createRoot(rootContainer)
+root.render(<Root />)
+
 if (__PRODUCTION__ && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch(console.error)
