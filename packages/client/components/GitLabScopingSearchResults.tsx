@@ -38,7 +38,11 @@ const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
     graphql`
-      query GitLabScopingSearchResultsQuery($teamId: ID!, $queryString: String!) {
+      query GitLabScopingSearchResultsQuery(
+        $teamId: ID!
+        $queryString: String!
+        $selectedProjectsIds: [ID!]
+      ) {
         ...GitLabScopingSearchResults_query
       }
     `,
@@ -85,7 +89,7 @@ const GitLabScopingSearchResults = (props: Props) => {
                       first: $projectsFirst
                       after: $projectsAfter
                       sort: "latest_activity_desc"
-                      ids: null # $projectIds
+                      ids: $selectedProjectsIds
                     ) @connection(key: "GitLabScopingSearchResults_projects") {
                       edges {
                         node {

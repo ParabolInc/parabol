@@ -15,12 +15,12 @@ const GitLabSearchQuery = new GraphQLObjectType<any, GQLContext>({
       description:
         'The query string in GitLab format, including repository filters. e.g. is:issue is:open'
     },
-    selectedProjectsFullPath: {
+    selectedProjectsIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'The list of the fullPaths of projects that have been selected as a filter',
       resolve: (testa) => {
         console.log('🚀  ~ projectFilters', {testa})
-        return testa.selectedProjectsFullPath || []
+        return testa.selectedProjectsIds || []
       }
     },
     lastUsedAt: {

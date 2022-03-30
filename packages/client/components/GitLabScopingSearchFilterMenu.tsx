@@ -54,7 +54,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
             id
             ... on PokerMeeting {
               gitlabSearchQuery {
-                selectedProjectsFullPath
+                selectedProjectsIds
                 queryString
               }
             }
@@ -64,7 +64,12 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
               gitlab {
                 api {
                   query {
-                    projects(membership: true, first: 100, sort: "latest_activity_desc") {
+                    testa: projects(
+                      ids: null
+                      membership: true
+                      first: 100
+                      sort: "latest_activity_desc"
+                    ) {
                       edges {
                         node {
                           ... on _xGitLabProject {
@@ -87,13 +92,13 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  const nullableEdges =
-    query.viewer.teamMember?.integrations.gitlab.api?.query?.projects?.edges ?? []
+  const nullableEdges = query.viewer.teamMember?.integrations.gitlab.api?.query?.testa?.edges ?? []
+  console.log('🚀  ~ query', {query, nullableEdges})
   const projects = useMemo(() => getNonNullEdges(nullableEdges).map(({node}) => node), [query])
   const meeting = query?.viewer?.meeting
   const meetingId = meeting?.id ?? ''
   const gitlabSearchQuery = meeting?.gitlabSearchQuery
-  const {selectedProjectsFullPath} = gitlabSearchQuery!
+  const {selectedProjectsIds} = gitlabSearchQuery!
   const atmosphere = useAtmosphere()
 
   const {query: searchQuery, filteredItems: filteredProjects, onQueryChange} = useSearchFilter(
@@ -120,19 +125,19 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
       )}
       {visibleProjects.map((project) => {
         const {id: projectId, fullPath} = project
-        const isSelected = selectedProjectsFullPath.includes(fullPath)
+        const isSelected = selectedProjectsIds.includes(projectId)
 
         const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('gitlab', meetingId)
             const gitlabSearchQuery = store.get<GitLabSearchQuery>(searchQueryId)!
-            const selectedProjectsFullPath = gitlabSearchQuery.getValue(
-              'selectedProjectsFullPath'
+            const selectedProjectsIds = gitlabSearchQuery.getValue(
+              'selectedProjectsIds'
             ) as string[]
-            const newProjectFilters = isSelected
-              ? selectedProjectsFullPath.filter((projectFullPath) => projectFullPath !== fullPath)
-              : [...selectedProjectsFullPath, fullPath]
-            gitlabSearchQuery.setValue(newProjectFilters, 'selectedProjectsFullPath')
+            const newSelectedProjectsIds = isSelected
+              ? selectedProjectsIds.filter((id) => id !== projectId)
+              : [...selectedProjectsIds, projectId]
+            gitlabSearchQuery.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
           })
         }
         return (
