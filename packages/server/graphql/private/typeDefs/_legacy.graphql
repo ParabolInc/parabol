@@ -1559,6 +1559,23 @@ type JiraServerIntegration {
   sharedProviders: [IntegrationProviderOAuth1!]!
 
   """
+  A list of issues coming straight from the jira integration for a specific team member
+  """
+  issues(
+    first: Int = 100
+
+    """the datetime cursor"""
+    after: DateTime
+
+    """A string of text to search for, or JQL if isJQL is true"""
+    queryString: String
+
+    """true if the queryString is JQL, else false"""
+    isJQL: Boolean!
+    projectKeyFilters: [ID!]
+  ): JiraServerIssueConnection!
+
+  """
   A list of projects accessible by this team member. empty if viewer is not the user
   """
   projects: [JiraServerRemoteProject!]!
@@ -1620,6 +1637,48 @@ interface TeamMemberIntegrationAuth {
 
   """The provider to connect to"""
   provider: IntegrationProvider!
+}
+
+"""A connection to a list of items."""
+type JiraServerIssueConnection {
+  """Page info with cursors coerced to ISO8601 dates"""
+  pageInfo: PageInfoDateCursor
+
+  """A list of edges."""
+  edges: [JiraServerIssueEdge!]!
+
+  """An error with the connection, if any"""
+  error: StandardMutationError
+}
+
+"""An edge in a connection."""
+type JiraServerIssueEdge {
+  """The item at the end of the edge"""
+  node: JiraServerIssue!
+  cursor: DateTime
+}
+
+"""The Jira Issue that comes direct from Jira Server"""
+type JiraServerIssue implements TaskIntegration {
+  id: ID!
+  issueKey: ID!
+  projectKey: ID!
+
+  """The parabol teamId this issue was fetched for"""
+  teamId: ID!
+
+  """The parabol userId this issue was fetched for"""
+  userId: ID!
+
+  """The url to access the issue"""
+  url: URL!
+
+  """The plaintext summary of the jira issue"""
+  summary: String!
+  description: String!
+
+  """The description converted into raw HTML"""
+  descriptionHTML: String!
 }
 
 """A project fetched from Jira in real time"""
