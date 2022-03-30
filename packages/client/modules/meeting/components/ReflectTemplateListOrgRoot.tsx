@@ -1,18 +1,10 @@
-import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
-import {QueryRenderer} from 'react-relay'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import renderQuery from '../../../utils/relay/renderQuery'
+import React, {Suspense} from 'react'
 import MockTemplateList from './MockTemplateList'
 import ReflectTemplateListOrg from './ReflectTemplateListOrg'
-
-const query = graphql`
-  query ReflectTemplateListOrgRootQuery($teamId: ID!) {
-    viewer {
-      ...ReflectTemplateListOrg_viewer
-    }
-  }
-`
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import reflectTemplateListOrgQuery, {
+  ReflectTemplateListOrgQuery
+} from '../../../__generated__/ReflectTemplateListOrgQuery.graphql'
 
 interface Props {
   isActive: boolean
@@ -21,16 +13,14 @@ interface Props {
 
 const ReflectTemplateListOrgRoot = (props: Props) => {
   const {isActive, teamId} = props
-  const atmosphere = useAtmosphere()
+  const queryRef = useQueryLoaderNow<ReflectTemplateListOrgQuery>(reflectTemplateListOrgQuery, {
+    teamId
+  })
   if (!isActive) return null
   return (
-    <QueryRenderer
-      environment={atmosphere}
-      query={query}
-      variables={{teamId}}
-      fetchPolicy={'store-or-network' as any}
-      render={renderQuery(ReflectTemplateListOrg, {Loader: <MockTemplateList />})}
-    />
+    <Suspense fallback={<MockTemplateList />}>
+      {queryRef && <ReflectTemplateListOrg queryRef={queryRef} />}
+    </Suspense>
   )
 }
 
