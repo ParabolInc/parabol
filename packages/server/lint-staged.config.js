@@ -1,5 +1,4 @@
 module.exports = {
-  // "*.{ts,tsx}": 'organize-imports-cli',
-  '*.{js,ts,tsx}': 'eslint --fix',
+  '*.{js,ts,tsx}': ['eslint --fix', 'prettier --write'],
   '*': () => 'tsc --noEmit -p tsconfig.json'
 }
