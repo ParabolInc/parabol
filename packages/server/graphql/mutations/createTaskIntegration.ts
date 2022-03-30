@@ -136,11 +136,7 @@ export default {
 
     const {issueId, ...updateTaskInput} = createTaskResponse
 
-    if (
-      userId &&
-      viewerId !== userId &&
-      'addCreatedBySomeoneElseComment' in taskIntegrationManager
-    ) {
+    if (userId && viewerId !== userId) {
       const addCommentResponse = await taskIntegrationManager.addCreatedBySomeoneElseComment(
         viewerName,
         assigneeName,

@@ -63,6 +63,10 @@ export interface JiraServerIssue {
   }
 }
 
+interface JiraServerIssuesResponse {
+  issues: JiraServerIssue[]
+}
+
 export default class JiraServerRestManager implements TaskIntegrationManager {
   public title = 'Jira Server'
   private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
@@ -151,6 +155,18 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
       'GET',
       `/rest/api/latest/issue/${issueId}?expand=renderedFields`
     )
+  }
+
+  async getIssues() {
+    // TODO: support JQL
+    const jql = 'order by lastViewed DESC'
+    const payload = {
+      jql,
+      maxResults: 100,
+      expand: ['renderedFields']
+    }
+
+    return this.request<JiraServerIssuesResponse>('POST', '/rest/api/latest/search', payload)
   }
 
   async createIssue(projectId: string, summary: string, description: string) {
