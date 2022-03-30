@@ -13,10 +13,12 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
+    "format": "yarn typecheck && yarn lint && yarn prettier",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-sFtorybook",
-    "lint": "eslint --fix ./**/*.{ts,tsx}",
+    "lint": "eslint --fix \"**/*.{ts,tsx}\"",
     "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
@@ -44,7 +46,7 @@
     "expect": "^24.8.0",
     "html-webpack-plugin": "5.0.0-beta.1",
     "lint-staged": "^10.1.7",
-    "prettier": "^1.19.1",
+    "prettier": "^2.6.1",
     "react-refresh": "^0.9.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "4.5.5",
