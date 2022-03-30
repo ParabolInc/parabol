@@ -6,14 +6,17 @@ import {
   PreloadFetchPolicy,
   useQueryLoader
 } from 'react-relay'
+import {Environment} from 'relay-runtime'
 import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
 
+// TODO: merge these last 3 (maybe more) parameters into `options` object
 const useQueryLoaderNow = <TQuery extends OperationType>(
   preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
   variables: VariablesOf<TQuery> = {},
   fetchPolicy?: PreloadFetchPolicy,
-  preventSuspense?: boolean
+  preventSuspense?: boolean,
+  relayEnvironment?: Environment
 ) => {
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
   const varRef = useRef(variables)
@@ -25,7 +28,11 @@ const useQueryLoaderNow = <TQuery extends OperationType>(
   const refreshQuery = useCallback(() => {
     // fetchQuery will fetch the query and write the data to the Relay store. This will
     // ensure that when we re-render, the data is already cached and we don't suspend
-    fetchQuery(atmosphere, preloadableRequest as GraphQLTaggedNode, variables).subscribe({
+    fetchQuery(
+      relayEnvironment || atmosphere,
+      preloadableRequest as GraphQLTaggedNode,
+      variables
+    ).subscribe({
       complete: () => {
         // *After* the query has been fetched, we call loadQuery again to re-render
         // with a new queryRef. At this point the data for the query should be
