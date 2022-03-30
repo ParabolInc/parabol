@@ -27,17 +27,17 @@ const OrgBillingRoot = ({organization}: Props) => {
   })
   return (
     <Suspense fallback={''}>
-      {queryRef && <OrgBillingWrapper queryRef={queryRef} organization={organization} />}
+      {queryRef && <OrgBillingContainer queryRef={queryRef} organization={organization} />}
     </Suspense>
   )
 }
 
-interface OrgBillingWrapperProps {
+interface OrgBillingContainerProps {
   queryRef: PreloadedQuery<OrgBillingRootQuery>
   organization: OrgBillingRoot_organization
 }
 
-function OrgBillingWrapper(props: OrgBillingWrapperProps) {
+function OrgBillingContainer(props: OrgBillingContainerProps) {
   const {queryRef, organization} = props
   const data = usePreloadedQuery<OrgBillingRootQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'

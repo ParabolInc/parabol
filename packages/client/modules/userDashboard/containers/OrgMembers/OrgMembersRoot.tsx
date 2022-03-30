@@ -25,14 +25,16 @@ const OrgMembersRoot = (props: Props) => {
     orgId,
     first: 10000
   })
-  return <Suspense fallback={''}>{queryRef && <OrgMembersWrapper queryRef={queryRef} />}</Suspense>
+  return (
+    <Suspense fallback={''}>{queryRef && <OrgMembersContainer queryRef={queryRef} />}</Suspense>
+  )
 }
 
-interface OrgMembersWrapperProps {
+interface OrgMembersContainerProps {
   queryRef: PreloadedQuery<OrgMembersRootQuery>
 }
 
-function OrgMembersWrapper(props: OrgMembersWrapperProps) {
+function OrgMembersContainer(props: OrgMembersContainerProps) {
   const {queryRef} = props
   const data = usePreloadedQuery<OrgMembersRootQuery>(query, queryRef, {
     UNSTABLE_renderPolicy: 'full'
