@@ -2,12 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
-// import useSearchFilter from '~/hooks/useSearchFilter'
-import {isNotNull} from '../utils/predicates'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-// import getProjectsFromQueryStr from '../utils/getProjectsFromQueryStr'
 import {
   GitLabScopingSearchFilterMenuQuery,
   GitLabScopingSearchFilterMenuQueryResponse
@@ -57,6 +54,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
             id
             ... on PokerMeeting {
               gitlabSearchQuery {
+                selectedProjectsFullPath
                 queryString
               }
             }
@@ -66,11 +64,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
               gitlab {
                 api {
                   query {
-                    allProjectsTest: projects(
-                      membership: true
-                      first: 100
-                      sort: "latest_activity_desc"
-                    ) {
+                    projects(membership: true, first: 100, sort: "latest_activity_desc") {
                       edges {
                         node {
                           ... on _xGitLabProject {
@@ -94,46 +88,19 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   )
 
   const nullableEdges =
-    query.viewer.teamMember?.integrations.gitlab.api?.query?.allProjectsTest?.edges ?? []
+    query.viewer.teamMember?.integrations.gitlab.api?.query?.projects?.edges ?? []
   const projects = useMemo(() => getNonNullEdges(nullableEdges).map(({node}) => node), [query])
-  console.log('🚀  ~ projects', {projects, query, nullableEdges})
-  // const meeting = query?.viewer?.meeting
-  // const meetingId = meeting?.id ?? ''
-  // const gitlabSearchQuery = meeting?.gitlabSearchQuery
-  // const queryString = gitlabSearchQuery?.queryString ?? null
-  // const atmosphere = useAtmosphere()
-  // const contributionsByProject =
-  //   query?.viewer?.teamMember?.integrations.gitlab?.api?.query?.viewer?.contributionsCollection
-  //     ?.commitContributionsByProjectsitory ?? []
-  // const projectContributions = useMemo(() => {
-  //   const contributions = contributionsByProject.map((contributionByProject) =>
-  //     contributionByProject.contributions.nodes ? contributionByProject.contributions.nodes[0] : null
-  //   )
-  //   return contributions
-  //     .filter(isNotNull)
-  //     .sort(
-  //       (a, b) =>
-  //         new Date(b.occurredAt as string).getTime() - new Date(a.occurredAt as string).getTime()
-  //     )
-  //     .map((sortedContributions) => sortedContributions?.projectsitory)
-  // }, [contributionsByProject])
+  const meeting = query?.viewer?.meeting
+  const meetingId = meeting?.id ?? ''
+  const gitlabSearchQuery = meeting?.gitlabSearchQuery
+  const {selectedProjectsFullPath} = gitlabSearchQuery!
+  const atmosphere = useAtmosphere()
 
   const {query: searchQuery, filteredItems: filteredProjects, onQueryChange} = useSearchFilter(
     projects,
     getValue
   )
   const visibleProjects = filteredProjects.slice(0, MAX_PROJECTS)
-
-  // // TODO parse the query string & extract out the projectsitories
-  // const selectedProjects = getProjectsFromQueryStr(queryString)
-  // const selectedAndFilteredProjects = useMemo(() => {
-  //   const adjustedMax =
-  //     selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS
-  //   const projects = filteredProjectContributions.map(({nameWithOwner}) =>
-  //     nameWithOwner.toLowerCase().trim()
-  //   )
-  //   return Array.from(new Set([...selectedProjects, ...projects])).slice(0, adjustedMax)
-  // }, [filteredProjectContributions])
 
   const {portalStatus, isDropdown} = menuProps
   return (
@@ -152,31 +119,28 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
       {visibleProjects.map((project) => {
-        const {id: projectId, name, fullPath} = project
-        // const isSelected = selectedProjects.includes(project)
+        const {id: projectId, fullPath} = project
+        const isSelected = selectedProjectsFullPath.includes(fullPath)
+
         const handleClick = () => {
-          // commitLocalUpdate(atmosphere, (store) => {
-          //   const searchQueryId = SearchQueryId.join('gitlab', meetingId)
-          //   const gitlabSearchQuery = store.get<GitLabSearchQuery>(searchQueryId)!
-          //   const newFilters = isSelected
-          //     ? selectedProjects.filter((name) => name !== project)
-          //     : selectedProjects.concat(project)
-          //   const queryString = gitlabSearchQuery.getValue('queryString')
-          //   const queryWithoutProjects = queryString
-          //     .trim()
-          //     .split(' ')
-          //     .filter((str) => !str.includes('project:'))
-          //   const newProjects = newFilters.map((name) => `project:${name}`)
-          //   const newQueryStr = queryWithoutProjects.concat(newProjects).join(' ')
-          //   gitlabSearchQuery.setValue(newQueryStr, 'queryString')
-          // })
+          commitLocalUpdate(atmosphere, (store) => {
+            const searchQueryId = SearchQueryId.join('gitlab', meetingId)
+            const gitlabSearchQuery = store.get<GitLabSearchQuery>(searchQueryId)!
+            const selectedProjectsFullPath = gitlabSearchQuery.getValue(
+              'selectedProjectsFullPath'
+            ) as string[]
+            const newProjectFilters = isSelected
+              ? selectedProjectsFullPath.filter((projectFullPath) => projectFullPath !== fullPath)
+              : [...selectedProjectsFullPath, fullPath]
+            gitlabSearchQuery.setValue(newProjectFilters, 'selectedProjectsFullPath')
+          })
         }
         return (
           <MenuItem
             key={projectId}
             label={
               <StyledMenuItemLabel>
-                <StyledCheckBox active={false} />
+                <StyledCheckBox active={isSelected} />
                 <TypeAheadLabel query={searchQuery} label={fullPath} />
               </StyledMenuItemLabel>
             }

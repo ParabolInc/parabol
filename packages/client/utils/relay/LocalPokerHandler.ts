@@ -38,7 +38,7 @@ const defaults = [
     type: 'GitLabSearchQuery',
     defaultQuery: {
       queryString: '',
-      projectFilters: [] as string[]
+      selectedProjectsFullPath: [] as string[]
     }
   }
 ] as const
