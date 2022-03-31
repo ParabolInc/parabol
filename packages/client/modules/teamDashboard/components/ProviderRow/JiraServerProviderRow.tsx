@@ -86,7 +86,7 @@ const ExtraProviderCard = styled(ProviderCard)({
 graphql`
   fragment JiraServerProviderRowTeamMember on TeamMember {
     integrations {
-      jiraServer{
+      jiraServer {
         auth {
           id
           isActive
@@ -127,7 +127,6 @@ const JiraServerProviderRow = (props: Props) => {
   const openOAuth = () => {
     JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)
   }
-
 
   return (
     <ExtraProviderCard>

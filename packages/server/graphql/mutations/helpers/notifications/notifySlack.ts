@@ -5,9 +5,6 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import getRethink from '../../../../database/rethinkDriver'
-import MeetingAction from '../../../../database/types/MeetingAction'
-import MeetingPoker from '../../../../database/types/MeetingPoker'
-import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import SlackAuth from '../../../../database/types/SlackAuth'
 import SlackNotification, {
   SlackNotificationEvent
@@ -20,6 +17,7 @@ import errorFilter from '../../../errorFilter'
 import {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {makeButtons, makeSection, makeSections} from './makeSlackBlocks'
+import {AnyMeeting} from '../../../../postgres/types/Meeting'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -120,7 +118,7 @@ export const startSlackMeeting = async (
   notifySlack('meetingStart', dataLoader, teamId, blocks, title).catch(console.log)
 }
 
-const makeEndMeetingButtons = (meeting: MeetingRetrospective | MeetingAction | MeetingPoker) => {
+const makeEndMeetingButtons = (meeting: AnyMeeting) => {
   const {id: meetingId} = meeting
   const searchParams = {
     utm_source: 'slack summary',

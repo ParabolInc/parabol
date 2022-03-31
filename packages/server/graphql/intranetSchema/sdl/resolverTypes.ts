@@ -536,7 +536,12 @@ export enum DiscussionTopicTypeEnum {
   GithubIssue = 'githubIssue',
   JiraIssue = 'jiraIssue',
   ReflectionGroup = 'reflectionGroup',
+<<<<<<< HEAD
   Task = 'task'
+=======
+  Task = 'task',
+  TeamPromptResponse = 'teamPromptResponse'
+>>>>>>> master
 }
 
 export type DomainCountPayload = {
@@ -3293,7 +3298,11 @@ export type TeamPromptMeeting = NewMeeting & {
   /** The phases the meeting will go through, including all phase-specific state */
   phases: Array<NewMeetingPhase>;
   /** The tasks created within the meeting */
+<<<<<<< HEAD
   responses: Array<Task>;
+=======
+  responses: Array<TeamPromptResponse>;
+>>>>>>> master
   /** The settings that govern the team prompt meeting */
   settings: TeamPromptMeetingSettings;
   /** true if should show the org the conversion modal, else false */
@@ -3344,6 +3353,90 @@ export type TeamPromptMeetingSettings = TeamMeetingSettings & {
   teamId: Scalars['ID'];
 };
 
+<<<<<<< HEAD
+=======
+/** A response of a single team member in a team prompt */
+export type TeamPromptResponse = Reactable & {
+  __typename?: 'TeamPromptResponse';
+  /** the content of the response */
+  content: Scalars['String'];
+  /** shortid */
+  id: Scalars['ID'];
+  /** the plain text content of the response */
+  plaintextContent: Scalars['String'];
+  /** All the reactjis for the given reflection */
+  reactjis: Array<Reactji>;
+  /** the shared sort order for reponses */
+  sortOrder: Scalars['Float'];
+  /** The team this response belongs to */
+  team: Team;
+  /** The user who created the response */
+  user?: Maybe<User>;
+  /** Id of the user who created the team prompt response */
+  userId: Scalars['ID'];
+};
+
+/** The stage where the single team member responds to a prompt */
+export type TeamPromptResponseStage = DiscussionThreadStage & NewMeetingStage & {
+  __typename?: 'TeamPromptResponseStage';
+  /** The discussion about the stage */
+  discussion: Discussion;
+  /** The ID to find the discussion that goes in the stage */
+  discussionId: Scalars['ID'];
+  /** The datetime the stage was completed */
+  endAt?: Maybe<Scalars['DateTime']>;
+  /** stageId, shortid */
+  id: Scalars['ID'];
+  /** true if a time limit is set, false if end time is set, null if neither is set */
+  isAsync?: Maybe<Scalars['Boolean']>;
+  /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
+  isComplete: Scalars['Boolean'];
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: Scalars['Boolean'];
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: Scalars['Boolean'];
+  /** true if the viewer is ready to advance, else false */
+  isViewerReady: Scalars['Boolean'];
+  /** The meeting this stage belongs to */
+  meeting?: Maybe<NewMeeting>;
+  /** foreign key. try using meeting */
+  meetingId: Scalars['ID'];
+  /** The phase this stage belongs to */
+  phase?: Maybe<NewMeetingPhase>;
+  /** The type of the phase */
+  phaseType?: Maybe<NewMeetingPhaseTypeEnum>;
+  /** the number of meeting members ready to advance, excluding the facilitator */
+  readyCount: Scalars['Int'];
+  /** The response to the prompt */
+  response: TeamPromptResponse;
+  /** The datetime the phase is scheduled to be finished, null if no time limit or end time is set */
+  scheduledEndTime?: Maybe<Scalars['DateTime']>;
+  /** The datetime the stage was started */
+  startAt?: Maybe<Scalars['DateTime']>;
+  /** The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion */
+  suggestedEndTime?: Maybe<Scalars['DateTime']>;
+  /** The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion */
+  suggestedTimeLimit?: Maybe<Scalars['Float']>;
+  teamId: Scalars['ID'];
+  /** The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null */
+  timeRemaining?: Maybe<Scalars['Float']>;
+  /** Number of times the facilitator has visited this stage */
+  viewCount?: Maybe<Scalars['Int']>;
+};
+
+/** The meeting phase where each of the team members can respond to prompts */
+export type TeamPromptResponsesPhase = NewMeetingPhase & {
+  __typename?: 'TeamPromptResponsesPhase';
+  /** shortid */
+  id: Scalars['ID'];
+  meetingId: Scalars['ID'];
+  /** The type of phase */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<TeamPromptResponseStage>;
+  teamId: Scalars['ID'];
+};
+
+>>>>>>> master
 /** A team-specific template dimension: e.g., effort, importance etc. */
 export type TemplateDimension = {
   __typename?: 'TemplateDimension';
@@ -4117,7 +4210,11 @@ export type ResolversTypes = {
   DisconnectSocketPayload: ResolverTypeWrapper<DisconnectSocketPayload>;
   DiscussPhase: ResolverTypeWrapper<DiscussPhase>;
   Discussion: ResolverTypeWrapper<Discussion>;
+<<<<<<< HEAD
   DiscussionThreadStage: ResolversTypes['AgendaItemsStage'] | ResolversTypes['EstimateStage'] | ResolversTypes['RetroDiscussStage'];
+=======
+  DiscussionThreadStage: ResolversTypes['AgendaItemsStage'] | ResolversTypes['EstimateStage'] | ResolversTypes['RetroDiscussStage'] | ResolversTypes['TeamPromptResponseStage'];
+>>>>>>> master
   DiscussionTopicTypeEnum: DiscussionTopicTypeEnum;
   DomainCountPayload: ResolverTypeWrapper<DomainCountPayload>;
   DraftEnterpriseInvoicePayload: ResolverTypeWrapper<DraftEnterpriseInvoicePayload>;
@@ -4177,9 +4274,15 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   NewFeatureBroadcast: ResolverTypeWrapper<NewFeatureBroadcast>;
   NewMeeting: ResolversTypes['ActionMeeting'] | ResolversTypes['PokerMeeting'] | ResolversTypes['RetrospectiveMeeting'] | ResolversTypes['TeamPromptMeeting'];
+<<<<<<< HEAD
   NewMeetingPhase: ResolversTypes['AgendaItemsPhase'] | ResolversTypes['CheckInPhase'] | ResolversTypes['DiscussPhase'] | ResolversTypes['EstimatePhase'] | ResolversTypes['GenericMeetingPhase'] | ResolversTypes['ReflectPhase'] | ResolversTypes['UpdatesPhase'];
   NewMeetingPhaseTypeEnum: NewMeetingPhaseTypeEnum;
   NewMeetingStage: ResolversTypes['AgendaItemsStage'] | ResolversTypes['CheckInStage'] | ResolversTypes['EstimateStage'] | ResolversTypes['GenericMeetingStage'] | ResolversTypes['RetroDiscussStage'] | ResolversTypes['UpdatesStage'];
+=======
+  NewMeetingPhase: ResolversTypes['AgendaItemsPhase'] | ResolversTypes['CheckInPhase'] | ResolversTypes['DiscussPhase'] | ResolversTypes['EstimatePhase'] | ResolversTypes['GenericMeetingPhase'] | ResolversTypes['ReflectPhase'] | ResolversTypes['TeamPromptResponsesPhase'] | ResolversTypes['UpdatesPhase'];
+  NewMeetingPhaseTypeEnum: NewMeetingPhaseTypeEnum;
+  NewMeetingStage: ResolversTypes['AgendaItemsStage'] | ResolversTypes['CheckInStage'] | ResolversTypes['EstimateStage'] | ResolversTypes['GenericMeetingStage'] | ResolversTypes['RetroDiscussStage'] | ResolversTypes['TeamPromptResponseStage'] | ResolversTypes['UpdatesStage'];
+>>>>>>> master
   NewMeetingTeamMemberStage: ResolversTypes['CheckInStage'] | ResolversTypes['UpdatesStage'];
   NextPeriodCharges: ResolverTypeWrapper<NextPeriodCharges>;
   Notification: ResolversTypes['NotificationTeamInvitation'] | ResolversTypes['NotifyPaymentRejected'] | ResolversTypes['NotifyPromoteToOrgLeader'];
@@ -4206,7 +4309,11 @@ export type ResolversTypes = {
   PokerTemplateConnection: ResolverTypeWrapper<PokerTemplateConnection>;
   PokerTemplateEdge: ResolverTypeWrapper<PokerTemplateEdge>;
   Query: ResolverTypeWrapper<{}>;
+<<<<<<< HEAD
   Reactable: ResolversTypes['Comment'] | ResolversTypes['RetroReflection'];
+=======
+  Reactable: ResolversTypes['Comment'] | ResolversTypes['RetroReflection'] | ResolversTypes['TeamPromptResponse'];
+>>>>>>> master
   Reactji: ResolverTypeWrapper<Reactji>;
   ReflectPhase: ResolverTypeWrapper<ReflectPhase>;
   ReflectPrompt: ResolverTypeWrapper<ReflectPrompt>;
@@ -4264,6 +4371,12 @@ export type ResolversTypes = {
   TeamPromptMeeting: ResolverTypeWrapper<TeamPromptMeeting>;
   TeamPromptMeetingMember: ResolverTypeWrapper<TeamPromptMeetingMember>;
   TeamPromptMeetingSettings: ResolverTypeWrapper<TeamPromptMeetingSettings>;
+<<<<<<< HEAD
+=======
+  TeamPromptResponse: ResolverTypeWrapper<TeamPromptResponse>;
+  TeamPromptResponseStage: ResolverTypeWrapper<TeamPromptResponseStage>;
+  TeamPromptResponsesPhase: ResolverTypeWrapper<TeamPromptResponsesPhase>;
+>>>>>>> master
   TemplateDimension: ResolverTypeWrapper<TemplateDimension>;
   TemplateDimensionRef: ResolverTypeWrapper<TemplateDimensionRef>;
   TemplateScale: ResolverTypeWrapper<TemplateScale>;
@@ -4319,7 +4432,11 @@ export type ResolversParentTypes = {
   DisconnectSocketPayload: DisconnectSocketPayload;
   DiscussPhase: DiscussPhase;
   Discussion: Discussion;
+<<<<<<< HEAD
   DiscussionThreadStage: ResolversParentTypes['AgendaItemsStage'] | ResolversParentTypes['EstimateStage'] | ResolversParentTypes['RetroDiscussStage'];
+=======
+  DiscussionThreadStage: ResolversParentTypes['AgendaItemsStage'] | ResolversParentTypes['EstimateStage'] | ResolversParentTypes['RetroDiscussStage'] | ResolversParentTypes['TeamPromptResponseStage'];
+>>>>>>> master
   DomainCountPayload: DomainCountPayload;
   DraftEnterpriseInvoicePayload: DraftEnterpriseInvoicePayload;
   Email: Scalars['Email'];
@@ -4372,8 +4489,13 @@ export type ResolversParentTypes = {
   Mutation: {};
   NewFeatureBroadcast: NewFeatureBroadcast;
   NewMeeting: ResolversParentTypes['ActionMeeting'] | ResolversParentTypes['PokerMeeting'] | ResolversParentTypes['RetrospectiveMeeting'] | ResolversParentTypes['TeamPromptMeeting'];
+<<<<<<< HEAD
   NewMeetingPhase: ResolversParentTypes['AgendaItemsPhase'] | ResolversParentTypes['CheckInPhase'] | ResolversParentTypes['DiscussPhase'] | ResolversParentTypes['EstimatePhase'] | ResolversParentTypes['GenericMeetingPhase'] | ResolversParentTypes['ReflectPhase'] | ResolversParentTypes['UpdatesPhase'];
   NewMeetingStage: ResolversParentTypes['AgendaItemsStage'] | ResolversParentTypes['CheckInStage'] | ResolversParentTypes['EstimateStage'] | ResolversParentTypes['GenericMeetingStage'] | ResolversParentTypes['RetroDiscussStage'] | ResolversParentTypes['UpdatesStage'];
+=======
+  NewMeetingPhase: ResolversParentTypes['AgendaItemsPhase'] | ResolversParentTypes['CheckInPhase'] | ResolversParentTypes['DiscussPhase'] | ResolversParentTypes['EstimatePhase'] | ResolversParentTypes['GenericMeetingPhase'] | ResolversParentTypes['ReflectPhase'] | ResolversParentTypes['TeamPromptResponsesPhase'] | ResolversParentTypes['UpdatesPhase'];
+  NewMeetingStage: ResolversParentTypes['AgendaItemsStage'] | ResolversParentTypes['CheckInStage'] | ResolversParentTypes['EstimateStage'] | ResolversParentTypes['GenericMeetingStage'] | ResolversParentTypes['RetroDiscussStage'] | ResolversParentTypes['TeamPromptResponseStage'] | ResolversParentTypes['UpdatesStage'];
+>>>>>>> master
   NewMeetingTeamMemberStage: ResolversParentTypes['CheckInStage'] | ResolversParentTypes['UpdatesStage'];
   NextPeriodCharges: NextPeriodCharges;
   Notification: ResolversParentTypes['NotificationTeamInvitation'] | ResolversParentTypes['NotifyPaymentRejected'] | ResolversParentTypes['NotifyPromoteToOrgLeader'];
@@ -4397,7 +4519,11 @@ export type ResolversParentTypes = {
   PokerTemplateConnection: PokerTemplateConnection;
   PokerTemplateEdge: PokerTemplateEdge;
   Query: {};
+<<<<<<< HEAD
   Reactable: ResolversParentTypes['Comment'] | ResolversParentTypes['RetroReflection'];
+=======
+  Reactable: ResolversParentTypes['Comment'] | ResolversParentTypes['RetroReflection'] | ResolversParentTypes['TeamPromptResponse'];
+>>>>>>> master
   Reactji: Reactji;
   ReflectPhase: ReflectPhase;
   ReflectPrompt: ReflectPrompt;
@@ -4448,6 +4574,12 @@ export type ResolversParentTypes = {
   TeamPromptMeeting: TeamPromptMeeting;
   TeamPromptMeetingMember: TeamPromptMeetingMember;
   TeamPromptMeetingSettings: TeamPromptMeetingSettings;
+<<<<<<< HEAD
+=======
+  TeamPromptResponse: TeamPromptResponse;
+  TeamPromptResponseStage: TeamPromptResponseStage;
+  TeamPromptResponsesPhase: TeamPromptResponsesPhase;
+>>>>>>> master
   TemplateDimension: TemplateDimension;
   TemplateDimensionRef: TemplateDimensionRef;
   TemplateScale: TemplateScale;
@@ -4755,7 +4887,11 @@ export type DiscussionResolvers<ContextType = InternalContext, ParentType extend
 };
 
 export type DiscussionThreadStageResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['DiscussionThreadStage'] = ResolversParentTypes['DiscussionThreadStage']> = {
+<<<<<<< HEAD
   __resolveType: TypeResolveFn<'AgendaItemsStage' | 'EstimateStage' | 'RetroDiscussStage', ParentType, ContextType>;
+=======
+  __resolveType: TypeResolveFn<'AgendaItemsStage' | 'EstimateStage' | 'RetroDiscussStage' | 'TeamPromptResponseStage', ParentType, ContextType>;
+>>>>>>> master
   discussion?: Resolver<ResolversTypes['Discussion'], ParentType, ContextType>;
   discussionId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
@@ -5275,7 +5411,11 @@ export type NewMeetingResolvers<ContextType = InternalContext, ParentType extend
 };
 
 export type NewMeetingPhaseResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['NewMeetingPhase'] = ResolversParentTypes['NewMeetingPhase']> = {
+<<<<<<< HEAD
   __resolveType: TypeResolveFn<'AgendaItemsPhase' | 'CheckInPhase' | 'DiscussPhase' | 'EstimatePhase' | 'GenericMeetingPhase' | 'ReflectPhase' | 'UpdatesPhase', ParentType, ContextType>;
+=======
+  __resolveType: TypeResolveFn<'AgendaItemsPhase' | 'CheckInPhase' | 'DiscussPhase' | 'EstimatePhase' | 'GenericMeetingPhase' | 'ReflectPhase' | 'TeamPromptResponsesPhase' | 'UpdatesPhase', ParentType, ContextType>;
+>>>>>>> master
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   phaseType?: Resolver<ResolversTypes['NewMeetingPhaseTypeEnum'], ParentType, ContextType>;
@@ -5284,7 +5424,11 @@ export type NewMeetingPhaseResolvers<ContextType = InternalContext, ParentType e
 };
 
 export type NewMeetingStageResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['NewMeetingStage'] = ResolversParentTypes['NewMeetingStage']> = {
+<<<<<<< HEAD
   __resolveType: TypeResolveFn<'AgendaItemsStage' | 'CheckInStage' | 'EstimateStage' | 'GenericMeetingStage' | 'RetroDiscussStage' | 'UpdatesStage', ParentType, ContextType>;
+=======
+  __resolveType: TypeResolveFn<'AgendaItemsStage' | 'CheckInStage' | 'EstimateStage' | 'GenericMeetingStage' | 'RetroDiscussStage' | 'TeamPromptResponseStage' | 'UpdatesStage', ParentType, ContextType>;
+>>>>>>> master
   endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isAsync?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -5562,7 +5706,11 @@ export type QueryResolvers<ContextType = InternalContext, ParentType extends Res
 };
 
 export type ReactableResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['Reactable'] = ResolversParentTypes['Reactable']> = {
+<<<<<<< HEAD
   __resolveType: TypeResolveFn<'Comment' | 'RetroReflection', ParentType, ContextType>;
+=======
+  __resolveType: TypeResolveFn<'Comment' | 'RetroReflection' | 'TeamPromptResponse', ParentType, ContextType>;
+>>>>>>> master
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   reactjis?: Resolver<Array<ResolversTypes['Reactji']>, ParentType, ContextType>;
 };
@@ -6165,7 +6313,11 @@ export type TeamPromptMeetingResolvers<ContextType = InternalContext, ParentType
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
   phases?: Resolver<Array<ResolversTypes['NewMeetingPhase']>, ParentType, ContextType>;
+<<<<<<< HEAD
   responses?: Resolver<Array<ResolversTypes['Task']>, ParentType, ContextType>;
+=======
+  responses?: Resolver<Array<ResolversTypes['TeamPromptResponse']>, ParentType, ContextType>;
+>>>>>>> master
   settings?: Resolver<ResolversTypes['TeamPromptMeetingSettings'], ParentType, ContextType>;
   showConversionModal?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   summarySentAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -6198,6 +6350,56 @@ export type TeamPromptMeetingSettingsResolvers<ContextType = InternalContext, Pa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+<<<<<<< HEAD
+=======
+export type TeamPromptResponseResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['TeamPromptResponse'] = ResolversParentTypes['TeamPromptResponse']> = {
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  plaintextContent?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reactjis?: Resolver<Array<ResolversTypes['Reactji']>, ParentType, ContextType>;
+  sortOrder?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TeamPromptResponseStageResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['TeamPromptResponseStage'] = ResolversParentTypes['TeamPromptResponseStage']> = {
+  discussion?: Resolver<ResolversTypes['Discussion'], ParentType, ContextType>;
+  discussionId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  endAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isAsync?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isComplete?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isNavigable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isNavigableByFacilitator?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isViewerReady?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  meeting?: Resolver<Maybe<ResolversTypes['NewMeeting']>, ParentType, ContextType>;
+  meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  phase?: Resolver<Maybe<ResolversTypes['NewMeetingPhase']>, ParentType, ContextType>;
+  phaseType?: Resolver<Maybe<ResolversTypes['NewMeetingPhaseTypeEnum']>, ParentType, ContextType>;
+  readyCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  response?: Resolver<ResolversTypes['TeamPromptResponse'], ParentType, ContextType>;
+  scheduledEndTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  startAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  suggestedEndTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  suggestedTimeLimit?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timeRemaining?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  viewCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TeamPromptResponsesPhaseResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['TeamPromptResponsesPhase'] = ResolversParentTypes['TeamPromptResponsesPhase']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  meetingId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  phaseType?: Resolver<ResolversTypes['NewMeetingPhaseTypeEnum'], ParentType, ContextType>;
+  stages?: Resolver<Array<ResolversTypes['TeamPromptResponseStage']>, ParentType, ContextType>;
+  teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+>>>>>>> master
 export type TemplateDimensionResolvers<ContextType = InternalContext, ParentType extends ResolversParentTypes['TemplateDimension'] = ResolversParentTypes['TemplateDimension']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -6666,6 +6868,12 @@ export type Resolvers<ContextType = InternalContext> = {
   TeamPromptMeeting?: TeamPromptMeetingResolvers<ContextType>;
   TeamPromptMeetingMember?: TeamPromptMeetingMemberResolvers<ContextType>;
   TeamPromptMeetingSettings?: TeamPromptMeetingSettingsResolvers<ContextType>;
+<<<<<<< HEAD
+=======
+  TeamPromptResponse?: TeamPromptResponseResolvers<ContextType>;
+  TeamPromptResponseStage?: TeamPromptResponseStageResolvers<ContextType>;
+  TeamPromptResponsesPhase?: TeamPromptResponsesPhaseResolvers<ContextType>;
+>>>>>>> master
   TemplateDimension?: TemplateDimensionResolvers<ContextType>;
   TemplateDimensionRef?: TemplateDimensionRefResolvers<ContextType>;
   TemplateScale?: TemplateScaleResolvers<ContextType>;

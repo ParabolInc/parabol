@@ -19,6 +19,7 @@ import {EndCheckInSuccess} from './EndCheckInPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 import {EndSprintPokerSuccess} from './EndSprintPokerPayload'
+import {EndTeamPromptSuccess} from './EndTeamPromptPayload'
 import MovePokerTemplateDimensionPayload from './MovePokerTemplateDimensionPayload'
 import {MovePokerTemplateScaleValueSuccess} from './MovePokerTemplateScaleValuePayload'
 import MoveReflectTemplatePromptPayload from './MoveReflectTemplatePromptPayload'
@@ -56,6 +57,7 @@ import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
 import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
+import {StartTeamPromptSuccess} from './StartTeamPromptPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import {UpdateGitHubDimensionFieldSuccess} from './UpdateGitHubDimensionFieldPayload'
@@ -78,10 +80,11 @@ const types = [
   ArchiveTeamPayload,
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
-  EndCheckInSuccess,
   EndNewMeetingPayload,
+  EndCheckInSuccess,
   EndRetrospectiveSuccess,
   EndSprintPokerSuccess,
+  EndTeamPromptSuccess,
   NavigateMeetingPayload,
   PushInvitationPayload,
   PromoteToTeamLeadPayload,
@@ -94,6 +97,7 @@ const types = [
   StartNewMeetingPayload,
   StartRetrospectiveSuccess,
   StartSprintPokerSuccess,
+  StartTeamPromptSuccess,
   UpdateAgendaItemPayload,
   UpdateCreditCardPayload,
   UpdateTeamNamePayload,
