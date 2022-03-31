@@ -1,47 +1,42 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import Placeholder from '@tiptap/extension-placeholder'
-import {EditorContent, EditorEvents, useEditor, JSONContent} from '@tiptap/react'
+import {EditorContent, Editor, EditorEvents, useEditor} from '@tiptap/react'
+import {Editor as EditorState} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 
 interface Props {
   autoFocus?: boolean
-  initialDoc: JSONContent
-  handleSubmit: (value: string) => void
+  editorState: EditorState
+  setEditorState: (newEditorState: EditorState) => void
+  handleSubmit: (editor: EditorState) => void
   readOnly: boolean
   placeholder: string
 }
 
 const PromptResponseEditor = (props: Props) => {
-  const {autoFocus: autoFocusProp, initialDoc,  handleSubmit, readOnly, placeholder} = props
-  const [isEditing, setIsEditing] = useState(false)
+  const {autoFocus: autoFocusProp, editorState, setEditorState, handleSubmit, readOnly, placeholder} = props
+  const [_isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
-  const [doc, setDoc] = useState(initialDoc)
-  useEffect(() => {
-    if (isEditing) return
-    setDoc(initialDoc)
-  }, [initialDoc])
 
   const setEditing = (isEditing: boolean) => {
     setIsEditing(isEditing)
     setAutoFocus(false)
   }
 
-  const onUpdate = ({editor}: EditorEvents['update']) => {
-    const nextDoc = editor.getJSON()
+  const onUpdate = ({editor: newEditorState}: EditorEvents['update']) => {
     setEditing(true)
-    setDoc(nextDoc)
+    setEditorState(newEditorState)
   }
 
-  const onSubmit = async ({editor}: EditorEvents['blur']) => {
-    const nextDoc = editor.getJSON()
+  const onSubmit = async ({editor: newEditorState}: EditorEvents['blur']) => {
     setEditing(false)
-    setDoc(nextDoc)
-    handleSubmit(JSON.stringify(nextDoc))
+    handleSubmit(newEditorState)
   }
 
-  const showPlaceholder = !doc.text && !!placeholder
-  const editor = useEditor({
-    content: doc,
+  const doc = editorState.getText()
+  const showPlaceholder = !doc && !!placeholder
+  const editor: Editor | null = useEditor({
+    content: editorState,
     extensions: [
       StarterKit,
       Placeholder.configure({
