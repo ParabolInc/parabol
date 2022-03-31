@@ -36,7 +36,8 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    meeting.setValue(value, 'gitlabSearchQuery')
+    const gitlabSearchQuery = meeting.getLinkedRecord('gitlabSearchQuery')!
+    gitlabSearchQuery.setValue(value, 'queryString')
   })
 }
 
@@ -50,13 +51,16 @@ const GitLabScopingSearchInput = (props: Props) => {
     graphql`
       fragment GitLabScopingSearchInput_meeting on PokerMeeting {
         id
-        gitlabSearchQuery
+        gitlabSearchQuery {
+          queryString
+        }
       }
     `,
     meetingRef
   )
   const {id: meetingId, gitlabSearchQuery} = meeting
-  const isEmpty = !gitlabSearchQuery
+  const {queryString} = gitlabSearchQuery
+  const isEmpty = !queryString
   const atmosphere = useAtmosphere()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +75,7 @@ const GitLabScopingSearchInput = (props: Props) => {
     <Wrapper>
       <SearchInput
         autoFocus
-        value={gitlabSearchQuery || ''}
+        value={queryString}
         onChange={onChange}
         placeholder={'Search GitLab issues...'}
       />

@@ -1,4 +1,5 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
@@ -26,15 +27,17 @@ const handleGitLabCreateIssue = (
   const issueConn = createProxyRecord(store, '_xGitLabIssueConnection', {})
   issueConn.setLinkedRecords([issueEdge], 'edges')
 
-  const meeting = store.get(meetingId)
-  const gitlabSearchQuery = meeting?.getValue('gitlabSearchQuery') as string | undefined
+  const gitlabSearchQueryId = SearchQueryId.join('gitlab', meetingId)
+  const gitlabSearchQuery = store.get(gitlabSearchQueryId)
+  const queryString = gitlabSearchQuery?.getValue('queryString') as string | undefined
+  const query = queryString?.trim() ?? ''
 
   const issueArgs = {
     first: 25,
     includeSubepics: true,
     sort: 'UPDATED_DESC',
     state: 'opened',
-    search: gitlabSearchQuery
+    search: query
   }
   project.setLinkedRecord(issueConn, 'issues', issueArgs)
 

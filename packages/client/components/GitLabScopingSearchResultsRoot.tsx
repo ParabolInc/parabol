@@ -19,14 +19,16 @@ const GitLabScopingSearchResultsRoot = (props: Props) => {
     graphql`
       fragment GitLabScopingSearchResultsRoot_meeting on PokerMeeting {
         ...GitLabScopingSearchResults_meeting
-        gitlabSearchQuery
+        gitlabSearchQuery {
+          queryString
+        }
         teamId
       }
     `,
     meetingRef
   )
   const {teamId, gitlabSearchQuery} = meeting
-  const normalizedQueryString = gitlabSearchQuery?.trim() || ''
+  const normalizedQueryString = gitlabSearchQuery.queryString.trim() || ''
   const queryRef = useQueryLoaderNow<GitLabScopingSearchResultsQuery>(
     gitlabScopingSearchResultsQuery,
     {teamId, queryString: normalizedQueryString}
