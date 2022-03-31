@@ -216,12 +216,7 @@ export default abstract class AzureDevOpsManager {
     return json
   }
 
-  async getWorkItemData(
-    instanceId: string,
-    projectId: string,
-    workItemIds: string[],
-    fields?: string[]
-  ) {
+  async getWorkItemData(instanceId: string, workItemIds: number[], fields?: string[]) {
     const workItems = [] as WorkItem[]
     let firstError: Error | undefined
     const params = new URLSearchParams()
@@ -230,7 +225,7 @@ export default abstract class AzureDevOpsManager {
       params.append('fields', fields.toString())
     }
     params.append('api-version', '7.1-preview.3')
-    const uri = `https://${instanceId}/${projectId}/_apis/wit/workitems?${params.toString()}`
+    const uri = `https://${instanceId}/_apis/wit/workitems?${params.toString()}`
     const res = await this.get<WorkItem[]>(uri)
     if (res instanceof Error) {
       if (!firstError) {
@@ -278,6 +273,45 @@ export default abstract class AzureDevOpsManager {
     const queryString =
       "Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'User Story' AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc"
     return await this.executeWiqlQuery(instanceId, queryString)
+  }
+
+  async getAllUserWorkItems() {
+    const allWorkItems = [] as WorkItem[]
+    let firstError: Error | undefined
+
+    const meResult = await this.getMe()
+    const {error: meError, azureDevOpsUser} = meResult
+    if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
+
+    const {id} = azureDevOpsUser
+    const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
+    if (!!accessibleError) return {error: accessibleError, projects: null}
+
+    accessibleOrgs.forEach(async (resource) => {
+      const {accountName} = resource
+      const {error: workItemsError, workItems} = await this.getUserStories(accountName)
+      if (!!workItemsError) {
+        if (!firstError) {
+          firstError = workItemsError
+        }
+      }
+      if (!!workItems) {
+        const resturnedIds = workItems.map((workItem) => workItem.id)
+        const {error: fullWorkItemsError, workItems: fullWorkItems} = await this.getWorkItemData(
+          accountName,
+          resturnedIds
+        )
+        if (!!fullWorkItemsError) {
+          if (!firstError) {
+            firstError = fullWorkItemsError
+          }
+        } else {
+          allWorkItems.push(...fullWorkItems)
+        }
+      }
+    })
+
+    return {error: firstError, workItems: allWorkItems}
   }
 
   async getMe() {
