@@ -76,12 +76,7 @@ type Query {
     """
     tier: TierEnum = pro
   ): Int
-  suProOrgInfo(
-    """
-    should organizations without active users be included?
-    """
-    includeInactive: Boolean! = false
-  ): [Organization!]
+
   suOrgCount(
     """
     the minimum number of users within the org to count it
