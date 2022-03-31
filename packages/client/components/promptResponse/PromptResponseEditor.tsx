@@ -36,7 +36,7 @@ const PromptResponseEditor = (props: Props) => {
   const doc = editorState.getText()
   const showPlaceholder = !doc && !!placeholder
   const editor: Editor | null = useEditor({
-    content: editorState,
+    content: editorState.getJSON(),
     extensions: [
       StarterKit,
       Placeholder.configure({
