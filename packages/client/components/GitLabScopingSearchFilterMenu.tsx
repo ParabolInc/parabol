@@ -64,7 +64,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
               gitlab {
                 api {
                   query {
-                    testa: projects(
+                    projects(
                       ids: null
                       membership: true
                       first: 100
@@ -92,8 +92,8 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
     {UNSTABLE_renderPolicy: 'full'}
   )
 
-  const nullableEdges = query.viewer.teamMember?.integrations.gitlab.api?.query?.testa?.edges ?? []
-  console.log('🚀  ~ query', {query, nullableEdges})
+  const nullableEdges =
+    query.viewer.teamMember?.integrations.gitlab.api?.query?.projects?.edges ?? []
   const projects = useMemo(() => getNonNullEdges(nullableEdges).map(({node}) => node), [query])
   const meeting = query?.viewer?.meeting
   const meetingId = meeting?.id ?? ''
