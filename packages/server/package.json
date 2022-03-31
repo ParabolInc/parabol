@@ -118,6 +118,8 @@
     "fast-json-stable-stringify": "^2.1.0",
     "graphql": "15.7.2",
     "graphql-jit": "^0.7.2",
+    "graphql-middleware": "^6.1.18",
+    "graphql-shield": "^7.5.0",
     "html-minifier-terser": "^5.0.2",
     "immutable": "3.8.2",
     "intersection-observer": "^0.7.0",
