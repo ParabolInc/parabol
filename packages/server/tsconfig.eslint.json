@@ -3,6 +3,7 @@
   "include": [
     "database/types/*",
     "database/migrations/*",
+    "postgres/migrationTemplate.ts",
     "postgres/migrations/*",
     "postgres/queries/generated/*",
     "postgres/migrations/postDeploy/*",

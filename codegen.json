@@ -31,6 +31,7 @@
           "User": "../../postgres/types/IUser#default as IUser",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
+          "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
