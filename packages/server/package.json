@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.50.0",
+  "version": "6.52.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -94,7 +94,6 @@
   },
   "dependencies": {
     "@authenio/samlify-node-xmllint": "^1.0.1",
-    "@graphql-tools/load-files": "^6.5.3",
     "@graphql-tools/merge": "^8.2.3",
     "@graphql-tools/schema": "^8.3.2",
     "@graphql-tools/wrap": "^7.0.6",
@@ -120,6 +119,8 @@
     "fast-json-stable-stringify": "^2.1.0",
     "graphql": "15.7.2",
     "graphql-jit": "^0.7.2",
+    "graphql-middleware": "^6.1.18",
+    "graphql-shield": "^7.5.0",
     "html-minifier-terser": "^5.0.2",
     "immutable": "3.8.2",
     "intersection-observer": "^0.7.0",
@@ -135,7 +136,7 @@
     "node-pg-migrate": "^5.9.0",
     "nodemailer": "^6.4.6",
     "oauth-1.0a": "^2.2.6",
-    "parabol-client": "^6.50.0",
+    "parabol-client": "^6.52.0",
     "pg": "^8.5.1",
     "pm2": "^5.1.1",
     "prettier-plugin-organize-imports": "^2.3.4",

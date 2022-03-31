@@ -1,26 +1,26 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {useFragment} from 'react-relay'
 import {JiraServerProviderRow_viewer$key} from '~/__generated__/JiraServerProviderRow_viewer.graphql'
-import graphql from 'babel-plugin-relay/macro'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
-import ProviderCard from '../../../../components/ProviderCard'
+import JiraServerConfigMenu from '../../../../components/JiraServerConfigMenu'
+import JiraServerProviderLogo from '../../../../components/JiraServerProviderLogo'
+import JiraServerSVG from '../../../../components/JiraServerSVG'
 import ProviderActions from '../../../../components/ProviderActions'
+import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
-import JiraServerProviderLogo from '../../../../components/JiraServerProviderLogo'
-import JiraServerSVG from '../../../../components/JiraServerSVG'
 import JiraServerClientManager from '../../../../utils/JiraServerClientManager'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import JiraServerConfigMenu from '../../../../components/JiraServerConfigMenu'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.SLATE_400,
@@ -86,7 +86,7 @@ const ExtraProviderCard = styled(ProviderCard)({
 graphql`
   fragment JiraServerProviderRowTeamMember on TeamMember {
     integrations {
-      jiraServer{
+      jiraServer {
         auth {
           id
           isActive
@@ -127,7 +127,6 @@ const JiraServerProviderRow = (props: Props) => {
   const openOAuth = () => {
     JiraServerClientManager.openOAuth(atmosphere, provider.id, teamId, mutationProps)
   }
-
 
   return (
     <ExtraProviderCard>

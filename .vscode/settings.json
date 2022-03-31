@@ -27,7 +27,6 @@
   ],
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
-    "source.organizeImports": false,
     "source.fixAll": true
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
