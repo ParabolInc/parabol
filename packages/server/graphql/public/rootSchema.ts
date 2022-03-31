@@ -1,8 +1,6 @@
-import {loadFilesSync} from '@graphql-tools/load-files'
 import {mergeSchemas} from '@graphql-tools/schema'
 import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
-import path from 'path'
 import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
 import githubSchema from '../../utils/githubSchema.graphql'
 import composeResolvers from '../composeResolvers'
@@ -61,9 +59,10 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
   schemaIDL: gitlabSchema
 })
 
-const typeDefs = loadFilesSync(
-  path.join(__PROJECT_ROOT__, 'packages/server/graphql/public/typeDefs/*.graphql')
-)
+const importAllStrings = (context: __WebpackModuleApi.RequireContext) => {
+  return context.keys().map((id) => context(id).default)
+}
+const typeDefs = importAllStrings(require.context('./typeDefs', false, /.graphql$/))
 
 const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],

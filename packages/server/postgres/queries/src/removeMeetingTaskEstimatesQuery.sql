@@ -2,4 +2,4 @@
   @name removeMeetingTaskEstimatesQuery
 */
 DELETE FROM "TaskEstimate"
-WHERE "meetingId" = :meetingId;
+WHERE "meetingId" = :meetingId AND "stageId" = :stageId;

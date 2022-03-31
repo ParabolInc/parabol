@@ -3,7 +3,6 @@
 import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
-import ms from 'ms'
 import {useEffect, useRef} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
@@ -12,7 +11,6 @@ import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useScript from '../hooks/useScript'
 import getAnonymousId from '../utils/getAnonymousId'
 import makeHref from '../utils/makeHref'
-import safeInitLogRocket from '../utils/safeInitLogRocket'
 
 const query = graphql`
   query AnalyticsPageQuery {
@@ -31,16 +29,16 @@ declare global {
 }
 
 const {sentry: dsn, datadogClientToken, datadogApplicationId, datadogService} = window.__ACTION__
-
+const ignoreErrors = [
+  'Failed to update a ServiceWorker for scope',
+  'ResizeObserver loop limit exceeded'
+]
 if (dsn) {
   Sentry.init({
     dsn,
     environment: 'client',
     release: __APP_VERSION__,
-    ignoreErrors: [
-      'Failed to update a ServiceWorker for scope',
-      'ResizeObserver loop limit exceeded'
-    ]
+    ignoreErrors
   })
 }
 
@@ -49,10 +47,21 @@ const datadogEnabled =
 if (datadogEnabled) {
   datadogRum.init({
     applicationId: `${datadogApplicationId}`,
-    clientToken: `${datadogClientToken}`,
+    beforeSend: (event) => {
+      // See https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm
+      if (event.type === 'error') {
+        const msg = event.error.message
+        const isIgnorable = ignoreErrors.some((error) => msg.includes(error))
+        if (isIgnorable) {
+          return false
+        }
+      }
+      return undefined
+    },
+    clientToken: datadogClientToken,
     site: 'datadoghq.com',
-    service: `${datadogService}`,
-    version: `${__APP_VERSION__}`,
+    service: datadogService,
+    version: __APP_VERSION__,
     sampleRate: 100,
     trackInteractions: true,
     defaultPrivacyLevel: 'allow'
@@ -91,34 +100,6 @@ const AnalyticsPage = () => {
     }
   )
   const atmosphere = useAtmosphere()
-
-  const initLogRocket = async () => {
-    const logRocketId = window.__ACTION__.logRocket
-    if (!logRocketId) return
-    const errorProneAtStr = window.localStorage.getItem(LocalStorageKey.ERROR_PRONE_AT)
-    const errorProneAtDate = new Date(errorProneAtStr!)
-    const isErrorProne =
-      errorProneAtDate.toJSON() === errorProneAtStr &&
-      errorProneAtDate > new Date(Date.now() - ms('14d'))
-    if (!isErrorProne) {
-      window.localStorage.removeItem(LocalStorageKey.ERROR_PRONE_AT)
-    }
-    const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-    if (!res) {
-      if (isErrorProne) {
-        safeInitLogRocket()
-      }
-    } else {
-      const {viewer} = res
-      const {isWatched, email, id: viewerId} = viewer
-      if (isErrorProne || isWatched) {
-        safeInitLogRocket(viewerId, email)
-      }
-    }
-  }
-  useEffect(() => {
-    initLogRocket()
-  }, [])
 
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return

@@ -1,13 +1,11 @@
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {AnyMeeting} from '../postgres/types/Meeting'
 import AgendaItem from '../database/types/AgendaItem'
 import {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Meeting from '../database/types/Meeting'
-import MeetingAction from '../database/types/MeetingAction'
-import MeetingPoker from '../database/types/MeetingPoker'
-import MeetingRetrospective from '../database/types/MeetingRetrospective'
 import Notification from '../database/types/Notification'
 import Organization from '../database/types/Organization'
 import Task from '../database/types/Task'
@@ -34,7 +32,7 @@ export const resolveNewMeeting = (
     meetingId
   }: {
     meetingId: string
-    meeting: MeetingRetrospective | MeetingAction | MeetingPoker
+    meeting: AnyMeeting
   },
   _args: unknown,
   {dataLoader}: GQLContext
