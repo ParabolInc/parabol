@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {GitLabScopingSearchBar_meeting} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
-import GitLabScopingSearchInput from './GitLabScopingSearchInput'
-import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
+import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
+import {GitLabScopingSearchBar_meeting$key} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
+import GitLabScopingSearchInput from './GitLabScopingSearchInput'
+import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
 import Icon from './Icon'
 
 const SearchIcon = styled(Icon)({
@@ -21,11 +21,22 @@ const SearchBar = styled('div')({
   padding: 16
 })
 interface Props {
-  meeting: GitLabScopingSearchBar_meeting
+  meetingRef: GitLabScopingSearchBar_meeting$key
 }
 
 const GitLabScopingSearchBar = (props: Props) => {
-  const {meeting} = props
+  const {meetingRef} = props
+
+  const meeting = useFragment(
+    graphql`
+      fragment GitLabScopingSearchBar_meeting on PokerMeeting {
+        ...GitLabScopingSearchInput_meeting
+        ...GitLabScopingSearchFilterToggle_meeting
+      }
+    `,
+    meetingRef
+  )
+
   return (
     <SearchBar>
       <SearchIcon>search</SearchIcon>
@@ -35,11 +46,4 @@ const GitLabScopingSearchBar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(GitLabScopingSearchBar, {
-  meeting: graphql`
-    fragment GitLabScopingSearchBar_meeting on PokerMeeting {
-      ...GitLabScopingSearchInput_meeting
-      ...GitLabScopingSearchFilterToggle_meeting
-    }
-  `
-})
+export default GitLabScopingSearchBar

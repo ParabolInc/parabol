@@ -59,7 +59,7 @@ const GitLabScopingSearchInput = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, gitlabSearchQuery} = meeting
-  const queryString = gitlabSearchQuery.queryString
+  const {queryString} = gitlabSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
 
@@ -75,7 +75,7 @@ const GitLabScopingSearchInput = (props: Props) => {
     <Wrapper>
       <SearchInput
         autoFocus
-        value={queryString || ''}
+        value={queryString}
         onChange={onChange}
         placeholder={'Search GitLab issues...'}
       />

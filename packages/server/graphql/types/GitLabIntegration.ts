@@ -45,12 +45,9 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           .load({service: 'gitlab', orgTeamIds, teamIds: [teamId]})
       }
     },
-    // TODO: implement this
     githubSearchQueries: {
-      type: new GraphQLList(new GraphQLNonNull(GitLabSearchQuery)),
-      description:
-        'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async () => null
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitLabSearchQuery))),
+      resolve: async () => []
     }
     // The GitLab schema get injected here as 'api'
   })

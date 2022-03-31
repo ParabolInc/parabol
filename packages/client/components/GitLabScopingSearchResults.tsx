@@ -105,7 +105,6 @@ const GitLabScopingSearchResults = (props: Props) => {
                             ) {
                               edges {
                                 node {
-                                  __typename
                                   ... on _xGitLabIssue {
                                     ...GitLabScopingSearchResultItem_issue
                                     ...GitLabScopingSelectAllIssues_issues

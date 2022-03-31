@@ -4,7 +4,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const GitLabSearchQuery = new GraphQLObjectType<any, GQLContext>({
   name: 'GitLabSearchQuery',
-  description: 'A GitLab search query including all filters selected when the query was executed',
+  description: 'A GitLab search query including the search query and the project filters',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -12,12 +12,12 @@ const GitLabSearchQuery = new GraphQLObjectType<any, GQLContext>({
     },
     queryString: {
       type: new GraphQLNonNull(GraphQLString),
-      description:
-        'The query string in GitLab format, including repository filters. e.g. is:issue is:open'
+      description: 'The query string used to search GitLab issue titles and descriptions'
     },
     selectedProjectsIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
-      description: 'The list of the fullPaths of projects that have been selected as a filter',
+      description:
+        'The list of ids of projects that have been selected as a filter. Null if none have been selected',
       resolve: ({selectedProjectsIds}) => selectedProjectsIds
     },
     lastUsedAt: {

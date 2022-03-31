@@ -1,4 +1,5 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {CreateTaskMutationResponse} from '../../__generated__/CreateTaskMutation.graphql'
@@ -10,7 +11,11 @@ const handleGitLabCreateIssue = (
   store: RecordSourceSelectorProxy
 ) => {
   const integration = task.getLinkedRecord('integration')
-  if (!integration) return
+  const teamId = task.getValue('teamId')
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const viewerId = viewer?.getValue('id') as string
+  const meetingId = task.getValue('meetingId')
+  if (!viewerId || !meetingId || !integration) return
   const webPath = integration.getValue('webPath') as string | undefined
   const {fullPath} = webPath ? parseWebPath(webPath) : {fullPath: ''}
   const project = createProxyRecord(store, '_xGitLabProject', {
@@ -22,14 +27,20 @@ const handleGitLabCreateIssue = (
   const issueConn = createProxyRecord(store, '_xGitLabIssueConnection', {})
   issueConn.setLinkedRecords([issueEdge], 'edges')
 
-  const issueArgs = {first: 25, includeSubepics: true, sort: 'UPDATED_DESC', state: 'opened'}
+  const gitlabSearchQueryId = SearchQueryId.join('gitlab', meetingId)
+  const gitlabSearchQuery = store.get(gitlabSearchQueryId)
+  const queryString = gitlabSearchQuery?.getValue('queryString') as string | undefined
+  const query = queryString?.trim() ?? ''
+
+  const issueArgs = {
+    first: 25,
+    includeSubepics: true,
+    sort: 'UPDATED_DESC',
+    state: 'opened',
+    search: query
+  }
   project.setLinkedRecord(issueConn, 'issues', issueArgs)
 
-  const teamId = task.getValue('teamId')
-  const meetingId = task.getValue('meetingId')
-  const viewer = store.getRoot().getLinkedRecord('viewer')
-  const viewerId = viewer?.getValue('id') as string
-  if (!viewerId || !meetingId) return
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
@@ -39,7 +50,7 @@ const handleGitLabCreateIssue = (
     ?.getLinkedRecord('query')
   const typename = integration.getType()
   if (typename !== '_xGitLabIssue') return
-  const gitlabProjectsConn = getGitLabProjectsConn(gitlab) // TODO: add query string
+  const gitlabProjectsConn = getGitLabProjectsConn(gitlab)
   if (!gitlabProjectsConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(
