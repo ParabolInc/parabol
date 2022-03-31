@@ -46,6 +46,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
           "Organization": "../../database/types/Organization#default as Organization",
           "User": "../../postgres/types/IUser#default as IUser"
         }
