@@ -32,6 +32,7 @@
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
           "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
+          "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
