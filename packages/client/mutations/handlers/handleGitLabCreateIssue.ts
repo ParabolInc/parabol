@@ -22,7 +22,13 @@ const handleGitLabCreateIssue = (
   const issueConn = createProxyRecord(store, '_xGitLabIssueConnection', {})
   issueConn.setLinkedRecords([issueEdge], 'edges')
 
-  const issueArgs = {first: 25, includeSubepics: true, sort: 'UPDATED_DESC', state: 'opened'}
+  const issueArgs = {
+    first: 25,
+    includeSubepics: true,
+    sort: 'UPDATED_DESC',
+    state: 'opened',
+    search: ''
+  }
   project.setLinkedRecord(issueConn, 'issues', issueArgs)
 
   const teamId = task.getValue('teamId')
@@ -39,7 +45,7 @@ const handleGitLabCreateIssue = (
     ?.getLinkedRecord('query')
   const typename = integration.getType()
   if (typename !== '_xGitLabIssue') return
-  const gitlabProjectsConn = getGitLabProjectsConn(gitlab) // TODO: add query string
+  const gitlabProjectsConn = getGitLabProjectsConn(gitlab)
   if (!gitlabProjectsConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(
