@@ -16,12 +16,9 @@ const GitLabSearchQuery = new GraphQLObjectType<any, GQLContext>({
         'The query string in GitLab format, including repository filters. e.g. is:issue is:open'
     },
     selectedProjectsIds: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
       description: 'The list of the fullPaths of projects that have been selected as a filter',
-      resolve: (testa) => {
-        console.log('🚀  ~ projectFilters', {testa})
-        return testa.selectedProjectsIds || []
-      }
+      resolve: ({selectedProjectsIds}) => selectedProjectsIds
     },
     lastUsedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),

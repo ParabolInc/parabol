@@ -48,11 +48,9 @@ const LocalPokerHandler: Handler = {
     initHandler(store, payload)
     const meetingId = payload.dataID
     const meeting = store.get(meetingId)!
-    console.log('🚀  ~ LocalPokerHandler', {defaults, meetingId, payload})
     defaults.forEach(({service, type, meetingPropName, defaultQuery}) => {
       const queryId = SearchQueryId.join(service, meetingId)
       const existingQuery = store.get(queryId)
-      console.log('🚀  ~ existingQuery', existingQuery)
       if (existingQuery) return
       const newQuery = createProxyRecord(store, type, {
         id: queryId,

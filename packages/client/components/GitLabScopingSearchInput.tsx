@@ -59,7 +59,6 @@ const GitLabScopingSearchInput = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, gitlabSearchQuery} = meeting
-  console.log('🚀  ~ gitlabSearchQuery', gitlabSearchQuery)
   const queryString = gitlabSearchQuery.queryString
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
