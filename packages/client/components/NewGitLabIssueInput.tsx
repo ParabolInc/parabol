@@ -137,7 +137,6 @@ const NewGitLabIssueInput = (props: Props) => {
                     edges {
                       node {
                         ... on _xGitLabProject {
-                          __typename
                           id
                           fullPath
                         }

@@ -95,7 +95,7 @@ const withNestedSchema = mergeSchemas({
     },
     _xGitLabProject: {
       __interfaces: () => ['RepoIntegration'],
-      __isTypeOf: ({fullPath}) => !!fullPath,
+      __isTypeOf: ({__typename}) => __typename === '_xGitLabProject',
       service: () => 'gitlab'
     },
     _xGitLabQuery: {

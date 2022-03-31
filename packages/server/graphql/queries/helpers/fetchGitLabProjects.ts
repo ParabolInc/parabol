@@ -4,6 +4,7 @@ import {GetProjectsQuery} from '../../../types/gitlabTypes'
 import {DataLoaderWorker} from '../../graphql'
 import getProjects from '../../nestedSchema/GitLab/queries/getProjects.graphql'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import {isNotNull} from 'parabol-client/utils/predicates'
 
 const fetchGitLabProjects = async (
   teamId: string,
@@ -26,23 +27,11 @@ const fetchGitLabProjects = async (
     console.error(error.message)
     return []
   }
-  const projects = [] as {
-    id: string
-    service: 'gitlab'
-    fullPath: string
-  }[]
-  data.projects?.edges?.forEach((edge) => {
-    if (!edge) return
-    const {node} = edge
-    if (!node) return
-    const {id, fullPath} = node
-    projects.push({
-      id,
-      service: 'gitlab',
-      fullPath
-    })
-  })
-  return projects
+  return (
+    data.projects?.edges
+      ?.map((edge) => edge?.node && {...edge.node, service: 'gitlab'})
+      .filter(isNotNull) ?? []
+  )
 }
 
 export default fetchGitLabProjects

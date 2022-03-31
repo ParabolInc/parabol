@@ -20,8 +20,7 @@ const createGitLabTask = async (
   const {title, contentState} = splitDraftContent(rawContent)
   const body = stateToMarkdown(contentState)
   const provider = await dataLoader.get('integrationProviders').load(providerId)
-  if (!provider?.serverBaseUrl) return {error: new Error('serverBaseUrl not found')}
-  const manager = new GitLabServerManager(accessToken, provider.serverBaseUrl)
+  const manager = new GitLabServerManager(accessToken, provider!.serverBaseUrl!)
   const gitlabRequest = manager.getGitLabRequest(info, context)
   const [createIssueData, createIssueError] = await gitlabRequest<CreateIssueMutation>(
     createIssueMutation,
