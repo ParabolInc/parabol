@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {GitLabScopingSearchResultsPaginationQuery} from '../__generated__/GitLabScopingSearchResultsPaginationQuery.graphql'
@@ -57,7 +56,7 @@ const GitLabScopingSearchResults = (props: Props) => {
     graphql`
       fragment GitLabScopingSearchResults_query on Query
         @argumentDefinitions(
-          projectsFirst: {type: "Int", defaultValue: 20}
+          projectsFirst: {type: "Int", defaultValue: 75}
           issuesFirst: {type: "Int", defaultValue: 25}
           projectsAfter: {type: "String"}
           issuesAfter: {type: "String"}
@@ -130,7 +129,6 @@ const GitLabScopingSearchResults = (props: Props) => {
     query
   )
 
-  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   const {data, hasNext, loadNext} = paginationRes
   const {viewer} = data
   const meeting = useFragment(
@@ -203,7 +201,6 @@ const GitLabScopingSearchResults = (props: Props) => {
             providerId={providerId}
           />
         ))}
-        {lastItem}
         {hasNext && (
           <LoadingNext key={'loadingNext'}>
             <Ellipsis />
