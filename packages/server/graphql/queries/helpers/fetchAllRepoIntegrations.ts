@@ -1,7 +1,7 @@
 import {GraphQLResolveInfo} from 'graphql'
-import fetchGitHubRepos from './fetchGitHubRepos'
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import {GQLContext} from '../../graphql'
+import fetchGitHubRepos from './fetchGitHubRepos'
 import fetchGitLabProjects from './fetchGitLabProjects'
 import {getPermsByTaskService, getPrevRepoIntegrations} from './repoIntegrationHelpers'
 

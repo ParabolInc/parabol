@@ -21271,4 +21271,4 @@ export type GetProjectsQueryVariables = Exact<{
 }>;
 
 
-export type GetProjectsQuery = { __typename?: 'Query', projects?: { __typename?: 'ProjectConnection', edges?: Array<{ __typename?: 'ProjectEdge', node?: { __typename?: 'Project', id: string, fullPath: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined };
+export type GetProjectsQuery = { __typename?: 'Query', projects?: { __typename?: 'ProjectConnection', edges?: Array<{ __typename?: 'ProjectEdge', node?: { __typename: 'Project', id: string, fullPath: string } | null | undefined } | null | undefined> | null | undefined } | null | undefined };
