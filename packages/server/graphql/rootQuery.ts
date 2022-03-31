@@ -1,7 +1,6 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../utils/authorization'
 import {GQLContext} from './graphql'
-import getDemoEntities from './queries/getDemoEntitites'
 import massInvitation from './queries/massInvitation'
 import SAMLIdP from './queries/SAMLIdP'
 import verifiedInvitation from './queries/verifiedInvitation'
@@ -18,7 +17,6 @@ export default new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('users').load(viewerId)
       }
     },
-    getDemoEntities,
     massInvitation,
     verifiedInvitation,
     SAMLIdP

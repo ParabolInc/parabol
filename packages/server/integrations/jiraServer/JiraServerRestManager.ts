@@ -1,12 +1,12 @@
-import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
-import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
-import splitDraftContent from '~/utils/draftjs/splitDraftContent'
+import OAuth from 'oauth-1.0a'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {ExternalLinks} from '~/types/constEnums'
+import splitDraftContent from '~/utils/draftjs/splitDraftContent'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 export interface JiraServerRestProject {
   /// more available fields
@@ -61,6 +61,10 @@ export interface JiraServerIssue {
   renderedFields: {
     description: string
   }
+}
+
+interface JiraServerIssuesResponse {
+  issues: JiraServerIssue[]
 }
 
 export default class JiraServerRestManager implements TaskIntegrationManager {
@@ -151,6 +155,18 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
       'GET',
       `/rest/api/latest/issue/${issueId}?expand=renderedFields`
     )
+  }
+
+  async getIssues() {
+    // TODO: support JQL
+    const jql = 'order by lastViewed DESC'
+    const payload = {
+      jql,
+      maxResults: 100,
+      expand: ['renderedFields']
+    }
+
+    return this.request<JiraServerIssuesResponse>('POST', '/rest/api/latest/search', payload)
   }
 
   async createIssue(projectId: string, summary: string, description: string) {

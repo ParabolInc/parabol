@@ -3,7 +3,6 @@ import getRethink from '../../../database/rethinkDriver'
 import generateUID from '../../../generateUID'
 import getPg from '../../../postgres/getPg'
 import {addUserNewFeatureQuery} from '../../../postgres/queries/generated/addUserNewFeatureQuery'
-import {requireSU} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
@@ -12,13 +11,12 @@ import {MutationResolvers} from '../resolverTypes'
 const addNewFeature: MutationResolvers['addNewFeature'] = async (
   _source,
   {actionButtonCopy, snackbarMessage, url},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
   const r = await getRethink()
   const redis = getRedis()
 
   // AUTH
-  requireSU(authToken)
   const operationId = dataLoader.share()
   const subOptions = {operationId}
 

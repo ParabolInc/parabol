@@ -29,16 +29,16 @@ declare global {
 }
 
 const {sentry: dsn, datadogClientToken, datadogApplicationId, datadogService} = window.__ACTION__
-
+const ignoreErrors = [
+  'Failed to update a ServiceWorker for scope',
+  'ResizeObserver loop limit exceeded'
+]
 if (dsn) {
   Sentry.init({
     dsn,
     environment: 'client',
     release: __APP_VERSION__,
-    ignoreErrors: [
-      'Failed to update a ServiceWorker for scope',
-      'ResizeObserver loop limit exceeded'
-    ]
+    ignoreErrors
   })
 }
 
@@ -47,10 +47,21 @@ const datadogEnabled =
 if (datadogEnabled) {
   datadogRum.init({
     applicationId: `${datadogApplicationId}`,
-    clientToken: `${datadogClientToken}`,
+    beforeSend: (event) => {
+      // See https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm
+      if (event.type === 'error') {
+        const msg = event.error.message
+        const isIgnorable = ignoreErrors.some((error) => msg.includes(error))
+        if (isIgnorable) {
+          return false
+        }
+      }
+      return undefined
+    },
+    clientToken: datadogClientToken,
     site: 'datadoghq.com',
-    service: `${datadogService}`,
-    version: `${__APP_VERSION__}`,
+    service: datadogService,
+    version: __APP_VERSION__,
     sampleRate: 100,
     trackInteractions: true,
     defaultPrivacyLevel: 'allow'
