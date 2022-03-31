@@ -23,6 +23,7 @@ interface IGetAzureDevOpsAuthByUserIdTeamIdQueryResult {
   refreshToken: string | null
   scopes: string | null
   accessTokenSecret: string | null
+  // Note: instanceIds does not belong here, in fact this type as a whole should be removed eventually
   instanceIds: string[]
 }
 
