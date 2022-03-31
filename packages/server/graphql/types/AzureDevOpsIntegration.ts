@@ -9,8 +9,6 @@ import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
-//import AzureDevOpsRemoteProject from './AzureDevOpsRemoteProject'
-//import AzureDevOpsManager from 'parabol-client/utils/AzureDevOpsManager'
 
 const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsIntegration',
