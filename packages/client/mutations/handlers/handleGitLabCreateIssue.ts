@@ -10,7 +10,11 @@ const handleGitLabCreateIssue = (
   store: RecordSourceSelectorProxy
 ) => {
   const integration = task.getLinkedRecord('integration')
-  if (!integration) return
+  const teamId = task.getValue('teamId')
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const viewerId = viewer?.getValue('id') as string
+  const meetingId = task.getValue('meetingId')
+  if (!viewerId || !meetingId || !integration) return
   const webPath = integration.getValue('webPath') as string | undefined
   const {fullPath} = webPath ? parseWebPath(webPath) : {fullPath: ''}
   const project = createProxyRecord(store, '_xGitLabProject', {
@@ -22,20 +26,18 @@ const handleGitLabCreateIssue = (
   const issueConn = createProxyRecord(store, '_xGitLabIssueConnection', {})
   issueConn.setLinkedRecords([issueEdge], 'edges')
 
+  const meeting = store.get(meetingId)
+  const gitlabSearchQuery = meeting?.getValue('gitlabSearchQuery') as string | undefined
+
   const issueArgs = {
     first: 25,
     includeSubepics: true,
     sort: 'UPDATED_DESC',
     state: 'opened',
-    search: ''
+    search: gitlabSearchQuery
   }
   project.setLinkedRecord(issueConn, 'issues', issueArgs)
 
-  const teamId = task.getValue('teamId')
-  const meetingId = task.getValue('meetingId')
-  const viewer = store.getRoot().getLinkedRecord('viewer')
-  const viewerId = viewer?.getValue('id') as string
-  if (!viewerId || !meetingId) return
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
