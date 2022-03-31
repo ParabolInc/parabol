@@ -1,3 +1,8 @@
+/*
+  This file imports our compiled schemas and prints them to a .graphql
+  These printed .graphql files are used by codegens, relay-compiler. typeahead support for IDEs, etc.
+*/
+
 import fs from 'fs'
 import {printSchema} from 'graphql'
 import path from 'path'

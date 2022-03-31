@@ -49,39 +49,45 @@ const wrapResolve =
 type ResolverMap = {
   // This type causes too much recursion, so I set it to any
   // {[FieldName: string]: R<any, any, any, any>} | GraphQLScalarType | SubscriptionResolvers
-  [TypeName: string]: any
+  readonly [TypeName: string]: any
 }
 
 interface PermissionMap {
-  [TypeName: string]: {
-    [FieldName: string]: ShieldRule
+  readonly [TypeName: string]: {
+    readonly [FieldName: string]: ShieldRule
   }
 }
 
 const composeResolvers = <T extends ResolverMap>(resolverMap: T, permissionMap: PermissionMap) => {
-  Object.entries(permissionMap).forEach(([typeName, ruleFieldMap]) => {
-    const resolverSubMap = resolverMap[typeName as keyof typeof resolverMap]
-    if (!resolverSubMap) throw new Error(`No resolver exists for type: ${typeName}`)
+  // clone the resolver map to keep this fn pure
+  const nextResolverMap = {...resolverMap}
+  Object.entries(permissionMap).forEach((entry) => {
+    const typeName = entry[0] as keyof T
+    const ruleFieldMap = entry[1]
+    // only clone field maps that will be mutated by permissions
+    nextResolverMap[typeName] = {...nextResolverMap[typeName]}
+    const nextResolverFieldMap = nextResolverMap[typeName]
+    if (!nextResolverFieldMap) throw new Error(`No resolver exists for type: ${typeName}`)
     Object.entries(ruleFieldMap).forEach(([fieldName, rule]) => {
       if (fieldName === '*') {
-        // apply this rule to every member of the resolverSubMap
+        // apply this rule to every member of the nextResolverFieldMap
         // Note: Permissions don't get applied to fields that don't have custom resolvers!
         // If this becomes a problem, we'll need to use the schema to get the typeMaps
-        Object.entries(resolverSubMap).forEach(([resolverFieldName, resolve]) => {
+        Object.entries(nextResolverFieldMap).forEach(([resolverFieldName, resolve]) => {
           // the wildcard is just a default value. if the field has a specific rule, use that
           if (ruleFieldMap[resolverFieldName]) return
-          resolverSubMap[resolverFieldName] = wrapResolve(resolve as Resolver, rule)
+          nextResolverFieldMap[resolverFieldName] = wrapResolve(resolve as Resolver, rule)
         })
       } else {
-        const unwrappedResolver = resolverSubMap[fieldName]
+        const unwrappedResolver = nextResolverFieldMap[fieldName]
         if (!unwrappedResolver) {
           throw new Error(`No resolver exists for field: ${fieldName}`)
         }
-        resolverSubMap[fieldName] = wrapResolve(unwrappedResolver, rule)
+        nextResolverFieldMap[fieldName] = wrapResolve(unwrappedResolver, rule)
       }
     })
   })
-  return resolverMap
+  return nextResolverMap
 }
 
 export default composeResolvers

@@ -1,6 +1,3 @@
-/* This file dynamically requires all queries, mutations, and types.
- * No need to mess with this unless we add subscriptions to the private schema
- */
 import {and, not} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import {Resolvers} from './resolverTypes'
