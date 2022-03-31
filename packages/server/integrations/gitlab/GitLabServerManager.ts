@@ -1,6 +1,6 @@
 import {GraphQLResolveInfo} from 'graphql'
-import {RootSchema} from '../../graphql/rootSchema'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
+import {RootSchema} from '../../graphql/public/rootSchema'
 import {GetProfileQuery} from '../../types/gitlabTypes'
 
 class GitLabServerManager {

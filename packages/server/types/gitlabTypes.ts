@@ -17,212 +17,212 @@ export type Scalars = {
    *
    * An example `AlertManagementHttpIntegrationID` is: `"gid://gitlab/AlertManagement::HttpIntegration/1"`.
    */
-  AlertManagementHttpIntegrationID: any;
+  AlertManagementHttpIntegrationID: string;
   /**
    * A `AnalyticsDevopsAdoptionEnabledNamespaceID` is a global ID. It is encoded as a string.
    *
    * An example `AnalyticsDevopsAdoptionEnabledNamespaceID` is: `"gid://gitlab/Analytics::DevopsAdoption::EnabledNamespace/1"`.
    */
-  AnalyticsDevopsAdoptionEnabledNamespaceID: any;
+  AnalyticsDevopsAdoptionEnabledNamespaceID: string;
   /**
    * A `AuditEventsExternalAuditEventDestinationID` is a global ID. It is encoded as a string.
    *
    * An example `AuditEventsExternalAuditEventDestinationID` is: `"gid://gitlab/AuditEvents::ExternalAuditEventDestination/1"`.
    */
-  AuditEventsExternalAuditEventDestinationID: any;
+  AuditEventsExternalAuditEventDestinationID: string;
   /**
    * A `AwardableID` is a global ID. It is encoded as a string.
    *
    * An example `AwardableID` is: `"gid://gitlab/Awardable/1"`.
    */
-  AwardableID: any;
+  AwardableID: string;
   /**
    * Represents non-fractional signed whole numeric values. Since the value may
    * exceed the size of a 32-bit integer, it's encoded as a string.
    */
-  BigInt: any;
+  BigInt: string;
   /**
    * A `BoardID` is a global ID. It is encoded as a string.
    *
    * An example `BoardID` is: `"gid://gitlab/Board/1"`.
    */
-  BoardID: any;
+  BoardID: string;
   /**
    * A `BoardsEpicBoardID` is a global ID. It is encoded as a string.
    *
    * An example `BoardsEpicBoardID` is: `"gid://gitlab/Boards::EpicBoard/1"`.
    */
-  BoardsEpicBoardID: any;
+  BoardsEpicBoardID: string;
   /**
    * A `BoardsEpicListID` is a global ID. It is encoded as a string.
    *
    * An example `BoardsEpicListID` is: `"gid://gitlab/Boards::EpicList/1"`.
    */
-  BoardsEpicListID: any;
+  BoardsEpicListID: string;
   /**
    * A `CiBuildID` is a global ID. It is encoded as a string.
    *
    * An example `CiBuildID` is: `"gid://gitlab/Ci::Build/1"`.
    */
-  CiBuildID: any;
+  CiBuildID: string;
   /**
    * A `CiPipelineID` is a global ID. It is encoded as a string.
    *
    * An example `CiPipelineID` is: `"gid://gitlab/Ci::Pipeline/1"`.
    */
-  CiPipelineID: any;
+  CiPipelineID: string;
   /**
    * A `CiRunnerID` is a global ID. It is encoded as a string.
    *
    * An example `CiRunnerID` is: `"gid://gitlab/Ci::Runner/1"`.
    */
-  CiRunnerID: any;
+  CiRunnerID: string;
   /**
    * A `ClustersAgentID` is a global ID. It is encoded as a string.
    *
    * An example `ClustersAgentID` is: `"gid://gitlab/Clusters::Agent/1"`.
    */
-  ClustersAgentID: any;
+  ClustersAgentID: string;
   /**
    * A `ClustersAgentTokenID` is a global ID. It is encoded as a string.
    *
    * An example `ClustersAgentTokenID` is: `"gid://gitlab/Clusters::AgentToken/1"`.
    */
-  ClustersAgentTokenID: any;
+  ClustersAgentTokenID: string;
   /**
    * A `ClustersClusterID` is a global ID. It is encoded as a string.
    *
    * An example `ClustersClusterID` is: `"gid://gitlab/Clusters::Cluster/1"`.
    */
-  ClustersClusterID: any;
+  ClustersClusterID: string;
   /**
    * A `ComplianceManagementFrameworkID` is a global ID. It is encoded as a string.
    *
    * An example `ComplianceManagementFrameworkID` is: `"gid://gitlab/ComplianceManagement::Framework/1"`.
    */
-  ComplianceManagementFrameworkID: any;
+  ComplianceManagementFrameworkID: string;
   /**
    * A `ContainerRepositoryID` is a global ID. It is encoded as a string.
    *
    * An example `ContainerRepositoryID` is: `"gid://gitlab/ContainerRepository/1"`.
    */
-  ContainerRepositoryID: any;
+  ContainerRepositoryID: string;
   /**
    * A `CustomEmojiID` is a global ID. It is encoded as a string.
    *
    * An example `CustomEmojiID` is: `"gid://gitlab/CustomEmoji/1"`.
    */
-  CustomEmojiID: any;
+  CustomEmojiID: string;
   /**
    * A `CustomerRelationsContactID` is a global ID. It is encoded as a string.
    *
    * An example `CustomerRelationsContactID` is: `"gid://gitlab/CustomerRelations::Contact/1"`.
    */
-  CustomerRelationsContactID: any;
+  CustomerRelationsContactID: string;
   /**
    * A `CustomerRelationsOrganizationID` is a global ID. It is encoded as a string.
    *
    * An example `CustomerRelationsOrganizationID` is: `"gid://gitlab/CustomerRelations::Organization/1"`.
    */
-  CustomerRelationsOrganizationID: any;
+  CustomerRelationsOrganizationID: string;
   /**
    * A `DastProfileID` is a global ID. It is encoded as a string.
    *
    * An example `DastProfileID` is: `"gid://gitlab/Dast::Profile/1"`.
    */
-  DastProfileID: any;
+  DastProfileID: string;
   /**
    * A `DastProfileScheduleID` is a global ID. It is encoded as a string.
    *
    * An example `DastProfileScheduleID` is: `"gid://gitlab/Dast::ProfileSchedule/1"`.
    */
-  DastProfileScheduleID: any;
+  DastProfileScheduleID: string;
   /**
    * A `DastScannerProfileID` is a global ID. It is encoded as a string.
    *
    * An example `DastScannerProfileID` is: `"gid://gitlab/DastScannerProfile/1"`.
    */
-  DastScannerProfileID: any;
+  DastScannerProfileID: string;
   /**
    * A `DastSiteProfileID` is a global ID. It is encoded as a string.
    *
    * An example `DastSiteProfileID` is: `"gid://gitlab/DastSiteProfile/1"`.
    */
-  DastSiteProfileID: any;
+  DastSiteProfileID: string;
   /**
    * A `DastSiteTokenID` is a global ID. It is encoded as a string.
    *
    * An example `DastSiteTokenID` is: `"gid://gitlab/DastSiteToken/1"`.
    */
-  DastSiteTokenID: any;
+  DastSiteTokenID: string;
   /**
    * A `DastSiteValidationID` is a global ID. It is encoded as a string.
    *
    * An example `DastSiteValidationID` is: `"gid://gitlab/DastSiteValidation/1"`.
    */
-  DastSiteValidationID: any;
+  DastSiteValidationID: string;
   /** Date represented in ISO 8601 */
-  Date: any;
+  Date: string;
   /**
    * A `DesignManagementDesignAtVersionID` is a global ID. It is encoded as a string.
    *
    * An example `DesignManagementDesignAtVersionID` is: `"gid://gitlab/DesignManagement::DesignAtVersion/1"`.
    */
-  DesignManagementDesignAtVersionID: any;
+  DesignManagementDesignAtVersionID: string;
   /**
    * A `DesignManagementDesignID` is a global ID. It is encoded as a string.
    *
    * An example `DesignManagementDesignID` is: `"gid://gitlab/DesignManagement::Design/1"`.
    */
-  DesignManagementDesignID: any;
+  DesignManagementDesignID: string;
   /**
    * A `DesignManagementVersionID` is a global ID. It is encoded as a string.
    *
    * An example `DesignManagementVersionID` is: `"gid://gitlab/DesignManagement::Version/1"`.
    */
-  DesignManagementVersionID: any;
+  DesignManagementVersionID: string;
   /**
    * A `DiffNoteID` is a global ID. It is encoded as a string.
    *
    * An example `DiffNoteID` is: `"gid://gitlab/DiffNote/1"`.
    */
-  DiffNoteID: any;
+  DiffNoteID: string;
   /**
    * A `DiscussionID` is a global ID. It is encoded as a string.
    *
    * An example `DiscussionID` is: `"gid://gitlab/Discussion/1"`.
    */
-  DiscussionID: any;
+  DiscussionID: string;
   /**
    * Duration between two instants, represented as a fractional number of seconds.
    *
    * For example: 12.3334
    */
-  Duration: any;
+  Duration: string;
   /**
    * A `EnvironmentID` is a global ID. It is encoded as a string.
    *
    * An example `EnvironmentID` is: `"gid://gitlab/Environment/1"`.
    */
-  EnvironmentID: any;
+  EnvironmentID: string;
   /**
    * A `EpicID` is a global ID. It is encoded as a string.
    *
    * An example `EpicID` is: `"gid://gitlab/Epic/1"`.
    */
-  EpicID: any;
+  EpicID: string;
   /**
    * A `EpicTreeSortingID` is a global ID. It is encoded as a string.
    *
    * An example `EpicTreeSortingID` is: `"gid://gitlab/EpicTreeSorting/1"`.
    */
-  EpicTreeSortingID: any;
+  EpicTreeSortingID: string;
   /**
    * A `GitlabErrorTrackingDetailedErrorID` is a global ID. It is encoded as a string.
    *
    * An example `GitlabErrorTrackingDetailedErrorID` is: `"gid://gitlab/Gitlab::ErrorTracking::DetailedError/1"`.
    */
-  GitlabErrorTrackingDetailedErrorID: any;
+  GitlabErrorTrackingDetailedErrorID: string;
   /**
    * A global identifier.
    *
@@ -231,221 +231,221 @@ export type Scalars = {
    *
    * Global identifiers are encoded as strings.
    */
-  GlobalID: any;
+  GlobalID: string;
   /**
    * A `GroupID` is a global ID. It is encoded as a string.
    *
    * An example `GroupID` is: `"gid://gitlab/Group/1"`.
    */
-  GroupID: any;
+  GroupID: string;
   /** An ISO 8601-encoded date */
-  ISO8601Date: any;
+  ISO8601Date: string;
   /**
    * A `IncidentManagementEscalationPolicyID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementEscalationPolicyID` is: `"gid://gitlab/IncidentManagement::EscalationPolicy/1"`.
    */
-  IncidentManagementEscalationPolicyID: any;
+  IncidentManagementEscalationPolicyID: string;
   /**
    * A `IncidentManagementEscalationRuleID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementEscalationRuleID` is: `"gid://gitlab/IncidentManagement::EscalationRule/1"`.
    */
-  IncidentManagementEscalationRuleID: any;
+  IncidentManagementEscalationRuleID: string;
   /**
    * A `IncidentManagementOncallParticipantID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementOncallParticipantID` is: `"gid://gitlab/IncidentManagement::OncallParticipant/1"`.
    */
-  IncidentManagementOncallParticipantID: any;
+  IncidentManagementOncallParticipantID: string;
   /**
    * A `IncidentManagementOncallRotationID` is a global ID. It is encoded as a string.
    *
    * An example `IncidentManagementOncallRotationID` is: `"gid://gitlab/IncidentManagement::OncallRotation/1"`.
    */
-  IncidentManagementOncallRotationID: any;
+  IncidentManagementOncallRotationID: string;
   /**
    * A `IntegrationsPrometheusID` is a global ID. It is encoded as a string.
    *
    * An example `IntegrationsPrometheusID` is: `"gid://gitlab/Integrations::Prometheus/1"`.
    * The older format `"gid://gitlab/PrometheusService/1"` was deprecated in 14.1.
    */
-  IntegrationsPrometheusID: any;
+  IntegrationsPrometheusID: string;
   /**
    * A `IssuableID` is a global ID. It is encoded as a string.
    *
    * An example `IssuableID` is: `"gid://gitlab/Issuable/1"`.
    */
-  IssuableID: any;
+  IssuableID: string;
   /**
    * A `IssueID` is a global ID. It is encoded as a string.
    *
    * An example `IssueID` is: `"gid://gitlab/Issue/1"`.
    */
-  IssueID: any;
+  IssueID: string;
   /**
    * A `IterationID` is a global ID. It is encoded as a string.
    *
    * An example `IterationID` is: `"gid://gitlab/Iteration/1"`.
    * The older format `"gid://gitlab/EEIteration/1"` was deprecated in 13.3.
    */
-  IterationID: any;
+  IterationID: string;
   /**
    * A `IterationsCadenceID` is a global ID. It is encoded as a string.
    *
    * An example `IterationsCadenceID` is: `"gid://gitlab/Iterations::Cadence/1"`.
    */
-  IterationsCadenceID: any;
+  IterationsCadenceID: string;
   /** Represents untyped JSON */
-  JSON: any;
+  JSON: string;
   /**
    * A `CommitStatusID` is a global ID. It is encoded as a string.
    *
    * An example `CommitStatusID` is: `"gid://gitlab/CommitStatus/1"`.
    */
-  JobID: any;
+  JobID: string;
   /** JSON object as raw string */
-  JsonString: any;
+  JsonString: string;
   /**
    * A `LabelID` is a global ID. It is encoded as a string.
    *
    * An example `LabelID` is: `"gid://gitlab/Label/1"`.
    */
-  LabelID: any;
+  LabelID: string;
   /**
    * A `ListID` is a global ID. It is encoded as a string.
    *
    * An example `ListID` is: `"gid://gitlab/List/1"`.
    */
-  ListID: any;
+  ListID: string;
   /**
    * A `MergeRequestID` is a global ID. It is encoded as a string.
    *
    * An example `MergeRequestID` is: `"gid://gitlab/MergeRequest/1"`.
    */
-  MergeRequestID: any;
+  MergeRequestID: string;
   /**
    * A `MetricsDashboardAnnotationID` is a global ID. It is encoded as a string.
    *
    * An example `MetricsDashboardAnnotationID` is: `"gid://gitlab/Metrics::Dashboard::Annotation/1"`.
    */
-  MetricsDashboardAnnotationID: any;
+  MetricsDashboardAnnotationID: string;
   /**
    * A `MilestoneID` is a global ID. It is encoded as a string.
    *
    * An example `MilestoneID` is: `"gid://gitlab/Milestone/1"`.
    */
-  MilestoneID: any;
+  MilestoneID: string;
   /**
    * A `NamespaceID` is a global ID. It is encoded as a string.
    *
    * An example `NamespaceID` is: `"gid://gitlab/Namespace/1"`.
    */
-  NamespaceID: any;
+  NamespaceID: string;
   /**
    * A `NoteID` is a global ID. It is encoded as a string.
    *
    * An example `NoteID` is: `"gid://gitlab/Note/1"`.
    */
-  NoteID: any;
+  NoteID: string;
   /**
    * A `NoteableID` is a global ID. It is encoded as a string.
    *
    * An example `NoteableID` is: `"gid://gitlab/Noteable/1"`.
    */
-  NoteableID: any;
+  NoteableID: string;
   /**
    * A `PackagesConanFileMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesConanFileMetadatumID` is: `"gid://gitlab/Packages::Conan::FileMetadatum/1"`.
    */
-  PackagesConanFileMetadatumID: any;
+  PackagesConanFileMetadatumID: string;
   /**
    * A `PackagesConanMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesConanMetadatumID` is: `"gid://gitlab/Packages::Conan::Metadatum/1"`.
    */
-  PackagesConanMetadatumID: any;
+  PackagesConanMetadatumID: string;
   /**
    * A `PackagesDependencyID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesDependencyID` is: `"gid://gitlab/Packages::Dependency/1"`.
    */
-  PackagesDependencyID: any;
+  PackagesDependencyID: string;
   /**
    * A `PackagesDependencyLinkID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesDependencyLinkID` is: `"gid://gitlab/Packages::DependencyLink/1"`.
    */
-  PackagesDependencyLinkID: any;
+  PackagesDependencyLinkID: string;
   /**
    * A `PackagesMavenMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesMavenMetadatumID` is: `"gid://gitlab/Packages::Maven::Metadatum/1"`.
    */
-  PackagesMavenMetadatumID: any;
+  PackagesMavenMetadatumID: string;
   /**
    * A `PackagesNugetDependencyLinkMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesNugetDependencyLinkMetadatumID` is: `"gid://gitlab/Packages::Nuget::DependencyLinkMetadatum/1"`.
    */
-  PackagesNugetDependencyLinkMetadatumID: any;
+  PackagesNugetDependencyLinkMetadatumID: string;
   /**
    * A `PackagesNugetMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesNugetMetadatumID` is: `"gid://gitlab/Packages::Nuget::Metadatum/1"`.
    */
-  PackagesNugetMetadatumID: any;
+  PackagesNugetMetadatumID: string;
   /**
    * A `PackagesPackageFileID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesPackageFileID` is: `"gid://gitlab/Packages::PackageFile/1"`.
    */
-  PackagesPackageFileID: any;
+  PackagesPackageFileID: string;
   /**
    * A `PackagesPackageID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesPackageID` is: `"gid://gitlab/Packages::Package/1"`.
    */
-  PackagesPackageID: any;
+  PackagesPackageID: string;
   /**
    * A `PackagesPypiMetadatumID` is a global ID. It is encoded as a string.
    *
    * An example `PackagesPypiMetadatumID` is: `"gid://gitlab/Packages::Pypi::Metadatum/1"`.
    */
-  PackagesPypiMetadatumID: any;
+  PackagesPypiMetadatumID: string;
   /**
    * A `PathLockID` is a global ID. It is encoded as a string.
    *
    * An example `PathLockID` is: `"gid://gitlab/PathLock/1"`.
    */
-  PathLockID: any;
+  PathLockID: string;
   /** String or integer. */
-  PayloadAlertFieldPathSegment: any;
+  PayloadAlertFieldPathSegment: string;
   /**
    * A `ProjectID` is a global ID. It is encoded as a string.
    *
    * An example `ProjectID` is: `"gid://gitlab/Project/1"`.
    */
-  ProjectID: any;
+  ProjectID: string;
   /**
    * A `ReleasesLinkID` is a global ID. It is encoded as a string.
    *
    * An example `ReleasesLinkID` is: `"gid://gitlab/Releases::Link/1"`.
    */
-  ReleasesLinkID: any;
+  ReleasesLinkID: string;
   /**
    * A `SnippetID` is a global ID. It is encoded as a string.
    *
    * An example `SnippetID` is: `"gid://gitlab/Snippet/1"`.
    */
-  SnippetID: any;
+  SnippetID: string;
   /**
    * A `TerraformStateID` is a global ID. It is encoded as a string.
    *
    * An example `TerraformStateID` is: `"gid://gitlab/Terraform::State/1"`.
    */
-  TerraformStateID: any;
+  TerraformStateID: string;
   /**
    * Time represented in ISO 8601.
    *
@@ -453,46 +453,46 @@ export type Scalars = {
    *
    * See `https://www.iso.org/iso-8601-date-and-time-format.html`.
    */
-  Time: any;
+  Time: string;
   /**
    * A `TodoID` is a global ID. It is encoded as a string.
    *
    * An example `TodoID` is: `"gid://gitlab/Todo/1"`.
    */
-  TodoID: any;
+  TodoID: string;
   /**
    * A `TodoableID` is a global ID. It is encoded as a string.
    *
    * An example `TodoableID` is: `"gid://gitlab/Todoable/1"`.
    */
-  TodoableID: any;
+  TodoableID: string;
   /** A regexp containing patterns sourced from user input */
-  UntrustedRegexp: any;
-  Upload: any;
+  UntrustedRegexp: string;
+  Upload: string;
   /**
    * A `UserID` is a global ID. It is encoded as a string.
    *
    * An example `UserID` is: `"gid://gitlab/User/1"`.
    */
-  UserID: any;
+  UserID: string;
   /**
    * A `VulnerabilitiesExternalIssueLinkID` is a global ID. It is encoded as a string.
    *
    * An example `VulnerabilitiesExternalIssueLinkID` is: `"gid://gitlab/Vulnerabilities::ExternalIssueLink/1"`.
    */
-  VulnerabilitiesExternalIssueLinkID: any;
+  VulnerabilitiesExternalIssueLinkID: string;
   /**
    * A `VulnerabilitiesScannerID` is a global ID. It is encoded as a string.
    *
    * An example `VulnerabilitiesScannerID` is: `"gid://gitlab/Vulnerabilities::Scanner/1"`.
    */
-  VulnerabilitiesScannerID: any;
+  VulnerabilitiesScannerID: string;
   /**
    * A `VulnerabilityID` is a global ID. It is encoded as a string.
    *
    * An example `VulnerabilityID` is: `"gid://gitlab/Vulnerability/1"`.
    */
-  VulnerabilityID: any;
+  VulnerabilityID: string;
 };
 
 /** Represents the access level of a relationship between a User and object that it is related to */
@@ -505,22 +505,21 @@ export type AccessLevel = {
 };
 
 /** Access level to a resource */
-export enum AccessLevelEnum {
+export type AccessLevelEnum =
   /** Developer access. */
-  Developer = 'DEVELOPER',
+  | 'DEVELOPER'
   /** Guest access. */
-  Guest = 'GUEST',
+  | 'GUEST'
   /** Maintainer access. */
-  Maintainer = 'MAINTAINER',
+  | 'MAINTAINER'
   /** Minimal access. */
-  MinimalAccess = 'MINIMAL_ACCESS',
+  | 'MINIMAL_ACCESS'
   /** No access. */
-  NoAccess = 'NO_ACCESS',
+  | 'NO_ACCESS'
   /** Owner access. */
-  Owner = 'OWNER',
+  | 'OWNER'
   /** Reporter access. */
-  Reporter = 'REPORTER'
-}
+  | 'REPORTER';
 
 /** Autogenerated input type of AddProjectToSecurityDashboard */
 export type AddProjectToSecurityDashboardInput = {
@@ -741,52 +740,51 @@ export type AlertManagementAlertEdge = {
 };
 
 /** Values for sorting alerts */
-export enum AlertManagementAlertSort {
+export type AlertManagementAlertSort =
   /** Created at ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Created at descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Created time by ascending order. */
-  CreatedTimeAsc = 'CREATED_TIME_ASC',
+  | 'CREATED_TIME_ASC'
   /** Created time by descending order. */
-  CreatedTimeDesc = 'CREATED_TIME_DESC',
+  | 'CREATED_TIME_DESC'
   /** End time by ascending order. */
-  EndedAtAsc = 'ENDED_AT_ASC',
+  | 'ENDED_AT_ASC'
   /** End time by descending order. */
-  EndedAtDesc = 'ENDED_AT_DESC',
+  | 'ENDED_AT_DESC'
   /** Events count by ascending order. */
-  EventCountAsc = 'EVENT_COUNT_ASC',
+  | 'EVENT_COUNT_ASC'
   /** Events count by descending order. */
-  EventCountDesc = 'EVENT_COUNT_DESC',
+  | 'EVENT_COUNT_DESC'
   /** Severity from less critical to more critical. */
-  SeverityAsc = 'SEVERITY_ASC',
+  | 'SEVERITY_ASC'
   /** Severity from more critical to less critical. */
-  SeverityDesc = 'SEVERITY_DESC',
+  | 'SEVERITY_DESC'
   /** Start time by ascending order. */
-  StartedAtAsc = 'STARTED_AT_ASC',
+  | 'STARTED_AT_ASC'
   /** Start time by descending order. */
-  StartedAtDesc = 'STARTED_AT_DESC',
+  | 'STARTED_AT_DESC'
   /** Status by order: `Ignored > Resolved > Acknowledged > Triggered`. */
-  StatusAsc = 'STATUS_ASC',
+  | 'STATUS_ASC'
   /** Status by order: `Triggered > Acknowledged > Resolved > Ignored`. */
-  StatusDesc = 'STATUS_DESC',
+  | 'STATUS_DESC'
   /** Updated at ascending order. */
-  UpdatedAsc = 'UPDATED_ASC',
+  | 'UPDATED_ASC'
   /** Updated at descending order. */
-  UpdatedDesc = 'UPDATED_DESC',
+  | 'UPDATED_DESC'
   /** Created time by ascending order. */
-  UpdatedTimeAsc = 'UPDATED_TIME_ASC',
+  | 'UPDATED_TIME_ASC'
   /** Created time by descending order. */
-  UpdatedTimeDesc = 'UPDATED_TIME_DESC',
+  | 'UPDATED_TIME_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'created_asc',
+  | 'created_asc'
   /** Created at descending order. */
-  CreatedDesc = 'created_desc',
+  | 'created_desc'
   /** Updated at ascending order. */
-  UpdatedAsc = 'updated_asc',
+  | 'updated_asc'
   /** Updated at descending order. */
-  UpdatedDesc = 'updated_desc'
-}
+  | 'updated_desc';
 
 /** Represents total number of alerts for the represented categories */
 export type AlertManagementAlertStatusCountsType = {
@@ -806,12 +804,11 @@ export type AlertManagementAlertStatusCountsType = {
 };
 
 /** Filters the alerts based on given domain */
-export enum AlertManagementDomainFilter {
+export type AlertManagementDomainFilter =
   /** Alerts for operations domain. */
-  Operations = 'operations',
+  | 'operations'
   /** Alerts for threat monitoring domain. */
-  ThreatMonitoring = 'threat_monitoring'
-}
+  | 'threat_monitoring';
 
 /** An endpoint and credentials used to accept alerts for a project */
 export type AlertManagementHttpIntegration = AlertManagementIntegration & {
@@ -896,12 +893,11 @@ export type AlertManagementIntegrationEdge = {
 };
 
 /** Values of types of integrations */
-export enum AlertManagementIntegrationType {
+export type AlertManagementIntegrationType =
   /** Integration with any monitoring tool. */
-  Http = 'HTTP',
+  | 'HTTP'
   /** Prometheus integration. */
-  Prometheus = 'PROMETHEUS'
-}
+  | 'PROMETHEUS';
 
 /** Parsed field from an alert used for custom mappings */
 export type AlertManagementPayloadAlertField = {
@@ -927,38 +923,36 @@ export type AlertManagementPayloadAlertFieldInput = {
 };
 
 /** Values for alert field names used in the custom mapping */
-export enum AlertManagementPayloadAlertFieldName {
+export type AlertManagementPayloadAlertFieldName =
   /** A high-level summary of the problem. */
-  Description = 'DESCRIPTION',
+  | 'DESCRIPTION'
   /** The resolved time of the incident. */
-  EndTime = 'END_TIME',
+  | 'END_TIME'
   /** The unique identifier of the alert. This can be used to group occurrences of the same alert. */
-  Fingerprint = 'FINGERPRINT',
+  | 'FINGERPRINT'
   /** The name of the associated GitLab environment. */
-  GitlabEnvironmentName = 'GITLAB_ENVIRONMENT_NAME',
+  | 'GITLAB_ENVIRONMENT_NAME'
   /** One or more hosts, as to where this incident occurred. */
-  Hosts = 'HOSTS',
+  | 'HOSTS'
   /** The name of the associated monitoring tool. */
-  MonitoringTool = 'MONITORING_TOOL',
+  | 'MONITORING_TOOL'
   /** The affected service. */
-  Service = 'SERVICE',
+  | 'SERVICE'
   /** The severity of the alert. */
-  Severity = 'SEVERITY',
+  | 'SEVERITY'
   /** The time of the incident. */
-  StartTime = 'START_TIME',
+  | 'START_TIME'
   /** The title of the incident. */
-  Title = 'TITLE'
-}
+  | 'TITLE';
 
 /** Values for alert field types used in the custom mapping */
-export enum AlertManagementPayloadAlertFieldType {
+export type AlertManagementPayloadAlertFieldType =
   /** Array field type. */
-  Array = 'ARRAY',
+  | 'ARRAY'
   /** DateTime field type. */
-  Datetime = 'DATETIME',
+  | 'DATETIME'
   /** String field type. */
-  String = 'STRING'
-}
+  | 'STRING';
 
 /** Parsed field (with its name) from an alert used for custom mappings */
 export type AlertManagementPayloadAlertMappingField = {
@@ -993,32 +987,30 @@ export type AlertManagementPrometheusIntegration = AlertManagementIntegration & 
 };
 
 /** Alert severity values */
-export enum AlertManagementSeverity {
+export type AlertManagementSeverity =
   /** Critical severity */
-  Critical = 'CRITICAL',
+  | 'CRITICAL'
   /** High severity */
-  High = 'HIGH',
+  | 'HIGH'
   /** Info severity */
-  Info = 'INFO',
+  | 'INFO'
   /** Low severity */
-  Low = 'LOW',
+  | 'LOW'
   /** Medium severity */
-  Medium = 'MEDIUM',
+  | 'MEDIUM'
   /** Unknown severity */
-  Unknown = 'UNKNOWN'
-}
+  | 'UNKNOWN';
 
 /** Alert status values */
-export enum AlertManagementStatus {
+export type AlertManagementStatus =
   /** Someone is actively investigating the problem. */
-  Acknowledged = 'ACKNOWLEDGED',
+  | 'ACKNOWLEDGED'
   /** No action will be taken. */
-  Ignored = 'IGNORED',
+  | 'IGNORED'
   /** The problem has been addressed. */
-  Resolved = 'RESOLVED',
+  | 'RESOLVED'
   /** Investigation has not started. */
-  Triggered = 'TRIGGERED'
-}
+  | 'TRIGGERED';
 
 /** Autogenerated input type of AlertSetAssignees */
 export type AlertSetAssigneesInput = {
@@ -1120,14 +1112,13 @@ export type ApiFuzzingCiConfigurationCreatePayload = {
 };
 
 /** All possible ways to specify the API surface for an API fuzzing scan. */
-export enum ApiFuzzingScanMode {
+export type ApiFuzzingScanMode =
   /** The API surface is specified by a HAR file. */
-  Har = 'HAR',
+  | 'HAR'
   /** The API surface is specified by a OPENAPI file. */
-  Openapi = 'OPENAPI',
+  | 'OPENAPI'
   /** The API surface is specified by a POSTMAN file. */
-  Postman = 'POSTMAN'
-}
+  | 'POSTMAN';
 
 /** An API Fuzzing scan profile. */
 export type ApiFuzzingScanProfile = {
@@ -1199,32 +1190,29 @@ export type ApprovalRuleUsersArgs = {
 };
 
 /** The kind of an approval rule. */
-export enum ApprovalRuleType {
+export type ApprovalRuleType =
   /** A `any_approver` approval rule. */
-  AnyApprover = 'ANY_APPROVER',
+  | 'ANY_APPROVER'
   /** A `code_owner` approval rule. */
-  CodeOwner = 'CODE_OWNER',
+  | 'CODE_OWNER'
   /** A `regular` approval rule. */
-  Regular = 'REGULAR',
+  | 'REGULAR'
   /** A `report_approver` approval rule. */
-  ReportApprover = 'REPORT_APPROVER'
-}
+  | 'REPORT_APPROVER';
 
 /** Assignee ID wildcard values */
-export enum AssigneeWildcardId {
+export type AssigneeWildcardId =
   /** An assignee is assigned. */
-  Any = 'ANY',
+  | 'ANY'
   /** No assignee is assigned. */
-  None = 'NONE'
-}
+  | 'NONE';
 
 /** User availability status */
-export enum AvailabilityEnum {
+export type AvailabilityEnum =
   /** Busy */
-  Busy = 'BUSY',
+  | 'BUSY'
   /** Not Set */
-  NotSet = 'NOT_SET'
-}
+  | 'NOT_SET';
 
 /** An emoji awarded by a user */
 export type AwardEmoji = {
@@ -1400,14 +1388,13 @@ export type BlobViewer = {
 };
 
 /** Types of blob viewers */
-export enum BlobViewersType {
+export type BlobViewersType =
   /** Auxiliary blob viewers type. */
-  Auxiliary = 'auxiliary',
+  | 'auxiliary'
   /** Rich blob viewers type. */
-  Rich = 'rich',
+  | 'rich'
   /** Simple blob viewers type. */
-  Simple = 'simple'
-}
+  | 'simple';
 
 /** Represents a project or group issue board */
 export type Board = {
@@ -2232,12 +2219,11 @@ export type CiConfigStageEdge = {
 };
 
 /** Values for YAML processor result */
-export enum CiConfigStatus {
+export type CiConfigStatus =
   /** Configuration file is not valid. */
-  Invalid = 'INVALID',
+  | 'INVALID'
   /** Configuration file is valid. */
-  Valid = 'VALID'
-}
+  | 'VALID';
 
 export type CiGroup = {
   __typename?: 'CiGroup';
@@ -2415,30 +2401,29 @@ export type CiJobEdge = {
   node?: Maybe<CiJob>;
 };
 
-export enum CiJobStatus {
+export type CiJobStatus =
   /** A job that is canceled. */
-  Canceled = 'CANCELED',
+  | 'CANCELED'
   /** A job that is created. */
-  Created = 'CREATED',
+  | 'CREATED'
   /** A job that is failed. */
-  Failed = 'FAILED',
+  | 'FAILED'
   /** A job that is manual. */
-  Manual = 'MANUAL',
+  | 'MANUAL'
   /** A job that is pending. */
-  Pending = 'PENDING',
+  | 'PENDING'
   /** A job that is preparing. */
-  Preparing = 'PREPARING',
+  | 'PREPARING'
   /** A job that is running. */
-  Running = 'RUNNING',
+  | 'RUNNING'
   /** A job that is scheduled. */
-  Scheduled = 'SCHEDULED',
+  | 'SCHEDULED'
   /** A job that is skipped. */
-  Skipped = 'SKIPPED',
+  | 'SKIPPED'
   /** A job that is success. */
-  Success = 'SUCCESS',
+  | 'SUCCESS'
   /** A job that is waiting for resource. */
-  WaitingForResource = 'WAITING_FOR_RESOURCE'
-}
+  | 'WAITING_FOR_RESOURCE';
 
 /** Autogenerated input type of CiJobTokenScopeAddProject */
 export type CiJobTokenScopeAddProjectInput = {
@@ -2608,12 +2593,11 @@ export type CiRunner = {
   version?: Maybe<Scalars['String']>;
 };
 
-export enum CiRunnerAccessLevel {
+export type CiRunnerAccessLevel =
   /** A runner that is not protected. */
-  NotProtected = 'NOT_PROTECTED',
+  | 'NOT_PROTECTED'
   /** A runner that is ref protected. */
-  RefProtected = 'REF_PROTECTED'
-}
+  | 'REF_PROTECTED';
 
 /** The connection type for CiRunner. */
 export type CiRunnerConnection = {
@@ -2638,38 +2622,35 @@ export type CiRunnerEdge = {
 };
 
 /** Values for sorting runners */
-export enum CiRunnerSort {
+export type CiRunnerSort =
   /** Ordered by contacted_at in ascending order. */
-  ContactedAsc = 'CONTACTED_ASC',
+  | 'CONTACTED_ASC'
   /** Ordered by contacted_at in descending order. */
-  ContactedDesc = 'CONTACTED_DESC',
+  | 'CONTACTED_DESC'
   /** Ordered by created_at in ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Ordered by created_at in descending order. */
-  CreatedDesc = 'CREATED_DESC'
-}
+  | 'CREATED_DESC';
 
-export enum CiRunnerStatus {
+export type CiRunnerStatus =
   /** A runner that is not paused. */
-  Active = 'ACTIVE',
+  | 'ACTIVE'
   /** A runner that has never contacted this instance. */
-  NotConnected = 'NOT_CONNECTED',
+  | 'NOT_CONNECTED'
   /** A runner that has not contacted this instance within the last 2 hours. */
-  Offline = 'OFFLINE',
+  | 'OFFLINE'
   /** A runner that contacted this instance within the last 2 hours. */
-  Online = 'ONLINE',
+  | 'ONLINE'
   /** A runner that is paused. */
-  Paused = 'PAUSED'
-}
+  | 'PAUSED';
 
-export enum CiRunnerType {
+export type CiRunnerType =
   /** A runner that is group type. */
-  GroupType = 'GROUP_TYPE',
+  | 'GROUP_TYPE'
   /** A runner that is instance type. */
-  InstanceType = 'INSTANCE_TYPE',
+  | 'INSTANCE_TYPE'
   /** A runner that is project type. */
-  ProjectType = 'PROJECT_TYPE'
-}
+  | 'PROJECT_TYPE';
 
 export type CiStage = {
   __typename?: 'CiStage';
@@ -2972,18 +2953,17 @@ export type CodeQualityDegradationEdge = {
   node?: Maybe<CodeQualityDegradation>;
 };
 
-export enum CodeQualityDegradationSeverity {
+export type CodeQualityDegradationSeverity =
   /** Code Quality degradation has a status of blocker. */
-  Blocker = 'BLOCKER',
+  | 'BLOCKER'
   /** Code Quality degradation has a status of critical. */
-  Critical = 'CRITICAL',
+  | 'CRITICAL'
   /** Code Quality degradation has a status of info. */
-  Info = 'INFO',
+  | 'INFO'
   /** Code Quality degradation has a status of major. */
-  Major = 'MAJOR',
+  | 'MAJOR'
   /** Code Quality degradation has a status of minor. */
-  Minor = 'MINOR'
-}
+  | 'MINOR';
 
 export type Commit = {
   __typename?: 'Commit';
@@ -3051,18 +3031,17 @@ export type CommitAction = {
 };
 
 /** Mode of a commit action */
-export enum CommitActionMode {
+export type CommitActionMode =
   /** Chmod command. */
-  Chmod = 'CHMOD',
+  | 'CHMOD'
   /** Create command. */
-  Create = 'CREATE',
+  | 'CREATE'
   /** Delete command. */
-  Delete = 'DELETE',
+  | 'DELETE'
   /** Move command. */
-  Move = 'MOVE',
+  | 'MOVE'
   /** Update command. */
-  Update = 'UPDATE'
-}
+  | 'UPDATE';
 
 /** The connection type for Commit. */
 export type CommitConnection = {
@@ -3115,12 +3094,11 @@ export type CommitEdge = {
   node?: Maybe<Commit>;
 };
 
-export enum CommitEncoding {
+export type CommitEncoding =
   /** Base64 encoding. */
-  Base64 = 'BASE64',
+  | 'BASE64'
   /** Text encoding. */
-  Text = 'TEXT'
-}
+  | 'TEXT';
 
 /** Represents a ComplianceFramework associated with a Project */
 export type ComplianceFramework = {
@@ -3224,12 +3202,11 @@ export type ConanMetadata = {
 };
 
 /** Conan file types */
-export enum ConanMetadatumFileTypeEnum {
+export type ConanMetadatumFileTypeEnum =
   /** A package file type. */
-  PackageFile = 'PACKAGE_FILE',
+  | 'PACKAGE_FILE'
   /** A recipe file type. */
-  RecipeFile = 'RECIPE_FILE'
-}
+  | 'RECIPE_FILE';
 
 /** Autogenerated input type of ConfigureDependencyScanning */
 export type ConfigureDependencyScanningInput = {
@@ -3350,46 +3327,43 @@ export type ContainerExpirationPolicy = {
   updatedAt: Scalars['Time'];
 };
 
-export enum ContainerExpirationPolicyCadenceEnum {
+export type ContainerExpirationPolicyCadenceEnum =
   /** Every day */
-  EveryDay = 'EVERY_DAY',
+  | 'EVERY_DAY'
   /** Every month */
-  EveryMonth = 'EVERY_MONTH',
+  | 'EVERY_MONTH'
   /** Every three months */
-  EveryThreeMonths = 'EVERY_THREE_MONTHS',
+  | 'EVERY_THREE_MONTHS'
   /** Every two weeks */
-  EveryTwoWeeks = 'EVERY_TWO_WEEKS',
+  | 'EVERY_TWO_WEEKS'
   /** Every week */
-  EveryWeek = 'EVERY_WEEK'
-}
+  | 'EVERY_WEEK';
 
-export enum ContainerExpirationPolicyKeepEnum {
+export type ContainerExpirationPolicyKeepEnum =
   /** 50 tags per image name */
-  FiftyTags = 'FIFTY_TAGS',
+  | 'FIFTY_TAGS'
   /** 5 tags per image name */
-  FiveTags = 'FIVE_TAGS',
+  | 'FIVE_TAGS'
   /** 100 tags per image name */
-  OneHundredTags = 'ONE_HUNDRED_TAGS',
+  | 'ONE_HUNDRED_TAGS'
   /** 1 tag per image name */
-  OneTag = 'ONE_TAG',
+  | 'ONE_TAG'
   /** 10 tags per image name */
-  TenTags = 'TEN_TAGS',
+  | 'TEN_TAGS'
   /** 25 tags per image name */
-  TwentyFiveTags = 'TWENTY_FIVE_TAGS'
-}
+  | 'TWENTY_FIVE_TAGS';
 
-export enum ContainerExpirationPolicyOlderThanEnum {
+export type ContainerExpirationPolicyOlderThanEnum =
   /** 14 days until tags are automatically removed */
-  FourteenDays = 'FOURTEEN_DAYS',
+  | 'FOURTEEN_DAYS'
   /** 90 days until tags are automatically removed */
-  NinetyDays = 'NINETY_DAYS',
+  | 'NINETY_DAYS'
   /** 7 days until tags are automatically removed */
-  SevenDays = 'SEVEN_DAYS',
+  | 'SEVEN_DAYS'
   /** 60 days until tags are automatically removed */
-  SixtyDays = 'SIXTY_DAYS',
+  | 'SIXTY_DAYS'
   /** 30 days until tags are automatically removed */
-  ThirtyDays = 'THIRTY_DAYS'
-}
+  | 'THIRTY_DAYS';
 
 /** A container repository */
 export type ContainerRepository = {
@@ -3421,16 +3395,15 @@ export type ContainerRepository = {
 };
 
 /** Status of the tags cleanup of a container repository */
-export enum ContainerRepositoryCleanupStatus {
+export type ContainerRepositoryCleanupStatus =
   /** Tags cleanup is ongoing. */
-  Ongoing = 'ONGOING',
+  | 'ONGOING'
   /** Tags cleanup is scheduled and is going to be executed shortly. */
-  Scheduled = 'SCHEDULED',
+  | 'SCHEDULED'
   /** Tags cleanup has been partially executed. There are still remaining tags to delete. */
-  Unfinished = 'UNFINISHED',
+  | 'UNFINISHED'
   /** Tags cleanup is not scheduled. This is the default state. */
-  Unscheduled = 'UNSCHEDULED'
-}
+  | 'UNSCHEDULED';
 
 /** The connection type for ContainerRepository. */
 export type ContainerRepositoryConnection = {
@@ -3493,36 +3466,34 @@ export type ContainerRepositoryEdge = {
 };
 
 /** Values for sorting container repositories */
-export enum ContainerRepositorySort {
+export type ContainerRepositorySort =
   /** Created at ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Created at descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Name by ascending order. */
-  NameAsc = 'NAME_ASC',
+  | 'NAME_ASC'
   /** Name by descending order. */
-  NameDesc = 'NAME_DESC',
+  | 'NAME_DESC'
   /** Updated at ascending order. */
-  UpdatedAsc = 'UPDATED_ASC',
+  | 'UPDATED_ASC'
   /** Updated at descending order. */
-  UpdatedDesc = 'UPDATED_DESC',
+  | 'UPDATED_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'created_asc',
+  | 'created_asc'
   /** Created at descending order. */
-  CreatedDesc = 'created_desc',
+  | 'created_desc'
   /** Updated at ascending order. */
-  UpdatedAsc = 'updated_asc',
+  | 'updated_asc'
   /** Updated at descending order. */
-  UpdatedDesc = 'updated_desc'
-}
+  | 'updated_desc';
 
 /** Status of a container repository */
-export enum ContainerRepositoryStatus {
+export type ContainerRepositoryStatus =
   /** Delete Failed status. */
-  DeleteFailed = 'DELETE_FAILED',
+  | 'DELETE_FAILED'
   /** Delete Scheduled status. */
-  DeleteScheduled = 'DELETE_SCHEDULED'
-}
+  | 'DELETE_SCHEDULED';
 
 /** A tag from a container repository */
 export type ContainerRepositoryTag = {
@@ -4409,16 +4380,15 @@ export type DastProfileCadenceInput = {
 };
 
 /** Unit for the duration of Dast Profile Cadence. */
-export enum DastProfileCadenceUnit {
+export type DastProfileCadenceUnit =
   /** DAST Profile Cadence duration in days. */
-  Day = 'DAY',
+  | 'DAY'
   /** DAST Profile Cadence duration in months. */
-  Month = 'MONTH',
+  | 'MONTH'
   /** DAST Profile Cadence duration in weeks. */
-  Week = 'WEEK',
+  | 'WEEK'
   /** DAST Profile Cadence duration in years. */
-  Year = 'YEAR'
-}
+  | 'YEAR';
 
 /** The connection type for DastProfile. */
 export type DastProfileConnection = {
@@ -4579,12 +4549,11 @@ export type DastProfileUpdatePayload = {
   pipelineUrl?: Maybe<Scalars['String']>;
 };
 
-export enum DastScanTypeEnum {
+export type DastScanTypeEnum =
   /** Active DAST scan. This scan will make active attacks against the target site. */
-  Active = 'ACTIVE',
+  | 'ACTIVE'
   /** Passive DAST scan. This scan will not make active attacks against the target site. */
-  Passive = 'PASSIVE'
-}
+  | 'PASSIVE';
 
 /** Represents a DAST scanner profile */
 export type DastScannerProfile = {
@@ -4888,18 +4857,17 @@ export type DastSiteProfileUpdatePayload = {
   id?: Maybe<Scalars['DastSiteProfileID']>;
 };
 
-export enum DastSiteProfileValidationStatusEnum {
+export type DastSiteProfileValidationStatusEnum =
   /** Site validation process finished but failed. */
-  FailedValidation = 'FAILED_VALIDATION',
+  | 'FAILED_VALIDATION'
   /** Site validation process is in progress. */
-  InprogressValidation = 'INPROGRESS_VALIDATION',
+  | 'INPROGRESS_VALIDATION'
   /** No site validation exists. */
-  None = 'NONE',
+  | 'NONE'
   /** Site validation process finished successfully. */
-  PassedValidation = 'PASSED_VALIDATION',
+  | 'PASSED_VALIDATION'
   /** Site validation process has not started. */
-  PendingValidation = 'PENDING_VALIDATION'
-}
+  | 'PENDING_VALIDATION';
 
 /** Autogenerated input type of DastSiteTokenCreate */
 export type DastSiteTokenCreateInput = {
@@ -5003,72 +4971,67 @@ export type DastSiteValidationRevokePayload = {
   errors: Array<Scalars['String']>;
 };
 
-export enum DastSiteValidationStatusEnum {
+export type DastSiteValidationStatusEnum =
   /** Site validation process finished but failed. */
-  FailedValidation = 'FAILED_VALIDATION',
+  | 'FAILED_VALIDATION'
   /** Site validation process is in progress. */
-  InprogressValidation = 'INPROGRESS_VALIDATION',
+  | 'INPROGRESS_VALIDATION'
   /** Site validation process finished successfully. */
-  PassedValidation = 'PASSED_VALIDATION',
+  | 'PASSED_VALIDATION'
   /** Site validation process has not started. */
-  PendingValidation = 'PENDING_VALIDATION'
-}
+  | 'PENDING_VALIDATION';
 
-export enum DastSiteValidationStrategyEnum {
+export type DastSiteValidationStrategyEnum =
   /** Header validation. */
-  Header = 'HEADER',
+  | 'HEADER'
   /** Meta tag validation. */
-  MetaTag = 'META_TAG',
+  | 'META_TAG'
   /** Text file validation. */
-  TextFile = 'TEXT_FILE'
-}
+  | 'TEXT_FILE';
 
-export enum DastTargetTypeEnum {
+export type DastTargetTypeEnum =
   /** API target. */
-  Api = 'API',
+  | 'API'
   /** Website target. */
-  Website = 'WEBSITE'
-}
+  | 'WEBSITE';
 
 /** Color of the data visualization palette */
-export enum DataVisualizationColorEnum {
+export type DataVisualizationColorEnum =
   /** Aqua color */
-  Aqua = 'AQUA',
+  | 'AQUA'
   /** Blue color */
-  Blue = 'BLUE',
+  | 'BLUE'
   /** Green color */
-  Green = 'GREEN',
+  | 'GREEN'
   /** Magenta color */
-  Magenta = 'MAGENTA',
+  | 'MAGENTA'
   /** Orange color */
-  Orange = 'ORANGE'
-}
+  | 'ORANGE';
 
 /** Weight of the data visualization palette */
-export enum DataVisualizationWeightEnum {
+export type DataVisualizationWeightEnum =
   /** 50 weight */
-  Weight_50 = 'WEIGHT_50',
+  | 'WEIGHT_50'
   /** 100 weight */
-  Weight_100 = 'WEIGHT_100',
+  | 'WEIGHT_100'
   /** 200 weight */
-  Weight_200 = 'WEIGHT_200',
+  | 'WEIGHT_200'
   /** 300 weight */
-  Weight_300 = 'WEIGHT_300',
+  | 'WEIGHT_300'
   /** 400 weight */
-  Weight_400 = 'WEIGHT_400',
+  | 'WEIGHT_400'
   /** 500 weight */
-  Weight_500 = 'WEIGHT_500',
+  | 'WEIGHT_500'
   /** 600 weight */
-  Weight_600 = 'WEIGHT_600',
+  | 'WEIGHT_600'
   /** 700 weight */
-  Weight_700 = 'WEIGHT_700',
+  | 'WEIGHT_700'
   /** 800 weight */
-  Weight_800 = 'WEIGHT_800',
+  | 'WEIGHT_800'
   /** 900 weight */
-  Weight_900 = 'WEIGHT_900',
+  | 'WEIGHT_900'
   /** 950 weight */
-  Weight_950 = 'WEIGHT_950'
-}
+  | 'WEIGHT_950';
 
 /** Autogenerated input type of DeleteAnnotation */
 export type DeleteAnnotationInput = {
@@ -5192,18 +5155,17 @@ export type DependencyProxySetting = {
 };
 
 /** All environment deployment tiers. */
-export enum DeploymentTier {
+export type DeploymentTier =
   /** Development. */
-  Development = 'DEVELOPMENT',
+  | 'DEVELOPMENT'
   /** Other. */
-  Other = 'OTHER',
+  | 'OTHER'
   /** Production. */
-  Production = 'PRODUCTION',
+  | 'PRODUCTION'
   /** Staging. */
-  Staging = 'STAGING',
+  | 'STAGING'
   /** Testing. */
-  Testing = 'TESTING'
-}
+  | 'TESTING';
 
 /** A single design */
 export type Design = CurrentUserTodos & DesignFields & NoteableInterface & {
@@ -5391,14 +5353,13 @@ export type DesignCollectionVersionsArgs = {
 };
 
 /** Copy state of a DesignCollection */
-export enum DesignCollectionCopyState {
+export type DesignCollectionCopyState =
   /** The DesignCollection encountered an error during a copy */
-  Error = 'ERROR',
+  | 'ERROR'
   /** The DesignCollection is being copied */
-  InProgress = 'IN_PROGRESS',
+  | 'IN_PROGRESS'
   /** The DesignCollection has no copy in progress */
-  Ready = 'READY'
-}
+  | 'READY';
 
 /** The connection type for Design. */
 export type DesignConnection = {
@@ -5600,16 +5561,15 @@ export type DesignVersionEdge = {
 };
 
 /** Mutation event of a design within a version */
-export enum DesignVersionEvent {
+export type DesignVersionEvent =
   /** A creation event */
-  Creation = 'CREATION',
+  | 'CREATION'
   /** A deletion event */
-  Deletion = 'DELETION',
+  | 'DELETION'
   /** A modification event */
-  Modification = 'MODIFICATION',
+  | 'MODIFICATION'
   /** No change. */
-  None = 'NONE'
-}
+  | 'NONE';
 
 /** Autogenerated input type of DestroyBoard */
 export type DestroyBoardInput = {
@@ -6022,12 +5982,11 @@ export type DiffPositionInput = {
 };
 
 /** Type of file the position refers to */
-export enum DiffPositionType {
+export type DiffPositionType =
   /** An image. */
-  Image = 'image',
+  | 'image'
   /** Text file. */
-  Text = 'text'
-}
+  | 'text';
 
 export type DiffRefs = {
   __typename?: 'DiffRefs';
@@ -6177,22 +6136,20 @@ export type DoraMetric = {
 };
 
 /** All possible ways that DORA metrics can be aggregated. */
-export enum DoraMetricBucketingInterval {
+export type DoraMetricBucketingInterval =
   /** All data points are combined into a single value. */
-  All = 'ALL',
+  | 'ALL'
   /** Data points are combined into chunks by day. */
-  Daily = 'DAILY',
+  | 'DAILY'
   /** Data points are combined into chunks by month. */
-  Monthly = 'MONTHLY'
-}
+  | 'MONTHLY';
 
 /** All supported DORA metric types. */
-export enum DoraMetricType {
+export type DoraMetricType =
   /** Deployment frequency. */
-  DeploymentFrequency = 'DEPLOYMENT_FREQUENCY',
+  | 'DEPLOYMENT_FREQUENCY'
   /** Lead time for changes. */
-  LeadTimeForChanges = 'LEAD_TIME_FOR_CHANGES'
-}
+  | 'LEAD_TIME_FOR_CHANGES';
 
 /** Autogenerated input type of EchoCreate */
 export type EchoCreateInput = {
@@ -6252,14 +6209,13 @@ export type Entry = {
 };
 
 /** Type of a tree entry */
-export enum EntryType {
+export type EntryType =
   /** File tree type. */
-  Blob = 'blob',
+  | 'blob'
   /** Commit tree type. */
-  Commit = 'commit',
+  | 'commit'
   /** Directory tree type. */
-  Tree = 'tree'
-}
+  | 'tree';
 
 /** Describes where code is deployed for a project */
 export type Environment = {
@@ -7180,46 +7136,43 @@ export type EpicSetSubscriptionPayload = {
 };
 
 /** Roadmap sort values */
-export enum EpicSort {
+export type EpicSort =
   /** Sort by end date in ascending order. */
-  EndDateAsc = 'END_DATE_ASC',
+  | 'END_DATE_ASC'
   /** Sort by end date in descending order. */
-  EndDateDesc = 'END_DATE_DESC',
+  | 'END_DATE_DESC'
   /** Sort by start date in ascending order. */
-  StartDateAsc = 'START_DATE_ASC',
+  | 'START_DATE_ASC'
   /** Sort by start date in descending order. */
-  StartDateDesc = 'START_DATE_DESC',
+  | 'START_DATE_DESC'
   /** Sort by title in ascending order. */
-  TitleAsc = 'TITLE_ASC',
+  | 'TITLE_ASC'
   /** Sort by title in descending order. */
-  TitleDesc = 'TITLE_DESC',
+  | 'TITLE_DESC'
   /** End date at ascending order. */
-  EndDateAsc = 'end_date_asc',
+  | 'end_date_asc'
   /** End date at descending order. */
-  EndDateDesc = 'end_date_desc',
+  | 'end_date_desc'
   /** Start date at ascending order. */
-  StartDateAsc = 'start_date_asc',
+  | 'start_date_asc'
   /** Start date at descending order. */
-  StartDateDesc = 'start_date_desc'
-}
+  | 'start_date_desc';
 
 /** State of an epic */
-export enum EpicState {
+export type EpicState =
   /** All epics. */
-  All = 'all',
+  | 'all'
   /** Closed epics. */
-  Closed = 'closed',
+  | 'closed'
   /** Open epics. */
-  Opened = 'opened'
-}
+  | 'opened';
 
 /** State event of an epic */
-export enum EpicStateEvent {
+export type EpicStateEvent =
   /** Close the epic. */
-  Close = 'CLOSE',
+  | 'CLOSE'
   /** Reopen the epic. */
-  Reopen = 'REOPEN'
-}
+  | 'REOPEN';
 
 /** A node of an epic tree. */
 export type EpicTreeNodeFieldsInputType = {
@@ -7253,12 +7206,11 @@ export type EpicTreeReorderPayload = {
 };
 
 /** Epic ID wildcard values */
-export enum EpicWildcardId {
+export type EpicWildcardId =
   /** Any epic is assigned. */
-  Any = 'ANY',
+  | 'ANY'
   /** No epic is assigned. */
-  None = 'NONE'
-}
+  | 'NONE';
 
 /** Autogenerated input type of EscalationPolicyCreate */
 export type EscalationPolicyCreateInput = {
@@ -7375,12 +7327,11 @@ export type EscalationRuleInput = {
 };
 
 /** Escalation rule statuses */
-export enum EscalationRuleStatus {
+export type EscalationRuleStatus =
   /** . */
-  Acknowledged = 'ACKNOWLEDGED',
+  | 'ACKNOWLEDGED'
   /** . */
-  Resolved = 'RESOLVED'
-}
+  | 'RESOLVED';
 
 /** Represents an escalation rule for an escalation policy */
 export type EscalationRuleType = {
@@ -7413,32 +7364,31 @@ export type Event = {
 };
 
 /** Event action */
-export enum EventAction {
+export type EventAction =
   /** Approved action */
-  Approved = 'APPROVED',
+  | 'APPROVED'
   /** Closed action */
-  Closed = 'CLOSED',
+  | 'CLOSED'
   /** Commented action */
-  Commented = 'COMMENTED',
+  | 'COMMENTED'
   /** Created action */
-  Created = 'CREATED',
+  | 'CREATED'
   /** Destroyed action */
-  Destroyed = 'DESTROYED',
+  | 'DESTROYED'
   /** Expired action */
-  Expired = 'EXPIRED',
+  | 'EXPIRED'
   /** Joined action */
-  Joined = 'JOINED',
+  | 'JOINED'
   /** Left action */
-  Left = 'LEFT',
+  | 'LEFT'
   /** Merged action */
-  Merged = 'MERGED',
+  | 'MERGED'
   /** Pushed action */
-  Pushed = 'PUSHED',
+  | 'PUSHED'
   /** Reopened action */
-  Reopened = 'REOPENED',
+  | 'REOPENED'
   /** Updated action */
-  Updated = 'UPDATED'
-}
+  | 'UPDATED';
 
 /** The connection type for Event. */
 export type EventConnection = {
@@ -8379,20 +8329,18 @@ export type GroupMemberEdge = {
 };
 
 /** Group member relation */
-export enum GroupMemberRelation {
+export type GroupMemberRelation =
   /** Members in the group's subgroups. */
-  Descendants = 'DESCENDANTS',
+  | 'DESCENDANTS'
   /** Members in the group itself. */
-  Direct = 'DIRECT',
+  | 'DIRECT'
   /** Members in the group's ancestor groups. */
-  Inherited = 'INHERITED'
-}
+  | 'INHERITED';
 
 /** User permission on groups */
-export enum GroupPermission {
+export type GroupPermission =
   /** Groups where the user can create projects. */
-  CreateProjects = 'CREATE_PROJECTS'
-}
+  | 'CREATE_PROJECTS';
 
 export type GroupPermissions = {
   __typename?: 'GroupPermissions';
@@ -8481,14 +8429,13 @@ export type GroupWikiRepositoryRegistryEdge = {
 };
 
 /** Health status of an issue or epic */
-export enum HealthStatus {
+export type HealthStatus =
   /** At risk */
-  AtRisk = 'atRisk',
+  | 'atRisk'
   /** Needs attention */
-  NeedsAttention = 'needsAttention',
+  | 'needsAttention'
   /** On track */
-  OnTrack = 'onTrack'
-}
+  | 'onTrack';
 
 /** Autogenerated input type of HttpIntegrationCreate */
 export type HttpIntegrationCreateInput = {
@@ -8774,38 +8721,35 @@ export type InstanceSecurityDashboardVulnerabilitySeveritiesCountArgs = {
 export type Issuable = Epic | Issue | MergeRequest;
 
 /** Fields to perform the search in */
-export enum IssuableSearchableField {
+export type IssuableSearchableField =
   /** Search in description field. */
-  Description = 'DESCRIPTION',
+  | 'DESCRIPTION'
   /** Search in title field. */
-  Title = 'TITLE'
-}
+  | 'TITLE';
 
 /** Incident severity */
-export enum IssuableSeverity {
+export type IssuableSeverity =
   /** Critical severity */
-  Critical = 'CRITICAL',
+  | 'CRITICAL'
   /** High severity */
-  High = 'HIGH',
+  | 'HIGH'
   /** Low severity */
-  Low = 'LOW',
+  | 'LOW'
   /** Medium severity */
-  Medium = 'MEDIUM',
+  | 'MEDIUM'
   /** Unknown severity */
-  Unknown = 'UNKNOWN'
-}
+  | 'UNKNOWN';
 
 /** State of a GitLab issue or merge request */
-export enum IssuableState {
+export type IssuableState =
   /** All available. */
-  All = 'all',
+  | 'all'
   /** In closed state. */
-  Closed = 'closed',
+  | 'closed'
   /** Discussion has been locked. */
-  Locked = 'locked',
+  | 'locked'
   /** In open state. */
-  Opened = 'opened'
-}
+  | 'opened';
 
 export type Issue = CurrentUserTodos & NoteableInterface & {
   __typename?: 'Issue';
@@ -9030,10 +8974,9 @@ export type IssueConnection = {
 };
 
 /** Iteration ID wildcard values for issue creation */
-export enum IssueCreationIterationWildcardId {
+export type IssueCreationIterationWildcardId =
   /** Current iteration. */
-  Current = 'CURRENT'
-}
+  | 'CURRENT';
 
 /** An edge in a connection. */
 export type IssueEdge = {
@@ -9331,90 +9274,87 @@ export type IssueSetWeightPayload = {
 };
 
 /** Values for sorting issues */
-export enum IssueSort {
+export type IssueSort =
   /** Blocking issues count by ascending order. */
-  BlockingIssuesAsc = 'BLOCKING_ISSUES_ASC',
+  | 'BLOCKING_ISSUES_ASC'
   /** Blocking issues count by descending order. */
-  BlockingIssuesDesc = 'BLOCKING_ISSUES_DESC',
+  | 'BLOCKING_ISSUES_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Created at descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Due date by ascending order. */
-  DueDateAsc = 'DUE_DATE_ASC',
+  | 'DUE_DATE_ASC'
   /** Due date by descending order. */
-  DueDateDesc = 'DUE_DATE_DESC',
+  | 'DUE_DATE_DESC'
   /** Label priority by ascending order. */
-  LabelPriorityAsc = 'LABEL_PRIORITY_ASC',
+  | 'LABEL_PRIORITY_ASC'
   /** Label priority by descending order. */
-  LabelPriorityDesc = 'LABEL_PRIORITY_DESC',
+  | 'LABEL_PRIORITY_DESC'
   /** Milestone due date by ascending order. */
-  MilestoneDueAsc = 'MILESTONE_DUE_ASC',
+  | 'MILESTONE_DUE_ASC'
   /** Milestone due date by descending order. */
-  MilestoneDueDesc = 'MILESTONE_DUE_DESC',
+  | 'MILESTONE_DUE_DESC'
   /** Number of upvotes (awarded "thumbs up" emoji) by ascending order. */
-  PopularityAsc = 'POPULARITY_ASC',
+  | 'POPULARITY_ASC'
   /** Number of upvotes (awarded "thumbs up" emoji) by descending order. */
-  PopularityDesc = 'POPULARITY_DESC',
+  | 'POPULARITY_DESC'
   /** Priority by ascending order. */
-  PriorityAsc = 'PRIORITY_ASC',
+  | 'PRIORITY_ASC'
   /** Priority by descending order. */
-  PriorityDesc = 'PRIORITY_DESC',
+  | 'PRIORITY_DESC'
   /** Published issues shown last. */
-  PublishedAsc = 'PUBLISHED_ASC',
+  | 'PUBLISHED_ASC'
   /** Published issues shown first. */
-  PublishedDesc = 'PUBLISHED_DESC',
+  | 'PUBLISHED_DESC'
   /** Relative position by ascending order. */
-  RelativePositionAsc = 'RELATIVE_POSITION_ASC',
+  | 'RELATIVE_POSITION_ASC'
   /** Severity from less critical to more critical. */
-  SeverityAsc = 'SEVERITY_ASC',
+  | 'SEVERITY_ASC'
   /** Severity from more critical to less critical. */
-  SeverityDesc = 'SEVERITY_DESC',
+  | 'SEVERITY_DESC'
   /** Issues with earliest SLA due time shown first. */
-  SlaDueAtAsc = 'SLA_DUE_AT_ASC',
+  | 'SLA_DUE_AT_ASC'
   /** Issues with latest SLA due time shown first. */
-  SlaDueAtDesc = 'SLA_DUE_AT_DESC',
+  | 'SLA_DUE_AT_DESC'
   /** Title by ascending order. */
-  TitleAsc = 'TITLE_ASC',
+  | 'TITLE_ASC'
   /** Title by descending order. */
-  TitleDesc = 'TITLE_DESC',
+  | 'TITLE_DESC'
   /** Updated at ascending order. */
-  UpdatedAsc = 'UPDATED_ASC',
+  | 'UPDATED_ASC'
   /** Updated at descending order. */
-  UpdatedDesc = 'UPDATED_DESC',
+  | 'UPDATED_DESC'
   /** Weight by ascending order. */
-  WeightAsc = 'WEIGHT_ASC',
+  | 'WEIGHT_ASC'
   /** Weight by descending order. */
-  WeightDesc = 'WEIGHT_DESC',
+  | 'WEIGHT_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'created_asc',
+  | 'created_asc'
   /** Created at descending order. */
-  CreatedDesc = 'created_desc',
+  | 'created_desc'
   /** Updated at ascending order. */
-  UpdatedAsc = 'updated_asc',
+  | 'updated_asc'
   /** Updated at descending order. */
-  UpdatedDesc = 'updated_desc'
-}
+  | 'updated_desc';
 
 /** State of a GitLab issue */
-export enum IssueState {
+export type IssueState =
   /** All available. */
-  All = 'all',
+  | 'all'
   /** In closed state. */
-  Closed = 'closed',
+  | 'closed'
   /** Discussion has been locked. */
-  Locked = 'locked',
+  | 'locked'
   /** In open state. */
-  Opened = 'opened'
-}
+  | 'opened';
 
 /** Values for issue state events */
-export enum IssueStateEvent {
+export type IssueStateEvent =
   /** Closes the issue. */
-  Close = 'CLOSE',
+  | 'CLOSE'
   /** Reopens the issue. */
-  Reopen = 'REOPEN'
-}
+  | 'REOPEN';
 
 /** Represents total number of issues for the represented statuses */
 export type IssueStatusCountsType = {
@@ -9428,16 +9368,15 @@ export type IssueStatusCountsType = {
 };
 
 /** Issue type */
-export enum IssueType {
+export type IssueType =
   /** Incident issue type */
-  Incident = 'INCIDENT',
+  | 'INCIDENT'
   /** Issue issue type */
-  Issue = 'ISSUE',
+  | 'ISSUE'
   /** Requirement issue type */
-  Requirement = 'REQUIREMENT',
+  | 'REQUIREMENT'
   /** Test Case issue type */
-  TestCase = 'TEST_CASE'
-}
+  | 'TEST_CASE';
 
 /** Represents an iteration object */
 export type Iteration = TimeboxReportInterface & {
@@ -9648,30 +9587,28 @@ export type IterationEdge = {
 };
 
 /** State of a GitLab iteration */
-export enum IterationState {
+export type IterationState =
   /** Any iteration. */
-  All = 'all',
+  | 'all'
   /** Closed iteration. */
-  Closed = 'closed',
+  | 'closed'
   /** Current iteration. */
-  Current = 'current',
+  | 'current'
   /** Open iteration. */
-  Opened = 'opened',
+  | 'opened'
   /** Started iteration. Deprecated in 14.1: Use current instead. */
-  Started = 'started',
+  | 'started'
   /** Upcoming iteration. */
-  Upcoming = 'upcoming'
-}
+  | 'upcoming';
 
 /** Iteration ID wildcard values */
-export enum IterationWildcardId {
+export type IterationWildcardId =
   /** An iteration is assigned. */
-  Any = 'ANY',
+  | 'ANY'
   /** Current iteration. */
-  Current = 'CURRENT',
+  | 'CURRENT'
   /** No iteration is assigned. */
-  None = 'NONE'
-}
+  | 'NONE';
 
 export type JiraImport = {
   __typename?: 'JiraImport';
@@ -9829,62 +9766,61 @@ export type JiraUsersMappingInputType = {
   jiraAccountId: Scalars['String'];
 };
 
-export enum JobArtifactFileType {
+export type JobArtifactFileType =
   /** ACCESSIBILITY job artifact file type. */
-  Accessibility = 'ACCESSIBILITY',
+  | 'ACCESSIBILITY'
   /** API FUZZING job artifact file type. */
-  ApiFuzzing = 'API_FUZZING',
+  | 'API_FUZZING'
   /** ARCHIVE job artifact file type. */
-  Archive = 'ARCHIVE',
+  | 'ARCHIVE'
   /** BROWSER PERFORMANCE job artifact file type. */
-  BrowserPerformance = 'BROWSER_PERFORMANCE',
+  | 'BROWSER_PERFORMANCE'
   /** CLUSTER APPLICATIONS job artifact file type. */
-  ClusterApplications = 'CLUSTER_APPLICATIONS',
+  | 'CLUSTER_APPLICATIONS'
   /** CLUSTER IMAGE SCANNING job artifact file type. */
-  ClusterImageScanning = 'CLUSTER_IMAGE_SCANNING',
+  | 'CLUSTER_IMAGE_SCANNING'
   /** COBERTURA job artifact file type. */
-  Cobertura = 'COBERTURA',
+  | 'COBERTURA'
   /** CODE QUALITY job artifact file type. */
-  Codequality = 'CODEQUALITY',
+  | 'CODEQUALITY'
   /** CONTAINER SCANNING job artifact file type. */
-  ContainerScanning = 'CONTAINER_SCANNING',
+  | 'CONTAINER_SCANNING'
   /** COVERAGE FUZZING job artifact file type. */
-  CoverageFuzzing = 'COVERAGE_FUZZING',
+  | 'COVERAGE_FUZZING'
   /** DAST job artifact file type. */
-  Dast = 'DAST',
+  | 'DAST'
   /** DEPENDENCY SCANNING job artifact file type. */
-  DependencyScanning = 'DEPENDENCY_SCANNING',
+  | 'DEPENDENCY_SCANNING'
   /** DOTENV job artifact file type. */
-  Dotenv = 'DOTENV',
+  | 'DOTENV'
   /** JUNIT job artifact file type. */
-  Junit = 'JUNIT',
+  | 'JUNIT'
   /** LICENSE SCANNING job artifact file type. */
-  LicenseScanning = 'LICENSE_SCANNING',
+  | 'LICENSE_SCANNING'
   /** LOAD PERFORMANCE job artifact file type. */
-  LoadPerformance = 'LOAD_PERFORMANCE',
+  | 'LOAD_PERFORMANCE'
   /** LSIF job artifact file type. */
-  Lsif = 'LSIF',
+  | 'LSIF'
   /** METADATA job artifact file type. */
-  Metadata = 'METADATA',
+  | 'METADATA'
   /** METRICS job artifact file type. */
-  Metrics = 'METRICS',
+  | 'METRICS'
   /** METRICS REFEREE job artifact file type. */
-  MetricsReferee = 'METRICS_REFEREE',
+  | 'METRICS_REFEREE'
   /** NETWORK REFEREE job artifact file type. */
-  NetworkReferee = 'NETWORK_REFEREE',
+  | 'NETWORK_REFEREE'
   /** PERFORMANCE job artifact file type. */
-  Performance = 'PERFORMANCE',
+  | 'PERFORMANCE'
   /** REQUIREMENTS job artifact file type. */
-  Requirements = 'REQUIREMENTS',
+  | 'REQUIREMENTS'
   /** SAST job artifact file type. */
-  Sast = 'SAST',
+  | 'SAST'
   /** SECRET DETECTION job artifact file type. */
-  SecretDetection = 'SECRET_DETECTION',
+  | 'SECRET_DETECTION'
   /** TERRAFORM job artifact file type. */
-  Terraform = 'TERRAFORM',
+  | 'TERRAFORM'
   /** TRACE job artifact file type. */
-  Trace = 'TRACE'
-}
+  | 'TRACE';
 
 /** Autogenerated input type of JobCancel */
 export type JobCancelInput = {
@@ -10143,14 +10079,13 @@ export type LicenseHistoryEntryEdge = {
 };
 
 /** List limit metric setting */
-export enum ListLimitMetric {
+export type ListLimitMetric =
   /** Limit list by number and total weight of issues. */
-  AllMetrics = 'all_metrics',
+  | 'all_metrics'
   /** Limit list by number of issues. */
-  IssueCount = 'issue_count',
+  | 'issue_count'
   /** Limit list by total weight of issues. */
-  IssueWeights = 'issue_weights'
-}
+  | 'issue_weights';
 
 /** Autogenerated input type of MarkAsSpamSnippet */
 export type MarkAsSpamSnippetInput = {
@@ -10191,28 +10126,27 @@ export type MavenMetadata = {
 };
 
 /** Possible identifier types for a measurement */
-export enum MeasurementIdentifier {
+export type MeasurementIdentifier =
   /** Group count. */
-  Groups = 'GROUPS',
+  | 'GROUPS'
   /** Issue count. */
-  Issues = 'ISSUES',
+  | 'ISSUES'
   /** Merge request count. */
-  MergeRequests = 'MERGE_REQUESTS',
+  | 'MERGE_REQUESTS'
   /** Pipeline count. */
-  Pipelines = 'PIPELINES',
+  | 'PIPELINES'
   /** Pipeline count with canceled status. */
-  PipelinesCanceled = 'PIPELINES_CANCELED',
+  | 'PIPELINES_CANCELED'
   /** Pipeline count with failed status. */
-  PipelinesFailed = 'PIPELINES_FAILED',
+  | 'PIPELINES_FAILED'
   /** Pipeline count with skipped status. */
-  PipelinesSkipped = 'PIPELINES_SKIPPED',
+  | 'PIPELINES_SKIPPED'
   /** Pipeline count with success status. */
-  PipelinesSucceeded = 'PIPELINES_SUCCEEDED',
+  | 'PIPELINES_SUCCEEDED'
   /** Project count. */
-  Projects = 'PROJECTS',
+  | 'PROJECTS'
   /** User count. */
-  Users = 'USERS'
-}
+  | 'USERS';
 
 export type MemberInterface = {
   /** GitLab::Access level. */
@@ -10937,12 +10871,11 @@ export type MergeRequestEdge = {
 };
 
 /** New state to apply to a merge request. */
-export enum MergeRequestNewState {
+export type MergeRequestNewState =
   /** Close the merge request if it is open. */
-  Closed = 'CLOSED',
+  | 'CLOSED'
   /** Open the merge request if it is closed. */
-  Open = 'OPEN'
-}
+  | 'OPEN';
 
 /** Check permissions for the current user on a merge request */
 export type MergeRequestPermissions = {
@@ -10968,14 +10901,13 @@ export type MergeRequestPermissions = {
 };
 
 /** State of a review of a GitLab merge request. */
-export enum MergeRequestReviewState {
+export type MergeRequestReviewState =
   /** The merge request is attention_required. */
-  AttentionRequired = 'ATTENTION_REQUIRED',
+  | 'ATTENTION_REQUIRED'
   /** The merge request is reviewed. */
-  Reviewed = 'REVIEWED',
+  | 'REVIEWED'
   /** The merge request is unreviewed. */
-  Unreviewed = 'UNREVIEWED'
-}
+  | 'UNREVIEWED';
 
 /** A user assigned to a merge request as a reviewer. */
 export type MergeRequestReviewer = User & {
@@ -11417,58 +11349,56 @@ export type MergeRequestSetWipPayload = {
 };
 
 /** Values for sorting merge requests */
-export enum MergeRequestSort {
+export type MergeRequestSort =
   /** Closed time by ascending order. */
-  ClosedAtAsc = 'CLOSED_AT_ASC',
+  | 'CLOSED_AT_ASC'
   /** Closed time by descending order. */
-  ClosedAtDesc = 'CLOSED_AT_DESC',
+  | 'CLOSED_AT_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Created at descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Label priority by ascending order. */
-  LabelPriorityAsc = 'LABEL_PRIORITY_ASC',
+  | 'LABEL_PRIORITY_ASC'
   /** Label priority by descending order. */
-  LabelPriorityDesc = 'LABEL_PRIORITY_DESC',
+  | 'LABEL_PRIORITY_DESC'
   /** Merge time by ascending order. */
-  MergedAtAsc = 'MERGED_AT_ASC',
+  | 'MERGED_AT_ASC'
   /** Merge time by descending order. */
-  MergedAtDesc = 'MERGED_AT_DESC',
+  | 'MERGED_AT_DESC'
   /** Milestone due date by ascending order. */
-  MilestoneDueAsc = 'MILESTONE_DUE_ASC',
+  | 'MILESTONE_DUE_ASC'
   /** Milestone due date by descending order. */
-  MilestoneDueDesc = 'MILESTONE_DUE_DESC',
+  | 'MILESTONE_DUE_DESC'
   /** Priority by ascending order. */
-  PriorityAsc = 'PRIORITY_ASC',
+  | 'PRIORITY_ASC'
   /** Priority by descending order. */
-  PriorityDesc = 'PRIORITY_DESC',
+  | 'PRIORITY_DESC'
   /** Updated at ascending order. */
-  UpdatedAsc = 'UPDATED_ASC',
+  | 'UPDATED_ASC'
   /** Updated at descending order. */
-  UpdatedDesc = 'UPDATED_DESC',
+  | 'UPDATED_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'created_asc',
+  | 'created_asc'
   /** Created at descending order. */
-  CreatedDesc = 'created_desc',
+  | 'created_desc'
   /** Updated at ascending order. */
-  UpdatedAsc = 'updated_asc',
+  | 'updated_asc'
   /** Updated at descending order. */
-  UpdatedDesc = 'updated_desc'
-}
+  | 'updated_desc';
 
 /** State of a GitLab merge request */
-export enum MergeRequestState {
+export type MergeRequestState =
   /** All available. */
-  All = 'all',
+  | 'all'
   /** In closed state. */
-  Closed = 'closed',
+  | 'closed'
   /** Discussion has been locked. */
-  Locked = 'locked',
+  | 'locked'
   /** Merge request has been merged. */
-  Merged = 'merged',
+  | 'merged'
   /** In open state. */
-  Opened = 'opened'
-}
+  | 'opened';
 
 /** Autogenerated input type of MergeRequestUpdate */
 export type MergeRequestUpdateInput = {
@@ -11507,27 +11437,25 @@ export type MergeRequestsResolverNegatedParams = {
 };
 
 /** Representation of whether a GitLab merge request can be merged. */
-export enum MergeStatus {
+export type MergeStatus =
   /** There are conflicts between the source and target branches. */
-  CannotBeMerged = 'CANNOT_BE_MERGED',
+  | 'CANNOT_BE_MERGED'
   /** Currently unchecked. The previous state was `CANNOT_BE_MERGED`. */
-  CannotBeMergedRecheck = 'CANNOT_BE_MERGED_RECHECK',
+  | 'CANNOT_BE_MERGED_RECHECK'
   /** There are no conflicts between the source and target branches. */
-  CanBeMerged = 'CAN_BE_MERGED',
+  | 'CAN_BE_MERGED'
   /** Currently checking for mergeability. */
-  Checking = 'CHECKING',
+  | 'CHECKING'
   /** Merge status has not been checked. */
-  Unchecked = 'UNCHECKED'
-}
+  | 'UNCHECKED';
 
-export enum MergeStrategyEnum {
+export type MergeStrategyEnum =
   /** Use the add_to_merge_train_when_pipeline_succeeds merge strategy. */
-  AddToMergeTrainWhenPipelineSucceeds = 'ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS',
+  | 'ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS'
   /** Use the merge_train merge strategy. */
-  MergeTrain = 'MERGE_TRAIN',
+  | 'MERGE_TRAIN'
   /** Use the merge_when_pipeline_succeeds merge strategy. */
-  MergeWhenPipelineSucceeds = 'MERGE_WHEN_PIPELINE_SUCCEEDS'
-}
+  | 'MERGE_WHEN_PIPELINE_SUCCEEDS';
 
 export type Metadata = {
   __typename?: 'Metadata';
@@ -11669,48 +11597,46 @@ export type MilestoneEdge = {
 };
 
 /** Values for sorting milestones */
-export enum MilestoneSort {
+export type MilestoneSort =
   /** Created at ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Created at descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Milestone due date by ascending order. */
-  DueDateAsc = 'DUE_DATE_ASC',
+  | 'DUE_DATE_ASC'
   /** Milestone due date by descending order. */
-  DueDateDesc = 'DUE_DATE_DESC',
+  | 'DUE_DATE_DESC'
   /**
    * Group milestones in this order: non-expired milestones with due dates,
    * non-expired milestones without due dates and expired milestones then sort by
    * due date in ascending order.
    */
-  ExpiredLastDueDateAsc = 'EXPIRED_LAST_DUE_DATE_ASC',
+  | 'EXPIRED_LAST_DUE_DATE_ASC'
   /**
    * Group milestones in this order: non-expired milestones with due dates,
    * non-expired milestones without due dates and expired milestones then sort by
    * due date in descending order.
    */
-  ExpiredLastDueDateDesc = 'EXPIRED_LAST_DUE_DATE_DESC',
+  | 'EXPIRED_LAST_DUE_DATE_DESC'
   /** Updated at ascending order. */
-  UpdatedAsc = 'UPDATED_ASC',
+  | 'UPDATED_ASC'
   /** Updated at descending order. */
-  UpdatedDesc = 'UPDATED_DESC',
+  | 'UPDATED_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'created_asc',
+  | 'created_asc'
   /** Created at descending order. */
-  CreatedDesc = 'created_desc',
+  | 'created_desc'
   /** Updated at ascending order. */
-  UpdatedAsc = 'updated_asc',
+  | 'updated_asc'
   /** Updated at descending order. */
-  UpdatedDesc = 'updated_desc'
-}
+  | 'updated_desc';
 
 /** Current state of milestone */
-export enum MilestoneStateEnum {
+export type MilestoneStateEnum =
   /** Milestone is currently active. */
-  Active = 'active',
+  | 'active'
   /** Milestone is closed. */
-  Closed = 'closed'
-}
+  | 'closed';
 
 /** Contains statistics about a milestone */
 export type MilestoneStats = {
@@ -11722,24 +11648,22 @@ export type MilestoneStats = {
 };
 
 /** Milestone ID wildcard values */
-export enum MilestoneWildcardId {
+export type MilestoneWildcardId =
   /** Milestone is assigned. */
-  Any = 'ANY',
+  | 'ANY'
   /** No milestone is assigned. */
-  None = 'NONE',
+  | 'NONE'
   /** Milestone assigned is open and started (start date <= today). */
-  Started = 'STARTED',
+  | 'STARTED'
   /** Milestone assigned is due in the future (due date > today). */
-  Upcoming = 'UPCOMING'
-}
+  | 'UPCOMING';
 
 /** The position to which the adjacent object should be moved */
-export enum MoveType {
+export type MoveType =
   /** Adjacent object is moved after the object that is being moved. */
-  After = 'after',
+  | 'after'
   /** Adjacent object is moved before the object that is being moved. */
-  Before = 'before'
-}
+  | 'before';
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -12990,14 +12914,13 @@ export type MutationVulnerabilityRevertToDetectedArgs = {
 };
 
 /** Different toggles for changing mutator behavior */
-export enum MutationOperationMode {
+export type MutationOperationMode =
   /** Performs an append operation. */
-  Append = 'APPEND',
+  | 'APPEND'
   /** Performs a removal operation. */
-  Remove = 'REMOVE',
+  | 'REMOVE'
   /** Performs a replace operation. */
-  Replace = 'REPLACE'
-}
+  | 'REPLACE';
 
 export type Namespace = {
   __typename?: 'Namespace';
@@ -13114,12 +13037,11 @@ export type NamespaceIncreaseStorageTemporarilyPayload = {
 };
 
 /** Values for sorting projects */
-export enum NamespaceProjectSort {
+export type NamespaceProjectSort =
   /** Most similar to the search query. */
-  Similarity = 'SIMILARITY',
+  | 'SIMILARITY'
   /** Sort by storage size. */
-  Storage = 'STORAGE'
-}
+  | 'STORAGE';
 
 export type NegatedBoardIssueInput = {
   /** Filter by assignee username. */
@@ -13202,18 +13124,16 @@ export type NegatedIssueFilterInput = {
 };
 
 /** Negated Iteration ID wildcard values */
-export enum NegatedIterationWildcardId {
+export type NegatedIterationWildcardId =
   /** Current iteration. */
-  Current = 'CURRENT'
-}
+  | 'CURRENT';
 
 /** Negated Milestone ID wildcard values */
-export enum NegatedMilestoneWildcardId {
+export type NegatedMilestoneWildcardId =
   /** Milestone assigned is open and yet to be started (start date > today). */
-  Started = 'STARTED',
+  | 'STARTED'
   /** Milestone assigned is open but due in the past (due date <= today). */
-  Upcoming = 'UPCOMING'
-}
+  | 'UPCOMING';
 
 /** Represents the network policy */
 export type NetworkPolicy = {
@@ -13266,12 +13186,11 @@ export type NetworkPolicyEdge = {
 };
 
 /** Kind of the network policy */
-export enum NetworkPolicyKind {
+export type NetworkPolicyKind =
   /** Policy kind of Cilium Network Policy. */
-  CiliumNetworkPolicy = 'CiliumNetworkPolicy',
+  | 'CiliumNetworkPolicy'
   /** Policy kind of Network Policy. */
-  NetworkPolicy = 'NetworkPolicy'
-}
+  | 'NetworkPolicy';
 
 export type Note = ResolvableInterface & {
   __typename?: 'Note';
@@ -13520,14 +13439,13 @@ export type OncallRotationLengthInputType = {
 };
 
 /** Rotation length unit of an on-call rotation */
-export enum OncallRotationUnitEnum {
+export type OncallRotationUnitEnum =
   /** Days */
-  Days = 'DAYS',
+  | 'DAYS'
   /** Hours */
-  Hours = 'HOURS',
+  | 'HOURS'
   /** Weeks */
-  Weeks = 'WEEKS'
-}
+  | 'WEEKS';
 
 /** Autogenerated input type of OncallRotationUpdate */
 export type OncallRotationUpdateInput = {
@@ -13778,16 +13696,15 @@ export type PackageDependencyLinkEdge = {
   node?: Maybe<PackageDependencyLink>;
 };
 
-export enum PackageDependencyType {
+export type PackageDependencyType =
   /** bundleDependencies dependency type */
-  BundleDependencies = 'BUNDLE_DEPENDENCIES',
+  | 'BUNDLE_DEPENDENCIES'
   /** dependencies dependency type */
-  Dependencies = 'DEPENDENCIES',
+  | 'DEPENDENCIES'
   /** devDependencies dependency type */
-  DevDependencies = 'DEV_DEPENDENCIES',
+  | 'DEV_DEPENDENCIES'
   /** peerDependencies dependency type */
-  PeerDependencies = 'PEER_DEPENDENCIES'
-}
+  | 'PEER_DEPENDENCIES';
 
 /** Represents a package details in the Package Registry. Note that this type is in beta and susceptible to changes */
 export type PackageDetailsType = {
@@ -13973,28 +13890,27 @@ export type PackageFileRegistryEdge = {
 };
 
 /** Values for sorting group packages */
-export enum PackageGroupSort {
+export type PackageGroupSort =
   /** Ordered by created_at in ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Ordered by created_at in descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Ordered by name in ascending order. */
-  NameAsc = 'NAME_ASC',
+  | 'NAME_ASC'
   /** Ordered by name in descending order. */
-  NameDesc = 'NAME_DESC',
+  | 'NAME_DESC'
   /** Ordered by project path in ascending order. */
-  ProjectPathAsc = 'PROJECT_PATH_ASC',
+  | 'PROJECT_PATH_ASC'
   /** Ordered by project path in descending order. */
-  ProjectPathDesc = 'PROJECT_PATH_DESC',
+  | 'PROJECT_PATH_DESC'
   /** Ordered by type in ascending order. */
-  TypeAsc = 'TYPE_ASC',
+  | 'TYPE_ASC'
   /** Ordered by type in descending order. */
-  TypeDesc = 'TYPE_DESC',
+  | 'TYPE_DESC'
   /** Ordered by version in ascending order. */
-  VersionAsc = 'VERSION_ASC',
+  | 'VERSION_ASC'
   /** Ordered by version in descending order. */
-  VersionDesc = 'VERSION_DESC'
-}
+  | 'VERSION_DESC';
 
 /** Represents metadata associated with a Package */
 export type PackageMetadata = ComposerMetadata | ConanMetadata | MavenMetadata | NugetMetadata | PypiMetadata;
@@ -14019,35 +13935,33 @@ export type PackageSettings = {
 };
 
 /** Values for sorting package */
-export enum PackageSort {
+export type PackageSort =
   /** Ordered by created_at in ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Ordered by created_at in descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Ordered by name in ascending order. */
-  NameAsc = 'NAME_ASC',
+  | 'NAME_ASC'
   /** Ordered by name in descending order. */
-  NameDesc = 'NAME_DESC',
+  | 'NAME_DESC'
   /** Ordered by type in ascending order. */
-  TypeAsc = 'TYPE_ASC',
+  | 'TYPE_ASC'
   /** Ordered by type in descending order. */
-  TypeDesc = 'TYPE_DESC',
+  | 'TYPE_DESC'
   /** Ordered by version in ascending order. */
-  VersionAsc = 'VERSION_ASC',
+  | 'VERSION_ASC'
   /** Ordered by version in descending order. */
-  VersionDesc = 'VERSION_DESC'
-}
+  | 'VERSION_DESC';
 
-export enum PackageStatus {
+export type PackageStatus =
   /** Packages with a default status */
-  Default = 'DEFAULT',
+  | 'DEFAULT'
   /** Packages with a error status */
-  Error = 'ERROR',
+  | 'ERROR'
   /** Packages with a hidden status */
-  Hidden = 'HIDDEN',
+  | 'HIDDEN'
   /** Packages with a processing status */
-  Processing = 'PROCESSING'
-}
+  | 'PROCESSING';
 
 /** Represents a package tag */
 export type PackageTag = {
@@ -14082,32 +13996,31 @@ export type PackageTagEdge = {
   node?: Maybe<PackageTag>;
 };
 
-export enum PackageTypeEnum {
+export type PackageTypeEnum =
   /** Packages from the Composer package manager */
-  Composer = 'COMPOSER',
+  | 'COMPOSER'
   /** Packages from the Conan package manager */
-  Conan = 'CONAN',
+  | 'CONAN'
   /** Packages from the Debian package manager */
-  Debian = 'DEBIAN',
+  | 'DEBIAN'
   /** Packages from the Generic package manager */
-  Generic = 'GENERIC',
+  | 'GENERIC'
   /** Packages from the Golang package manager */
-  Golang = 'GOLANG',
+  | 'GOLANG'
   /** Packages from the Helm package manager */
-  Helm = 'HELM',
+  | 'HELM'
   /** Packages from the Maven package manager */
-  Maven = 'MAVEN',
+  | 'MAVEN'
   /** Packages from the npm package manager */
-  Npm = 'NPM',
+  | 'NPM'
   /** Packages from the Nuget package manager */
-  Nuget = 'NUGET',
+  | 'NUGET'
   /** Packages from the PyPI package manager */
-  Pypi = 'PYPI',
+  | 'PYPI'
   /** Packages from the Rubygems package manager */
-  Rubygems = 'RUBYGEMS',
+  | 'RUBYGEMS'
   /** Packages from the Terraform Module package manager */
-  TerraformModule = 'TERRAFORM_MODULE'
-}
+  | 'TERRAFORM_MODULE';
 
 /** Information about pagination in a connection. */
 export type PageInfo = {
@@ -14424,26 +14337,25 @@ export type PipelineCancelPayload = {
   errors: Array<Scalars['String']>;
 };
 
-export enum PipelineConfigSourceEnum {
+export type PipelineConfigSourceEnum =
   /** Auto DevOps source. */
-  AutoDevopsSource = 'AUTO_DEVOPS_SOURCE',
+  | 'AUTO_DEVOPS_SOURCE'
   /** Bridge source. */
-  BridgeSource = 'BRIDGE_SOURCE',
+  | 'BRIDGE_SOURCE'
   /** Compliance source. */
-  ComplianceSource = 'COMPLIANCE_SOURCE',
+  | 'COMPLIANCE_SOURCE'
   /** External project source. */
-  ExternalProjectSource = 'EXTERNAL_PROJECT_SOURCE',
+  | 'EXTERNAL_PROJECT_SOURCE'
   /** Parameter source. */
-  ParameterSource = 'PARAMETER_SOURCE',
+  | 'PARAMETER_SOURCE'
   /** Remote source. */
-  RemoteSource = 'REMOTE_SOURCE',
+  | 'REMOTE_SOURCE'
   /** Repository source. */
-  RepositorySource = 'REPOSITORY_SOURCE',
+  | 'REPOSITORY_SOURCE'
   /** Unknown source. */
-  UnknownSource = 'UNKNOWN_SOURCE',
+  | 'UNKNOWN_SOURCE'
   /** Webide source. */
-  WebideSource = 'WEBIDE_SOURCE'
-}
+  | 'WEBIDE_SOURCE';
 
 /** The connection type for Pipeline. */
 export type PipelineConnection = {
@@ -14566,30 +14478,29 @@ export type PipelineSecurityReportFindingEdge = {
   node?: Maybe<PipelineSecurityReportFinding>;
 };
 
-export enum PipelineStatusEnum {
+export type PipelineStatusEnum =
   /** Pipeline was canceled before completion. */
-  Canceled = 'CANCELED',
+  | 'CANCELED'
   /** Pipeline has been created. */
-  Created = 'CREATED',
+  | 'CREATED'
   /** At least one stage of the pipeline failed. */
-  Failed = 'FAILED',
+  | 'FAILED'
   /** Pipeline needs to be manually started. */
-  Manual = 'MANUAL',
+  | 'MANUAL'
   /** Pipeline has not started running yet. */
-  Pending = 'PENDING',
+  | 'PENDING'
   /** Pipeline is preparing to run. */
-  Preparing = 'PREPARING',
+  | 'PREPARING'
   /** Pipeline is running. */
-  Running = 'RUNNING',
+  | 'RUNNING'
   /** Pipeline is scheduled to run. */
-  Scheduled = 'SCHEDULED',
+  | 'SCHEDULED'
   /** Pipeline was skipped. */
-  Skipped = 'SKIPPED',
+  | 'SKIPPED'
   /** Pipeline completed successfully. */
-  Success = 'SUCCESS',
+  | 'SUCCESS'
   /** A resource (for example, a runner) that the pipeline requires to run is unavailable. */
-  WaitingForResource = 'WAITING_FOR_RESOURCE'
-}
+  | 'WAITING_FOR_RESOURCE';
 
 export type Project = {
   __typename?: 'Project';
@@ -15532,16 +15443,15 @@ export type ProjectMemberEdge = {
 };
 
 /** Project member relation */
-export enum ProjectMemberRelation {
+export type ProjectMemberRelation =
   /** Descendants members */
-  Descendants = 'DESCENDANTS',
+  | 'DESCENDANTS'
   /** Direct members */
-  Direct = 'DIRECT',
+  | 'DIRECT'
   /** Inherited members */
-  Inherited = 'INHERITED',
+  | 'INHERITED'
   /** Invited Groups members */
-  InvitedGroups = 'INVITED_GROUPS'
-}
+  | 'INVITED_GROUPS';
 
 export type ProjectPermissions = {
   __typename?: 'ProjectPermissions';
@@ -16161,16 +16071,15 @@ export type RecentFailures = {
 };
 
 /** State of a Geo registry */
-export enum RegistryState {
+export type RegistryState =
   /** Registry that failed to sync. */
-  Failed = 'FAILED',
+  | 'FAILED'
   /** Registry waiting to be synced. */
-  Pending = 'PENDING',
+  | 'PENDING'
   /** Registry currently syncing. */
-  Started = 'STARTED',
+  | 'STARTED'
   /** Registry that is synced. */
-  Synced = 'SYNCED'
-}
+  | 'SYNCED';
 
 /** Represents a release */
 export type Release = {
@@ -16323,16 +16232,15 @@ export type ReleaseAssetLinkInput = {
 };
 
 /** Type of the link: `other`, `runbook`, `image`, `package` */
-export enum ReleaseAssetLinkType {
+export type ReleaseAssetLinkType =
   /** Image link type */
-  Image = 'IMAGE',
+  | 'IMAGE'
   /** Other link type */
-  Other = 'OTHER',
+  | 'OTHER'
   /** Package link type */
-  Package = 'PACKAGE',
+  | 'PACKAGE'
   /** Runbook link type */
-  Runbook = 'RUNBOOK'
-}
+  | 'RUNBOOK';
 
 /** Autogenerated input type of ReleaseAssetLinkUpdate */
 export type ReleaseAssetLinkUpdateInput = {
@@ -16524,16 +16432,15 @@ export type ReleaseLinks = {
 };
 
 /** Values for sorting releases */
-export enum ReleaseSort {
+export type ReleaseSort =
   /** Created at ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Created at descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Released at by ascending order. */
-  ReleasedAtAsc = 'RELEASED_AT_ASC',
+  | 'RELEASED_AT_ASC'
   /** Released at by descending order. */
-  ReleasedAtDesc = 'RELEASED_AT_DESC'
-}
+  | 'RELEASED_AT_DESC';
 
 /** Represents the source code attached to a release in a particular format */
 export type ReleaseSource = {
@@ -16565,12 +16472,11 @@ export type ReleaseSourceEdge = {
 };
 
 /** Release tag ID wildcard values */
-export enum ReleaseTagWildcardId {
+export type ReleaseTagWildcardId =
   /** Release tag is assigned. */
-  Any = 'ANY',
+  | 'ANY'
   /** No release tag is assigned. */
-  None = 'NONE'
-}
+  | 'NONE';
 
 /** Autogenerated input type of ReleaseUpdate */
 export type ReleaseUpdateInput = {
@@ -16850,12 +16756,11 @@ export type RequirementPermissions = {
 };
 
 /** State of a requirement */
-export enum RequirementState {
+export type RequirementState =
   /** Archived requirement. */
-  Archived = 'ARCHIVED',
+  | 'ARCHIVED'
   /** Open requirement. */
-  Opened = 'OPENED'
-}
+  | 'OPENED';
 
 /** Counts of requirements by their state */
 export type RequirementStatesCount = {
@@ -16867,14 +16772,13 @@ export type RequirementStatesCount = {
 };
 
 /** Status of a requirement based on last test report */
-export enum RequirementStatusFilter {
+export type RequirementStatusFilter =
   /** Failed test report. */
-  Failed = 'FAILED',
+  | 'FAILED'
   /** Requirements without any test report. */
-  Missing = 'MISSING',
+  | 'MISSING'
   /** Passed test report. */
-  Passed = 'PASSED'
-}
+  | 'PASSED';
 
 export type ResolvableInterface = {
   /** Indicates if the object can be resolved. */
@@ -16955,16 +16859,15 @@ export type RunnerDeletePayload = {
 };
 
 /** Values for filtering runners in namespaces. */
-export enum RunnerMembershipFilter {
+export type RunnerMembershipFilter =
   /**
    * Include runners that have either a direct relationship or a relationship with
    * descendants. These can be project runners or group runners (in the case where
    * group is queried).
    */
-  Descendants = 'DESCENDANTS',
+  | 'DESCENDANTS'
   /** Include runners that have a direct relationship. */
-  Direct = 'DIRECT'
-}
+  | 'DIRECT';
 
 export type RunnerPermissions = {
   __typename?: 'RunnerPermissions';
@@ -17275,14 +17178,13 @@ export type SastCiConfigurationOptionsEntityEdge = {
 };
 
 /** Size of UI component in SAST configuration page */
-export enum SastUiComponentSize {
+export type SastUiComponentSize =
   /** Size of UI component in SAST configuration page is large. */
-  Large = 'LARGE',
+  | 'LARGE'
   /** Size of UI component in SAST configuration page is medium. */
-  Medium = 'MEDIUM',
+  | 'MEDIUM'
   /** Size of UI component in SAST configuration page is small. */
-  Small = 'SMALL'
-}
+  | 'SMALL';
 
 /** Represents the security scan information */
 export type Scan = {
@@ -17513,44 +17415,42 @@ export type SecurityReportSummarySectionScansArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
-export enum SecurityReportTypeEnum {
+export type SecurityReportTypeEnum =
   /** API FUZZING scan report */
-  ApiFuzzing = 'API_FUZZING',
+  | 'API_FUZZING'
   /** CLUSTER IMAGE SCANNING scan report */
-  ClusterImageScanning = 'CLUSTER_IMAGE_SCANNING',
+  | 'CLUSTER_IMAGE_SCANNING'
   /** CONTAINER SCANNING scan report */
-  ContainerScanning = 'CONTAINER_SCANNING',
+  | 'CONTAINER_SCANNING'
   /** COVERAGE FUZZING scan report */
-  CoverageFuzzing = 'COVERAGE_FUZZING',
+  | 'COVERAGE_FUZZING'
   /** DAST scan report */
-  Dast = 'DAST',
+  | 'DAST'
   /** DEPENDENCY SCANNING scan report */
-  DependencyScanning = 'DEPENDENCY_SCANNING',
+  | 'DEPENDENCY_SCANNING'
   /** SAST scan report */
-  Sast = 'SAST',
+  | 'SAST'
   /** SECRET DETECTION scan report */
-  SecretDetection = 'SECRET_DETECTION'
-}
+  | 'SECRET_DETECTION';
 
 /** The type of the security scanner */
-export enum SecurityScannerType {
+export type SecurityScannerType =
   /** API Fuzzing scanner */
-  ApiFuzzing = 'API_FUZZING',
+  | 'API_FUZZING'
   /** Cluster Image Scanning scanner */
-  ClusterImageScanning = 'CLUSTER_IMAGE_SCANNING',
+  | 'CLUSTER_IMAGE_SCANNING'
   /** Container Scanning scanner */
-  ContainerScanning = 'CONTAINER_SCANNING',
+  | 'CONTAINER_SCANNING'
   /** Coverage Fuzzing scanner */
-  CoverageFuzzing = 'COVERAGE_FUZZING',
+  | 'COVERAGE_FUZZING'
   /** DAST scanner */
-  Dast = 'DAST',
+  | 'DAST'
   /** Dependency Scanning scanner */
-  DependencyScanning = 'DEPENDENCY_SCANNING',
+  | 'DEPENDENCY_SCANNING'
   /** SAST scanner */
-  Sast = 'SAST',
+  | 'SAST'
   /** Secret Detection scanner */
-  SecretDetection = 'SECRET_DETECTION'
-}
+  | 'SECRET_DETECTION';
 
 /** Represents a list of security scanners */
 export type SecurityScanners = {
@@ -17765,16 +17665,15 @@ export type SentryErrorStackTraceEntry = {
 };
 
 /** State of a Sentry error */
-export enum SentryErrorStatus {
+export type SentryErrorStatus =
   /** Error has been ignored. */
-  Ignored = 'IGNORED',
+  | 'IGNORED'
   /** Error has been resolved. */
-  Resolved = 'RESOLVED',
+  | 'RESOLVED'
   /** Error has been ignored until next release. */
-  ResolvedInNextRelease = 'RESOLVED_IN_NEXT_RELEASE',
+  | 'RESOLVED_IN_NEXT_RELEASE'
   /** Error is unresolved. */
-  Unresolved = 'UNRESOLVED'
-}
+  | 'UNRESOLVED';
 
 /** State of a Sentry error */
 export type SentryErrorTags = {
@@ -17812,91 +17711,89 @@ export type ServiceEdge = {
   node?: Maybe<Service>;
 };
 
-export enum ServiceType {
+export type ServiceType =
   /** AsanaService type */
-  AsanaService = 'ASANA_SERVICE',
+  | 'ASANA_SERVICE'
   /** AssemblaService type */
-  AssemblaService = 'ASSEMBLA_SERVICE',
+  | 'ASSEMBLA_SERVICE'
   /** BambooService type */
-  BambooService = 'BAMBOO_SERVICE',
+  | 'BAMBOO_SERVICE'
   /** BugzillaService type */
-  BugzillaService = 'BUGZILLA_SERVICE',
+  | 'BUGZILLA_SERVICE'
   /** BuildkiteService type */
-  BuildkiteService = 'BUILDKITE_SERVICE',
+  | 'BUILDKITE_SERVICE'
   /** CampfireService type */
-  CampfireService = 'CAMPFIRE_SERVICE',
+  | 'CAMPFIRE_SERVICE'
   /** ConfluenceService type */
-  ConfluenceService = 'CONFLUENCE_SERVICE',
+  | 'CONFLUENCE_SERVICE'
   /** CustomIssueTrackerService type */
-  CustomIssueTrackerService = 'CUSTOM_ISSUE_TRACKER_SERVICE',
+  | 'CUSTOM_ISSUE_TRACKER_SERVICE'
   /** DatadogService type */
-  DatadogService = 'DATADOG_SERVICE',
+  | 'DATADOG_SERVICE'
   /** DiscordService type */
-  DiscordService = 'DISCORD_SERVICE',
+  | 'DISCORD_SERVICE'
   /** DroneCiService type */
-  DroneCiService = 'DRONE_CI_SERVICE',
+  | 'DRONE_CI_SERVICE'
   /** EmailsOnPushService type */
-  EmailsOnPushService = 'EMAILS_ON_PUSH_SERVICE',
+  | 'EMAILS_ON_PUSH_SERVICE'
   /** EwmService type */
-  EwmService = 'EWM_SERVICE',
+  | 'EWM_SERVICE'
   /** ExternalWikiService type */
-  ExternalWikiService = 'EXTERNAL_WIKI_SERVICE',
+  | 'EXTERNAL_WIKI_SERVICE'
   /** FlowdockService type */
-  FlowdockService = 'FLOWDOCK_SERVICE',
+  | 'FLOWDOCK_SERVICE'
   /** GithubService type */
-  GithubService = 'GITHUB_SERVICE',
+  | 'GITHUB_SERVICE'
   /** GitlabSlackApplicationService type */
-  GitlabSlackApplicationService = 'GITLAB_SLACK_APPLICATION_SERVICE',
+  | 'GITLAB_SLACK_APPLICATION_SERVICE'
   /** HangoutsChatService type */
-  HangoutsChatService = 'HANGOUTS_CHAT_SERVICE',
+  | 'HANGOUTS_CHAT_SERVICE'
   /** IrkerService type */
-  IrkerService = 'IRKER_SERVICE',
+  | 'IRKER_SERVICE'
   /** JenkinsService type */
-  JenkinsService = 'JENKINS_SERVICE',
+  | 'JENKINS_SERVICE'
   /** JiraService type */
-  JiraService = 'JIRA_SERVICE',
+  | 'JIRA_SERVICE'
   /** MattermostService type */
-  MattermostService = 'MATTERMOST_SERVICE',
+  | 'MATTERMOST_SERVICE'
   /** MattermostSlashCommandsService type */
-  MattermostSlashCommandsService = 'MATTERMOST_SLASH_COMMANDS_SERVICE',
+  | 'MATTERMOST_SLASH_COMMANDS_SERVICE'
   /** MicrosoftTeamsService type */
-  MicrosoftTeamsService = 'MICROSOFT_TEAMS_SERVICE',
+  | 'MICROSOFT_TEAMS_SERVICE'
   /** PackagistService type */
-  PackagistService = 'PACKAGIST_SERVICE',
+  | 'PACKAGIST_SERVICE'
   /** PipelinesEmailService type */
-  PipelinesEmailService = 'PIPELINES_EMAIL_SERVICE',
+  | 'PIPELINES_EMAIL_SERVICE'
   /** PivotaltrackerService type */
-  PivotaltrackerService = 'PIVOTALTRACKER_SERVICE',
+  | 'PIVOTALTRACKER_SERVICE'
   /** PrometheusService type */
-  PrometheusService = 'PROMETHEUS_SERVICE',
+  | 'PROMETHEUS_SERVICE'
   /** PushoverService type */
-  PushoverService = 'PUSHOVER_SERVICE',
+  | 'PUSHOVER_SERVICE'
   /** RedmineService type */
-  RedmineService = 'REDMINE_SERVICE',
+  | 'REDMINE_SERVICE'
   /** SlackService type */
-  SlackService = 'SLACK_SERVICE',
+  | 'SLACK_SERVICE'
   /** SlackSlashCommandsService type */
-  SlackSlashCommandsService = 'SLACK_SLASH_COMMANDS_SERVICE',
+  | 'SLACK_SLASH_COMMANDS_SERVICE'
   /** TeamcityService type */
-  TeamcityService = 'TEAMCITY_SERVICE',
+  | 'TEAMCITY_SERVICE'
   /** UnifyCircuitService type */
-  UnifyCircuitService = 'UNIFY_CIRCUIT_SERVICE',
+  | 'UNIFY_CIRCUIT_SERVICE'
   /** WebexTeamsService type */
-  WebexTeamsService = 'WEBEX_TEAMS_SERVICE',
+  | 'WEBEX_TEAMS_SERVICE'
   /** YoutrackService type */
-  YoutrackService = 'YOUTRACK_SERVICE',
+  | 'YOUTRACK_SERVICE'
   /** ZentaoService type */
-  ZentaoService = 'ZENTAO_SERVICE'
-}
+  | 'ZENTAO_SERVICE';
 
-export enum SharedRunnersSetting {
+export type SharedRunnersSetting =
   /** Sharing of runners is disabled and unoverridable. */
-  DisabledAndUnoverridable = 'DISABLED_AND_UNOVERRIDABLE',
+  | 'DISABLED_AND_UNOVERRIDABLE'
   /** Sharing of runners is disabled with override. */
-  DisabledWithOverride = 'DISABLED_WITH_OVERRIDE',
+  | 'DISABLED_WITH_OVERRIDE'
   /** Sharing of runners is enabled. */
-  Enabled = 'ENABLED'
-}
+  | 'ENABLED';
 
 /** Represents a snippet entry */
 export type Snippet = NoteableInterface & {
@@ -17999,16 +17896,15 @@ export type SnippetBlob = {
 };
 
 /** Type of a snippet blob input action */
-export enum SnippetBlobActionEnum {
+export type SnippetBlobActionEnum =
   /** Create a snippet blob. */
-  Create = 'create',
+  | 'create'
   /** Delete a snippet blob. */
-  Delete = 'delete',
+  | 'delete'
   /** Move a snippet blob. */
-  Move = 'move',
+  | 'move'
   /** Update a snippet blob. */
-  Update = 'update'
-}
+  | 'update';
 
 /** Represents an action to perform over a snippet file */
 export type SnippetBlobActionInputType = {
@@ -18139,24 +18035,23 @@ export type SnippetRepositoryRegistryEdge = {
 };
 
 /** Common sort values */
-export enum Sort {
+export type Sort =
   /** Created at ascending order. */
-  CreatedAsc = 'CREATED_ASC',
+  | 'CREATED_ASC'
   /** Created at descending order. */
-  CreatedDesc = 'CREATED_DESC',
+  | 'CREATED_DESC'
   /** Updated at ascending order. */
-  UpdatedAsc = 'UPDATED_ASC',
+  | 'UPDATED_ASC'
   /** Updated at descending order. */
-  UpdatedDesc = 'UPDATED_DESC',
+  | 'UPDATED_DESC'
   /** Created at ascending order. */
-  CreatedAsc = 'created_asc',
+  | 'created_asc'
   /** Created at descending order. */
-  CreatedDesc = 'created_desc',
+  | 'created_desc'
   /** Updated at ascending order. */
-  UpdatedAsc = 'updated_asc',
+  | 'updated_asc'
   /** Updated at descending order. */
-  UpdatedDesc = 'updated_desc'
-}
+  | 'updated_desc';
 
 export type StatusAction = {
   __typename?: 'StatusAction';
@@ -18429,16 +18324,15 @@ export type TestCaseEdge = {
   node?: Maybe<TestCase>;
 };
 
-export enum TestCaseStatus {
+export type TestCaseStatus =
   /** Test case that has a status of error. */
-  Error = 'error',
+  | 'error'
   /** Test case that has a status of failed. */
-  Failed = 'failed',
+  | 'failed'
   /** Test case that has a status of skipped. */
-  Skipped = 'skipped',
+  | 'skipped'
   /** Test case that has a status of success. */
-  Success = 'success'
-}
+  | 'success';
 
 /** Represents a requirement test report */
 export type TestReport = {
@@ -18474,12 +18368,11 @@ export type TestReportEdge = {
 };
 
 /** State of a test report */
-export enum TestReportState {
+export type TestReportState =
   /** Failed test report. */
-  Failed = 'FAILED',
+  | 'FAILED'
   /** Passed test report. */
-  Passed = 'PASSED'
-}
+  | 'PASSED';
 
 /** Test report for a pipeline */
 export type TestReportSummary = {
@@ -18698,26 +18591,25 @@ export type Todo = {
   targetType: TodoTargetEnum;
 };
 
-export enum TodoActionEnum {
+export type TodoActionEnum =
   /** User was set as an approver. */
-  ApprovalRequired = 'approval_required',
+  | 'approval_required'
   /** User was assigned. */
-  Assigned = 'assigned',
+  | 'assigned'
   /** Build triggered by the user failed. */
-  BuildFailed = 'build_failed',
+  | 'build_failed'
   /** User was directly addressed. */
-  DirectlyAddressed = 'directly_addressed',
+  | 'directly_addressed'
   /** User added a TODO. */
-  Marked = 'marked',
+  | 'marked'
   /** User was mentioned. */
-  Mentioned = 'mentioned',
+  | 'mentioned'
   /** Merge request authored by the user was removed from the merge train. */
-  MergeTrainRemoved = 'merge_train_removed',
+  | 'merge_train_removed'
   /** Review was requested from the user. */
-  ReviewRequested = 'review_requested',
+  | 'review_requested'
   /** Merge request authored by the user could not be merged. */
-  Unmergeable = 'unmergeable'
-}
+  | 'unmergeable';
 
 /** The connection type for Todo. */
 export type TodoConnection = {
@@ -18815,27 +18707,25 @@ export type TodoRestorePayload = {
   todo: Todo;
 };
 
-export enum TodoStateEnum {
+export type TodoStateEnum =
   /** State of the todo is done. */
-  Done = 'done',
+  | 'done'
   /** State of the todo is pending. */
-  Pending = 'pending'
-}
+  | 'pending';
 
-export enum TodoTargetEnum {
+export type TodoTargetEnum =
   /** Alert. */
-  Alert = 'ALERT',
+  | 'ALERT'
   /** Commit. */
-  Commit = 'COMMIT',
+  | 'COMMIT'
   /** Design. */
-  Design = 'DESIGN',
+  | 'DESIGN'
   /** An Epic. */
-  Epic = 'EPIC',
+  | 'EPIC'
   /** Issue. */
-  Issue = 'ISSUE',
+  | 'ISSUE'
   /** Merge request. */
-  Mergerequest = 'MERGEREQUEST'
-}
+  | 'MERGEREQUEST';
 
 /** Autogenerated input type of TodosMarkAllDone */
 export type TodosMarkAllDoneInput = {
@@ -18951,12 +18841,11 @@ export type TreeEntryEdge = {
   node?: Maybe<TreeEntry>;
 };
 
-export enum TypeEnum {
+export type TypeEnum =
   /** Snippet created independent of any project. */
-  Personal = 'personal',
+  | 'personal'
   /** Snippet related to a specific project. */
-  Project = 'project'
-}
+  | 'project';
 
 /** Autogenerated input type of UpdateAlertStatus */
 export type UpdateAlertStatusInput = {
@@ -19835,76 +19724,75 @@ export type UserCalloutEdge = {
 };
 
 /** Name of the feature that the callout is for. */
-export enum UserCalloutFeatureNameEnum {
+export type UserCalloutFeatureNameEnum =
   /** Callout feature name for active_user_count_threshold. */
-  ActiveUserCountThreshold = 'ACTIVE_USER_COUNT_THRESHOLD',
+  | 'ACTIVE_USER_COUNT_THRESHOLD'
   /** Callout feature name for buy_pipeline_minutes_notification_dot. */
-  BuyPipelineMinutesNotificationDot = 'BUY_PIPELINE_MINUTES_NOTIFICATION_DOT',
+  | 'BUY_PIPELINE_MINUTES_NOTIFICATION_DOT'
   /** Callout feature name for canary_deployment. */
-  CanaryDeployment = 'CANARY_DEPLOYMENT',
+  | 'CANARY_DEPLOYMENT'
   /** Callout feature name for cloud_licensing_subscription_activation_banner. */
-  CloudLicensingSubscriptionActivationBanner = 'CLOUD_LICENSING_SUBSCRIPTION_ACTIVATION_BANNER',
+  | 'CLOUD_LICENSING_SUBSCRIPTION_ACTIVATION_BANNER'
   /** Callout feature name for cluster_security_warning. */
-  ClusterSecurityWarning = 'CLUSTER_SECURITY_WARNING',
+  | 'CLUSTER_SECURITY_WARNING'
   /** Callout feature name for customize_homepage. */
-  CustomizeHomepage = 'CUSTOMIZE_HOMEPAGE',
+  | 'CUSTOMIZE_HOMEPAGE'
   /** Callout feature name for eoa_bronze_plan_banner. */
-  EoaBronzePlanBanner = 'EOA_BRONZE_PLAN_BANNER',
+  | 'EOA_BRONZE_PLAN_BANNER'
   /** Callout feature name for feature_flags_new_version. */
-  FeatureFlagsNewVersion = 'FEATURE_FLAGS_NEW_VERSION',
+  | 'FEATURE_FLAGS_NEW_VERSION'
   /** Callout feature name for gcp_signup_offer. */
-  GcpSignupOffer = 'GCP_SIGNUP_OFFER',
+  | 'GCP_SIGNUP_OFFER'
   /** Callout feature name for geo_enable_hashed_storage. */
-  GeoEnableHashedStorage = 'GEO_ENABLE_HASHED_STORAGE',
+  | 'GEO_ENABLE_HASHED_STORAGE'
   /** Callout feature name for geo_migrate_hashed_storage. */
-  GeoMigrateHashedStorage = 'GEO_MIGRATE_HASHED_STORAGE',
+  | 'GEO_MIGRATE_HASHED_STORAGE'
   /** Callout feature name for gke_cluster_integration. */
-  GkeClusterIntegration = 'GKE_CLUSTER_INTEGRATION',
+  | 'GKE_CLUSTER_INTEGRATION'
   /** Callout feature name for gold_trial_billings. */
-  GoldTrialBillings = 'GOLD_TRIAL_BILLINGS',
+  | 'GOLD_TRIAL_BILLINGS'
   /** Callout feature name for new_user_signups_cap_reached. */
-  NewUserSignupsCapReached = 'NEW_USER_SIGNUPS_CAP_REACHED',
+  | 'NEW_USER_SIGNUPS_CAP_REACHED'
   /** Callout feature name for personal_access_token_expiry. */
-  PersonalAccessTokenExpiry = 'PERSONAL_ACCESS_TOKEN_EXPIRY',
+  | 'PERSONAL_ACCESS_TOKEN_EXPIRY'
   /** Callout feature name for pipeline_needs_banner. */
-  PipelineNeedsBanner = 'PIPELINE_NEEDS_BANNER',
+  | 'PIPELINE_NEEDS_BANNER'
   /** Callout feature name for pipeline_needs_hover_tip. */
-  PipelineNeedsHoverTip = 'PIPELINE_NEEDS_HOVER_TIP',
+  | 'PIPELINE_NEEDS_HOVER_TIP'
   /** Callout feature name for profile_personal_access_token_expiry. */
-  ProfilePersonalAccessTokenExpiry = 'PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY',
+  | 'PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY'
   /** Callout feature name for registration_enabled_callout. */
-  RegistrationEnabledCallout = 'REGISTRATION_ENABLED_CALLOUT',
+  | 'REGISTRATION_ENABLED_CALLOUT'
   /** Callout feature name for security_configuration_devops_alert. */
-  SecurityConfigurationDevopsAlert = 'SECURITY_CONFIGURATION_DEVOPS_ALERT',
+  | 'SECURITY_CONFIGURATION_DEVOPS_ALERT'
   /** Callout feature name for security_configuration_upgrade_banner. */
-  SecurityConfigurationUpgradeBanner = 'SECURITY_CONFIGURATION_UPGRADE_BANNER',
+  | 'SECURITY_CONFIGURATION_UPGRADE_BANNER'
   /** Callout feature name for security_newsletter_callout. */
-  SecurityNewsletterCallout = 'SECURITY_NEWSLETTER_CALLOUT',
+  | 'SECURITY_NEWSLETTER_CALLOUT'
   /** Callout feature name for suggest_pipeline. */
-  SuggestPipeline = 'SUGGEST_PIPELINE',
+  | 'SUGGEST_PIPELINE'
   /** Callout feature name for suggest_popover_dismissed. */
-  SuggestPopoverDismissed = 'SUGGEST_POPOVER_DISMISSED',
+  | 'SUGGEST_POPOVER_DISMISSED'
   /** Callout feature name for tabs_position_highlight. */
-  TabsPositionHighlight = 'TABS_POSITION_HIGHLIGHT',
+  | 'TABS_POSITION_HIGHLIGHT'
   /** Callout feature name for terraform_notification_dismissed. */
-  TerraformNotificationDismissed = 'TERRAFORM_NOTIFICATION_DISMISSED',
+  | 'TERRAFORM_NOTIFICATION_DISMISSED'
   /** Callout feature name for threat_monitoring_info. */
-  ThreatMonitoringInfo = 'THREAT_MONITORING_INFO',
+  | 'THREAT_MONITORING_INFO'
   /** Callout feature name for trial_status_reminder_d3. */
-  TrialStatusReminderD3 = 'TRIAL_STATUS_REMINDER_D3',
+  | 'TRIAL_STATUS_REMINDER_D3'
   /** Callout feature name for trial_status_reminder_d14. */
-  TrialStatusReminderD14 = 'TRIAL_STATUS_REMINDER_D14',
+  | 'TRIAL_STATUS_REMINDER_D14'
   /** Callout feature name for two_factor_auth_recovery_settings_check. */
-  TwoFactorAuthRecoverySettingsCheck = 'TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK',
+  | 'TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK'
   /** Callout feature name for ultimate_trial. */
-  UltimateTrial = 'ULTIMATE_TRIAL',
+  | 'ULTIMATE_TRIAL'
   /** Callout feature name for unfinished_tag_cleanup_callout. */
-  UnfinishedTagCleanupCallout = 'UNFINISHED_TAG_CLEANUP_CALLOUT',
+  | 'UNFINISHED_TAG_CLEANUP_CALLOUT'
   /** Callout feature name for web_ide_alert_dismissed. */
-  WebIdeAlertDismissed = 'WEB_IDE_ALERT_DISMISSED',
+  | 'WEB_IDE_ALERT_DISMISSED'
   /** Callout feature name for web_ide_ci_environments_guidance. */
-  WebIdeCiEnvironmentsGuidance = 'WEB_IDE_CI_ENVIRONMENTS_GUIDANCE'
-}
+  | 'WEB_IDE_CI_ENVIRONMENTS_GUIDANCE';
 
 /** Core represention of a GitLab user. */
 export type UserCore = User & {
@@ -20184,14 +20072,13 @@ export type UserPermissions = {
 };
 
 /** Possible states of a user */
-export enum UserState {
+export type UserState =
   /** User is active and is able to use the system. */
-  Active = 'active',
+  | 'active'
   /** User has been blocked and is prevented from using the system. */
-  Blocked = 'blocked',
+  | 'blocked'
   /** User is no longer active and is unable to use the system. */
-  Deactivated = 'deactivated'
-}
+  | 'deactivated';
 
 export type UserStatus = {
   __typename?: 'UserStatus';
@@ -20205,23 +20092,21 @@ export type UserStatus = {
   messageHtml?: Maybe<Scalars['String']>;
 };
 
-export enum VisibilityLevelsEnum {
+export type VisibilityLevelsEnum =
   /** Internal visibility level. */
-  Internal = 'internal',
+  | 'internal'
   /** Private visibility level. */
-  Private = 'private',
+  | 'private'
   /** Public visibility level. */
-  Public = 'public'
-}
+  | 'public';
 
-export enum VisibilityScopesEnum {
+export type VisibilityScopesEnum =
   /** Snippet is visible for any logged in user except external users. */
-  Internal = 'internal',
+  | 'internal'
   /** Snippet is visible only to the snippet creator. */
-  Private = 'private',
+  | 'private'
   /** Snippet can be accessed without any authentication. */
-  Public = 'public'
-}
+  | 'public';
 
 /** Represents the count of vulnerabilities by severity on a particular day. This data is retained for 365 days */
 export type VulnerabilitiesCountByDay = {
@@ -20375,22 +20260,21 @@ export type VulnerabilityNotesArgs = {
 };
 
 /** Confidence that a given vulnerability is present in the codebase. */
-export enum VulnerabilityConfidence {
+export type VulnerabilityConfidence =
   /** Confirmed confidence */
-  Confirmed = 'CONFIRMED',
+  | 'CONFIRMED'
   /** Experimental confidence */
-  Experimental = 'EXPERIMENTAL',
+  | 'EXPERIMENTAL'
   /** High confidence */
-  High = 'HIGH',
+  | 'HIGH'
   /** Ignore confidence */
-  Ignore = 'IGNORE',
+  | 'IGNORE'
   /** Low confidence */
-  Low = 'LOW',
+  | 'LOW'
   /** Medium confidence */
-  Medium = 'MEDIUM',
+  | 'MEDIUM'
   /** Unknown confidence */
-  Unknown = 'UNKNOWN'
-}
+  | 'UNKNOWN';
 
 /** Autogenerated input type of VulnerabilityConfirm */
 export type VulnerabilityConfirmInput = {
@@ -20675,28 +20559,27 @@ export type VulnerabilityDismissPayload = {
 };
 
 /** The dismissal reason of the Vulnerability */
-export enum VulnerabilityDismissalReason {
+export type VulnerabilityDismissalReason =
   /** The vulnerability is known, and has not been remediated or mitigated, but is considered to be an acceptable business risk. */
-  AcceptableRisk = 'ACCEPTABLE_RISK',
+  | 'ACCEPTABLE_RISK'
   /**
    * An error in reporting in which a test result incorrectly indicates the
    * presence of a vulnerability in a system when the vulnerability is not present.
    */
-  FalsePositive = 'FALSE_POSITIVE',
+  | 'FALSE_POSITIVE'
   /**
    * A management, operational, or technical control (that is, safeguard or
    * countermeasure) employed by an organization that provides equivalent or
    * comparable protection for an information system.
    */
-  MitigatingControl = 'MITIGATING_CONTROL',
+  | 'MITIGATING_CONTROL'
   /**
    * The vulnerability is known, and has not been remediated or mitigated, but is
    * considered to be in a part of the application that will not be updated.
    */
-  NotApplicable = 'NOT_APPLICABLE',
+  | 'NOT_APPLICABLE'
   /** The finding is not a vulnerability because it is part of a test or is test data. */
-  UsedInTests = 'USED_IN_TESTS'
-}
+  | 'USED_IN_TESTS';
 
 /** An edge in a connection. */
 export type VulnerabilityEdge = {
@@ -20779,30 +20662,27 @@ export type VulnerabilityExternalIssueLinkEdge = {
 };
 
 /** The external tracker of the external issue link related to a vulnerability */
-export enum VulnerabilityExternalIssueLinkExternalTracker {
+export type VulnerabilityExternalIssueLinkExternalTracker =
   /** Jira external tracker */
-  Jira = 'JIRA'
-}
+  | 'JIRA';
 
 /** The type of the external issue link related to a vulnerability */
-export enum VulnerabilityExternalIssueLinkType {
+export type VulnerabilityExternalIssueLinkType =
   /** Created link type */
-  Created = 'CREATED'
-}
+  | 'CREATED';
 
 /** The grade of the vulnerable project */
-export enum VulnerabilityGrade {
+export type VulnerabilityGrade =
   /** A grade */
-  A = 'A',
+  | 'A'
   /** B grade */
-  B = 'B',
+  | 'B'
   /** C grade */
-  C = 'C',
+  | 'C'
   /** D grade */
-  D = 'D',
+  | 'D'
   /** F grade */
-  F = 'F'
-}
+  | 'F';
 
 /** Represents a vulnerability identifier */
 export type VulnerabilityIdentifier = {
@@ -20860,12 +20740,11 @@ export type VulnerabilityIssueLinkEdge = {
 };
 
 /** The type of the issue link related to a vulnerability */
-export enum VulnerabilityIssueLinkType {
+export type VulnerabilityIssueLinkType =
   /** Issue is created for the vulnerability */
-  Created = 'CREATED',
+  | 'CREATED'
   /** Has a related issue */
-  Related = 'RELATED'
-}
+  | 'RELATED';
 
 /** Represents a link related to a vulnerability */
 export type VulnerabilityLink = {
@@ -20996,26 +20875,25 @@ export type VulnerabilityPermissions = {
 };
 
 /** The type of the security scan that found the vulnerability */
-export enum VulnerabilityReportType {
+export type VulnerabilityReportType =
   /** API Fuzzing report */
-  ApiFuzzing = 'API_FUZZING',
+  | 'API_FUZZING'
   /** Cluster Image Scanning report */
-  ClusterImageScanning = 'CLUSTER_IMAGE_SCANNING',
+  | 'CLUSTER_IMAGE_SCANNING'
   /** Container Scanning report */
-  ContainerScanning = 'CONTAINER_SCANNING',
+  | 'CONTAINER_SCANNING'
   /** Coverage Fuzzing report */
-  CoverageFuzzing = 'COVERAGE_FUZZING',
+  | 'COVERAGE_FUZZING'
   /** DAST report */
-  Dast = 'DAST',
+  | 'DAST'
   /** Dependency Scanning report */
-  DependencyScanning = 'DEPENDENCY_SCANNING',
+  | 'DEPENDENCY_SCANNING'
   /** Generic report */
-  Generic = 'GENERIC',
+  | 'GENERIC'
   /** SAST report */
-  Sast = 'SAST',
+  | 'SAST'
   /** Secret Detection report */
-  SecretDetection = 'SECRET_DETECTION'
-}
+  | 'SECRET_DETECTION';
 
 /** Autogenerated input type of VulnerabilityResolve */
 export type VulnerabilityResolveInput = {
@@ -21126,56 +21004,53 @@ export type VulnerabilitySeveritiesCount = {
 };
 
 /** The severity of the vulnerability */
-export enum VulnerabilitySeverity {
+export type VulnerabilitySeverity =
   /** Critical severity */
-  Critical = 'CRITICAL',
+  | 'CRITICAL'
   /** High severity */
-  High = 'HIGH',
+  | 'HIGH'
   /** Info severity */
-  Info = 'INFO',
+  | 'INFO'
   /** Low severity */
-  Low = 'LOW',
+  | 'LOW'
   /** Medium severity */
-  Medium = 'MEDIUM',
+  | 'MEDIUM'
   /** Unknown severity */
-  Unknown = 'UNKNOWN'
-}
+  | 'UNKNOWN';
 
 /** Vulnerability sort values */
-export enum VulnerabilitySort {
+export type VulnerabilitySort =
   /** Detection timestamp in ascending order. */
-  DetectedAsc = 'detected_asc',
+  | 'detected_asc'
   /** Detection timestamp in descending order. */
-  DetectedDesc = 'detected_desc',
+  | 'detected_desc'
   /** Report Type in ascending order. */
-  ReportTypeAsc = 'report_type_asc',
+  | 'report_type_asc'
   /** Report Type in descending order. */
-  ReportTypeDesc = 'report_type_desc',
+  | 'report_type_desc'
   /** Severity in ascending order. */
-  SeverityAsc = 'severity_asc',
+  | 'severity_asc'
   /** Severity in descending order. */
-  SeverityDesc = 'severity_desc',
+  | 'severity_desc'
   /** State in ascending order. */
-  StateAsc = 'state_asc',
+  | 'state_asc'
   /** State in descending order. */
-  StateDesc = 'state_desc',
+  | 'state_desc'
   /** Title in ascending order. */
-  TitleAsc = 'title_asc',
+  | 'title_asc'
   /** Title in descending order. */
-  TitleDesc = 'title_desc'
-}
+  | 'title_desc';
 
 /** The state of the vulnerability */
-export enum VulnerabilityState {
+export type VulnerabilityState =
   /** Confirmed vulnerability */
-  Confirmed = 'CONFIRMED',
+  | 'CONFIRMED'
   /** Detected vulnerability */
-  Detected = 'DETECTED',
+  | 'DETECTED'
   /** Dismissed vulnerability */
-  Dismissed = 'DISMISSED',
+  | 'DISMISSED'
   /** Resolved vulnerability */
-  Resolved = 'RESOLVED'
-}
+  | 'RESOLVED';
 
 /** Represents a vulnerable dependency. Used in vulnerability location data */
 export type VulnerableDependency = {
@@ -21214,12 +21089,11 @@ export type VulnerableProjectsByGradeProjectsArgs = {
 };
 
 /** Weight ID wildcard values */
-export enum WeightWildcardId {
+export type WeightWildcardId =
   /** Weight is assigned. */
-  Any = 'ANY',
+  | 'ANY'
   /** No weight is assigned. */
-  None = 'NONE'
-}
+  | 'NONE';
 
 /** Autogenerated input type of iterationCreate */
 export type IterationCreateInput = {

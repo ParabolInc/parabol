@@ -1,12 +1,12 @@
-import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
-import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
-import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
-import splitDraftContent from '~/utils/draftjs/splitDraftContent'
+import OAuth from 'oauth-1.0a'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {ExternalLinks} from '~/types/constEnums'
+import splitDraftContent from '~/utils/draftjs/splitDraftContent'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 export interface JiraServerRestProject {
   /// more available fields

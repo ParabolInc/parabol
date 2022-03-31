@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import EndTeamPromptPayload from '../types/EndTeamPromptPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {GQLContext} from '../graphql'
-import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import EndTeamPromptPayload from '../types/EndTeamPromptPayload'
 
 const endTeamPrompt = {
   type: GraphQLNonNull(EndTeamPromptPayload),
