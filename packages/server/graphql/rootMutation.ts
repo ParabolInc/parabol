@@ -140,6 +140,7 @@ import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import startTeamPrompt from './mutations/startTeamPrompt'
+import endTeamPrompt from './mutations/endTeamPrompt'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 export default new GraphQLObjectType<any, GQLContext>({
@@ -286,6 +287,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateIntegrationProvider,
       removeIntegrationProvider,
       removeTeamMemberIntegrationAuth,
-      startTeamPrompt
+      startTeamPrompt,
+      endTeamPrompt
     } as any)
 })
