@@ -125,7 +125,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
       )}
       {visibleProjects.map((project) => {
         const {id: projectId, fullPath} = project
-        const isSelected = selectedProjectsIds.includes(projectId)
+        const isSelected = !!selectedProjectsIds?.includes(projectId)
 
         const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
