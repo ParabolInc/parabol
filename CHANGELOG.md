@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.51.0 2022-Mar-24
+### Added
+- feat(standups): Added empty team prompt meeting component (#6170)
+- More typesafety for GraphQL code (#6167
+- chore: enforce conventional commit PR titles (#6258)
+- Add flow diagram for services (#6235)
+
+### Changed
+- remove icebreaker question (#6142)
+- Remove backfilling invoices logic from migration (#6237)
+- ci: use official postgres image & sync with digital ocean version (#6182)
+- chore: remove postcommit git command (#6253)
+- feat: allow admins to call set org user role mutation (#6148)
+- feat: disable rate limiter in test (#6146)
+- chore(deps): bump node-forge from 1.2.1 to 1.3.0 (#6256)
+- chore(deps-dev): bump minimist from 1.2.5 to 1.2.6 (#6264)
+- chore(sdl): codemod it all (#6228)
+- chore: Remove LogRocket (#6266)
+
+### Fixed
+- Fix type mismatch GraphQL (#6151)
+- chore(noImplicitAny): fix more errors (#6161)
+- fix(sdl): Default resolveType on mutation payloads (#6270)
+
 ## 6.50.0 2022-Mar-16
 ### Added
 - Add task menu to push to Jira Server (#6026)
