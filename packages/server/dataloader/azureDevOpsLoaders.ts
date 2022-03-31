@@ -5,8 +5,6 @@ import {
   Resource,
   TeamProjectReference
 } from 'parabol-client/utils/AzureDevOpsManager'
-// import {AzureDevOpsAuth} from '../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
-// import getAzureDevOpsAuthByUserId from '../postgres/queries/getAzureDevOpsAuthsByUserId'
 //import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 //import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
 //import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -16,7 +14,7 @@ import {
 //import upsertAzureDevOpsAuths from '../postgres/queries/upsertAzureDevOpsAuths'
 import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import RootDataLoader from './RootDataLoader'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth';
+import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 
 type TeamUserKey = {
@@ -81,8 +79,9 @@ export const freshAzureDevOpsAuth = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          // const userAzureDevOpsAuths = await getAzureDevOpsAuthByUserId(userId)
-          const azureDevOpsAuthToRefresh = await parent.get('teamMemberIntegrationAuths').load({service:'azureDevOps', teamId, userId})
+          const azureDevOpsAuthToRefresh = await parent
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'azureDevOps', teamId, userId})
           // const azureDevOpsAuthToRefresh = userAzureDevOpsAuths?.find(
           //   (azureDevOpsAuth) => azureDevOpsAuth.teamId === teamId
           // )

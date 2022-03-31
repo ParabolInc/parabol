@@ -1,6 +1,5 @@
 import {GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLBoolean, GraphQLList} from 'graphql'
 import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
-import {AzureDevOpsAuth} from '../../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
 import {GQLContext} from '../graphql'
 import AzureDevOpsWorkItem from './AzureDevOpsWorkItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -9,6 +8,34 @@ import standardError from '../../utils/standardError'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
+
+type IntegrationProviderServiceEnum = 'azureDevOps' | 'gitlab' | 'jiraServer' | 'mattermost'
+
+interface IGetAzureDevOpsAuthByUserIdTeamIdQueryResult {
+  createdAt: Date
+  updatedAt: Date
+  teamId: string
+  userId: string
+  providerId: number
+  service: IntegrationProviderServiceEnum
+  isActive: boolean
+  accessToken: string | null
+  refreshToken: string | null
+  scopes: string | null
+  accessTokenSecret: string | null
+  instanceIds: string[]
+}
+
+interface AzureDevOpsAuth
+  extends Omit<IGetAzureDevOpsAuthByUserIdTeamIdQueryResult, 'azureDevOpsSearchQueries'> {
+  azureDevOpsSearchQueries: {
+    id: string
+    queryString: string
+    projectKeyFilters?: string[]
+    lastUsedAt: Date
+    isWIQL: boolean
+  }[]
+}
 
 const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'AzureDevOpsIntegration',
@@ -79,6 +106,11 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
           const err = new Error('Cannot access another team members issues')
+          standardError(err, {tags: {teamId, userId}, userId: viewerId})
+          return connectionFromTasks([], 0, err)
+        }
+        if (!accessToken) {
+          const err = new Error('Cannot find access token')
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
