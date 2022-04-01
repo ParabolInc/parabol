@@ -60,6 +60,9 @@ module.exports = ({isDeploy}) => ({
     })
   ],
   plugins: [
+    new webpack.DefinePlugin({
+      __PROJECT_ROOT__: JSON.stringify(PROJECT_ROOT),
+    }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[contenthash].js.map',
       append: `\n//# sourceMappingURL=${getNormalizedWebpackPublicPath()}[url]`

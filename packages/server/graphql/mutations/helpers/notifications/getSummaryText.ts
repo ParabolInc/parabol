@@ -1,12 +1,9 @@
 import plural from 'parabol-client/utils/plural'
 import relativeDate from 'parabol-client/utils/date/relativeDate'
-import {isMeetingRetrospective} from '../../../../database/types/MeetingRetrospective'
-import {isMeetingAction} from '../../../../database/types/MeetingAction'
-import {isMeetingPoker} from '../../../../database/types/MeetingPoker'
-import Meeting from '../../../../database/types/Meeting'
+import {AnyMeeting} from '../../../../postgres/types/Meeting'
 
-const getSummaryText = (meeting: Meeting) => {
-  if (isMeetingRetrospective(meeting)) {
+const getSummaryText = (meeting: AnyMeeting) => {
+  if (meeting.meetingType === 'retrospective') {
     const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
     return `Your team shared ${reflectionCount} ${plural(
       reflectionCount,
@@ -15,7 +12,7 @@ const getSummaryText = (meeting: Meeting) => {
       commentCount,
       'comment'
     )} and created ${taskCount} ${plural(taskCount, 'task')}.`
-  } else if (isMeetingAction(meeting)) {
+  } else if (meeting.meetingType === 'action') {
     const {createdAt, endedAt, agendaItemCount = 0, commentCount = 0, taskCount = 0} = meeting
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
@@ -30,15 +27,15 @@ const getSummaryText = (meeting: Meeting) => {
       commentCount,
       'comment'
     )}.`
-  } else if (isMeetingPoker(meeting)) {
+  } else if (meeting.meetingType === 'teamPrompt') {
+    return 'TODO: Implement teamPrompt summary text'
+  } else {
     const {storyCount = 0, commentCount = 0} = meeting
     return `You voted on ${storyCount} ${plural(
       storyCount,
       'story',
       'stories'
     )} and added ${commentCount} ${plural(commentCount, 'comment')}.`
-  } else {
-    throw new Error(`Meeting type not supported ${meeting.meetingType}`)
   }
 }
 

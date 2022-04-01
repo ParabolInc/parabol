@@ -1,5 +1,12 @@
-import OAuth from 'oauth-1.0a'
 import crypto from 'crypto'
+import OAuth from 'oauth-1.0a'
+import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
+import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
+import {ExternalLinks} from '~/types/constEnums'
+import splitDraftContent from '~/utils/draftjs/splitDraftContent'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 export interface JiraServerRestProject {
   /// more available fields
@@ -20,19 +27,66 @@ export interface JiraServerRestProject {
   archived: boolean
 }
 
-export default class JiraServerRestManager {
-  serverBaseUrl: string
-  oauth: OAuth
-  token: OAuth.Token
+interface JiraServerCreateMeta {
+  projects: {
+    id: string
+    issuetypes: {
+      name: string
+      id: string
+    }[]
+  }[]
+}
+
+interface JiraServerCreateIssueResponse {
+  id: string
+  key: string
+  self: string
+}
+
+interface JiraServerAddCommentResponse {
+  id: string
+}
+
+export interface JiraServerIssue {
+  id: string
+  key: string
+  self: string
+  fields: {
+    summary: string
+    description: string | null
+    project: {
+      key: string
+    }
+  }
+  renderedFields: {
+    description: string
+  }
+}
+
+interface JiraServerIssuesResponse {
+  issues: JiraServerIssue[]
+}
+
+export default class JiraServerRestManager implements TaskIntegrationManager {
+  public title = 'Jira Server'
+  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
+  private readonly provider: IntegrationProviderJiraServer
+  private readonly serverBaseUrl: string
+  private readonly oauth: OAuth
+  private readonly token: OAuth.Token
 
   constructor(
-    serverBaseUrl: string,
-    consumerKey: string,
-    consumerSecret: string,
-    oauthToken: string,
-    oauthTokenSecret: string
+    auth: IGetTeamMemberIntegrationAuthQueryResult,
+    provider: IntegrationProviderJiraServer
   ) {
+    this.auth = auth
+    this.provider = provider
+
+    const {serverBaseUrl, consumerKey, consumerSecret} = this.provider
+    const {accessToken, accessTokenSecret} = this.auth
+
     this.serverBaseUrl = serverBaseUrl
+
     this.oauth = new OAuth({
       consumer: {
         key: consumerKey,
@@ -44,8 +98,8 @@ export default class JiraServerRestManager {
         crypto.createSign('RSA-SHA1').update(baseString).sign(consumerSecret).toString('base64')
     })
     this.token = {
-      key: oauthToken,
-      secret: oauthTokenSecret
+      key: accessToken!,
+      secret: accessTokenSecret!
     }
   }
 
@@ -54,29 +108,14 @@ export default class JiraServerRestManager {
     return json.errorMessages?.join('\n')
   }
 
-  async request(method: string, path: string) {
-    const url = new URL(path, this.serverBaseUrl)
-    const request = {
-      url: url.toString(),
-      method
-    }
-    const auth = this.oauth.authorize(request, this.token)
-    const response = await fetch(request.url, {
-      method: request.method,
-      headers: {
-        ...this.oauth.toHeader(auth)
-      }
-    })
-    return response
-  }
-
   async parseJsonResponse<T>(response: Response): Promise<T | Error> {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
       return new Error('Received non-JSON Jira Server Response')
     }
     const json = await response.json()
-    if (response.status !== 200) {
+
+    if (response.status !== 201 && response.status !== 200) {
       return new Error(
         `Fetching projects failed with status ${response.status}, ${this.formatError(json)}`
       )
@@ -85,19 +124,169 @@ export default class JiraServerRestManager {
     return json
   }
 
+  async requestRaw(method: string, path: string, body?: any) {
+    const url = new URL(path, this.serverBaseUrl)
+    const request = {
+      url: url.toString(),
+      method
+    }
+    const auth = this.oauth.authorize(request, this.token)
+    return fetch(request.url, {
+      method: request.method,
+      body: body ? JSON.stringify(body) : undefined,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.oauth.toHeader(auth)
+      }
+    })
+  }
+
+  async request<T>(method: string, path: string, body?: any) {
+    const response = await this.requestRaw(method, path, body)
+    return this.parseJsonResponse<T>(response)
+  }
+
+  async getCreateMeta() {
+    return this.request<JiraServerCreateMeta>('GET', '/rest/api/2/issue/createmeta')
+  }
+
+  async getIssue(issueId: string) {
+    return this.request<JiraServerIssue>(
+      'GET',
+      `/rest/api/latest/issue/${issueId}?expand=renderedFields`
+    )
+  }
+
+  async getIssues() {
+    // TODO: support JQL
+    const jql = 'order by lastViewed DESC'
+    const payload = {
+      jql,
+      maxResults: 100,
+      expand: ['renderedFields']
+    }
+
+    return this.request<JiraServerIssuesResponse>('POST', '/rest/api/latest/search', payload)
+  }
+
+  async createIssue(projectId: string, summary: string, description: string) {
+    const meta = await this.getCreateMeta()
+    if (meta instanceof Error) {
+      return meta
+    }
+    const project = meta.projects.find((project) => project.id === projectId)
+
+    if (!project) {
+      return new Error('Project not found')
+    }
+
+    const {issuetypes} = project
+    const bestIssueType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
+
+    if (!bestIssueType) {
+      return new Error('No issue types specified')
+    }
+
+    return this.request<JiraServerCreateIssueResponse>('POST', '/rest/api/2/issue', {
+      fields: {
+        project: {
+          id: projectId
+        },
+        issuetype: {
+          id: bestIssueType.id
+        },
+        summary,
+        description
+      }
+    })
+  }
+
+  async addComment(comment: string, issueId: string) {
+    return this.request<JiraServerAddCommentResponse>(
+      'POST',
+      `/rest/api/2/issue/${issueId}/comment`,
+      {
+        body: comment
+      }
+    )
+  }
+
   async getProjects() {
-    const response = await this.request('GET', '/rest/api/latest/project')
-    const projects = await this.parseJsonResponse<JiraServerRestProject[]>(response)
-    return projects
+    return this.request<JiraServerRestProject[]>('GET', '/rest/api/latest/project')
   }
 
   async getProjectAvatar(avatarUrl: string) {
-    const imageRes = await this.request('GET', avatarUrl)
+    const imageRes = await this.requestRaw('GET', avatarUrl)
 
     if (!imageRes || imageRes instanceof Error) return ''
     const arrayBuffer = await imageRes.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer).toString('base64')
     const contentType = imageRes.headers.get('content-type')
     return `data:${contentType};base64,${buffer}`
+  }
+
+  async createTask({
+    rawContentStr,
+    integrationRepoId
+  }: {
+    rawContentStr: string
+    integrationRepoId: string
+  }): Promise<CreateTaskResponse> {
+    const {title: summary, contentState} = splitDraftContent(rawContentStr)
+    // TODO: implement stateToJiraServerFormat
+    const description = contentState.getPlainText()
+
+    const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
+
+    const res = await this.createIssue(repositoryId, summary, description)
+
+    if (res instanceof Error) {
+      return res
+    }
+    const issueId = res.id
+
+    return {
+      integrationHash: JiraServerIssueId.join(this.provider.id, repositoryId, issueId),
+      issueId,
+      integration: {
+        accessUserId: this.auth.userId,
+        service: 'jiraServer',
+        providerId: this.provider.id,
+        issueId,
+        repositoryId
+      }
+    }
+  }
+
+  private makeCreateJiraServerTaskComment(
+    creator: string,
+    assignee: string,
+    teamName: string,
+    teamDashboardUrl: string
+  ) {
+    return `Created by ${creator} for ${assignee}
+    See the dashboard of [${teamName}|${teamDashboardUrl}]
+  
+    *Powered by [Parabol|${ExternalLinks.INTEGRATIONS_JIRASERVER}]*`
+  }
+
+  async addCreatedBySomeoneElseComment(
+    viewerName: string,
+    assigneeName: string,
+    teamName: string,
+    teamDashboardUrl: string,
+    issueId: string
+  ): Promise<string | Error> {
+    const comment = this.makeCreateJiraServerTaskComment(
+      viewerName,
+      assigneeName,
+      teamName,
+      teamDashboardUrl
+    )
+    const res = await this.addComment(comment, issueId)
+    if (res instanceof Error) {
+      return res
+    }
+    return res.id
   }
 }

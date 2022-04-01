@@ -59,11 +59,11 @@ $ yarn dev
 ### Development
 
 - [Code Reviews](./docs/codeReview.md)
-- [Create new GraphQL Mutations](./scripts/codeshift/README.md)
+- [Create new GraphQL Mutations](./packages/server/graphql/public/README.md)
 - [Docker](./docker/README.md)
 - [Dev.js](./scripts/README.md)
 - [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
-- [GraphiQL, Private Schema Admin](./packages/server/graphql/intranetSchema/README.md)
+- [GraphiQL, Private Schema Admin](./packages/server/graphql/private/README.md)
 - [GraphQL Executor](./packages/gql-executor/README.md)
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
