@@ -7,6 +7,13 @@ const transformRules = (projectRoot) => {
   const TOOLBOX_SRC = path.join(projectRoot, 'scripts', 'toolboxSrc')
   return [
     {
+      test: /\.graphql$/,
+      include: SERVER_ROOT,
+      use: {
+        loader: 'raw-loader'
+      }
+    },
+    {
       test: /\.tsx?$/,
       // things that need the relay plugin
       include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
@@ -54,6 +61,7 @@ const transformRules = (projectRoot) => {
     {
       // things that need inline-import
       include: [path.join(SERVER_ROOT, 'graphql'), path.join(SERVER_ROOT, 'integrations')],
+      test: /\.tsx?/,
       use: [
         {
           loader: 'babel-loader',

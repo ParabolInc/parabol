@@ -5,17 +5,12 @@ import {RValue} from '../../../database/stricterR'
 import getMailManager from '../../../email/getMailManager'
 import notificationSummaryCreator from '../../../email/notificationSummaryCreator'
 import getPg from '../../../postgres/getPg'
-import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmails'] = async (
   _source,
-  _args,
-  {authToken}
+  _args
 ) => {
-  // AUTH
-  requireSU(authToken)
-
   // RESOLUTION
   // Note - this may be a lot of data one day. userNotifications is an array
   // of all the users who have not logged in within the last 24 hours and their

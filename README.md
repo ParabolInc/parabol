@@ -59,7 +59,7 @@ $ yarn dev
 ### Development
 
 - [Code Reviews](./docs/codeReview.md)
-- [Create new GraphQL Mutations](./scripts/codeshift/README.md)
+- [Create new GraphQL Mutations](./packages/server/graphql/public/README.md)
 - [Docker](./docker/README.md)
 - [Dev.js](./scripts/README.md)
 - [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
