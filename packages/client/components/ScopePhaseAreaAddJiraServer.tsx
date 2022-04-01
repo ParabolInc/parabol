@@ -5,10 +5,10 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {PALETTE} from '../styles/paletteV3'
+import JiraServerClientManager from '../utils/JiraServerClientManager'
 import {ScopePhaseAreaAddJiraServer_meeting$key} from '../__generated__/ScopePhaseAreaAddJiraServer_meeting.graphql'
 import JiraServerSVG from './JiraServerSVG'
 import RaisedButton from './RaisedButton'
-import JiraServerClientManager from '../utils/JiraServerClientManager'
 
 const AddJiraServerArea = styled('div')({
   display: 'flex',

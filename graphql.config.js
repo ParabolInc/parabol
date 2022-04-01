@@ -1,7 +1,7 @@
 module.exports = {
   projects: {
     Parabol: {
-      schemaPath: './schema.graphql',
+      schemaPath: './packages/server/graphql/public/schema.graphql',
       name: 'Parabol GraphQL Schema',
       includes: ['*']
     }
