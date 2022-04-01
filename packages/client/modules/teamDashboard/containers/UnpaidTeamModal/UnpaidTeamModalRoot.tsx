@@ -1,12 +1,9 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import React from 'react'
 import {QueryRenderer} from 'react-relay'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
-import UnpaidTeamModal from '../../components/UnpaidTeamModal/UnpaidTeamModal'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import renderQuery from '../../../../utils/relay/renderQuery'
+import UnpaidTeamModal from '../../components/UnpaidTeamModal/UnpaidTeamModal'
 
 const query = graphql`
   query UnpaidTeamModalRootQuery($teamId: ID!) {
@@ -16,12 +13,13 @@ const query = graphql`
   }
 `
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props {
   teamId: string
 }
 
 const UnpaidTeamModalRoot = (props: Props) => {
-  const {atmosphere, teamId} = props
+  const {teamId} = props
+  const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -33,4 +31,4 @@ const UnpaidTeamModalRoot = (props: Props) => {
   )
 }
 
-export default withAtmosphere(withRouter(UnpaidTeamModalRoot))
+export default UnpaidTeamModalRoot
