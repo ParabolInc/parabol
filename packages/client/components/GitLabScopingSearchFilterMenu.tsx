@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import useSearchFilter from '~/hooks/useSearchFilter'
+import getNonNullEdges from '~/utils/getNonNullEdges'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
@@ -16,8 +18,6 @@ import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-import getNonNullEdges from '~/utils/getNonNullEdges'
-import useSearchFilter from '~/hooks/useSearchFilter'
 
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
@@ -69,6 +69,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
                       membership: true
                       first: 100
                       sort: "latest_activity_desc"
+                      search: "" # search tells Relay this query differs to the GitLabScopingSearchResults query
                     ) {
                       edges {
                         node {
@@ -101,10 +102,11 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   const {selectedProjectsIds} = gitlabSearchQuery!
   const atmosphere = useAtmosphere()
 
-  const {query: searchQuery, filteredItems: filteredProjects, onQueryChange} = useSearchFilter(
-    projects,
-    getValue
-  )
+  const {
+    query: searchQuery,
+    filteredItems: filteredProjects,
+    onQueryChange
+  } = useSearchFilter(projects, getValue)
   const visibleProjects = filteredProjects.slice(0, MAX_PROJECTS)
 
   const {portalStatus, isDropdown} = menuProps
