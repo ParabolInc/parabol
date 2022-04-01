@@ -2,10 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PokerEstimateHeaderCard_stage} from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
+import PokerEstimateHeaderCardContent from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardGitHub from './PokerEstimateHeaderCardGitHub'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
-import PokerEstimateHeaderCardHtml from './PokerEstimateHeaderCardHtml'
 
 interface Props {
   stage: PokerEstimateHeaderCard_stage
@@ -30,7 +30,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
   if (integration.__typename === 'JiraIssue' || integration.__typename === 'JiraServerIssue') {
     const name = integration.__typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
     return (
-      <PokerEstimateHeaderCardHtml
+      <PokerEstimateHeaderCardContent
         summary={integration.summary}
         descriptionHTML={integration.descriptionHTML}
         url={integration.jiraUrl}

@@ -77,7 +77,7 @@ interface Props {
   linkTitle: string
   linkText: string
 }
-const PokerEstimateHeaderCardHtml = (props: Props) => {
+const PokerEstimateHeaderCardContent = (props: Props) => {
   const {summary, descriptionHTML, url, linkTitle, linkText} = props
   const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {
@@ -108,4 +108,4 @@ const PokerEstimateHeaderCardHtml = (props: Props) => {
   )
 }
 
-export default PokerEstimateHeaderCardHtml
+export default PokerEstimateHeaderCardContent
