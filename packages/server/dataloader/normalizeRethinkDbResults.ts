@@ -1,5 +1,5 @@
-const normalizeRethinkDbResults = <T extends {id: string}>(
-  keys: Readonly<string[]>,
+const normalizeRethinkDbResults = <T extends {id: string | number}>(
+  keys: Readonly<string[] | number[]>,
   results: T[]
 ) => {
   const map = {} as {[key: string]: T}

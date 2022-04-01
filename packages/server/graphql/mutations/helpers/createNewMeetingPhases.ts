@@ -25,6 +25,7 @@ import UpdatesStage from '../../../database/types/UpdatesStage'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
+import {upsertTeamPromptResponses} from '../../../postgres/queries/upsertTeamPromptResponses'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
   const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
@@ -145,6 +146,14 @@ const createNewMeetingPhases = async (
             discussionTopicId: stage.teamMemberId,
             discussionTopicType: 'teamPromptResponse' as const
           }))
+          const teamMemberPromptResponses = teamPromptStages.map((stage, index) => ({
+            meetingId,
+            userId: stage.teamMemberId.split('::')[0],
+            sortOrder: index,
+            content: {},
+            plaintextContent: ''
+          }))
+          asyncSideEffects.push(upsertTeamPromptResponses(teamMemberPromptResponses))
           asyncSideEffects.push(insertDiscussions(teamMemberResponseDiscussion))
           return teamPromptResponsesPhase
         default:

@@ -20,3 +20,20 @@ export function primaryKeyLoaderMaker<ReturnT extends {id: string}>(
     )
   }
 }
+
+/**
+ * Register a loader for types loaded by their {id: number} field.
+ */
+export function numberedPrimaryKeyLoaderMaker<ReturnT extends {id: number}>(
+  batchFn: (ids: readonly number[]) => Promise<ReturnT[]>
+) {
+  return (parent: RootDataLoader) => {
+    return new NullableDataLoader<number, ReturnT, number>(
+      async (ids) => {
+        const result = await batchFn(ids)
+        return normalizeRethinkDbResults(ids, result)
+      },
+      {...parent.dataLoaderOptions}
+    )
+  }
+}
