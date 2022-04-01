@@ -34,7 +34,7 @@ import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
@@ -342,6 +342,8 @@ export default class Atmosphere extends Environment {
     this.authToken = null
     this.authObj = null
     window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+    // since this is async, useAuthRoute will have already run
+    window.location.href = '/'
   }
 
   setAuthToken = async (authToken: string | null) => {
