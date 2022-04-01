@@ -15,9 +15,10 @@ dist/
 dump.rdb
 node_modules/
 package-lock.json
-packages/server/segmentFns/debug.js
-packages/server/graphql/intranetSchema/mutations/__output__/
-packages/server/graphql/intranetSchema/sdl/resolverTypes.ts
+packages/server/types/githubTypes.ts
+packages/server/types/gitlabTypes.ts
+packages/server/graphql/private/resolverTypes.ts
+packages/server/graphql/public/resolverTypes.ts
 queryMap.json
 rethinkdb_data/
 rethinkdb_dump_*

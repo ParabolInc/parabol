@@ -29,10 +29,20 @@ graphql`
           issueKey
           summary
         }
+        ... on JiraServerIssue {
+          __typename
+          issueKey
+          summary
+        }
         ... on _xGitHubIssue {
           __typename
           title
           number
+        }
+        ... on _xGitLabIssue {
+          __typename
+          title
+          iid
         }
       }
     }
@@ -78,7 +88,10 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
             subtitle: ''
           }
         }
-        if (integration.__typename === 'JiraIssue') {
+        if (
+          integration.__typename === 'JiraIssue' ||
+          integration.__typename === 'JiraServerIssue'
+        ) {
           // jira-integration parabol card
           return {
             title: integration.summary,
@@ -88,6 +101,11 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
           return {
             title: integration.title,
             subtitle: `#${integration.number}`
+          }
+        } else if (integration.__typename === '_xGitLabIssue') {
+          return {
+            title: integration.title,
+            subtitle: `#${integration.iid}`
           }
         }
         return {

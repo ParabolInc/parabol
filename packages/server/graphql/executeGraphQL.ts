@@ -11,8 +11,8 @@ import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
-import privateSchema from './intranetSchema/intranetSchema'
-import publicSchema from './rootSchema'
+import privateSchema from './private/rootSchema'
+import publicSchema from './public/rootSchema'
 
 export interface GQLRequest {
   authToken: AuthToken

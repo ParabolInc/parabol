@@ -12,10 +12,10 @@
   "devDependencies": {
     "@playwright/test": "^1.19.2",
     "@types/node": "16",
-    "@typescript-eslint/eslint-plugin": "^5.11.0",
-    "@typescript-eslint/parser": "^5.11.0",
+    "@typescript-eslint/eslint-plugin": "^5.17.0",
+    "@typescript-eslint/parser": "^5.17.0",
     "eslint": "^8.8.0",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-prettier": "^8.5.0",
     "lint-staged": "^12.3.3",
     "ts-app-env": "^1.4.2",
     "typescript": "^4.5.5"

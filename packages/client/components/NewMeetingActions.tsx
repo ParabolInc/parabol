@@ -4,6 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import StartCheckInMutation from '~/mutations/StartCheckInMutation'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
+import StartTeamPromptMutation from '~/mutations/StartTeamPromptMutation'
 import {NewMeetingActions_team} from '~/__generated__/NewMeetingActions_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -72,7 +73,7 @@ const NewMeetingActions = (props: Props) => {
     } else if (meetingType === 'retrospective') {
       StartRetrospectiveMutation(atmosphere, {teamId}, {history, onError, onCompleted})
     } else if (meetingType === 'teamPrompt') {
-      // TODO: start team prompt mutation
+      StartTeamPromptMutation(atmosphere, {teamId}, {history, onError, onCompleted})
     }
   }
 

@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/query';
 /** 'RemoveMeetingTaskEstimatesQuery' parameters type */
 export interface IRemoveMeetingTaskEstimatesQueryParams {
   meetingId: string | null | void;
+  stageId: string | null | void;
 }
 
 /** 'RemoveMeetingTaskEstimatesQuery' return type */
@@ -15,13 +16,13 @@ export interface IRemoveMeetingTaskEstimatesQueryQuery {
   result: IRemoveMeetingTaskEstimatesQueryResult;
 }
 
-const removeMeetingTaskEstimatesQueryIR: any = {"name":"removeMeetingTaskEstimatesQuery","params":[{"name":"meetingId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":94,"b":102,"line":5,"col":21}]}}],"usedParamSet":{"meetingId":true},"statement":{"body":"DELETE FROM \"TaskEstimate\"\nWHERE \"meetingId\" = :meetingId","loc":{"a":46,"b":102,"line":4,"col":0}}};
+const removeMeetingTaskEstimatesQueryIR: any = {"name":"removeMeetingTaskEstimatesQuery","params":[{"name":"meetingId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":94,"b":102,"line":5,"col":21}]}},{"name":"stageId","transform":{"type":"scalar"},"codeRefs":{"used":[{"a":121,"b":127,"line":5,"col":48}]}}],"usedParamSet":{"meetingId":true,"stageId":true},"statement":{"body":"DELETE FROM \"TaskEstimate\"\nWHERE \"meetingId\" = :meetingId AND \"stageId\" = :stageId","loc":{"a":46,"b":127,"line":4,"col":0}}};
 
 /**
  * Query generated from SQL:
  * ```
  * DELETE FROM "TaskEstimate"
- * WHERE "meetingId" = :meetingId
+ * WHERE "meetingId" = :meetingId AND "stageId" = :stageId
  * ```
  */
 export const removeMeetingTaskEstimatesQuery = new PreparedQuery<IRemoveMeetingTaskEstimatesQueryParams,IRemoveMeetingTaskEstimatesQueryResult>(removeMeetingTaskEstimatesQueryIR);

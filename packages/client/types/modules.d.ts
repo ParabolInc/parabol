@@ -19,7 +19,6 @@ interface Window {
     datadogClientToken: string | undefined
     datadogApplicationId: string | undefined
     datadogService: string | undefined
-    logRocket: string | undefined
     github: string
     google: string
     segment: string

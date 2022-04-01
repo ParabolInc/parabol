@@ -19,8 +19,8 @@ import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import sendToSentry from '../utils/sendToSentry'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
 import DocumentCache from './DocumentCache'
+import publicSchema from './public/rootSchema'
 import ResponseStream from './ResponseStream'
-import publicSchema from './rootSchema'
 
 export interface SubscribeRequest {
   connectionContext: ConnectionContext

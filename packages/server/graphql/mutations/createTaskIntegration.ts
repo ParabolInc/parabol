@@ -1,18 +1,19 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import makeAppURL from '~/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
+import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
+import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateTaskIntegrationPayload from '../types/CreateTaskIntegrationPayload'
 import IntegrationProviderServiceEnum, {
   IntegrationProviderServiceEnumType
 } from '../types/IntegrationProviderServiceEnum'
-import makeAppURL from '~/utils/makeAppURL'
-import appOrigin from '../../appOrigin'
-import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
 
 type CreateTaskIntegrationMutationVariables = {
   integrationProviderService: IntegrationProviderServiceEnumType
@@ -69,15 +70,27 @@ export default {
     }
 
     const [viewerTaskManager, assigneeTaskManager, team, teamMembers] = await Promise.all([
-      TaskIntegrationManagerFactory.initManager(dataLoader, integrationProviderService, {
-        teamId: teamId,
-        userId: viewerId
-      }),
+      TaskIntegrationManagerFactory.initManager(
+        dataLoader,
+        integrationProviderService,
+        {
+          teamId: teamId,
+          userId: viewerId
+        },
+        context,
+        info
+      ),
       userId
-        ? TaskIntegrationManagerFactory.initManager(dataLoader, integrationProviderService, {
-            teamId: teamId,
-            userId
-          })
+        ? TaskIntegrationManagerFactory.initManager(
+            dataLoader,
+            integrationProviderService,
+            {
+              teamId: teamId,
+              userId
+            },
+            context,
+            info
+          )
         : null,
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -112,33 +125,36 @@ export default {
       (userId && teamMembers.find((user) => user.userId === userId)) || {}
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
-    const createdBySomeoneElseComment =
-      userId && viewerId !== userId
-        ? taskIntegrationManager.getCreatedBySomeoneElseComment(
-            viewerName,
-            assigneeName,
-            team.name,
-            teamDashboardUrl
-          )
-        : undefined
-
     const createTaskResponse = await taskIntegrationManager.createTask({
       rawContentStr,
-      integrationRepoId,
-      createdBySomeoneElseComment,
-      context,
-      info
+      integrationRepoId
     })
 
     if (createTaskResponse instanceof Error) {
       return {error: {message: createTaskResponse.message}}
     }
 
+    const {issueId, ...updateTaskInput} = createTaskResponse
+
+    if (userId && viewerId !== userId) {
+      const addCommentResponse = await taskIntegrationManager.addCreatedBySomeoneElseComment(
+        viewerName,
+        assigneeName,
+        team.name,
+        teamDashboardUrl,
+        issueId
+      )
+
+      if (addCommentResponse instanceof Error) {
+        sendToSentry(addCommentResponse)
+      }
+    }
+
     await r
       .table('Task')
       .get(taskId)
       .update({
-        ...createTaskResponse,
+        ...updateTaskInput,
         updatedAt: now
       })
       .run()
