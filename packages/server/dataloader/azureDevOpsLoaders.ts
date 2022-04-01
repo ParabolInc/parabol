@@ -6,19 +6,10 @@ import {
   TeamProjectReference,
   WorkItem
 } from 'parabol-client/utils/AzureDevOpsManager'
-// import {AzureDevOpsAuth} from '../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
-// import getAzureDevOpsAuthByUserId from '../postgres/queries/getAzureDevOpsAuthsByUserId'
-//import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
-//import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
-//import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-//import AzureDevOpsIssue from '../graphql/types/AzureDevOpsIssue'
-//import publish from '../utils/publish'
-//import sendToSentry from '../utils/sendToSentry'
-//import upsertAzureDevOpsAuths from '../postgres/queries/upsertAzureDevOpsAuths'
+import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import RootDataLoader from './RootDataLoader'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 
 type TeamUserKey = {
   teamId: string
@@ -82,18 +73,14 @@ export const freshAzureDevOpsAuth = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          // const userAzureDevOpsAuths = await getAzureDevOpsAuthByUserId(userId)
           const azureDevOpsAuthToRefresh = await parent
             .get('teamMemberIntegrationAuths')
             .load({service: 'azureDevOps', teamId, userId})
-          // const azureDevOpsAuthToRefresh = userAzureDevOpsAuths?.find(
-          //   (azureDevOpsAuth) => azureDevOpsAuth.teamId === teamId
-          // )
+
           if (!azureDevOpsAuthToRefresh) {
             console.log('error line 61')
             return null
           }
-
           const {accessToken: existingAccessToken, refreshToken} = azureDevOpsAuthToRefresh
           const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
@@ -124,7 +111,6 @@ export const freshAzureDevOpsAuth = (
               refreshToken: updatedRefreshToken
             }
             await upsertTeamMemberIntegrationAuth(newAzureDevOpsAuth)
-
             return newAzureDevOpsAuth
           }
 
