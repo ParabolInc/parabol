@@ -6,8 +6,7 @@ import MeetingArea from './MeetingArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingStyles from './MeetingStyles'
-import MeetingTopBar from './MeetingTopBar'
-import PhaseHeaderTitle from './PhaseHeaderTitle'
+import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
 import PhaseWrapper from './PhaseWrapper'
 
 interface Props {
@@ -21,13 +20,7 @@ const TeamPromptMeeting = (_props: Props) => {
         <Suspense fallback={''}>
           <MeetingContent>
             <MeetingHeaderAndPhase hideBottomBar={true}>
-              <MeetingTopBar
-                avatarGroup={/*:TODO: (jmtaber129): Add avatar group*/<></>}
-                isMeetingSidebarCollapsed={true}
-              >
-                {/* :TODO: (jmtaber129): Add back button */}
-                <PhaseHeaderTitle>Hard-coded standup title</PhaseHeaderTitle>
-              </MeetingTopBar>
+              <TeamPromptTopBar />
               <PhaseWrapper>
                 <Link title='My Dashboard' to='/meetings'>
                   <img alt='Parabol' src={logoMarkPurple} />

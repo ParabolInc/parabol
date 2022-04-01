@@ -13,7 +13,7 @@ import {ICON_SIZE} from '~/styles/typographyV2'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
-const MeetingTopBarStyles = styled('div')({
+export const MeetingTopBarStyles = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   flexShrink: 0,
@@ -29,7 +29,7 @@ const MeetingTopBarStyles = styled('div')({
   }
 })
 
-const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
+export const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
   ({isMeetingSidebarCollapsed}) => ({
     alignItems: 'flex-start',
     display: 'flex',
@@ -143,7 +143,7 @@ interface Props {
   isCommentUnread?: boolean
   isMeetingSidebarCollapsed: boolean
   isRightDrawerOpen?: boolean
-  toggleSidebar?: () => void
+  toggleSidebar: () => void
   toggleDrawer?: () => void
 }
 
@@ -162,7 +162,7 @@ const MeetingTopBar = (props: Props) => {
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
-        {isMeetingSidebarCollapsed && toggleSidebar && (
+        {isMeetingSidebarCollapsed && (
           <StyledSidebarToggle dataCy='topbar' onClick={toggleSidebar} />
         )}
         <ChildrenBlock>{children}</ChildrenBlock>
