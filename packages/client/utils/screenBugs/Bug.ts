@@ -55,7 +55,7 @@ export default class Bug {
   toggle_stationary_counter = Math.random() * 50
   stationary = false
   inserted = false
-  bug = (null as unknown) as HTMLDivElement & {top?: number; left?: number}
+  bug = null as unknown as HTMLDivElement & {top?: number; left?: number}
   active = true
   walkIndex = 0
   flyIndex = 0
@@ -74,7 +74,7 @@ export default class Bug {
     return deg * this.deg2rad_k
   }
   random = (min: number, max: number, plusminus?: boolean) => {
-    if (min == max) return min
+    if (min === max) return min
     const result = Math.round(min - 0.5 + Math.random() * (max - min + 1))
     if (plusminus) return Math.random() > 0.5 ? result : -result
     return result
