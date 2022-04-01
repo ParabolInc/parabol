@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {ScopePhaseAreaJiraServer_meeting$key} from '../__generated__/ScopePhaseAreaJiraServer_meeting.graphql'
-import ScopePhaseAreaAddJiraServer from './ScopePhaseAreaAddJiraServer'
 import JiraServerScopingSearchResultsRoot from './JiraServerScopingSearchResultsRoot'
+import ScopePhaseAreaAddJiraServer from './ScopePhaseAreaAddJiraServer'
 
 interface Props {
   isActive: boolean

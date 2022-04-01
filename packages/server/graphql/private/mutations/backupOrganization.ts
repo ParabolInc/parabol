@@ -8,7 +8,6 @@ import {RValue} from '../../../database/stricterR'
 import getPg from '../../../postgres/getPg'
 import getPgConfig from '../../../postgres/getPgConfig'
 import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
-import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 const exec = util.promisify(childProcess.exec)
@@ -121,9 +120,6 @@ const backupOrganization: MutationResolvers['backupOrganization'] = async (
   {orgIds},
   {authToken}
 ) => {
-  // AUTH
-  requireSU(authToken)
-
   // RESOLUTION
   await backupPgOrganization(orgIds)
 
