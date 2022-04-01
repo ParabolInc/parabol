@@ -11,16 +11,16 @@ import {PALETTE} from '../styles/paletteV3'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import Icon from './Icon'
-import JiraSVG from './JiraSVG'
 import JiraServerSVG from './JiraServerSVG'
+import JiraSVG from './JiraSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
+import ScopePhaseAreaJiraServer from './ScopePhaseAreaJiraServer'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
-import ScopePhaseAreaJiraServer from './ScopePhaseAreaJiraServer'
 
 interface Props {
   meeting: ScopePhaseArea_meeting

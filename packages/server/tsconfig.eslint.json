@@ -9,6 +9,7 @@
     "postgres/types/*",
     "graphql/queries",
     "graphql/private/**/*.ts",
+    "graphql/public/**/*.ts",
     "integrations",
     "email/**/*",
     "segmentFns/*",

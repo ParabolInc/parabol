@@ -4,9 +4,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
-import poker from '../../../static/images/illustrations/sprintPoker.png'
-import retrospective from '../../../static/images/illustrations/retrospective.png'
 import action from '../../../static/images/illustrations/action.png'
+import retrospective from '../../../static/images/illustrations/retrospective.png'
+import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import useAnimatedMeetingCard from '../hooks/useAnimatedMeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -157,16 +157,6 @@ const MeetingCard = (props: Props) => {
   const {meeting, status, onTransitionEnd, displayIdx} = props
   const {name, team, id: meetingId, meetingType, phases} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
-  if (!team) {
-    // 95% sure there's a bug in relay causing this
-    const errObj = {id: meetingId} as any
-    if (meeting.hasOwnProperty('team')) {
-      errObj.team = team
-    }
-    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
-    return null
-  }
-  const {id: teamId, name: teamName} = team
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
@@ -184,6 +174,16 @@ const MeetingCard = (props: Props) => {
     closeTooltip,
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
+  if (!team) {
+    // 95% sure there's a bug in relay causing this
+    const errObj = {id: meetingId} as any
+    if (meeting.hasOwnProperty('team')) {
+      errObj.team = team
+    }
+    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    return null
+  }
+  const {id: teamId, name: teamName} = team
 
   return (
     <CardWrapper

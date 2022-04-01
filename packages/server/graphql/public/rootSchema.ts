@@ -1,15 +1,18 @@
 import {mergeSchemas} from '@graphql-tools/schema'
-import {GraphQLResolveInfo, GraphQLSchema} from 'graphql'
+import {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
-import {IntegrationProviderGitLabOAuth2} from '../postgres/queries/getIntegrationProvidersByIds'
-import githubSchema from '../utils/githubSchema.graphql'
-import {GQLContext} from './graphql'
-import gitlabSchema from './nestedSchema/GitLab/gitlabSchema.graphql'
-import nestGitLabEndpoint from './nestedSchema/nestGitLabEndpoint'
-import mutation from './rootMutation'
-import query from './rootQuery'
-import subscription from './rootSubscription'
-import rootTypes from './rootTypes'
+import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
+import githubSchema from '../../utils/githubSchema.graphql'
+import composeResolvers from '../composeResolvers'
+import {GQLContext} from '../graphql'
+import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
+import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
+import mutation from '../rootMutation'
+import query from '../rootQuery'
+import subscription from '../rootSubscription'
+import rootTypes from '../rootTypes'
+import permissions from './permissions'
+import resolvers from './resolvers'
 
 const parabolSchema = new GraphQLSchema({
   query,
@@ -56,52 +59,17 @@ const {schema: withGitLabSchema, gitlabRequest} = nestGitLabEndpoint({
   schemaIDL: gitlabSchema
 })
 
-// Use
-const resolveToFieldNameOrAlias = (
-  source: any,
-  _args: unknown,
-  _context: unknown,
-  info: GraphQLResolveInfo
-) => {
-  // fieldNodes will always have 1+ node
-  const key = info.fieldNodes[0]!.alias?.value ?? info.fieldName
-  return source[key]
+const importAllStrings = (context: __WebpackModuleApi.RequireContext) => {
+  return context.keys().map((id) => context(id).default)
 }
+const typeDefs = importAllStrings(require.context('./typeDefs', false, /.graphql$/))
 
 const withNestedSchema = mergeSchemas({
   schemas: [withGitHubSchema, withGitLabSchema],
-  typeDefs: `
-    type _xGitHubIssue implements TaskIntegration
-    type _xGitLabIssue implements TaskIntegration
-    type _xGitHubRepository implements RepoIntegration
-    type _xGitLabProject implements RepoIntegration
-    extend type _xGitHubRepository {
-      service: IntegrationProviderServiceEnum!
-    }
-    extend type _xGitLabProject {
-      service: IntegrationProviderServiceEnum!
-    }
-    `,
-  // TODO apply this resolver to every type in the GitHub/GitLab schema
+  typeDefs,
+  // TODO apply this resolver to every type in the GitHub schema
   // It is necessary any time client code uses an alias inside a wrapper
-  resolvers: {
-    _xGitHubIssue: {
-      url: resolveToFieldNameOrAlias
-    },
-    _xGitHubRepository: {
-      __interfaces: () => ['RepoIntegration'],
-      __isTypeOf: ({nameWithOwner}: {nameWithOwner?: string}) => !!nameWithOwner,
-      service: () => 'github'
-    },
-    _xGitLabProject: {
-      __interfaces: () => ['RepoIntegration'],
-      __isTypeOf: ({__typename}) => __typename === '_xGitLabProject',
-      service: () => 'gitlab'
-    },
-    _xGitLabQuery: {
-      projects: resolveToFieldNameOrAlias
-    }
-  }
+  resolvers: composeResolvers(resolvers, permissions)
 })
 const addRequestors = (schema: GraphQLSchema) => {
   const finalSchema = schema as any
