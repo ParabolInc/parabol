@@ -68,6 +68,7 @@ const updatePromptResponse = {
 
     const data = {meetingId, promptResponseId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePromptResponseSuccess', data, subOptions)
+
     return data
   }
 }
