@@ -35,7 +35,6 @@ const importTasksForPoker = async (
       if (!integration) return null
       return new ImportedTask({
         userId,
-        integrationHash: serviceTaskId,
         integration: {
           accessUserId: userId,
           ...integration

@@ -11,6 +11,8 @@ const IntegrationHash = {
         return GitHubIssueId.join(integration.nameWithOwner, integration.issueNumber)
       case 'jira':
         return JiraIssueId.join(integration.cloudId, integration.issueKey)
+      case 'jiraServer':
+        return JiraServerIssueId.join(integration.providerId, integration.repositoryId, integration.issueId)
       case 'gitlab':
         return GitLabIssueId.join(integration.providerId, integration.gid)
       default:
