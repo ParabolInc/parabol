@@ -6,6 +6,10 @@
     "shared/*",
     "mutations/fragments/*",
     "mutations/InvalidateSessionsMutation.ts",
-    ""
+    "modules/email/components/*",
+    "hooks/*",
+    "components/promptResponse/PromptResponseEditor.tsx",
+    "components/WebcamPermissionsModal.tsx",
+    "components/EstimatePhaseEmptyState.tsx"
   ]
 }
