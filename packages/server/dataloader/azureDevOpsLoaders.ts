@@ -3,7 +3,8 @@ import {decode} from 'jsonwebtoken'
 import {
   AzureDevOpsUser,
   Resource,
-  TeamProjectReference
+  TeamProjectReference,
+  WorkItem
 } from 'parabol-client/utils/AzureDevOpsManager'
 // import {AzureDevOpsAuth} from '../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
 // import getAzureDevOpsAuthByUserId from '../postgres/queries/getAzureDevOpsAuthsByUserId'
@@ -16,7 +17,7 @@ import {
 //import upsertAzureDevOpsAuths from '../postgres/queries/upsertAzureDevOpsAuths'
 import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import RootDataLoader from './RootDataLoader'
-import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth';
+import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 
 type TeamUserKey = {
@@ -82,7 +83,9 @@ export const freshAzureDevOpsAuth = (
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           // const userAzureDevOpsAuths = await getAzureDevOpsAuthByUserId(userId)
-          const azureDevOpsAuthToRefresh = await parent.get('teamMemberIntegrationAuths').load({service:'azureDevOps', teamId, userId})
+          const azureDevOpsAuthToRefresh = await parent
+            .get('teamMemberIntegrationAuths')
+            .load({service: 'azureDevOps', teamId, userId})
           // const azureDevOpsAuthToRefresh = userAzureDevOpsAuths?.find(
           //   (azureDevOpsAuth) => azureDevOpsAuth.teamId === teamId
           // )
@@ -137,6 +140,38 @@ export const freshAzureDevOpsAuth = (
   )
 }
 
+export const azureDevOpsAllWorkItems = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, WorkItem[] | undefined, string> => {
+  return new DataLoader<TeamUserKey, WorkItem[] | undefined, string>(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId}) => {
+          const returnWorkItems = [] as WorkItem[]
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return undefined
+          const {accessToken} = auth
+          if (!accessToken) return undefined
+          const manager = new AzureDevOpsServerManager(accessToken)
+          const restResult = await manager.getAllUserWorkItems()
+          const {error, workItems} = restResult
+          if (error !== undefined || workItems === undefined) {
+            console.log(error)
+          } else {
+            returnWorkItems.push(...workItems)
+          }
+          return returnWorkItems
+        })
+      )
+      return results.map((result) => (result.status === 'fulfilled' ? result.value : undefined))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
+    }
+  )
+}
+
 export const azureDevUserInfo = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, AzureUserInfo | undefined, string> => {
@@ -151,7 +186,7 @@ export const azureDevUserInfo = (
           const manager = new AzureDevOpsServerManager(accessToken)
           const restResult = await manager.getMe()
           const {error, azureDevOpsUser} = restResult
-          if (error !== undefined || azureDevOpsUser !== undefined) {
+          if (error !== undefined || azureDevOpsUser === undefined) {
             console.log(error)
             return undefined
           }

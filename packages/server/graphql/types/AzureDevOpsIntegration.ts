@@ -1,5 +1,4 @@
 import {GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLBoolean, GraphQLList} from 'graphql'
-import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import {AzureDevOpsAuth} from '../../postgres/queries/getAzureDevOpsAuthsByUserIdTeamId'
 import {GQLContext} from '../graphql'
 import AzureDevOpsWorkItem from './AzureDevOpsWorkItem'
@@ -72,9 +71,9 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
       description:
         'A list of work items coming straight from the azure dev ops integration for a specific team member',
       resolve: async (
-        {teamId, userId, accessToken, instanceIds}: AzureDevOpsAuth,
+        {teamId, userId}: AzureDevOpsAuth,
         {},
-        {authToken}: GQLContext
+        {authToken, dataLoader}: GQLContext
       ) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
@@ -82,19 +81,20 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
           return connectionFromTasks([], 0, err)
         }
-        const manager = new AzureDevOpsServerManager(accessToken)
-        const instanceId = instanceIds[0] as string
-        const result = await manager.getUserStories(instanceId)
-        const {workItems} = result
-        const userStories = Array.from(
-          workItems.map((workItem) => {
-            return {
-              id: workItem.id.toString(),
-              url: workItem.url
-            }
-          })
-        )
-        return userStories
+        const workItems = await dataLoader.get('azureDevOpsAllWorkItems').load({teamId, userId})
+        if (workItems === undefined) {
+          return []
+        } else {
+          const userStories = Array.from(
+            workItems.map((workItem) => {
+              return {
+                id: workItem.id.toString(),
+                url: workItem.url
+              }
+            })
+          )
+          return userStories
+        }
       }
     },
     cloudProvider: {
@@ -123,15 +123,7 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
           .get('sharedIntegrationProviders')
           .load({service: 'azureDevOps', orgTeamIds, teamIds: [teamId]})
       }
-    } /*,
-    projects: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AzureDevOpsRemoteProject))),
-      description:
-        'A list of projects accessible by this team member. empty if viewer is not the user',
-      resolve: async ({teamId, userId, auth}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('allAzureDevOpsProjects').load({teamId, userId, auth.})
-      }
-    }*/
+    }
   })
 })
 

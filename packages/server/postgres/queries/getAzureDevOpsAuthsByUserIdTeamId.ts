@@ -19,11 +19,11 @@ const getAzureDevOpsAuthByUserIdTeamId = async (userId: string, teamId: string) 
   const [res] = await getAzureDevOpsAuthByUserIdTeamIdQuery.run({teamId, userId}, getPg())
   if (!res) return null
   return {
-    ...res,
-    azureDevOpsSearchQueries: res.azureDevOpsSearchQueries.map((adosq: any) => ({
+    ...res //,
+    /*azureDevOpsSearchQueries: res.azureDevOpsSearchQueries.map((adosq: any) => ({
       ...adosq,
       lastUsedAt: new Date(adosq.lastUsedAt)
-    }))
+    }))*/
   } as AzureDevOpsAuth
 }
 
