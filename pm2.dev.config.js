@@ -1,77 +1,48 @@
 module.exports = {
   apps: [
     {
-      name: 'GQL/Socket Server',
-      script: 'scripts/gqlServers.js',
+      name: 'Build Servers',
+      script: 'scripts/buildServers.js'
+    },
+    {
+      name: 'Run Executor',
+      script: 'scripts/runExecutor.js',
       instances: 1,
-      autorestart: true,
-      watch: ['packages/server', 'packages/gql-executor'],
-      ignore_watch: [
-        '**/__tests__',
-        'rootSchema.graphql',
-        'resolverTypes.ts',
-        'githubTypes.ts',
-        'gitlabTypes.ts'
-      ],
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      watch: ['dev/gqlExecutor.js']
+    },
+    {
+      name: 'Run Socket Server',
+      script: 'scripts/runSocketServer.js',
+      instances: 1,
+      watch: ['dev/web.js']
     },
     {
       name: 'Web Server',
-      script: 'scripts/hmrServer.js',
-      instances: 1,
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      script: 'scripts/hmrServer.js'
     },
     {
       name: 'Run DB Migrations',
       script: 'scripts/runMigrations.js',
-      instances: 1,
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      autorestart: false
     },
     {
       name: 'Run Schema Updater',
       script: 'scripts/runSchemaUpdater.js',
-      instances: 1,
-      autorestart: true,
-      watch: [
-        'packages/server/graphql/public/typeDefs',
-        'packages/server/graphql/private/typeDefs'
-      ],
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
     },
     {
       name: 'Watch Relay',
       script: 'scripts/watchRelay.js',
-      instances: 1,
-      autorestart: true,
-      watch: ['packages/server/graphql/public/schema.graphql'],
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      watch: ['packages/server/graphql/public/schema.graphql']
     },
     {
       name: 'Watch Codegen',
-      script: 'scripts/watchCodegen.js',
-      instances: 1,
-      autorestart: true,
-      max_memory_restart: '3000M',
-      env_production: {
-        NODE_ENV: 'development'
-      }
+      script: 'scripts/watchCodegen.js'
     }
-  ]
+  ].map((app) => ({
+    env_production: {
+      NODE_ENV: 'development'
+    },
+    ...app
+  }))
 }
