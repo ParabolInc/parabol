@@ -9,7 +9,7 @@ import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchive_team$key} from '~/__generated__/TeamArchive_team.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {Layout, MathEnum} from '../../../../types/constEnums'
+import {Card, Layout, MathEnum} from '../../../../types/constEnums'
 import {TeamArchiveArchivedTasksQuery} from '../../../../__generated__/TeamArchiveArchivedTasksQuery.graphql'
 import {TeamArchiveQuery} from '../../../../__generated__/TeamArchiveQuery.graphql'
 import {TeamArchive_query$key} from '../../../../__generated__/TeamArchive_query.graphql'
@@ -72,17 +72,26 @@ const CardGrid = styled('div')({
 })
 
 const EmptyMsg = styled('div')({
-  backgroundColor: '#FFFFFF',
+  backgroundColor: Card.BACKGROUND_COLOR as string,
   border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: 4,
-  fontSize: 14,
+  borderRadius: Card.BORDER_RADIUS,
+  fontSize: Card.FONT_SIZE,
   display: 'inline-block',
   margin: 20,
-  padding: 16
+  padding: Card.PADDING
 })
 
 const LinkSpan = styled('div')({
   color: PALETTE.AQUA_400
+})
+
+const NoMoreMsg = styled('div')({
+  backgroundColor: Card.BACKGROUND_COLOR as string,
+  border: `1px solid ${PALETTE.SLATE_400}`,
+  borderRadius: Card.BORDER_RADIUS,
+  fontSize: Card.FONT_SIZE,
+  display: 'inline-block',
+  padding: Card.PADDING
 })
 
 interface Props {
@@ -184,6 +193,9 @@ const TeamArchive = (props: Props) => {
 
   const {edges} = filteredTasks
   const [columnCount] = useState(getColumnCount)
+  const rowCount = Math.ceil(edges.length / columnCount) + 1 // used +1 for "no more" message row
+  const noMoreMsgIndex = hasNext ? Number.MAX_VALUE : (rowCount - 1) * columnCount
+
   const _onRowsRenderedRef = useRef<
     ({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void
   >()
@@ -192,7 +204,7 @@ const TeamArchive = (props: Props) => {
   const getIndex = (columnIndex: number, rowIndex: number) => {
     return columnCount * rowIndex + columnIndex
   }
-  const isRowLoaded = ({index}) => index < edges.length
+  const isRowLoaded = ({index}) => index < edges.length || index === noMoreMsgIndex
   const maybeLoadMore = () => {
     if (!hasNext || isLoadingNext) return Promise.resolve()
     return new Promise<void>((resolve, reject) => {
@@ -202,8 +214,7 @@ const TeamArchive = (props: Props) => {
   const [cellCache] = useState(
     () =>
       new CellMeasurerCache({
-        defaultHeight: 182,
-        minHeight: 106,
+        defaultHeight: 70,
         fixedWidth: true
       })
   )
@@ -250,7 +261,7 @@ const TeamArchive = (props: Props) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const index = getIndex(columnIndex, rowIndex)
     if (!isRowLoaded({index})) return undefined
-    const task = edges[index]!.node
+
     return (
       <CellMeasurer
         cache={cellCache}
@@ -259,20 +270,33 @@ const TeamArchive = (props: Props) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        {({measure}) => {
+        {({registerChild}) => {
+          if (index === noMoreMsgIndex) {
+            return (
+              <NoMoreMsg
+                ref={registerChild as any}
+                style={{
+                  ...style,
+                  width: 'auto',
+                  height: 'auto',
+                  left: '50%',
+                  transform: 'translate(-50%, 0)',
+                  padding: '1rem 0.5rem'
+                }}
+              >
+                🎉 That's all folks! There are no further tasks in the archive.
+              </NoMoreMsg>
+            )
+          }
+          const task = edges[index]!.node
           return (
             // put styles here because aphrodite is async
             <div
+              ref={registerChild as any}
               key={`cardBlockFor${task.id}`}
               style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem'}}
             >
-              <NullableTask
-                dataCy={`archive-task`}
-                key={key}
-                area='teamDash'
-                measure={measure}
-                task={task}
-              />
+              <NullableTask dataCy={`archive-task`} key={key} area='teamDash' task={task} />
             </div>
           )
         }}
@@ -327,7 +351,7 @@ const TeamArchive = (props: Props) => {
                                 gridRef.current = c
                                 registerChild(c)
                               }}
-                              rowCount={Math.ceil(edges.length / columnCount)}
+                              rowCount={rowCount}
                               rowHeight={cellCache.rowHeight}
                               style={{outline: 'none'}}
                               width={width}
