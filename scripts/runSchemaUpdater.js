@@ -10,7 +10,16 @@ const compileToolbox = async () => {
   return new Promise((resolve) => {
     const config = require('./webpack/toolbox.config')
     const compiler = webpack(config)
-    compiler.run(resolve)
+    compiler.run((err, stats) => {
+      if (err) {
+        console.log('Webpack error:', err)
+      }
+      const {errors} = stats.compilation
+      if (errors.length > 0) {
+        console.log('COMPILATION ERRORS:', errors)
+      }
+      resolve()
+    })
   })
 }
 
@@ -23,4 +32,8 @@ const runSchemaUpdater = async () => {
   return updateGraphQLSchema()
 }
 
-runSchemaUpdater()
+if (require.main === module) {
+  runSchemaUpdater()
+}
+
+module.exports = runSchemaUpdater
