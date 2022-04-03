@@ -24,6 +24,7 @@
     "start": "pm2-runtime start pm2.config.js",
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "node scripts/prod.js",
+    "codegen": "node scripts/codegenGraphQL.js",
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
@@ -37,8 +38,9 @@
     "dev": "pm2-runtime start pm2.dev.config.js",
     "lint": "lerna run --parallel lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
+    "relay": "node scripts/compileRelay.js",
     "typecheck": "lerna run --parallel --no-bail typecheck",
-    "update-schema": "node scripts/updateSchemaCLI.js",
+    "update-schema": "node scripts/runSchemaUpdater.js",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "precommit": "lerna run --stream precommit",
     "prepare": "husky install"

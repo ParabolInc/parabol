@@ -35,12 +35,14 @@ module.exports = {
     },
     {
       name: 'Relay Compiler',
-      script: 'scripts/watchRelay.js',
+      script: 'scripts/compileRelay.js',
+      args: '--watch',
       watch: ['packages/server/graphql/public/schema.graphql']
     },
     {
       name: 'GraphQL Codegen',
-      script: 'scripts/watchCodegen.js'
+      script: 'scripts/codegenGraphQL.js',
+      args: '--watch'
     }
   ].map((app) => ({
     env_production: {
