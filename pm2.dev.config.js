@@ -1,42 +1,45 @@
 module.exports = {
   apps: [
     {
-      name: 'Build Servers',
+      name: 'Webpack Servers',
       script: 'scripts/buildServers.js'
     },
     {
-      name: 'Run Executor',
+      name: 'GraphQL Executor',
       script: 'scripts/runExecutor.js',
+      // increase this to test scaling
       instances: 1,
       watch: ['dev/gqlExecutor.js']
     },
     {
-      name: 'Run Socket Server',
+      name: 'Socket Server',
       script: 'scripts/runSocketServer.js',
+      // increase this to test scaling
       instances: 1,
       watch: ['dev/web.js']
     },
     {
-      name: 'Web Server',
+      name: 'Dev Server',
       script: 'scripts/hmrServer.js'
     },
     {
-      name: 'Run DB Migrations',
+      name: 'DB Migrations',
       script: 'scripts/runMigrations.js',
+      // once this completes, it will exit
       autorestart: false
     },
     {
-      name: 'Run Schema Updater',
+      name: 'GraphQL Schema Updater',
       script: 'scripts/runSchemaUpdater.js',
       watch: ['packages/server/graphql/public/typeDefs', 'packages/server/graphql/private/typeDefs']
     },
     {
-      name: 'Watch Relay',
+      name: 'Relay Compiler',
       script: 'scripts/watchRelay.js',
       watch: ['packages/server/graphql/public/schema.graphql']
     },
     {
-      name: 'Watch Codegen',
+      name: 'GraphQL Codegen',
       script: 'scripts/watchCodegen.js'
     }
   ].map((app) => ({
