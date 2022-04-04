@@ -70,15 +70,13 @@ const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  if (!viewerMeetingMember) return null
-  const {user, teamMember} = viewerMeetingMember
+  const {user, teamMember} = viewerMeetingMember!
   const {featureFlags} = user
   const gitlabIntegration = teamMember.integrations.gitlab
   const jiraServerIntegration = teamMember.integrations.jiraServer
   const isGitLabProviderAvailable = !!(
     gitlabIntegration.cloudProvider?.clientId || gitlabIntegration.sharedProviders.length
   )
-
   const allowGitLab = isGitLabProviderAvailable && featureFlags.gitlab
   const allowJiraServer = !!jiraServerIntegration.sharedProviders.length
 
@@ -117,8 +115,7 @@ const ScopePhaseArea = (props: Props) => {
     setActiveIdx(2)
   }
 
-  // swipeable views won't ignore null children, so conditionally create them: https://github.com/oliviertassinari/react-swipeable-views/issues/271
-  const contents: Partial<Record<typeof baseTabs[number]['label'], JSX.Element>> = {
+  const contents: Record<typeof baseTabs[number]['label'], JSX.Element> = {
     GitHub: (
       <ScopePhaseAreaGitHub
         isActive={isTabActive('GitHub')}
@@ -133,20 +130,15 @@ const ScopePhaseArea = (props: Props) => {
         meeting={meeting}
       />
     ),
-    Parabol: <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />
-  }
-
-  if (allowJiraServer) {
-    contents['Jira Server'] = (
+    Parabol: <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />,
+    'Jira Server': (
       <ScopePhaseAreaJiraServer
         isActive={isTabActive('Jira Server')}
         gotoParabol={goToParabol}
         meetingRef={meeting}
       />
-    )
-  }
-  if (allowGitLab) {
-    contents['GitLab'] = (
+    ),
+    GitLab: (
       <ScopePhaseAreaGitLab
         isActive={isTabActive('GitLab')}
         gotoParabol={goToParabol}
@@ -178,8 +170,9 @@ const ScopePhaseArea = (props: Props) => {
         containerStyle={containerStyle}
         style={innerStyle}
       >
-        {Object.keys(contents).map((contentKey) => (
-          <TabContents key={contentKey}>{contents[contentKey]}</TabContents>
+        {/* swipeable views won't ignore null children: https://github.com/oliviertassinari/react-swipeable-views/issues/271 */}
+        {tabs.map(({label}) => (
+          <TabContents key={label}>{contents[label]}</TabContents>
         ))}
       </SwipeableViews>
     </ScopingArea>
