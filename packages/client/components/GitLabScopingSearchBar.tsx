@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {GitLabScopingSearchBar_meeting$key} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
+import GitLabScopingSearchCurrentFilters from './GitLabScopingSearchCurrentFilters'
 import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
 import GitLabScopingSearchInput from './GitLabScopingSearchInput'
 import Icon from './Icon'
@@ -41,6 +42,7 @@ const GitLabScopingSearchBar = (props: Props) => {
       fragment GitLabScopingSearchBar_meeting on PokerMeeting {
         ...GitLabScopingSearchInput_meeting
         ...GitLabScopingSearchFilterToggle_meeting
+        ...GitLabScopingSearchCurrentFilters_meeting
       }
     `,
     meetingRef
@@ -53,6 +55,7 @@ const GitLabScopingSearchBar = (props: Props) => {
         <GitLabScopingSearchInput meetingRef={meeting} />
         <GitLabScopingSearchFilterToggle meetingRef={meeting} />
       </SearchBarWrapper>
+      <GitLabScopingSearchCurrentFilters meetingRef={meeting} />
     </SearchBar>
   )
 }
