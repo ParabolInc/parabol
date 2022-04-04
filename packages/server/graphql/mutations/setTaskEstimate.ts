@@ -4,6 +4,8 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -90,6 +92,16 @@ const setTaskEstimate = {
     let githubLabelName: string | undefined = undefined
     const {integration} = task
     const service = integration?.service
+
+    if (!stageId || !meeting) {
+      return {error: {message: 'Cannot add comment for non-meeting estimates'}}
+    }
+    const {name: meetingName, phases} = meeting
+    const estimatePhase = getPhase(phases, 'ESTIMATE')
+    const {stages} = estimatePhase
+    const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+    const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
+
     if (service === 'jira') {
       const {accessUserId, cloudId, issueKey} = integration!
       const projectKey = JiraProjectKeyId.join(issueKey)
@@ -114,11 +126,6 @@ const setTaskEstimate = {
         if (!stageId || !meeting) {
           return {error: {message: 'Cannot add jira comment for non-meeting estimates'}}
         }
-        const {name: meetingName, phases} = meeting
-        const estimatePhase = getPhase(phases, 'ESTIMATE')
-        const {stages} = estimatePhase
-        const stageIdx = stages.findIndex((stage) => stage.id === stageId)
-        const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
         const res = await manager.addComment(
           cloudId,
           issueKey,
@@ -137,6 +144,56 @@ const setTaskEstimate = {
         } catch (e) {
           const message = e instanceof Error ? e.message : 'Unable to updateStoryPoints'
           return {error: {message}}
+        }
+      }
+    } else if (service === 'jiraServer') {
+      const {accessUserId, issueId} = integration!
+
+      const [auth /*, team*/] = await Promise.all([
+        dataLoader
+          .get('teamMemberIntegrationAuths')
+          .load({service: 'jiraServer', teamId, userId: accessUserId}),
+        dataLoader.get('teams').load(teamId)
+      ])
+
+      if (!auth) {
+        return {error: {message: 'User no longer has access to Jira Server'}}
+      }
+
+      const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+
+      if (!provider) {
+        return null
+      }
+
+      const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
+
+      // TODO: only comment field implemented for now
+      // const jiraDimensionFields = team?.jiraServerDimensionFields || []
+      // const dimensionField = jiraServerDimensionFields.find(
+      //   (dimensionField) =>
+      //     dimensionField.dimensionName === dimensionName &&
+      //     dimensionField.cloudId === cloudId &&
+      //     dimensionField.projectKey === projectKey
+      // )
+      // const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.SERVICE_FIELD_NULL
+      const fieldName = SprintPokerDefaults.SERVICE_FIELD_COMMENT
+
+      if (fieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT) {
+        if (!stageId || !meeting) {
+          return {error: {message: 'Cannot add jira server comment for non-meeting estimates'}}
+        }
+
+        const res = await manager.addScoreComment(
+          dimensionName,
+          value || '<None>',
+          meetingName,
+          discussionURL,
+          issueId
+        )
+
+        if (res instanceof Error) {
+          return {error: {message: res.message}}
         }
       }
     } else if (service === 'github') {

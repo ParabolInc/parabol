@@ -5,8 +5,9 @@ import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
-import {PokerDimensionFinalScoreGitHubPicker_stage$key} from '../__generated__/PokerDimensionFinalScoreGitHubPicker_stage.graphql'
+import {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
 import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
+import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
 import LinkButton from './LinkButton'
 import StyledError from './StyledError'
 
@@ -54,7 +55,7 @@ const StyledLinkButton = styled(LinkButton)({
   }
 })
 
-const GitHubControlWrapper = styled('div')({
+const ControlWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex'
 })
@@ -67,22 +68,40 @@ interface Props {
   canUpdate: boolean
   clearError: () => void
   isFacilitator: boolean
-  stageRef: PokerDimensionFinalScoreGitHubPicker_stage$key
+  stageRef: PokerDimensionFinalScorePicker_stage$key
   error?: string | null
   submitScore: () => void
   inputRef: RefObject<HTMLInputElement>
+  integrationType: string
+  // title: string
 }
 
-const PokerDimensionFinalScoreGitHubPicker = (props: Props) => {
-  const {inputRef, isFacilitator, canUpdate, error, stageRef, clearError, submitScore} = props
+const PokerDimensionFinalScorePicker = (props: Props) => {
+  const {
+    inputRef,
+    isFacilitator,
+    canUpdate,
+    error,
+    stageRef,
+    clearError,
+    submitScore,
+    integrationType
+  } = props
   const stage = useFragment(
     graphql`
-      fragment PokerDimensionFinalScoreGitHubPicker_stage on EstimateStage {
+      fragment PokerDimensionFinalScorePicker_stage on EstimateStage {
         ...GitHubFieldDimensionDropdown_stage
+        ...JiraFieldDimensionDropdown_stage
       }
     `,
     stageRef
   )
+  const titleByType = {
+    _xGitHubIssue: 'GitHub',
+    JiraIssue: 'Jira',
+    JiraServerIssue: 'Jira Server'
+  }
+  const title = titleByType[integrationType]
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const focusInput = () => inputRef.current!.focus()
   return (
@@ -96,18 +115,30 @@ const PokerDimensionFinalScoreGitHubPicker = (props: Props) => {
       ) : null}
       <Mapper isDesktop={isDesktop}>
         {error && <ErrorMessage isDesktop={isDesktop}>{error}</ErrorMessage>}
-        <GitHubControlWrapper>
-          {isDesktop ? <Label>{'GitHub Label: '}</Label> : <MobileLabel>{'Label:'}</MobileLabel>}
-          <GitHubFieldDimensionDropdown
-            clearError={clearError}
-            stageRef={stage}
-            isFacilitator={isFacilitator}
-            submitScore={submitScore}
-          />
-        </GitHubControlWrapper>
+        <ControlWrapper>
+          {isDesktop ? <Label>{`${title} Label: `}</Label> : <MobileLabel>{'Label:'}</MobileLabel>}
+
+          {integrationType === '_xGitHubIssue' && (
+            <GitHubFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+
+          {(integrationType === 'JiraIssue' || integrationType === 'JiraServerIssue') && (
+            <JiraFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+        </ControlWrapper>
       </Mapper>
     </Wrapper>
   )
 }
 
-export default PokerDimensionFinalScoreGitHubPicker
+export default PokerDimensionFinalScorePicker
