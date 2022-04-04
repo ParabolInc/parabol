@@ -6,3 +6,4 @@ resolverTypes.ts
 githubSchema.graphql
 gitlabSchema.graphql
 _legacy.graphql
+migrationTemplate.ts

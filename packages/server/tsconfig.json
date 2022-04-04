@@ -7,7 +7,7 @@
     "paths": {
       "server/*": [""],
       "parabol-client/*": ["client/*"],
-      "~/*": ["client/*"],
+      "~/*": ["client/*"]
     },
     "lib": [
       "esnext",
@@ -19,6 +19,7 @@
       "jest-extended"
     ]
   },
+
   "exclude": [
     "**/node_modules",
     "types/githubTypes.ts",
