@@ -9,7 +9,6 @@ import {RValue} from '../../../database/stricterR'
 import getMailManager from '../../../email/getMailManager'
 import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTemplate'
 import IUser from '../../../postgres/types/IUser'
-import {requireSU} from '../../../utils/authorization'
 import {MutationResolvers} from '../resolverTypes'
 
 interface Details extends UpcomingInvoiceEmailProps {
@@ -62,9 +61,8 @@ const getEmailDetails = (organizations: Organization[], userMap: Map<string, IUs
 const sendUpcomingInvoiceEmails: MutationResolvers['sendUpcomingInvoiceEmails'] = async (
   _source,
   _args,
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
-  requireSU(authToken)
   const r = await getRethink()
   const now = new Date()
   const periodEndThresh = new Date(Date.now() + Threshold.UPCOMING_INVOICE_EMAIL_WARNING)

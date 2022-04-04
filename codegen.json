@@ -1,12 +1,17 @@
 {
   "config": {
-    "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck"
+    "content": "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n// @ts-nocheck",
+    "enumsAsTypes": true,
+    "defaultScalarType": "string"
   },
   "generates": {
     "packages/server/types/githubTypes.ts": {
       "schema": "packages/server/utils/githubSchema.graphql",
       "documents": "packages/server/utils/githubQueries/*.graphql",
-      "plugins": ["typescript", "typescript-operations", "add"]
+      "plugins": ["typescript", "typescript-operations", "add"],
+      "config": {
+        "assumeValidSDL": true
+      }
     },
     "packages/server/types/gitlabTypes.ts": {
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql",
@@ -14,7 +19,10 @@
         "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
         "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"
       ],
-      "plugins": ["typescript", "typescript-operations", "add"]
+      "plugins": ["typescript", "typescript-operations", "add"],
+      "config": {
+        "assumeValidSDL": true
+      }
     },
     "packages/server/graphql/private/resolverTypes.ts": {
       "schema": "packages/server/graphql/private/schema.graphql",
@@ -26,10 +34,24 @@
           "User": "../../postgres/types/IUser#default as IUser",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
+          "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
+          "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource"
+        }
+      }
+    },
+    "packages/server/graphql/public/resolverTypes.ts": {
+      "schema": "packages/server/graphql/public/schema.graphql",
+      "plugins": ["typescript", "typescript-resolvers", "add"],
+      "config": {
+        "contextType": "../graphql#GQLContext",
+        "mappers": {
+          "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
+          "Organization": "../../database/types/Organization#default as Organization",
+          "User": "../../postgres/types/IUser#default as IUser"
         }
       }
     }

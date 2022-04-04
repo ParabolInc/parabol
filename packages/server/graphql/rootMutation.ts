@@ -48,12 +48,12 @@ import endCheckIn from './mutations/endCheckIn'
 import endDraggingReflection from './mutations/endDraggingReflection'
 import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
+import endTeamPrompt from './mutations/endTeamPrompt'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
-import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
@@ -113,6 +113,7 @@ import startCheckIn from './mutations/startCheckIn'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
+import startTeamPrompt from './mutations/startTeamPrompt'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
@@ -139,8 +140,6 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
-import startTeamPrompt from './mutations/startTeamPrompt'
-import endTeamPrompt from './mutations/endTeamPrompt'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 export default new GraphQLObjectType<any, GQLContext>({
@@ -196,7 +195,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
-      loginWithGoogle,
       loginWithPassword,
       movePokerTemplateDimension,
       moveReflectTemplatePrompt,

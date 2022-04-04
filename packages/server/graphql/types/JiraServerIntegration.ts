@@ -1,25 +1,25 @@
 import {
   GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLInt,
-  GraphQLString,
-  GraphQLID
+  GraphQLString
 } from 'graphql'
 import TeamMember from '../../database/types/TeamMember'
-import {GQLContext} from '../graphql'
-import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
-import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
-import JiraServerRemoteProject from './JiraServerRemoteProject'
-import {JiraServerIssueConnection} from './JiraServerIssue'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {getUserId} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
-import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import sendToSentry from '../../utils/sendToSentry'
-import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
+import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {getUserId} from '../../utils/authorization'
+import sendToSentry from '../../utils/sendToSentry'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import IntegrationProviderOAuth1 from './IntegrationProviderOAuth1'
+import {JiraServerIssueConnection} from './JiraServerIssue'
+import JiraServerRemoteProject from './JiraServerRemoteProject'
+import TeamMemberIntegrationAuthOAuth1 from './TeamMemberIntegrationAuthOAuth1'
 
 const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: string}, GQLContext>({
   name: 'JiraServerIntegration',
@@ -133,6 +133,7 @@ const JiraServerIntegration = new GraphQLObjectType<{teamId: string; userId: str
             id: issue.id,
             self: issue.self,
             issueKey: issue.key,
+            providerId: provider.id,
             descriptionHTML: issue.renderedFields.description,
             ...issue.fields,
             service: 'jiraServer',
