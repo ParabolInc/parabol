@@ -29,7 +29,6 @@ const updateGQLSchema = async () => {
   const GQL_ROOT = path.join(__PROJECT_ROOT__, 'packages/server/graphql')
   const publicSchemaPath = path.join(GQL_ROOT, 'public/schema.graphql')
   const privateSchemaPath = path.join(GQL_ROOT, 'private/schema.graphql')
-  // TODO only write if different
   await Promise.all([
     writeIfChanged(publicSchemaPath, printSchema(publicSchema)),
     writeIfChanged(privateSchemaPath, printSchema(privateSchema))
