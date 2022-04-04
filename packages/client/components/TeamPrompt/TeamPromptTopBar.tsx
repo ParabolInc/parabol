@@ -1,13 +1,12 @@
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-
 import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
+import {meetingAvatarMediaQueries} from '../../styles/meeting'
 import BackButton from '../BackButton'
 import {AvatarGroupBlock, HeadingBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
-import {meetingAvatarMediaQueries} from '../../styles/meeting'
 
 const TeamPromptHeaderTitle = styled('h1')({
   fontSize: 16,
@@ -50,6 +49,7 @@ const TeamPromptTopBar = (props: Props) => {
     graphql`
       fragment TeamPromptTopBar_meeting on TeamPromptMeeting {
         name
+        ...TeamPromptOptionsMenu_meeting
       }
     `,
     meetingRef
@@ -67,7 +67,7 @@ const TeamPromptTopBar = (props: Props) => {
       </HeadingBlock>
       <AvatarGroupBlock>
         <ButtonContainer>
-          <TeamPromptOptionsMenu />
+          <TeamPromptOptionsMenu meeting={meeting} />
         </ButtonContainer>
       </AvatarGroupBlock>
       {/* :TODO: (jmtaber129): Add avatars, overflow menu, etc. */}

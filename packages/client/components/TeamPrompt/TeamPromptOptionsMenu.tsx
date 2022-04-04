@@ -1,9 +1,15 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useFragment} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {PALETTE} from '../../styles/paletteV3'
+import useMutationProps from '~/hooks/useMutationProps'
+import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
 import {ICON_SIZE} from '~/styles/typographyV2'
+import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
+import {PALETTE} from '../../styles/paletteV3'
 import CardButton from '../CardButton'
 import Icon from '../Icon'
 import IconLabel from '../IconLabel'
@@ -35,8 +41,27 @@ const OptionMenuItem = styled('div')({
   width: '200px'
 })
 
-const TeamPromptOptionsMenu = () => {
+interface Props {
+  meeting: TeamPromptOptionsMenu_meeting$key
+}
+
+const TeamPromptOptionsMenu = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+
+  const {meeting: meetingRef} = props
+
+  const meeting = useFragment(
+    graphql`
+      fragment TeamPromptOptionsMenu_meeting on TeamPromptMeeting {
+        id
+      }
+    `,
+    meetingRef
+  )
+
+  const {id: meetingId} = meeting
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError} = useMutationProps()
 
   const renderedMenu = (
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
@@ -50,7 +75,7 @@ const TeamPromptOptionsMenu = () => {
         }
         onClick={async () => {
           menuProps.closePortal()
-          // :TODO: (jmtaber129): Actually end meeting.
+          EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError})
         }}
       />
     </Menu>
