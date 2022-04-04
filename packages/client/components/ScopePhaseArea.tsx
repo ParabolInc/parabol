@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
-import {v4 as uuid} from 'uuid'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.graphql'
@@ -109,22 +108,27 @@ const ScopePhaseArea = (props: Props) => {
     setActiveIdx(2)
   }
 
-  // swipeable views won't ignore null children so conditionally create them: https://github.com/oliviertassinari/react-swipeable-views/issues/271
-  const contents = [
-    <ScopePhaseAreaGitHub
-      isActive={isTabActive('GitHub')}
-      gotoParabol={goToParabol}
-      meetingRef={meeting}
-    />,
-    <ScopePhaseAreaJira
-      isActive={isTabActive('Jira')}
-      gotoParabol={goToParabol}
-      meeting={meeting}
-    />,
-    <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />
-  ]
+  // swipeable views won't ignore null children, so conditionally create them: https://github.com/oliviertassinari/react-swipeable-views/issues/271
+  const contents: Partial<Record<typeof baseTabs[number]['label'], JSX.Element>> = {
+    GitHub: (
+      <ScopePhaseAreaGitHub
+        isActive={isTabActive('GitHub')}
+        gotoParabol={goToParabol}
+        meetingRef={meeting}
+      />
+    ),
+    Jira: (
+      <ScopePhaseAreaJira
+        isActive={isTabActive('Jira')}
+        gotoParabol={goToParabol}
+        meeting={meeting}
+      />
+    ),
+    Parabol: <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />
+  }
+
   if (allowJiraServer) {
-    contents.push(
+    contents['Jira Server'] = (
       <ScopePhaseAreaJiraServer
         isActive={isTabActive('Jira Server')}
         gotoParabol={goToParabol}
@@ -133,7 +137,7 @@ const ScopePhaseArea = (props: Props) => {
     )
   }
   if (allowGitLab) {
-    contents.push(
+    contents['GitLab'] = (
       <ScopePhaseAreaGitLab
         isActive={isTabActive('GitLab')}
         gotoParabol={goToParabol}
@@ -165,8 +169,8 @@ const ScopePhaseArea = (props: Props) => {
         containerStyle={containerStyle}
         style={innerStyle}
       >
-        {contents.map((content) => (
-          <TabContents key={uuid()}>{content}</TabContents>
+        {Object.keys(contents).map((contentKey) => (
+          <TabContents key={contentKey}>{contents[contentKey]}</TabContents>
         ))}
       </SwipeableViews>
     </ScopingArea>
