@@ -115,9 +115,12 @@ const AzureDevOpsIntegration = new GraphQLObjectType<any, GQLContext>({
         } else {
           const userStories = Array.from(
             workItems.map((workItem) => {
+              console.log(`workitem fields - ${workItem.fields['System.State']}`)
               return {
                 id: workItem.id.toString(),
-                url: workItem.url
+                url: workItem.url,
+                state: workItem.fields['System.State'],
+                type: workItem.fields['System.WorkItemType']
               }
             })
           )

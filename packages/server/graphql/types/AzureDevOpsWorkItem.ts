@@ -21,6 +21,14 @@ const AzureDevOpsWorkItem = new GraphQLObjectType<any, GQLContext>({
     url: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'URL to the issue'
+    },
+    state: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The Current State of the Work item'
+    },
+    type: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The Type of the Work item'
     }
   })
 })
