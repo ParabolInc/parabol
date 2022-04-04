@@ -19,7 +19,10 @@
         "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
         "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"
       ],
-      "plugins": ["typescript", "typescript-operations", "add"]
+      "plugins": ["typescript", "typescript-operations", "add"],
+      "config": {
+        "assumeValidSDL": true
+      }
     },
     "packages/server/graphql/private/resolverTypes.ts": {
       "schema": "packages/server/graphql/private/schema.graphql",
@@ -31,6 +34,8 @@
           "User": "../../postgres/types/IUser#default as IUser",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
+          "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
+          "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
@@ -44,6 +49,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "LoginWithGooglePayload": "./types/LoginWithGooglePayload#LoginWithGooglePayloadSource",
           "Organization": "../../database/types/Organization#default as Organization",
           "User": "../../postgres/types/IUser#default as IUser"
         }

@@ -68,11 +68,9 @@ const innerStyle = {width: '100%', height: '100%'}
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
-  if (!viewerMeetingMember) return null
-  const {user, teamMember} = viewerMeetingMember
+  const {user, teamMember} = viewerMeetingMember!
   const {featureFlags} = user
   const gitlabIntegration = teamMember.integrations.gitlab
   const jiraServerIntegration = teamMember.integrations.jiraServer
@@ -92,20 +90,68 @@ const ScopePhaseArea = (props: Props) => {
   ] as const
 
   const tabs = baseTabs.filter(({allow}) => allow)
-
+  const [activeIdx, setActiveIdx] = useState(() => {
+    const favoriteService = window.localStorage.getItem('favoriteService') || 'Jira'
+    const idx = tabs.findIndex((tab) => tab.label === favoriteService)
+    return idx === -1 ? 1 : idx
+  })
   const isTabActive = (label: typeof baseTabs[number]['label']) => {
     return activeIdx === tabs.findIndex((tab) => tab.label === label)
+  }
+
+  const selectIdx = (idx: number) => {
+    setActiveIdx(idx)
+    const service = tabs[idx]?.label ?? 'Jira'
+    window.localStorage.setItem('favoriteService', service)
   }
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
-    setActiveIdx(idx)
+    selectIdx(idx)
   }
 
   const goToParabol = () => {
     setActiveIdx(2)
+  }
+
+  // swipeable views won't ignore null children, so conditionally create them: https://github.com/oliviertassinari/react-swipeable-views/issues/271
+  const contents: Partial<Record<typeof baseTabs[number]['label'], JSX.Element>> = {
+    GitHub: (
+      <ScopePhaseAreaGitHub
+        isActive={isTabActive('GitHub')}
+        gotoParabol={goToParabol}
+        meetingRef={meeting}
+      />
+    ),
+    Jira: (
+      <ScopePhaseAreaJira
+        isActive={isTabActive('Jira')}
+        gotoParabol={goToParabol}
+        meeting={meeting}
+      />
+    ),
+    Parabol: <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />
+  }
+
+  if (allowJiraServer) {
+    contents['Jira Server'] = (
+      <ScopePhaseAreaJiraServer
+        isActive={isTabActive('Jira Server')}
+        gotoParabol={goToParabol}
+        meetingRef={meeting}
+      />
+    )
+  }
+  if (allowGitLab) {
+    contents['GitLab'] = (
+      <ScopePhaseAreaGitLab
+        isActive={isTabActive('GitLab')}
+        gotoParabol={goToParabol}
+        meetingRef={meeting}
+      />
+    )
   }
 
   return (
@@ -120,7 +166,7 @@ const ScopePhaseArea = (props: Props) => {
                 {tab.label}
               </TabLabel>
             }
-            onClick={() => setActiveIdx(idx)}
+            onClick={() => selectIdx(idx)}
           />
         ))}
       </StyledTabsBar>
@@ -131,37 +177,9 @@ const ScopePhaseArea = (props: Props) => {
         containerStyle={containerStyle}
         style={innerStyle}
       >
-        <TabContents>
-          <ScopePhaseAreaGitHub
-            isActive={isTabActive('GitHub')}
-            gotoParabol={goToParabol}
-            meetingRef={meeting}
-          />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaJira
-            isActive={isTabActive('Jira')}
-            gotoParabol={goToParabol}
-            meeting={meeting}
-          />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaParabolScoping isActive={isTabActive('Parabol')} meeting={meeting} />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaJiraServer
-            isActive={isTabActive('Jira Server')}
-            gotoParabol={goToParabol}
-            meetingRef={meeting}
-          />
-        </TabContents>
-        <TabContents>
-          <ScopePhaseAreaGitLab
-            isActive={isTabActive('GitLab')}
-            gotoParabol={goToParabol}
-            meetingRef={meeting}
-          />
-        </TabContents>
+        {Object.keys(contents).map((contentKey) => (
+          <TabContents key={contentKey}>{contents[contentKey]}</TabContents>
+        ))}
       </SwipeableViews>
     </ScopingArea>
   )
