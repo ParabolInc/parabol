@@ -73,7 +73,6 @@ interface Props {
   submitScore: () => void
   inputRef: RefObject<HTMLInputElement>
   integrationType: string
-  // title: string
 }
 
 const PokerDimensionFinalScorePicker = (props: Props) => {
