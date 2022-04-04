@@ -1,13 +1,10 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {PokerEstimateHeaderCardJira_issue} from '../__generated__/PokerEstimateHeaderCardJira_issue.graphql'
 import CardButton from './CardButton'
 import Icon from './Icon'
 import IconLabel from './IconLabel'
@@ -74,16 +71,19 @@ const StyledLabel = styled('span')({
 })
 
 interface Props {
-  issue: PokerEstimateHeaderCardJira_issue
+  summary: string
+  descriptionHTML: string
+  url: string
+  linkTitle: string
+  linkText: string
 }
-const PokerEstimateHeaderCardJira = (props: Props) => {
-  const {issue} = props
+const PokerEstimateHeaderCardContent = (props: Props) => {
+  const {summary, descriptionHTML, url, linkTitle, linkText} = props
   const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {issueKey, summary, descriptionHTML, jiraUrl} = issue
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -99,13 +99,8 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
           isExpanded={isExpanded}
           dangerouslySetInnerHTML={{__html: descriptionHTML}}
         />
-        <StyledLink
-          href={jiraUrl}
-          rel='noopener noreferrer'
-          target='_blank'
-          title={`Jira Issue #${issueKey}`}
-        >
-          <StyledLabel>{issueKey}</StyledLabel>
+        <StyledLink href={url} rel='noopener noreferrer' target='_blank' title={linkTitle}>
+          <StyledLabel>{linkText}</StyledLabel>
           <StyledIcon>launch</StyledIcon>
         </StyledLink>
       </HeaderCard>
@@ -113,13 +108,4 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(PokerEstimateHeaderCardJira, {
-  issue: graphql`
-    fragment PokerEstimateHeaderCardJira_issue on JiraIssue {
-      issueKey
-      summary
-      descriptionHTML
-      jiraUrl: url
-    }
-  `
-})
+export default PokerEstimateHeaderCardContent

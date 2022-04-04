@@ -1,0 +1,36 @@
+extend type Mutation {
+  """
+  Sign up or login using Google
+  """
+  loginWithGoogle(
+    """
+    The code provided from the OAuth2 flow
+    """
+    code: ID!
+
+    """
+    optional segment id created before they were a user
+    """
+    segmentId: ID
+
+    """
+    if present, the user is also joining a team
+    """
+    invitationToken: ID
+  ): LoginWithGooglePayload!
+}
+
+type LoginWithGooglePayload {
+  error: StandardMutationError
+
+  """
+  The new auth token
+  """
+  authToken: ID
+  userId: ID
+
+  """
+  the newly created user
+  """
+  user: User
+}
