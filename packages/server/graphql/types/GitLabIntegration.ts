@@ -1,8 +1,8 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import GitLabSearchQuery from './GitLabSearchQuery'
 import IntegrationProviderOAuth2 from './IntegrationProviderOAuth2'
 import TeamMemberIntegrationAuthOAuth2 from './TeamMemberIntegrationAuthOAuth2'
-import GitLabSearchQuery from './GitLabSearchQuery'
 
 const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitLabIntegration',
@@ -45,7 +45,7 @@ const GitLabIntegration = new GraphQLObjectType<any, GQLContext>({
           .load({service: 'gitlab', orgTeamIds, teamIds: [teamId]})
       }
     },
-    githubSearchQueries: {
+    gitlabSearchQueries: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitLabSearchQuery))),
       resolve: async () => []
     }
