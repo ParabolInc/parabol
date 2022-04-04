@@ -18,6 +18,7 @@ export const up = async function (r) {
   }
 
   await r.tableDrop('Team').run()
+  await client.end()
 };
 
 export const down = async function (r) {
@@ -48,4 +49,5 @@ export const down = async function (r) {
     const filteredTeams = teams.rows.slice(current, current + batchSize).map(dropUndefined)
     await r.table('Team').insert(filteredTeams).run()
   }
+  await client.end()
 };
