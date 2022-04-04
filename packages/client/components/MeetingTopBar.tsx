@@ -47,7 +47,7 @@ const PrimaryActionBlock = styled('div')({
   display: 'flex'
 })
 
-const AvatarGroupBlock = styled('div')({
+export const AvatarGroupBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
