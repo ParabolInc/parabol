@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
+import React from 'react'
 import meetingSummaryEmailRootSsrQuery, {
   MeetingSummaryEmailRootSSRQuery
 } from 'parabol-client/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
@@ -45,15 +45,13 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
     environment
   )
   return (
-    <Suspense fallback={''}>
-      {queryRef && (
-        <MeetingSummaryEmailContainer
-          queryRef={queryRef}
-          meetingId={meetingId}
-          appOrigin={appOrigin}
-        />
-      )}
-    </Suspense>
+    queryRef && (
+      <MeetingSummaryEmailContainer
+        queryRef={queryRef}
+        meetingId={meetingId}
+        appOrigin={appOrigin}
+      />
+    )
   )
 }
 
