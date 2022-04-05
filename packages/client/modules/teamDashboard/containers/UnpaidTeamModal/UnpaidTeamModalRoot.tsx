@@ -5,6 +5,7 @@ import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import unpaidTeamModalQuery, {
   UnpaidTeamModalQuery
 } from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
 
 interface Props extends RouteComponentProps<{}> {
   teamId: string
@@ -13,7 +14,11 @@ interface Props extends RouteComponentProps<{}> {
 const UnpaidTeamModalRoot = (props: Props) => {
   const {teamId} = props
   const queryRef = useQueryLoaderNow<UnpaidTeamModalQuery>(unpaidTeamModalQuery, {teamId})
-  return <Suspense fallback={''}>{queryRef && <UnpaidTeamModal queryRef={queryRef} />}</Suspense>
+  return (
+    <Suspense fallback={renderLoader()}>
+      {queryRef && <UnpaidTeamModal queryRef={queryRef} />}
+    </Suspense>
+  )
 }
 
 export default withRouter(UnpaidTeamModalRoot)

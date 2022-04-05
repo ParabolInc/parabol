@@ -5,6 +5,7 @@ import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import organizationQuery, {
   OrganizationQuery
 } from '../../../../__generated__/OrganizationQuery.graphql'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
 
 interface Props extends RouteComponentProps<{orgId: string}> {}
 
@@ -14,7 +15,11 @@ const OrganizationRoot = (props: Props) => {
     params: {orgId}
   } = match
   const queryRef = useQueryLoaderNow<OrganizationQuery>(organizationQuery, {orgId})
-  return <Suspense fallback={''}>{queryRef && <Organization queryRef={queryRef} />}</Suspense>
+  return (
+    <Suspense fallback={renderLoader({Loader: <div />})}>
+      {queryRef && <Organization queryRef={queryRef} />}
+    </Suspense>
+  )
 }
 
 export default OrganizationRoot

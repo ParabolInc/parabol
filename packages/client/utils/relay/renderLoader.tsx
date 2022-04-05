@@ -3,7 +3,6 @@ import LoadingComponent from '../../components/LoadingComponent/LoadingComponent
 
 interface LoaderOptions {
   Loader?: ReactNode
-  props?: {[key: string]: any}
   size?: number
   loadingDelay?: number
   menuLoadingWidth?: number

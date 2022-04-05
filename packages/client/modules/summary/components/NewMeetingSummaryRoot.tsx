@@ -5,6 +5,8 @@ import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import newMeetingSummaryQuery, {
   NewMeetingSummaryQuery
 } from '../../../__generated__/NewMeetingSummaryQuery.graphql'
+import {LoaderSize} from '../../../types/constEnums'
+import {renderLoader} from '../../../utils/relay/renderLoader'
 
 interface Props extends RouteComponentProps<{urlAction?: 'csv'; meetingId: string}> {}
 
@@ -14,7 +16,7 @@ const NewMeetingSummaryRoot = ({match}: Props) => {
   } = match
   const queryRef = useQueryLoaderNow<NewMeetingSummaryQuery>(newMeetingSummaryQuery, {meetingId})
   return (
-    <Suspense fallback={''}>
+    <Suspense fallback={renderLoader({size: LoaderSize.WHOLE_PAGE})}>
       {queryRef && <NewMeetingSummary queryRef={queryRef} urlAction={urlAction} />}
     </Suspense>
   )

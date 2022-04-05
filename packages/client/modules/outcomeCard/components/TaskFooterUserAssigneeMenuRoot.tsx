@@ -10,6 +10,7 @@ import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAs
 import {TaskFooterUserAssigneeMenuRoot_task} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 import {AreaEnum} from '../../../__generated__/UpdateTaskMutation.graphql'
+import {renderLoader} from '../../../utils/relay/renderLoader'
 
 interface Props {
   area: string
@@ -28,7 +29,7 @@ const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
     {teamId}
   )
   return (
-    <Suspense fallback={''}>
+    <Suspense fallback={renderLoader()}>
       {queryRef && (
         <TaskFooterUserAssigneeMenu
           queryRef={queryRef}
