@@ -11,10 +11,13 @@ interface Props {
   discussionId: string
   allowedThreadables: DiscussionThreadables[]
   width?: string
+  showHeader?: boolean
+  showEmptyState?: boolean
 }
 
 const DiscussionThreadRoot = (props: Props) => {
-  const {allowedThreadables, meetingContentRef, discussionId, width} = props
+  const {allowedThreadables, meetingContentRef, discussionId, width, showHeader, showEmptyState} =
+    props
   const queryRef = useQueryLoaderNow<DiscussionThreadQuery>(discussionThreadQuery, {discussionId})
   return (
     <Suspense fallback={''}>
@@ -24,6 +27,8 @@ const DiscussionThreadRoot = (props: Props) => {
           meetingContentRef={meetingContentRef}
           queryRef={queryRef}
           width={width}
+          showHeader={showHeader}
+          showEmptyState={showEmptyState}
         />
       )}
     </Suspense>

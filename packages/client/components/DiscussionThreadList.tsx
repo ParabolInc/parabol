@@ -58,6 +58,8 @@ interface Props {
   threadables: DiscussionThreadList_threadables
   viewer: DiscussionThreadList_viewer
   dataCy: string
+  showHeader?: boolean
+  showEmptyState?: boolean
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
@@ -68,15 +70,17 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     threadables,
     dataCy,
     preferredNames,
-    viewer
+    viewer,
+    showHeader = true,
+    showEmptyState = true
   } = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
   const allowTasks = allowedThreadables.includes('task')
-  if (isEmpty) {
+  if (isEmpty && showEmptyState) {
     return (
       <EmptyWrapper>
-        {allowTasks && <Header>{'Discussion & Takeaway Tasks'}</Header>}
+        {allowTasks && showHeader && <Header>{'Discussion & Takeaway Tasks'}</Header>}
         <DiscussionThreadListEmptyState
           allowTasks={allowTasks}
           isReadOnly={allowedThreadables.length === 0}
@@ -90,7 +94,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 
   return (
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
-      {allowTasks && <Header>{'Discussion & Takeaway Tasks'}</Header>}
+      {allowTasks && showHeader && <Header>{'Discussion & Takeaway Tasks'}</Header>}
       <PusherDowner />
       {threadables.map((threadable) => {
         const {id} = threadable

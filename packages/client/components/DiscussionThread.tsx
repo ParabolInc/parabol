@@ -33,10 +33,12 @@ interface Props {
   allowedThreadables: DiscussionThreadables[]
   width?: string
   queryRef: PreloadedQuery<DiscussionThreadQuery>
+  showHeader?: boolean
+  showEmptyState?: boolean
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, allowedThreadables, width, queryRef} = props
+  const {meetingContentRef, allowedThreadables, width, queryRef, showHeader, showEmptyState} = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const listRef = useRef<HTMLDivElement>(null)
@@ -114,6 +116,8 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
         viewer={viewer}
+        showHeader={showHeader}
+        showEmptyState={showEmptyState}
       />
       <DiscussionThreadInput
         allowedThreadables={allowedThreadables}
