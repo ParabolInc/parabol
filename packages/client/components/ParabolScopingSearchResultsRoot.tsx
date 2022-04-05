@@ -3,7 +3,6 @@ import React, {Suspense} from 'react'
 import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import ParabolScopingSearchResults from './ParabolScopingSearchResults'
 import {ParabolScopingSearchResultsRoot_meeting} from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
-import ErrorComponent from './ErrorComponent/ErrorComponent'
 import parabolScopingSearchResultsRootQuery, {
   ParabolScopingSearchResultsRootQuery
 } from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
@@ -47,7 +46,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
     }
   )
   return (
-    <ErrorBoundary fallback={(error) => <ErrorComponent error={error} eventId={''} />}>
+    <ErrorBoundary>
       <Suspense fallback={<MockScopingList />}>
         {queryRef && <ParabolScopingSearchResultsContainer meeting={meeting} queryRef={queryRef} />}
       </Suspense>

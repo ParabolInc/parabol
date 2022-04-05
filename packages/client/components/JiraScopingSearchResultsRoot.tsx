@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {JiraScopingSearchResultsRoot_meeting} from '../__generated__/JiraScopingSearchResultsRoot_meeting.graphql'
-import ErrorComponent from './ErrorComponent/ErrorComponent'
 import JiraScopingSearchResults from './JiraScopingSearchResults'
 import ErrorBoundary from './ErrorBoundary'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
@@ -28,7 +27,7 @@ const JiraScopingSearchResultsRoot = (props: Props) => {
     first: 100
   })
   return (
-    <ErrorBoundary fallback={(error) => <ErrorComponent error={error} eventId={''} />}>
+    <ErrorBoundary>
       <Suspense fallback={<MockScopingList />}>
         {queryRef && <JiraScopingSearchResults queryRef={queryRef} meeting={meeting} />}
       </Suspense>
