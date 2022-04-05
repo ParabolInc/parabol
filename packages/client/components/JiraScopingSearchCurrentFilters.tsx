@@ -8,7 +8,7 @@ import {JiraScopingSearchCurrentFilters_meeting$key} from '../__generated__/Jira
 const Wrapper = styled('div')({
   width: '100%',
   display: 'flex',
-  paddingLeft: '66px',
+  paddingLeft: '72px',
   paddingTop: '8px'
 })
 
@@ -66,14 +66,16 @@ const JiraScopingSearchCurrentFilters = (props: Props) => {
   const {atlassian} = integrations
   const {projects} = atlassian!
   const {projectKeyFilters} = jiraSearchQuery
-  const issueKeys = projectKeyFilters.map((projectId, idx) => {
+  const projectFilterNames = projectKeyFilters.map((projectId, idx) => {
     const project = projects.find(({id}) => id === projectId)!
     return idx === 0 ? project.name : `, ${project.name}`
   })
+  const currentFilters = projectFilterNames.length ? projectFilterNames : 'None'
+
   return (
     <Wrapper>
       <Description>Current filters:</Description>
-      <Items>{issueKeys.length ? issueKeys : 'None'}</Items>
+      <Items>{currentFilters}</Items>
     </Wrapper>
   )
 }

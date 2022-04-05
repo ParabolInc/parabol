@@ -13,6 +13,7 @@ import Icon from './Icon'
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD24,
+  padding: 3,
   marginRight: 12
 })
 

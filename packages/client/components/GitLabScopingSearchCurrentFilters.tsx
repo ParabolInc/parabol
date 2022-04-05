@@ -8,7 +8,7 @@ import {GitLabScopingSearchCurrentFilters_meeting$key} from '../__generated__/Gi
 const Wrapper = styled('div')({
   width: '100%',
   display: 'flex',
-  paddingLeft: '66px',
+  paddingLeft: '72px',
   paddingTop: '8px'
 })
 
@@ -51,14 +51,15 @@ const GitLabScopingSearchCurrentFilters = (props: Props) => {
   )
   const {gitlabSearchQuery} = meeting
   const {selectedProjects} = gitlabSearchQuery
-  const selectedProjectsFullPaths =
-    selectedProjects?.map((project, idx) =>
-      idx === 0 ? project.fullPath : `, ${project.fullPath}`
-    ) ?? 'None'
+  const selectedProjectsFullPaths = selectedProjects?.map((project, idx) =>
+    idx === 0 ? project.fullPath : `, ${project.fullPath}`
+  )
+  const currentFilters = selectedProjectsFullPaths?.length ? selectedProjectsFullPaths : 'None'
+
   return (
     <Wrapper>
       <Description>Current filters: </Description>
-      <Items>{selectedProjectsFullPaths}</Items>
+      <Items>{currentFilters}</Items>
     </Wrapper>
   )
 }
