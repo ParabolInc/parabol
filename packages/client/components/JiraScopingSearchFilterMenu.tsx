@@ -50,7 +50,6 @@ const FilterLabel = styled(DropdownMenuLabel)({
 interface Props {
   menuProps: MenuProps
   queryRef: PreloadedQuery<JiraScopingSearchFilterMenuQuery>
-  error?: Error | null
 }
 
 type JiraSearchQuery = NonNullable<
