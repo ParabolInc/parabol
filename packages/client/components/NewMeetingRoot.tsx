@@ -8,6 +8,7 @@ import TeamSubscription from '../subscriptions/TeamSubscription'
 import NewMeeting from './NewMeeting'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import newMeetingQuery, {NewMeetingQuery} from '~/__generated__/NewMeetingQuery.graphql'
+import {renderLoader} from '../utils/relay/renderLoader'
 
 const NewMeetingRoot = () => {
   const {match} = useRouter<{teamId: string}>()
@@ -19,7 +20,7 @@ const NewMeetingRoot = () => {
   useSubscription('NewMeetingRoot', TeamSubscription)
   const queryRef = useQueryLoaderNow<NewMeetingQuery>(newMeetingQuery, {teamId})
   return (
-    <Suspense fallback={''}>
+    <Suspense fallback={renderLoader()}>
       {queryRef && <NewMeeting teamId={teamId} queryRef={queryRef} />}
     </Suspense>
   )
