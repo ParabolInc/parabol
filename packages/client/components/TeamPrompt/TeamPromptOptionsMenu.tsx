@@ -42,24 +42,25 @@ const OptionMenuItem = styled('div')({
 })
 
 interface Props {
-  meeting: TeamPromptOptionsMenu_meeting$key
+  meetingRef: TeamPromptOptionsMenu_meeting$key
 }
 
 const TeamPromptOptionsMenu = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
-  const {meeting: meetingRef} = props
+  const {meetingRef} = props
 
   const meeting = useFragment(
     graphql`
       fragment TeamPromptOptionsMenu_meeting on TeamPromptMeeting {
         id
+        endedAt
       }
     `,
     meetingRef
   )
 
-  const {id: meetingId} = meeting
+  const {id: meetingId, endedAt} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
 
@@ -67,6 +68,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
     <Menu ariaLabel={'Edit the meeting'} {...menuProps}>
       <MenuItem
         key='copy'
+        isDisabled={!!endedAt}
         label={
           <OptionMenuItem>
             <StyledIcon>flag</StyledIcon>

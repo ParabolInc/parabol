@@ -67,7 +67,7 @@ const TeamPromptTopBar = (props: Props) => {
       </HeadingBlock>
       <AvatarGroupBlock>
         <ButtonContainer>
-          <TeamPromptOptionsMenu meeting={meeting} />
+          <TeamPromptOptionsMenu meetingRef={meeting} />
         </ButtonContainer>
       </AvatarGroupBlock>
       {/* :TODO: (jmtaber129): Add avatars, overflow menu, etc. */}
