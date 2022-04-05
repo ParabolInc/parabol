@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo, useState} from 'react'
-import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
 import {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__generated__/TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery.graphql'
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
 import {SearchMenuItem} from '~/components/SearchMenuItem'
@@ -8,7 +8,7 @@ import useEventCallback from '~/hooks/useEventCallback'
 import useModal from '~/hooks/useModal'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-import {TaskFooterTeamAssigneeMenu_task} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
+import {TaskFooterTeamAssigneeMenu_task$key} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
 import {TaskFooterTeamAssigneeMenuQuery} from '../../../../__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
 import Menu from '../../../../components/Menu'
@@ -42,7 +42,7 @@ const query = graphql`
 interface Props {
   menuProps: MenuProps
   queryRef: PreloadedQuery<TaskFooterTeamAssigneeMenuQuery>
-  task: TaskFooterTeamAssigneeMenu_task
+  task: TaskFooterTeamAssigneeMenu_task$key
 }
 
 const gqlQuery = graphql`
@@ -62,7 +62,7 @@ const gqlQuery = graphql`
 `
 
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
-  const {menuProps, task, queryRef} = props
+  const {menuProps, task: taskRef, queryRef} = props
   const data = usePreloadedQuery<TaskFooterTeamAssigneeMenuQuery>(gqlQuery, queryRef, {
     UNSTABLE_renderPolicy: 'full'
   })
@@ -70,6 +70,21 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
 
   const {closePortal: closeTeamAssigneeMenu} = menuProps
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)
+
+  const task = useFragment(
+    graphql`
+      fragment TaskFooterTeamAssigneeMenu_task on Task {
+        id
+        team {
+          id
+        }
+        integration {
+          __typename
+        }
+      }
+    `,
+    taskRef
+  )
   const {team, id: taskId, integration} = task
   const isGitHubTask = integration?.__typename === '_xGitHubIssue'
   const isJiraTask = integration?.__typename === 'JiraIssue'
@@ -193,16 +208,4 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(TaskFooterTeamAssigneeMenu, {
-  task: graphql`
-    fragment TaskFooterTeamAssigneeMenu_task on Task {
-      id
-      team {
-        id
-      }
-      integration {
-        __typename
-      }
-    }
-  `
-})
+export default TaskFooterTeamAssigneeMenu
