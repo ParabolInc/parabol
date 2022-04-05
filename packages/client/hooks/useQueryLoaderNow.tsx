@@ -33,7 +33,7 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
     // fetchQuery will fetch the query and write the data to the Relay store. This will
     // ensure that when we re-render, the data is already cached and we don't suspend
     fetchQuery(
-      relayEnvironment || atmosphere,
+      relayEnvironment ?? atmosphere,
       preloadableRequest as GraphQLTaggedNode,
       variables
     ).subscribe({
