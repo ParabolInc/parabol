@@ -9,13 +9,14 @@ const Wrapper = styled('div')({
   width: '100%',
   display: 'flex',
   paddingLeft: '66px',
-  paddingTop: '6px'
+  paddingTop: '8px'
 })
 
 const Description = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 16,
-  fontWeight: 500
+  fontWeight: 500,
+  whiteSpace: 'nowrap'
 })
 
 const Items = styled('div')({
@@ -23,7 +24,11 @@ const Items = styled('div')({
   fontSize: 16,
   fontWeight: 600,
   fontStyle: 'italic',
-  paddingLeft: 4
+  padding: '0px 24px 0px 4px',
+  width: '100%',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
 })
 
 interface Props {
