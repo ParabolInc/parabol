@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer, usePreloadedQuery, PreloadedQuery} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
@@ -83,11 +82,8 @@ const JiraScopingSearchResults = (props: Props) => {
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // TODO: after add Suspense fallback in Root, should be able to remove this?
-  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
-  // TODO fix flicker after viewer is present but edges isn't set
   if (!edges) {
-    return <MockScopingList />
+    return null
   }
   if (edges.length === 0 && !isEditing) {
     return (
