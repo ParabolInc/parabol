@@ -10,14 +10,18 @@ import {Environment} from 'relay-runtime'
 import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
 
-// TODO: merge these last 3 (maybe more) parameters into `options` object
-const useQueryLoaderNow = <TQuery extends OperationType>(
+type QueryLoaderOptions = {
+  fetchPolicy?: PreloadFetchPolicy
+  preventSuspense?: boolean
+  relayEnvironment?: Environment
+}
+
+export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
   preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
   variables: VariablesOf<TQuery> = {},
-  fetchPolicy?: PreloadFetchPolicy,
-  preventSuspense?: boolean,
-  relayEnvironment?: Environment
+  options: QueryLoaderOptions = {}
 ) => {
+  const {fetchPolicy, preventSuspense, relayEnvironment} = options
   const [queryRef, loadQuery] = useQueryLoader<TQuery>(preloadableRequest)
   const varRef = useRef(variables)
   const atmosphere = useAtmosphere()
@@ -61,6 +65,21 @@ const useQueryLoaderNow = <TQuery extends OperationType>(
     }
   }, [])
 
+  return {queryRef, retry: refreshQuery}
+}
+
+const useQueryLoaderNow = <TQuery extends OperationType>(
+  preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
+  variables: VariablesOf<TQuery> = {},
+  fetchPolicy?: PreloadFetchPolicy,
+  preventSuspense?: boolean,
+  relayEnvironment?: Environment
+) => {
+  const {queryRef} = useQueryLoaderNowWithRetry(preloadableRequest, variables, {
+    fetchPolicy,
+    preventSuspense,
+    relayEnvironment
+  })
   return queryRef
 }
 
