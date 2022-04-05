@@ -33,7 +33,7 @@ const TeamPromptMeeting = (props: Props) => {
         <Suspense fallback={''}>
           <MeetingContent>
             <MeetingHeaderAndPhase hideBottomBar={true}>
-              <TeamPromptTopBar meeting={meeting} />
+              <TeamPromptTopBar meetingRef={meeting} />
               <PhaseWrapper>
                 <Link title='My Dashboard' to='/meetings'>
                   <img alt='Parabol' src={logoMarkPurple} />

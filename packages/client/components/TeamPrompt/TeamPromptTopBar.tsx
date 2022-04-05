@@ -23,12 +23,12 @@ const TeamPromptHeader = styled('div')({
 })
 
 interface Props {
-  meeting: TeamPromptTopBar_meeting$key
+  meetingRef: TeamPromptTopBar_meeting$key
 }
 
 const TeamPromptTopBar = (props: Props) => {
   const {history} = useRouter()
-  const {meeting: meetingRef} = props
+  const {meetingRef} = props
 
   const meeting = useFragment(
     graphql`
