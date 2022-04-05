@@ -6,6 +6,7 @@ import {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
+import MockFieldList from '../../../components/MockFieldList'
 
 interface Props {
   menuProps: MenuProps
@@ -21,7 +22,7 @@ const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
     {}
   )
   return (
-    <Suspense fallback={''}>
+    <Suspense fallback={MockFieldList}>
       {queryRef && (
         <TaskFooterTeamAssigneeMenu queryRef={queryRef} menuProps={menuProps} task={task} />
       )}

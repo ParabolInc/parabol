@@ -6,6 +6,8 @@ import viewerNotOnTeamQuery, {
   ViewerNotOnTeamQuery
 } from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {LoaderSize} from '../types/constEnums'
+import {renderLoader} from '../utils/relay/renderLoader'
 
 const ViewerNotOnTeamRoot = () => {
   const searchParams = new URLSearchParams(location.search)
@@ -16,7 +18,11 @@ const ViewerNotOnTeamRoot = () => {
     teamId,
     meetingId
   })
-  return <Suspense fallback={''}>{queryRef && <ViewerNotOnTeam queryRef={queryRef} />}</Suspense>
+  return (
+    <Suspense fallback={renderLoader({size: LoaderSize.WHOLE_PAGE})}>
+      {queryRef && <ViewerNotOnTeam queryRef={queryRef} />}
+    </Suspense>
+  )
 }
 
 export default ViewerNotOnTeamRoot
