@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import {meetingAvatarMediaQueries} from '../../styles/meeting'
 import BackButton from '../BackButton'
-import {AvatarGroupBlock, HeadingBlock, MeetingTopBarStyles} from '../MeetingTopBar'
+import {HeadingBlock, IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
 const TeamPromptHeaderTitle = styled('h1')({
@@ -65,12 +65,12 @@ const TeamPromptTopBar = (props: Props) => {
           <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
         </TeamPromptHeader>
       </HeadingBlock>
-      <AvatarGroupBlock>
+      <IconGroupBlock>
         {/* :TODO: (jmtaber129): Add avatars, etc. */}
         <ButtonContainer>
           <TeamPromptOptionsMenu meetingRef={meeting} />
         </ButtonContainer>
-      </AvatarGroupBlock>
+      </IconGroupBlock>
     </MeetingTopBarStyles>
   )
 }

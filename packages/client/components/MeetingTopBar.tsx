@@ -1,15 +1,15 @@
-import React, {ReactElement, ReactNode} from 'react'
 import styled from '@emotion/styled'
-import DemoCreateAccountButton from './DemoCreateAccountButton'
-import SidebarToggle from './SidebarToggle'
-import isDemoRoute from '../utils/isDemoRoute'
-import hasToken from '../utils/hasToken'
-import {meetingAvatarMediaQueries} from '../styles/meeting'
-import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
-import PlainButton from './PlainButton/PlainButton'
+import React, {ReactElement, ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import Icon from './Icon'
 import {ICON_SIZE} from '~/styles/typographyV2'
+import {meetingAvatarMediaQueries} from '../styles/meeting'
+import hasToken from '../utils/hasToken'
+import isDemoRoute from '../utils/isDemoRoute'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import DemoCreateAccountButton from './DemoCreateAccountButton'
+import Icon from './Icon'
+import PlainButton from './PlainButton/PlainButton'
+import SidebarToggle from './SidebarToggle'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
@@ -47,7 +47,7 @@ const PrimaryActionBlock = styled('div')({
   display: 'flex'
 })
 
-export const AvatarGroupBlock = styled('div')({
+export const IconGroupBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
@@ -167,7 +167,7 @@ const MeetingTopBar = (props: Props) => {
         )}
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
-      <AvatarGroupBlock>
+      <IconGroupBlock>
         {showButton && (
           <PrimaryActionBlock>
             <DemoCreateAccountButton />
@@ -184,7 +184,7 @@ const MeetingTopBar = (props: Props) => {
             </DiscussionButton>
           </ButtonContainer>
         )}
-      </AvatarGroupBlock>
+      </IconGroupBlock>
     </MeetingTopBarStyles>
   )
 }
