@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import JiraIssueId from '~/shared/gqlIds/JiraIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {JiraScopingSearchCurrentFilters_meeting$key} from '../__generated__/JiraScopingSearchCurrentFilters_meeting.graphql'
 
@@ -44,18 +43,36 @@ const JiraScopingSearchCurrentFilters = (props: Props) => {
         jiraSearchQuery {
           projectKeyFilters
         }
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              atlassian {
+                projects {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
   const {jiraSearchQuery} = meeting
+  const {viewerMeetingMember} = meeting
+  const {teamMember} = viewerMeetingMember!
+  const {integrations} = teamMember
+  const {atlassian} = integrations
+  const {projects} = atlassian!
   const {projectKeyFilters} = jiraSearchQuery
-  const issueKeys = projectKeyFilters.map((key, idx) =>
-    idx === 0 ? JiraIssueId.split(key).issueKey : `, ${JiraIssueId.split(key).issueKey}`
-  )
+  const issueKeys = projectKeyFilters.map((projectId, idx) => {
+    const project = projects.find(({id}) => id === projectId)!
+    return idx === 0 ? project.name : `, ${project.name}`
+  })
   return (
     <Wrapper>
-      <Description>Current filters: </Description>
+      <Description>Current filters:</Description>
       <Items>{issueKeys.length ? issueKeys : 'None'}</Items>
     </Wrapper>
   )
