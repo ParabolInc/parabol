@@ -7,7 +7,7 @@ import orgMembersRootQuery, {
   OrgMembersRootQuery
 } from '../../../../__generated__/OrgMembersRootQuery.graphql'
 import {LoaderSize} from '../../../../types/constEnums'
-import {renderLoader} from '../../../../utils/relay/renderFallback'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
 
 const query = graphql`
   query OrgMembersRootQuery($orgId: ID!, $first: Int!, $after: String) {

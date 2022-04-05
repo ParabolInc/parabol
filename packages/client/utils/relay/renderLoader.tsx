@@ -1,7 +1,5 @@
-import React, {ComponentType, ReactNode} from 'react'
-import ErrorComponent from '../../components/ErrorComponent/ErrorComponent'
+import React, {ReactNode} from 'react'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
-import * as Sentry from '@sentry/browser'
 
 interface LoaderOptions {
   Loader?: ReactNode
@@ -26,12 +24,4 @@ export const renderLoader = (options: LoaderOptions = {}) => {
       showAfter={menuLoadingWidth ? 0 : undefined}
     />
   )
-}
-
-type ErrorOptions = {Error?: ComponentType<{error: any}>}
-
-export const renderError = (error: Error, options: ErrorOptions = {}) => {
-  const Error = options.Error || ErrorComponent
-  const eventId = Sentry.captureException(error)
-  return <Error error={error} eventId={eventId} />
 }

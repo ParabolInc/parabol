@@ -5,7 +5,7 @@ import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import organizationsQuery, {
   OrganizationsQuery
 } from '../../../../__generated__/OrganizationsQuery.graphql'
-import {renderLoader} from '../../../../utils/relay/renderFallback'
+import {renderLoader} from '../../../../utils/relay/renderLoader'
 import {LoaderSize} from '../../../../types/constEnums'
 
 const OrganizationsRoot = () => {
