@@ -1,8 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
-import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
 import ParabolScopingSearchResults from './ParabolScopingSearchResults'
-import {ParabolScopingSearchResultsRoot_meeting} from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
+import {
+  ParabolScopingSearchResultsRoot_meeting,
+  ParabolScopingSearchResultsRoot_meeting$key
+} from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
 import parabolScopingSearchResultsRootQuery, {
   ParabolScopingSearchResultsRootQuery
 } from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
@@ -28,11 +31,24 @@ const query = graphql`
 `
 
 interface Props {
-  meeting: ParabolScopingSearchResultsRoot_meeting
+  meeting: ParabolScopingSearchResultsRoot_meeting$key
 }
 
 const ParabolScopingSearchResultsRoot = (props: Props) => {
-  const {meeting} = props
+  const {meeting: meetingRef} = props
+  const meeting = useFragment(
+    graphql`
+      fragment ParabolScopingSearchResultsRoot_meeting on PokerMeeting {
+        ...ParabolScopingSearchResults_meeting
+        parabolSearchQuery {
+          queryString
+          statusFilters
+        }
+        teamId
+      }
+    `,
+    meetingRef
+  )
   const {teamId, parabolSearchQuery} = meeting
   const {queryString, statusFilters} = parabolSearchQuery as unknown as ParabolSearchQuery
   const queryRef = useQueryLoaderNow<ParabolScopingSearchResultsRootQuery>(
@@ -68,15 +84,4 @@ function ParabolScopingSearchResultsContainer(props: ParabolScopingSearchResults
   return <ParabolScopingSearchResults viewer={viewer} meeting={meeting} />
 }
 
-export default createFragmentContainer(ParabolScopingSearchResultsRoot, {
-  meeting: graphql`
-    fragment ParabolScopingSearchResultsRoot_meeting on PokerMeeting {
-      ...ParabolScopingSearchResults_meeting
-      parabolSearchQuery {
-        queryString
-        statusFilters
-      }
-      teamId
-    }
-  `
-})
+export default ParabolScopingSearchResultsRoot
