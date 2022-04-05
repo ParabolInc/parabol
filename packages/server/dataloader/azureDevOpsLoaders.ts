@@ -141,7 +141,7 @@ export const azureDevOpsAllWorkItems = (
         keys.map(async ({userId, teamId}) => {
           const returnWorkItems = [] as WorkItem[]
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
-          if (!auth) return undefined
+          if (!auth) return []
           const {accessToken} = auth
           console.log(`accessToken - ${accessToken}`)
           if (!accessToken) return undefined
