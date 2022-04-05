@@ -9,14 +9,18 @@ module.exports = {
       script: 'scripts/runExecutor.js',
       // increase this to test scaling
       instances: 1,
-      watch: ['dev/gqlExecutor.js']
+      watch: ['dev/gqlExecutor.js'],
+      // if the watched file doeesn't exist, wait for it instead of restarting
+      autorestart: false
     },
     {
       name: 'Socket Server',
       script: 'scripts/runSocketServer.js',
       // increase this to test scaling
       instances: 1,
-      watch: ['dev/web.js']
+      watch: ['dev/web.js'],
+      // if the watched file doeesn't exist, wait for it instead of restarting
+      autorestart: false
     },
     {
       name: 'Dev Server',
@@ -42,7 +46,11 @@ module.exports = {
     {
       name: 'GraphQL Codegen',
       script: 'scripts/codegenGraphQL.js',
-      args: '--watch'
+      args: '--watch',
+      autorestart: false,
+      // SIGINT won't kill this process in fork mode >:-(
+      // instances: 1 forces cluster mode
+      instances: 1
     }
   ].map((app) => ({
     env_production: {

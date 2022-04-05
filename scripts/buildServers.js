@@ -6,11 +6,20 @@
  When a change is detected the pm2 process restarts, loading the new code.
 */
 const webpack = require('webpack')
+const waitForRelayCompiler = require('./waitForRelayCompiler')
 
 const buildServers = async () => {
   const config = require('./webpack/dev.servers.config')
   const compiler = webpack(config)
-  compiler.watch({aggregateTimeout: 100}, () => {
+  await waitForRelayCompiler()
+  compiler.watch({aggregateTimeout: 100}, (err, stats) => {
+    if (err) {
+      console.log('Webpack error:', err)
+    }
+    const {errors} = stats.compilation
+    if (errors.length > 0) {
+      console.log('COMPILATION ERRORS:', errors)
+    }
     /* servers finished rebuilding */
   })
 }

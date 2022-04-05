@@ -5,8 +5,10 @@
   They are included in the build to minimize the number of webpack builds we perform
 */
 const webpack = require('webpack')
+const isRelayCompilerFirstTime = require('./isRelayCompilerFirstTime')
 
 const compileToolbox = async () => {
+  const isFirstTime = isRelayCompilerFirstTime()
   return new Promise((resolve) => {
     const config = require('./webpack/toolbox.config')
     const compiler = webpack(config)
@@ -15,7 +17,7 @@ const compileToolbox = async () => {
         console.log('Webpack error:', err)
       }
       const {errors} = stats.compilation
-      if (errors.length > 0) {
+      if (!isFirstTime && errors.length > 0) {
         console.log('COMPILATION ERRORS:', errors)
       }
       resolve()

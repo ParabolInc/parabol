@@ -4,4 +4,9 @@
   {@link buildServers} writes the change to {@link ../dev/web}.
   Pm2 reloads this file whenever {@link ../dev/web} changes
 */
-require('../dev/web.js')
+try {
+  require('../dev/web.js')
+} catch (e) {
+  // webpack has not created the file yet
+  // pm2 will restart this process when the file changes
+}

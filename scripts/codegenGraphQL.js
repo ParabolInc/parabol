@@ -7,7 +7,7 @@
 const codegenGraphQL = async () => {
   const {generate} = require('@graphql-codegen/cli')
   const config = require('../codegen.json')
-  const watch = process.argv[2] === '--watch'
+  const watch = process.argv.find((arg) => arg === '--watch')
   if (watch) {
     // watches the `schema` files and re-runs if it changes
     // on the first run, schemas won't exist
