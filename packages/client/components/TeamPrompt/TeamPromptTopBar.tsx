@@ -66,11 +66,11 @@ const TeamPromptTopBar = (props: Props) => {
         </TeamPromptHeader>
       </HeadingBlock>
       <AvatarGroupBlock>
+        {/* :TODO: (jmtaber129): Add avatars, etc. */}
         <ButtonContainer>
           <TeamPromptOptionsMenu meetingRef={meeting} />
         </ButtonContainer>
       </AvatarGroupBlock>
-      {/* :TODO: (jmtaber129): Add avatars, overflow menu, etc. */}
     </MeetingTopBarStyles>
   )
 }
