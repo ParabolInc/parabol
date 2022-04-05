@@ -6,6 +6,8 @@ import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import orgMembersRootQuery, {
   OrgMembersRootQuery
 } from '../../../../__generated__/OrgMembersRootQuery.graphql'
+import {LoaderSize} from '../../../../types/constEnums'
+import {renderLoader} from '../../../../utils/relay/renderFallback'
 
 const query = graphql`
   query OrgMembersRootQuery($orgId: ID!, $first: Int!, $after: String) {
@@ -26,7 +28,9 @@ const OrgMembersRoot = (props: Props) => {
     first: 10000
   })
   return (
-    <Suspense fallback={''}>{queryRef && <OrgMembersContainer queryRef={queryRef} />}</Suspense>
+    <Suspense fallback={renderLoader({size: LoaderSize.PANEL})}>
+      {queryRef && <OrgMembersContainer queryRef={queryRef} />}
+    </Suspense>
   )
 }
 
