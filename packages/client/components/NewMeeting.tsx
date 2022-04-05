@@ -147,7 +147,6 @@ const NewMeeting = (props: Props) => {
   const {teams, featureFlags} = viewer
   const newMeetingOrder = useMemo(() => createMeetingOrder(featureFlags), [featureFlags])
 
-  // useStoreQueryRetry(retry)
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
