@@ -1,8 +1,11 @@
 import React, {Suspense} from 'react'
-import {createFragmentContainer, PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {PreloadedQuery, usePreloadedQuery, useFragment} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import OrgBilling from '../../components/OrgBilling/OrgBilling'
-import {OrgBillingRoot_organization} from '../../../../__generated__/OrgBillingRoot_organization.graphql'
+import {
+  OrgBillingRoot_organization,
+  OrgBillingRoot_organization$key
+} from '../../../../__generated__/OrgBillingRoot_organization.graphql'
 import orgBillingRootQuery, {
   OrgBillingRootQuery
 } from '../../../../__generated__/OrgBillingRootQuery.graphql'
@@ -17,10 +20,19 @@ const query = graphql`
 `
 
 interface Props {
-  organization: OrgBillingRoot_organization
+  organization: OrgBillingRoot_organization$key
 }
 
-const OrgBillingRoot = ({organization}: Props) => {
+const OrgBillingRoot = ({organization: organizationRef}: Props) => {
+  const organization = useFragment(
+    graphql`
+      fragment OrgBillingRoot_organization on Organization {
+        ...OrgBilling_organization
+        id
+      }
+    `,
+    organizationRef
+  )
   const queryRef = useQueryLoaderNow<OrgBillingRootQuery>(orgBillingRootQuery, {
     orgId: organization.id,
     first: 3
@@ -46,11 +58,4 @@ function OrgBillingContainer(props: OrgBillingContainerProps) {
   return <OrgBilling viewer={viewer} organization={organization} />
 }
 
-export default createFragmentContainer(OrgBillingRoot, {
-  organization: graphql`
-    fragment OrgBillingRoot_organization on Organization {
-      ...OrgBilling_organization
-      id
-    }
-  `
-})
+export default OrgBillingRoot
