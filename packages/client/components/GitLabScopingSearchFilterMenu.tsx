@@ -38,6 +38,8 @@ type GitLabSearchQuery = NonNullable<
   NonNullable<GitLabScopingSearchFilterMenuQueryResponse['viewer']['meeting']>['gitlabSearchQuery']
 >
 
+type SelectedProject = NonNullable<GitLabSearchQuery['selectedProjects']>[0]
+
 const MAX_PROJECTS = 10
 
 const getValue = (item: {fullPath?: string}) => {
@@ -103,9 +105,7 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
   const meetingId = meeting?.id ?? ''
   const gitlabSearchQuery = meeting?.gitlabSearchQuery
   const {selectedProjects} = gitlabSearchQuery!
-  console.log('🚀  ~ gitlabSearchQuery', gitlabSearchQuery)
-  const selectedProjectsIds = selectedProjects?.map((project) => project?.id)
-  console.log('🚀  ~ selectedProjectsIds', selectedProjectsIds)
+  const selectedProjectsIds = selectedProjects?.map(({id}) => id)
   const atmosphere = useAtmosphere()
 
   const {
@@ -139,25 +139,20 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('gitlab', meetingId)
             const gitlabSearchQuery = store.get<GitLabSearchQuery>(searchQueryId)!
-            const selectedProjectRecord =
-              store.get<GitLabSearchQuery['selectedProjects']>(projectId)
-            const selectedProjectsRecords =
-              gitlabSearchQuery.getLinkedRecord<GitLabSearchQuery['selectedProjects']>(
-                'selectedProjects'
-              )
+            const selectedProjectRecord = store.get<SelectedProject>(projectId)
+            if (!selectedProjectRecord) return
+            const selectedProjectsRecords = gitlabSearchQuery.getLinkedRecords('selectedProjects')
             if (isSelected) {
+              const newSelectedProjects = selectedProjectsRecords?.filter(
+                (project) => project.getValue('id') !== projectId
+              )
+              gitlabSearchQuery.setLinkedRecords(newSelectedProjects, 'selectedProjects')
             } else {
               const newSelectedProjects = selectedProjectsRecords
                 ? [...selectedProjectsRecords, selectedProjectRecord]
                 : [selectedProjectRecord]
-              console.log('🚀  ~ newSelectedProjects', newSelectedProjects)
               gitlabSearchQuery.setLinkedRecords(newSelectedProjects, 'selectedProjects')
             }
-            // const newSelectedProjectsIds = isSelected
-            //   ? selectedProjectsIds.filter((id) => id !== projectId)
-            //   : [...selectedProjectsIds, projectId]
-
-            // gitlabSearchQuery.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
           })
         }
         return (

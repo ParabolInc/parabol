@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../styles/paletteV3'
+import {GitLabScopingSearchCurrentFilters_meeting$key} from '../__generated__/GitLabScopingSearchCurrentFilters_meeting.graphql'
 
 const Wrapper = styled('div')({
   width: '100%',
@@ -26,7 +27,7 @@ const Items = styled('div')({
 })
 
 interface Props {
-  meetingRef: any
+  meetingRef: GitLabScopingSearchCurrentFilters_meeting$key
 }
 
 const GitLabScopingSearchCurrentFilters = (props: Props) => {
@@ -34,7 +35,6 @@ const GitLabScopingSearchCurrentFilters = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment GitLabScopingSearchCurrentFilters_meeting on PokerMeeting {
-        id
         gitlabSearchQuery {
           selectedProjects {
             fullPath
@@ -44,15 +44,12 @@ const GitLabScopingSearchCurrentFilters = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, gitlabSearchQuery} = meeting
+  const {gitlabSearchQuery} = meeting
   const {selectedProjects} = gitlabSearchQuery
-  const selectedProjectsFullPaths = selectedProjects?.map(({fullPath}) => fullPath)
-  console.log('🚀  ~ gitlabSearchQuery', {
-    gitlabSearchQuery,
-    selectedProjects,
-    selectedProjectsFullPaths
-  })
-  // const isEmpty = !queryString
+  const selectedProjectsFullPaths =
+    selectedProjects?.map((project, idx) =>
+      idx === 0 ? project.fullPath : `, ${project.fullPath}`
+    ) ?? 'None'
   return (
     <Wrapper>
       <Description>Current filters: </Description>
