@@ -11,7 +11,6 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
-import MockFieldList from './MockFieldList'
 import TypeAheadLabel from './TypeAheadLabel'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {SearchMenuItem} from './SearchMenuItem'
@@ -95,7 +94,6 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
     UNSTABLE_renderPolicy: 'full'
   })
   const {viewer} = data
-  const isLoading = viewer === null
   const projects = viewer?.teamMember?.integrations.atlassian?.projects ?? []
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
@@ -151,12 +149,11 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
-      {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && (
         <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
-      {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
+      {(query && selectedAndFilteredProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>
           No Jira Projects found!
         </EmptyDropdownMenuItemLabel>
