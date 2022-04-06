@@ -18,7 +18,7 @@ import getMeetingTaskEstimates, {
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {MeetingTypeEnum} from '../postgres/types/Meeting'
 import getRedis from '../utils/getRedis'
-import normalizeResults from './normalizeRethinkDbResults'
+import normalizeResults from './normalizeResults'
 import RootDataLoader from './RootDataLoader'
 
 export interface MeetingSettingsKey {

@@ -1,4 +1,4 @@
-import normalizeResults from './normalizeRethinkDbResults'
+import normalizeResults from './normalizeResults'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 
